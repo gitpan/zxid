@@ -1,0 +1,201 @@
+# zxid/sg/saml-schema-assertion-2.0.sg
+# $Id: saml-schema-assertion-2.0.sg,v 1.2 2006/05/30 21:31:40 sampo Exp $
+#
+# N.B. This file is not a direct conversion. Instead it has been manually edited to
+# make it simpler and to facilitate code generation.
+
+target(sa, urn:oasis:names:tc:SAML:2.0:assertion)
+ns(xs,http://www.w3.org/2001/XMLSchema)
+import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)
+import(xenc,http://www.w3.org/2001/04/xmlenc#,http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd)
+
+&@IDNameQualifiers: 
+  @NameQualifier?	 -> %xs:string
+  @SPNameQualifier?	 -> %xs:string
+  ;
+
+BaseID	 -> %sa:BaseIDAbstractType
+%BaseIDAbstractType:
+  &@sa:IDNameQualifiers
+  ;
+
+NameID	 -> %sa:NameIDType
+%NameIDType:	 base(xs:string)
+  &@sa:IDNameQualifiers
+  @Format?	 -> %xs:anyURI
+  @SPProvidedID? -> %xs:string
+  ;
+
+%EncryptedElementType:
+  xenc:EncryptedData
+  xenc:EncryptedKey*
+  ;
+
+EncryptedID	 -> %sa:EncryptedElementType
+Issuer           -> %sa:NameIDType
+AssertionIDRef	 -> %xs:NCName
+AssertionURIRef	 -> %xs:anyURI
+
+Assertion	 -> %sa:AssertionType
+%AssertionType:
+  sa:Issuer
+  ds:Signature?
+  sa:Subject?
+  sa:Conditions?
+  sa:Advice?
+  sa:Statement*                  # *** how to express * for choice
+  sa:AuthnStatement*
+  sa:AuthzDecisionStatement*
+  sa:AttributeStatement*
+  @Version	 -> %xs:string
+  @ID	         -> %xs:ID
+  @IssueInstant	 -> %xs:dateTime
+  ;
+
+Subject	 -> %sa:SubjectType
+%SubjectType:
+  sa:BaseID?                     # Only one of the IDs should occur
+  sa:NameID?
+  sa:EncryptedID?
+  sa:SubjectConfirmation*        # This is more lax than SAML spec
+  ;
+
+SubjectConfirmation	 -> %sa:SubjectConfirmationType
+%SubjectConfirmationType:
+  sa:BaseID?                     # Only one of the IDs should occur
+  sa:NameID?
+  sa:EncryptedID?
+  sa:SubjectConfirmationData?
+  @Method	 -> %xs:anyURI
+  ;
+
+SubjectConfirmationData	 -> %sa:SubjectConfirmationDataType
+%SubjectConfirmationDataType:	 base(anyType)
+  any*  processContents(lax)
+  @NotBefore?	 -> %xs:dateTime
+  @NotOnOrAfter? -> %xs:dateTime
+  @Recipient?	 -> %xs:anyURI
+  @InResponseTo? -> %xs:NCName
+  @Address?	 -> %xs:string
+  @any
+  ;
+
+%KeyInfoConfirmationDataType:	 base(sa:SubjectConfirmationDataType)
+  ds:KeyInfo+
+  ;
+
+Conditions	 -> %sa:ConditionsType
+%ConditionsType:
+  sa:Condition*                  # *** Stated differently in XSD
+  sa:AudienceRestriction*
+  sa:OneTimeUse*
+  sa:ProxyRestriction*
+  @NotBefore?	 -> %xs:dateTime
+  @NotOnOrAfter? -> %xs:dateTime
+  ;
+
+Condition	 -> %sa:ConditionAbstractType
+
+AudienceRestriction -> %sa:AudienceRestrictionType
+%AudienceRestrictionType:	 base(sa:ConditionAbstractType)
+  sa:Audience+
+  ;
+
+Audience	 -> %xs:anyURI
+
+OneTimeUse	 -> %sa:OneTimeUseType
+%OneTimeUseType: base(sa:ConditionAbstractType) ;
+
+ProxyRestriction -> %sa:ProxyRestrictionType
+%ProxyRestrictionType:	 base(sa:ConditionAbstractType)
+  sa:Audience*
+  @Count?	 -> %xs:nonNegativeInteger
+  ;
+
+Advice	 -> %sa:AdviceType
+%AdviceType:
+  sa:AssertionIDRef*    # *** really a choice, but maxOccurs="unbounded"
+  sa:AssertionURIRef*
+  sa:Assertion*
+  sa:EncryptedAssertion*
+  any*  ns(##other)  processContents(lax)
+  ;
+
+EncryptedAssertion -> %sa:EncryptedElementType
+
+Statement	 -> %sa:StatementAbstractType
+
+AuthnStatement	 -> %sa:AuthnStatementType
+%AuthnStatementType:	 base(sa:StatementAbstractType)
+  sa:SubjectLocality?
+  sa:AuthnContext
+  @AuthnInstant	         -> %xs:dateTime
+  @SessionIndex?	 -> %xs:string
+  @SessionNotOnOrAfter?	 -> %xs:dateTime
+  ;
+
+SubjectLocality	 -> %sa:SubjectLocalityType
+%SubjectLocalityType:
+  @Address?	 -> %xs:string
+  @DNSName?	 -> %xs:string
+  ;
+
+AuthnContext	 -> %sa:AuthnContextType
+%AuthnContextType:
+  sa:AuthnContextClassRef?    # N.B. We diverge from canonical XSD
+  sa:AuthnContextDecl?
+  sa:AuthnContextDeclRef?
+  sa:AuthenticatingAuthority*
+  ;
+
+AuthnContextClassRef	 -> %xs:anyURI
+AuthnContextDeclRef	 -> %xs:anyURI
+AuthnContextDecl	 -> %xs:anyType
+AuthenticatingAuthority	 -> %xs:anyURI
+
+AuthzDecisionStatement	 -> %sa:AuthzDecisionStatementType
+%AuthzDecisionStatementType:	 base(sa:StatementAbstractType)
+  sa:Action+
+  sa:Evidence?
+  @Resource	 -> %xs:anyURI
+  @Decision	 -> %sa:DecisionType
+  ;
+
+%DecisionType:	 enum( Permit Deny Indeterminate ) ;
+
+Action	 -> %sa:ActionType
+%ActionType:	 base(string)
+  @Namespace	 -> %xs:anyURI
+  ;
+
+Evidence	 -> %sa:EvidenceType
+%EvidenceType:
+  sa:AssertionIDRef*      # XSD has choice maxOccurs="unbounded"
+  sa:AssertionURIRef*
+  sa:Assertion*
+  sa:EncryptedAssertion*
+  ;
+
+AttributeStatement	 -> %sa:AttributeStatementType
+%AttributeStatementType: base(sa:StatementAbstractType)
+  sa:Attribute*           # XSD has choice maxOccurs="unbounded"
+  sa:EncryptedAttribute*
+  ;
+
+Attribute	 -> %sa:AttributeType
+%AttributeType:
+  sa:AttributeValue*
+  @Name	         -> %xs:string
+  @NameFormat?	 -> %xs:anyURI
+  @FriendlyName? -> %xs:string
+  @any
+  ;
+
+AttributeValue	   -> %xs:anyType
+EncryptedAttribute -> %sa:EncryptedElementType
+
+TestElem:
+  sa:AttributeValue*
+  ;
+
+#EOF

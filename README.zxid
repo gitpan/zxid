@@ -1,0 +1,1010 @@
+README.zxid
+###########
+<<author: Sampo Kellomäki (sampo@iki.fi)>>
+<<cvsid: $Id: README.zxid,v 1.19 2006/09/05 05:09:37 sampo Exp $>>
+
+1 Who needs this?
+=================
+
+ZXID project has currently (Aug 2006) two outputs
+
+libzxid:: A C library for supporting SAML 2.0, including federated Single Sign-On
+zxid:: A C program that implements a SAML Service Provider (SP) as a CGI script
+
+You need this if you are
+
+Web Master:: You want to enable SAML based Single Sign-On (SSO) to your web site. In this
+    case you would use the zxid SP CGI script directly, only configuring
+    it slightly.
+
+Perl Developer:: You can use the Net::SAML module to integrate SSO
+    to your application and web site. Given the direct perl support this is
+    easier than fully understanding the C interface.
+
+PHP Developer:: We expect to support functionality roughly equivalent
+    to perl Net::SAML. It does not help that swig.org project does
+    not officially support php5. Perhaps there is something the php5
+    community could do to fix this? (*** php4 vs. php5 penetration?)
+
+Web Developer:: You want to integrate SAML based SSO to your web site tool or product
+    so that your customers can enjoy SSO enabled web sites. In this case
+    you would study zxid.c for examples and use libzxid.a to implement the
+    functionality in your own program.
+
+Identity Management hacker:: you need some building blocks: you
+    will study libzxid and add to it, contributing to the project.
+
+ZXID Project has vastly more ambitious goals. See the ZXID Project chapter
+later in this document.
+
+2 Installing
+============
+
+If you want to try ZXID out immediately, we recommend compiling the
+library and examples and installing one of the examples as a CGI
+script in an existing web server. See later chapters for more details.
+
+  tar xvzf zxid-0.4.tgz
+  cd zxid-0.4
+  # N.B. There is no configure script. The Makefile works for all supported platforms as is.
+  make
+  make perlmod           # optional
+  cd Net; make install   # optional: install Net::SAML perl module
+  cp zxid <webroot>/
+  # configure your web server to recognize zxid a CGI, e.g.
+  mini_httpd -p 8443 -c zxid -S -E zxid.pem
+
+  # Edit your /etc/hosts to contain
+  127.0.0.1       localhost sp1.zxidcommon.org sp1.zxidsp.org
+
+  # Point your browser to
+  https://sp1.zxidsp.org:8443/zxid?o=E
+  https://sp1.zxidsp.org:8443/zxid.pl?o=E      # Perl version
+
+  # Find an IdP to test with and configure it...
+
+2.1 Prerequisites
+-----------------
+
+This software depends on following packages:
+
+1. zlib from zlib.net. Generally whatever comes with your distro is sufficient.
+2. openssl-0.9.8b or later. See www.openssl.org. Generally openssl libraries
+   distributed with most Linux distros are sufficient.<<footnote: It is
+   possible to compile without OpenSSL, e.g. for space constrained embedded
+   system, but this has serious security implications.>>
+3. libcurl from http://curl.haxx.se/. I used version 7.15.5, but probably
+   whatever ships with your distribution is fine. libcurl is needed
+   for SOAP bindings and for fetching metadata. It needs to be compiled
+   to support HTTPS.<<footnote: Compilation without libcurl is possible
+   with some loss of functionality.>>
+4. HTTPS capable web server. For most trivial testing CGI support is needed. We
+   recommend mini_httpd available from http://www.acme.com/software/mini_httpd/
+
+Following additional packages are needed by developers who wish
+to build from scratch, including the code generation (the standard
+distribution includes the output of the code generation, so most
+people do not need these).
+
+a. gperf from gnu.org (only for build process when generating code)
+b. swig from swig.org (only for build process and only if you want scripting interfaces)
+c. perl from cpan.org (only for build process and only if you want to generate code from .sg)
+d. plaindoc from http://mercnet.pt/plaindoc/pd.html (only for build process, for code
+   generation from .sg, and for documentation)
+e. mini_httpd from http://www.acme.com/software/mini_httpd/ (only for canned tutorial)
+
+Although technically not needed to build zxid, you will need an IdP
+to test against. We do not, at the time, supply one so you
+will need to find a third party.
+
+2.2 Canned Tutorial: Running ZXID as CGI under mini_httpd
+---------------------------------------------------------
+
+While zxid will run easily under Apache httpd (see <<link:apache.html:
+receipe>>), for sake of simplicity we first illustrate running it with
+mini_httpd(8), a very simple SSL capable web server by Jef Poskanzer.
+
+2.2.1 Getting and installing mini_httpd
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can download the source for mini_httpd from
+http://www.acme.com/software/mini_httpd/
+
+You should already have installed OpenSSL, or quite probably OpenSSL
+shipped with your distribution. If it is not located at
+/usr/local/ssl, the you need to edit the mini_httpd ~Makefile~ to
+indicate where it is. At any rate you need to uncomment all lines that
+start by SSL_ in the ~Makefile~. Then say
+
+  make
+
+Now copy the mini_httpd binary somewhere in your path.
+
+2.2.2 Running mini_httpd
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+After building zxid, in zxid directory, run
+
+  mini_httpd -p 8443 -c zxid -S -E zxid.pem
+
+where
+
+  -p 8443      specifies the port to listen to
+  -c zxid      specifies that URL paths ending in "zxid" are CGI scripts
+  -S           specifies that https is to be used
+  -E zxid.pem  specifies the SSL certificate to use
+
+> N.B. The zxid.pem certificate and private key combo is shipped with zxid
+> for demonstration purposes. Obviously everybody who downloads zxid
+> has that private key, so there is no real security what-so-ever.  For
+> production use, you must generate, or aquire, your own private
+> key-certificate pair (and keep the private key secret). See Certificates
+> chapter for further info.
+
+2.2.3 Accessing ZXID
+~~~~~~~~~~~~~~~~~~~~
+
+Edit your /etc/hosts file so that the definition of localhost also
+includes sp1.zxidcommon.org and sp1.zxidsp.org domain names, e.g:
+
+  127.0.0.1       localhost sp1.zxidcommon.org sp1.zxidsp.org
+
+Point your browser to
+
+  https://sp1.zxidsp.org:8443/zxid
+
+or if you do not want the common domain cookie check
+
+  https://sp1.zxidsp.org:8443/zxid?o=E
+
+2.2.4 Setting up an IdP
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Currently zxid does not ship with an IdP (though the necessary
+protocol encoders and decoders are latently available in libzxid,
+should anyone wish to make an attempt to hack an IdP together).
+For you to test zxid, you will need to aquire an IdP from
+somewhere - any vendor whose product is SAML 2.0 certified
+will do. One possible source is http://symlabs.com/Products/SFIAM.html
+who have a free download.
+
+If you do not want to install an IdP yourself (even for testing),
+find someone who already runs one and ask if they would be willing
+to load the metadata of your zxid SP.
+
+Once you get your IdP up and running, you need to make sure it accepts
+the zxid SP in its Circle of Trust (CoT). This is done by placing
+the metadata of the SP in right place in the IdP product configuration.
+If your IdP supports automatic CoT management, just turn it on
+and chances are you are done.<<footnote: On production IdP you should
+understand the trust implications (i.e. no trust) of flipping automatic
+CoT management on.>>
+
+If not, you can obtain the zxid SP metadata (which is slightly different
+for each install so you can't just copy it from existing install) from
+
+  https://sp1.zxidsp.org:8443/zxid?o=B
+
+This URL is the +well known location method+ metadata URL. It is also
+the SP +Entity ID+ or Provider ID, should the IdP product ask for
+this in its configuration. If the IdP product needs you to
+supply the metadata manually as an xml file, just point your
+web browser to the above URL and save to file.
+
+zxid SP, by default, has automatic fetching of IdP metadata enabled so
+there is no manual configuration step needed, provided that the IdP
+supports the well known location method. All SAML 2.0 certified IdP
+implementations must support it (but you may still need to enable it
+in configuration).
+
+However, you will need the Entity ID (Provider ID) of the IdP. This is
+the URL that the IdP uses for well known location method of metadata
+sharing. You may need to dig the IdP documentation or GUI for a while
+to find it. If you already have the IdP metadata as an xml file, open it
+and look for EntityDescriptor/entityID. If you already have the
+file, you can also import it manually by running following command
+
+  ./zxid -import file:///path/to/idp-meta.xml
+
+But the preferred method still is just let the automatic method
+do its job.
+
+2.2.5 Your first SSO
+~~~~~~~~~~~~~~~~~~~~
+
+1. Start at
+
+     https://sp1.zxidsp.org:8443/zxid
+
+   or
+
+     https://sp1.zxidsp.org:8443/zxid?o=E
+
+   If you had common domin cookie already in place, and you
+   are already logged in the IdP, the SSO may happen
+   automatically (go to step 3). The automatic experience
+   will be typical when you use SSO regularily for more
+   than one web site (i.e. SP).
+
+   However, if you get a screen titled "ZXID SP SSO",
+   you need to paste the IdP's Entity ID to the supplied field
+   and click "Login". If zxid SP already obtained the metadata for the
+   IdP, you may also see a button specific for your IdP (and in this
+   case there is no need to know the Entity ID anymore or paste anything). 
+
+2. Next step depends on the IdP product you are using. Usually
+   a login screen will appear asking for user name and password.
+   Supply these and login. You will need an account at the IdP.
+
+3. For more slick IdPs, that's all you need to do and you will
+   land right back at the zxid SP page titled "ZXID SP Management".
+
+   > Congratulations, you have made your first SSO!
+
+   However, some IdPs will pester you with additional questions
+   and you will have to jump through their hoops. A typical
+   question is whether you want to accept a federation. You do.
+   Sometimes the federation question does not appear automatically
+   and you need to figure out a way to create a federation
+   in their user interface and how to get them to send you
+   back to SP. Sometimes the word used is "account linking"
+   instead of federation.<<footnote: Vendor products are constantly
+   improving in this area. From protocol perspective
+   all the additional gyrations are unnecessary. Be sure
+   to provide feedback to the vendor so that simpler, easier
+   to use, products will emerge in future.>>
+
+3 Configuring and Running
+=========================
+
+ZXID ships with working demo configuration so you can run it right
+away and once you are familiar with the concepts, you can return
+to this chapter.
+
+ZXID uses a configuration file in hardwired path<<footnote: As of version 0.2 the
+configuration file has not been implemented yet. You configure ZXID at compile
+time by editing zxidconf.h>>
+
+  /var/zxid/zxid.conf
+
+for figuring out its parameters. If this file is not present, built-in
+default configuration is used. The built-in configuration will allow
+you to test features of ZXID, but should not be used in production
+because it uses default certificates and private keys. Obviously the
+demo private key is of public knowledge since it is distributed with the
+ZXID package, and as such it provides no privacy protection
+what-so-ever. For production use you MUST generate your own
+certificate and private key.
+
+Usually configuration of a system involves following tasks
+
+1. Configure web server (see your web server documentation)
+   a. HTTPS operation and TLS certificate. In the minimum you need
+      the main site, but you may want to configure the Common Domain
+      Cookie virtual host as well.
+   b. Arrange for ZXID to be invoked. This could mean configuring
+      zxid.x or zxid.pl to be recognized as a CGI script, or it could
+      mean setting up your ~modperl~ or ~modphp~ system to call
+      ZXID at the appropriate place.
+2. Configure ZXID, including signing certificate and CoT with peer metadata
+   a. generate or aquire certificate
+   b. Obtain peer metadata (from their well known location) or enable +Instant CoT+ feature.
+3. Configure CoT peers with your metadata. They can download your
+   metadata from your well known location (which is the URL that is your entity ID). For this
+   to happen you need to have web server and ZXID up and running.
+
+3.1 Configuration Parameters
+----------------------------
+
+3.1.1 zxidroot
+~~~~~~~~~~~~~~
+
+The root directory of ZXID configuration files and directories. By default this
+is /var/zxid and has following directories and files in it
+
+  /var/zxid/
+   |
+   +-- zxid.conf  Main configuration file
+   +-- pem/       Our certificates
+   +-- cot/       Metadata of CoT partners (metadata cache)
+   +-- ses/       Sessions
+   `-- log/       Log files, pid files, and the like
+
+3.1.2 pem
+~~~~~~~~~
+
+Directory that holds various certificates. The certificates
+have hardwired names that are not configurable.
+
+ca.pem:: Certification Authority certificates. These are used for validating any
+    certificates received from peers (other sites on the CoT). The CA certificates
+    may also be shipped to the peers to facilitate them validating our signatures.
+    This is especially relevant if the certificate is issued by multilayer CA
+    hierarchy where the peer may not have the intermediate CA certificates.
+sign-nopw-cert.pem:: The signing certificate AND private key (concatenated in one file).
+    The private key MUST NOT be encrypted (there will not be any opportunity to supply
+    decryption password).
+enc-nopw-cert.pem:: The encryption certificate AND private key (concatenated in one file).
+    The private key MUST NOT be encrypted (there will not be any opportunity to supply
+    decryption password). The signing certificate can be used as the encryption
+    certificate. If encryption certificate is not specified it will default to
+    signing certificate.
+
+In addition to the above certificates and private keys, you will need
+to configure your web server to use TLS or SSL certificates for the main site
+and the Common Domain site. We suggest the following naming
+
+ssl-nopw-cert.pem:: SSL or TLS certificate for main site. In order to avoid browser
+    warnings, the CN field of this certificate should match the domain name of the
+    site. The SSL certificate can be same as signing or encryption certificate.
+cdc-nopw-cert.pem:: SSL or TLS certificate for Common Domain Cookie introduction site.
+    In order to avoid browser warnings, the CN field of this certificate should match
+    the domain name of the site. The SSL certificate can be same as signing or encryption
+    certificate.
+
+3.1.3 cot
+~~~~~~~~~
+
+Directory that holds metadata of the Circle of Trust (CoT)
+partners. If +Instant CoT+ is enabled, this directory needs to be
+writable at run time.
+
+3.2 Special or embedded compile (reduced functionality)
+-------------------------------------------------------
+
+libzxid contains thousands of functions and any given application is
+unlikely to use them all. Thus the easiest, safest, no loss of
+functionality, way to reduce the footprint is to simply enable
+compiler and linker flags that support dead function
+elimination.<<footnote: Unfortunately the gnu ld does not support dead
+function elimination. You should file this as a bug to them. If they
+tell you to put evey one of the 7000 some functions in a separate .c file,
+consider the scalability implications of this. Read the comments in
+pulverize.pl for a full scoop and an approach.>>
+
+If you need to squeeze zxid into as minimal space as possible,
+some functionality tradeoffs are supported. I stress that you
+should only attempt these tradeoffs once you are familiar with
+zxid and know what you are doing. The canned install instructions
+and tutorial walk throughs stop working if you omit
+significant functionality.
+
+3.2.1 Compilation without OpenSSL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Comment out the -DUSE_OPENSSL flag from CFLAGS in Makefile and
+recompile.
+
+This will cripple zxid from security perspective because it
+will no longer be able to verify or generate digital signatures.
+Unless your environment does not need trust and security,
+or you understand thoroughly how to provide trust and security
+by other means, it is a very bad idea to compile without OpenSSL.
+
+N.B. Compiling, or not, zxid with OpenSSL does not affect
+whether your web server will use SSL or TLS. Unless you know
+what you are doing, you should be using SSL at web server
+layer. Given that SSL is used at web server layer, the savings
+you would gain from compiling zxid without OpenSSL may be
+neglible if you use dynamic linking.
+
+3.2.2 Compilation without libcurl
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Comment out the -DUSE_CURL flag from CFLAGS in Makefile and
+recompile.
+
+Disabling libcurl does not have adverse security implications: you
+only loose some functionality and depdending on your situation you may
+well be able to live without it.
+
+1. Without libcurl, zxid can not act as a SOAP client. This has a few
+   consequences
+
+   a. Artifact profile for SSO is not supported because it needs SOAP
+      to resolve the artifact. In most cases a perfectly
+      viable alternative is to use POST profile for SSO.
+
+   b. SOAP profiles for Single Logout and NameID management (aka
+      defederation) are not supported. You can use the redirect
+      profiles and get mostly the same functionality.
+
+2. Automatic CoT metadata fetching using well known
+   location method is not supported without libcurl.
+   You can fetch the metadata manually, e.g. using web browser,
+   and place it in /var/zxid/cot directory.
+
+   If you want to manually control your Circle of Trust
+   relationships, you probably want to do this anyway so
+   loss of automatic functionality is a nonissue.<<footnote:
+   If you compile with libcurl, but still want to disable
+   automatic metadata fetching, investigate the ZXID_MD_FETCH
+   and related configuration options.>>
+
+3. Web Services Client (WSC) functionality is not supported
+   without libcurl. Effectively this is just another case of
+   SOAP needed. If you have your own SOAP implementation,
+   you may, at lesser automation, achieve much of the
+   same functionality by calling the encoder and decoder
+   functions manually.
+
+3.2.3 Compiling without zlib (not supported)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+zlib is used mainly in redirect profiles. Since zlib foot print is
+small, we have made no supported provision to compile without it. If
+you hack something together, let us know.
+
+4 Net::SAML Perl Module
+=======================
+
+* perl CGI example: zxid.pl
+* using with modperl
+
+After building the main zxid tree, you can
+
+  cd Net
+  perl Makefile.PL
+  make
+  make test      # Tests are extremely sparse at the moment
+  make install
+
+This assumes you use the pregenerated Net/SAML_wrap.c and Net/SAML.pm files
+that we distribute. If you wish to generate these files from origin,
+you need to have SWIG installed and then say in main zxid directory
+
+  make perlmod
+
+5 PHP Integration
+=================
+
+TBD using SWIG
+
+6 Python Integration
+====================
+
+TBD using SWIG
+
+7 Java Native API Integration
+=============================
+
+TBD using SWIG
+
+8 Native C API
+==============
+
+The generated aspects of the native C API are in c/*-data.h, for example
+
+  c/saml2-data.h
+
+Studying this file is very instructive.
+
+8.1 C Data Structures
+---------------------
+
+From .sg a header (.h) is generated. This header contains structs that
+represent the data of the elements. Each element and attribute
+generates its own node. Even trivial nodes like strings have to be
+kept this way because the nodes form basis of remembering the ordering
+of data. This ordering is needed for exclusive XML canonicalization,
+and thus for signature verification.<<footnote: It's unfortunate that
+the XML standards do not make this any easier. Without order
+maintenance requirement, it would be possible to represent trivial
+child elements directly as struct fields. An approach that tried to do
+just this is available from CVS tag GEN_LALR (ca. 29.5.2006).>>
+
+Any missing data is represented by NULL pointer.
+
+Any repeating data is kept as a linked list, in reverse order of being
+seen in the data stream.<<footnote: Reverse order is just an
+optimization - or an artefact of simply adding latest element to the
+head of the list. If this bothers you, it's easy enough to reverse the
+list afterwards. Linked list is simple and works well for data whose
+order does not matter much (we use separate pointer for remembering
+the canonicalization order) and where random access is not needed, or
+cardinality is low enough so that simple pointer chasing is efficient
+enough.>>
+
+Simple elements and all attributes are represented by simple string node
+(even if they are booleans or integers).
+
+8.1.1 Handling Namespaces
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+An annoying feature of XML documents is that they have variable
+namespace prefixes. The namespace prefix for the unqualified elements
+is taken to be the one specified in target() directive of the .sg
+input. Name of an element in C code is formed by prefixing the element
+by the namespace prefix and an underscore.
+
+Attributes will only have namespace prefix if such was expressly
+specified in .sg input. However, pointer and length fields
+representing attributes take an "a" middlefix, thus giving a separate
+C identifier namespace for the attributes.
+
+When decoding, the actual namespace prefixes are recorded. The wire
+order encoder knows to use these recorded prefixes so that accurate
+canonicalization for XMLDSIG can be produced. The schema order encoder
+always uses the prefixes defined using target() directives in .sg
+files. The runtime notion of namespaces is handled by ~ns_tab~ field
+of the decoding and encoding context.  It is initialized to contain
+all namespaces known by virtue of .sg declarations.  The runtime
+assigned prefixes are held in a linked list hanging from ~n~ (next)
+field of ~struct zx_ns_s~. (*** more work needed here)
+
+The code generation creates a file such as c/saml2-ns.c which contains
+initialization for the table. The main program should point the ns_tab
+field of context as follows:
+
+  struct zx_ns_s my_ns_tab[] = {
+  #include "c/saml2-ns.c"
+    { 0,0,0,0,0 }
+  };
+  
+  main {
+    struct zx_ctx* ctx;
+    ...
+    ctx->ns_tab = my_ns_tab;
+  }
+
+8.1.2 Handling any and anyAttribute
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Since our aim is to be lax in what we accept, every element can handle
+unexpected additional attributes as well as unexpected elements. Thus
+whether the schema specifies any or anyAttribute or not, we handle
+everything as if they were there. However, when attributes and
+elements are received out side of their expected context, they are
+simply trated as strings whith string names. This is true even for
+those attributes and elements that would be recognizable in their
+proper context.
+
+The any extension points, as well as some bookkeeping data
+are hidden inside ~ZX_ELEM_EXT~ macro. If you tinker with
+this macro, be sure you know what you are doing. If you want
+to add your own specific fields to all structs, redefining
+~ZX_ELEM_EXT~ may be appropriate, but if you want to add more
+fields only to some specific structures, you can define
+a macro of form
+
+  TPF_EEE_EXT
+
+and put in it whatever fields you want. These fields will be
+initialized to zero when the structure is created, but are not touched
+in any other way by the generated code. In particular, if some of your
+fields are pointers, it will be your responsibility to free them. The
+standard free functions will not understand to free them. See the data
+structure walking functions, below for one way to accomplish this.
+
+8.1.3 Root data structure
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The root data structure
+
+  struct zx_root_s;
+
+is a special structure that has a field for evey top level
+recognizable element.
+
+8.1.4 Per element data structures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*** TBW
+
+8.1.5 Memory Allocation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+After decoding all string data points directly into the input buffer,
+i.e. strings are NOT copied. Be sure to not free the input buffer
+until you are done processing the data structure. If you need to take
+a copy of the strings, you will need to walk the data structure as a
+post processing step and do your copies. This can be done using
+
+  void TPF_dup_strs_len_NS_EEE(struct zx_dec_ctx* c, struct TPF_NS_EEE_s* x);
+
+The structures are allocated via ZX_ZALLOC() macro, which
+by default calls zx_zalloc() function, which in turn
+uses system malloc(3). However, you can redefine the
+macro to use whatever other allocation scheme you desire.
+
+The generated libraries never free(3) memory. In many programming
+patterns, this is actually desireable: for example a CGI program can
+count on dying - the process exit(2) will free all the memory.
+
+If you need to free(3) the data structure, you will need to walk it
+using
+
+  void TPF_free_len_NS_EEE(struct zx_dec_ctx* c, struct TPF_NS_EEE_s* x, int free_strings);
+  void zx_free_any(struct zx_dec_ctx* c, struct zx_note_s* n, int free_strs);
+
+The zx_free_any() works by having a gigantic switch statement that calls
+the appropriate specific free function.
+
+You can deep clone the data structure with
+
+  void TPF_deep_clone_NS_EEE(struct zx_dec_ctx* c, struct TPF_NS_EEE_s* x, int dup_strings);
+  struct zx_note_s* zx_clone_any(struct zx_dec_ctx* c, struct zx_note_s* n, int dup_strs);
+
+The zx_clone_any() works by having a gigantic switch statement that calls
+the appropriate specific free function.
+
+8.2 Decoder as Recursive Descent Parser
+---------------------------------------
+
+The entry point to the decoder is
+
+  struct zx_root_s* zx_dec_root(struct zx_dec_ctx* c, int n);
+
+The decoding context holds pointer to the raw data and must
+be initialized prior to calling the decoder. The second
+argument specifies how many recognized elements are decoded
+before returning. Usually you would specify 1 to consume
+one top level element from the stream.
+
+The returned datastructure, ~struct zx_root_s~, contains
+one pointer for each type of top level element that can
+be recognized. The ~tok~ field of the returned value
+identifies the last top level element recognized and can
+be used to dispatch to correct request handler:
+
+  struct TPF_root_s* x = TPF_dec_root(c, 1);
+  switch (x->gg.g.tok) {
+  case TPF_NS_EEE_ELEM: return process_EEE_req(x->NN_EEE);
+  }
+
+When processing responses, it is generally already known
+which type of response you are expecting, so you can simply
+check for NULLness of the respective pointer in the returned
+data structure.
+
+Internally zx_dec_root() works much the same way: it scans
+a beginning of an element from the stream, looks up the token
+number corresponding to the element name, and switches on
+that, calling element specific decoder functions (see next
+section) to do the detailed processing.
+
+8.2.1 Element Decoders
+~~~~~~~~~~~~~~~~~~~~~~
+
+For each recognizable element there is a function of form
+
+  struct TPF_NS_EEE_s* zx_dec_NS_ELEM(struct zx_dec_ctx* c, int tok);
+
+This function works much the same way as ???
+
+8.2.2 Decoder Extension Points
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The generated code is instrumented with following macros
+
+ZX_ATTR_DEC_EXT(ss):: Extension point called just after decoding known attribute
+ZX_XMLNS_DEC_EXT(ss):: Extension point called just after decoding xmlns attribute
+ZX_UNKNOWN_ATTR_DEC_EXT(ss):: Extension point called just after decoding unknown attr
+ZX_START_DEC_EXT(x):: Extension point called just after decoding element name
+    and allocating struct, but before decoding any of the attributes.
+ZX_END_DEC_EXT(x):: Extension point called just after decoding the entire element.
+ZX_START_BODY_DEC_EXT(x):: Extension point called just after decoding element tag, including attributes, but before decoding the body of the element.
+ZX_PI_DEC_EXT(pi):: Extension point called just after decoding processing instruction
+ZX_COMMENT_DEC_EXT(comment):: Extension point called just after decoding comment
+ZX_CONTENT_DEC(ss):: Extension point called just after decoding string content
+ZX_UNKNOWN_ELEM_DEC_EXT(elem):: Extension point called just after decoding unknown element
+
+Following macros are available to the extension points
+
+TPF:: Type prefix (as specified by  -p during code generation)
+EL_NAME:: Namespaceful element name (NS_EEE)
+EL_STRUCT:: Name of the struct that describes the element
+EL_NS:: Namespace prefix of the element (as seen in input schema)
+EL_TAG:: Name of the element without any namespace qualification.
+
+8.3 Exclusive Canonical Encoder
+-------------------------------
+
+The encoder receives a C data structure and generates a gigantic
+string containing an XML document corresponding to the data structure
+and the input schemata. The XML document conforms to the rules of
+exclusinve XML canonicalization and hence is useful as input to XMLDSIG.
+
+One encoder is generated for each root node specified at the code
+generation. Often these encoders share code for interior nodes.
+
+The encoders allow two pass rendering. You can first use the length
+computation method to calculate the amount of storage needed and
+then call one of the rendering functions to actually render. Or
+if you simply have large enough buffer, you can render directly.
+
+8.3.1 Length computation
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Compute length of an element (and its subelements). The XML attributes
+and elements are processed in schema order, although this should
+not really matter as length in wire order should be the same.
+
+  int TPF_enc_len_NS_EEE(struct zx_enc_ctx* c, struct TPF_NS_EEE_s* x);
+
+8.3.2 Encoding in schema order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Render element into string. The XML attributes and elements are
+processed in schema order. This is what you generally want for
+rendering new data structure to a string. The wo pointers are not
+used.
+
+  char* TPF_enc_so_NS_EEE(struct zx_enc_ctx* c, struct TPF_NS_EEE_s* x, char* p);
+
+8.3.3 Encoding in wire order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Render element into string. The XML attributes and elements are
+processed in wire order by chasing wo pointers. This is what you want
+for validating signatures on other people's XML documents.
+
+  char* TPF_enc_wo_NS_EEE(struct zx_enc_ctx* c, struct TPF_NS_EEE_s* x, char* p);
+
+8.4 Data Accessor Functions
+---------------------------
+
+*** TBW
+
+8.5 Memory Allocation and Free
+------------------------------
+
+*** TBW
+
+8.6 Walking the data structure
+------------------------------
+
+*** TBW
+
+8.9 Thread Safety
+-----------------
+
+All generated libraries are designed to be thread safe, provided
+that the underlying libc APIs, such as malloc(3) are thread safe.
+
+8 ZXID Project
+==============
+
+Immediate goal: build a SAML 2.0 SP and ID-WSF 1.1 WSC
+
+Goals of ZXID project include
+
+* SOAP 1.1 support
+* SAML 2.0 compliance
+  - SP role (highest short term priority)
+  - IdP role
+* Liberty ID-FF 1.2 support
+  - SP
+  - IdP
+  - SAML 1.1
+* Liberty ID-WSF 1.1 support
+  - Discovery bootstrap
+  - Discovery WSC
+  - ID-DAP WSC
+  - ID-DAP WSP
+* Liberty ID-WSF 2.0 support
+  - Discovery bootstrap
+  - Discovery WSC
+  - ID-DAP WSC
+  - ID-DAP WSP
+
+8.1 Project Layout
+------------------
+
+Following directory layout is used by the project. Many of the specified
+directories are used by intermediate outputs that are not distributed
+in tarball releases, but may or may no be present in CVS checkouts.
+
+  zxid-0.xx
+   |
+   +-- xsd    XML schema descriptions of protocols (not distributed)
+   +-- sg     Schema Grammar (.sg) descriptions of protocols
+   +-- c      C code generated from the Schema Grammar descriptions
+   +-- tex    Temporary files for document generation using PlainDoc (not distributed)
+   +-- html   HTML documentation generated using PlainDoc
+   +-- review Publicly released announcements and documents (not distributed)
+   +-- t      Test scripts and expected test outputs
+   `-- tmp    Temporary files, such as actual test outputs
+
+8.2 Protocol Encoders and Decoders
+----------------------------------
+
+The protocol encoders and decoders are generated automatically from
+the schema grammar (.sg) descriptions. This ensures accurate protocol
+implementation. While the output is strictly schema driven and correct,
+the decoders have some provisions to accept some deviations from
+strict spec (e.g. out of order elements are tolerated). However,
+one should note that XMLDSIG does not tolerate very much deviation,
+thus even if decoder accepts a slightly illfomed message, it is likely
+to fail in signature verification.
+
+There are three outputs from generation
+
+1. Data structures describing the data (xx.h)
+2. Encoder that linearizes the data structure to wire protocol (xx-enc.c)
+3. Decoder that converts wire protocol byte stream to a data structure (xx-dec.c)
+
+9 Code Generation Tools
+=======================
+
+Main work horse of code generation is xsd2sg.pl, which serves multiple
+purposes
+
+1. Build hashes of all declarations in .sg input. Each hash element consists
+   of array of elements and attributes, as well as groups and attribute groups.
+   The type of array element sis determined from prefix, per .sg rules.
+2. Expand groups and attribute groups
+3. Evaluate each element wrt its type and generate
+   a. C data structures
+   b. Decoder grammar
+   c. Token descriptions for perfect hash and lexical analyzer
+   d. Encoder C code
+
+The code to build hashes is intervowen in the code that generates .xsd
+from .sg. The rest of the generation happens in a function called
+generate().
+
+Typical command line (to generate SAML 2.0 protocol engine)
+
+  ~/plaindoc/xsd2sg.pl -d -gen saml2 -p zx_ \
+       -r saml:Assertion -r se:Envelope \
+       -S \
+       sg/saml-schema-assertion-2.0.sg \
+       sg/saml-schema-protocol-2.0.sg \
+       sg/xmldsig-core.sg \
+       sg/xenc-schema.sg \
+       sg/soap11.sg \
+       >/dev/null
+
+<<ignore: ~/plaindoc/xsd2sg.pl -d -gen saml2 -p zx_ -r saml:Assertion -r se:Envelope -S sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg sg/soap11.sg >/dev/null >>
+
+To generate SAML 2.0 Metadata engine you would issue
+
+  ~/plaindoc/xsd2sg.pl -d -gen saml2md -p zx_ \
+       -r md:EntityDescriptor -r md:EntitiesDescriptor \
+       -S \
+       sg/saml-schema-assertion-2.0.sg \
+       sg/saml-schema-metadata-2.0.sg \
+       sg/xmldsig-core.sg \
+       sg/xenc-schema.sg \
+       >/dev/null
+
+<<ignore: ~/plaindoc/xsd2sg.pl -d -gen saml2md -p zx_ -r md:EntityDescriptor -r md:EntitiesDescriptor -S sg/saml-schema-assertion-2.0.sg sg/saml-schema-metadata-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg >/dev/null >>
+
+9.1 Special Support for Specific Programming Languages
+------------------------------------------------------
+
+While C code generation is the main output, and this can always be
+converted to other languages using SWIG, sometimes a more natural
+language interface can be built by directly generating it.
+
+We plan to enhance the code generation to do something like this. At
+least direct hash-of-hashes-of-arrays-of-hashes type datastructure
+generation for benefit of some scripting languages is planned.
+
+10 ZXID SP
+==========
+
+*** warning: not checked lately, may be wrong!
+
+<<table: ZXID SP URLs
+URL          Description
+============ =======================================================
+/zxid        Same as o=M. Main convenience entry point
+/zxid?o=M    SSO with CDC; or management if already logged in
+/zxid?o=C    Common Domain Cookie (CDC) reader, usually under common domain host name.
+/zxid?o=E    SSO after CDC read; or management if already logged in.
+/zxid?o=P    HTTP POST end point. Used for forms and last part of POST profile SSO.
+/zxid?o=S    SOAP end point (HTTP POST)
+/zxid?o=B    Get SP metadata (or combined SP and IdP metadata if proxying).
+>>
+
+*** add description of CGI fields
+
+10 Certificates
+===============
+
+TBD
+
+11 License
+==========
+
+Copyright (c) 2006 Sampo Kellomäki (sampo@iki.fi), All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+12 FAQ
+======
+
+*** real user FAQs are still lacking. Maybe this stuff is perfect?
+
+12.8 Author's Pet Peeves
+------------------------
+
+1. What is Schema Grammar (.sg) and why are you using it?
+   * Schema Grammar is a compact formal description of XML documents. It is
+     mostly bidirectionally convertible to XML Schema (XSD) and captures
+     the useful essence of most XML schemas.
+   * Schema Grammars are intuitive and compact, often allowing the
+     essence to be understood at glance, and even most complex cases
+     being only about 50% of the volume of the corresponding XSD.
+   * We use Schema Grammar descriptions because they are more human readable
+     than XSD and still equally amenable to automated code generation.
+   * Schema Grammar descriptions are usually converted using xsd2sg.pl, which is
+     part of the PlainDoc distribution.
+   * See http://mercnet.pt/plaindoc
+   * N.B. You do not need xsd2sg.pl or PlainDoc if you just want to compile and use ZXID.
+
+2. What is PlainDoc (.pd)?
+   * PlainDoc is a document preparation system that uses intuitive plain text files
+     with minimal markup to generate PDF and HTML outputs.
+   * We use PlainDoc because it makes it easy to maintain documentation.
+   * See http://mercnet.pt/plaindoc
+   * N.B. You do not need PlainDoc if you just want to compile and use ZXID.
+
+3. How come zxid is so heavy to compile?
+   * SAML 2.0 and related specs have a lot of functionality and detail, even
+     if you really only need 1% of it. We do not wish to arbitrate which
+     functionality is best or most needed, so we simply provide it all.
+   * A lot of the code is generated, thus the input for C compiler is well
+     in excess of half a million lines of code (of which only about 6k
+     were written by a human).
+   * Some of the generated files are gigantic, e.g. Net/SAML/zxid_wrap.c
+     is over 380k lines. Compiler has to process all of this as a single
+     compilation unit.
+   * gcc and gnu ld were, perhaps, not designed to process this large inputs
+     efficiently. Often the implementation strategy of keeping
+     everything in memory will cause a smaller machines to swap.
+   * My 1GHz CPU, 256 MB RAM machine definitely swaps and thus
+     takes about 45 minutes to compile all this stuff.
+   * I recommend at least 1GB RAM and 3GHz CPU for development
+     machine. On such machine, you should be able to build in about 10 min.
+
+4. Why do you not use ./configure and GNU autoconf?
+   * ~autoconf~ is not for everyone. World does not stop without
+     ~autoconf~. Or indeed need ~autoconf~. It is Yet Another Dependency
+     I Do Not Need (YADIDNN).
+   * I find the GNU ~autoconf~ stuff much more difficult to understand than
+     my own ~Makefile~. Why should I debug ~autoconf~ when I could
+     spend the time debugging my ~Makefile~ or the actual code?
+   * I find resolving problems much easier at source code and ~Makefile~ level
+     than trying to debug a million line script generated by some system
+     I do not understand (perhaps some hardcore ~autoconf~ advocate could
+     try to convince me and educate me, but I doubt).
+   * My policy is to only support systems I have first hand experience with,
+     or I have trustworthy friends to rely on. It does not help me
+     to have a system that tries to guess +gazillion irrellevant variables+
+     to an unpredictable state. It's much easier to stick to standards like
+     POSIX and make sure you have predictable results from predictable inputs.
+   * If the deterministic and predictable results are wrong, they can
+     at least be debugged and fixed with a finite amount of work.
+   * Supporting all relevant systems manually is not that much of work. The
+     inhabitants of the orrelevant systems can support themselves, probably
+     learning a great deal on the side.
+
+12.9 Annoyances and improvement ideas
+-------------------------------------
+
+There is a lot of commonality that is not leveraged, especially in the
+way service end points are chose given the metadata.  The descriptors
+are nearly identical so casting them to one should work.
+
+Many of the SAML2 responses are nearly identical. Rather than
+construct them fully formally, we could have just one "SAML any
+response" function. Perhaps this could be supported by some schema
+grammar level aliasing feature: if an element derives from base type
+without adding anything at all of its own, we might as well only
+generate code for the base type.
+
+<<htmlpreamble: <title>ZXID Home</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>README ZXID</h1> >>
+
+<<EOF: >>

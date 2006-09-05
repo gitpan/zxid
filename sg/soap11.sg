@@ -1,0 +1,48 @@
+# soap11.sg - Slightly edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: soap11.sg,v 1.3 2006/05/30 21:31:40 sampo Exp $
+
+target(se, http://schemas.xmlsoap.org/soap/envelope/)
+ns(xs,http://www.w3.org/2001/XMLSchema)
+
+Envelope -> %se:Envelope
+%Envelope:
+  se:Header?
+  se:Body
+  any*
+  @any?
+  ;
+
+Header	 -> %se:Header
+%Header:
+  any*
+  @any?
+  ;
+
+Body	 -> %se:Body
+%Body:
+  any*
+  @any?
+  ;
+
+@mustUnderstand	 -> %xs:boolean
+@actor	 -> %xs:anyURI
+
+@encodingStyle	 -> %xs:anyURI
+&@encodingStyle: 
+  @se:encodingStyle?
+  ;
+
+Fault	 -> %se:Fault
+%Fault:
+  faultcode	 -> %xs:QName
+  faultstring	 -> %xs:string
+  faultactor?	 -> %xs:anyURI
+  detail?	 -> %se:detail
+  ;
+
+%detail:
+  any*
+  @any
+  ;
+
+#EOF
