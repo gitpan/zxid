@@ -1,5 +1,5 @@
 /* c/saml2md-dec.c - WARNING: This file was automatically generated. DO NOT EDIT!
- * $Id: saml2md-dec.c,v 1.27 2006/09/05 05:09:41 sampo Exp $ */
+ * $Id$ */
 /* Code generation design Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi),
  * All Rights Reserved. NO WARRANTY. See file COPYING for terms and conditions
  * of use. Some aspects of code generation were driven by schema
@@ -4017,6 +4017,2815 @@ next_attr:
             el = zxmd_DEC_simple_elem(c, tok);
             el->g.n = &x->X509SerialNumber->g;
             x->X509SerialNumber = el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_AdditionalMetaLocation) */
+
+#define EL_NAME   m20_AdditionalMetaLocation
+#define EL_STRUCT zxmd_m20_AdditionalMetaLocation_s
+#define EL_NS     m20
+#define EL_TAG    AdditionalMetaLocation
+
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_DEC_m20_AdditionalMetaLocation(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_AdditionalMetaLocation_s* x = ZX_ZALLOC(c, struct zxmd_m20_AdditionalMetaLocation_s);
+  x->gg.g.tok = zxmd_m20_AdditionalMetaLocation_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_AdditionalMetaLocation_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_namespace_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->namespace->g;
+      x->namespace = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_AffiliationDescriptor) */
+
+#define EL_NAME   m20_AffiliationDescriptor
+#define EL_STRUCT zxmd_m20_AffiliationDescriptor_s
+#define EL_NS     m20
+#define EL_TAG    AffiliationDescriptor
+
+struct zxmd_m20_AffiliationDescriptor_s* zxmd_DEC_m20_AffiliationDescriptor(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_AffiliationDescriptor_s* x = ZX_ZALLOC(c, struct zxmd_m20_AffiliationDescriptor_s);
+  x->gg.g.tok = zxmd_m20_AffiliationDescriptor_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_AffiliationDescriptor_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_affiliationOwnerID_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->affiliationOwnerID->g;
+      x->affiliationOwnerID = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_validUntil_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->validUntil->g;
+      x->validUntil = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_cacheDuration_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->cacheDuration->g;
+      x->cacheDuration = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_id_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->id->g;
+      x->id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_AffiliateMember_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->AffiliateMember->g;
+            x->AffiliateMember = el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+          case zxmd_m20_KeyDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_KeyDescriptor(c);
+            el->g.n = &x->KeyDescriptor->gg.g;
+            x->KeyDescriptor = (struct zxmd_m20_KeyDescriptor_s*)el;
+            break;
+          case zxmd_ds_Signature_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_ds_Signature(c);
+            el->g.n = &x->Signature->gg.g;
+            x->Signature = (struct zxmd_ds_Signature_s*)el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_AssertionConsumerServiceURL) */
+
+#define EL_NAME   m20_AssertionConsumerServiceURL
+#define EL_STRUCT zxmd_m20_AssertionConsumerServiceURL_s
+#define EL_NS     m20
+#define EL_TAG    AssertionConsumerServiceURL
+
+struct zxmd_m20_AssertionConsumerServiceURL_s* zxmd_DEC_m20_AssertionConsumerServiceURL(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_AssertionConsumerServiceURL_s* x = ZX_ZALLOC(c, struct zxmd_m20_AssertionConsumerServiceURL_s);
+  x->gg.g.tok = zxmd_m20_AssertionConsumerServiceURL_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_AssertionConsumerServiceURL_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_id_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->id->g;
+      x->id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_isDefault_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->isDefault->g;
+      x->isDefault = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_ContactPerson) */
+
+#define EL_NAME   m20_ContactPerson
+#define EL_STRUCT zxmd_m20_ContactPerson_s
+#define EL_NS     m20
+#define EL_TAG    ContactPerson
+
+struct zxmd_m20_ContactPerson_s* zxmd_DEC_m20_ContactPerson(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_ContactPerson_s* x = ZX_ZALLOC(c, struct zxmd_m20_ContactPerson_s);
+  x->gg.g.tok = zxmd_m20_ContactPerson_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_ContactPerson_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_libertyPrincipalIdentifier_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->libertyPrincipalIdentifier->g;
+      x->libertyPrincipalIdentifier = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_contactType_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->contactType->g;
+      x->contactType = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_Company_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->Company->g;
+            x->Company = el;
+            break;
+          case zxmd_m20_GivenName_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->GivenName->g;
+            x->GivenName = el;
+            break;
+          case zxmd_m20_SurName_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SurName->g;
+            x->SurName = el;
+            break;
+          case zxmd_m20_EmailAddress_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->EmailAddress->g;
+            x->EmailAddress = el;
+            break;
+          case zxmd_m20_TelephoneNumber_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->TelephoneNumber->g;
+            x->TelephoneNumber = el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_EntitiesDescriptor) */
+
+#define EL_NAME   m20_EntitiesDescriptor
+#define EL_STRUCT zxmd_m20_EntitiesDescriptor_s
+#define EL_NS     m20
+#define EL_TAG    EntitiesDescriptor
+
+struct zxmd_m20_EntitiesDescriptor_s* zxmd_DEC_m20_EntitiesDescriptor(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_EntitiesDescriptor_s* x = ZX_ZALLOC(c, struct zxmd_m20_EntitiesDescriptor_s);
+  x->gg.g.tok = zxmd_m20_EntitiesDescriptor_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_EntitiesDescriptor_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_EntityDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_EntityDescriptor(c);
+            el->g.n = &x->EntityDescriptor->gg.g;
+            x->EntityDescriptor = (struct zxmd_m20_EntityDescriptor_s*)el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_EntityDescriptor) */
+
+#define EL_NAME   m20_EntityDescriptor
+#define EL_STRUCT zxmd_m20_EntityDescriptor_s
+#define EL_NS     m20
+#define EL_TAG    EntityDescriptor
+
+struct zxmd_m20_EntityDescriptor_s* zxmd_DEC_m20_EntityDescriptor(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_EntityDescriptor_s* x = ZX_ZALLOC(c, struct zxmd_m20_EntityDescriptor_s);
+  x->gg.g.tok = zxmd_m20_EntityDescriptor_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_EntityDescriptor_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_providerID_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->providerID->g;
+      x->providerID = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_id_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->id->g;
+      x->id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_validUntil_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->validUntil->g;
+      x->validUntil = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_cacheDuration_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->cacheDuration->g;
+      x->cacheDuration = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_IDPDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_IDPDescriptor(c);
+            el->g.n = &x->IDPDescriptor->gg.g;
+            x->IDPDescriptor = (struct zxmd_m20_IDPDescriptor_s*)el;
+            break;
+          case zxmd_m20_SPDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_SPDescriptor(c);
+            el->g.n = &x->SPDescriptor->gg.g;
+            x->SPDescriptor = (struct zxmd_m20_SPDescriptor_s*)el;
+            break;
+          case zxmd_m20_AffiliationDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_AffiliationDescriptor(c);
+            el->g.n = &x->AffiliationDescriptor->gg.g;
+            x->AffiliationDescriptor = (struct zxmd_m20_AffiliationDescriptor_s*)el;
+            break;
+          case zxmd_m20_ContactPerson_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_ContactPerson(c);
+            el->g.n = &x->ContactPerson->gg.g;
+            x->ContactPerson = (struct zxmd_m20_ContactPerson_s*)el;
+            break;
+          case zxmd_m20_Organization_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Organization(c);
+            el->g.n = &x->Organization->gg.g;
+            x->Organization = (struct zxmd_m20_Organization_s*)el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+          case zxmd_ds_Signature_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_ds_Signature(c);
+            el->g.n = &x->Signature->gg.g;
+            x->Signature = (struct zxmd_ds_Signature_s*)el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_Extension) */
+
+#define EL_NAME   m20_Extension
+#define EL_STRUCT zxmd_m20_Extension_s
+#define EL_NS     m20
+#define EL_TAG    Extension
+
+struct zxmd_m20_Extension_s* zxmd_DEC_m20_Extension(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_Extension_s* x = ZX_ZALLOC(c, struct zxmd_m20_Extension_s);
+  x->gg.g.tok = zxmd_m20_Extension_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_Extension_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_IDPDescriptor) */
+
+#define EL_NAME   m20_IDPDescriptor
+#define EL_STRUCT zxmd_m20_IDPDescriptor_s
+#define EL_NS     m20
+#define EL_TAG    IDPDescriptor
+
+struct zxmd_m20_IDPDescriptor_s* zxmd_DEC_m20_IDPDescriptor(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_IDPDescriptor_s* x = ZX_ZALLOC(c, struct zxmd_m20_IDPDescriptor_s);
+  x->gg.g.tok = zxmd_m20_IDPDescriptor_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_IDPDescriptor_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_protocolSupportEnumeration_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->protocolSupportEnumeration->g;
+      x->protocolSupportEnumeration = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_id_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->id->g;
+      x->id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_validUntil_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->validUntil->g;
+      x->validUntil = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_cacheDuration_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->cacheDuration->g;
+      x->cacheDuration = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_KeyDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_KeyDescriptor(c);
+            el->g.n = &x->KeyDescriptor->gg.g;
+            x->KeyDescriptor = (struct zxmd_m20_KeyDescriptor_s*)el;
+            break;
+          case zxmd_m20_SoapEndpoint_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SoapEndpoint->g;
+            x->SoapEndpoint = el;
+            break;
+          case zxmd_m20_SingleLogoutServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleLogoutServiceURL->g;
+            x->SingleLogoutServiceURL = el;
+            break;
+          case zxmd_m20_SingleLogoutServiceReturnURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleLogoutServiceReturnURL->g;
+            x->SingleLogoutServiceReturnURL = el;
+            break;
+          case zxmd_m20_FederationTerminationServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->FederationTerminationServiceURL->g;
+            x->FederationTerminationServiceURL = el;
+            break;
+          case zxmd_m20_FederationTerminationServiceReturnURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->FederationTerminationServiceReturnURL->g;
+            x->FederationTerminationServiceReturnURL = el;
+            break;
+          case zxmd_m20_FederationTerminationNotificationProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->FederationTerminationNotificationProtocolProfile->g;
+            x->FederationTerminationNotificationProtocolProfile = el;
+            break;
+          case zxmd_m20_SingleLogoutProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleLogoutProtocolProfile->g;
+            x->SingleLogoutProtocolProfile = el;
+            break;
+          case zxmd_m20_RegisterNameIdentifierProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->RegisterNameIdentifierProtocolProfile->g;
+            x->RegisterNameIdentifierProtocolProfile = el;
+            break;
+          case zxmd_m20_RegisterNameIdentifierServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->RegisterNameIdentifierServiceURL->g;
+            x->RegisterNameIdentifierServiceURL = el;
+            break;
+          case zxmd_m20_RegisterNameIdentifierServiceReturnURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->RegisterNameIdentifierServiceReturnURL->g;
+            x->RegisterNameIdentifierServiceReturnURL = el;
+            break;
+          case zxmd_m20_NameIdentifierMappingProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->NameIdentifierMappingProtocolProfile->g;
+            x->NameIdentifierMappingProtocolProfile = el;
+            break;
+          case zxmd_m20_NameIdentifierMappingEncryptionProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->NameIdentifierMappingEncryptionProfile->g;
+            x->NameIdentifierMappingEncryptionProfile = el;
+            break;
+          case zxmd_m20_Organization_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Organization(c);
+            el->g.n = &x->Organization->gg.g;
+            x->Organization = (struct zxmd_m20_Organization_s*)el;
+            break;
+          case zxmd_m20_ContactPerson_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_ContactPerson(c);
+            el->g.n = &x->ContactPerson->gg.g;
+            x->ContactPerson = (struct zxmd_m20_ContactPerson_s*)el;
+            break;
+          case zxmd_m20_AdditionalMetaLocation_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_AdditionalMetaLocation(c);
+            el->g.n = &x->AdditionalMetaLocation->gg.g;
+            x->AdditionalMetaLocation = (struct zxmd_m20_AdditionalMetaLocation_s*)el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+          case zxmd_ds_Signature_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_ds_Signature(c);
+            el->g.n = &x->Signature->gg.g;
+            x->Signature = (struct zxmd_ds_Signature_s*)el;
+            break;
+          case zxmd_m20_SingleSignOnServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleSignOnServiceURL->g;
+            x->SingleSignOnServiceURL = el;
+            break;
+          case zxmd_m20_SingleSignOnProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleSignOnProtocolProfile->g;
+            x->SingleSignOnProtocolProfile = el;
+            break;
+          case zxmd_m20_AuthnServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->AuthnServiceURL->g;
+            x->AuthnServiceURL = el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_KeyDescriptor) */
+
+#define EL_NAME   m20_KeyDescriptor
+#define EL_STRUCT zxmd_m20_KeyDescriptor_s
+#define EL_NS     m20
+#define EL_TAG    KeyDescriptor
+
+struct zxmd_m20_KeyDescriptor_s* zxmd_DEC_m20_KeyDescriptor(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_KeyDescriptor_s* x = ZX_ZALLOC(c, struct zxmd_m20_KeyDescriptor_s);
+  x->gg.g.tok = zxmd_m20_KeyDescriptor_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_KeyDescriptor_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_use_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->use->g;
+      x->use = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_EncryptionMethod_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->EncryptionMethod->g;
+            x->EncryptionMethod = el;
+            break;
+          case zxmd_m20_KeySize_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->KeySize->g;
+            x->KeySize = el;
+            break;
+          case zxmd_ds_KeyInfo_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_ds_KeyInfo(c);
+            el->g.n = &x->KeyInfo->gg.g;
+            x->KeyInfo = (struct zxmd_ds_KeyInfo_s*)el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_Organization) */
+
+#define EL_NAME   m20_Organization
+#define EL_STRUCT zxmd_m20_Organization_s
+#define EL_NS     m20
+#define EL_TAG    Organization
+
+struct zxmd_m20_Organization_s* zxmd_DEC_m20_Organization(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_Organization_s* x = ZX_ZALLOC(c, struct zxmd_m20_Organization_s);
+  x->gg.g.tok = zxmd_m20_Organization_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_Organization_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_OrganizationName_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_OrganizationName(c);
+            el->g.n = &x->OrganizationName->gg.g;
+            x->OrganizationName = (struct zxmd_m20_OrganizationName_s*)el;
+            break;
+          case zxmd_m20_OrganizationDisplayName_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_OrganizationDisplayName(c);
+            el->g.n = &x->OrganizationDisplayName->gg.g;
+            x->OrganizationDisplayName = (struct zxmd_m20_OrganizationDisplayName_s*)el;
+            break;
+          case zxmd_m20_OrganizationURL_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_OrganizationURL(c);
+            el->g.n = &x->OrganizationURL->gg.g;
+            x->OrganizationURL = (struct zxmd_m20_OrganizationURL_s*)el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_OrganizationDisplayName) */
+
+#define EL_NAME   m20_OrganizationDisplayName
+#define EL_STRUCT zxmd_m20_OrganizationDisplayName_s
+#define EL_NS     m20
+#define EL_TAG    OrganizationDisplayName
+
+struct zxmd_m20_OrganizationDisplayName_s* zxmd_DEC_m20_OrganizationDisplayName(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_OrganizationDisplayName_s* x = ZX_ZALLOC(c, struct zxmd_m20_OrganizationDisplayName_s);
+  x->gg.g.tok = zxmd_m20_OrganizationDisplayName_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_OrganizationDisplayName_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_lang_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->lang->g;
+      x->lang = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_OrganizationName) */
+
+#define EL_NAME   m20_OrganizationName
+#define EL_STRUCT zxmd_m20_OrganizationName_s
+#define EL_NS     m20
+#define EL_TAG    OrganizationName
+
+struct zxmd_m20_OrganizationName_s* zxmd_DEC_m20_OrganizationName(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_OrganizationName_s* x = ZX_ZALLOC(c, struct zxmd_m20_OrganizationName_s);
+  x->gg.g.tok = zxmd_m20_OrganizationName_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_OrganizationName_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_lang_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->lang->g;
+      x->lang = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_OrganizationURL) */
+
+#define EL_NAME   m20_OrganizationURL
+#define EL_STRUCT zxmd_m20_OrganizationURL_s
+#define EL_NS     m20
+#define EL_TAG    OrganizationURL
+
+struct zxmd_m20_OrganizationURL_s* zxmd_DEC_m20_OrganizationURL(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_OrganizationURL_s* x = ZX_ZALLOC(c, struct zxmd_m20_OrganizationURL_s);
+  x->gg.g.tok = zxmd_m20_OrganizationURL_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_OrganizationURL_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_lang_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->lang->g;
+      x->lang = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+
+	  default:
+	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    tok = ZX_TOK_NOT_FOUND;
+	    /* fall thru to classify it as any extension */
+	  case ZX_TOK_NOT_FOUND:
+	    elem = zxmd_DEC_wrong_elem(c, name, c->p - name);
+	    elem->gg.g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = elem;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    break;
+	  }
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    /* Data */
+    name = c->p;
+    ZX_LOOK_FOR(c,'<',x);
+    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss->len = c->p - name;
+    ss->s = name;
+    ss->g.tok = ZX_TOK_DATA;
+    ss->g.n = &x->gg.content->g;
+    x->gg.content = ss;
+    ZX_CONTENT_DEC(ss);
+    goto potential_tag;
+  }
+}
+
+#undef EL_NAME
+#undef EL_STRUCT
+#undef EL_NS
+#undef EL_TAG
+
+
+
+
+
+
+/* FUNC(zxmd_DEC_m20_SPDescriptor) */
+
+#define EL_NAME   m20_SPDescriptor
+#define EL_STRUCT zxmd_m20_SPDescriptor_s
+#define EL_NS     m20
+#define EL_TAG    SPDescriptor
+
+struct zxmd_m20_SPDescriptor_s* zxmd_DEC_m20_SPDescriptor(struct zx_ctx* c)
+{
+  int tok;
+  struct zx_elem_s* el;
+  struct zx_str_s* ss;
+  struct zx_any_attr_s* attr;
+  struct zx_any_elem_s* elem;
+  char* name;
+  char* data;
+  char quote;
+  struct zxmd_m20_SPDescriptor_s* x = ZX_ZALLOC(c, struct zxmd_m20_SPDescriptor_s);
+  x->gg.g.tok = zxmd_m20_SPDescriptor_ELEM;
+  x->gg.g.ns = zxmd_elems[zxmd_m20_SPDescriptor_ELEM].ns;
+  ZX_START_DEC_EXT(x);
+
+#if 1 /* NORMALMODE */
+  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+
+  /* The tag name has already been detected. Process attributes until '>' */
+  
+  for (; 1; ++c->p) {
+    ZX_SKIP_WS(c,x);
+    if (ONE_OF_2(*c->p, '>', '/'))
+      break;
+    name = c->p;
+    ZX_LOOK_FOR(c,'=',x);
+    
+    ++c->p;
+    if (!ONE_OF_2(*c->p, '"', '\''))
+      return 0;
+    quote = *c->p;
+    ++c->p;
+    data = c->p;	
+    
+    ZX_LOOK_FOR(c,quote,x);
+    
+    tok = zxmd_attr_lookup(c, name, data-2);
+    switch (tok) {
+    case zxmd_protocolSupportEnumeration_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->protocolSupportEnumeration->g;
+      x->protocolSupportEnumeration = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_id_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->id->g;
+      x->id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_validUntil_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->validUntil->g;
+      x->validUntil = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zxmd_cacheDuration_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str_s);
+      ss->g.n = &x->cacheDuration->g;
+      x->cacheDuration = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+
+    case ZX_TOK_XMLNS:
+      ZX_XMLNS_DEC_EXT(ss);
+      goto next_attr;
+    default:
+      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+      tok = ZX_TOK_NOT_FOUND;
+      /* fall thru to classify it as anyAttr extension */
+    case ZX_TOK_NOT_FOUND:
+      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
+      attr->name_len = data - name - 2;
+      attr->name = name;
+      attr->ss.g.n = &x->gg.any_attr->ss.g;
+      x->gg.any_attr = attr;
+      ss = &attr->ss;
+      /* *** namespace handling for unknown element? */
+      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
+      goto set_attr_val;
+    }
+    ss->g.ns = zxmd_attrs[tok].ns;
+set_attr_val:
+    ss->g.tok = tok;
+    ss->len = c->p - data;
+    ss->s = data;
+next_attr:
+    continue;
+  }
+  ++c->p;
+  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+    ++c->p;
+    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+    ZX_END_DEC_EXT(x);
+    return x;
+  }
+#endif
+
+  /* Process contents until '</' */
+  
+  ZX_START_BODY_DEC_EXT(x);
+  
+  while (1) {
+  next_elem:
+    ZX_SKIP_WS(c,x);
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction */
+	ERR("Processing instructions not supported. %d",0);
+	ZX_PI_DEC_EXT(pi);
+	return 0;
+      case '!':  /* comment */
+	ERR("Comments not supported. %d",0);
+	ZX_COMMENT_DEC_EXT(comment);
+	return 0;
+      case '/':  /* close tag */
+	++c->p;
+	name = c->p;
+	ZX_LOOK_FOR(c,'>',x);
+	tok = zxmd_elem_lookup(c, name, c->p);
+	if (tok != x->gg.g.tok) {
+	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
+	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	  ++c->p;
+	  return x;
+	}
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_END_DEC_EXT(x);
+	return x;
+      default:
+	if (A_Z_a_z_(*c->p)) {
+	  name = c->p;
+	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
+	  if (!c->p)
+	    return 0;
+	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = zxmd_elem_lookup(c, name, c->p);
+	  switch (tok) {
+          case zxmd_m20_KeyDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_KeyDescriptor(c);
+            el->g.n = &x->KeyDescriptor->gg.g;
+            x->KeyDescriptor = (struct zxmd_m20_KeyDescriptor_s*)el;
+            break;
+          case zxmd_m20_SoapEndpoint_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SoapEndpoint->g;
+            x->SoapEndpoint = el;
+            break;
+          case zxmd_m20_SingleLogoutServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleLogoutServiceURL->g;
+            x->SingleLogoutServiceURL = el;
+            break;
+          case zxmd_m20_SingleLogoutServiceReturnURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleLogoutServiceReturnURL->g;
+            x->SingleLogoutServiceReturnURL = el;
+            break;
+          case zxmd_m20_FederationTerminationServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->FederationTerminationServiceURL->g;
+            x->FederationTerminationServiceURL = el;
+            break;
+          case zxmd_m20_FederationTerminationServiceReturnURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->FederationTerminationServiceReturnURL->g;
+            x->FederationTerminationServiceReturnURL = el;
+            break;
+          case zxmd_m20_FederationTerminationNotificationProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->FederationTerminationNotificationProtocolProfile->g;
+            x->FederationTerminationNotificationProtocolProfile = el;
+            break;
+          case zxmd_m20_SingleLogoutProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->SingleLogoutProtocolProfile->g;
+            x->SingleLogoutProtocolProfile = el;
+            break;
+          case zxmd_m20_RegisterNameIdentifierProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->RegisterNameIdentifierProtocolProfile->g;
+            x->RegisterNameIdentifierProtocolProfile = el;
+            break;
+          case zxmd_m20_RegisterNameIdentifierServiceURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->RegisterNameIdentifierServiceURL->g;
+            x->RegisterNameIdentifierServiceURL = el;
+            break;
+          case zxmd_m20_RegisterNameIdentifierServiceReturnURL_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->RegisterNameIdentifierServiceReturnURL->g;
+            x->RegisterNameIdentifierServiceReturnURL = el;
+            break;
+          case zxmd_m20_NameIdentifierMappingProtocolProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->NameIdentifierMappingProtocolProfile->g;
+            x->NameIdentifierMappingProtocolProfile = el;
+            break;
+          case zxmd_m20_NameIdentifierMappingEncryptionProfile_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->NameIdentifierMappingEncryptionProfile->g;
+            x->NameIdentifierMappingEncryptionProfile = el;
+            break;
+          case zxmd_m20_Organization_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Organization(c);
+            el->g.n = &x->Organization->gg.g;
+            x->Organization = (struct zxmd_m20_Organization_s*)el;
+            break;
+          case zxmd_m20_ContactPerson_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_ContactPerson(c);
+            el->g.n = &x->ContactPerson->gg.g;
+            x->ContactPerson = (struct zxmd_m20_ContactPerson_s*)el;
+            break;
+          case zxmd_m20_AdditionalMetaLocation_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_AdditionalMetaLocation(c);
+            el->g.n = &x->AdditionalMetaLocation->gg.g;
+            x->AdditionalMetaLocation = (struct zxmd_m20_AdditionalMetaLocation_s*)el;
+            break;
+          case zxmd_m20_Extension_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_Extension(c);
+            el->g.n = &x->Extension->gg.g;
+            x->Extension = (struct zxmd_m20_Extension_s*)el;
+            break;
+          case zxmd_ds_Signature_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_ds_Signature(c);
+            el->g.n = &x->Signature->gg.g;
+            x->Signature = (struct zxmd_ds_Signature_s*)el;
+            break;
+          case zxmd_m20_AssertionConsumerServiceURL_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_AssertionConsumerServiceURL(c);
+            el->g.n = &x->AssertionConsumerServiceURL->gg.g;
+            x->AssertionConsumerServiceURL = (struct zxmd_m20_AssertionConsumerServiceURL_s*)el;
+            break;
+          case zxmd_m20_AuthnRequestsSigned_ELEM:
+            el = zxmd_DEC_simple_elem(c, tok);
+            el->g.n = &x->AuthnRequestsSigned->g;
+            x->AuthnRequestsSigned = el;
             break;
 
 	  default:
@@ -17527,6 +20336,16 @@ struct zxmd_root_s* zxmd_DEC_root(struct zx_ctx* c)
             el = (struct zx_elem_s*)zxmd_DEC_md_EntitiesDescriptor(c);
             el->g.n = &x->EntitiesDescriptor->gg.g;
             x->EntitiesDescriptor = (struct zxmd_md_EntitiesDescriptor_s*)el;
+            if (--x->gg.g.tok) break; else { x->gg.g.tok = tok; return x; };
+          case zxmd_m20_EntityDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_EntityDescriptor(c);
+            el->g.n = &x->m20_EntityDescriptor->gg.g;
+            x->m20_EntityDescriptor = (struct zxmd_m20_EntityDescriptor_s*)el;
+            if (--x->gg.g.tok) break; else { x->gg.g.tok = tok; return x; };
+          case zxmd_m20_EntitiesDescriptor_ELEM:
+            el = (struct zx_elem_s*)zxmd_DEC_m20_EntitiesDescriptor(c);
+            el->g.n = &x->m20_EntitiesDescriptor->gg.g;
+            x->m20_EntitiesDescriptor = (struct zxmd_m20_EntitiesDescriptor_s*)el;
             if (--x->gg.g.tok) break; else { x->gg.g.tok = tok; return x; };
 
 	  default:

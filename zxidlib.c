@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidlib.c,v 1.16 2006/09/05 05:09:37 sampo Exp $
+ * $Id: zxidlib.c,v 1.17 2006/09/16 20:00:36 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  *
@@ -90,24 +90,24 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
     *p = 0;
     
     switch (n[0]) {
-    case 'o':      cgi->op = v[0];         break;
-    case 's':      cgi->sid = v;           break;
-    case 'u':      cgi->user = v;          break;
-    case 'p':      cgi->pw = v;            break;
-    case 'c':      cgi->cdc = v;           break;
+    case 'o': cgi->op = v[0];         break;
+    case 's': cgi->sid = v;           break;
+    case 'u': cgi->user = v;          break;
+    case 'p': cgi->pw = v;            break;
+    case 'c': cgi->cdc = v;           break;
       
       /* The following two entity IDs, combined with various login buttons
        * aim at supporting may different user interface layouts. You need to
        * understand how they interact to avoid undesired conflicts. */
-    case 'e':      if (v[0]) cgi->eid = v; break;  /* EntityID field (manual entry) */
-    case 'd':      if (v[0]) cgi->eid = v; break;  /* EntityID popup or radio box */
+    case 'e':                                 /* EntityID field (manual entry) */
+    case 'd': if (v[0]) cgi->eid = v; break;  /* EntityID popup or radio box */
     case 'l':
       /* Login button names are like lP<eid>, where "l" is literal ell, P is
        * protocol profile designator, and <eid> is Entity ID of the IdP.
        * N.B. If eid is omitted from button name, it may be provided using
        * d or e fields (see above). */
       cgi->pr_ix = n[1];
-      if (n[1])
+      if (n[2])
 	cgi->eid = n+2;
       cgi->op = 'L';
       D("cgi: login eid(%s)", cgi->eid);
@@ -516,6 +516,7 @@ void zxid_url_set(struct zxid_conf* cf, char* url)
 
 int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
 {
+  D("Initconf with path(%s)", zxid_path);
   memset(cf, 0, sizeof(struct zxid_conf));
   cf->path = zxid_path;
   cf->path_len = strlen(zxid_path);

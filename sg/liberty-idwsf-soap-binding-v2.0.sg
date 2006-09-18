@@ -1,0 +1,85 @@
+# zxid/sg/liberty-idwsf-soap-binding-v2.0.sg
+# Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: liberty-idwsf-soap-binding-v2.0.sg,v 1.4 2006/09/15 04:44:47 sampo Exp $
+
+target(b,   urn:liberty:sb:2006-08)
+import(sp,  urn:oasis:names:tc:SAML:2.0:protocol)
+import(wsu, http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd,wss-util-1.0.xsd)
+import(a,   http://www.w3.org/2005/08/addressing,ws-addr-1.0.xsd)
+import(lu,  urn:liberty:util:2005-11,liberty-idwsf-utility-v2.0.xsd)
+
+%FrameworkType:
+  any*  processContents(lax)
+  @version	 -> %xs:string
+  @any
+  ;
+Framework	 -> %b:FrameworkType
+
+%SenderType:
+  @providerID	 -> %xs:anyURI
+  @affiliationID?	 -> %xs:anyURI
+  @any
+  ;
+Sender	 -> %b:SenderType
+
+%TargetIdentityType:
+  any*  processContents(lax)
+  @any
+  ;
+TargetIdentity	 -> %b:TargetIdentityType
+
+%CredentialsContextType:
+  sp:RequestedAuthnContext?
+  b:SecurityMechID*	 -> %xs:anyURI
+  @any
+  ;
+CredentialsContext	 -> %b:CredentialsContextType
+
+%EndpointUpdateType:	 base(a:EndpointReferenceType)
+  @updateType?	 -> %xs:anyURI
+  ;
+EndpointUpdate	 -> %b:EndpointUpdateType
+
+%TimeoutType:
+  @maxProcessingTime	 -> %xs:integer
+  @any
+  ;
+Timeout	 -> %TimeoutType
+
+%ProcessingContextType:	 base(xs:anyURI)
+  @any
+  ;
+ProcessingContext	 -> %b:ProcessingContextType
+
+%ConsentType:
+  @uri	 -> %xs:anyURI
+  @timestamp?	 -> %xs:dateTime
+  @any
+  ;
+Consent	 -> %b:ConsentType
+
+%UsageDirectiveType:
+  any+  ns(##other)  processContents(lax)
+  @ref	 -> %xs:IDREF
+  @any
+  ;
+UsageDirective	 -> %b:UsageDirectiveType
+
+ApplicationEPR	 -> %a:EndpointReferenceType
+
+%UserInteractionHeaderType:
+  b:InteractionService* -> %a:EndpointReferenceType
+  @interact?	 -> %xs:string  default (interactIfNeeded)
+  @language?	 -> %xs:NMTOKENS
+  @redirect?	 -> %xs:boolean  default (0)
+  @maxInteractTime? -> %xs:integer
+  @any
+  ;
+UserInteraction	 -> %b:UserInteractionHeaderType
+
+RedirectRequest	 -> %b:RedirectRequestType
+%RedirectRequestType:
+  @redirectURL	 -> %xs:anyURI
+  ;
+
+#EOF

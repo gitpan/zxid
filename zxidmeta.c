@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidmeta.c,v 1.10 2006/08/31 15:44:42 sampo Exp $
+ * $Id: zxidmeta.c,v 1.11 2006/09/16 20:00:36 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  *
@@ -331,6 +331,7 @@ struct zxid_entity* zxid_load_cot_cache(struct zxid_conf* cf)
   dir = opendir(buf);
   if (!dir) {
     perror("opendir for /var/zxid/cot (or other if configured)");
+    D("failed path(%s)", buf);
     return 0;
   }
   
@@ -463,6 +464,11 @@ struct zx_str_s* zxid_my_entity_id(struct zxid_conf* cf)
   return zx_strf(cf->ctx, "%s?o=B", cf->url);
 }
 
+struct zx_str_s* zxid_my_cdc_url(struct zxid_conf* cf)
+{
+  return zx_strf(cf->ctx, "%s?o=C", cf->cdc_url);
+}
+
 struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf)
 {
   struct zx_sa_Issuer_s* is = zx_NEW_sa_Issuer(cf->ctx);
@@ -472,16 +478,20 @@ struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf)
   return is;
 }
 
-int zxid_send_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
+struct zx_str_s* zxid_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
-  struct zx_str_s* ss;
   struct zxmd_md_EntityDescriptor_s* ed;
   
   ed = zxmd_NEW_md_EntityDescriptor(cf->ctx);
   ed->entityID = zxid_my_entity_id(cf);
   ed->SPSSODescriptor = zxid_sp_sso_desc(cf);
   
-  ss = zxmd_EASY_ENC_SO_md_EntityDescriptor(cf->ctx, ed);
+  return zxmd_EASY_ENC_SO_md_EntityDescriptor(cf->ctx, ed);
+}
+
+int zxid_send_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
+{
+  struct zx_str_s* ss = zxid_sp_meta(cf, cgi);
   if (!ss)
     return 0;
   write_all_fd(1, ss->s, ss->len);

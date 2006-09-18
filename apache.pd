@@ -1,7 +1,7 @@
 Apache Setup Receipe for ZXID
 #############################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: apache.pd,v 1.1 2006/09/01 01:16:39 sampo Exp $>>
+<<cvsid: $Id: apache.pd,v 1.2 2006/09/16 05:59:56 sampo Exp $>>
 
 While I am not a guru in Apache set ups and others will do this much
 better, not to speak of the official documentation, I still find that
@@ -365,5 +365,5 @@ logs (be sure to replace /home/sampo with whatever makes sense):
 If you can't get any access at all, be sure you do not have the mini_httpd
 or some other process running on the same port.
 
-<<htmlpreamble: <title>ZXID Home</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>README ZXID</h1> >>
+<<htmlpreamble: <title>Apache Setup Receipe for ZXID</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>Apache Setup Receipe for ZXID</h1> >>
 <<EOF: >>

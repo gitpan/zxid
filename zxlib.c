@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxlib.c,v 1.6 2006/08/31 15:44:42 sampo Exp $
+ * $Id: zxlib.c,v 1.7 2006/09/16 20:00:36 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 8.8.2006,  moved lookup functions to generated code --Sampo
@@ -50,6 +50,19 @@ char* zx_str_to_c(struct zx_ctx* c, struct zx_str_s* ss)
   memcpy(p, ss->s, ss->len);
   p[ss->len] = 0;
   return p;
+}
+
+/* zx_str_conv() helps SWIG typemaps to achieve natural conversion
+ * to native length + data representations of scripting languages. */
+
+void zx_str_conv(struct zx_str_s* ss, int* out_len, char** out_s)  /* SWIG typemap friendly */
+{
+  *out_s = 0;
+  *out_len = 0;
+  if (!ss)
+    return;
+  *out_s = ss->s;
+  *out_len = ss->len;
 }
 
 void zx_str_free(struct zx_ctx* c, struct zx_str_s* ss)

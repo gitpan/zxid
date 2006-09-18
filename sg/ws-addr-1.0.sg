@@ -1,0 +1,85 @@
+# zxid/sg/ws-addr-1.0.sg
+# Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: ws-addr-1.0.sg,v 1.3 2006/09/15 02:38:10 sampo Exp $
+
+target(a, http://www.w3.org/2005/08/addressing)
+
+EndpointReference	 -> %a:EndpointReferenceType
+%EndpointReferenceType:
+  a:Address	 -> %a:AttributedURIType
+  a:ReferenceParameters?	 -> %a:ReferenceParametersType
+  a:Metadata?
+  any*  ns(##other)  processContents(lax)
+  @any
+  ;
+
+%ReferenceParametersType:
+  any*  processContents(lax)
+  @any
+  ;
+
+Metadata	 -> %a:MetadataType
+%MetadataType:
+  any*  processContents(lax)
+  @any
+  ;
+
+MessageID	 -> %a:AttributedURIType
+
+RelatesTo	 -> %a:RelatesToType
+%RelatesToType:	 base(xs:anyURI)
+  @RelationshipType?	 -> %a:RelationshipTypeOpenEnum  # default (http://www.w3.org/2005/08/addressing/reply)
+  @any
+  ;
+
+%RelationshipTypeOpenEnum:  union(a:RelationshipType xs:anyURI)
+  ;
+
+%RelationshipType:	 enum( http://www.w3.org/2005/08/addressing/reply ) ;
+
+ReplyTo	 -> %a:EndpointReferenceType
+From	 -> %a:EndpointReferenceType
+FaultTo	 -> %a:EndpointReferenceType
+To	 -> %a:AttributedURIType
+Action	 -> %a:AttributedURIType
+
+%AttributedURIType:	 base(xs:anyURI)
+  @any
+  ;
+
+@IsReferenceParameter	 -> %xs:boolean
+
+%FaultCodesOpenEnumType:  union(a:FaultCodesType xs:QName)
+  ;
+
+%FaultCodesType:	 enum( a:InvalidAddressingHeader a:InvalidAddress a:InvalidEPR a:InvalidCardinality a:MissingAddressInEPR a:DuplicateMessageID a:ActionMismatch a:MessageAddressingHeaderRequired a:DestinationUnreachable a:ActionNotSupported a:EndpointUnavailable ) ;
+
+RetryAfter	 -> %a:AttributedUnsignedLongType
+
+%AttributedUnsignedLongType:	 base(xs:unsignedLong)
+  @any
+  ;
+
+ProblemHeaderQName -> %a:AttributedQNameType
+
+%AttributedQNameType:	 base(xs:QName)
+  @any
+  ;
+
+ProblemHeader	 -> %a:AttributedAnyType
+
+%AttributedAnyType:
+  any*  processContents(lax)
+  @any
+  ;
+
+ProblemIRI	 -> %a:AttributedURIType
+
+ProblemAction	 -> %a:ProblemActionType
+%ProblemActionType:
+  a:Action?
+  a:SoapAction? -> %xs:anyURI
+  @any
+  ;
+
+#EOF

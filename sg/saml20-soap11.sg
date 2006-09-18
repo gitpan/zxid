@@ -1,14 +1,18 @@
 # zxid/sg/saml20-soap11.sg
 # Slightly edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: saml20-soap11.sg,v 1.1 2006/05/30 21:31:40 sampo Exp $
+# $Id: saml20-soap11.sg,v 1.3 2006/09/15 02:38:10 sampo Exp $
 #
 # Main purpose of this schema is to permit direct, one pass, parsing of
 # of SAML 2.0 content in SOAP envelope. Thus relevant SOAP extension
 # points have been replaced with actual SAML 2.0 elements.
+#
+# When you add new SOAP messages, you need to add them here, to the body.
 
 target(se, http://schemas.xmlsoap.org/soap/envelope/)
-ns(xs,http://www.w3.org/2001/XMLSchema)
-ns(sp,urn:oasis:names:tc:SAML:2.0:protocol)
+ns(xs,   http://www.w3.org/2001/XMLSchema)
+ns(sp,   urn:oasis:names:tc:SAML:2.0:protocol)
+ns(sp11, urn:oasis:names:tc:SAML:1.0:protocol)
+ns(ff12, urn:liberty:iff:2003-08)
 
 Envelope -> %se:Envelope
 %Envelope:
@@ -39,13 +43,21 @@ Body	 -> %se:Body
   sp:AuthzDecisionQuery?
   sp:AssertionIDRequest?
   sp:Response?
+  sp11:Request?
+  sp11:Response?
+  ff12:RegisterNameIdentifierRequest?
+  ff12:RegisterNameIdentifierResponse?
+  ff12:FederationTerminationNotification?
+  ff12:LogoutRequest?
+  ff12:LogoutResponse?
+  ff12:NameIdentifierMappingRequest?
+  ff12:NameIdentifierMappingResponse?
   se:Fault?
   ;
 
-@mustUnderstand	 -> %xs:boolean
-@actor	 -> %xs:anyURI
-
-@encodingStyle	 -> %xs:anyURI
+@mustUnderstand -> %xs:boolean
+@actor          -> %xs:anyURI
+@encodingStyle  -> %xs:anyURI
 &@encodingStyle: 
   @se:encodingStyle?
   ;

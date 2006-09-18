@@ -1,0 +1,37 @@
+# zxid/sg/liberty-idwsf-security-mechanisms-v2.0.sg
+# Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: liberty-idwsf-security-mechanisms-v2.0.sg,v 1.2 2006/09/15 04:44:47 sampo Exp $
+
+target(sec, urn:liberty:security:2006-08)
+
+%TokenPolicyType:
+  any?  processContents(lax)
+  @validUntil?	 -> %xs:dateTime
+  @issueTo?	 -> %xs:anyURI
+  @type?	 -> %xs:anyURI
+  @wantDSEPR?    -> %xs:boolean
+  @any
+  ;
+TokenPolicy	 -> %sec:TokenPolicyType
+
+%TransitedProviderType:	 base(xs:anyURI)
+  @timeStamp?	 -> %xs:dateTime
+  @confirmationURI?	 -> %xs:anyURI
+  ;
+TransitedProvider	 -> %sec:TransitedProviderType
+
+%TransitedProviderPathType:
+  sec:TransitedProvider+
+  ;
+
+TransitedProviderPath	 -> %sec:TransitedProviderPathType
+
+%TokenType:
+  any*  processContents(lax)
+  @id?    -> %xs:ID
+  @ref?   -> %xs:anyURI
+  @usage? -> %xs:anyURI
+  ;
+Token     -> %sec:TokenType
+
+#EOF

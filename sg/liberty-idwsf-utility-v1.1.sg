@@ -1,0 +1,23 @@
+# zxid/sg/liberty-idwsf-utility-v1.1.sg
+# Slightly edited, 14.9.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: liberty-idwsf-utility-v1.1.sg,v 1.1 2006/09/15 01:30:09 sampo Exp $
+
+%IDType:	 base(xs:string) ;
+%IDReferenceType:	 base(xs:string) ;
+
+Status	 -> %StatusType
+%StatusType:
+  Status*
+  @code	 -> %xs:QName
+  @ref?	 -> %IDReferenceType
+  @comment?	 -> %xs:string
+  ;
+
+%EmptyType:	 base(xs:anyType) ;
+
+Extension	 -> %extensionType
+%extensionType:
+  any+  ns(##other)  processContents(lax)
+  ;
+
+#EOF

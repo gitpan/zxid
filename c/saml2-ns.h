@@ -1,5 +1,5 @@
 /* c/saml2-ns.h - WARNING: This file was automatically generated. DO NOT EDIT!
- * $Id: saml2-ns.h,v 1.17 2006/09/05 05:09:39 sampo Exp $ */
+ * $Id$ */
 
 #ifndef _zx__ns_h
 #define _zx__ns_h
@@ -17,6 +17,14 @@ extern struct zx_ns_s zx_ns_tab[];
 #define zx_xmlns_xenc    "http://www.w3.org/2001/04/xmlenc#"
 #define zx_xmlns_ix_se 4
 #define zx_xmlns_se    "http://schemas.xmlsoap.org/soap/envelope/"
+#define zx_xmlns_ix_sp11 5
+#define zx_xmlns_sp11    "urn:oasis:names:tc:SAML:1.0:protocol"
+#define zx_xmlns_ix_sa11 6
+#define zx_xmlns_sa11    "urn:oasis:names:tc:SAML:1.0:assertion"
+#define zx_xmlns_ix_ff12 7
+#define zx_xmlns_ff12    "urn:liberty:iff:2003-08"
+#define zx_xmlns_ix_ac 8
+#define zx_xmlns_ac    "urn:liberty:ac:2004-12"
 
 
 #endif

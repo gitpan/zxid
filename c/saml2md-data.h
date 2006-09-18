@@ -1,5 +1,5 @@
 /* c/saml2md-data.h - WARNING: This header was automatically generated. DO NOT EDIT!
- * $Id: saml2md-data.h,v 1.27 2006/09/05 05:09:41 sampo Exp $ */
+ * $Id$ */
 /* Datastructure design, topography, and layout
  * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi),
  * All Rights Reserved. NO WARRANTY. See file COPYING for
@@ -167,7 +167,7 @@ struct zx_str_s* zxmd_ds_DigestMethod_GET_Algorithm(struct zxmd_ds_DigestMethod_
 void zxmd_ds_DigestMethod_PUT_Algorithm(struct zxmd_ds_DigestMethod_s* x, struct zx_str_s* y);
 
 /* -------------------------- ds_KeyInfo -------------------------- */
-/* refby( zxmd_ds_Signature_s zxmd_md_KeyDescriptor_s zxmd_xenc_EncryptedData_s zxmd_xenc_EncryptedKey_s ) */
+/* refby( zxmd_ds_Signature_s zxmd_m20_KeyDescriptor_s zxmd_md_KeyDescriptor_s zxmd_xenc_EncryptedData_s zxmd_xenc_EncryptedKey_s ) */
 #ifndef zxmd_ds_KeyInfo_EXT
 #define zxmd_ds_KeyInfo_EXT
 #endif
@@ -593,7 +593,7 @@ void zxmd_ds_SPKIData_DEL_SPKISexp(struct zxmd_ds_SPKIData_s* x, int n);
 void zxmd_ds_SPKIData_REV_SPKISexp(struct zxmd_ds_SPKIData_s* x);
 
 /* -------------------------- ds_Signature -------------------------- */
-/* refby( zxmd_md_IDPSSODescriptor_s zxmd_md_PDPDescriptor_s zxmd_md_SPSSODescriptor_s zxmd_md_AuthnAuthorityDescriptor_s zxmd_md_EntityDescriptor_s zxmd_sa_Assertion_s zxmd_md_AffiliationDescriptor_s zxmd_md_RoleDescriptor_s zxmd_md_EntitiesDescriptor_s zxmd_md_AttributeAuthorityDescriptor_s ) */
+/* refby( zxmd_md_IDPSSODescriptor_s zxmd_md_PDPDescriptor_s zxmd_md_SPSSODescriptor_s zxmd_md_AuthnAuthorityDescriptor_s zxmd_m20_IDPDescriptor_s zxmd_md_EntityDescriptor_s zxmd_sa_Assertion_s zxmd_md_AffiliationDescriptor_s zxmd_m20_SPDescriptor_s zxmd_m20_AffiliationDescriptor_s zxmd_m20_EntityDescriptor_s zxmd_md_RoleDescriptor_s zxmd_md_EntitiesDescriptor_s zxmd_md_AttributeAuthorityDescriptor_s ) */
 #ifndef zxmd_ds_Signature_EXT
 #define zxmd_ds_Signature_EXT
 #endif
@@ -1028,6 +1028,1034 @@ void zxmd_ds_X509IssuerSerial_DEL_X509SerialNumber(struct zxmd_ds_X509IssuerSeri
 void zxmd_ds_X509IssuerSerial_REV_X509IssuerName(struct zxmd_ds_X509IssuerSerial_s* x);
 void zxmd_ds_X509IssuerSerial_REV_X509SerialNumber(struct zxmd_ds_X509IssuerSerial_s* x);
 
+/* -------------------------- m20_AdditionalMetaLocation -------------------------- */
+/* refby( zxmd_m20_IDPDescriptor_s zxmd_m20_SPDescriptor_s ) */
+#ifndef zxmd_m20_AdditionalMetaLocation_EXT
+#define zxmd_m20_AdditionalMetaLocation_EXT
+#endif
+
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_DEC_m20_AdditionalMetaLocation(struct zx_ctx* c);
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_NEW_m20_AdditionalMetaLocation(struct zx_ctx* c);
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_DEEP_CLONE_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x);
+void zxmd_FREE_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x, int free_strs);
+int zxmd_WALK_SO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_AdditionalMetaLocation(struct zxmd_m20_AdditionalMetaLocation_s* x);
+char* zxmd_ENC_SO_m20_AdditionalMetaLocation(struct zxmd_m20_AdditionalMetaLocation_s* x, char* p);
+char* zxmd_ENC_WO_m20_AdditionalMetaLocation(struct zxmd_m20_AdditionalMetaLocation_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zxmd_m20_AdditionalMetaLocation_s* x);
+
+struct zxmd_m20_AdditionalMetaLocation_s {
+  ZX_ELEM_EXT
+  zxmd_m20_AdditionalMetaLocation_EXT
+  struct zx_str_s* namespace;	/* {0,1} attribute xs:anyURI */
+};
+
+struct zx_str_s* zxmd_m20_AdditionalMetaLocation_GET_namespace(struct zxmd_m20_AdditionalMetaLocation_s* x);
+void zxmd_m20_AdditionalMetaLocation_PUT_namespace(struct zxmd_m20_AdditionalMetaLocation_s* x, struct zx_str_s* y);
+
+/* -------------------------- m20_AffiliationDescriptor -------------------------- */
+/* refby( zxmd_m20_EntityDescriptor_s ) */
+#ifndef zxmd_m20_AffiliationDescriptor_EXT
+#define zxmd_m20_AffiliationDescriptor_EXT
+#endif
+
+struct zxmd_m20_AffiliationDescriptor_s* zxmd_DEC_m20_AffiliationDescriptor(struct zx_ctx* c);
+struct zxmd_m20_AffiliationDescriptor_s* zxmd_NEW_m20_AffiliationDescriptor(struct zx_ctx* c);
+struct zxmd_m20_AffiliationDescriptor_s* zxmd_DEEP_CLONE_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x);
+void zxmd_FREE_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x, int free_strs);
+int zxmd_WALK_SO_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_AffiliationDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x);
+char* zxmd_ENC_SO_m20_AffiliationDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, char* p);
+char* zxmd_ENC_WO_m20_AffiliationDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_AffiliationDescriptor(struct zx_ctx* c, struct zxmd_m20_AffiliationDescriptor_s* x);
+
+struct zxmd_m20_AffiliationDescriptor_s {
+  ZX_ELEM_EXT
+  zxmd_m20_AffiliationDescriptor_EXT
+  struct zx_elem_s* AffiliateMember;	/* {1,-1} xs:anyURI */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+  struct zxmd_m20_KeyDescriptor_s* KeyDescriptor;	/* {0,-1}  */
+  struct zxmd_ds_Signature_s* Signature;	/* {0,1} nada */
+  struct zx_str_s* affiliationOwnerID;	/* {1,1} attribute m20:entityIDType */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* id;	/* {0,1} attribute xs:ID */
+};
+
+struct zx_str_s* zxmd_m20_AffiliationDescriptor_GET_affiliationOwnerID(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zx_str_s* zxmd_m20_AffiliationDescriptor_GET_validUntil(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zx_str_s* zxmd_m20_AffiliationDescriptor_GET_cacheDuration(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zx_str_s* zxmd_m20_AffiliationDescriptor_GET_id(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_AffiliationDescriptor_GET_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_AffiliationDescriptor_GET_Extension(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+struct zxmd_m20_KeyDescriptor_s* zxmd_m20_AffiliationDescriptor_GET_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+struct zxmd_ds_Signature_s* zxmd_m20_AffiliationDescriptor_GET_Signature(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+int zxmd_m20_AffiliationDescriptor_NUM_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x);
+int zxmd_m20_AffiliationDescriptor_NUM_Extension(struct zxmd_m20_AffiliationDescriptor_s* x);
+int zxmd_m20_AffiliationDescriptor_NUM_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x);
+int zxmd_m20_AffiliationDescriptor_NUM_Signature(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_AffiliationDescriptor_POP_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_AffiliationDescriptor_POP_Extension(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zxmd_m20_KeyDescriptor_s* zxmd_m20_AffiliationDescriptor_POP_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x);
+struct zxmd_ds_Signature_s* zxmd_m20_AffiliationDescriptor_POP_Signature(struct zxmd_m20_AffiliationDescriptor_s* x);
+void zxmd_m20_AffiliationDescriptor_PUSH_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_AffiliationDescriptor_PUSH_Extension(struct zxmd_m20_AffiliationDescriptor_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_AffiliationDescriptor_PUSH_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, struct zxmd_m20_KeyDescriptor_s* y);
+void zxmd_m20_AffiliationDescriptor_PUSH_Signature(struct zxmd_m20_AffiliationDescriptor_s* x, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_affiliationOwnerID(struct zxmd_m20_AffiliationDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_validUntil(struct zxmd_m20_AffiliationDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_cacheDuration(struct zxmd_m20_AffiliationDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_id(struct zxmd_m20_AffiliationDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_Extension(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zxmd_m20_KeyDescriptor_s* y);
+void zxmd_m20_AffiliationDescriptor_PUT_Signature(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_AffiliationDescriptor_ADD_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_AffiliationDescriptor_ADD_Extension(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_AffiliationDescriptor_ADD_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zxmd_m20_KeyDescriptor_s* z);
+void zxmd_m20_AffiliationDescriptor_ADD_Signature(struct zxmd_m20_AffiliationDescriptor_s* x, int n, struct zxmd_ds_Signature_s* z);
+void zxmd_m20_AffiliationDescriptor_DEL_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+void zxmd_m20_AffiliationDescriptor_DEL_Extension(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+void zxmd_m20_AffiliationDescriptor_DEL_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+void zxmd_m20_AffiliationDescriptor_DEL_Signature(struct zxmd_m20_AffiliationDescriptor_s* x, int n);
+void zxmd_m20_AffiliationDescriptor_REV_AffiliateMember(struct zxmd_m20_AffiliationDescriptor_s* x);
+void zxmd_m20_AffiliationDescriptor_REV_Extension(struct zxmd_m20_AffiliationDescriptor_s* x);
+void zxmd_m20_AffiliationDescriptor_REV_KeyDescriptor(struct zxmd_m20_AffiliationDescriptor_s* x);
+void zxmd_m20_AffiliationDescriptor_REV_Signature(struct zxmd_m20_AffiliationDescriptor_s* x);
+
+/* -------------------------- m20_AssertionConsumerServiceURL -------------------------- */
+/* refby( zxmd_m20_SPDescriptor_s ) */
+#ifndef zxmd_m20_AssertionConsumerServiceURL_EXT
+#define zxmd_m20_AssertionConsumerServiceURL_EXT
+#endif
+
+struct zxmd_m20_AssertionConsumerServiceURL_s* zxmd_DEC_m20_AssertionConsumerServiceURL(struct zx_ctx* c);
+struct zxmd_m20_AssertionConsumerServiceURL_s* zxmd_NEW_m20_AssertionConsumerServiceURL(struct zx_ctx* c);
+struct zxmd_m20_AssertionConsumerServiceURL_s* zxmd_DEEP_CLONE_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x);
+void zxmd_FREE_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x, int free_strs);
+int zxmd_WALK_SO_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_AssertionConsumerServiceURL(struct zxmd_m20_AssertionConsumerServiceURL_s* x);
+char* zxmd_ENC_SO_m20_AssertionConsumerServiceURL(struct zxmd_m20_AssertionConsumerServiceURL_s* x, char* p);
+char* zxmd_ENC_WO_m20_AssertionConsumerServiceURL(struct zxmd_m20_AssertionConsumerServiceURL_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_AssertionConsumerServiceURL(struct zx_ctx* c, struct zxmd_m20_AssertionConsumerServiceURL_s* x);
+
+struct zxmd_m20_AssertionConsumerServiceURL_s {
+  ZX_ELEM_EXT
+  zxmd_m20_AssertionConsumerServiceURL_EXT
+  struct zx_str_s* id;	/* {1,1} attribute xs:ID */
+  struct zx_str_s* isDefault;	/* {0,1} attribute xs:boolean */
+};
+
+struct zx_str_s* zxmd_m20_AssertionConsumerServiceURL_GET_id(struct zxmd_m20_AssertionConsumerServiceURL_s* x);
+struct zx_str_s* zxmd_m20_AssertionConsumerServiceURL_GET_isDefault(struct zxmd_m20_AssertionConsumerServiceURL_s* x);
+void zxmd_m20_AssertionConsumerServiceURL_PUT_id(struct zxmd_m20_AssertionConsumerServiceURL_s* x, struct zx_str_s* y);
+void zxmd_m20_AssertionConsumerServiceURL_PUT_isDefault(struct zxmd_m20_AssertionConsumerServiceURL_s* x, struct zx_str_s* y);
+
+/* -------------------------- m20_ContactPerson -------------------------- */
+/* refby( zxmd_m20_IDPDescriptor_s zxmd_m20_SPDescriptor_s zxmd_m20_EntityDescriptor_s ) */
+#ifndef zxmd_m20_ContactPerson_EXT
+#define zxmd_m20_ContactPerson_EXT
+#endif
+
+struct zxmd_m20_ContactPerson_s* zxmd_DEC_m20_ContactPerson(struct zx_ctx* c);
+struct zxmd_m20_ContactPerson_s* zxmd_NEW_m20_ContactPerson(struct zx_ctx* c);
+struct zxmd_m20_ContactPerson_s* zxmd_DEEP_CLONE_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x);
+void zxmd_FREE_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x, int free_strs);
+int zxmd_WALK_SO_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_ContactPerson(struct zxmd_m20_ContactPerson_s* x);
+char* zxmd_ENC_SO_m20_ContactPerson(struct zxmd_m20_ContactPerson_s* x, char* p);
+char* zxmd_ENC_WO_m20_ContactPerson(struct zxmd_m20_ContactPerson_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_ContactPerson(struct zx_ctx* c, struct zxmd_m20_ContactPerson_s* x);
+
+struct zxmd_m20_ContactPerson_s {
+  ZX_ELEM_EXT
+  zxmd_m20_ContactPerson_EXT
+  struct zx_elem_s* Company;	/* {0,1} xs:string */
+  struct zx_elem_s* GivenName;	/* {0,1} xs:string */
+  struct zx_elem_s* SurName;	/* {0,1} xs:string */
+  struct zx_elem_s* EmailAddress;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* TelephoneNumber;	/* {0,-1} xs:string */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+  struct zx_str_s* libertyPrincipalIdentifier;	/* {0,1} attribute m20:entityIDType */
+  struct zx_str_s* contactType;	/* {1,1} attribute m20:attrContactType */
+};
+
+struct zx_str_s* zxmd_m20_ContactPerson_GET_libertyPrincipalIdentifier(struct zxmd_m20_ContactPerson_s* x);
+struct zx_str_s* zxmd_m20_ContactPerson_GET_contactType(struct zxmd_m20_ContactPerson_s* x);
+struct zx_elem_s* zxmd_m20_ContactPerson_GET_Company(struct zxmd_m20_ContactPerson_s* x, int n);
+struct zx_elem_s* zxmd_m20_ContactPerson_GET_GivenName(struct zxmd_m20_ContactPerson_s* x, int n);
+struct zx_elem_s* zxmd_m20_ContactPerson_GET_SurName(struct zxmd_m20_ContactPerson_s* x, int n);
+struct zx_elem_s* zxmd_m20_ContactPerson_GET_EmailAddress(struct zxmd_m20_ContactPerson_s* x, int n);
+struct zx_elem_s* zxmd_m20_ContactPerson_GET_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_ContactPerson_GET_Extension(struct zxmd_m20_ContactPerson_s* x, int n);
+int zxmd_m20_ContactPerson_NUM_Company(struct zxmd_m20_ContactPerson_s* x);
+int zxmd_m20_ContactPerson_NUM_GivenName(struct zxmd_m20_ContactPerson_s* x);
+int zxmd_m20_ContactPerson_NUM_SurName(struct zxmd_m20_ContactPerson_s* x);
+int zxmd_m20_ContactPerson_NUM_EmailAddress(struct zxmd_m20_ContactPerson_s* x);
+int zxmd_m20_ContactPerson_NUM_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x);
+int zxmd_m20_ContactPerson_NUM_Extension(struct zxmd_m20_ContactPerson_s* x);
+struct zx_elem_s* zxmd_m20_ContactPerson_POP_Company(struct zxmd_m20_ContactPerson_s* x);
+struct zx_elem_s* zxmd_m20_ContactPerson_POP_GivenName(struct zxmd_m20_ContactPerson_s* x);
+struct zx_elem_s* zxmd_m20_ContactPerson_POP_SurName(struct zxmd_m20_ContactPerson_s* x);
+struct zx_elem_s* zxmd_m20_ContactPerson_POP_EmailAddress(struct zxmd_m20_ContactPerson_s* x);
+struct zx_elem_s* zxmd_m20_ContactPerson_POP_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_ContactPerson_POP_Extension(struct zxmd_m20_ContactPerson_s* x);
+void zxmd_m20_ContactPerson_PUSH_Company(struct zxmd_m20_ContactPerson_s* x, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUSH_GivenName(struct zxmd_m20_ContactPerson_s* x, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUSH_SurName(struct zxmd_m20_ContactPerson_s* x, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUSH_EmailAddress(struct zxmd_m20_ContactPerson_s* x, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUSH_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUSH_Extension(struct zxmd_m20_ContactPerson_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_ContactPerson_PUT_libertyPrincipalIdentifier(struct zxmd_m20_ContactPerson_s* x, struct zx_str_s* y);
+void zxmd_m20_ContactPerson_PUT_contactType(struct zxmd_m20_ContactPerson_s* x, struct zx_str_s* y);
+void zxmd_m20_ContactPerson_PUT_Company(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUT_GivenName(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUT_SurName(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUT_EmailAddress(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUT_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_ContactPerson_PUT_Extension(struct zxmd_m20_ContactPerson_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_ContactPerson_ADD_Company(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_ContactPerson_ADD_GivenName(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_ContactPerson_ADD_SurName(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_ContactPerson_ADD_EmailAddress(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_ContactPerson_ADD_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_ContactPerson_ADD_Extension(struct zxmd_m20_ContactPerson_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_ContactPerson_DEL_Company(struct zxmd_m20_ContactPerson_s* x, int n);
+void zxmd_m20_ContactPerson_DEL_GivenName(struct zxmd_m20_ContactPerson_s* x, int n);
+void zxmd_m20_ContactPerson_DEL_SurName(struct zxmd_m20_ContactPerson_s* x, int n);
+void zxmd_m20_ContactPerson_DEL_EmailAddress(struct zxmd_m20_ContactPerson_s* x, int n);
+void zxmd_m20_ContactPerson_DEL_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x, int n);
+void zxmd_m20_ContactPerson_DEL_Extension(struct zxmd_m20_ContactPerson_s* x, int n);
+void zxmd_m20_ContactPerson_REV_Company(struct zxmd_m20_ContactPerson_s* x);
+void zxmd_m20_ContactPerson_REV_GivenName(struct zxmd_m20_ContactPerson_s* x);
+void zxmd_m20_ContactPerson_REV_SurName(struct zxmd_m20_ContactPerson_s* x);
+void zxmd_m20_ContactPerson_REV_EmailAddress(struct zxmd_m20_ContactPerson_s* x);
+void zxmd_m20_ContactPerson_REV_TelephoneNumber(struct zxmd_m20_ContactPerson_s* x);
+void zxmd_m20_ContactPerson_REV_Extension(struct zxmd_m20_ContactPerson_s* x);
+
+/* -------------------------- m20_EntitiesDescriptor -------------------------- */
+/* refby( ) */
+#ifndef zxmd_m20_EntitiesDescriptor_EXT
+#define zxmd_m20_EntitiesDescriptor_EXT
+#endif
+
+struct zxmd_m20_EntitiesDescriptor_s* zxmd_DEC_m20_EntitiesDescriptor(struct zx_ctx* c);
+struct zxmd_m20_EntitiesDescriptor_s* zxmd_NEW_m20_EntitiesDescriptor(struct zx_ctx* c);
+struct zxmd_m20_EntitiesDescriptor_s* zxmd_DEEP_CLONE_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x);
+void zxmd_FREE_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x, int free_strs);
+int zxmd_WALK_SO_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_EntitiesDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x);
+char* zxmd_ENC_SO_m20_EntitiesDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, char* p);
+char* zxmd_ENC_WO_m20_EntitiesDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_EntitiesDescriptor(struct zx_ctx* c, struct zxmd_m20_EntitiesDescriptor_s* x);
+
+struct zxmd_m20_EntitiesDescriptor_s {
+  ZX_ELEM_EXT
+  zxmd_m20_EntitiesDescriptor_EXT
+  struct zxmd_m20_EntityDescriptor_s* EntityDescriptor;	/* {2,unbounded} nada */
+};
+
+struct zxmd_m20_EntityDescriptor_s* zxmd_m20_EntitiesDescriptor_GET_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, int n);
+int zxmd_m20_EntitiesDescriptor_NUM_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x);
+struct zxmd_m20_EntityDescriptor_s* zxmd_m20_EntitiesDescriptor_POP_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x);
+void zxmd_m20_EntitiesDescriptor_PUSH_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, struct zxmd_m20_EntityDescriptor_s* y);
+void zxmd_m20_EntitiesDescriptor_PUT_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, int n, struct zxmd_m20_EntityDescriptor_s* y);
+void zxmd_m20_EntitiesDescriptor_ADD_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, int n, struct zxmd_m20_EntityDescriptor_s* z);
+void zxmd_m20_EntitiesDescriptor_DEL_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x, int n);
+void zxmd_m20_EntitiesDescriptor_REV_EntityDescriptor(struct zxmd_m20_EntitiesDescriptor_s* x);
+
+/* -------------------------- m20_EntityDescriptor -------------------------- */
+/* refby( zxmd_m20_EntitiesDescriptor_s ) */
+#ifndef zxmd_m20_EntityDescriptor_EXT
+#define zxmd_m20_EntityDescriptor_EXT
+#endif
+
+struct zxmd_m20_EntityDescriptor_s* zxmd_DEC_m20_EntityDescriptor(struct zx_ctx* c);
+struct zxmd_m20_EntityDescriptor_s* zxmd_NEW_m20_EntityDescriptor(struct zx_ctx* c);
+struct zxmd_m20_EntityDescriptor_s* zxmd_DEEP_CLONE_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_FREE_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x, int free_strs);
+int zxmd_WALK_SO_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_EntityDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+char* zxmd_ENC_SO_m20_EntityDescriptor(struct zxmd_m20_EntityDescriptor_s* x, char* p);
+char* zxmd_ENC_WO_m20_EntityDescriptor(struct zxmd_m20_EntityDescriptor_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_EntityDescriptor(struct zx_ctx* c, struct zxmd_m20_EntityDescriptor_s* x);
+
+struct zxmd_m20_EntityDescriptor_s {
+  ZX_ELEM_EXT
+  zxmd_m20_EntityDescriptor_EXT
+  struct zxmd_m20_IDPDescriptor_s* IDPDescriptor;	/* {0,-1}  */
+  struct zxmd_m20_SPDescriptor_s* SPDescriptor;	/* {0,-1}  */
+  struct zxmd_m20_AffiliationDescriptor_s* AffiliationDescriptor;	/* {0,-1}  */
+  struct zxmd_m20_ContactPerson_s* ContactPerson;	/* {0,1}  */
+  struct zxmd_m20_Organization_s* Organization;	/* {0,1}  */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+  struct zxmd_ds_Signature_s* Signature;	/* {0,1} nada */
+  struct zx_str_s* providerID;	/* {1,1} attribute m20:entityIDType */
+  struct zx_str_s* id;	/* {0,1} attribute xs:ID */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+};
+
+struct zx_str_s* zxmd_m20_EntityDescriptor_GET_providerID(struct zxmd_m20_EntityDescriptor_s* x);
+struct zx_str_s* zxmd_m20_EntityDescriptor_GET_id(struct zxmd_m20_EntityDescriptor_s* x);
+struct zx_str_s* zxmd_m20_EntityDescriptor_GET_validUntil(struct zxmd_m20_EntityDescriptor_s* x);
+struct zx_str_s* zxmd_m20_EntityDescriptor_GET_cacheDuration(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_IDPDescriptor_s* zxmd_m20_EntityDescriptor_GET_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n);
+struct zxmd_m20_SPDescriptor_s* zxmd_m20_EntityDescriptor_GET_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n);
+struct zxmd_m20_AffiliationDescriptor_s* zxmd_m20_EntityDescriptor_GET_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n);
+struct zxmd_m20_ContactPerson_s* zxmd_m20_EntityDescriptor_GET_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x, int n);
+struct zxmd_m20_Organization_s* zxmd_m20_EntityDescriptor_GET_Organization(struct zxmd_m20_EntityDescriptor_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_EntityDescriptor_GET_Extension(struct zxmd_m20_EntityDescriptor_s* x, int n);
+struct zxmd_ds_Signature_s* zxmd_m20_EntityDescriptor_GET_Signature(struct zxmd_m20_EntityDescriptor_s* x, int n);
+int zxmd_m20_EntityDescriptor_NUM_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+int zxmd_m20_EntityDescriptor_NUM_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+int zxmd_m20_EntityDescriptor_NUM_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+int zxmd_m20_EntityDescriptor_NUM_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x);
+int zxmd_m20_EntityDescriptor_NUM_Organization(struct zxmd_m20_EntityDescriptor_s* x);
+int zxmd_m20_EntityDescriptor_NUM_Extension(struct zxmd_m20_EntityDescriptor_s* x);
+int zxmd_m20_EntityDescriptor_NUM_Signature(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_IDPDescriptor_s* zxmd_m20_EntityDescriptor_POP_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_SPDescriptor_s* zxmd_m20_EntityDescriptor_POP_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_AffiliationDescriptor_s* zxmd_m20_EntityDescriptor_POP_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_ContactPerson_s* zxmd_m20_EntityDescriptor_POP_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_Organization_s* zxmd_m20_EntityDescriptor_POP_Organization(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_EntityDescriptor_POP_Extension(struct zxmd_m20_EntityDescriptor_s* x);
+struct zxmd_ds_Signature_s* zxmd_m20_EntityDescriptor_POP_Signature(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_PUSH_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_m20_IDPDescriptor_s* y);
+void zxmd_m20_EntityDescriptor_PUSH_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_m20_SPDescriptor_s* y);
+void zxmd_m20_EntityDescriptor_PUSH_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_m20_AffiliationDescriptor_s* y);
+void zxmd_m20_EntityDescriptor_PUSH_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_m20_ContactPerson_s* y);
+void zxmd_m20_EntityDescriptor_PUSH_Organization(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_m20_Organization_s* y);
+void zxmd_m20_EntityDescriptor_PUSH_Extension(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_EntityDescriptor_PUSH_Signature(struct zxmd_m20_EntityDescriptor_s* x, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_EntityDescriptor_PUT_providerID(struct zxmd_m20_EntityDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_EntityDescriptor_PUT_id(struct zxmd_m20_EntityDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_EntityDescriptor_PUT_validUntil(struct zxmd_m20_EntityDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_EntityDescriptor_PUT_cacheDuration(struct zxmd_m20_EntityDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_EntityDescriptor_PUT_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_IDPDescriptor_s* y);
+void zxmd_m20_EntityDescriptor_PUT_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_SPDescriptor_s* y);
+void zxmd_m20_EntityDescriptor_PUT_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_AffiliationDescriptor_s* y);
+void zxmd_m20_EntityDescriptor_PUT_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_ContactPerson_s* y);
+void zxmd_m20_EntityDescriptor_PUT_Organization(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_Organization_s* y);
+void zxmd_m20_EntityDescriptor_PUT_Extension(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_EntityDescriptor_PUT_Signature(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_EntityDescriptor_ADD_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_IDPDescriptor_s* z);
+void zxmd_m20_EntityDescriptor_ADD_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_SPDescriptor_s* z);
+void zxmd_m20_EntityDescriptor_ADD_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_AffiliationDescriptor_s* z);
+void zxmd_m20_EntityDescriptor_ADD_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_ContactPerson_s* z);
+void zxmd_m20_EntityDescriptor_ADD_Organization(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_Organization_s* z);
+void zxmd_m20_EntityDescriptor_ADD_Extension(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_EntityDescriptor_ADD_Signature(struct zxmd_m20_EntityDescriptor_s* x, int n, struct zxmd_ds_Signature_s* z);
+void zxmd_m20_EntityDescriptor_DEL_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_DEL_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_DEL_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_DEL_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_DEL_Organization(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_DEL_Extension(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_DEL_Signature(struct zxmd_m20_EntityDescriptor_s* x, int n);
+void zxmd_m20_EntityDescriptor_REV_IDPDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_REV_SPDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_REV_AffiliationDescriptor(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_REV_ContactPerson(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_REV_Organization(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_REV_Extension(struct zxmd_m20_EntityDescriptor_s* x);
+void zxmd_m20_EntityDescriptor_REV_Signature(struct zxmd_m20_EntityDescriptor_s* x);
+
+/* -------------------------- m20_Extension -------------------------- */
+/* refby( zxmd_m20_KeyDescriptor_s zxmd_m20_IDPDescriptor_s zxmd_m20_Organization_s zxmd_m20_SPDescriptor_s zxmd_m20_AffiliationDescriptor_s zxmd_m20_EntityDescriptor_s zxmd_m20_ContactPerson_s ) */
+#ifndef zxmd_m20_Extension_EXT
+#define zxmd_m20_Extension_EXT
+#endif
+
+struct zxmd_m20_Extension_s* zxmd_DEC_m20_Extension(struct zx_ctx* c);
+struct zxmd_m20_Extension_s* zxmd_NEW_m20_Extension(struct zx_ctx* c);
+struct zxmd_m20_Extension_s* zxmd_DEEP_CLONE_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x);
+void zxmd_FREE_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x, int free_strs);
+int zxmd_WALK_SO_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_Extension(struct zxmd_m20_Extension_s* x);
+char* zxmd_ENC_SO_m20_Extension(struct zxmd_m20_Extension_s* x, char* p);
+char* zxmd_ENC_WO_m20_Extension(struct zxmd_m20_Extension_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_Extension(struct zx_ctx* c, struct zxmd_m20_Extension_s* x);
+
+struct zxmd_m20_Extension_s {
+  ZX_ELEM_EXT
+  zxmd_m20_Extension_EXT
+};
+
+
+/* -------------------------- m20_IDPDescriptor -------------------------- */
+/* refby( zxmd_m20_EntityDescriptor_s ) */
+#ifndef zxmd_m20_IDPDescriptor_EXT
+#define zxmd_m20_IDPDescriptor_EXT
+#endif
+
+struct zxmd_m20_IDPDescriptor_s* zxmd_DEC_m20_IDPDescriptor(struct zx_ctx* c);
+struct zxmd_m20_IDPDescriptor_s* zxmd_NEW_m20_IDPDescriptor(struct zx_ctx* c);
+struct zxmd_m20_IDPDescriptor_s* zxmd_DEEP_CLONE_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_FREE_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x, int free_strs);
+int zxmd_WALK_SO_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_IDPDescriptor(struct zxmd_m20_IDPDescriptor_s* x);
+char* zxmd_ENC_SO_m20_IDPDescriptor(struct zxmd_m20_IDPDescriptor_s* x, char* p);
+char* zxmd_ENC_WO_m20_IDPDescriptor(struct zxmd_m20_IDPDescriptor_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_IDPDescriptor(struct zx_ctx* c, struct zxmd_m20_IDPDescriptor_s* x);
+
+struct zxmd_m20_IDPDescriptor_s {
+  ZX_ELEM_EXT
+  zxmd_m20_IDPDescriptor_EXT
+  struct zxmd_m20_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
+  struct zx_elem_s* SoapEndpoint;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* SingleLogoutServiceURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* SingleLogoutServiceReturnURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* FederationTerminationServiceURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* FederationTerminationServiceReturnURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* FederationTerminationNotificationProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* SingleLogoutProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* RegisterNameIdentifierProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* RegisterNameIdentifierServiceURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* RegisterNameIdentifierServiceReturnURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* NameIdentifierMappingProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* NameIdentifierMappingEncryptionProfile;	/* {0,-1} xs:anyURI */
+  struct zxmd_m20_Organization_s* Organization;	/* {0,1}  */
+  struct zxmd_m20_ContactPerson_s* ContactPerson;	/* {0,-1}  */
+  struct zxmd_m20_AdditionalMetaLocation_s* AdditionalMetaLocation;	/* {0,-1}  */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+  struct zxmd_ds_Signature_s* Signature;	/* {0,1} nada */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
+  struct zx_str_s* id;	/* {0,1} attribute xs:ID */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_elem_s* SingleSignOnServiceURL;	/* {1,1} xs:anyURI */
+  struct zx_elem_s* SingleSignOnProtocolProfile;	/* {1,-1} xs:anyURI */
+  struct zx_elem_s* AuthnServiceURL;	/* {0,1} xs:anyURI */
+};
+
+struct zx_str_s* zxmd_m20_IDPDescriptor_GET_protocolSupportEnumeration(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_str_s* zxmd_m20_IDPDescriptor_GET_id(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_str_s* zxmd_m20_IDPDescriptor_GET_validUntil(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_str_s* zxmd_m20_IDPDescriptor_GET_cacheDuration(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_m20_KeyDescriptor_s* zxmd_m20_IDPDescriptor_GET_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zxmd_m20_Organization_s* zxmd_m20_IDPDescriptor_GET_Organization(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zxmd_m20_ContactPerson_s* zxmd_m20_IDPDescriptor_GET_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_m20_IDPDescriptor_GET_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_IDPDescriptor_GET_Extension(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zxmd_ds_Signature_s* zxmd_m20_IDPDescriptor_GET_Signature(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_GET_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+int zxmd_m20_IDPDescriptor_NUM_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_Organization(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_Extension(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_Signature(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+int zxmd_m20_IDPDescriptor_NUM_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_m20_KeyDescriptor_s* zxmd_m20_IDPDescriptor_POP_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_m20_Organization_s* zxmd_m20_IDPDescriptor_POP_Organization(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_m20_ContactPerson_s* zxmd_m20_IDPDescriptor_POP_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_m20_IDPDescriptor_POP_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_IDPDescriptor_POP_Extension(struct zxmd_m20_IDPDescriptor_s* x);
+struct zxmd_ds_Signature_s* zxmd_m20_IDPDescriptor_POP_Signature(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_IDPDescriptor_POP_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_PUSH_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x, struct zxmd_m20_KeyDescriptor_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_Organization(struct zxmd_m20_IDPDescriptor_s* x, struct zxmd_m20_Organization_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x, struct zxmd_m20_ContactPerson_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x, struct zxmd_m20_AdditionalMetaLocation_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_Extension(struct zxmd_m20_IDPDescriptor_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_Signature(struct zxmd_m20_IDPDescriptor_s* x, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUSH_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_protocolSupportEnumeration(struct zxmd_m20_IDPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_IDPDescriptor_PUT_id(struct zxmd_m20_IDPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_IDPDescriptor_PUT_validUntil(struct zxmd_m20_IDPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_IDPDescriptor_PUT_cacheDuration(struct zxmd_m20_IDPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_IDPDescriptor_PUT_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_KeyDescriptor_s* y);
+void zxmd_m20_IDPDescriptor_PUT_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_Organization(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_Organization_s* y);
+void zxmd_m20_IDPDescriptor_PUT_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_ContactPerson_s* y);
+void zxmd_m20_IDPDescriptor_PUT_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_AdditionalMetaLocation_s* y);
+void zxmd_m20_IDPDescriptor_PUT_Extension(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_IDPDescriptor_PUT_Signature(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_IDPDescriptor_PUT_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_PUT_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_IDPDescriptor_ADD_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_KeyDescriptor_s* z);
+void zxmd_m20_IDPDescriptor_ADD_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_Organization(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_Organization_s* z);
+void zxmd_m20_IDPDescriptor_ADD_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_ContactPerson_s* z);
+void zxmd_m20_IDPDescriptor_ADD_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_AdditionalMetaLocation_s* z);
+void zxmd_m20_IDPDescriptor_ADD_Extension(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_IDPDescriptor_ADD_Signature(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zxmd_ds_Signature_s* z);
+void zxmd_m20_IDPDescriptor_ADD_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_ADD_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_IDPDescriptor_DEL_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_Organization(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_Extension(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_Signature(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_DEL_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x, int n);
+void zxmd_m20_IDPDescriptor_REV_KeyDescriptor(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_SoapEndpoint(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_SingleLogoutServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_SingleLogoutServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_FederationTerminationServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_FederationTerminationServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_SingleLogoutProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_RegisterNameIdentifierServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_NameIdentifierMappingProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_Organization(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_ContactPerson(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_AdditionalMetaLocation(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_Extension(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_Signature(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_SingleSignOnServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_SingleSignOnProtocolProfile(struct zxmd_m20_IDPDescriptor_s* x);
+void zxmd_m20_IDPDescriptor_REV_AuthnServiceURL(struct zxmd_m20_IDPDescriptor_s* x);
+
+/* -------------------------- m20_KeyDescriptor -------------------------- */
+/* refby( zxmd_m20_IDPDescriptor_s zxmd_m20_SPDescriptor_s zxmd_m20_AffiliationDescriptor_s ) */
+#ifndef zxmd_m20_KeyDescriptor_EXT
+#define zxmd_m20_KeyDescriptor_EXT
+#endif
+
+struct zxmd_m20_KeyDescriptor_s* zxmd_DEC_m20_KeyDescriptor(struct zx_ctx* c);
+struct zxmd_m20_KeyDescriptor_s* zxmd_NEW_m20_KeyDescriptor(struct zx_ctx* c);
+struct zxmd_m20_KeyDescriptor_s* zxmd_DEEP_CLONE_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x);
+void zxmd_FREE_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x, int free_strs);
+int zxmd_WALK_SO_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_KeyDescriptor(struct zxmd_m20_KeyDescriptor_s* x);
+char* zxmd_ENC_SO_m20_KeyDescriptor(struct zxmd_m20_KeyDescriptor_s* x, char* p);
+char* zxmd_ENC_WO_m20_KeyDescriptor(struct zxmd_m20_KeyDescriptor_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_KeyDescriptor(struct zx_ctx* c, struct zxmd_m20_KeyDescriptor_s* x);
+
+struct zxmd_m20_KeyDescriptor_s {
+  ZX_ELEM_EXT
+  zxmd_m20_KeyDescriptor_EXT
+  struct zx_elem_s* EncryptionMethod;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* KeySize;	/* {0,1} xs:integer */
+  struct zxmd_ds_KeyInfo_s* KeyInfo;	/* {0,1} nada */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+  struct zx_str_s* use;	/* {0,1} attribute keyTypes */
+};
+
+struct zx_str_s* zxmd_m20_KeyDescriptor_GET_use(struct zxmd_m20_KeyDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_KeyDescriptor_GET_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_KeyDescriptor_GET_KeySize(struct zxmd_m20_KeyDescriptor_s* x, int n);
+struct zxmd_ds_KeyInfo_s* zxmd_m20_KeyDescriptor_GET_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_KeyDescriptor_GET_Extension(struct zxmd_m20_KeyDescriptor_s* x, int n);
+int zxmd_m20_KeyDescriptor_NUM_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x);
+int zxmd_m20_KeyDescriptor_NUM_KeySize(struct zxmd_m20_KeyDescriptor_s* x);
+int zxmd_m20_KeyDescriptor_NUM_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x);
+int zxmd_m20_KeyDescriptor_NUM_Extension(struct zxmd_m20_KeyDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_KeyDescriptor_POP_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_KeyDescriptor_POP_KeySize(struct zxmd_m20_KeyDescriptor_s* x);
+struct zxmd_ds_KeyInfo_s* zxmd_m20_KeyDescriptor_POP_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_KeyDescriptor_POP_Extension(struct zxmd_m20_KeyDescriptor_s* x);
+void zxmd_m20_KeyDescriptor_PUSH_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_KeyDescriptor_PUSH_KeySize(struct zxmd_m20_KeyDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_KeyDescriptor_PUSH_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x, struct zxmd_ds_KeyInfo_s* y);
+void zxmd_m20_KeyDescriptor_PUSH_Extension(struct zxmd_m20_KeyDescriptor_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_KeyDescriptor_PUT_use(struct zxmd_m20_KeyDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_KeyDescriptor_PUT_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_KeyDescriptor_PUT_KeySize(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_KeyDescriptor_PUT_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zxmd_ds_KeyInfo_s* y);
+void zxmd_m20_KeyDescriptor_PUT_Extension(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_KeyDescriptor_ADD_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_KeyDescriptor_ADD_KeySize(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_KeyDescriptor_ADD_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zxmd_ds_KeyInfo_s* z);
+void zxmd_m20_KeyDescriptor_ADD_Extension(struct zxmd_m20_KeyDescriptor_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_KeyDescriptor_DEL_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x, int n);
+void zxmd_m20_KeyDescriptor_DEL_KeySize(struct zxmd_m20_KeyDescriptor_s* x, int n);
+void zxmd_m20_KeyDescriptor_DEL_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x, int n);
+void zxmd_m20_KeyDescriptor_DEL_Extension(struct zxmd_m20_KeyDescriptor_s* x, int n);
+void zxmd_m20_KeyDescriptor_REV_EncryptionMethod(struct zxmd_m20_KeyDescriptor_s* x);
+void zxmd_m20_KeyDescriptor_REV_KeySize(struct zxmd_m20_KeyDescriptor_s* x);
+void zxmd_m20_KeyDescriptor_REV_KeyInfo(struct zxmd_m20_KeyDescriptor_s* x);
+void zxmd_m20_KeyDescriptor_REV_Extension(struct zxmd_m20_KeyDescriptor_s* x);
+
+/* -------------------------- m20_Organization -------------------------- */
+/* refby( zxmd_m20_IDPDescriptor_s zxmd_m20_SPDescriptor_s zxmd_m20_EntityDescriptor_s ) */
+#ifndef zxmd_m20_Organization_EXT
+#define zxmd_m20_Organization_EXT
+#endif
+
+struct zxmd_m20_Organization_s* zxmd_DEC_m20_Organization(struct zx_ctx* c);
+struct zxmd_m20_Organization_s* zxmd_NEW_m20_Organization(struct zx_ctx* c);
+struct zxmd_m20_Organization_s* zxmd_DEEP_CLONE_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x);
+void zxmd_FREE_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x, int free_strs);
+int zxmd_WALK_SO_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_Organization(struct zxmd_m20_Organization_s* x);
+char* zxmd_ENC_SO_m20_Organization(struct zxmd_m20_Organization_s* x, char* p);
+char* zxmd_ENC_WO_m20_Organization(struct zxmd_m20_Organization_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_Organization(struct zx_ctx* c, struct zxmd_m20_Organization_s* x);
+
+struct zxmd_m20_Organization_s {
+  ZX_ELEM_EXT
+  zxmd_m20_Organization_EXT
+  struct zxmd_m20_OrganizationName_s* OrganizationName;	/* {1,-1}  */
+  struct zxmd_m20_OrganizationDisplayName_s* OrganizationDisplayName;	/* {1,-1}  */
+  struct zxmd_m20_OrganizationURL_s* OrganizationURL;	/* {1,-1}  */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+};
+
+struct zxmd_m20_OrganizationName_s* zxmd_m20_Organization_GET_OrganizationName(struct zxmd_m20_Organization_s* x, int n);
+struct zxmd_m20_OrganizationDisplayName_s* zxmd_m20_Organization_GET_OrganizationDisplayName(struct zxmd_m20_Organization_s* x, int n);
+struct zxmd_m20_OrganizationURL_s* zxmd_m20_Organization_GET_OrganizationURL(struct zxmd_m20_Organization_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_Organization_GET_Extension(struct zxmd_m20_Organization_s* x, int n);
+int zxmd_m20_Organization_NUM_OrganizationName(struct zxmd_m20_Organization_s* x);
+int zxmd_m20_Organization_NUM_OrganizationDisplayName(struct zxmd_m20_Organization_s* x);
+int zxmd_m20_Organization_NUM_OrganizationURL(struct zxmd_m20_Organization_s* x);
+int zxmd_m20_Organization_NUM_Extension(struct zxmd_m20_Organization_s* x);
+struct zxmd_m20_OrganizationName_s* zxmd_m20_Organization_POP_OrganizationName(struct zxmd_m20_Organization_s* x);
+struct zxmd_m20_OrganizationDisplayName_s* zxmd_m20_Organization_POP_OrganizationDisplayName(struct zxmd_m20_Organization_s* x);
+struct zxmd_m20_OrganizationURL_s* zxmd_m20_Organization_POP_OrganizationURL(struct zxmd_m20_Organization_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_Organization_POP_Extension(struct zxmd_m20_Organization_s* x);
+void zxmd_m20_Organization_PUSH_OrganizationName(struct zxmd_m20_Organization_s* x, struct zxmd_m20_OrganizationName_s* y);
+void zxmd_m20_Organization_PUSH_OrganizationDisplayName(struct zxmd_m20_Organization_s* x, struct zxmd_m20_OrganizationDisplayName_s* y);
+void zxmd_m20_Organization_PUSH_OrganizationURL(struct zxmd_m20_Organization_s* x, struct zxmd_m20_OrganizationURL_s* y);
+void zxmd_m20_Organization_PUSH_Extension(struct zxmd_m20_Organization_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_Organization_PUT_OrganizationName(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_OrganizationName_s* y);
+void zxmd_m20_Organization_PUT_OrganizationDisplayName(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_OrganizationDisplayName_s* y);
+void zxmd_m20_Organization_PUT_OrganizationURL(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_OrganizationURL_s* y);
+void zxmd_m20_Organization_PUT_Extension(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_Organization_ADD_OrganizationName(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_OrganizationName_s* z);
+void zxmd_m20_Organization_ADD_OrganizationDisplayName(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_OrganizationDisplayName_s* z);
+void zxmd_m20_Organization_ADD_OrganizationURL(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_OrganizationURL_s* z);
+void zxmd_m20_Organization_ADD_Extension(struct zxmd_m20_Organization_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_Organization_DEL_OrganizationName(struct zxmd_m20_Organization_s* x, int n);
+void zxmd_m20_Organization_DEL_OrganizationDisplayName(struct zxmd_m20_Organization_s* x, int n);
+void zxmd_m20_Organization_DEL_OrganizationURL(struct zxmd_m20_Organization_s* x, int n);
+void zxmd_m20_Organization_DEL_Extension(struct zxmd_m20_Organization_s* x, int n);
+void zxmd_m20_Organization_REV_OrganizationName(struct zxmd_m20_Organization_s* x);
+void zxmd_m20_Organization_REV_OrganizationDisplayName(struct zxmd_m20_Organization_s* x);
+void zxmd_m20_Organization_REV_OrganizationURL(struct zxmd_m20_Organization_s* x);
+void zxmd_m20_Organization_REV_Extension(struct zxmd_m20_Organization_s* x);
+
+/* -------------------------- m20_OrganizationDisplayName -------------------------- */
+/* refby( zxmd_m20_Organization_s ) */
+#ifndef zxmd_m20_OrganizationDisplayName_EXT
+#define zxmd_m20_OrganizationDisplayName_EXT
+#endif
+
+struct zxmd_m20_OrganizationDisplayName_s* zxmd_DEC_m20_OrganizationDisplayName(struct zx_ctx* c);
+struct zxmd_m20_OrganizationDisplayName_s* zxmd_NEW_m20_OrganizationDisplayName(struct zx_ctx* c);
+struct zxmd_m20_OrganizationDisplayName_s* zxmd_DEEP_CLONE_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x);
+void zxmd_FREE_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x, int free_strs);
+int zxmd_WALK_SO_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_OrganizationDisplayName(struct zxmd_m20_OrganizationDisplayName_s* x);
+char* zxmd_ENC_SO_m20_OrganizationDisplayName(struct zxmd_m20_OrganizationDisplayName_s* x, char* p);
+char* zxmd_ENC_WO_m20_OrganizationDisplayName(struct zxmd_m20_OrganizationDisplayName_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_OrganizationDisplayName(struct zx_ctx* c, struct zxmd_m20_OrganizationDisplayName_s* x);
+
+struct zxmd_m20_OrganizationDisplayName_s {
+  ZX_ELEM_EXT
+  zxmd_m20_OrganizationDisplayName_EXT
+  struct zx_str_s* lang;	/* {1,1} attribute xs:string */
+};
+
+struct zx_str_s* zxmd_m20_OrganizationDisplayName_GET_lang(struct zxmd_m20_OrganizationDisplayName_s* x);
+void zxmd_m20_OrganizationDisplayName_PUT_lang(struct zxmd_m20_OrganizationDisplayName_s* x, struct zx_str_s* y);
+
+/* -------------------------- m20_OrganizationName -------------------------- */
+/* refby( zxmd_m20_Organization_s ) */
+#ifndef zxmd_m20_OrganizationName_EXT
+#define zxmd_m20_OrganizationName_EXT
+#endif
+
+struct zxmd_m20_OrganizationName_s* zxmd_DEC_m20_OrganizationName(struct zx_ctx* c);
+struct zxmd_m20_OrganizationName_s* zxmd_NEW_m20_OrganizationName(struct zx_ctx* c);
+struct zxmd_m20_OrganizationName_s* zxmd_DEEP_CLONE_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x);
+void zxmd_FREE_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x, int free_strs);
+int zxmd_WALK_SO_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_OrganizationName(struct zxmd_m20_OrganizationName_s* x);
+char* zxmd_ENC_SO_m20_OrganizationName(struct zxmd_m20_OrganizationName_s* x, char* p);
+char* zxmd_ENC_WO_m20_OrganizationName(struct zxmd_m20_OrganizationName_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_OrganizationName(struct zx_ctx* c, struct zxmd_m20_OrganizationName_s* x);
+
+struct zxmd_m20_OrganizationName_s {
+  ZX_ELEM_EXT
+  zxmd_m20_OrganizationName_EXT
+  struct zx_str_s* lang;	/* {1,1} attribute xs:string */
+};
+
+struct zx_str_s* zxmd_m20_OrganizationName_GET_lang(struct zxmd_m20_OrganizationName_s* x);
+void zxmd_m20_OrganizationName_PUT_lang(struct zxmd_m20_OrganizationName_s* x, struct zx_str_s* y);
+
+/* -------------------------- m20_OrganizationURL -------------------------- */
+/* refby( zxmd_m20_Organization_s ) */
+#ifndef zxmd_m20_OrganizationURL_EXT
+#define zxmd_m20_OrganizationURL_EXT
+#endif
+
+struct zxmd_m20_OrganizationURL_s* zxmd_DEC_m20_OrganizationURL(struct zx_ctx* c);
+struct zxmd_m20_OrganizationURL_s* zxmd_NEW_m20_OrganizationURL(struct zx_ctx* c);
+struct zxmd_m20_OrganizationURL_s* zxmd_DEEP_CLONE_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x);
+void zxmd_FREE_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x, int free_strs);
+int zxmd_WALK_SO_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_OrganizationURL(struct zxmd_m20_OrganizationURL_s* x);
+char* zxmd_ENC_SO_m20_OrganizationURL(struct zxmd_m20_OrganizationURL_s* x, char* p);
+char* zxmd_ENC_WO_m20_OrganizationURL(struct zxmd_m20_OrganizationURL_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_OrganizationURL(struct zx_ctx* c, struct zxmd_m20_OrganizationURL_s* x);
+
+struct zxmd_m20_OrganizationURL_s {
+  ZX_ELEM_EXT
+  zxmd_m20_OrganizationURL_EXT
+  struct zx_str_s* lang;	/* {1,1} attribute xs:string */
+};
+
+struct zx_str_s* zxmd_m20_OrganizationURL_GET_lang(struct zxmd_m20_OrganizationURL_s* x);
+void zxmd_m20_OrganizationURL_PUT_lang(struct zxmd_m20_OrganizationURL_s* x, struct zx_str_s* y);
+
+/* -------------------------- m20_SPDescriptor -------------------------- */
+/* refby( zxmd_m20_EntityDescriptor_s ) */
+#ifndef zxmd_m20_SPDescriptor_EXT
+#define zxmd_m20_SPDescriptor_EXT
+#endif
+
+struct zxmd_m20_SPDescriptor_s* zxmd_DEC_m20_SPDescriptor(struct zx_ctx* c);
+struct zxmd_m20_SPDescriptor_s* zxmd_NEW_m20_SPDescriptor(struct zx_ctx* c);
+struct zxmd_m20_SPDescriptor_s* zxmd_DEEP_CLONE_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x, int dup_strs);
+void zxmd_DUP_STRS_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_FREE_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x, int free_strs);
+int zxmd_WALK_SO_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_WALK_WO_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zxmd_LEN_m20_SPDescriptor(struct zxmd_m20_SPDescriptor_s* x);
+char* zxmd_ENC_SO_m20_SPDescriptor(struct zxmd_m20_SPDescriptor_s* x, char* p);
+char* zxmd_ENC_WO_m20_SPDescriptor(struct zxmd_m20_SPDescriptor_s* x, char* p);
+struct zx_str_s* zxmd_EASY_ENC_SO_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x);
+struct zx_str_s* zxmd_EASY_ENC_WO_m20_SPDescriptor(struct zx_ctx* c, struct zxmd_m20_SPDescriptor_s* x);
+
+struct zxmd_m20_SPDescriptor_s {
+  ZX_ELEM_EXT
+  zxmd_m20_SPDescriptor_EXT
+  struct zxmd_m20_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
+  struct zx_elem_s* SoapEndpoint;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* SingleLogoutServiceURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* SingleLogoutServiceReturnURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* FederationTerminationServiceURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* FederationTerminationServiceReturnURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* FederationTerminationNotificationProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* SingleLogoutProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* RegisterNameIdentifierProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* RegisterNameIdentifierServiceURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* RegisterNameIdentifierServiceReturnURL;	/* {0,1} xs:anyURI */
+  struct zx_elem_s* NameIdentifierMappingProtocolProfile;	/* {0,-1} xs:anyURI */
+  struct zx_elem_s* NameIdentifierMappingEncryptionProfile;	/* {0,-1} xs:anyURI */
+  struct zxmd_m20_Organization_s* Organization;	/* {0,1}  */
+  struct zxmd_m20_ContactPerson_s* ContactPerson;	/* {0,-1}  */
+  struct zxmd_m20_AdditionalMetaLocation_s* AdditionalMetaLocation;	/* {0,-1}  */
+  struct zxmd_m20_Extension_s* Extension;	/* {0,1}  */
+  struct zxmd_ds_Signature_s* Signature;	/* {0,1} nada */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
+  struct zx_str_s* id;	/* {0,1} attribute xs:ID */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zxmd_m20_AssertionConsumerServiceURL_s* AssertionConsumerServiceURL;	/* {1,-1}  */
+  struct zx_elem_s* AuthnRequestsSigned;	/* {1,1} xs:boolean */
+};
+
+struct zx_str_s* zxmd_m20_SPDescriptor_GET_protocolSupportEnumeration(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_str_s* zxmd_m20_SPDescriptor_GET_id(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_str_s* zxmd_m20_SPDescriptor_GET_validUntil(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_str_s* zxmd_m20_SPDescriptor_GET_cacheDuration(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_KeyDescriptor_s* zxmd_m20_SPDescriptor_GET_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zxmd_m20_Organization_s* zxmd_m20_SPDescriptor_GET_Organization(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zxmd_m20_ContactPerson_s* zxmd_m20_SPDescriptor_GET_ContactPerson(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_m20_SPDescriptor_GET_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zxmd_m20_Extension_s* zxmd_m20_SPDescriptor_GET_Extension(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zxmd_ds_Signature_s* zxmd_m20_SPDescriptor_GET_Signature(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zxmd_m20_AssertionConsumerServiceURL_s* zxmd_m20_SPDescriptor_GET_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+struct zx_elem_s* zxmd_m20_SPDescriptor_GET_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x, int n);
+int zxmd_m20_SPDescriptor_NUM_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_Organization(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_ContactPerson(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_Extension(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_Signature(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+int zxmd_m20_SPDescriptor_NUM_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_KeyDescriptor_s* zxmd_m20_SPDescriptor_POP_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_Organization_s* zxmd_m20_SPDescriptor_POP_Organization(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_ContactPerson_s* zxmd_m20_SPDescriptor_POP_ContactPerson(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_AdditionalMetaLocation_s* zxmd_m20_SPDescriptor_POP_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_Extension_s* zxmd_m20_SPDescriptor_POP_Extension(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_ds_Signature_s* zxmd_m20_SPDescriptor_POP_Signature(struct zxmd_m20_SPDescriptor_s* x);
+struct zxmd_m20_AssertionConsumerServiceURL_s* zxmd_m20_SPDescriptor_POP_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+struct zx_elem_s* zxmd_m20_SPDescriptor_POP_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_PUSH_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_m20_KeyDescriptor_s* y);
+void zxmd_m20_SPDescriptor_PUSH_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUSH_Organization(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_m20_Organization_s* y);
+void zxmd_m20_SPDescriptor_PUSH_ContactPerson(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_m20_ContactPerson_s* y);
+void zxmd_m20_SPDescriptor_PUSH_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_m20_AdditionalMetaLocation_s* y);
+void zxmd_m20_SPDescriptor_PUSH_Extension(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_SPDescriptor_PUSH_Signature(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_SPDescriptor_PUSH_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x, struct zxmd_m20_AssertionConsumerServiceURL_s* y);
+void zxmd_m20_SPDescriptor_PUSH_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_protocolSupportEnumeration(struct zxmd_m20_SPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_SPDescriptor_PUT_id(struct zxmd_m20_SPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_SPDescriptor_PUT_validUntil(struct zxmd_m20_SPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_SPDescriptor_PUT_cacheDuration(struct zxmd_m20_SPDescriptor_s* x, struct zx_str_s* y);
+void zxmd_m20_SPDescriptor_PUT_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_KeyDescriptor_s* y);
+void zxmd_m20_SPDescriptor_PUT_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_PUT_Organization(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_Organization_s* y);
+void zxmd_m20_SPDescriptor_PUT_ContactPerson(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_ContactPerson_s* y);
+void zxmd_m20_SPDescriptor_PUT_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_AdditionalMetaLocation_s* y);
+void zxmd_m20_SPDescriptor_PUT_Extension(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_Extension_s* y);
+void zxmd_m20_SPDescriptor_PUT_Signature(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_ds_Signature_s* y);
+void zxmd_m20_SPDescriptor_PUT_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_AssertionConsumerServiceURL_s* y);
+void zxmd_m20_SPDescriptor_PUT_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);
+void zxmd_m20_SPDescriptor_ADD_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_KeyDescriptor_s* z);
+void zxmd_m20_SPDescriptor_ADD_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_ADD_Organization(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_Organization_s* z);
+void zxmd_m20_SPDescriptor_ADD_ContactPerson(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_ContactPerson_s* z);
+void zxmd_m20_SPDescriptor_ADD_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_AdditionalMetaLocation_s* z);
+void zxmd_m20_SPDescriptor_ADD_Extension(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_Extension_s* z);
+void zxmd_m20_SPDescriptor_ADD_Signature(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_ds_Signature_s* z);
+void zxmd_m20_SPDescriptor_ADD_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n, struct zxmd_m20_AssertionConsumerServiceURL_s* z);
+void zxmd_m20_SPDescriptor_ADD_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x, int n, struct zx_elem_s* z);
+void zxmd_m20_SPDescriptor_DEL_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_Organization(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_ContactPerson(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_Extension(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_Signature(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_DEL_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x, int n);
+void zxmd_m20_SPDescriptor_REV_KeyDescriptor(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_SoapEndpoint(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_SingleLogoutServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_SingleLogoutServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_FederationTerminationServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_FederationTerminationServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_FederationTerminationNotificationProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_SingleLogoutProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_RegisterNameIdentifierProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_RegisterNameIdentifierServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_RegisterNameIdentifierServiceReturnURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_NameIdentifierMappingProtocolProfile(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_NameIdentifierMappingEncryptionProfile(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_Organization(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_ContactPerson(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_AdditionalMetaLocation(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_Extension(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_Signature(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_AssertionConsumerServiceURL(struct zxmd_m20_SPDescriptor_s* x);
+void zxmd_m20_SPDescriptor_REV_AuthnRequestsSigned(struct zxmd_m20_SPDescriptor_s* x);
+
 /* -------------------------- md_AdditionalMetadataLocation -------------------------- */
 /* refby( zxmd_md_EntityDescriptor_s ) */
 #ifndef zxmd_md_AdditionalMetadataLocation_EXT
@@ -1082,9 +2110,9 @@ struct zxmd_md_AffiliationDescriptor_s {
   struct zxmd_md_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_elem_s* AffiliateMember;	/* {1,-1} xs:anyURI */
   struct zxmd_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
-  struct zx_str_s* affiliationOwnerID;	/* {1,1} attribute md:entityIDType */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
+  struct zx_str_s* affiliationOwnerID;	/* {1,1} attribute m20:entityIDType */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
 };
 
@@ -1271,9 +2299,9 @@ struct zxmd_md_AttributeAuthorityDescriptor_s {
   struct zxmd_md_Organization_s* Organization;	/* {0,1} nada */
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
-  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:anyURI */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
   struct zx_str_s* errorURL;	/* {0,1} attribute xs:anyURI */
   struct zxmd_md_AttributeService_s* AttributeService;	/* {1,-1} nada */
   struct zxmd_md_AssertionIDRequestService_s* AssertionIDRequestService;	/* {0,-1} nada */
@@ -1493,9 +2521,9 @@ struct zxmd_md_AuthnAuthorityDescriptor_s {
   struct zxmd_md_Organization_s* Organization;	/* {0,1} nada */
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
-  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:anyURI */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
   struct zx_str_s* errorURL;	/* {0,1} attribute xs:anyURI */
   struct zxmd_md_AuthnQueryService_s* AuthnQueryService;	/* {1,-1} nada */
   struct zxmd_md_AssertionIDRequestService_s* AssertionIDRequestService;	/* {0,-1} nada */
@@ -1673,7 +2701,7 @@ struct zxmd_md_ContactPerson_s {
   struct zx_elem_s* SurName;	/* {0,1} xs:string */
   struct zx_elem_s* EmailAddress;	/* {0,-1} xs:anyURI */
   struct zx_elem_s* TelephoneNumber;	/* {0,-1} xs:string */
-  struct zx_str_s* contactType;	/* {1,1} attribute md:ContactTypeType */
+  struct zx_str_s* contactType;	/* {1,1} attribute m20:attrContactType */
 };
 
 struct zx_str_s* zxmd_md_ContactPerson_GET_contactType(struct zxmd_md_ContactPerson_s* x);
@@ -1799,8 +2827,8 @@ struct zxmd_md_EntitiesDescriptor_s {
   struct zxmd_md_Extensions_s* Extensions;	/* {0,1}  */
   struct zxmd_md_EntityDescriptor_s* EntityDescriptor;	/* {0,-1} nada */
   struct zxmd_md_EntitiesDescriptor_s* EntitiesDescriptor;	/* {0,-1} nada */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
   struct zx_str_s* Name;	/* {0,1} attribute xs:string */
 };
@@ -1881,8 +2909,8 @@ struct zxmd_md_EntityDescriptor_s {
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zxmd_md_AdditionalMetadataLocation_s* AdditionalMetadataLocation;	/* {0,-1} nada */
   struct zx_str_s* entityID;	/* {1,1} attribute md:entityIDType */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
 };
 
@@ -2044,9 +3072,9 @@ struct zxmd_md_IDPSSODescriptor_s {
   struct zxmd_md_Organization_s* Organization;	/* {0,1} nada */
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
-  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:anyURI */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
   struct zx_str_s* errorURL;	/* {0,1} attribute xs:anyURI */
   struct zxmd_md_ArtifactResolutionService_s* ArtifactResolutionService;	/* {0,-1} nada */
   struct zxmd_md_SingleLogoutService_s* SingleLogoutService;	/* {0,-1} nada */
@@ -2209,7 +3237,7 @@ struct zxmd_md_KeyDescriptor_s {
   zxmd_md_KeyDescriptor_EXT
   struct zxmd_ds_KeyInfo_s* KeyInfo;	/* {1,1} nada */
   struct zxmd_md_EncryptionMethod_s* EncryptionMethod;	/* {0,-1} nada */
-  struct zx_str_s* use;	/* {0,1} attribute md:KeyTypes */
+  struct zx_str_s* use;	/* {0,1} attribute keyTypes */
 };
 
 struct zx_str_s* zxmd_md_KeyDescriptor_GET_use(struct zxmd_md_KeyDescriptor_s* x);
@@ -2472,9 +3500,9 @@ struct zxmd_md_PDPDescriptor_s {
   struct zxmd_md_Organization_s* Organization;	/* {0,1} nada */
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
-  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:anyURI */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
   struct zx_str_s* errorURL;	/* {0,1} attribute xs:anyURI */
   struct zxmd_md_AuthzService_s* AuthzService;	/* {1,-1} nada */
   struct zxmd_md_AssertionIDRequestService_s* AssertionIDRequestService;	/* {0,-1} nada */
@@ -2630,9 +3658,9 @@ struct zxmd_md_RoleDescriptor_s {
   struct zxmd_md_Organization_s* Organization;	/* {0,1} nada */
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
-  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:anyURI */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
   struct zx_str_s* errorURL;	/* {0,1} attribute xs:anyURI */
 };
 
@@ -2715,9 +3743,9 @@ struct zxmd_md_SPSSODescriptor_s {
   struct zxmd_md_Organization_s* Organization;	/* {0,1} nada */
   struct zxmd_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
   struct zx_str_s* ID;	/* {0,1} attribute xs:ID */
-  struct zx_str_s* validUntil;	/* {0,1} attribute dateTime */
-  struct zx_str_s* cacheDuration;	/* {0,1} attribute duration */
-  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:anyURI */
+  struct zx_str_s* validUntil;	/* {0,1} attribute xs:dateTime */
+  struct zx_str_s* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str_s* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
   struct zx_str_s* errorURL;	/* {0,1} attribute xs:anyURI */
   struct zxmd_md_ArtifactResolutionService_s* ArtifactResolutionService;	/* {0,-1} nada */
   struct zxmd_md_SingleLogoutService_s* SingleLogoutService;	/* {0,-1} nada */
@@ -4851,24 +5879,42 @@ struct zxmd_root_s {
   zxmd_root_EXT
   struct zxmd_md_EntityDescriptor_s* EntityDescriptor;	/* {0,-1} root */
   struct zxmd_md_EntitiesDescriptor_s* EntitiesDescriptor;	/* {0,-1} root */
+  struct zxmd_m20_EntityDescriptor_s* m20_EntityDescriptor;	/* {0,-1} root */
+  struct zxmd_m20_EntitiesDescriptor_s* m20_EntitiesDescriptor;	/* {0,-1}  */
 };
 
 struct zxmd_md_EntityDescriptor_s* zxmd_root_GET_EntityDescriptor(struct zxmd_root_s* x, int n);
 struct zxmd_md_EntitiesDescriptor_s* zxmd_root_GET_EntitiesDescriptor(struct zxmd_root_s* x, int n);
+struct zxmd_m20_EntityDescriptor_s* zxmd_root_GET_m20_EntityDescriptor(struct zxmd_root_s* x, int n);
+struct zxmd_m20_EntitiesDescriptor_s* zxmd_root_GET_m20_EntitiesDescriptor(struct zxmd_root_s* x, int n);
 int zxmd_root_NUM_EntityDescriptor(struct zxmd_root_s* x);
 int zxmd_root_NUM_EntitiesDescriptor(struct zxmd_root_s* x);
+int zxmd_root_NUM_m20_EntityDescriptor(struct zxmd_root_s* x);
+int zxmd_root_NUM_m20_EntitiesDescriptor(struct zxmd_root_s* x);
 struct zxmd_md_EntityDescriptor_s* zxmd_root_POP_EntityDescriptor(struct zxmd_root_s* x);
 struct zxmd_md_EntitiesDescriptor_s* zxmd_root_POP_EntitiesDescriptor(struct zxmd_root_s* x);
+struct zxmd_m20_EntityDescriptor_s* zxmd_root_POP_m20_EntityDescriptor(struct zxmd_root_s* x);
+struct zxmd_m20_EntitiesDescriptor_s* zxmd_root_POP_m20_EntitiesDescriptor(struct zxmd_root_s* x);
 void zxmd_root_PUSH_EntityDescriptor(struct zxmd_root_s* x, struct zxmd_md_EntityDescriptor_s* y);
 void zxmd_root_PUSH_EntitiesDescriptor(struct zxmd_root_s* x, struct zxmd_md_EntitiesDescriptor_s* y);
+void zxmd_root_PUSH_m20_EntityDescriptor(struct zxmd_root_s* x, struct zxmd_m20_EntityDescriptor_s* y);
+void zxmd_root_PUSH_m20_EntitiesDescriptor(struct zxmd_root_s* x, struct zxmd_m20_EntitiesDescriptor_s* y);
 void zxmd_root_PUT_EntityDescriptor(struct zxmd_root_s* x, int n, struct zxmd_md_EntityDescriptor_s* y);
 void zxmd_root_PUT_EntitiesDescriptor(struct zxmd_root_s* x, int n, struct zxmd_md_EntitiesDescriptor_s* y);
+void zxmd_root_PUT_m20_EntityDescriptor(struct zxmd_root_s* x, int n, struct zxmd_m20_EntityDescriptor_s* y);
+void zxmd_root_PUT_m20_EntitiesDescriptor(struct zxmd_root_s* x, int n, struct zxmd_m20_EntitiesDescriptor_s* y);
 void zxmd_root_ADD_EntityDescriptor(struct zxmd_root_s* x, int n, struct zxmd_md_EntityDescriptor_s* z);
 void zxmd_root_ADD_EntitiesDescriptor(struct zxmd_root_s* x, int n, struct zxmd_md_EntitiesDescriptor_s* z);
+void zxmd_root_ADD_m20_EntityDescriptor(struct zxmd_root_s* x, int n, struct zxmd_m20_EntityDescriptor_s* z);
+void zxmd_root_ADD_m20_EntitiesDescriptor(struct zxmd_root_s* x, int n, struct zxmd_m20_EntitiesDescriptor_s* z);
 void zxmd_root_DEL_EntityDescriptor(struct zxmd_root_s* x, int n);
 void zxmd_root_DEL_EntitiesDescriptor(struct zxmd_root_s* x, int n);
+void zxmd_root_DEL_m20_EntityDescriptor(struct zxmd_root_s* x, int n);
+void zxmd_root_DEL_m20_EntitiesDescriptor(struct zxmd_root_s* x, int n);
 void zxmd_root_REV_EntityDescriptor(struct zxmd_root_s* x);
 void zxmd_root_REV_EntitiesDescriptor(struct zxmd_root_s* x);
+void zxmd_root_REV_m20_EntityDescriptor(struct zxmd_root_s* x);
+void zxmd_root_REV_m20_EntitiesDescriptor(struct zxmd_root_s* x);
 
 int zxmd_LEN_simple_elem(struct zx_elem_s* x , int simplelen);
 char* zxmd_ENC_SO_simple_elem(struct zx_elem_s* x, char* p, char* simpletag, int simplelen);

@@ -1,5 +1,5 @@
 /* c/saml2-enc.c - WARNING: This file was automatically generated. DO NOT EDIT!
- * $Id: saml2-enc.c,v 1.26 2006/09/05 05:09:38 sampo Exp $ */
+ * $Id$ */
 /* Code generation design Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi),
  * All Rights Reserved. NO WARRANTY. See file COPYING for terms and conditions
  * of use. Some aspects of code generation were driven by schema
@@ -26,6 +26,7267 @@
 #include "zx.h"
 #include "c/saml2-const.h"
 #include "c/saml2-data.h"
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_ActivationLimit
+#define EL_STRUCT zx_ac_ActivationLimit_s
+#define EL_NS     ac
+#define EL_TAG    ActivationLimit
+
+/* FUNC(zx_LEN_ac_ActivationLimit) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_ActivationLimit(struct zx_ac_ActivationLimit_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("ActivationLimit") - 1 + 1 + 2 + sizeof("ActivationLimit") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_ActivationLimitDuration_s* e;
+      for (e = x->ActivationLimitDuration; e; e = (struct zx_ac_ActivationLimitDuration_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ActivationLimitDuration(e);
+  }
+  {
+      struct zx_ac_ActivationLimitUsages_s* e;
+      for (e = x->ActivationLimitUsages; e; e = (struct zx_ac_ActivationLimitUsages_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ActivationLimitUsages(e);
+  }
+  for (se = x->ActivationLimitSession; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ActivationLimitSession") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_ActivationLimit) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_ActivationLimit(struct zx_ac_ActivationLimit_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationLimit", sizeof("ActivationLimit") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_ActivationLimitDuration_s* e;
+      for (e = x->ActivationLimitDuration; e; e = (struct zx_ac_ActivationLimitDuration_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ActivationLimitDuration(e, p);
+  }
+  {
+      struct zx_ac_ActivationLimitUsages_s* e;
+      for (e = x->ActivationLimitUsages; e; e = (struct zx_ac_ActivationLimitUsages_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ActivationLimitUsages(e, p);
+  }
+  for (se = x->ActivationLimitSession; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ActivationLimitSession", sizeof("ActivationLimitSession") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationLimit", sizeof("ActivationLimit") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_ActivationLimit) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_ActivationLimit(struct zx_ac_ActivationLimit_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_ActivationLimit) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit_s* x )
+{
+  int len = zx_LEN_ac_ActivationLimit(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_ActivationLimit(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_ActivationLimit) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit_s* x )
+{
+  int len = zx_LEN_ac_ActivationLimit(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_ActivationLimit(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_ActivationLimitDuration
+#define EL_STRUCT zx_ac_ActivationLimitDuration_s
+#define EL_NS     ac
+#define EL_TAG    ActivationLimitDuration
+
+/* FUNC(zx_LEN_ac_ActivationLimitDuration) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_ActivationLimitDuration(struct zx_ac_ActivationLimitDuration_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("ActivationLimitDuration") - 1 + 1 + 2 + sizeof("ActivationLimitDuration") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->duration, sizeof("duration"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_ActivationLimitDuration) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_ActivationLimitDuration(struct zx_ac_ActivationLimitDuration_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationLimitDuration", sizeof("ActivationLimitDuration") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->duration, "duration", sizeof("duration")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationLimitDuration", sizeof("ActivationLimitDuration") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_ActivationLimitDuration) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_ActivationLimitDuration(struct zx_ac_ActivationLimitDuration_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_ActivationLimitDuration) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x )
+{
+  int len = zx_LEN_ac_ActivationLimitDuration(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_ActivationLimitDuration(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_ActivationLimitDuration) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x )
+{
+  int len = zx_LEN_ac_ActivationLimitDuration(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_ActivationLimitDuration(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_ActivationLimitUsages
+#define EL_STRUCT zx_ac_ActivationLimitUsages_s
+#define EL_NS     ac
+#define EL_TAG    ActivationLimitUsages
+
+/* FUNC(zx_LEN_ac_ActivationLimitUsages) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_ActivationLimitUsages(struct zx_ac_ActivationLimitUsages_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("ActivationLimitUsages") - 1 + 1 + 2 + sizeof("ActivationLimitUsages") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->number, sizeof("number"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_ActivationLimitUsages) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_ActivationLimitUsages(struct zx_ac_ActivationLimitUsages_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationLimitUsages", sizeof("ActivationLimitUsages") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->number, "number", sizeof("number")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationLimitUsages", sizeof("ActivationLimitUsages") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_ActivationLimitUsages) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_ActivationLimitUsages(struct zx_ac_ActivationLimitUsages_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_ActivationLimitUsages) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x )
+{
+  int len = zx_LEN_ac_ActivationLimitUsages(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_ActivationLimitUsages(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_ActivationLimitUsages) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x )
+{
+  int len = zx_LEN_ac_ActivationLimitUsages(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_ActivationLimitUsages(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_ActivationPin
+#define EL_STRUCT zx_ac_ActivationPin_s
+#define EL_NS     ac
+#define EL_TAG    ActivationPin
+
+/* FUNC(zx_LEN_ac_ActivationPin) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_ActivationPin(struct zx_ac_ActivationPin_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("ActivationPin") - 1 + 1 + 2 + sizeof("ActivationPin") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Length_s* e;
+      for (e = x->Length; e; e = (struct zx_ac_Length_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Length(e);
+  }
+  {
+      struct zx_ac_Alphabet_s* e;
+      for (e = x->Alphabet; e; e = (struct zx_ac_Alphabet_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Alphabet(e);
+  }
+  {
+      struct zx_ac_Generation_s* e;
+      for (e = x->Generation; e; e = (struct zx_ac_Generation_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Generation(e);
+  }
+  {
+      struct zx_ac_ActivationLimit_s* e;
+      for (e = x->ActivationLimit; e; e = (struct zx_ac_ActivationLimit_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ActivationLimit(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_ActivationPin) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_ActivationPin(struct zx_ac_ActivationPin_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationPin", sizeof("ActivationPin") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Length_s* e;
+      for (e = x->Length; e; e = (struct zx_ac_Length_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Length(e, p);
+  }
+  {
+      struct zx_ac_Alphabet_s* e;
+      for (e = x->Alphabet; e; e = (struct zx_ac_Alphabet_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Alphabet(e, p);
+  }
+  {
+      struct zx_ac_Generation_s* e;
+      for (e = x->Generation; e; e = (struct zx_ac_Generation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Generation(e, p);
+  }
+  {
+      struct zx_ac_ActivationLimit_s* e;
+      for (e = x->ActivationLimit; e; e = (struct zx_ac_ActivationLimit_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ActivationLimit(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ActivationPin", sizeof("ActivationPin") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_ActivationPin) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_ActivationPin(struct zx_ac_ActivationPin_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_ActivationPin) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* x )
+{
+  int len = zx_LEN_ac_ActivationPin(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_ActivationPin(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_ActivationPin) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* x )
+{
+  int len = zx_LEN_ac_ActivationPin(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_ActivationPin(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Alphabet
+#define EL_STRUCT zx_ac_Alphabet_s
+#define EL_NS     ac
+#define EL_TAG    Alphabet
+
+/* FUNC(zx_LEN_ac_Alphabet) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Alphabet(struct zx_ac_Alphabet_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Alphabet") - 1 + 1 + 2 + sizeof("Alphabet") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->requiredChars, sizeof("requiredChars"));
+  len += zx_attr_len(x->excludedChars, sizeof("excludedChars"));
+  len += zx_attr_len(x->case_is_c_keyword, sizeof("case"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Alphabet) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Alphabet(struct zx_ac_Alphabet_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Alphabet", sizeof("Alphabet") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->requiredChars, "requiredChars", sizeof("requiredChars")-1);
+  p = zx_attr_enc(p, x->excludedChars, "excludedChars", sizeof("excludedChars")-1);
+  p = zx_attr_enc(p, x->case_is_c_keyword, "case", sizeof("case")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Alphabet", sizeof("Alphabet") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Alphabet) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Alphabet(struct zx_ac_Alphabet_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Alphabet) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x )
+{
+  int len = zx_LEN_ac_Alphabet(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Alphabet(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Alphabet) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x )
+{
+  int len = zx_LEN_ac_Alphabet(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Alphabet(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_AsymmetricDecryption
+#define EL_STRUCT zx_ac_AsymmetricDecryption_s
+#define EL_NS     ac
+#define EL_TAG    AsymmetricDecryption
+
+/* FUNC(zx_LEN_ac_AsymmetricDecryption) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_AsymmetricDecryption(struct zx_ac_AsymmetricDecryption_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AsymmetricDecryption") - 1 + 1 + 2 + sizeof("AsymmetricDecryption") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_AsymmetricDecryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_AsymmetricDecryption(struct zx_ac_AsymmetricDecryption_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AsymmetricDecryption", sizeof("AsymmetricDecryption") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AsymmetricDecryption", sizeof("AsymmetricDecryption") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_AsymmetricDecryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_AsymmetricDecryption(struct zx_ac_AsymmetricDecryption_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_AsymmetricDecryption) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x )
+{
+  int len = zx_LEN_ac_AsymmetricDecryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_AsymmetricDecryption(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_AsymmetricDecryption) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x )
+{
+  int len = zx_LEN_ac_AsymmetricDecryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_AsymmetricDecryption(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_AsymmetricKeyAgreement
+#define EL_STRUCT zx_ac_AsymmetricKeyAgreement_s
+#define EL_NS     ac
+#define EL_TAG    AsymmetricKeyAgreement
+
+/* FUNC(zx_LEN_ac_AsymmetricKeyAgreement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_AsymmetricKeyAgreement(struct zx_ac_AsymmetricKeyAgreement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AsymmetricKeyAgreement") - 1 + 1 + 2 + sizeof("AsymmetricKeyAgreement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_AsymmetricKeyAgreement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_AsymmetricKeyAgreement(struct zx_ac_AsymmetricKeyAgreement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AsymmetricKeyAgreement", sizeof("AsymmetricKeyAgreement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AsymmetricKeyAgreement", sizeof("AsymmetricKeyAgreement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_AsymmetricKeyAgreement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_AsymmetricKeyAgreement(struct zx_ac_AsymmetricKeyAgreement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_AsymmetricKeyAgreement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x )
+{
+  int len = zx_LEN_ac_AsymmetricKeyAgreement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_AsymmetricKeyAgreement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_AsymmetricKeyAgreement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x )
+{
+  int len = zx_LEN_ac_AsymmetricKeyAgreement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_AsymmetricKeyAgreement(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_AuthenticatingAuthority
+#define EL_STRUCT zx_ac_AuthenticatingAuthority_s
+#define EL_NS     ac
+#define EL_TAG    AuthenticatingAuthority
+
+/* FUNC(zx_LEN_ac_AuthenticatingAuthority) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_AuthenticatingAuthority(struct zx_ac_AuthenticatingAuthority_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticatingAuthority") - 1 + 1 + 2 + sizeof("AuthenticatingAuthority") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ID, sizeof("ID"));
+
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      for (e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n)
+	  len += zx_LEN_ac_GoverningAgreements(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_AuthenticatingAuthority) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_AuthenticatingAuthority(struct zx_ac_AuthenticatingAuthority_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticatingAuthority", sizeof("AuthenticatingAuthority") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ID, "ID", sizeof("ID")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      for (e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_GoverningAgreements(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticatingAuthority", sizeof("AuthenticatingAuthority") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_AuthenticatingAuthority) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_AuthenticatingAuthority(struct zx_ac_AuthenticatingAuthority_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_AuthenticatingAuthority) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x )
+{
+  int len = zx_LEN_ac_AuthenticatingAuthority(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_AuthenticatingAuthority(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_AuthenticatingAuthority) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x )
+{
+  int len = zx_LEN_ac_AuthenticatingAuthority(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_AuthenticatingAuthority(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_AuthenticationContextStatement
+#define EL_STRUCT zx_ac_AuthenticationContextStatement_s
+#define EL_NS     ac
+#define EL_TAG    AuthenticationContextStatement
+
+/* FUNC(zx_LEN_ac_AuthenticationContextStatement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_AuthenticationContextStatement(struct zx_ac_AuthenticationContextStatement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticationContextStatement") - 1 + 1 + 2 + sizeof("AuthenticationContextStatement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ID, sizeof("ID"));
+
+  {
+      struct zx_ac_Identification_s* e;
+      for (e = x->Identification; e; e = (struct zx_ac_Identification_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Identification(e);
+  }
+  {
+      struct zx_ac_TechnicalProtection_s* e;
+      for (e = x->TechnicalProtection; e; e = (struct zx_ac_TechnicalProtection_s*)e->gg.g.n)
+	  len += zx_LEN_ac_TechnicalProtection(e);
+  }
+  {
+      struct zx_ac_OperationalProtection_s* e;
+      for (e = x->OperationalProtection; e; e = (struct zx_ac_OperationalProtection_s*)e->gg.g.n)
+	  len += zx_LEN_ac_OperationalProtection(e);
+  }
+  {
+      struct zx_ac_AuthenticationMethod_s* e;
+      for (e = x->AuthenticationMethod; e; e = (struct zx_ac_AuthenticationMethod_s*)e->gg.g.n)
+	  len += zx_LEN_ac_AuthenticationMethod(e);
+  }
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      for (e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n)
+	  len += zx_LEN_ac_GoverningAgreements(e);
+  }
+  {
+      struct zx_ac_AuthenticatingAuthority_s* e;
+      for (e = x->AuthenticatingAuthority; e; e = (struct zx_ac_AuthenticatingAuthority_s*)e->gg.g.n)
+	  len += zx_LEN_ac_AuthenticatingAuthority(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_AuthenticationContextStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_AuthenticationContextStatement(struct zx_ac_AuthenticationContextStatement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationContextStatement", sizeof("AuthenticationContextStatement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ID, "ID", sizeof("ID")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Identification_s* e;
+      for (e = x->Identification; e; e = (struct zx_ac_Identification_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Identification(e, p);
+  }
+  {
+      struct zx_ac_TechnicalProtection_s* e;
+      for (e = x->TechnicalProtection; e; e = (struct zx_ac_TechnicalProtection_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_TechnicalProtection(e, p);
+  }
+  {
+      struct zx_ac_OperationalProtection_s* e;
+      for (e = x->OperationalProtection; e; e = (struct zx_ac_OperationalProtection_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_OperationalProtection(e, p);
+  }
+  {
+      struct zx_ac_AuthenticationMethod_s* e;
+      for (e = x->AuthenticationMethod; e; e = (struct zx_ac_AuthenticationMethod_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_AuthenticationMethod(e, p);
+  }
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      for (e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_GoverningAgreements(e, p);
+  }
+  {
+      struct zx_ac_AuthenticatingAuthority_s* e;
+      for (e = x->AuthenticatingAuthority; e; e = (struct zx_ac_AuthenticatingAuthority_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_AuthenticatingAuthority(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationContextStatement", sizeof("AuthenticationContextStatement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_AuthenticationContextStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_AuthenticationContextStatement(struct zx_ac_AuthenticationContextStatement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_AuthenticationContextStatement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_AuthenticationContextStatement_s* x )
+{
+  int len = zx_LEN_ac_AuthenticationContextStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_AuthenticationContextStatement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_AuthenticationContextStatement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_AuthenticationContextStatement_s* x )
+{
+  int len = zx_LEN_ac_AuthenticationContextStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_AuthenticationContextStatement(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_AuthenticationMethod
+#define EL_STRUCT zx_ac_AuthenticationMethod_s
+#define EL_NS     ac
+#define EL_TAG    AuthenticationMethod
+
+/* FUNC(zx_LEN_ac_AuthenticationMethod) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_AuthenticationMethod(struct zx_ac_AuthenticationMethod_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticationMethod") - 1 + 1 + 2 + sizeof("AuthenticationMethod") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_PrincipalAuthenticationMechanism_s* e;
+      for (e = x->PrincipalAuthenticationMechanism; e; e = (struct zx_ac_PrincipalAuthenticationMechanism_s*)e->gg.g.n)
+	  len += zx_LEN_ac_PrincipalAuthenticationMechanism(e);
+  }
+  {
+      struct zx_ac_Authenticator_s* e;
+      for (e = x->Authenticator; e; e = (struct zx_ac_Authenticator_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Authenticator(e);
+  }
+  {
+      struct zx_ac_AuthenticatorTransportProtocol_s* e;
+      for (e = x->AuthenticatorTransportProtocol; e; e = (struct zx_ac_AuthenticatorTransportProtocol_s*)e->gg.g.n)
+	  len += zx_LEN_ac_AuthenticatorTransportProtocol(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_AuthenticationMethod) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_AuthenticationMethod(struct zx_ac_AuthenticationMethod_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationMethod", sizeof("AuthenticationMethod") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_PrincipalAuthenticationMechanism_s* e;
+      for (e = x->PrincipalAuthenticationMechanism; e; e = (struct zx_ac_PrincipalAuthenticationMechanism_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_PrincipalAuthenticationMechanism(e, p);
+  }
+  {
+      struct zx_ac_Authenticator_s* e;
+      for (e = x->Authenticator; e; e = (struct zx_ac_Authenticator_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Authenticator(e, p);
+  }
+  {
+      struct zx_ac_AuthenticatorTransportProtocol_s* e;
+      for (e = x->AuthenticatorTransportProtocol; e; e = (struct zx_ac_AuthenticatorTransportProtocol_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_AuthenticatorTransportProtocol(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationMethod", sizeof("AuthenticationMethod") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_AuthenticationMethod) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_AuthenticationMethod(struct zx_ac_AuthenticationMethod_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_AuthenticationMethod) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_AuthenticationMethod_s* x )
+{
+  int len = zx_LEN_ac_AuthenticationMethod(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_AuthenticationMethod(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_AuthenticationMethod) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_AuthenticationMethod_s* x )
+{
+  int len = zx_LEN_ac_AuthenticationMethod(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_AuthenticationMethod(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Authenticator
+#define EL_STRUCT zx_ac_Authenticator_s
+#define EL_NS     ac
+#define EL_TAG    Authenticator
+
+/* FUNC(zx_LEN_ac_Authenticator) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Authenticator(struct zx_ac_Authenticator_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Authenticator") - 1 + 1 + 2 + sizeof("Authenticator") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_PreviousSession_s* e;
+      for (e = x->PreviousSession; e; e = (struct zx_ac_PreviousSession_s*)e->gg.g.n)
+	  len += zx_LEN_ac_PreviousSession(e);
+  }
+  {
+      struct zx_ac_ResumeSession_s* e;
+      for (e = x->ResumeSession; e; e = (struct zx_ac_ResumeSession_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ResumeSession(e);
+  }
+  {
+      struct zx_ac_DigSig_s* e;
+      for (e = x->DigSig; e; e = (struct zx_ac_DigSig_s*)e->gg.g.n)
+	  len += zx_LEN_ac_DigSig(e);
+  }
+  {
+      struct zx_ac_Password_s* e;
+      for (e = x->Password; e; e = (struct zx_ac_Password_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Password(e);
+  }
+  {
+      struct zx_ac_ZeroKnowledge_s* e;
+      for (e = x->ZeroKnowledge; e; e = (struct zx_ac_ZeroKnowledge_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ZeroKnowledge(e);
+  }
+  {
+      struct zx_ac_SharedSecretChallengeResponse_s* e;
+      for (e = x->SharedSecretChallengeResponse; e; e = (struct zx_ac_SharedSecretChallengeResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ac_SharedSecretChallengeResponse(e);
+  }
+  {
+      struct zx_ac_SharedSecretDynamicPlaintext_s* e;
+      for (e = x->SharedSecretDynamicPlaintext; e; e = (struct zx_ac_SharedSecretDynamicPlaintext_s*)e->gg.g.n)
+	  len += zx_LEN_ac_SharedSecretDynamicPlaintext(e);
+  }
+  {
+      struct zx_ac_IPAddress_s* e;
+      for (e = x->IPAddress; e; e = (struct zx_ac_IPAddress_s*)e->gg.g.n)
+	  len += zx_LEN_ac_IPAddress(e);
+  }
+  {
+      struct zx_ac_AsymmetricDecryption_s* e;
+      for (e = x->AsymmetricDecryption; e; e = (struct zx_ac_AsymmetricDecryption_s*)e->gg.g.n)
+	  len += zx_LEN_ac_AsymmetricDecryption(e);
+  }
+  {
+      struct zx_ac_AsymmetricKeyAgreement_s* e;
+      for (e = x->AsymmetricKeyAgreement; e; e = (struct zx_ac_AsymmetricKeyAgreement_s*)e->gg.g.n)
+	  len += zx_LEN_ac_AsymmetricKeyAgreement(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Authenticator) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Authenticator(struct zx_ac_Authenticator_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Authenticator", sizeof("Authenticator") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_PreviousSession_s* e;
+      for (e = x->PreviousSession; e; e = (struct zx_ac_PreviousSession_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_PreviousSession(e, p);
+  }
+  {
+      struct zx_ac_ResumeSession_s* e;
+      for (e = x->ResumeSession; e; e = (struct zx_ac_ResumeSession_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ResumeSession(e, p);
+  }
+  {
+      struct zx_ac_DigSig_s* e;
+      for (e = x->DigSig; e; e = (struct zx_ac_DigSig_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_DigSig(e, p);
+  }
+  {
+      struct zx_ac_Password_s* e;
+      for (e = x->Password; e; e = (struct zx_ac_Password_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Password(e, p);
+  }
+  {
+      struct zx_ac_ZeroKnowledge_s* e;
+      for (e = x->ZeroKnowledge; e; e = (struct zx_ac_ZeroKnowledge_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ZeroKnowledge(e, p);
+  }
+  {
+      struct zx_ac_SharedSecretChallengeResponse_s* e;
+      for (e = x->SharedSecretChallengeResponse; e; e = (struct zx_ac_SharedSecretChallengeResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_SharedSecretChallengeResponse(e, p);
+  }
+  {
+      struct zx_ac_SharedSecretDynamicPlaintext_s* e;
+      for (e = x->SharedSecretDynamicPlaintext; e; e = (struct zx_ac_SharedSecretDynamicPlaintext_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_SharedSecretDynamicPlaintext(e, p);
+  }
+  {
+      struct zx_ac_IPAddress_s* e;
+      for (e = x->IPAddress; e; e = (struct zx_ac_IPAddress_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_IPAddress(e, p);
+  }
+  {
+      struct zx_ac_AsymmetricDecryption_s* e;
+      for (e = x->AsymmetricDecryption; e; e = (struct zx_ac_AsymmetricDecryption_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_AsymmetricDecryption(e, p);
+  }
+  {
+      struct zx_ac_AsymmetricKeyAgreement_s* e;
+      for (e = x->AsymmetricKeyAgreement; e; e = (struct zx_ac_AsymmetricKeyAgreement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_AsymmetricKeyAgreement(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Authenticator", sizeof("Authenticator") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Authenticator) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Authenticator(struct zx_ac_Authenticator_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Authenticator) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* x )
+{
+  int len = zx_LEN_ac_Authenticator(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Authenticator(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Authenticator) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* x )
+{
+  int len = zx_LEN_ac_Authenticator(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Authenticator(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_AuthenticatorTransportProtocol
+#define EL_STRUCT zx_ac_AuthenticatorTransportProtocol_s
+#define EL_NS     ac
+#define EL_TAG    AuthenticatorTransportProtocol
+
+/* FUNC(zx_LEN_ac_AuthenticatorTransportProtocol) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_AuthenticatorTransportProtocol(struct zx_ac_AuthenticatorTransportProtocol_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticatorTransportProtocol") - 1 + 1 + 2 + sizeof("AuthenticatorTransportProtocol") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_HTTP_s* e;
+      for (e = x->HTTP; e; e = (struct zx_ac_HTTP_s*)e->gg.g.n)
+	  len += zx_LEN_ac_HTTP(e);
+  }
+  {
+      struct zx_ac_SSL_s* e;
+      for (e = x->SSL; e; e = (struct zx_ac_SSL_s*)e->gg.g.n)
+	  len += zx_LEN_ac_SSL(e);
+  }
+  {
+      struct zx_ac_MobileNetworkNoEncryption_s* e;
+      for (e = x->MobileNetworkNoEncryption; e; e = (struct zx_ac_MobileNetworkNoEncryption_s*)e->gg.g.n)
+	  len += zx_LEN_ac_MobileNetworkNoEncryption(e);
+  }
+  {
+      struct zx_ac_MobileNetworkRadioEncryption_s* e;
+      for (e = x->MobileNetworkRadioEncryption; e; e = (struct zx_ac_MobileNetworkRadioEncryption_s*)e->gg.g.n)
+	  len += zx_LEN_ac_MobileNetworkRadioEncryption(e);
+  }
+  {
+      struct zx_ac_MobileNetworkEndToEndEncryption_s* e;
+      for (e = x->MobileNetworkEndToEndEncryption; e; e = (struct zx_ac_MobileNetworkEndToEndEncryption_s*)e->gg.g.n)
+	  len += zx_LEN_ac_MobileNetworkEndToEndEncryption(e);
+  }
+  {
+      struct zx_ac_WTLS_s* e;
+      for (e = x->WTLS; e; e = (struct zx_ac_WTLS_s*)e->gg.g.n)
+	  len += zx_LEN_ac_WTLS(e);
+  }
+  {
+      struct zx_ac_IPSec_s* e;
+      for (e = x->IPSec; e; e = (struct zx_ac_IPSec_s*)e->gg.g.n)
+	  len += zx_LEN_ac_IPSec(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_AuthenticatorTransportProtocol) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_AuthenticatorTransportProtocol(struct zx_ac_AuthenticatorTransportProtocol_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticatorTransportProtocol", sizeof("AuthenticatorTransportProtocol") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_HTTP_s* e;
+      for (e = x->HTTP; e; e = (struct zx_ac_HTTP_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_HTTP(e, p);
+  }
+  {
+      struct zx_ac_SSL_s* e;
+      for (e = x->SSL; e; e = (struct zx_ac_SSL_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_SSL(e, p);
+  }
+  {
+      struct zx_ac_MobileNetworkNoEncryption_s* e;
+      for (e = x->MobileNetworkNoEncryption; e; e = (struct zx_ac_MobileNetworkNoEncryption_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_MobileNetworkNoEncryption(e, p);
+  }
+  {
+      struct zx_ac_MobileNetworkRadioEncryption_s* e;
+      for (e = x->MobileNetworkRadioEncryption; e; e = (struct zx_ac_MobileNetworkRadioEncryption_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_MobileNetworkRadioEncryption(e, p);
+  }
+  {
+      struct zx_ac_MobileNetworkEndToEndEncryption_s* e;
+      for (e = x->MobileNetworkEndToEndEncryption; e; e = (struct zx_ac_MobileNetworkEndToEndEncryption_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_MobileNetworkEndToEndEncryption(e, p);
+  }
+  {
+      struct zx_ac_WTLS_s* e;
+      for (e = x->WTLS; e; e = (struct zx_ac_WTLS_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_WTLS(e, p);
+  }
+  {
+      struct zx_ac_IPSec_s* e;
+      for (e = x->IPSec; e; e = (struct zx_ac_IPSec_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_IPSec(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticatorTransportProtocol", sizeof("AuthenticatorTransportProtocol") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_AuthenticatorTransportProtocol) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_AuthenticatorTransportProtocol(struct zx_ac_AuthenticatorTransportProtocol_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_AuthenticatorTransportProtocol) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_AuthenticatorTransportProtocol_s* x )
+{
+  int len = zx_LEN_ac_AuthenticatorTransportProtocol(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_AuthenticatorTransportProtocol(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_AuthenticatorTransportProtocol) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_AuthenticatorTransportProtocol_s* x )
+{
+  int len = zx_LEN_ac_AuthenticatorTransportProtocol(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_AuthenticatorTransportProtocol(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_DeactivationCallCenter
+#define EL_STRUCT zx_ac_DeactivationCallCenter_s
+#define EL_NS     ac
+#define EL_TAG    DeactivationCallCenter
+
+/* FUNC(zx_LEN_ac_DeactivationCallCenter) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_DeactivationCallCenter(struct zx_ac_DeactivationCallCenter_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("DeactivationCallCenter") - 1 + 1 + 2 + sizeof("DeactivationCallCenter") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_DeactivationCallCenter) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_DeactivationCallCenter(struct zx_ac_DeactivationCallCenter_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "DeactivationCallCenter", sizeof("DeactivationCallCenter") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "DeactivationCallCenter", sizeof("DeactivationCallCenter") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_DeactivationCallCenter) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_DeactivationCallCenter(struct zx_ac_DeactivationCallCenter_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_DeactivationCallCenter) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x )
+{
+  int len = zx_LEN_ac_DeactivationCallCenter(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_DeactivationCallCenter(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_DeactivationCallCenter) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x )
+{
+  int len = zx_LEN_ac_DeactivationCallCenter(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_DeactivationCallCenter(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_DigSig
+#define EL_STRUCT zx_ac_DigSig_s
+#define EL_NS     ac
+#define EL_TAG    DigSig
+
+/* FUNC(zx_LEN_ac_DigSig) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_DigSig(struct zx_ac_DigSig_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("DigSig") - 1 + 1 + 2 + sizeof("DigSig") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_DigSig) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_DigSig(struct zx_ac_DigSig_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "DigSig", sizeof("DigSig") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "DigSig", sizeof("DigSig") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_DigSig) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_DigSig(struct zx_ac_DigSig_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_DigSig) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x )
+{
+  int len = zx_LEN_ac_DigSig(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_DigSig(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_DigSig) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x )
+{
+  int len = zx_LEN_ac_DigSig(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_DigSig(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Extension
+#define EL_STRUCT zx_ac_Extension_s
+#define EL_NS     ac
+#define EL_TAG    Extension
+
+/* FUNC(zx_LEN_ac_Extension) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Extension(struct zx_ac_Extension_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Extension") - 1 + 1 + 2 + sizeof("Extension") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Extension) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Extension(struct zx_ac_Extension_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Extension", sizeof("Extension") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Extension", sizeof("Extension") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Extension) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Extension(struct zx_ac_Extension_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Extension) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x )
+{
+  int len = zx_LEN_ac_Extension(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Extension(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Extension) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x )
+{
+  int len = zx_LEN_ac_Extension(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Extension(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Generation
+#define EL_STRUCT zx_ac_Generation_s
+#define EL_NS     ac
+#define EL_TAG    Generation
+
+/* FUNC(zx_LEN_ac_Generation) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Generation(struct zx_ac_Generation_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Generation") - 1 + 1 + 2 + sizeof("Generation") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->mechanism, sizeof("mechanism"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Generation) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Generation(struct zx_ac_Generation_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Generation", sizeof("Generation") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->mechanism, "mechanism", sizeof("mechanism")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Generation", sizeof("Generation") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Generation) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Generation(struct zx_ac_Generation_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Generation) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x )
+{
+  int len = zx_LEN_ac_Generation(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Generation(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Generation) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x )
+{
+  int len = zx_LEN_ac_Generation(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Generation(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_GoverningAgreementRef
+#define EL_STRUCT zx_ac_GoverningAgreementRef_s
+#define EL_NS     ac
+#define EL_TAG    GoverningAgreementRef
+
+/* FUNC(zx_LEN_ac_GoverningAgreementRef) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_GoverningAgreementRef(struct zx_ac_GoverningAgreementRef_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("GoverningAgreementRef") - 1 + 1 + 2 + sizeof("GoverningAgreementRef") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->governingAgreementRef, sizeof("governingAgreementRef"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_GoverningAgreementRef) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_GoverningAgreementRef(struct zx_ac_GoverningAgreementRef_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "GoverningAgreementRef", sizeof("GoverningAgreementRef") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->governingAgreementRef, "governingAgreementRef", sizeof("governingAgreementRef")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "GoverningAgreementRef", sizeof("GoverningAgreementRef") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_GoverningAgreementRef) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_GoverningAgreementRef(struct zx_ac_GoverningAgreementRef_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_GoverningAgreementRef) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x )
+{
+  int len = zx_LEN_ac_GoverningAgreementRef(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_GoverningAgreementRef(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_GoverningAgreementRef) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x )
+{
+  int len = zx_LEN_ac_GoverningAgreementRef(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_GoverningAgreementRef(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_GoverningAgreements
+#define EL_STRUCT zx_ac_GoverningAgreements_s
+#define EL_NS     ac
+#define EL_TAG    GoverningAgreements
+
+/* FUNC(zx_LEN_ac_GoverningAgreements) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_GoverningAgreements(struct zx_ac_GoverningAgreements_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("GoverningAgreements") - 1 + 1 + 2 + sizeof("GoverningAgreements") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_GoverningAgreementRef_s* e;
+      for (e = x->GoverningAgreementRef; e; e = (struct zx_ac_GoverningAgreementRef_s*)e->gg.g.n)
+	  len += zx_LEN_ac_GoverningAgreementRef(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_GoverningAgreements) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_GoverningAgreements(struct zx_ac_GoverningAgreements_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "GoverningAgreements", sizeof("GoverningAgreements") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_GoverningAgreementRef_s* e;
+      for (e = x->GoverningAgreementRef; e; e = (struct zx_ac_GoverningAgreementRef_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_GoverningAgreementRef(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "GoverningAgreements", sizeof("GoverningAgreements") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_GoverningAgreements) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_GoverningAgreements(struct zx_ac_GoverningAgreements_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_GoverningAgreements) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x )
+{
+  int len = zx_LEN_ac_GoverningAgreements(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_GoverningAgreements(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_GoverningAgreements) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x )
+{
+  int len = zx_LEN_ac_GoverningAgreements(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_GoverningAgreements(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_HTTP
+#define EL_STRUCT zx_ac_HTTP_s
+#define EL_NS     ac
+#define EL_TAG    HTTP
+
+/* FUNC(zx_LEN_ac_HTTP) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_HTTP(struct zx_ac_HTTP_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("HTTP") - 1 + 1 + 2 + sizeof("HTTP") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_HTTP) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_HTTP(struct zx_ac_HTTP_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "HTTP", sizeof("HTTP") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "HTTP", sizeof("HTTP") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_HTTP) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_HTTP(struct zx_ac_HTTP_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_HTTP) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x )
+{
+  int len = zx_LEN_ac_HTTP(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_HTTP(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_HTTP) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x )
+{
+  int len = zx_LEN_ac_HTTP(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_HTTP(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_IPAddress
+#define EL_STRUCT zx_ac_IPAddress_s
+#define EL_NS     ac
+#define EL_TAG    IPAddress
+
+/* FUNC(zx_LEN_ac_IPAddress) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_IPAddress(struct zx_ac_IPAddress_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("IPAddress") - 1 + 1 + 2 + sizeof("IPAddress") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_IPAddress) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_IPAddress(struct zx_ac_IPAddress_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IPAddress", sizeof("IPAddress") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IPAddress", sizeof("IPAddress") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_IPAddress) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_IPAddress(struct zx_ac_IPAddress_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_IPAddress) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x )
+{
+  int len = zx_LEN_ac_IPAddress(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_IPAddress(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_IPAddress) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x )
+{
+  int len = zx_LEN_ac_IPAddress(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_IPAddress(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_IPSec
+#define EL_STRUCT zx_ac_IPSec_s
+#define EL_NS     ac
+#define EL_TAG    IPSec
+
+/* FUNC(zx_LEN_ac_IPSec) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_IPSec(struct zx_ac_IPSec_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("IPSec") - 1 + 1 + 2 + sizeof("IPSec") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_IPSec) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_IPSec(struct zx_ac_IPSec_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IPSec", sizeof("IPSec") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IPSec", sizeof("IPSec") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_IPSec) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_IPSec(struct zx_ac_IPSec_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_IPSec) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x )
+{
+  int len = zx_LEN_ac_IPSec(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_IPSec(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_IPSec) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x )
+{
+  int len = zx_LEN_ac_IPSec(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_IPSec(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Identification
+#define EL_STRUCT zx_ac_Identification_s
+#define EL_NS     ac
+#define EL_TAG    Identification
+
+/* FUNC(zx_LEN_ac_Identification) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Identification(struct zx_ac_Identification_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Identification") - 1 + 1 + 2 + sizeof("Identification") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->nym, sizeof("nym"));
+
+  {
+      struct zx_ac_PhysicalVerification_s* e;
+      for (e = x->PhysicalVerification; e; e = (struct zx_ac_PhysicalVerification_s*)e->gg.g.n)
+	  len += zx_LEN_ac_PhysicalVerification(e);
+  }
+  {
+      struct zx_ac_WrittenConsent_s* e;
+      for (e = x->WrittenConsent; e; e = (struct zx_ac_WrittenConsent_s*)e->gg.g.n)
+	  len += zx_LEN_ac_WrittenConsent(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Identification) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Identification(struct zx_ac_Identification_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Identification", sizeof("Identification") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->nym, "nym", sizeof("nym")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_PhysicalVerification_s* e;
+      for (e = x->PhysicalVerification; e; e = (struct zx_ac_PhysicalVerification_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_PhysicalVerification(e, p);
+  }
+  {
+      struct zx_ac_WrittenConsent_s* e;
+      for (e = x->WrittenConsent; e; e = (struct zx_ac_WrittenConsent_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_WrittenConsent(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Identification", sizeof("Identification") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Identification) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Identification(struct zx_ac_Identification_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Identification) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s* x )
+{
+  int len = zx_LEN_ac_Identification(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Identification(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Identification) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s* x )
+{
+  int len = zx_LEN_ac_Identification(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Identification(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_KeyActivation
+#define EL_STRUCT zx_ac_KeyActivation_s
+#define EL_NS     ac
+#define EL_TAG    KeyActivation
+
+/* FUNC(zx_LEN_ac_KeyActivation) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_KeyActivation(struct zx_ac_KeyActivation_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("KeyActivation") - 1 + 1 + 2 + sizeof("KeyActivation") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_ActivationPin_s* e;
+      for (e = x->ActivationPin; e; e = (struct zx_ac_ActivationPin_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ActivationPin(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_KeyActivation) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_KeyActivation(struct zx_ac_KeyActivation_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "KeyActivation", sizeof("KeyActivation") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_ActivationPin_s* e;
+      for (e = x->ActivationPin; e; e = (struct zx_ac_ActivationPin_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ActivationPin(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "KeyActivation", sizeof("KeyActivation") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_KeyActivation) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_KeyActivation(struct zx_ac_KeyActivation_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_KeyActivation) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* x )
+{
+  int len = zx_LEN_ac_KeyActivation(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_KeyActivation(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_KeyActivation) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* x )
+{
+  int len = zx_LEN_ac_KeyActivation(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_KeyActivation(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_KeySharing
+#define EL_STRUCT zx_ac_KeySharing_s
+#define EL_NS     ac
+#define EL_TAG    KeySharing
+
+/* FUNC(zx_LEN_ac_KeySharing) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_KeySharing(struct zx_ac_KeySharing_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("KeySharing") - 1 + 1 + 2 + sizeof("KeySharing") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->sharing, sizeof("sharing"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_KeySharing) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_KeySharing(struct zx_ac_KeySharing_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "KeySharing", sizeof("KeySharing") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->sharing, "sharing", sizeof("sharing")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "KeySharing", sizeof("KeySharing") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_KeySharing) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_KeySharing(struct zx_ac_KeySharing_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_KeySharing) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x )
+{
+  int len = zx_LEN_ac_KeySharing(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_KeySharing(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_KeySharing) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x )
+{
+  int len = zx_LEN_ac_KeySharing(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_KeySharing(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_KeyStorage
+#define EL_STRUCT zx_ac_KeyStorage_s
+#define EL_NS     ac
+#define EL_TAG    KeyStorage
+
+/* FUNC(zx_LEN_ac_KeyStorage) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_KeyStorage(struct zx_ac_KeyStorage_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("KeyStorage") - 1 + 1 + 2 + sizeof("KeyStorage") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->medium, sizeof("medium"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_KeyStorage) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_KeyStorage(struct zx_ac_KeyStorage_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "KeyStorage", sizeof("KeyStorage") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->medium, "medium", sizeof("medium")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "KeyStorage", sizeof("KeyStorage") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_KeyStorage) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_KeyStorage(struct zx_ac_KeyStorage_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_KeyStorage) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x )
+{
+  int len = zx_LEN_ac_KeyStorage(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_KeyStorage(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_KeyStorage) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x )
+{
+  int len = zx_LEN_ac_KeyStorage(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_KeyStorage(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Length
+#define EL_STRUCT zx_ac_Length_s
+#define EL_NS     ac
+#define EL_TAG    Length
+
+/* FUNC(zx_LEN_ac_Length) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Length(struct zx_ac_Length_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Length") - 1 + 1 + 2 + sizeof("Length") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->min, sizeof("min"));
+  len += zx_attr_len(x->max, sizeof("max"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Length) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Length(struct zx_ac_Length_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Length", sizeof("Length") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->min, "min", sizeof("min")-1);
+  p = zx_attr_enc(p, x->max, "max", sizeof("max")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Length", sizeof("Length") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Length) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Length(struct zx_ac_Length_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Length) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x )
+{
+  int len = zx_LEN_ac_Length(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Length(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Length) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x )
+{
+  int len = zx_LEN_ac_Length(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Length(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_MobileNetworkEndToEndEncryption
+#define EL_STRUCT zx_ac_MobileNetworkEndToEndEncryption_s
+#define EL_NS     ac
+#define EL_TAG    MobileNetworkEndToEndEncryption
+
+/* FUNC(zx_LEN_ac_MobileNetworkEndToEndEncryption) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_MobileNetworkEndToEndEncryption(struct zx_ac_MobileNetworkEndToEndEncryption_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("MobileNetworkEndToEndEncryption") - 1 + 1 + 2 + sizeof("MobileNetworkEndToEndEncryption") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_MobileNetworkEndToEndEncryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_MobileNetworkEndToEndEncryption(struct zx_ac_MobileNetworkEndToEndEncryption_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "MobileNetworkEndToEndEncryption", sizeof("MobileNetworkEndToEndEncryption") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "MobileNetworkEndToEndEncryption", sizeof("MobileNetworkEndToEndEncryption") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_MobileNetworkEndToEndEncryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_MobileNetworkEndToEndEncryption(struct zx_ac_MobileNetworkEndToEndEncryption_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_MobileNetworkEndToEndEncryption) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x )
+{
+  int len = zx_LEN_ac_MobileNetworkEndToEndEncryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_MobileNetworkEndToEndEncryption(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_MobileNetworkEndToEndEncryption) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x )
+{
+  int len = zx_LEN_ac_MobileNetworkEndToEndEncryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_MobileNetworkEndToEndEncryption(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_MobileNetworkNoEncryption
+#define EL_STRUCT zx_ac_MobileNetworkNoEncryption_s
+#define EL_NS     ac
+#define EL_TAG    MobileNetworkNoEncryption
+
+/* FUNC(zx_LEN_ac_MobileNetworkNoEncryption) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_MobileNetworkNoEncryption(struct zx_ac_MobileNetworkNoEncryption_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("MobileNetworkNoEncryption") - 1 + 1 + 2 + sizeof("MobileNetworkNoEncryption") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_MobileNetworkNoEncryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_MobileNetworkNoEncryption(struct zx_ac_MobileNetworkNoEncryption_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "MobileNetworkNoEncryption", sizeof("MobileNetworkNoEncryption") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "MobileNetworkNoEncryption", sizeof("MobileNetworkNoEncryption") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_MobileNetworkNoEncryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_MobileNetworkNoEncryption(struct zx_ac_MobileNetworkNoEncryption_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_MobileNetworkNoEncryption) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x )
+{
+  int len = zx_LEN_ac_MobileNetworkNoEncryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_MobileNetworkNoEncryption(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_MobileNetworkNoEncryption) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x )
+{
+  int len = zx_LEN_ac_MobileNetworkNoEncryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_MobileNetworkNoEncryption(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_MobileNetworkRadioEncryption
+#define EL_STRUCT zx_ac_MobileNetworkRadioEncryption_s
+#define EL_NS     ac
+#define EL_TAG    MobileNetworkRadioEncryption
+
+/* FUNC(zx_LEN_ac_MobileNetworkRadioEncryption) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_MobileNetworkRadioEncryption(struct zx_ac_MobileNetworkRadioEncryption_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("MobileNetworkRadioEncryption") - 1 + 1 + 2 + sizeof("MobileNetworkRadioEncryption") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_MobileNetworkRadioEncryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_MobileNetworkRadioEncryption(struct zx_ac_MobileNetworkRadioEncryption_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "MobileNetworkRadioEncryption", sizeof("MobileNetworkRadioEncryption") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "MobileNetworkRadioEncryption", sizeof("MobileNetworkRadioEncryption") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_MobileNetworkRadioEncryption) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_MobileNetworkRadioEncryption(struct zx_ac_MobileNetworkRadioEncryption_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_MobileNetworkRadioEncryption) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x )
+{
+  int len = zx_LEN_ac_MobileNetworkRadioEncryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_MobileNetworkRadioEncryption(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_MobileNetworkRadioEncryption) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x )
+{
+  int len = zx_LEN_ac_MobileNetworkRadioEncryption(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_MobileNetworkRadioEncryption(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_OperationalProtection
+#define EL_STRUCT zx_ac_OperationalProtection_s
+#define EL_NS     ac
+#define EL_TAG    OperationalProtection
+
+/* FUNC(zx_LEN_ac_OperationalProtection) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_OperationalProtection(struct zx_ac_OperationalProtection_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("OperationalProtection") - 1 + 1 + 2 + sizeof("OperationalProtection") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_SecurityAudit_s* e;
+      for (e = x->SecurityAudit; e; e = (struct zx_ac_SecurityAudit_s*)e->gg.g.n)
+	  len += zx_LEN_ac_SecurityAudit(e);
+  }
+  {
+      struct zx_ac_DeactivationCallCenter_s* e;
+      for (e = x->DeactivationCallCenter; e; e = (struct zx_ac_DeactivationCallCenter_s*)e->gg.g.n)
+	  len += zx_LEN_ac_DeactivationCallCenter(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_OperationalProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_OperationalProtection(struct zx_ac_OperationalProtection_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "OperationalProtection", sizeof("OperationalProtection") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_SecurityAudit_s* e;
+      for (e = x->SecurityAudit; e; e = (struct zx_ac_SecurityAudit_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_SecurityAudit(e, p);
+  }
+  {
+      struct zx_ac_DeactivationCallCenter_s* e;
+      for (e = x->DeactivationCallCenter; e; e = (struct zx_ac_DeactivationCallCenter_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_DeactivationCallCenter(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "OperationalProtection", sizeof("OperationalProtection") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_OperationalProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_OperationalProtection(struct zx_ac_OperationalProtection_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_OperationalProtection) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_OperationalProtection_s* x )
+{
+  int len = zx_LEN_ac_OperationalProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_OperationalProtection(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_OperationalProtection) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_OperationalProtection_s* x )
+{
+  int len = zx_LEN_ac_OperationalProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_OperationalProtection(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Password
+#define EL_STRUCT zx_ac_Password_s
+#define EL_NS     ac
+#define EL_TAG    Password
+
+/* FUNC(zx_LEN_ac_Password) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Password(struct zx_ac_Password_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Password") - 1 + 1 + 2 + sizeof("Password") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Length_s* e;
+      for (e = x->Length; e; e = (struct zx_ac_Length_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Length(e);
+  }
+  {
+      struct zx_ac_Alphabet_s* e;
+      for (e = x->Alphabet; e; e = (struct zx_ac_Alphabet_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Alphabet(e);
+  }
+  {
+      struct zx_ac_Generation_s* e;
+      for (e = x->Generation; e; e = (struct zx_ac_Generation_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Generation(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Password) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Password(struct zx_ac_Password_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Password", sizeof("Password") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Length_s* e;
+      for (e = x->Length; e; e = (struct zx_ac_Length_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Length(e, p);
+  }
+  {
+      struct zx_ac_Alphabet_s* e;
+      for (e = x->Alphabet; e; e = (struct zx_ac_Alphabet_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Alphabet(e, p);
+  }
+  {
+      struct zx_ac_Generation_s* e;
+      for (e = x->Generation; e; e = (struct zx_ac_Generation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Generation(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Password", sizeof("Password") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Password) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Password(struct zx_ac_Password_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Password) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x )
+{
+  int len = zx_LEN_ac_Password(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Password(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Password) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x )
+{
+  int len = zx_LEN_ac_Password(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Password(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_PhysicalVerification
+#define EL_STRUCT zx_ac_PhysicalVerification_s
+#define EL_NS     ac
+#define EL_TAG    PhysicalVerification
+
+/* FUNC(zx_LEN_ac_PhysicalVerification) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_PhysicalVerification(struct zx_ac_PhysicalVerification_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("PhysicalVerification") - 1 + 1 + 2 + sizeof("PhysicalVerification") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->credentialLevel, sizeof("credentialLevel"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_PhysicalVerification) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_PhysicalVerification(struct zx_ac_PhysicalVerification_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PhysicalVerification", sizeof("PhysicalVerification") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->credentialLevel, "credentialLevel", sizeof("credentialLevel")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PhysicalVerification", sizeof("PhysicalVerification") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_PhysicalVerification) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_PhysicalVerification(struct zx_ac_PhysicalVerification_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_PhysicalVerification) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x )
+{
+  int len = zx_LEN_ac_PhysicalVerification(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_PhysicalVerification(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_PhysicalVerification) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x )
+{
+  int len = zx_LEN_ac_PhysicalVerification(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_PhysicalVerification(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_PreviousSession
+#define EL_STRUCT zx_ac_PreviousSession_s
+#define EL_NS     ac
+#define EL_TAG    PreviousSession
+
+/* FUNC(zx_LEN_ac_PreviousSession) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_PreviousSession(struct zx_ac_PreviousSession_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("PreviousSession") - 1 + 1 + 2 + sizeof("PreviousSession") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_PreviousSession) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_PreviousSession(struct zx_ac_PreviousSession_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PreviousSession", sizeof("PreviousSession") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PreviousSession", sizeof("PreviousSession") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_PreviousSession) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_PreviousSession(struct zx_ac_PreviousSession_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_PreviousSession) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x )
+{
+  int len = zx_LEN_ac_PreviousSession(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_PreviousSession(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_PreviousSession) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x )
+{
+  int len = zx_LEN_ac_PreviousSession(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_PreviousSession(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_PrincipalAuthenticationMechanism
+#define EL_STRUCT zx_ac_PrincipalAuthenticationMechanism_s
+#define EL_NS     ac
+#define EL_TAG    PrincipalAuthenticationMechanism
+
+/* FUNC(zx_LEN_ac_PrincipalAuthenticationMechanism) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_PrincipalAuthenticationMechanism(struct zx_ac_PrincipalAuthenticationMechanism_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("PrincipalAuthenticationMechanism") - 1 + 1 + 2 + sizeof("PrincipalAuthenticationMechanism") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Password_s* e;
+      for (e = x->Password; e; e = (struct zx_ac_Password_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Password(e);
+  }
+  {
+      struct zx_ac_Token_s* e;
+      for (e = x->Token; e; e = (struct zx_ac_Token_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Token(e);
+  }
+  {
+      struct zx_ac_Smartcard_s* e;
+      for (e = x->Smartcard; e; e = (struct zx_ac_Smartcard_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Smartcard(e);
+  }
+  {
+      struct zx_ac_ActivationPin_s* e;
+      for (e = x->ActivationPin; e; e = (struct zx_ac_ActivationPin_s*)e->gg.g.n)
+	  len += zx_LEN_ac_ActivationPin(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_PrincipalAuthenticationMechanism) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_PrincipalAuthenticationMechanism(struct zx_ac_PrincipalAuthenticationMechanism_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PrincipalAuthenticationMechanism", sizeof("PrincipalAuthenticationMechanism") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Password_s* e;
+      for (e = x->Password; e; e = (struct zx_ac_Password_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Password(e, p);
+  }
+  {
+      struct zx_ac_Token_s* e;
+      for (e = x->Token; e; e = (struct zx_ac_Token_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Token(e, p);
+  }
+  {
+      struct zx_ac_Smartcard_s* e;
+      for (e = x->Smartcard; e; e = (struct zx_ac_Smartcard_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Smartcard(e, p);
+  }
+  {
+      struct zx_ac_ActivationPin_s* e;
+      for (e = x->ActivationPin; e; e = (struct zx_ac_ActivationPin_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_ActivationPin(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PrincipalAuthenticationMechanism", sizeof("PrincipalAuthenticationMechanism") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_PrincipalAuthenticationMechanism) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_PrincipalAuthenticationMechanism(struct zx_ac_PrincipalAuthenticationMechanism_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_PrincipalAuthenticationMechanism) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_ac_PrincipalAuthenticationMechanism_s* x )
+{
+  int len = zx_LEN_ac_PrincipalAuthenticationMechanism(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_PrincipalAuthenticationMechanism(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_PrincipalAuthenticationMechanism) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_ac_PrincipalAuthenticationMechanism_s* x )
+{
+  int len = zx_LEN_ac_PrincipalAuthenticationMechanism(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_PrincipalAuthenticationMechanism(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_PrivateKeyProtection
+#define EL_STRUCT zx_ac_PrivateKeyProtection_s
+#define EL_NS     ac
+#define EL_TAG    PrivateKeyProtection
+
+/* FUNC(zx_LEN_ac_PrivateKeyProtection) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_PrivateKeyProtection(struct zx_ac_PrivateKeyProtection_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("PrivateKeyProtection") - 1 + 1 + 2 + sizeof("PrivateKeyProtection") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_KeyActivation_s* e;
+      for (e = x->KeyActivation; e; e = (struct zx_ac_KeyActivation_s*)e->gg.g.n)
+	  len += zx_LEN_ac_KeyActivation(e);
+  }
+  {
+      struct zx_ac_KeyStorage_s* e;
+      for (e = x->KeyStorage; e; e = (struct zx_ac_KeyStorage_s*)e->gg.g.n)
+	  len += zx_LEN_ac_KeyStorage(e);
+  }
+  {
+      struct zx_ac_KeySharing_s* e;
+      for (e = x->KeySharing; e; e = (struct zx_ac_KeySharing_s*)e->gg.g.n)
+	  len += zx_LEN_ac_KeySharing(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_PrivateKeyProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_PrivateKeyProtection(struct zx_ac_PrivateKeyProtection_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PrivateKeyProtection", sizeof("PrivateKeyProtection") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_KeyActivation_s* e;
+      for (e = x->KeyActivation; e; e = (struct zx_ac_KeyActivation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_KeyActivation(e, p);
+  }
+  {
+      struct zx_ac_KeyStorage_s* e;
+      for (e = x->KeyStorage; e; e = (struct zx_ac_KeyStorage_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_KeyStorage(e, p);
+  }
+  {
+      struct zx_ac_KeySharing_s* e;
+      for (e = x->KeySharing; e; e = (struct zx_ac_KeySharing_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_KeySharing(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "PrivateKeyProtection", sizeof("PrivateKeyProtection") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_PrivateKeyProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_PrivateKeyProtection(struct zx_ac_PrivateKeyProtection_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_PrivateKeyProtection) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKeyProtection_s* x )
+{
+  int len = zx_LEN_ac_PrivateKeyProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_PrivateKeyProtection(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_PrivateKeyProtection) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKeyProtection_s* x )
+{
+  int len = zx_LEN_ac_PrivateKeyProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_PrivateKeyProtection(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_ResumeSession
+#define EL_STRUCT zx_ac_ResumeSession_s
+#define EL_NS     ac
+#define EL_TAG    ResumeSession
+
+/* FUNC(zx_LEN_ac_ResumeSession) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_ResumeSession(struct zx_ac_ResumeSession_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("ResumeSession") - 1 + 1 + 2 + sizeof("ResumeSession") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_ResumeSession) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_ResumeSession(struct zx_ac_ResumeSession_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ResumeSession", sizeof("ResumeSession") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ResumeSession", sizeof("ResumeSession") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_ResumeSession) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_ResumeSession(struct zx_ac_ResumeSession_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_ResumeSession) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x )
+{
+  int len = zx_LEN_ac_ResumeSession(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_ResumeSession(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_ResumeSession) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x )
+{
+  int len = zx_LEN_ac_ResumeSession(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_ResumeSession(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_SSL
+#define EL_STRUCT zx_ac_SSL_s
+#define EL_NS     ac
+#define EL_TAG    SSL
+
+/* FUNC(zx_LEN_ac_SSL) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_SSL(struct zx_ac_SSL_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SSL") - 1 + 1 + 2 + sizeof("SSL") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_SSL) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_SSL(struct zx_ac_SSL_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SSL", sizeof("SSL") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SSL", sizeof("SSL") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_SSL) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_SSL(struct zx_ac_SSL_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_SSL) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x )
+{
+  int len = zx_LEN_ac_SSL(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_SSL(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_SSL) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x )
+{
+  int len = zx_LEN_ac_SSL(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_SSL(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_SecretKeyProtection
+#define EL_STRUCT zx_ac_SecretKeyProtection_s
+#define EL_NS     ac
+#define EL_TAG    SecretKeyProtection
+
+/* FUNC(zx_LEN_ac_SecretKeyProtection) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_SecretKeyProtection(struct zx_ac_SecretKeyProtection_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SecretKeyProtection") - 1 + 1 + 2 + sizeof("SecretKeyProtection") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_KeyActivation_s* e;
+      for (e = x->KeyActivation; e; e = (struct zx_ac_KeyActivation_s*)e->gg.g.n)
+	  len += zx_LEN_ac_KeyActivation(e);
+  }
+  {
+      struct zx_ac_KeyStorage_s* e;
+      for (e = x->KeyStorage; e; e = (struct zx_ac_KeyStorage_s*)e->gg.g.n)
+	  len += zx_LEN_ac_KeyStorage(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_SecretKeyProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_SecretKeyProtection(struct zx_ac_SecretKeyProtection_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SecretKeyProtection", sizeof("SecretKeyProtection") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_KeyActivation_s* e;
+      for (e = x->KeyActivation; e; e = (struct zx_ac_KeyActivation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_KeyActivation(e, p);
+  }
+  {
+      struct zx_ac_KeyStorage_s* e;
+      for (e = x->KeyStorage; e; e = (struct zx_ac_KeyStorage_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_KeyStorage(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SecretKeyProtection", sizeof("SecretKeyProtection") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_SecretKeyProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_SecretKeyProtection(struct zx_ac_SecretKeyProtection_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_SecretKeyProtection) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyProtection_s* x )
+{
+  int len = zx_LEN_ac_SecretKeyProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_SecretKeyProtection(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_SecretKeyProtection) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyProtection_s* x )
+{
+  int len = zx_LEN_ac_SecretKeyProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_SecretKeyProtection(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_SecurityAudit
+#define EL_STRUCT zx_ac_SecurityAudit_s
+#define EL_NS     ac
+#define EL_TAG    SecurityAudit
+
+/* FUNC(zx_LEN_ac_SecurityAudit) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_SecurityAudit(struct zx_ac_SecurityAudit_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SecurityAudit") - 1 + 1 + 2 + sizeof("SecurityAudit") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_SwitchAudit_s* e;
+      for (e = x->SwitchAudit; e; e = (struct zx_ac_SwitchAudit_s*)e->gg.g.n)
+	  len += zx_LEN_ac_SwitchAudit(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_SecurityAudit) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_SecurityAudit(struct zx_ac_SecurityAudit_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SecurityAudit", sizeof("SecurityAudit") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_SwitchAudit_s* e;
+      for (e = x->SwitchAudit; e; e = (struct zx_ac_SwitchAudit_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_SwitchAudit(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SecurityAudit", sizeof("SecurityAudit") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_SecurityAudit) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_SecurityAudit(struct zx_ac_SecurityAudit_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_SecurityAudit) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* x )
+{
+  int len = zx_LEN_ac_SecurityAudit(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_SecurityAudit(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_SecurityAudit) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* x )
+{
+  int len = zx_LEN_ac_SecurityAudit(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_SecurityAudit(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_SharedSecretChallengeResponse
+#define EL_STRUCT zx_ac_SharedSecretChallengeResponse_s
+#define EL_NS     ac
+#define EL_TAG    SharedSecretChallengeResponse
+
+/* FUNC(zx_LEN_ac_SharedSecretChallengeResponse) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_SharedSecretChallengeResponse(struct zx_ac_SharedSecretChallengeResponse_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SharedSecretChallengeResponse") - 1 + 1 + 2 + sizeof("SharedSecretChallengeResponse") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_SharedSecretChallengeResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_SharedSecretChallengeResponse(struct zx_ac_SharedSecretChallengeResponse_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SharedSecretChallengeResponse", sizeof("SharedSecretChallengeResponse") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SharedSecretChallengeResponse", sizeof("SharedSecretChallengeResponse") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_SharedSecretChallengeResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_SharedSecretChallengeResponse(struct zx_ac_SharedSecretChallengeResponse_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_SharedSecretChallengeResponse) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x )
+{
+  int len = zx_LEN_ac_SharedSecretChallengeResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_SharedSecretChallengeResponse(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_SharedSecretChallengeResponse) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x )
+{
+  int len = zx_LEN_ac_SharedSecretChallengeResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_SharedSecretChallengeResponse(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_SharedSecretDynamicPlaintext
+#define EL_STRUCT zx_ac_SharedSecretDynamicPlaintext_s
+#define EL_NS     ac
+#define EL_TAG    SharedSecretDynamicPlaintext
+
+/* FUNC(zx_LEN_ac_SharedSecretDynamicPlaintext) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_SharedSecretDynamicPlaintext(struct zx_ac_SharedSecretDynamicPlaintext_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SharedSecretDynamicPlaintext") - 1 + 1 + 2 + sizeof("SharedSecretDynamicPlaintext") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_SharedSecretDynamicPlaintext) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_SharedSecretDynamicPlaintext(struct zx_ac_SharedSecretDynamicPlaintext_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SharedSecretDynamicPlaintext", sizeof("SharedSecretDynamicPlaintext") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SharedSecretDynamicPlaintext", sizeof("SharedSecretDynamicPlaintext") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_SharedSecretDynamicPlaintext) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_SharedSecretDynamicPlaintext(struct zx_ac_SharedSecretDynamicPlaintext_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_SharedSecretDynamicPlaintext) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x )
+{
+  int len = zx_LEN_ac_SharedSecretDynamicPlaintext(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_SharedSecretDynamicPlaintext(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_SharedSecretDynamicPlaintext) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x )
+{
+  int len = zx_LEN_ac_SharedSecretDynamicPlaintext(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_SharedSecretDynamicPlaintext(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Smartcard
+#define EL_STRUCT zx_ac_Smartcard_s
+#define EL_NS     ac
+#define EL_TAG    Smartcard
+
+/* FUNC(zx_LEN_ac_Smartcard) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Smartcard(struct zx_ac_Smartcard_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Smartcard") - 1 + 1 + 2 + sizeof("Smartcard") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Smartcard) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Smartcard(struct zx_ac_Smartcard_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Smartcard", sizeof("Smartcard") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Smartcard", sizeof("Smartcard") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Smartcard) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Smartcard(struct zx_ac_Smartcard_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Smartcard) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x )
+{
+  int len = zx_LEN_ac_Smartcard(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Smartcard(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Smartcard) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x )
+{
+  int len = zx_LEN_ac_Smartcard(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Smartcard(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_SwitchAudit
+#define EL_STRUCT zx_ac_SwitchAudit_s
+#define EL_NS     ac
+#define EL_TAG    SwitchAudit
+
+/* FUNC(zx_LEN_ac_SwitchAudit) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_SwitchAudit(struct zx_ac_SwitchAudit_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SwitchAudit") - 1 + 1 + 2 + sizeof("SwitchAudit") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_SwitchAudit) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_SwitchAudit(struct zx_ac_SwitchAudit_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SwitchAudit", sizeof("SwitchAudit") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SwitchAudit", sizeof("SwitchAudit") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_SwitchAudit) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_SwitchAudit(struct zx_ac_SwitchAudit_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_SwitchAudit) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x )
+{
+  int len = zx_LEN_ac_SwitchAudit(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_SwitchAudit(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_SwitchAudit) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x )
+{
+  int len = zx_LEN_ac_SwitchAudit(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_SwitchAudit(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_TechnicalProtection
+#define EL_STRUCT zx_ac_TechnicalProtection_s
+#define EL_NS     ac
+#define EL_TAG    TechnicalProtection
+
+/* FUNC(zx_LEN_ac_TechnicalProtection) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_TechnicalProtection(struct zx_ac_TechnicalProtection_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("TechnicalProtection") - 1 + 1 + 2 + sizeof("TechnicalProtection") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_PrivateKeyProtection_s* e;
+      for (e = x->PrivateKeyProtection; e; e = (struct zx_ac_PrivateKeyProtection_s*)e->gg.g.n)
+	  len += zx_LEN_ac_PrivateKeyProtection(e);
+  }
+  {
+      struct zx_ac_SecretKeyProtection_s* e;
+      for (e = x->SecretKeyProtection; e; e = (struct zx_ac_SecretKeyProtection_s*)e->gg.g.n)
+	  len += zx_LEN_ac_SecretKeyProtection(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_TechnicalProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_TechnicalProtection(struct zx_ac_TechnicalProtection_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "TechnicalProtection", sizeof("TechnicalProtection") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_PrivateKeyProtection_s* e;
+      for (e = x->PrivateKeyProtection; e; e = (struct zx_ac_PrivateKeyProtection_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_PrivateKeyProtection(e, p);
+  }
+  {
+      struct zx_ac_SecretKeyProtection_s* e;
+      for (e = x->SecretKeyProtection; e; e = (struct zx_ac_SecretKeyProtection_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_SecretKeyProtection(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "TechnicalProtection", sizeof("TechnicalProtection") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_TechnicalProtection) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_TechnicalProtection(struct zx_ac_TechnicalProtection_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_TechnicalProtection) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalProtection_s* x )
+{
+  int len = zx_LEN_ac_TechnicalProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_TechnicalProtection(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_TechnicalProtection) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalProtection_s* x )
+{
+  int len = zx_LEN_ac_TechnicalProtection(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_TechnicalProtection(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_TimeSyncToken
+#define EL_STRUCT zx_ac_TimeSyncToken_s
+#define EL_NS     ac
+#define EL_TAG    TimeSyncToken
+
+/* FUNC(zx_LEN_ac_TimeSyncToken) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_TimeSyncToken(struct zx_ac_TimeSyncToken_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("TimeSyncToken") - 1 + 1 + 2 + sizeof("TimeSyncToken") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->DeviceType, sizeof("DeviceType"));
+  len += zx_attr_len(x->SeedLength, sizeof("SeedLength"));
+  len += zx_attr_len(x->DeviceInHand, sizeof("DeviceInHand"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_TimeSyncToken) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_TimeSyncToken(struct zx_ac_TimeSyncToken_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "TimeSyncToken", sizeof("TimeSyncToken") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->DeviceType, "DeviceType", sizeof("DeviceType")-1);
+  p = zx_attr_enc(p, x->SeedLength, "SeedLength", sizeof("SeedLength")-1);
+  p = zx_attr_enc(p, x->DeviceInHand, "DeviceInHand", sizeof("DeviceInHand")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "TimeSyncToken", sizeof("TimeSyncToken") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_TimeSyncToken) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_TimeSyncToken(struct zx_ac_TimeSyncToken_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_TimeSyncToken) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x )
+{
+  int len = zx_LEN_ac_TimeSyncToken(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_TimeSyncToken(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_TimeSyncToken) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x )
+{
+  int len = zx_LEN_ac_TimeSyncToken(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_TimeSyncToken(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_Token
+#define EL_STRUCT zx_ac_Token_s
+#define EL_NS     ac
+#define EL_TAG    Token
+
+/* FUNC(zx_LEN_ac_Token) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_Token(struct zx_ac_Token_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Token") - 1 + 1 + 2 + sizeof("Token") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_TimeSyncToken_s* e;
+      for (e = x->TimeSyncToken; e; e = (struct zx_ac_TimeSyncToken_s*)e->gg.g.n)
+	  len += zx_LEN_ac_TimeSyncToken(e);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_Token) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_Token(struct zx_ac_Token_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Token", sizeof("Token") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_TimeSyncToken_s* e;
+      for (e = x->TimeSyncToken; e; e = (struct zx_ac_TimeSyncToken_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_TimeSyncToken(e, p);
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Token", sizeof("Token") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_Token) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_Token(struct zx_ac_Token_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_Token) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x )
+{
+  int len = zx_LEN_ac_Token(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_Token(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_Token) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x )
+{
+  int len = zx_LEN_ac_Token(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_Token(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_WTLS
+#define EL_STRUCT zx_ac_WTLS_s
+#define EL_NS     ac
+#define EL_TAG    WTLS
+
+/* FUNC(zx_LEN_ac_WTLS) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_WTLS(struct zx_ac_WTLS_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("WTLS") - 1 + 1 + 2 + sizeof("WTLS") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_WTLS) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_WTLS(struct zx_ac_WTLS_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "WTLS", sizeof("WTLS") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "WTLS", sizeof("WTLS") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_WTLS) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_WTLS(struct zx_ac_WTLS_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_WTLS) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x )
+{
+  int len = zx_LEN_ac_WTLS(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_WTLS(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_WTLS) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x )
+{
+  int len = zx_LEN_ac_WTLS(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_WTLS(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_WrittenConsent
+#define EL_STRUCT zx_ac_WrittenConsent_s
+#define EL_NS     ac
+#define EL_TAG    WrittenConsent
+
+/* FUNC(zx_LEN_ac_WrittenConsent) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_WrittenConsent(struct zx_ac_WrittenConsent_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("WrittenConsent") - 1 + 1 + 2 + sizeof("WrittenConsent") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_WrittenConsent) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_WrittenConsent(struct zx_ac_WrittenConsent_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "WrittenConsent", sizeof("WrittenConsent") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "WrittenConsent", sizeof("WrittenConsent") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_WrittenConsent) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_WrittenConsent(struct zx_ac_WrittenConsent_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_WrittenConsent) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x )
+{
+  int len = zx_LEN_ac_WrittenConsent(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_WrittenConsent(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_WrittenConsent) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x )
+{
+  int len = zx_LEN_ac_WrittenConsent(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_WrittenConsent(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ac_ZeroKnowledge
+#define EL_STRUCT zx_ac_ZeroKnowledge_s
+#define EL_NS     ac
+#define EL_TAG    ZeroKnowledge
+
+/* FUNC(zx_LEN_ac_ZeroKnowledge) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ac_ZeroKnowledge(struct zx_ac_ZeroKnowledge_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("ZeroKnowledge") - 1 + 1 + 2 + sizeof("ZeroKnowledge") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ac_Extension(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ac_ZeroKnowledge) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ac_ZeroKnowledge(struct zx_ac_ZeroKnowledge_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ZeroKnowledge", sizeof("ZeroKnowledge") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_Extension(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "ZeroKnowledge", sizeof("ZeroKnowledge") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ac_ZeroKnowledge) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ac_ZeroKnowledge(struct zx_ac_ZeroKnowledge_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ac_ZeroKnowledge) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x )
+{
+  int len = zx_LEN_ac_ZeroKnowledge(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ac_ZeroKnowledge(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ac_ZeroKnowledge) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x )
+{
+  int len = zx_LEN_ac_ZeroKnowledge(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ac_ZeroKnowledge(x, buf ), buf, len);
+}
+
 
 
 
@@ -3204,6 +10465,6876 @@ struct zx_str_s* zx_EASY_ENC_WO_ds_X509IssuerSerial(struct zx_ctx* c, struct zx_
   int len = zx_LEN_ds_X509IssuerSerial(x );
   char* buf = ZX_ALLOC(c, len+1);
   return zx_easy_enc_common(c, zx_ENC_WO_ds_X509IssuerSerial(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_Assertion
+#define EL_STRUCT zx_ff12_Assertion_s
+#define EL_NS     ff12
+#define EL_TAG    Assertion
+
+/* FUNC(zx_LEN_ff12_Assertion) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_Assertion(struct zx_ff12_Assertion_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Assertion") - 1 + 1 + 2 + sizeof("Assertion") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->AssertionID, sizeof("AssertionID"));
+  len += zx_attr_len(x->Issuer, sizeof("Issuer"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->InResponseTo, sizeof("InResponseTo"));
+
+  {
+      struct zx_sa11_Conditions_s* e;
+      for (e = x->Conditions; e; e = (struct zx_sa11_Conditions_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Conditions(e);
+  }
+  {
+      struct zx_sa11_Advice_s* e;
+      for (e = x->Advice; e; e = (struct zx_sa11_Advice_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Advice(e);
+  }
+  for (se = x->Statement; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("Statement") - 1);
+  {
+      struct zx_sa11_SubjectStatement_s* e;
+      for (e = x->SubjectStatement; e; e = (struct zx_sa11_SubjectStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_SubjectStatement(e);
+  }
+  {
+      struct zx_sa11_AuthenticationStatement_s* e;
+      for (e = x->AuthenticationStatement; e; e = (struct zx_sa11_AuthenticationStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AuthenticationStatement(e);
+  }
+  {
+      struct zx_sa11_AuthorizationDecisionStatement_s* e;
+      for (e = x->AuthorizationDecisionStatement; e; e = (struct zx_sa11_AuthorizationDecisionStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AuthorizationDecisionStatement(e);
+  }
+  {
+      struct zx_sa11_AttributeStatement_s* e;
+      for (e = x->AttributeStatement; e; e = (struct zx_sa11_AttributeStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AttributeStatement(e);
+  }
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_Assertion) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_Assertion(struct zx_ff12_Assertion_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Assertion", sizeof("Assertion") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->AssertionID, "AssertionID", sizeof("AssertionID")-1);
+  p = zx_attr_enc(p, x->Issuer, "Issuer", sizeof("Issuer")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->InResponseTo, "InResponseTo", sizeof("InResponseTo")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Conditions_s* e;
+      for (e = x->Conditions; e; e = (struct zx_sa11_Conditions_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Conditions(e, p);
+  }
+  {
+      struct zx_sa11_Advice_s* e;
+      for (e = x->Advice; e; e = (struct zx_sa11_Advice_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Advice(e, p);
+  }
+  for (se = x->Statement; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "Statement", sizeof("Statement") - 1);
+  {
+      struct zx_sa11_SubjectStatement_s* e;
+      for (e = x->SubjectStatement; e; e = (struct zx_sa11_SubjectStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_SubjectStatement(e, p);
+  }
+  {
+      struct zx_sa11_AuthenticationStatement_s* e;
+      for (e = x->AuthenticationStatement; e; e = (struct zx_sa11_AuthenticationStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AuthenticationStatement(e, p);
+  }
+  {
+      struct zx_sa11_AuthorizationDecisionStatement_s* e;
+      for (e = x->AuthorizationDecisionStatement; e; e = (struct zx_sa11_AuthorizationDecisionStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AuthorizationDecisionStatement(e, p);
+  }
+  {
+      struct zx_sa11_AttributeStatement_s* e;
+      for (e = x->AttributeStatement; e; e = (struct zx_sa11_AttributeStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AttributeStatement(e, p);
+  }
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Assertion", sizeof("Assertion") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_Assertion) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_Assertion(struct zx_ff12_Assertion_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_Assertion) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x )
+{
+  int len = zx_LEN_ff12_Assertion(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_Assertion(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_Assertion) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x )
+{
+  int len = zx_LEN_ff12_Assertion(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_Assertion(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_AuthenticationStatement
+#define EL_STRUCT zx_ff12_AuthenticationStatement_s
+#define EL_NS     ff12
+#define EL_TAG    AuthenticationStatement
+
+/* FUNC(zx_LEN_ff12_AuthenticationStatement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_AuthenticationStatement(struct zx_ff12_AuthenticationStatement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticationStatement") - 1 + 1 + 2 + sizeof("AuthenticationStatement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->AuthenticationMethod, sizeof("AuthenticationMethod"));
+  len += zx_attr_len(x->AuthenticationInstant, sizeof("AuthenticationInstant"));
+  len += zx_attr_len(x->ReauthenticateOnOrAfter, sizeof("ReauthenticateOnOrAfter"));
+  len += zx_attr_len(x->SessionIndex, sizeof("SessionIndex"));
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+  {
+      struct zx_sa11_SubjectLocality_s* e;
+      for (e = x->SubjectLocality; e; e = (struct zx_sa11_SubjectLocality_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_SubjectLocality(e);
+  }
+  {
+      struct zx_sa11_AuthorityBinding_s* e;
+      for (e = x->AuthorityBinding; e; e = (struct zx_sa11_AuthorityBinding_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AuthorityBinding(e);
+  }
+  {
+      struct zx_ff12_AuthnContext_s* e;
+      for (e = x->AuthnContext; e; e = (struct zx_ff12_AuthnContext_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnContext(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_AuthenticationStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_AuthenticationStatement(struct zx_ff12_AuthenticationStatement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationStatement", sizeof("AuthenticationStatement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->AuthenticationMethod, "AuthenticationMethod", sizeof("AuthenticationMethod")-1);
+  p = zx_attr_enc(p, x->AuthenticationInstant, "AuthenticationInstant", sizeof("AuthenticationInstant")-1);
+  p = zx_attr_enc(p, x->ReauthenticateOnOrAfter, "ReauthenticateOnOrAfter", sizeof("ReauthenticateOnOrAfter")-1);
+  p = zx_attr_enc(p, x->SessionIndex, "SessionIndex", sizeof("SessionIndex")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+  {
+      struct zx_sa11_SubjectLocality_s* e;
+      for (e = x->SubjectLocality; e; e = (struct zx_sa11_SubjectLocality_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_SubjectLocality(e, p);
+  }
+  {
+      struct zx_sa11_AuthorityBinding_s* e;
+      for (e = x->AuthorityBinding; e; e = (struct zx_sa11_AuthorityBinding_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AuthorityBinding(e, p);
+  }
+  {
+      struct zx_ff12_AuthnContext_s* e;
+      for (e = x->AuthnContext; e; e = (struct zx_ff12_AuthnContext_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnContext(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationStatement", sizeof("AuthenticationStatement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_AuthenticationStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_AuthenticationStatement(struct zx_ff12_AuthenticationStatement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_AuthenticationStatement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_AuthenticationStatement(struct zx_ctx* c, struct zx_ff12_AuthenticationStatement_s* x )
+{
+  int len = zx_LEN_ff12_AuthenticationStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_AuthenticationStatement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_AuthenticationStatement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_AuthenticationStatement(struct zx_ctx* c, struct zx_ff12_AuthenticationStatement_s* x )
+{
+  int len = zx_LEN_ff12_AuthenticationStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_AuthenticationStatement(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_AuthnContext
+#define EL_STRUCT zx_ff12_AuthnContext_s
+#define EL_NS     ff12
+#define EL_TAG    AuthnContext
+
+/* FUNC(zx_LEN_ff12_AuthnContext) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_AuthnContext(struct zx_ff12_AuthnContext_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthnContext") - 1 + 1 + 2 + sizeof("AuthnContext") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->AuthnContextClassRef; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AuthnContextClassRef") - 1);
+  {
+      struct zx_ac_AuthenticationContextStatement_s* e;
+      for (e = x->AuthenticationContextStatement; e; e = (struct zx_ac_AuthenticationContextStatement_s*)e->gg.g.n)
+	  len += zx_LEN_ac_AuthenticationContextStatement(e);
+  }
+  for (se = x->AuthnContextStatementRef; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AuthnContextStatementRef") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_AuthnContext) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_AuthnContext(struct zx_ff12_AuthnContext_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnContext", sizeof("AuthnContext") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->AuthnContextClassRef; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AuthnContextClassRef", sizeof("AuthnContextClassRef") - 1);
+  {
+      struct zx_ac_AuthenticationContextStatement_s* e;
+      for (e = x->AuthenticationContextStatement; e; e = (struct zx_ac_AuthenticationContextStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ac_AuthenticationContextStatement(e, p);
+  }
+  for (se = x->AuthnContextStatementRef; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AuthnContextStatementRef", sizeof("AuthnContextStatementRef") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnContext", sizeof("AuthnContext") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_AuthnContext) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_AuthnContext(struct zx_ff12_AuthnContext_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_AuthnContext) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_AuthnContext(struct zx_ctx* c, struct zx_ff12_AuthnContext_s* x )
+{
+  int len = zx_LEN_ff12_AuthnContext(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_AuthnContext(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_AuthnContext) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_AuthnContext(struct zx_ctx* c, struct zx_ff12_AuthnContext_s* x )
+{
+  int len = zx_LEN_ff12_AuthnContext(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_AuthnContext(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_AuthnRequest
+#define EL_STRUCT zx_ff12_AuthnRequest_s
+#define EL_NS     ff12
+#define EL_TAG    AuthnRequest
+
+/* FUNC(zx_LEN_ff12_AuthnRequest) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_AuthnRequest(struct zx_ff12_AuthnRequest_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthnRequest") - 1 + 1 + 2 + sizeof("AuthnRequest") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->RequestID, sizeof("RequestID"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->consent, sizeof("consent"));
+
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  for (se = x->AffiliationID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AffiliationID") - 1);
+  for (se = x->NameIDPolicy; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("NameIDPolicy") - 1);
+  for (se = x->ForceAuthn; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ForceAuthn") - 1);
+  for (se = x->IsPassive; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("IsPassive") - 1);
+  for (se = x->ProtocolProfile; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProtocolProfile") - 1);
+  for (se = x->AssertionConsumerServiceID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionConsumerServiceID") - 1);
+  {
+      struct zx_ff12_RequestAuthnContext_s* e;
+      for (e = x->RequestAuthnContext; e; e = (struct zx_ff12_RequestAuthnContext_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_RequestAuthnContext(e);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RelayState") - 1);
+  {
+      struct zx_ff12_Scoping_s* e;
+      for (e = x->Scoping; e; e = (struct zx_ff12_Scoping_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Scoping(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_AuthnRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_AuthnRequest(struct zx_ff12_AuthnRequest_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnRequest", sizeof("AuthnRequest") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->RequestID, "RequestID", sizeof("RequestID")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->consent, "consent", sizeof("consent")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RespondWith", sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  for (se = x->AffiliationID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AffiliationID", sizeof("AffiliationID") - 1);
+  for (se = x->NameIDPolicy; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "NameIDPolicy", sizeof("NameIDPolicy") - 1);
+  for (se = x->ForceAuthn; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ForceAuthn", sizeof("ForceAuthn") - 1);
+  for (se = x->IsPassive; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "IsPassive", sizeof("IsPassive") - 1);
+  for (se = x->ProtocolProfile; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProtocolProfile", sizeof("ProtocolProfile") - 1);
+  for (se = x->AssertionConsumerServiceID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionConsumerServiceID", sizeof("AssertionConsumerServiceID") - 1);
+  {
+      struct zx_ff12_RequestAuthnContext_s* e;
+      for (e = x->RequestAuthnContext; e; e = (struct zx_ff12_RequestAuthnContext_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_RequestAuthnContext(e, p);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RelayState", sizeof("RelayState") - 1);
+  {
+      struct zx_ff12_Scoping_s* e;
+      for (e = x->Scoping; e; e = (struct zx_ff12_Scoping_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Scoping(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnRequest", sizeof("AuthnRequest") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_AuthnRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_AuthnRequest(struct zx_ff12_AuthnRequest_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_AuthnRequest) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_AuthnRequest(struct zx_ctx* c, struct zx_ff12_AuthnRequest_s* x )
+{
+  int len = zx_LEN_ff12_AuthnRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_AuthnRequest(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_AuthnRequest) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_AuthnRequest(struct zx_ctx* c, struct zx_ff12_AuthnRequest_s* x )
+{
+  int len = zx_LEN_ff12_AuthnRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_AuthnRequest(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_AuthnRequestEnvelope
+#define EL_STRUCT zx_ff12_AuthnRequestEnvelope_s
+#define EL_NS     ff12
+#define EL_TAG    AuthnRequestEnvelope
+
+/* FUNC(zx_LEN_ff12_AuthnRequestEnvelope) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_AuthnRequestEnvelope(struct zx_ff12_AuthnRequestEnvelope_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthnRequestEnvelope") - 1 + 1 + 2 + sizeof("AuthnRequestEnvelope") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  {
+      struct zx_ff12_AuthnRequest_s* e;
+      for (e = x->AuthnRequest; e; e = (struct zx_ff12_AuthnRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnRequest(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  for (se = x->ProviderName; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderName") - 1);
+  for (se = x->AssertionConsumerServiceURL; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionConsumerServiceURL") - 1);
+  {
+      struct zx_ff12_IDPList_s* e;
+      for (e = x->IDPList; e; e = (struct zx_ff12_IDPList_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_IDPList(e);
+  }
+  for (se = x->IsPassive; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("IsPassive") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_AuthnRequestEnvelope) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_AuthnRequestEnvelope(struct zx_ff12_AuthnRequestEnvelope_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnRequestEnvelope", sizeof("AuthnRequestEnvelope") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  {
+      struct zx_ff12_AuthnRequest_s* e;
+      for (e = x->AuthnRequest; e; e = (struct zx_ff12_AuthnRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnRequest(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  for (se = x->ProviderName; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderName", sizeof("ProviderName") - 1);
+  for (se = x->AssertionConsumerServiceURL; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionConsumerServiceURL", sizeof("AssertionConsumerServiceURL") - 1);
+  {
+      struct zx_ff12_IDPList_s* e;
+      for (e = x->IDPList; e; e = (struct zx_ff12_IDPList_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_IDPList(e, p);
+  }
+  for (se = x->IsPassive; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "IsPassive", sizeof("IsPassive") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnRequestEnvelope", sizeof("AuthnRequestEnvelope") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_AuthnRequestEnvelope) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_AuthnRequestEnvelope(struct zx_ff12_AuthnRequestEnvelope_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_AuthnRequestEnvelope) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_AuthnRequestEnvelope(struct zx_ctx* c, struct zx_ff12_AuthnRequestEnvelope_s* x )
+{
+  int len = zx_LEN_ff12_AuthnRequestEnvelope(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_AuthnRequestEnvelope(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_AuthnRequestEnvelope) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_AuthnRequestEnvelope(struct zx_ctx* c, struct zx_ff12_AuthnRequestEnvelope_s* x )
+{
+  int len = zx_LEN_ff12_AuthnRequestEnvelope(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_AuthnRequestEnvelope(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_AuthnResponse
+#define EL_STRUCT zx_ff12_AuthnResponse_s
+#define EL_NS     ff12
+#define EL_TAG    AuthnResponse
+
+/* FUNC(zx_LEN_ff12_AuthnResponse) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_AuthnResponse(struct zx_ff12_AuthnResponse_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthnResponse") - 1 + 1 + 2 + sizeof("AuthnResponse") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ResponseID, sizeof("ResponseID"));
+  len += zx_attr_len(x->InResponseTo, sizeof("InResponseTo"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->Recipient, sizeof("Recipient"));
+  len += zx_attr_len(x->consent, sizeof("consent"));
+
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Status(e);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Assertion(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RelayState") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_AuthnResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_AuthnResponse(struct zx_ff12_AuthnResponse_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnResponse", sizeof("AuthnResponse") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ResponseID, "ResponseID", sizeof("ResponseID")-1);
+  p = zx_attr_enc(p, x->InResponseTo, "InResponseTo", sizeof("InResponseTo")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->Recipient, "Recipient", sizeof("Recipient")-1);
+  p = zx_attr_enc(p, x->consent, "consent", sizeof("consent")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Status(e, p);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Assertion(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RelayState", sizeof("RelayState") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnResponse", sizeof("AuthnResponse") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_AuthnResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_AuthnResponse(struct zx_ff12_AuthnResponse_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_AuthnResponse) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_AuthnResponse(struct zx_ctx* c, struct zx_ff12_AuthnResponse_s* x )
+{
+  int len = zx_LEN_ff12_AuthnResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_AuthnResponse(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_AuthnResponse) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_AuthnResponse(struct zx_ctx* c, struct zx_ff12_AuthnResponse_s* x )
+{
+  int len = zx_LEN_ff12_AuthnResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_AuthnResponse(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_AuthnResponseEnvelope
+#define EL_STRUCT zx_ff12_AuthnResponseEnvelope_s
+#define EL_NS     ff12
+#define EL_TAG    AuthnResponseEnvelope
+
+/* FUNC(zx_LEN_ff12_AuthnResponseEnvelope) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_AuthnResponseEnvelope(struct zx_ff12_AuthnResponseEnvelope_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthnResponseEnvelope") - 1 + 1 + 2 + sizeof("AuthnResponseEnvelope") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  {
+      struct zx_ff12_AuthnResponse_s* e;
+      for (e = x->AuthnResponse; e; e = (struct zx_ff12_AuthnResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnResponse(e);
+  }
+  for (se = x->AssertionConsumerServiceURL; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionConsumerServiceURL") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_AuthnResponseEnvelope) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_AuthnResponseEnvelope(struct zx_ff12_AuthnResponseEnvelope_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnResponseEnvelope", sizeof("AuthnResponseEnvelope") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  {
+      struct zx_ff12_AuthnResponse_s* e;
+      for (e = x->AuthnResponse; e; e = (struct zx_ff12_AuthnResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnResponse(e, p);
+  }
+  for (se = x->AssertionConsumerServiceURL; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionConsumerServiceURL", sizeof("AssertionConsumerServiceURL") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthnResponseEnvelope", sizeof("AuthnResponseEnvelope") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_AuthnResponseEnvelope) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_AuthnResponseEnvelope(struct zx_ff12_AuthnResponseEnvelope_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_AuthnResponseEnvelope) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_AuthnResponseEnvelope(struct zx_ctx* c, struct zx_ff12_AuthnResponseEnvelope_s* x )
+{
+  int len = zx_LEN_ff12_AuthnResponseEnvelope(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_AuthnResponseEnvelope(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_AuthnResponseEnvelope) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_AuthnResponseEnvelope(struct zx_ctx* c, struct zx_ff12_AuthnResponseEnvelope_s* x )
+{
+  int len = zx_LEN_ff12_AuthnResponseEnvelope(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_AuthnResponseEnvelope(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_EncryptableNameIdentifier
+#define EL_STRUCT zx_ff12_EncryptableNameIdentifier_s
+#define EL_NS     ff12
+#define EL_TAG    EncryptableNameIdentifier
+
+/* FUNC(zx_LEN_ff12_EncryptableNameIdentifier) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_EncryptableNameIdentifier(struct zx_ff12_EncryptableNameIdentifier_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("EncryptableNameIdentifier") - 1 + 1 + 2 + sizeof("EncryptableNameIdentifier") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->NameQualifier, sizeof("NameQualifier"));
+  len += zx_attr_len(x->Format, sizeof("Format"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->Nonce, sizeof("Nonce"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_EncryptableNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_EncryptableNameIdentifier(struct zx_ff12_EncryptableNameIdentifier_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "EncryptableNameIdentifier", sizeof("EncryptableNameIdentifier") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->NameQualifier, "NameQualifier", sizeof("NameQualifier")-1);
+  p = zx_attr_enc(p, x->Format, "Format", sizeof("Format")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->Nonce, "Nonce", sizeof("Nonce")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "EncryptableNameIdentifier", sizeof("EncryptableNameIdentifier") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_EncryptableNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_EncryptableNameIdentifier(struct zx_ff12_EncryptableNameIdentifier_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_EncryptableNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_EncryptableNameIdentifier(struct zx_ctx* c, struct zx_ff12_EncryptableNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_EncryptableNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_EncryptableNameIdentifier(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_EncryptableNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_EncryptableNameIdentifier(struct zx_ctx* c, struct zx_ff12_EncryptableNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_EncryptableNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_EncryptableNameIdentifier(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_EncryptedNameIdentifier
+#define EL_STRUCT zx_ff12_EncryptedNameIdentifier_s
+#define EL_NS     ff12
+#define EL_TAG    EncryptedNameIdentifier
+
+/* FUNC(zx_LEN_ff12_EncryptedNameIdentifier) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_EncryptedNameIdentifier(struct zx_ff12_EncryptedNameIdentifier_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("EncryptedNameIdentifier") - 1 + 1 + 2 + sizeof("EncryptedNameIdentifier") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_xenc_EncryptedData_s* e;
+      for (e = x->EncryptedData; e; e = (struct zx_xenc_EncryptedData_s*)e->gg.g.n)
+	  len += zx_LEN_xenc_EncryptedData(e);
+  }
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n)
+	  len += zx_LEN_xenc_EncryptedKey(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_EncryptedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_EncryptedNameIdentifier(struct zx_ff12_EncryptedNameIdentifier_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "EncryptedNameIdentifier", sizeof("EncryptedNameIdentifier") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_xenc_EncryptedData_s* e;
+      for (e = x->EncryptedData; e; e = (struct zx_xenc_EncryptedData_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xenc_EncryptedData(e, p);
+  }
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xenc_EncryptedKey(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "EncryptedNameIdentifier", sizeof("EncryptedNameIdentifier") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_EncryptedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_EncryptedNameIdentifier(struct zx_ff12_EncryptedNameIdentifier_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_EncryptedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_EncryptedNameIdentifier(struct zx_ctx* c, struct zx_ff12_EncryptedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_EncryptedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_EncryptedNameIdentifier(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_EncryptedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_EncryptedNameIdentifier(struct zx_ctx* c, struct zx_ff12_EncryptedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_EncryptedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_EncryptedNameIdentifier(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_Extension
+#define EL_STRUCT zx_ff12_Extension_s
+#define EL_NS     ff12
+#define EL_TAG    Extension
+
+/* FUNC(zx_LEN_ff12_Extension) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_Extension(struct zx_ff12_Extension_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Extension") - 1 + 1 + 2 + sizeof("Extension") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_Extension) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_Extension(struct zx_ff12_Extension_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Extension", sizeof("Extension") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Extension", sizeof("Extension") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_Extension) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_Extension(struct zx_ff12_Extension_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_Extension) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_Extension(struct zx_ctx* c, struct zx_ff12_Extension_s* x )
+{
+  int len = zx_LEN_ff12_Extension(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_Extension(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_Extension) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_Extension(struct zx_ctx* c, struct zx_ff12_Extension_s* x )
+{
+  int len = zx_LEN_ff12_Extension(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_Extension(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_FederationTerminationNotification
+#define EL_STRUCT zx_ff12_FederationTerminationNotification_s
+#define EL_NS     ff12
+#define EL_TAG    FederationTerminationNotification
+
+/* FUNC(zx_LEN_ff12_FederationTerminationNotification) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_FederationTerminationNotification(struct zx_ff12_FederationTerminationNotification_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("FederationTerminationNotification") - 1 + 1 + 2 + sizeof("FederationTerminationNotification") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->RequestID, sizeof("RequestID"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->consent, sizeof("consent"));
+
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_NameIdentifier(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_FederationTerminationNotification) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_FederationTerminationNotification(struct zx_ff12_FederationTerminationNotification_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "FederationTerminationNotification", sizeof("FederationTerminationNotification") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->RequestID, "RequestID", sizeof("RequestID")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->consent, "consent", sizeof("consent")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RespondWith", sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_NameIdentifier(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "FederationTerminationNotification", sizeof("FederationTerminationNotification") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_FederationTerminationNotification) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_FederationTerminationNotification(struct zx_ff12_FederationTerminationNotification_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_FederationTerminationNotification) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_FederationTerminationNotification(struct zx_ctx* c, struct zx_ff12_FederationTerminationNotification_s* x )
+{
+  int len = zx_LEN_ff12_FederationTerminationNotification(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_FederationTerminationNotification(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_FederationTerminationNotification) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_FederationTerminationNotification(struct zx_ctx* c, struct zx_ff12_FederationTerminationNotification_s* x )
+{
+  int len = zx_LEN_ff12_FederationTerminationNotification(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_FederationTerminationNotification(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_IDPEntries
+#define EL_STRUCT zx_ff12_IDPEntries_s
+#define EL_NS     ff12
+#define EL_TAG    IDPEntries
+
+/* FUNC(zx_LEN_ff12_IDPEntries) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_IDPEntries(struct zx_ff12_IDPEntries_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("IDPEntries") - 1 + 1 + 2 + sizeof("IDPEntries") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ff12_IDPEntry_s* e;
+      for (e = x->IDPEntry; e; e = (struct zx_ff12_IDPEntry_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_IDPEntry(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_IDPEntries) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_IDPEntries(struct zx_ff12_IDPEntries_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPEntries", sizeof("IDPEntries") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ff12_IDPEntry_s* e;
+      for (e = x->IDPEntry; e; e = (struct zx_ff12_IDPEntry_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_IDPEntry(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPEntries", sizeof("IDPEntries") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_IDPEntries) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_IDPEntries(struct zx_ff12_IDPEntries_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_IDPEntries) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_IDPEntries(struct zx_ctx* c, struct zx_ff12_IDPEntries_s* x )
+{
+  int len = zx_LEN_ff12_IDPEntries(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_IDPEntries(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_IDPEntries) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_IDPEntries(struct zx_ctx* c, struct zx_ff12_IDPEntries_s* x )
+{
+  int len = zx_LEN_ff12_IDPEntries(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_IDPEntries(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_IDPEntry
+#define EL_STRUCT zx_ff12_IDPEntry_s
+#define EL_NS     ff12
+#define EL_TAG    IDPEntry
+
+/* FUNC(zx_LEN_ff12_IDPEntry) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_IDPEntry(struct zx_ff12_IDPEntry_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("IDPEntry") - 1 + 1 + 2 + sizeof("IDPEntry") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  for (se = x->ProviderName; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderName") - 1);
+  for (se = x->Loc; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("Loc") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_IDPEntry) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_IDPEntry(struct zx_ff12_IDPEntry_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPEntry", sizeof("IDPEntry") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  for (se = x->ProviderName; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderName", sizeof("ProviderName") - 1);
+  for (se = x->Loc; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "Loc", sizeof("Loc") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPEntry", sizeof("IDPEntry") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_IDPEntry) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_IDPEntry(struct zx_ff12_IDPEntry_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_IDPEntry) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_IDPEntry(struct zx_ctx* c, struct zx_ff12_IDPEntry_s* x )
+{
+  int len = zx_LEN_ff12_IDPEntry(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_IDPEntry(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_IDPEntry) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_IDPEntry(struct zx_ctx* c, struct zx_ff12_IDPEntry_s* x )
+{
+  int len = zx_LEN_ff12_IDPEntry(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_IDPEntry(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_IDPList
+#define EL_STRUCT zx_ff12_IDPList_s
+#define EL_NS     ff12
+#define EL_TAG    IDPList
+
+/* FUNC(zx_LEN_ff12_IDPList) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_IDPList(struct zx_ff12_IDPList_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("IDPList") - 1 + 1 + 2 + sizeof("IDPList") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ff12_IDPEntries_s* e;
+      for (e = x->IDPEntries; e; e = (struct zx_ff12_IDPEntries_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_IDPEntries(e);
+  }
+  for (se = x->GetComplete; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("GetComplete") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_IDPList) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_IDPList(struct zx_ff12_IDPList_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPList", sizeof("IDPList") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ff12_IDPEntries_s* e;
+      for (e = x->IDPEntries; e; e = (struct zx_ff12_IDPEntries_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_IDPEntries(e, p);
+  }
+  for (se = x->GetComplete; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "GetComplete", sizeof("GetComplete") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPList", sizeof("IDPList") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_IDPList) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_IDPList(struct zx_ff12_IDPList_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_IDPList) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_IDPList(struct zx_ctx* c, struct zx_ff12_IDPList_s* x )
+{
+  int len = zx_LEN_ff12_IDPList(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_IDPList(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_IDPList) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_IDPList(struct zx_ctx* c, struct zx_ff12_IDPList_s* x )
+{
+  int len = zx_LEN_ff12_IDPList(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_IDPList(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_IDPProvidedNameIdentifier
+#define EL_STRUCT zx_ff12_IDPProvidedNameIdentifier_s
+#define EL_NS     ff12
+#define EL_TAG    IDPProvidedNameIdentifier
+
+/* FUNC(zx_LEN_ff12_IDPProvidedNameIdentifier) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_IDPProvidedNameIdentifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("IDPProvidedNameIdentifier") - 1 + 1 + 2 + sizeof("IDPProvidedNameIdentifier") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->NameQualifier, sizeof("NameQualifier"));
+  len += zx_attr_len(x->Format, sizeof("Format"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_IDPProvidedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_IDPProvidedNameIdentifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPProvidedNameIdentifier", sizeof("IDPProvidedNameIdentifier") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->NameQualifier, "NameQualifier", sizeof("NameQualifier")-1);
+  p = zx_attr_enc(p, x->Format, "Format", sizeof("Format")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "IDPProvidedNameIdentifier", sizeof("IDPProvidedNameIdentifier") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_IDPProvidedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_IDPProvidedNameIdentifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_IDPProvidedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_IDPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_IDPProvidedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_IDPProvidedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_IDPProvidedNameIdentifier(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_IDPProvidedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_IDPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_IDPProvidedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_IDPProvidedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_IDPProvidedNameIdentifier(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_LogoutRequest
+#define EL_STRUCT zx_ff12_LogoutRequest_s
+#define EL_NS     ff12
+#define EL_TAG    LogoutRequest
+
+/* FUNC(zx_LEN_ff12_LogoutRequest) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_LogoutRequest(struct zx_ff12_LogoutRequest_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("LogoutRequest") - 1 + 1 + 2 + sizeof("LogoutRequest") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->RequestID, sizeof("RequestID"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->consent, sizeof("consent"));
+  len += zx_attr_len(x->NotOnOrAfter, sizeof("NotOnOrAfter"));
+
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_NameIdentifier(e);
+  }
+  for (se = x->SessionIndex; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("SessionIndex") - 1);
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RelayState") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_LogoutRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_LogoutRequest(struct zx_ff12_LogoutRequest_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "LogoutRequest", sizeof("LogoutRequest") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->RequestID, "RequestID", sizeof("RequestID")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->consent, "consent", sizeof("consent")-1);
+  p = zx_attr_enc(p, x->NotOnOrAfter, "NotOnOrAfter", sizeof("NotOnOrAfter")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RespondWith", sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_NameIdentifier(e, p);
+  }
+  for (se = x->SessionIndex; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "SessionIndex", sizeof("SessionIndex") - 1);
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RelayState", sizeof("RelayState") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "LogoutRequest", sizeof("LogoutRequest") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_LogoutRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_LogoutRequest(struct zx_ff12_LogoutRequest_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_LogoutRequest) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_LogoutRequest(struct zx_ctx* c, struct zx_ff12_LogoutRequest_s* x )
+{
+  int len = zx_LEN_ff12_LogoutRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_LogoutRequest(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_LogoutRequest) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_LogoutRequest(struct zx_ctx* c, struct zx_ff12_LogoutRequest_s* x )
+{
+  int len = zx_LEN_ff12_LogoutRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_LogoutRequest(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_LogoutResponse
+#define EL_STRUCT zx_ff12_LogoutResponse_s
+#define EL_NS     ff12
+#define EL_TAG    LogoutResponse
+
+/* FUNC(zx_LEN_ff12_LogoutResponse) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_LogoutResponse(struct zx_ff12_LogoutResponse_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("LogoutResponse") - 1 + 1 + 2 + sizeof("LogoutResponse") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ResponseID, sizeof("ResponseID"));
+  len += zx_attr_len(x->InResponseTo, sizeof("InResponseTo"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->Recipient, sizeof("Recipient"));
+
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Status(e);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RelayState") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_LogoutResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_LogoutResponse(struct zx_ff12_LogoutResponse_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "LogoutResponse", sizeof("LogoutResponse") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ResponseID, "ResponseID", sizeof("ResponseID")-1);
+  p = zx_attr_enc(p, x->InResponseTo, "InResponseTo", sizeof("InResponseTo")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->Recipient, "Recipient", sizeof("Recipient")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Status(e, p);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RelayState", sizeof("RelayState") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "LogoutResponse", sizeof("LogoutResponse") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_LogoutResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_LogoutResponse(struct zx_ff12_LogoutResponse_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_LogoutResponse) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_LogoutResponse(struct zx_ctx* c, struct zx_ff12_LogoutResponse_s* x )
+{
+  int len = zx_LEN_ff12_LogoutResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_LogoutResponse(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_LogoutResponse) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_LogoutResponse(struct zx_ctx* c, struct zx_ff12_LogoutResponse_s* x )
+{
+  int len = zx_LEN_ff12_LogoutResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_LogoutResponse(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_NameIdentifierMappingRequest
+#define EL_STRUCT zx_ff12_NameIdentifierMappingRequest_s
+#define EL_NS     ff12
+#define EL_TAG    NameIdentifierMappingRequest
+
+/* FUNC(zx_LEN_ff12_NameIdentifierMappingRequest) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_NameIdentifierMappingRequest(struct zx_ff12_NameIdentifierMappingRequest_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("NameIdentifierMappingRequest") - 1 + 1 + 2 + sizeof("NameIdentifierMappingRequest") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->RequestID, sizeof("RequestID"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->consent, sizeof("consent"));
+
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_NameIdentifier(e);
+  }
+  for (se = x->TargetNamespace; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("TargetNamespace") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_NameIdentifierMappingRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_NameIdentifierMappingRequest(struct zx_ff12_NameIdentifierMappingRequest_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "NameIdentifierMappingRequest", sizeof("NameIdentifierMappingRequest") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->RequestID, "RequestID", sizeof("RequestID")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->consent, "consent", sizeof("consent")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RespondWith", sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_NameIdentifier(e, p);
+  }
+  for (se = x->TargetNamespace; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "TargetNamespace", sizeof("TargetNamespace") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "NameIdentifierMappingRequest", sizeof("NameIdentifierMappingRequest") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_NameIdentifierMappingRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_NameIdentifierMappingRequest(struct zx_ff12_NameIdentifierMappingRequest_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_NameIdentifierMappingRequest) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_NameIdentifierMappingRequest(struct zx_ctx* c, struct zx_ff12_NameIdentifierMappingRequest_s* x )
+{
+  int len = zx_LEN_ff12_NameIdentifierMappingRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_NameIdentifierMappingRequest(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_NameIdentifierMappingRequest) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_NameIdentifierMappingRequest(struct zx_ctx* c, struct zx_ff12_NameIdentifierMappingRequest_s* x )
+{
+  int len = zx_LEN_ff12_NameIdentifierMappingRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_NameIdentifierMappingRequest(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_NameIdentifierMappingResponse
+#define EL_STRUCT zx_ff12_NameIdentifierMappingResponse_s
+#define EL_NS     ff12
+#define EL_TAG    NameIdentifierMappingResponse
+
+/* FUNC(zx_LEN_ff12_NameIdentifierMappingResponse) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_NameIdentifierMappingResponse(struct zx_ff12_NameIdentifierMappingResponse_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("NameIdentifierMappingResponse") - 1 + 1 + 2 + sizeof("NameIdentifierMappingResponse") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ResponseID, sizeof("ResponseID"));
+  len += zx_attr_len(x->InResponseTo, sizeof("InResponseTo"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->Recipient, sizeof("Recipient"));
+
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Status(e);
+  }
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_NameIdentifier(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_NameIdentifierMappingResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_NameIdentifierMappingResponse(struct zx_ff12_NameIdentifierMappingResponse_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "NameIdentifierMappingResponse", sizeof("NameIdentifierMappingResponse") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ResponseID, "ResponseID", sizeof("ResponseID")-1);
+  p = zx_attr_enc(p, x->InResponseTo, "InResponseTo", sizeof("InResponseTo")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->Recipient, "Recipient", sizeof("Recipient")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Status(e, p);
+  }
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_NameIdentifier(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "NameIdentifierMappingResponse", sizeof("NameIdentifierMappingResponse") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_NameIdentifierMappingResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_NameIdentifierMappingResponse(struct zx_ff12_NameIdentifierMappingResponse_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_NameIdentifierMappingResponse) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_NameIdentifierMappingResponse(struct zx_ctx* c, struct zx_ff12_NameIdentifierMappingResponse_s* x )
+{
+  int len = zx_LEN_ff12_NameIdentifierMappingResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_NameIdentifierMappingResponse(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_NameIdentifierMappingResponse) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_NameIdentifierMappingResponse(struct zx_ctx* c, struct zx_ff12_NameIdentifierMappingResponse_s* x )
+{
+  int len = zx_LEN_ff12_NameIdentifierMappingResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_NameIdentifierMappingResponse(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_OldProvidedNameIdentifier
+#define EL_STRUCT zx_ff12_OldProvidedNameIdentifier_s
+#define EL_NS     ff12
+#define EL_TAG    OldProvidedNameIdentifier
+
+/* FUNC(zx_LEN_ff12_OldProvidedNameIdentifier) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_OldProvidedNameIdentifier(struct zx_ff12_OldProvidedNameIdentifier_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("OldProvidedNameIdentifier") - 1 + 1 + 2 + sizeof("OldProvidedNameIdentifier") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->NameQualifier, sizeof("NameQualifier"));
+  len += zx_attr_len(x->Format, sizeof("Format"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_OldProvidedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_OldProvidedNameIdentifier(struct zx_ff12_OldProvidedNameIdentifier_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "OldProvidedNameIdentifier", sizeof("OldProvidedNameIdentifier") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->NameQualifier, "NameQualifier", sizeof("NameQualifier")-1);
+  p = zx_attr_enc(p, x->Format, "Format", sizeof("Format")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "OldProvidedNameIdentifier", sizeof("OldProvidedNameIdentifier") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_OldProvidedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_OldProvidedNameIdentifier(struct zx_ff12_OldProvidedNameIdentifier_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_OldProvidedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_OldProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_OldProvidedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_OldProvidedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_OldProvidedNameIdentifier(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_OldProvidedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_OldProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_OldProvidedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_OldProvidedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_OldProvidedNameIdentifier(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_RegisterNameIdentifierRequest
+#define EL_STRUCT zx_ff12_RegisterNameIdentifierRequest_s
+#define EL_NS     ff12
+#define EL_TAG    RegisterNameIdentifierRequest
+
+/* FUNC(zx_LEN_ff12_RegisterNameIdentifierRequest) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_RegisterNameIdentifierRequest(struct zx_ff12_RegisterNameIdentifierRequest_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("RegisterNameIdentifierRequest") - 1 + 1 + 2 + sizeof("RegisterNameIdentifierRequest") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->RequestID, sizeof("RequestID"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_ff12_IDPProvidedNameIdentifier_s* e;
+      for (e = x->IDPProvidedNameIdentifier; e; e = (struct zx_ff12_IDPProvidedNameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_IDPProvidedNameIdentifier(e);
+  }
+  {
+      struct zx_ff12_SPProvidedNameIdentifier_s* e;
+      for (e = x->SPProvidedNameIdentifier; e; e = (struct zx_ff12_SPProvidedNameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_SPProvidedNameIdentifier(e);
+  }
+  {
+      struct zx_ff12_OldProvidedNameIdentifier_s* e;
+      for (e = x->OldProvidedNameIdentifier; e; e = (struct zx_ff12_OldProvidedNameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_OldProvidedNameIdentifier(e);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RelayState") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_RegisterNameIdentifierRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_RegisterNameIdentifierRequest(struct zx_ff12_RegisterNameIdentifierRequest_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "RegisterNameIdentifierRequest", sizeof("RegisterNameIdentifierRequest") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->RequestID, "RequestID", sizeof("RequestID")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RespondWith", sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_ff12_IDPProvidedNameIdentifier_s* e;
+      for (e = x->IDPProvidedNameIdentifier; e; e = (struct zx_ff12_IDPProvidedNameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_IDPProvidedNameIdentifier(e, p);
+  }
+  {
+      struct zx_ff12_SPProvidedNameIdentifier_s* e;
+      for (e = x->SPProvidedNameIdentifier; e; e = (struct zx_ff12_SPProvidedNameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_SPProvidedNameIdentifier(e, p);
+  }
+  {
+      struct zx_ff12_OldProvidedNameIdentifier_s* e;
+      for (e = x->OldProvidedNameIdentifier; e; e = (struct zx_ff12_OldProvidedNameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_OldProvidedNameIdentifier(e, p);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RelayState", sizeof("RelayState") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "RegisterNameIdentifierRequest", sizeof("RegisterNameIdentifierRequest") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_RegisterNameIdentifierRequest) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_RegisterNameIdentifierRequest(struct zx_ff12_RegisterNameIdentifierRequest_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_RegisterNameIdentifierRequest) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_RegisterNameIdentifierRequest(struct zx_ctx* c, struct zx_ff12_RegisterNameIdentifierRequest_s* x )
+{
+  int len = zx_LEN_ff12_RegisterNameIdentifierRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_RegisterNameIdentifierRequest(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_RegisterNameIdentifierRequest) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_RegisterNameIdentifierRequest(struct zx_ctx* c, struct zx_ff12_RegisterNameIdentifierRequest_s* x )
+{
+  int len = zx_LEN_ff12_RegisterNameIdentifierRequest(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_RegisterNameIdentifierRequest(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_RegisterNameIdentifierResponse
+#define EL_STRUCT zx_ff12_RegisterNameIdentifierResponse_s
+#define EL_NS     ff12
+#define EL_TAG    RegisterNameIdentifierResponse
+
+/* FUNC(zx_LEN_ff12_RegisterNameIdentifierResponse) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_RegisterNameIdentifierResponse(struct zx_ff12_RegisterNameIdentifierResponse_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("RegisterNameIdentifierResponse") - 1 + 1 + 2 + sizeof("RegisterNameIdentifierResponse") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ResponseID, sizeof("ResponseID"));
+  len += zx_attr_len(x->InResponseTo, sizeof("InResponseTo"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->Recipient, sizeof("Recipient"));
+
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Extension(e);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProviderID") - 1);
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Status(e);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RelayState") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_RegisterNameIdentifierResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_RegisterNameIdentifierResponse(struct zx_ff12_RegisterNameIdentifierResponse_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "RegisterNameIdentifierResponse", sizeof("RegisterNameIdentifierResponse") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ResponseID, "ResponseID", sizeof("ResponseID")-1);
+  p = zx_attr_enc(p, x->InResponseTo, "InResponseTo", sizeof("InResponseTo")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->Recipient, "Recipient", sizeof("Recipient")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_ff12_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ff12_Extension_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Extension(e, p);
+  }
+  for (se = x->ProviderID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProviderID", sizeof("ProviderID") - 1);
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Status(e, p);
+  }
+  for (se = x->RelayState; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RelayState", sizeof("RelayState") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "RegisterNameIdentifierResponse", sizeof("RegisterNameIdentifierResponse") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_RegisterNameIdentifierResponse) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_RegisterNameIdentifierResponse(struct zx_ff12_RegisterNameIdentifierResponse_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_RegisterNameIdentifierResponse) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_RegisterNameIdentifierResponse(struct zx_ctx* c, struct zx_ff12_RegisterNameIdentifierResponse_s* x )
+{
+  int len = zx_LEN_ff12_RegisterNameIdentifierResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_RegisterNameIdentifierResponse(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_RegisterNameIdentifierResponse) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_RegisterNameIdentifierResponse(struct zx_ctx* c, struct zx_ff12_RegisterNameIdentifierResponse_s* x )
+{
+  int len = zx_LEN_ff12_RegisterNameIdentifierResponse(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_RegisterNameIdentifierResponse(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_RequestAuthnContext
+#define EL_STRUCT zx_ff12_RequestAuthnContext_s
+#define EL_NS     ff12
+#define EL_TAG    RequestAuthnContext
+
+/* FUNC(zx_LEN_ff12_RequestAuthnContext) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_RequestAuthnContext(struct zx_ff12_RequestAuthnContext_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("RequestAuthnContext") - 1 + 1 + 2 + sizeof("RequestAuthnContext") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->AuthnContextClassRef; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AuthnContextClassRef") - 1);
+  for (se = x->AuthnContextStatementRef; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AuthnContextStatementRef") - 1);
+  for (se = x->AuthnContextComparison; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AuthnContextComparison") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_RequestAuthnContext) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_RequestAuthnContext(struct zx_ff12_RequestAuthnContext_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "RequestAuthnContext", sizeof("RequestAuthnContext") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->AuthnContextClassRef; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AuthnContextClassRef", sizeof("AuthnContextClassRef") - 1);
+  for (se = x->AuthnContextStatementRef; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AuthnContextStatementRef", sizeof("AuthnContextStatementRef") - 1);
+  for (se = x->AuthnContextComparison; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AuthnContextComparison", sizeof("AuthnContextComparison") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "RequestAuthnContext", sizeof("RequestAuthnContext") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_RequestAuthnContext) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_RequestAuthnContext(struct zx_ff12_RequestAuthnContext_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_RequestAuthnContext) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_RequestAuthnContext(struct zx_ctx* c, struct zx_ff12_RequestAuthnContext_s* x )
+{
+  int len = zx_LEN_ff12_RequestAuthnContext(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_RequestAuthnContext(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_RequestAuthnContext) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_RequestAuthnContext(struct zx_ctx* c, struct zx_ff12_RequestAuthnContext_s* x )
+{
+  int len = zx_LEN_ff12_RequestAuthnContext(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_RequestAuthnContext(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_SPProvidedNameIdentifier
+#define EL_STRUCT zx_ff12_SPProvidedNameIdentifier_s
+#define EL_NS     ff12
+#define EL_TAG    SPProvidedNameIdentifier
+
+/* FUNC(zx_LEN_ff12_SPProvidedNameIdentifier) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_SPProvidedNameIdentifier(struct zx_ff12_SPProvidedNameIdentifier_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SPProvidedNameIdentifier") - 1 + 1 + 2 + sizeof("SPProvidedNameIdentifier") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->NameQualifier, sizeof("NameQualifier"));
+  len += zx_attr_len(x->Format, sizeof("Format"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_SPProvidedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_SPProvidedNameIdentifier(struct zx_ff12_SPProvidedNameIdentifier_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SPProvidedNameIdentifier", sizeof("SPProvidedNameIdentifier") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->NameQualifier, "NameQualifier", sizeof("NameQualifier")-1);
+  p = zx_attr_enc(p, x->Format, "Format", sizeof("Format")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SPProvidedNameIdentifier", sizeof("SPProvidedNameIdentifier") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_SPProvidedNameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_SPProvidedNameIdentifier(struct zx_ff12_SPProvidedNameIdentifier_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_SPProvidedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_SPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_SPProvidedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_SPProvidedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_SPProvidedNameIdentifier(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_SPProvidedNameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_SPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_SPProvidedNameIdentifier_s* x )
+{
+  int len = zx_LEN_ff12_SPProvidedNameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_SPProvidedNameIdentifier(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_Scoping
+#define EL_STRUCT zx_ff12_Scoping_s
+#define EL_NS     ff12
+#define EL_TAG    Scoping
+
+/* FUNC(zx_LEN_ff12_Scoping) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_Scoping(struct zx_ff12_Scoping_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Scoping") - 1 + 1 + 2 + sizeof("Scoping") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->ProxyCount; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ProxyCount") - 1);
+  {
+      struct zx_ff12_IDPList_s* e;
+      for (e = x->IDPList; e; e = (struct zx_ff12_IDPList_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_IDPList(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_Scoping) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_Scoping(struct zx_ff12_Scoping_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Scoping", sizeof("Scoping") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->ProxyCount; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ProxyCount", sizeof("ProxyCount") - 1);
+  {
+      struct zx_ff12_IDPList_s* e;
+      for (e = x->IDPList; e; e = (struct zx_ff12_IDPList_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_IDPList(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Scoping", sizeof("Scoping") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_Scoping) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_Scoping(struct zx_ff12_Scoping_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_Scoping) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_Scoping(struct zx_ctx* c, struct zx_ff12_Scoping_s* x )
+{
+  int len = zx_LEN_ff12_Scoping(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_Scoping(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_Scoping) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_Scoping(struct zx_ctx* c, struct zx_ff12_Scoping_s* x )
+{
+  int len = zx_LEN_ff12_Scoping(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_Scoping(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   ff12_Subject
+#define EL_STRUCT zx_ff12_Subject_s
+#define EL_NS     ff12
+#define EL_TAG    Subject
+
+/* FUNC(zx_LEN_ff12_Subject) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_ff12_Subject(struct zx_ff12_Subject_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Subject") - 1 + 1 + 2 + sizeof("Subject") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_NameIdentifier(e);
+  }
+  {
+      struct zx_sa11_SubjectConfirmation_s* e;
+      for (e = x->SubjectConfirmation; e; e = (struct zx_sa11_SubjectConfirmation_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_SubjectConfirmation(e);
+  }
+  {
+      struct zx_ff12_IDPProvidedNameIdentifier_s* e;
+      for (e = x->IDPProvidedNameIdentifier; e; e = (struct zx_ff12_IDPProvidedNameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_IDPProvidedNameIdentifier(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_ff12_Subject) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_ff12_Subject(struct zx_ff12_Subject_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Subject", sizeof("Subject") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_NameIdentifier(e, p);
+  }
+  {
+      struct zx_sa11_SubjectConfirmation_s* e;
+      for (e = x->SubjectConfirmation; e; e = (struct zx_sa11_SubjectConfirmation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_SubjectConfirmation(e, p);
+  }
+  {
+      struct zx_ff12_IDPProvidedNameIdentifier_s* e;
+      for (e = x->IDPProvidedNameIdentifier; e; e = (struct zx_ff12_IDPProvidedNameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_IDPProvidedNameIdentifier(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Subject", sizeof("Subject") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_ff12_Subject) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_ff12_Subject(struct zx_ff12_Subject_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_ff12_Subject) */
+
+struct zx_str_s* zx_EASY_ENC_SO_ff12_Subject(struct zx_ctx* c, struct zx_ff12_Subject_s* x )
+{
+  int len = zx_LEN_ff12_Subject(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_ff12_Subject(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_ff12_Subject) */
+
+struct zx_str_s* zx_EASY_ENC_WO_ff12_Subject(struct zx_ctx* c, struct zx_ff12_Subject_s* x )
+{
+  int len = zx_LEN_ff12_Subject(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_ff12_Subject(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Action
+#define EL_STRUCT zx_sa11_Action_s
+#define EL_NS     sa11
+#define EL_TAG    Action
+
+/* FUNC(zx_LEN_sa11_Action) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Action(struct zx_sa11_Action_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Action") - 1 + 1 + 2 + sizeof("Action") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->Namespace, sizeof("Namespace"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Action) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Action(struct zx_sa11_Action_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Action", sizeof("Action") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->Namespace, "Namespace", sizeof("Namespace")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Action", sizeof("Action") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Action) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Action(struct zx_sa11_Action_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Action) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Action(struct zx_ctx* c, struct zx_sa11_Action_s* x )
+{
+  int len = zx_LEN_sa11_Action(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Action(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Action) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Action(struct zx_ctx* c, struct zx_sa11_Action_s* x )
+{
+  int len = zx_LEN_sa11_Action(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Action(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Advice
+#define EL_STRUCT zx_sa11_Advice_s
+#define EL_NS     sa11
+#define EL_TAG    Advice
+
+/* FUNC(zx_LEN_sa11_Advice) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Advice(struct zx_sa11_Advice_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Advice") - 1 + 1 + 2 + sizeof("Advice") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->AssertionIDReference; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionIDReference") - 1);
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Assertion(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Advice) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Advice(struct zx_sa11_Advice_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Advice", sizeof("Advice") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->AssertionIDReference; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionIDReference", sizeof("AssertionIDReference") - 1);
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Assertion(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Advice", sizeof("Advice") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Advice) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Advice(struct zx_sa11_Advice_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Advice) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Advice(struct zx_ctx* c, struct zx_sa11_Advice_s* x )
+{
+  int len = zx_LEN_sa11_Advice(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Advice(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Advice) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Advice(struct zx_ctx* c, struct zx_sa11_Advice_s* x )
+{
+  int len = zx_LEN_sa11_Advice(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Advice(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Assertion
+#define EL_STRUCT zx_sa11_Assertion_s
+#define EL_NS     sa11
+#define EL_TAG    Assertion
+
+/* FUNC(zx_LEN_sa11_Assertion) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Assertion(struct zx_sa11_Assertion_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Assertion") - 1 + 1 + 2 + sizeof("Assertion") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->AssertionID, sizeof("AssertionID"));
+  len += zx_attr_len(x->Issuer, sizeof("Issuer"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+
+  {
+      struct zx_sa11_Conditions_s* e;
+      for (e = x->Conditions; e; e = (struct zx_sa11_Conditions_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Conditions(e);
+  }
+  {
+      struct zx_sa11_Advice_s* e;
+      for (e = x->Advice; e; e = (struct zx_sa11_Advice_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Advice(e);
+  }
+  for (se = x->Statement; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("Statement") - 1);
+  {
+      struct zx_sa11_SubjectStatement_s* e;
+      for (e = x->SubjectStatement; e; e = (struct zx_sa11_SubjectStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_SubjectStatement(e);
+  }
+  {
+      struct zx_sa11_AuthenticationStatement_s* e;
+      for (e = x->AuthenticationStatement; e; e = (struct zx_sa11_AuthenticationStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AuthenticationStatement(e);
+  }
+  {
+      struct zx_sa11_AuthorizationDecisionStatement_s* e;
+      for (e = x->AuthorizationDecisionStatement; e; e = (struct zx_sa11_AuthorizationDecisionStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AuthorizationDecisionStatement(e);
+  }
+  {
+      struct zx_sa11_AttributeStatement_s* e;
+      for (e = x->AttributeStatement; e; e = (struct zx_sa11_AttributeStatement_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AttributeStatement(e);
+  }
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Assertion) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Assertion(struct zx_sa11_Assertion_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Assertion", sizeof("Assertion") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->AssertionID, "AssertionID", sizeof("AssertionID")-1);
+  p = zx_attr_enc(p, x->Issuer, "Issuer", sizeof("Issuer")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Conditions_s* e;
+      for (e = x->Conditions; e; e = (struct zx_sa11_Conditions_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Conditions(e, p);
+  }
+  {
+      struct zx_sa11_Advice_s* e;
+      for (e = x->Advice; e; e = (struct zx_sa11_Advice_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Advice(e, p);
+  }
+  for (se = x->Statement; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "Statement", sizeof("Statement") - 1);
+  {
+      struct zx_sa11_SubjectStatement_s* e;
+      for (e = x->SubjectStatement; e; e = (struct zx_sa11_SubjectStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_SubjectStatement(e, p);
+  }
+  {
+      struct zx_sa11_AuthenticationStatement_s* e;
+      for (e = x->AuthenticationStatement; e; e = (struct zx_sa11_AuthenticationStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AuthenticationStatement(e, p);
+  }
+  {
+      struct zx_sa11_AuthorizationDecisionStatement_s* e;
+      for (e = x->AuthorizationDecisionStatement; e; e = (struct zx_sa11_AuthorizationDecisionStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AuthorizationDecisionStatement(e, p);
+  }
+  {
+      struct zx_sa11_AttributeStatement_s* e;
+      for (e = x->AttributeStatement; e; e = (struct zx_sa11_AttributeStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AttributeStatement(e, p);
+  }
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Assertion", sizeof("Assertion") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Assertion) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Assertion(struct zx_sa11_Assertion_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Assertion) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Assertion(struct zx_ctx* c, struct zx_sa11_Assertion_s* x )
+{
+  int len = zx_LEN_sa11_Assertion(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Assertion(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Assertion) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Assertion(struct zx_ctx* c, struct zx_sa11_Assertion_s* x )
+{
+  int len = zx_LEN_sa11_Assertion(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Assertion(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Attribute
+#define EL_STRUCT zx_sa11_Attribute_s
+#define EL_NS     sa11
+#define EL_TAG    Attribute
+
+/* FUNC(zx_LEN_sa11_Attribute) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Attribute(struct zx_sa11_Attribute_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Attribute") - 1 + 1 + 2 + sizeof("Attribute") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->AttributeName, sizeof("AttributeName"));
+  len += zx_attr_len(x->AttributeNamespace, sizeof("AttributeNamespace"));
+
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AttributeValue") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Attribute) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Attribute(struct zx_sa11_Attribute_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Attribute", sizeof("Attribute") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->AttributeName, "AttributeName", sizeof("AttributeName")-1);
+  p = zx_attr_enc(p, x->AttributeNamespace, "AttributeNamespace", sizeof("AttributeNamespace")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AttributeValue", sizeof("AttributeValue") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Attribute", sizeof("Attribute") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Attribute) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Attribute(struct zx_sa11_Attribute_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Attribute) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Attribute(struct zx_ctx* c, struct zx_sa11_Attribute_s* x )
+{
+  int len = zx_LEN_sa11_Attribute(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Attribute(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Attribute) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Attribute(struct zx_ctx* c, struct zx_sa11_Attribute_s* x )
+{
+  int len = zx_LEN_sa11_Attribute(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Attribute(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_AttributeDesignator
+#define EL_STRUCT zx_sa11_AttributeDesignator_s
+#define EL_NS     sa11
+#define EL_TAG    AttributeDesignator
+
+/* FUNC(zx_LEN_sa11_AttributeDesignator) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_AttributeDesignator(struct zx_sa11_AttributeDesignator_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AttributeDesignator") - 1 + 1 + 2 + sizeof("AttributeDesignator") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->AttributeName, sizeof("AttributeName"));
+  len += zx_attr_len(x->AttributeNamespace, sizeof("AttributeNamespace"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_AttributeDesignator) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_AttributeDesignator(struct zx_sa11_AttributeDesignator_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AttributeDesignator", sizeof("AttributeDesignator") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->AttributeName, "AttributeName", sizeof("AttributeName")-1);
+  p = zx_attr_enc(p, x->AttributeNamespace, "AttributeNamespace", sizeof("AttributeNamespace")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AttributeDesignator", sizeof("AttributeDesignator") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_AttributeDesignator) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_AttributeDesignator(struct zx_sa11_AttributeDesignator_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_AttributeDesignator) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_AttributeDesignator(struct zx_ctx* c, struct zx_sa11_AttributeDesignator_s* x )
+{
+  int len = zx_LEN_sa11_AttributeDesignator(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_AttributeDesignator(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_AttributeDesignator) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_AttributeDesignator(struct zx_ctx* c, struct zx_sa11_AttributeDesignator_s* x )
+{
+  int len = zx_LEN_sa11_AttributeDesignator(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_AttributeDesignator(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_AttributeStatement
+#define EL_STRUCT zx_sa11_AttributeStatement_s
+#define EL_NS     sa11
+#define EL_TAG    AttributeStatement
+
+/* FUNC(zx_LEN_sa11_AttributeStatement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_AttributeStatement(struct zx_sa11_AttributeStatement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AttributeStatement") - 1 + 1 + 2 + sizeof("AttributeStatement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+  {
+      struct zx_sa11_Attribute_s* e;
+      for (e = x->Attribute; e; e = (struct zx_sa11_Attribute_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Attribute(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_AttributeStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_AttributeStatement(struct zx_sa11_AttributeStatement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AttributeStatement", sizeof("AttributeStatement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+  {
+      struct zx_sa11_Attribute_s* e;
+      for (e = x->Attribute; e; e = (struct zx_sa11_Attribute_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Attribute(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AttributeStatement", sizeof("AttributeStatement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_AttributeStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_AttributeStatement(struct zx_sa11_AttributeStatement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_AttributeStatement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_AttributeStatement(struct zx_ctx* c, struct zx_sa11_AttributeStatement_s* x )
+{
+  int len = zx_LEN_sa11_AttributeStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_AttributeStatement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_AttributeStatement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_AttributeStatement(struct zx_ctx* c, struct zx_sa11_AttributeStatement_s* x )
+{
+  int len = zx_LEN_sa11_AttributeStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_AttributeStatement(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_AudienceRestrictionCondition
+#define EL_STRUCT zx_sa11_AudienceRestrictionCondition_s
+#define EL_NS     sa11
+#define EL_TAG    AudienceRestrictionCondition
+
+/* FUNC(zx_LEN_sa11_AudienceRestrictionCondition) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_AudienceRestrictionCondition(struct zx_sa11_AudienceRestrictionCondition_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AudienceRestrictionCondition") - 1 + 1 + 2 + sizeof("AudienceRestrictionCondition") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->Audience; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("Audience") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_AudienceRestrictionCondition) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_AudienceRestrictionCondition(struct zx_sa11_AudienceRestrictionCondition_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AudienceRestrictionCondition", sizeof("AudienceRestrictionCondition") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->Audience; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "Audience", sizeof("Audience") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AudienceRestrictionCondition", sizeof("AudienceRestrictionCondition") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_AudienceRestrictionCondition) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_AudienceRestrictionCondition(struct zx_sa11_AudienceRestrictionCondition_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_AudienceRestrictionCondition) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_AudienceRestrictionCondition(struct zx_ctx* c, struct zx_sa11_AudienceRestrictionCondition_s* x )
+{
+  int len = zx_LEN_sa11_AudienceRestrictionCondition(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_AudienceRestrictionCondition(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_AudienceRestrictionCondition) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_AudienceRestrictionCondition(struct zx_ctx* c, struct zx_sa11_AudienceRestrictionCondition_s* x )
+{
+  int len = zx_LEN_sa11_AudienceRestrictionCondition(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_AudienceRestrictionCondition(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_AuthenticationStatement
+#define EL_STRUCT zx_sa11_AuthenticationStatement_s
+#define EL_NS     sa11
+#define EL_TAG    AuthenticationStatement
+
+/* FUNC(zx_LEN_sa11_AuthenticationStatement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_AuthenticationStatement(struct zx_sa11_AuthenticationStatement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticationStatement") - 1 + 1 + 2 + sizeof("AuthenticationStatement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->AuthenticationMethod, sizeof("AuthenticationMethod"));
+  len += zx_attr_len(x->AuthenticationInstant, sizeof("AuthenticationInstant"));
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+  {
+      struct zx_sa11_SubjectLocality_s* e;
+      for (e = x->SubjectLocality; e; e = (struct zx_sa11_SubjectLocality_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_SubjectLocality(e);
+  }
+  {
+      struct zx_sa11_AuthorityBinding_s* e;
+      for (e = x->AuthorityBinding; e; e = (struct zx_sa11_AuthorityBinding_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AuthorityBinding(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_AuthenticationStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_AuthenticationStatement(struct zx_sa11_AuthenticationStatement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationStatement", sizeof("AuthenticationStatement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->AuthenticationMethod, "AuthenticationMethod", sizeof("AuthenticationMethod")-1);
+  p = zx_attr_enc(p, x->AuthenticationInstant, "AuthenticationInstant", sizeof("AuthenticationInstant")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+  {
+      struct zx_sa11_SubjectLocality_s* e;
+      for (e = x->SubjectLocality; e; e = (struct zx_sa11_SubjectLocality_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_SubjectLocality(e, p);
+  }
+  {
+      struct zx_sa11_AuthorityBinding_s* e;
+      for (e = x->AuthorityBinding; e; e = (struct zx_sa11_AuthorityBinding_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AuthorityBinding(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationStatement", sizeof("AuthenticationStatement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_AuthenticationStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_AuthenticationStatement(struct zx_sa11_AuthenticationStatement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_AuthenticationStatement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_AuthenticationStatement(struct zx_ctx* c, struct zx_sa11_AuthenticationStatement_s* x )
+{
+  int len = zx_LEN_sa11_AuthenticationStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_AuthenticationStatement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_AuthenticationStatement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_AuthenticationStatement(struct zx_ctx* c, struct zx_sa11_AuthenticationStatement_s* x )
+{
+  int len = zx_LEN_sa11_AuthenticationStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_AuthenticationStatement(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_AuthorityBinding
+#define EL_STRUCT zx_sa11_AuthorityBinding_s
+#define EL_NS     sa11
+#define EL_TAG    AuthorityBinding
+
+/* FUNC(zx_LEN_sa11_AuthorityBinding) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_AuthorityBinding(struct zx_sa11_AuthorityBinding_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthorityBinding") - 1 + 1 + 2 + sizeof("AuthorityBinding") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->AuthorityKind, sizeof("AuthorityKind"));
+  len += zx_attr_len(x->Location, sizeof("Location"));
+  len += zx_attr_len(x->Binding, sizeof("Binding"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_AuthorityBinding) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_AuthorityBinding(struct zx_sa11_AuthorityBinding_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthorityBinding", sizeof("AuthorityBinding") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->AuthorityKind, "AuthorityKind", sizeof("AuthorityKind")-1);
+  p = zx_attr_enc(p, x->Location, "Location", sizeof("Location")-1);
+  p = zx_attr_enc(p, x->Binding, "Binding", sizeof("Binding")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthorityBinding", sizeof("AuthorityBinding") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_AuthorityBinding) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_AuthorityBinding(struct zx_sa11_AuthorityBinding_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_AuthorityBinding) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_AuthorityBinding(struct zx_ctx* c, struct zx_sa11_AuthorityBinding_s* x )
+{
+  int len = zx_LEN_sa11_AuthorityBinding(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_AuthorityBinding(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_AuthorityBinding) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_AuthorityBinding(struct zx_ctx* c, struct zx_sa11_AuthorityBinding_s* x )
+{
+  int len = zx_LEN_sa11_AuthorityBinding(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_AuthorityBinding(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_AuthorizationDecisionStatement
+#define EL_STRUCT zx_sa11_AuthorizationDecisionStatement_s
+#define EL_NS     sa11
+#define EL_TAG    AuthorizationDecisionStatement
+
+/* FUNC(zx_LEN_sa11_AuthorizationDecisionStatement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_AuthorizationDecisionStatement(struct zx_sa11_AuthorizationDecisionStatement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthorizationDecisionStatement") - 1 + 1 + 2 + sizeof("AuthorizationDecisionStatement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->Resource, sizeof("Resource"));
+  len += zx_attr_len(x->Decision, sizeof("Decision"));
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+  {
+      struct zx_sa11_Action_s* e;
+      for (e = x->Action; e; e = (struct zx_sa11_Action_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Action(e);
+  }
+  {
+      struct zx_sa11_Evidence_s* e;
+      for (e = x->Evidence; e; e = (struct zx_sa11_Evidence_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Evidence(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_AuthorizationDecisionStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_AuthorizationDecisionStatement(struct zx_sa11_AuthorizationDecisionStatement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthorizationDecisionStatement", sizeof("AuthorizationDecisionStatement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->Resource, "Resource", sizeof("Resource")-1);
+  p = zx_attr_enc(p, x->Decision, "Decision", sizeof("Decision")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+  {
+      struct zx_sa11_Action_s* e;
+      for (e = x->Action; e; e = (struct zx_sa11_Action_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Action(e, p);
+  }
+  {
+      struct zx_sa11_Evidence_s* e;
+      for (e = x->Evidence; e; e = (struct zx_sa11_Evidence_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Evidence(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthorizationDecisionStatement", sizeof("AuthorizationDecisionStatement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_AuthorizationDecisionStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_AuthorizationDecisionStatement(struct zx_sa11_AuthorizationDecisionStatement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_AuthorizationDecisionStatement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_AuthorizationDecisionStatement(struct zx_ctx* c, struct zx_sa11_AuthorizationDecisionStatement_s* x )
+{
+  int len = zx_LEN_sa11_AuthorizationDecisionStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_AuthorizationDecisionStatement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_AuthorizationDecisionStatement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_AuthorizationDecisionStatement(struct zx_ctx* c, struct zx_sa11_AuthorizationDecisionStatement_s* x )
+{
+  int len = zx_LEN_sa11_AuthorizationDecisionStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_AuthorizationDecisionStatement(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Conditions
+#define EL_STRUCT zx_sa11_Conditions_s
+#define EL_NS     sa11
+#define EL_TAG    Conditions
+
+/* FUNC(zx_LEN_sa11_Conditions) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Conditions(struct zx_sa11_Conditions_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Conditions") - 1 + 1 + 2 + sizeof("Conditions") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->NotBefore, sizeof("NotBefore"));
+  len += zx_attr_len(x->NotOnOrAfter, sizeof("NotOnOrAfter"));
+
+  {
+      struct zx_sa11_AudienceRestrictionCondition_s* e;
+      for (e = x->AudienceRestrictionCondition; e; e = (struct zx_sa11_AudienceRestrictionCondition_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AudienceRestrictionCondition(e);
+  }
+  {
+      struct zx_sa11_DoNotCacheCondition_s* e;
+      for (e = x->DoNotCacheCondition; e; e = (struct zx_sa11_DoNotCacheCondition_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_DoNotCacheCondition(e);
+  }
+  for (se = x->Condition; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("Condition") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Conditions) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Conditions(struct zx_sa11_Conditions_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Conditions", sizeof("Conditions") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->NotBefore, "NotBefore", sizeof("NotBefore")-1);
+  p = zx_attr_enc(p, x->NotOnOrAfter, "NotOnOrAfter", sizeof("NotOnOrAfter")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_AudienceRestrictionCondition_s* e;
+      for (e = x->AudienceRestrictionCondition; e; e = (struct zx_sa11_AudienceRestrictionCondition_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AudienceRestrictionCondition(e, p);
+  }
+  {
+      struct zx_sa11_DoNotCacheCondition_s* e;
+      for (e = x->DoNotCacheCondition; e; e = (struct zx_sa11_DoNotCacheCondition_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_DoNotCacheCondition(e, p);
+  }
+  for (se = x->Condition; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "Condition", sizeof("Condition") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Conditions", sizeof("Conditions") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Conditions) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Conditions(struct zx_sa11_Conditions_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Conditions) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Conditions(struct zx_ctx* c, struct zx_sa11_Conditions_s* x )
+{
+  int len = zx_LEN_sa11_Conditions(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Conditions(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Conditions) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Conditions(struct zx_ctx* c, struct zx_sa11_Conditions_s* x )
+{
+  int len = zx_LEN_sa11_Conditions(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Conditions(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_DoNotCacheCondition
+#define EL_STRUCT zx_sa11_DoNotCacheCondition_s
+#define EL_NS     sa11
+#define EL_TAG    DoNotCacheCondition
+
+/* FUNC(zx_LEN_sa11_DoNotCacheCondition) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_DoNotCacheCondition(struct zx_sa11_DoNotCacheCondition_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("DoNotCacheCondition") - 1 + 1 + 2 + sizeof("DoNotCacheCondition") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_DoNotCacheCondition) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_DoNotCacheCondition(struct zx_sa11_DoNotCacheCondition_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "DoNotCacheCondition", sizeof("DoNotCacheCondition") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "DoNotCacheCondition", sizeof("DoNotCacheCondition") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_DoNotCacheCondition) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_DoNotCacheCondition(struct zx_sa11_DoNotCacheCondition_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_DoNotCacheCondition) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_DoNotCacheCondition(struct zx_ctx* c, struct zx_sa11_DoNotCacheCondition_s* x )
+{
+  int len = zx_LEN_sa11_DoNotCacheCondition(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_DoNotCacheCondition(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_DoNotCacheCondition) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_DoNotCacheCondition(struct zx_ctx* c, struct zx_sa11_DoNotCacheCondition_s* x )
+{
+  int len = zx_LEN_sa11_DoNotCacheCondition(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_DoNotCacheCondition(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Evidence
+#define EL_STRUCT zx_sa11_Evidence_s
+#define EL_NS     sa11
+#define EL_TAG    Evidence
+
+/* FUNC(zx_LEN_sa11_Evidence) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Evidence(struct zx_sa11_Evidence_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Evidence") - 1 + 1 + 2 + sizeof("Evidence") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->AssertionIDReference; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionIDReference") - 1);
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Assertion(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Evidence) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Evidence(struct zx_sa11_Evidence_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Evidence", sizeof("Evidence") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->AssertionIDReference; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionIDReference", sizeof("AssertionIDReference") - 1);
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Assertion(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Evidence", sizeof("Evidence") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Evidence) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Evidence(struct zx_sa11_Evidence_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Evidence) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Evidence(struct zx_ctx* c, struct zx_sa11_Evidence_s* x )
+{
+  int len = zx_LEN_sa11_Evidence(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Evidence(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Evidence) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Evidence(struct zx_ctx* c, struct zx_sa11_Evidence_s* x )
+{
+  int len = zx_LEN_sa11_Evidence(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Evidence(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_NameIdentifier
+#define EL_STRUCT zx_sa11_NameIdentifier_s
+#define EL_NS     sa11
+#define EL_TAG    NameIdentifier
+
+/* FUNC(zx_LEN_sa11_NameIdentifier) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_NameIdentifier(struct zx_sa11_NameIdentifier_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("NameIdentifier") - 1 + 1 + 2 + sizeof("NameIdentifier") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->NameQualifier, sizeof("NameQualifier"));
+  len += zx_attr_len(x->Format, sizeof("Format"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_NameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_NameIdentifier(struct zx_sa11_NameIdentifier_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "NameIdentifier", sizeof("NameIdentifier") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->NameQualifier, "NameQualifier", sizeof("NameQualifier")-1);
+  p = zx_attr_enc(p, x->Format, "Format", sizeof("Format")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "NameIdentifier", sizeof("NameIdentifier") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_NameIdentifier) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_NameIdentifier(struct zx_sa11_NameIdentifier_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_NameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_NameIdentifier(struct zx_ctx* c, struct zx_sa11_NameIdentifier_s* x )
+{
+  int len = zx_LEN_sa11_NameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_NameIdentifier(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_NameIdentifier) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_NameIdentifier(struct zx_ctx* c, struct zx_sa11_NameIdentifier_s* x )
+{
+  int len = zx_LEN_sa11_NameIdentifier(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_NameIdentifier(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_Subject
+#define EL_STRUCT zx_sa11_Subject_s
+#define EL_NS     sa11
+#define EL_TAG    Subject
+
+/* FUNC(zx_LEN_sa11_Subject) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_Subject(struct zx_sa11_Subject_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Subject") - 1 + 1 + 2 + sizeof("Subject") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_NameIdentifier(e);
+  }
+  {
+      struct zx_sa11_SubjectConfirmation_s* e;
+      for (e = x->SubjectConfirmation; e; e = (struct zx_sa11_SubjectConfirmation_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_SubjectConfirmation(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_Subject) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_Subject(struct zx_sa11_Subject_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Subject", sizeof("Subject") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_NameIdentifier_s* e;
+      for (e = x->NameIdentifier; e; e = (struct zx_sa11_NameIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_NameIdentifier(e, p);
+  }
+  {
+      struct zx_sa11_SubjectConfirmation_s* e;
+      for (e = x->SubjectConfirmation; e; e = (struct zx_sa11_SubjectConfirmation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_SubjectConfirmation(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Subject", sizeof("Subject") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_Subject) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_Subject(struct zx_sa11_Subject_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_Subject) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_Subject(struct zx_ctx* c, struct zx_sa11_Subject_s* x )
+{
+  int len = zx_LEN_sa11_Subject(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_Subject(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_Subject) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_Subject(struct zx_ctx* c, struct zx_sa11_Subject_s* x )
+{
+  int len = zx_LEN_sa11_Subject(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_Subject(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_SubjectConfirmation
+#define EL_STRUCT zx_sa11_SubjectConfirmation_s
+#define EL_NS     sa11
+#define EL_TAG    SubjectConfirmation
+
+/* FUNC(zx_LEN_sa11_SubjectConfirmation) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_SubjectConfirmation(struct zx_sa11_SubjectConfirmation_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SubjectConfirmation") - 1 + 1 + 2 + sizeof("SubjectConfirmation") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  for (se = x->ConfirmationMethod; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("ConfirmationMethod") - 1);
+  for (se = x->SubjectConfirmationData; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("SubjectConfirmationData") - 1);
+  {
+      struct zx_ds_KeyInfo_s* e;
+      for (e = x->KeyInfo; e; e = (struct zx_ds_KeyInfo_s*)e->gg.g.n)
+	  len += zx_LEN_ds_KeyInfo(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_SubjectConfirmation) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_SubjectConfirmation(struct zx_sa11_SubjectConfirmation_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectConfirmation", sizeof("SubjectConfirmation") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->ConfirmationMethod; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "ConfirmationMethod", sizeof("ConfirmationMethod") - 1);
+  for (se = x->SubjectConfirmationData; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "SubjectConfirmationData", sizeof("SubjectConfirmationData") - 1);
+  {
+      struct zx_ds_KeyInfo_s* e;
+      for (e = x->KeyInfo; e; e = (struct zx_ds_KeyInfo_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_KeyInfo(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectConfirmation", sizeof("SubjectConfirmation") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_SubjectConfirmation) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_SubjectConfirmation(struct zx_sa11_SubjectConfirmation_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_SubjectConfirmation) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_SubjectConfirmation(struct zx_ctx* c, struct zx_sa11_SubjectConfirmation_s* x )
+{
+  int len = zx_LEN_sa11_SubjectConfirmation(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_SubjectConfirmation(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_SubjectConfirmation) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_SubjectConfirmation(struct zx_ctx* c, struct zx_sa11_SubjectConfirmation_s* x )
+{
+  int len = zx_LEN_sa11_SubjectConfirmation(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_SubjectConfirmation(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_SubjectLocality
+#define EL_STRUCT zx_sa11_SubjectLocality_s
+#define EL_NS     sa11
+#define EL_TAG    SubjectLocality
+
+/* FUNC(zx_LEN_sa11_SubjectLocality) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_SubjectLocality(struct zx_sa11_SubjectLocality_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SubjectLocality") - 1 + 1 + 2 + sizeof("SubjectLocality") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->IPAddress, sizeof("IPAddress"));
+  len += zx_attr_len(x->DNSAddress, sizeof("DNSAddress"));
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_SubjectLocality) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_SubjectLocality(struct zx_sa11_SubjectLocality_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectLocality", sizeof("SubjectLocality") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->IPAddress, "IPAddress", sizeof("IPAddress")-1);
+  p = zx_attr_enc(p, x->DNSAddress, "DNSAddress", sizeof("DNSAddress")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectLocality", sizeof("SubjectLocality") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_SubjectLocality) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_SubjectLocality(struct zx_sa11_SubjectLocality_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_SubjectLocality) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_SubjectLocality(struct zx_ctx* c, struct zx_sa11_SubjectLocality_s* x )
+{
+  int len = zx_LEN_sa11_SubjectLocality(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_SubjectLocality(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_SubjectLocality) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_SubjectLocality(struct zx_ctx* c, struct zx_sa11_SubjectLocality_s* x )
+{
+  int len = zx_LEN_sa11_SubjectLocality(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_SubjectLocality(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sa11_SubjectStatement
+#define EL_STRUCT zx_sa11_SubjectStatement_s
+#define EL_NS     sa11
+#define EL_TAG    SubjectStatement
+
+/* FUNC(zx_LEN_sa11_SubjectStatement) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sa11_SubjectStatement(struct zx_sa11_SubjectStatement_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SubjectStatement") - 1 + 1 + 2 + sizeof("SubjectStatement") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sa11_SubjectStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sa11_SubjectStatement(struct zx_sa11_SubjectStatement_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectStatement", sizeof("SubjectStatement") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectStatement", sizeof("SubjectStatement") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sa11_SubjectStatement) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sa11_SubjectStatement(struct zx_sa11_SubjectStatement_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sa11_SubjectStatement) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sa11_SubjectStatement(struct zx_ctx* c, struct zx_sa11_SubjectStatement_s* x )
+{
+  int len = zx_LEN_sa11_SubjectStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sa11_SubjectStatement(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sa11_SubjectStatement) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sa11_SubjectStatement(struct zx_ctx* c, struct zx_sa11_SubjectStatement_s* x )
+{
+  int len = zx_LEN_sa11_SubjectStatement(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sa11_SubjectStatement(x, buf ), buf, len);
 }
 
 
@@ -6883,6 +21014,51 @@ int zx_LEN_se_Body(struct zx_se_Body_s* x )
 	  len += zx_LEN_sp_Response(e);
   }
   {
+      struct zx_sp11_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_sp11_Request_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Request(e);
+  }
+  {
+      struct zx_sp11_Response_s* e;
+      for (e = x->sp11_Response; e; e = (struct zx_sp11_Response_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Response(e);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierRequest_s* e;
+      for (e = x->RegisterNameIdentifierRequest; e; e = (struct zx_ff12_RegisterNameIdentifierRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_RegisterNameIdentifierRequest(e);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierResponse_s* e;
+      for (e = x->RegisterNameIdentifierResponse; e; e = (struct zx_ff12_RegisterNameIdentifierResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_RegisterNameIdentifierResponse(e);
+  }
+  {
+      struct zx_ff12_FederationTerminationNotification_s* e;
+      for (e = x->FederationTerminationNotification; e; e = (struct zx_ff12_FederationTerminationNotification_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_FederationTerminationNotification(e);
+  }
+  {
+      struct zx_ff12_LogoutRequest_s* e;
+      for (e = x->ff12_LogoutRequest; e; e = (struct zx_ff12_LogoutRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_LogoutRequest(e);
+  }
+  {
+      struct zx_ff12_LogoutResponse_s* e;
+      for (e = x->ff12_LogoutResponse; e; e = (struct zx_ff12_LogoutResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_LogoutResponse(e);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingRequest_s* e;
+      for (e = x->NameIdentifierMappingRequest; e; e = (struct zx_ff12_NameIdentifierMappingRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_NameIdentifierMappingRequest(e);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingResponse_s* e;
+      for (e = x->NameIdentifierMappingResponse; e; e = (struct zx_ff12_NameIdentifierMappingResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_NameIdentifierMappingResponse(e);
+  }
+  {
       struct zx_se_Fault_s* e;
       for (e = x->Fault; e; e = (struct zx_se_Fault_s*)e->gg.g.n)
 	  len += zx_LEN_se_Fault(e);
@@ -6988,6 +21164,51 @@ char* zx_ENC_SO_se_Body(struct zx_se_Body_s* x, char* p )
       struct zx_sp_Response_s* e;
       for (e = x->Response; e; e = (struct zx_sp_Response_s*)e->gg.g.n)
 	  p = zx_ENC_SO_sp_Response(e, p);
+  }
+  {
+      struct zx_sp11_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_sp11_Request_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Request(e, p);
+  }
+  {
+      struct zx_sp11_Response_s* e;
+      for (e = x->sp11_Response; e; e = (struct zx_sp11_Response_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Response(e, p);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierRequest_s* e;
+      for (e = x->RegisterNameIdentifierRequest; e; e = (struct zx_ff12_RegisterNameIdentifierRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_RegisterNameIdentifierRequest(e, p);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierResponse_s* e;
+      for (e = x->RegisterNameIdentifierResponse; e; e = (struct zx_ff12_RegisterNameIdentifierResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_RegisterNameIdentifierResponse(e, p);
+  }
+  {
+      struct zx_ff12_FederationTerminationNotification_s* e;
+      for (e = x->FederationTerminationNotification; e; e = (struct zx_ff12_FederationTerminationNotification_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_FederationTerminationNotification(e, p);
+  }
+  {
+      struct zx_ff12_LogoutRequest_s* e;
+      for (e = x->ff12_LogoutRequest; e; e = (struct zx_ff12_LogoutRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_LogoutRequest(e, p);
+  }
+  {
+      struct zx_ff12_LogoutResponse_s* e;
+      for (e = x->ff12_LogoutResponse; e; e = (struct zx_ff12_LogoutResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_LogoutResponse(e, p);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingRequest_s* e;
+      for (e = x->NameIdentifierMappingRequest; e; e = (struct zx_ff12_NameIdentifierMappingRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_NameIdentifierMappingRequest(e, p);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingResponse_s* e;
+      for (e = x->NameIdentifierMappingResponse; e; e = (struct zx_ff12_NameIdentifierMappingResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_NameIdentifierMappingResponse(e, p);
   }
   {
       struct zx_se_Fault_s* e;
@@ -7599,6 +21820,1395 @@ struct zx_str_s* zx_EASY_ENC_WO_se_detail(struct zx_ctx* c, struct zx_se_detail_
   int len = zx_LEN_se_detail(x );
   char* buf = ZX_ALLOC(c, len+1);
   return zx_easy_enc_common(c, zx_ENC_WO_se_detail(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_AttributeQuery
+#define EL_STRUCT zx_sp11_AttributeQuery_s
+#define EL_NS     sp11
+#define EL_TAG    AttributeQuery
+
+/* FUNC(zx_LEN_sp11_AttributeQuery) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_AttributeQuery(struct zx_sp11_AttributeQuery_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AttributeQuery") - 1 + 1 + 2 + sizeof("AttributeQuery") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->Resource, sizeof("Resource"));
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+  {
+      struct zx_sa11_AttributeDesignator_s* e;
+      for (e = x->AttributeDesignator; e; e = (struct zx_sa11_AttributeDesignator_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_AttributeDesignator(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_AttributeQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_AttributeQuery(struct zx_sp11_AttributeQuery_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AttributeQuery", sizeof("AttributeQuery") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->Resource, "Resource", sizeof("Resource")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+  {
+      struct zx_sa11_AttributeDesignator_s* e;
+      for (e = x->AttributeDesignator; e; e = (struct zx_sa11_AttributeDesignator_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_AttributeDesignator(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AttributeQuery", sizeof("AttributeQuery") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_AttributeQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_AttributeQuery(struct zx_sp11_AttributeQuery_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_AttributeQuery) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_AttributeQuery(struct zx_ctx* c, struct zx_sp11_AttributeQuery_s* x )
+{
+  int len = zx_LEN_sp11_AttributeQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_AttributeQuery(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_AttributeQuery) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_AttributeQuery(struct zx_ctx* c, struct zx_sp11_AttributeQuery_s* x )
+{
+  int len = zx_LEN_sp11_AttributeQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_AttributeQuery(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_AuthenticationQuery
+#define EL_STRUCT zx_sp11_AuthenticationQuery_s
+#define EL_NS     sp11
+#define EL_TAG    AuthenticationQuery
+
+/* FUNC(zx_LEN_sp11_AuthenticationQuery) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_AuthenticationQuery(struct zx_sp11_AuthenticationQuery_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthenticationQuery") - 1 + 1 + 2 + sizeof("AuthenticationQuery") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->AuthenticationMethod, sizeof("AuthenticationMethod"));
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_AuthenticationQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_AuthenticationQuery(struct zx_sp11_AuthenticationQuery_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationQuery", sizeof("AuthenticationQuery") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->AuthenticationMethod, "AuthenticationMethod", sizeof("AuthenticationMethod")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthenticationQuery", sizeof("AuthenticationQuery") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_AuthenticationQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_AuthenticationQuery(struct zx_sp11_AuthenticationQuery_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_AuthenticationQuery) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_AuthenticationQuery(struct zx_ctx* c, struct zx_sp11_AuthenticationQuery_s* x )
+{
+  int len = zx_LEN_sp11_AuthenticationQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_AuthenticationQuery(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_AuthenticationQuery) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_AuthenticationQuery(struct zx_ctx* c, struct zx_sp11_AuthenticationQuery_s* x )
+{
+  int len = zx_LEN_sp11_AuthenticationQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_AuthenticationQuery(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_AuthorizationDecisionQuery
+#define EL_STRUCT zx_sp11_AuthorizationDecisionQuery_s
+#define EL_NS     sp11
+#define EL_TAG    AuthorizationDecisionQuery
+
+/* FUNC(zx_LEN_sp11_AuthorizationDecisionQuery) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_AuthorizationDecisionQuery(struct zx_sp11_AuthorizationDecisionQuery_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("AuthorizationDecisionQuery") - 1 + 1 + 2 + sizeof("AuthorizationDecisionQuery") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->Resource, sizeof("Resource"));
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+  {
+      struct zx_sa11_Action_s* e;
+      for (e = x->Action; e; e = (struct zx_sa11_Action_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Action(e);
+  }
+  {
+      struct zx_sa11_Evidence_s* e;
+      for (e = x->Evidence; e; e = (struct zx_sa11_Evidence_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Evidence(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_AuthorizationDecisionQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_AuthorizationDecisionQuery(struct zx_sp11_AuthorizationDecisionQuery_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthorizationDecisionQuery", sizeof("AuthorizationDecisionQuery") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->Resource, "Resource", sizeof("Resource")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+  {
+      struct zx_sa11_Action_s* e;
+      for (e = x->Action; e; e = (struct zx_sa11_Action_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Action(e, p);
+  }
+  {
+      struct zx_sa11_Evidence_s* e;
+      for (e = x->Evidence; e; e = (struct zx_sa11_Evidence_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Evidence(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "AuthorizationDecisionQuery", sizeof("AuthorizationDecisionQuery") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_AuthorizationDecisionQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_AuthorizationDecisionQuery(struct zx_sp11_AuthorizationDecisionQuery_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_AuthorizationDecisionQuery) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_AuthorizationDecisionQuery(struct zx_ctx* c, struct zx_sp11_AuthorizationDecisionQuery_s* x )
+{
+  int len = zx_LEN_sp11_AuthorizationDecisionQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_AuthorizationDecisionQuery(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_AuthorizationDecisionQuery) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_AuthorizationDecisionQuery(struct zx_ctx* c, struct zx_sp11_AuthorizationDecisionQuery_s* x )
+{
+  int len = zx_LEN_sp11_AuthorizationDecisionQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_AuthorizationDecisionQuery(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_Request
+#define EL_STRUCT zx_sp11_Request_s
+#define EL_NS     sp11
+#define EL_TAG    Request
+
+/* FUNC(zx_LEN_sp11_Request) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_Request(struct zx_sp11_Request_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Request") - 1 + 1 + 2 + sizeof("Request") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->RequestID, sizeof("RequestID"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  for (se = x->Query; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("Query") - 1);
+  {
+      struct zx_sp11_SubjectQuery_s* e;
+      for (e = x->SubjectQuery; e; e = (struct zx_sp11_SubjectQuery_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_SubjectQuery(e);
+  }
+  {
+      struct zx_sp11_AuthenticationQuery_s* e;
+      for (e = x->AuthenticationQuery; e; e = (struct zx_sp11_AuthenticationQuery_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_AuthenticationQuery(e);
+  }
+  {
+      struct zx_sp11_AttributeQuery_s* e;
+      for (e = x->AttributeQuery; e; e = (struct zx_sp11_AttributeQuery_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_AttributeQuery(e);
+  }
+  {
+      struct zx_sp11_AuthorizationDecisionQuery_s* e;
+      for (e = x->AuthorizationDecisionQuery; e; e = (struct zx_sp11_AuthorizationDecisionQuery_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_AuthorizationDecisionQuery(e);
+  }
+  for (se = x->AssertionIDReference; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionIDReference") - 1);
+  for (se = x->AssertionArtifact; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("AssertionArtifact") - 1);
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_Request) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_Request(struct zx_sp11_Request_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Request", sizeof("Request") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->RequestID, "RequestID", sizeof("RequestID")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  for (se = x->RespondWith; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "RespondWith", sizeof("RespondWith") - 1);
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  for (se = x->Query; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "Query", sizeof("Query") - 1);
+  {
+      struct zx_sp11_SubjectQuery_s* e;
+      for (e = x->SubjectQuery; e; e = (struct zx_sp11_SubjectQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_SubjectQuery(e, p);
+  }
+  {
+      struct zx_sp11_AuthenticationQuery_s* e;
+      for (e = x->AuthenticationQuery; e; e = (struct zx_sp11_AuthenticationQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_AuthenticationQuery(e, p);
+  }
+  {
+      struct zx_sp11_AttributeQuery_s* e;
+      for (e = x->AttributeQuery; e; e = (struct zx_sp11_AttributeQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_AttributeQuery(e, p);
+  }
+  {
+      struct zx_sp11_AuthorizationDecisionQuery_s* e;
+      for (e = x->AuthorizationDecisionQuery; e; e = (struct zx_sp11_AuthorizationDecisionQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_AuthorizationDecisionQuery(e, p);
+  }
+  for (se = x->AssertionIDReference; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionIDReference", sizeof("AssertionIDReference") - 1);
+  for (se = x->AssertionArtifact; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "AssertionArtifact", sizeof("AssertionArtifact") - 1);
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Request", sizeof("Request") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_Request) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_Request(struct zx_sp11_Request_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_Request) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_Request(struct zx_ctx* c, struct zx_sp11_Request_s* x )
+{
+  int len = zx_LEN_sp11_Request(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_Request(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_Request) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_Request(struct zx_ctx* c, struct zx_sp11_Request_s* x )
+{
+  int len = zx_LEN_sp11_Request(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_Request(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_Response
+#define EL_STRUCT zx_sp11_Response_s
+#define EL_NS     sp11
+#define EL_TAG    Response
+
+/* FUNC(zx_LEN_sp11_Response) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_Response(struct zx_sp11_Response_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Response") - 1 + 1 + 2 + sizeof("Response") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->ResponseID, sizeof("ResponseID"));
+  len += zx_attr_len(x->InResponseTo, sizeof("InResponseTo"));
+  len += zx_attr_len(x->MajorVersion, sizeof("MajorVersion"));
+  len += zx_attr_len(x->MinorVersion, sizeof("MinorVersion"));
+  len += zx_attr_len(x->IssueInstant, sizeof("IssueInstant"));
+  len += zx_attr_len(x->Recipient, sizeof("Recipient"));
+
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  len += zx_LEN_ds_Signature(e);
+  }
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Status(e);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Assertion(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_Response) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_Response(struct zx_sp11_Response_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Response", sizeof("Response") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->ResponseID, "ResponseID", sizeof("ResponseID")-1);
+  p = zx_attr_enc(p, x->InResponseTo, "InResponseTo", sizeof("InResponseTo")-1);
+  p = zx_attr_enc(p, x->MajorVersion, "MajorVersion", sizeof("MajorVersion")-1);
+  p = zx_attr_enc(p, x->MinorVersion, "MinorVersion", sizeof("MinorVersion")-1);
+  p = zx_attr_enc(p, x->IssueInstant, "IssueInstant", sizeof("IssueInstant")-1);
+  p = zx_attr_enc(p, x->Recipient, "Recipient", sizeof("Recipient")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ds_Signature(e, p);
+  }
+  {
+      struct zx_sp11_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_sp11_Status_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Status(e, p);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Assertion(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Response", sizeof("Response") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_Response) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_Response(struct zx_sp11_Response_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_Response) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_Response(struct zx_ctx* c, struct zx_sp11_Response_s* x )
+{
+  int len = zx_LEN_sp11_Response(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_Response(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_Response) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_Response(struct zx_ctx* c, struct zx_sp11_Response_s* x )
+{
+  int len = zx_LEN_sp11_Response(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_Response(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_Status
+#define EL_STRUCT zx_sp11_Status_s
+#define EL_NS     sp11
+#define EL_TAG    Status
+
+/* FUNC(zx_LEN_sp11_Status) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_Status(struct zx_sp11_Status_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("Status") - 1 + 1 + 2 + sizeof("Status") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_sp11_StatusCode_s* e;
+      for (e = x->StatusCode; e; e = (struct zx_sp11_StatusCode_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_StatusCode(e);
+  }
+  for (se = x->StatusMessage; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_simple_elem(se, sizeof("StatusMessage") - 1);
+  {
+      struct zx_sp11_StatusDetail_s* e;
+      for (e = x->StatusDetail; e; e = (struct zx_sp11_StatusDetail_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_StatusDetail(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_Status) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_Status(struct zx_sp11_Status_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Status", sizeof("Status") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sp11_StatusCode_s* e;
+      for (e = x->StatusCode; e; e = (struct zx_sp11_StatusCode_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_StatusCode(e, p);
+  }
+  for (se = x->StatusMessage; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(se, p, "StatusMessage", sizeof("StatusMessage") - 1);
+  {
+      struct zx_sp11_StatusDetail_s* e;
+      for (e = x->StatusDetail; e; e = (struct zx_sp11_StatusDetail_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_StatusDetail(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "Status", sizeof("Status") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_Status) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_Status(struct zx_sp11_Status_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_Status) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_Status(struct zx_ctx* c, struct zx_sp11_Status_s* x )
+{
+  int len = zx_LEN_sp11_Status(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_Status(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_Status) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_Status(struct zx_ctx* c, struct zx_sp11_Status_s* x )
+{
+  int len = zx_LEN_sp11_Status(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_Status(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_StatusCode
+#define EL_STRUCT zx_sp11_StatusCode_s
+#define EL_NS     sp11
+#define EL_TAG    StatusCode
+
+/* FUNC(zx_LEN_sp11_StatusCode) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_StatusCode(struct zx_sp11_StatusCode_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("StatusCode") - 1 + 1 + 2 + sizeof("StatusCode") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  len += zx_attr_len(x->Value, sizeof("Value"));
+
+  {
+      struct zx_sp11_StatusCode_s* e;
+      for (e = x->StatusCode; e; e = (struct zx_sp11_StatusCode_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_StatusCode(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_StatusCode) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_StatusCode(struct zx_sp11_StatusCode_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "StatusCode", sizeof("StatusCode") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  p = zx_attr_enc(p, x->Value, "Value", sizeof("Value")-1);
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sp11_StatusCode_s* e;
+      for (e = x->StatusCode; e; e = (struct zx_sp11_StatusCode_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_StatusCode(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "StatusCode", sizeof("StatusCode") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_StatusCode) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_StatusCode(struct zx_sp11_StatusCode_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_StatusCode) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_StatusCode(struct zx_ctx* c, struct zx_sp11_StatusCode_s* x )
+{
+  int len = zx_LEN_sp11_StatusCode(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_StatusCode(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_StatusCode) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_StatusCode(struct zx_ctx* c, struct zx_sp11_StatusCode_s* x )
+{
+  int len = zx_LEN_sp11_StatusCode(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_StatusCode(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_StatusDetail
+#define EL_STRUCT zx_sp11_StatusDetail_s
+#define EL_NS     sp11
+#define EL_TAG    StatusDetail
+
+/* FUNC(zx_LEN_sp11_StatusDetail) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_StatusDetail(struct zx_sp11_StatusDetail_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("StatusDetail") - 1 + 1 + 2 + sizeof("StatusDetail") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_StatusDetail) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_StatusDetail(struct zx_sp11_StatusDetail_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "StatusDetail", sizeof("StatusDetail") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "StatusDetail", sizeof("StatusDetail") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_StatusDetail) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_StatusDetail(struct zx_sp11_StatusDetail_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_StatusDetail) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_StatusDetail(struct zx_ctx* c, struct zx_sp11_StatusDetail_s* x )
+{
+  int len = zx_LEN_sp11_StatusDetail(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_StatusDetail(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_StatusDetail) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_StatusDetail(struct zx_ctx* c, struct zx_sp11_StatusDetail_s* x )
+{
+  int len = zx_LEN_sp11_StatusDetail(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_StatusDetail(x, buf ), buf, len);
+}
+
+
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   sp11_SubjectQuery
+#define EL_STRUCT zx_sp11_SubjectQuery_s
+#define EL_NS     sp11
+#define EL_TAG    SubjectQuery
+
+/* FUNC(zx_LEN_sp11_SubjectQuery) */
+
+/* Compute length of an element (and its subelements). The XML attributes
+ * and elements are processed in schema order, although this should
+ * not really matter as length in wire order should be the same. */
+
+int zx_LEN_sp11_SubjectQuery(struct zx_sp11_SubjectQuery_s* x )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  int len = 1 + sizeof("SubjectQuery") - 1 + 1 + 2 + sizeof("SubjectQuery") - 1 + 1;
+  
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
+    len += (x->gg.g.ns->prefix_len + 1) * 2;
+#else
+  /* root node has no begin tag */
+  int len = 0;
+#endif
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Subject(e);
+  }
+
+
+  len += zx_len_common(&x->gg); 
+  return len;
+}
+
+/* FUNC(zx_ENC_SO_sp11_SubjectQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in schema order. This is what you generally want for
+ * rendering new data structure to a string. The wo pointers are not used. */
+
+char* zx_ENC_SO_sp11_SubjectQuery(struct zx_sp11_SubjectQuery_s* x, char* p )
+{
+  struct zx_elem_s* se;
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectQuery", sizeof("SubjectQuery") - 1);
+#else
+  /* root node has no begin tag */
+#endif
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+  p = zx_enc_so_unknown_attrs(p, x->gg.any_attr);
+
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no begin tag */
+#endif
+  
+  {
+      struct zx_sa11_Subject_s* e;
+      for (e = x->Subject; e; e = (struct zx_sa11_Subject_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Subject(e, p);
+  }
+
+
+  p = zx_enc_so_unknown_elems_and_content(p, &x->gg);
+  
+#if 1 /* NORMALMODE */
+  ZX_OUT_CH(p, '<');
+  ZX_OUT_CH(p, '/');
+  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
+    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
+    ZX_OUT_CH(p, ':');
+  }
+  ZX_OUT_MEM(p, "SubjectQuery", sizeof("SubjectQuery") - 1);
+  ZX_OUT_CH(p, '>');
+#else
+  /* root node has no end tag ither */
+#endif
+  return p;
+}
+
+/* FUNC(zx_ENC_WO_sp11_SubjectQuery) */
+
+/* Render element into string. The XML attributes and elements are
+ * processed in wire order by chasing wo pointers. This is what you want for
+ * validating signatures on other people's XML documents. */
+
+char* zx_ENC_WO_sp11_SubjectQuery(struct zx_sp11_SubjectQuery_s* x, char* p )
+{
+  ERR("*** enc_wo not implemented %d", 0);
+  return 0;
+}
+
+/* FUNC(zx_EASY_ENC_SO_sp11_SubjectQuery) */
+
+struct zx_str_s* zx_EASY_ENC_SO_sp11_SubjectQuery(struct zx_ctx* c, struct zx_sp11_SubjectQuery_s* x )
+{
+  int len = zx_LEN_sp11_SubjectQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_SO_sp11_SubjectQuery(x, buf ), buf, len);
+}
+
+/* FUNC(zx_EASY_ENC_WO_sp11_SubjectQuery) */
+
+struct zx_str_s* zx_EASY_ENC_WO_sp11_SubjectQuery(struct zx_ctx* c, struct zx_sp11_SubjectQuery_s* x )
+{
+  int len = zx_LEN_sp11_SubjectQuery(x );
+  char* buf = ZX_ALLOC(c, len+1);
+  return zx_easy_enc_common(c, zx_ENC_WO_sp11_SubjectQuery(x, buf ), buf, len);
 }
 
 
@@ -14144,6 +29754,81 @@ int zx_LEN_root(struct zx_root_s* x )
       for (e = x->Envelope; e; e = (struct zx_se_Envelope_s*)e->gg.g.n)
 	  len += zx_LEN_se_Envelope(e);
   }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_sa11_Assertion(e);
+  }
+  {
+      struct zx_sp11_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_sp11_Request_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Request(e);
+  }
+  {
+      struct zx_sp11_Response_s* e;
+      for (e = x->sp11_Response; e; e = (struct zx_sp11_Response_s*)e->gg.g.n)
+	  len += zx_LEN_sp11_Response(e);
+  }
+  {
+      struct zx_ff12_Assertion_s* e;
+      for (e = x->ff12_Assertion; e; e = (struct zx_ff12_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_Assertion(e);
+  }
+  {
+      struct zx_ff12_AuthnRequest_s* e;
+      for (e = x->ff12_AuthnRequest; e; e = (struct zx_ff12_AuthnRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnRequest(e);
+  }
+  {
+      struct zx_ff12_AuthnResponse_s* e;
+      for (e = x->AuthnResponse; e; e = (struct zx_ff12_AuthnResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnResponse(e);
+  }
+  {
+      struct zx_ff12_AuthnRequestEnvelope_s* e;
+      for (e = x->AuthnRequestEnvelope; e; e = (struct zx_ff12_AuthnRequestEnvelope_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnRequestEnvelope(e);
+  }
+  {
+      struct zx_ff12_AuthnResponseEnvelope_s* e;
+      for (e = x->AuthnResponseEnvelope; e; e = (struct zx_ff12_AuthnResponseEnvelope_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_AuthnResponseEnvelope(e);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierRequest_s* e;
+      for (e = x->RegisterNameIdentifierRequest; e; e = (struct zx_ff12_RegisterNameIdentifierRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_RegisterNameIdentifierRequest(e);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierResponse_s* e;
+      for (e = x->RegisterNameIdentifierResponse; e; e = (struct zx_ff12_RegisterNameIdentifierResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_RegisterNameIdentifierResponse(e);
+  }
+  {
+      struct zx_ff12_FederationTerminationNotification_s* e;
+      for (e = x->FederationTerminationNotification; e; e = (struct zx_ff12_FederationTerminationNotification_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_FederationTerminationNotification(e);
+  }
+  {
+      struct zx_ff12_LogoutRequest_s* e;
+      for (e = x->ff12_LogoutRequest; e; e = (struct zx_ff12_LogoutRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_LogoutRequest(e);
+  }
+  {
+      struct zx_ff12_LogoutResponse_s* e;
+      for (e = x->ff12_LogoutResponse; e; e = (struct zx_ff12_LogoutResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_LogoutResponse(e);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingRequest_s* e;
+      for (e = x->NameIdentifierMappingRequest; e; e = (struct zx_ff12_NameIdentifierMappingRequest_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_NameIdentifierMappingRequest(e);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingResponse_s* e;
+      for (e = x->NameIdentifierMappingResponse; e; e = (struct zx_ff12_NameIdentifierMappingResponse_s*)e->gg.g.n)
+	  len += zx_LEN_ff12_NameIdentifierMappingResponse(e);
+  }
 
 
   len += zx_len_common(&x->gg); 
@@ -14211,6 +29896,81 @@ char* zx_ENC_SO_root(struct zx_root_s* x, char* p )
       struct zx_se_Envelope_s* e;
       for (e = x->Envelope; e; e = (struct zx_se_Envelope_s*)e->gg.g.n)
 	  p = zx_ENC_SO_se_Envelope(e, p);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Assertion(e, p);
+  }
+  {
+      struct zx_sp11_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_sp11_Request_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Request(e, p);
+  }
+  {
+      struct zx_sp11_Response_s* e;
+      for (e = x->sp11_Response; e; e = (struct zx_sp11_Response_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sp11_Response(e, p);
+  }
+  {
+      struct zx_ff12_Assertion_s* e;
+      for (e = x->ff12_Assertion; e; e = (struct zx_ff12_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Assertion(e, p);
+  }
+  {
+      struct zx_ff12_AuthnRequest_s* e;
+      for (e = x->ff12_AuthnRequest; e; e = (struct zx_ff12_AuthnRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnRequest(e, p);
+  }
+  {
+      struct zx_ff12_AuthnResponse_s* e;
+      for (e = x->AuthnResponse; e; e = (struct zx_ff12_AuthnResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnResponse(e, p);
+  }
+  {
+      struct zx_ff12_AuthnRequestEnvelope_s* e;
+      for (e = x->AuthnRequestEnvelope; e; e = (struct zx_ff12_AuthnRequestEnvelope_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnRequestEnvelope(e, p);
+  }
+  {
+      struct zx_ff12_AuthnResponseEnvelope_s* e;
+      for (e = x->AuthnResponseEnvelope; e; e = (struct zx_ff12_AuthnResponseEnvelope_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_AuthnResponseEnvelope(e, p);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierRequest_s* e;
+      for (e = x->RegisterNameIdentifierRequest; e; e = (struct zx_ff12_RegisterNameIdentifierRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_RegisterNameIdentifierRequest(e, p);
+  }
+  {
+      struct zx_ff12_RegisterNameIdentifierResponse_s* e;
+      for (e = x->RegisterNameIdentifierResponse; e; e = (struct zx_ff12_RegisterNameIdentifierResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_RegisterNameIdentifierResponse(e, p);
+  }
+  {
+      struct zx_ff12_FederationTerminationNotification_s* e;
+      for (e = x->FederationTerminationNotification; e; e = (struct zx_ff12_FederationTerminationNotification_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_FederationTerminationNotification(e, p);
+  }
+  {
+      struct zx_ff12_LogoutRequest_s* e;
+      for (e = x->ff12_LogoutRequest; e; e = (struct zx_ff12_LogoutRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_LogoutRequest(e, p);
+  }
+  {
+      struct zx_ff12_LogoutResponse_s* e;
+      for (e = x->ff12_LogoutResponse; e; e = (struct zx_ff12_LogoutResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_LogoutResponse(e, p);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingRequest_s* e;
+      for (e = x->NameIdentifierMappingRequest; e; e = (struct zx_ff12_NameIdentifierMappingRequest_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_NameIdentifierMappingRequest(e, p);
+  }
+  {
+      struct zx_ff12_NameIdentifierMappingResponse_s* e;
+      for (e = x->NameIdentifierMappingResponse; e; e = (struct zx_ff12_NameIdentifierMappingResponse_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_NameIdentifierMappingResponse(e, p);
   }
 
 

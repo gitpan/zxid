@@ -1420,8 +1420,8 @@ static swig_module_info swig_module = {swig_types, 40, 0, 0, 0, 0};
 
 #define SWIG_init    boot_Net__SAML
 
-#define SWIG_name   "zxidc::boot_zxid"
-#define SWIG_prefix "zxidc::"
+#define SWIG_name   "Net::SAMLc::boot_Net__SAML"
+#define SWIG_prefix "Net::SAMLc::"
 
 #define SWIGVERSION 0x010329 
 
@@ -1834,8 +1834,8 @@ SWIG_From_size_t  SWIG_PERL_DECL_ARGS_1(size_t value)
 }
 
 #ifdef PERL_OBJECT
-#define MAGIC_CLASS _wrap_zxid_var::
-class _wrap_zxid_var : public CPerlObj {
+#define MAGIC_CLASS _wrap_Net::SAML_var::
+class _wrap_Net::SAML_var : public CPerlObj {
 public:
 #else
 #define MAGIC_CLASS
@@ -3418,7 +3418,14 @@ XS(_wrap_zx_elem_s_xmlns_get) {
     }
     arg1 = (struct zx_elem_s *)(argp1);
     result = (struct zx_str_s *) ((arg1)->xmlns);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     XSRETURN(argvi);
   fail:
@@ -3484,7 +3491,14 @@ XS(_wrap_zx_elem_s_content_get) {
     }
     arg1 = (struct zx_elem_s *)(argp1);
     result = (struct zx_str_s *) ((arg1)->content);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     XSRETURN(argvi);
   fail:
@@ -3586,15 +3600,10 @@ XS(_wrap_zx_ref_len_simple_elem) {
     struct zx_elem_s *result = 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
+    if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: zx_ref_len_simple_elem(c,len,s);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zx_ctx, 0 |  0 );
@@ -3602,26 +3611,15 @@ XS(_wrap_zx_ref_len_simple_elem) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zx_ref_len_simple_elem" "', argument " "1"" of type '" "struct zx_ctx *""'"); 
     }
     arg1 = (struct zx_ctx *)(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "zx_ref_len_simple_elem" "', argument " "2"" of type '" "int""'");
-    } 
-    arg2 = (int)(val2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zx_ref_len_simple_elem" "', argument " "3"" of type '" "char *""'");
+    {
+      arg3 = SvPV(ST(1), arg2);
     }
-    arg3 = buf3;
     result = (struct zx_elem_s *)zx_ref_len_simple_elem(arg1,arg2,arg3);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_elem_s, 0 | SWIG_SHADOW); argvi++ ;
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
@@ -3674,15 +3672,10 @@ XS(_wrap_zx_dup_len_simple_elem) {
     struct zx_elem_s *result = 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
+    if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: zx_dup_len_simple_elem(c,len,s);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zx_ctx, 0 |  0 );
@@ -3690,26 +3683,15 @@ XS(_wrap_zx_dup_len_simple_elem) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zx_dup_len_simple_elem" "', argument " "1"" of type '" "struct zx_ctx *""'"); 
     }
     arg1 = (struct zx_ctx *)(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "zx_dup_len_simple_elem" "', argument " "2"" of type '" "int""'");
-    } 
-    arg2 = (int)(val2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zx_dup_len_simple_elem" "', argument " "3"" of type '" "char *""'");
+    {
+      arg3 = SvPV(ST(1), arg2);
     }
-    arg3 = buf3;
     result = (struct zx_elem_s *)zx_dup_len_simple_elem(arg1,arg2,arg3);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_elem_s, 0 | SWIG_SHADOW); argvi++ ;
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
@@ -3968,7 +3950,14 @@ XS(_wrap_new_zx_str_s) {
       SWIG_croak("Usage: new_zx_str_s();");
     }
     result = (struct zx_str_s *)(struct zx_str_s *) calloc(1, sizeof(struct zx_str_s));
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, SWIG_OWNER | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     XSRETURN(argvi);
   fail:
     SWIG_croak_null();
@@ -4031,7 +4020,14 @@ XS(_wrap_zx_ref_str) {
     }
     arg2 = buf2;
     result = (struct zx_str_s *)zx_ref_str(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     XSRETURN(argvi);
@@ -4051,15 +4047,10 @@ XS(_wrap_zx_ref_len_str) {
     struct zx_str_s *result = 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
+    if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: zx_ref_len_str(c,len,s);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zx_ctx, 0 |  0 );
@@ -4067,26 +4058,22 @@ XS(_wrap_zx_ref_len_str) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zx_ref_len_str" "', argument " "1"" of type '" "struct zx_ctx *""'"); 
     }
     arg1 = (struct zx_ctx *)(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "zx_ref_len_str" "', argument " "2"" of type '" "int""'");
-    } 
-    arg2 = (int)(val2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zx_ref_len_str" "', argument " "3"" of type '" "char *""'");
+    {
+      arg3 = SvPV(ST(1), arg2);
     }
-    arg3 = buf3;
     result = (struct zx_str_s *)zx_ref_len_str(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
@@ -4119,7 +4106,14 @@ XS(_wrap_zx_dup_str) {
     }
     arg2 = buf2;
     result = (struct zx_str_s *)zx_dup_str(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     XSRETURN(argvi);
@@ -4139,15 +4133,10 @@ XS(_wrap_zx_dup_len_str) {
     struct zx_str_s *result = 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
-    int val2 ;
-    int ecode2 = 0 ;
-    int res3 ;
-    char *buf3 = 0 ;
-    int alloc3 = 0 ;
     int argvi = 0;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
+    if ((items < 2) || (items > 2)) {
       SWIG_croak("Usage: zx_dup_len_str(c,len,s);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zx_ctx, 0 |  0 );
@@ -4155,26 +4144,22 @@ XS(_wrap_zx_dup_len_str) {
       SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zx_dup_len_str" "', argument " "1"" of type '" "struct zx_ctx *""'"); 
     }
     arg1 = (struct zx_ctx *)(argp1);
-    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
-    if (!SWIG_IsOK(ecode2)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "zx_dup_len_str" "', argument " "2"" of type '" "int""'");
-    } 
-    arg2 = (int)(val2);
-    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
-    if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zx_dup_len_str" "', argument " "3"" of type '" "char *""'");
+    {
+      arg3 = SvPV(ST(1), arg2);
     }
-    arg3 = buf3;
     result = (struct zx_str_s *)zx_dup_len_str(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     XSRETURN(argvi);
   fail:
     
-    
-    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
     SWIG_croak_null();
   }
 }
@@ -4208,7 +4193,14 @@ XS(_wrap_zx_strf) {
     }
     arg2 = buf2;
     result = (struct zx_str_s *)zx_strf(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     XSRETURN(argvi);
@@ -4288,6 +4280,53 @@ XS(_wrap_zx_str_to_c) {
     
     XSRETURN(argvi);
   fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zx_str_conv) {
+  {
+    struct zx_str_s *arg1 = (struct zx_str_s *) 0 ;
+    int *arg2 = (int *) 0 ;
+    char **arg3 = (char **) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    void *argp3 = 0 ;
+    int res3 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 3) || (items > 3)) {
+      SWIG_croak("Usage: zx_str_conv(ss,out_len,out_s);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zx_str_s, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zx_str_conv" "', argument " "1"" of type '" "struct zx_str_s *""'"); 
+    }
+    arg1 = (struct zx_str_s *)(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_int, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zx_str_conv" "', argument " "2"" of type '" "int *""'"); 
+    }
+    arg2 = (int *)(argp2);
+    res3 = SWIG_ConvertPtr(ST(2), &argp3,SWIGTYPE_p_p_char, 0 |  0 );
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zx_str_conv" "', argument " "3"" of type '" "char **""'"); 
+    }
+    arg3 = (char **)(argp3);
+    zx_str_conv(arg1,arg2,arg3);
+    
+    
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
     
     
     SWIG_croak_null();
@@ -4601,7 +4640,14 @@ XS(_wrap_zx_any_attr_s_ss_get) {
     }
     arg1 = (struct zx_any_attr_s *)(argp1);
     result = (struct zx_str_s *)& ((arg1)->ss);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     XSRETURN(argvi);
   fail:
@@ -5613,7 +5659,14 @@ XS(_wrap_zx_easy_enc_common) {
     } 
     arg4 = (int)(val4);
     result = (struct zx_str_s *)zx_easy_enc_common(arg1,arg2,arg3,arg4);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
@@ -5837,7 +5890,14 @@ XS(_wrap_zx_clone_attr) {
     }
     arg2 = (struct zx_str_s *)(argp2);
     result = (struct zx_str_s *)zx_clone_attr(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     
     XSRETURN(argvi);
@@ -10654,6 +10714,51 @@ XS(_wrap_zxid_sp_sso_desc) {
 }
 
 
+XS(_wrap_zxid_sp_meta) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    struct zxid_cgi *arg2 = (struct zxid_cgi *) 0 ;
+    struct zx_str_s *result = 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: zxid_sp_meta(cf,cgi);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_sp_meta" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_cgi, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_sp_meta" "', argument " "2"" of type '" "struct zxid_cgi *""'"); 
+    }
+    arg2 = (struct zxid_cgi *)(argp2);
+    result = (struct zx_str_s *)zxid_sp_meta(arg1,arg2);
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_zxid_send_sp_meta) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
@@ -10710,7 +10815,49 @@ XS(_wrap_zxid_my_entity_id) {
     }
     arg1 = (struct zxid_conf *)(argp1);
     result = (struct zx_str_s *)zxid_my_entity_id(arg1);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_my_cdc_url) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    struct zx_str_s *result = 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: zxid_my_cdc_url(cf);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_my_cdc_url" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    result = (struct zx_str_s *)zxid_my_cdc_url(arg1);
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     XSRETURN(argvi);
   fail:
@@ -11481,7 +11628,14 @@ XS(_wrap_zxid_idp_loc_raw) {
     } 
     arg6 = (int)(val6);
     result = (struct zx_str_s *)zxid_idp_loc_raw(arg1,arg2,arg3,arg4,arg5,arg6);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     
     
@@ -11552,7 +11706,14 @@ XS(_wrap_zxid_idp_loc) {
     }
     arg5 = buf5;
     result = (struct zx_str_s *)zxid_idp_loc(arg1,arg2,arg3,arg4,arg5);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     
     
@@ -11664,7 +11825,14 @@ XS(_wrap_zxid_saml2_redir_enc) {
     }
     arg2 = (struct zx_str_s *)(argp2);
     result = (struct zx_str_s *)zxid_saml2_redir_enc(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     
     XSRETURN(argvi);
@@ -11758,7 +11926,14 @@ XS(_wrap_zxid_saml2_redir_url) {
     }
     arg3 = (struct zx_str_s *)(argp3);
     result = (struct zx_str_s *)zxid_saml2_redir_url(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     
     
@@ -11943,7 +12118,14 @@ XS(_wrap_zxid_start_sso_url) {
     }
     arg2 = (struct zxid_cgi *)(argp2);
     result = (struct zx_str_s *)zxid_start_sso_url(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     
     XSRETURN(argvi);
@@ -12180,7 +12362,14 @@ XS(_wrap_zxid_date_time) {
       }
     }
     result = (struct zx_str_s *)zxid_date_time(arg1,arg2);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     XSRETURN(argvi);
   fail:
@@ -12225,7 +12414,14 @@ XS(_wrap_zxid_mk_id) {
     } 
     arg3 = (int)(val3);
     result = (struct zx_str_s *)zxid_mk_id(arg1,arg2,arg3);
-    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_str_s, 0 | SWIG_SHADOW); argvi++ ;
+    {
+      if (argvi >= items) {
+        EXTEND(sp,1);
+      }
+      ST(argvi) = newSVpv(result->s, result->len);
+      /* Do not free underlying zx_str because they are usually returned by reference. */
+      ++argvi;
+    }
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     
@@ -14051,12 +14247,12 @@ static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_time_t = {"_p_time_t", "time_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "unsigned char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_zx_any_attr_s = {"_p_zx_any_attr_s", "struct zx_any_attr_s *", 0, 0, (void*)"zxid::zx_any_attr_s", 0};
-static swig_type_info _swigt__p_zx_any_elem_s = {"_p_zx_any_elem_s", "struct zx_any_elem_s *", 0, 0, (void*)"zxid::zx_any_elem_s", 0};
-static swig_type_info _swigt__p_zx_ctx = {"_p_zx_ctx", "struct zx_ctx *", 0, 0, (void*)"zxid::zx_ctx", 0};
-static swig_type_info _swigt__p_zx_elem_s = {"_p_zx_elem_s", "struct zx_elem_s *", 0, 0, (void*)"zxid::zx_elem_s", 0};
-static swig_type_info _swigt__p_zx_node_s = {"_p_zx_node_s", "struct zx_node_s *", 0, 0, (void*)"zxid::zx_node_s", 0};
-static swig_type_info _swigt__p_zx_ns_s = {"_p_zx_ns_s", "struct zx_ns_s *", 0, 0, (void*)"zxid::zx_ns_s", 0};
+static swig_type_info _swigt__p_zx_any_attr_s = {"_p_zx_any_attr_s", "struct zx_any_attr_s *", 0, 0, (void*)"Net::SAML::zx_any_attr_s", 0};
+static swig_type_info _swigt__p_zx_any_elem_s = {"_p_zx_any_elem_s", "struct zx_any_elem_s *", 0, 0, (void*)"Net::SAML::zx_any_elem_s", 0};
+static swig_type_info _swigt__p_zx_ctx = {"_p_zx_ctx", "struct zx_ctx *", 0, 0, (void*)"Net::SAML::zx_ctx", 0};
+static swig_type_info _swigt__p_zx_elem_s = {"_p_zx_elem_s", "struct zx_elem_s *", 0, 0, (void*)"Net::SAML::zx_elem_s", 0};
+static swig_type_info _swigt__p_zx_node_s = {"_p_zx_node_s", "struct zx_node_s *", 0, 0, (void*)"Net::SAML::zx_node_s", 0};
+static swig_type_info _swigt__p_zx_ns_s = {"_p_zx_ns_s", "struct zx_ns_s *", 0, 0, (void*)"Net::SAML::zx_ns_s", 0};
 static swig_type_info _swigt__p_zx_root_s = {"_p_zx_root_s", "struct zx_root_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_sa_Assertion_s = {"_p_zx_sa_Assertion_s", "struct zx_sa_Assertion_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_sa_Issuer_s = {"_p_zx_sa_Issuer_s", "struct zx_sa_Issuer_s *", 0, 0, (void*)0, 0};
@@ -14069,13 +14265,13 @@ static swig_type_info _swigt__p_zx_sp_LogoutResponse_s = {"_p_zx_sp_LogoutRespon
 static swig_type_info _swigt__p_zx_sp_ManageNameIDRequest_s = {"_p_zx_sp_ManageNameIDRequest_s", "struct zx_sp_ManageNameIDRequest_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_sp_ManageNameIDResponse_s = {"_p_zx_sp_ManageNameIDResponse_s", "struct zx_sp_ManageNameIDResponse_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_sp_Status_s = {"_p_zx_sp_Status_s", "struct zx_sp_Status_s *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_zx_str_s = {"_p_zx_str_s", "struct zx_str_s *", 0, 0, (void*)"zxid::zx_str_s", 0};
-static swig_type_info _swigt__p_zx_tok = {"_p_zx_tok", "zx_tok *", 0, 0, (void*)"zxid::zx_tok", 0};
-static swig_type_info _swigt__p_zxid_cgi = {"_p_zxid_cgi", "struct zxid_cgi *", 0, 0, (void*)"zxid::zxid_cgi", 0};
-static swig_type_info _swigt__p_zxid_conf = {"_p_zxid_conf", "struct zxid_conf *", 0, 0, (void*)"zxid::zxid_conf", 0};
-static swig_type_info _swigt__p_zxid_curl_ctx = {"_p_zxid_curl_ctx", "zxid_curl_ctx *", 0, 0, (void*)"zxid::zxid_curl_ctx", 0};
-static swig_type_info _swigt__p_zxid_entity = {"_p_zxid_entity", "struct zxid_entity *", 0, 0, (void*)"zxid::zxid_entity", 0};
-static swig_type_info _swigt__p_zxid_ses = {"_p_zxid_ses", "struct zxid_ses *", 0, 0, (void*)"zxid::zxid_ses", 0};
+static swig_type_info _swigt__p_zx_str_s = {"_p_zx_str_s", "struct zx_str_s *", 0, 0, (void*)"Net::SAML::zx_str_s", 0};
+static swig_type_info _swigt__p_zx_tok = {"_p_zx_tok", "zx_tok *", 0, 0, (void*)"Net::SAML::zx_tok", 0};
+static swig_type_info _swigt__p_zxid_cgi = {"_p_zxid_cgi", "struct zxid_cgi *", 0, 0, (void*)"Net::SAML::zxid_cgi", 0};
+static swig_type_info _swigt__p_zxid_conf = {"_p_zxid_conf", "struct zxid_conf *", 0, 0, (void*)"Net::SAML::zxid_conf", 0};
+static swig_type_info _swigt__p_zxid_curl_ctx = {"_p_zxid_curl_ctx", "zxid_curl_ctx *", 0, 0, (void*)"Net::SAML::zxid_curl_ctx", 0};
+static swig_type_info _swigt__p_zxid_entity = {"_p_zxid_entity", "struct zxid_entity *", 0, 0, (void*)"Net::SAML::zxid_entity", 0};
+static swig_type_info _swigt__p_zxid_ses = {"_p_zxid_ses", "struct zxid_ses *", 0, 0, (void*)"Net::SAML::zxid_ses", 0};
 static swig_type_info _swigt__p_zxmd_md_AssertionConsumerService_s = {"_p_zxmd_md_AssertionConsumerService_s", "struct zxmd_md_AssertionConsumerService_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxmd_md_EntityDescriptor_s = {"_p_zxmd_md_EntityDescriptor_s", "struct zxmd_md_EntityDescriptor_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxmd_md_KeyDescriptor_s = {"_p_zxmd_md_KeyDescriptor_s", "struct zxmd_md_KeyDescriptor_s *", 0, 0, (void*)0, 0};
@@ -14220,330 +14416,333 @@ static swig_constant_info swig_constants[] = {
 }
 #endif
 static swig_variable_info swig_variables[] = {
-    { "zxidc::std_basis_64", MAGIC_CLASS _wrap_std_basis_64_set, MAGIC_CLASS _wrap_std_basis_64_get,0 },
-    { "zxidc::safe_basis_64", MAGIC_CLASS _wrap_safe_basis_64_set, MAGIC_CLASS _wrap_safe_basis_64_get,0 },
-    { "zxidc::zx_std_index_64", MAGIC_CLASS _wrap_zx_std_index_64_set, MAGIC_CLASS _wrap_zx_std_index_64_get,&SWIGTYPE_p_unsigned_char },
+    { "Net::SAMLc::std_basis_64", MAGIC_CLASS _wrap_std_basis_64_set, MAGIC_CLASS _wrap_std_basis_64_get,0 },
+    { "Net::SAMLc::safe_basis_64", MAGIC_CLASS _wrap_safe_basis_64_set, MAGIC_CLASS _wrap_safe_basis_64_get,0 },
+    { "Net::SAMLc::zx_std_index_64", MAGIC_CLASS _wrap_zx_std_index_64_set, MAGIC_CLASS _wrap_zx_std_index_64_get,&SWIGTYPE_p_unsigned_char },
 {0,0,0,0}
 };
 static swig_command_info swig_commands[] = {
-{"zxidc::zx_ctx_base_set", _wrap_zx_ctx_base_set},
-{"zxidc::zx_ctx_base_get", _wrap_zx_ctx_base_get},
-{"zxidc::zx_ctx_p_set", _wrap_zx_ctx_p_set},
-{"zxidc::zx_ctx_p_get", _wrap_zx_ctx_p_get},
-{"zxidc::zx_ctx_lim_set", _wrap_zx_ctx_lim_set},
-{"zxidc::zx_ctx_lim_get", _wrap_zx_ctx_lim_get},
-{"zxidc::zx_ctx_ns_tab_set", _wrap_zx_ctx_ns_tab_set},
-{"zxidc::zx_ctx_ns_tab_get", _wrap_zx_ctx_ns_tab_get},
-{"zxidc::new_zx_ctx", _wrap_new_zx_ctx},
-{"zxidc::delete_zx_ctx", _wrap_delete_zx_ctx},
-{"zxidc::zx_ns_s_n_set", _wrap_zx_ns_s_n_set},
-{"zxidc::zx_ns_s_n_get", _wrap_zx_ns_s_n_get},
-{"zxidc::zx_ns_s_prefix_len_set", _wrap_zx_ns_s_prefix_len_set},
-{"zxidc::zx_ns_s_prefix_len_get", _wrap_zx_ns_s_prefix_len_get},
-{"zxidc::zx_ns_s_prefix_set", _wrap_zx_ns_s_prefix_set},
-{"zxidc::zx_ns_s_prefix_get", _wrap_zx_ns_s_prefix_get},
-{"zxidc::zx_ns_s_url_len_set", _wrap_zx_ns_s_url_len_set},
-{"zxidc::zx_ns_s_url_len_get", _wrap_zx_ns_s_url_len_get},
-{"zxidc::zx_ns_s_url_set", _wrap_zx_ns_s_url_set},
-{"zxidc::zx_ns_s_url_get", _wrap_zx_ns_s_url_get},
-{"zxidc::new_zx_ns_s", _wrap_new_zx_ns_s},
-{"zxidc::delete_zx_ns_s", _wrap_delete_zx_ns_s},
-{"zxidc::zx_node_s_n_set", _wrap_zx_node_s_n_set},
-{"zxidc::zx_node_s_n_get", _wrap_zx_node_s_n_get},
-{"zxidc::zx_node_s_wo_set", _wrap_zx_node_s_wo_set},
-{"zxidc::zx_node_s_wo_get", _wrap_zx_node_s_wo_get},
-{"zxidc::zx_node_s_ns_set", _wrap_zx_node_s_ns_set},
-{"zxidc::zx_node_s_ns_get", _wrap_zx_node_s_ns_get},
-{"zxidc::zx_node_s_tok_set", _wrap_zx_node_s_tok_set},
-{"zxidc::zx_node_s_tok_get", _wrap_zx_node_s_tok_get},
-{"zxidc::zx_node_s_err_set", _wrap_zx_node_s_err_set},
-{"zxidc::zx_node_s_err_get", _wrap_zx_node_s_err_get},
-{"zxidc::zx_node_s_span_start_set", _wrap_zx_node_s_span_start_set},
-{"zxidc::zx_node_s_span_start_get", _wrap_zx_node_s_span_start_get},
-{"zxidc::zx_node_s_span_end_set", _wrap_zx_node_s_span_end_set},
-{"zxidc::zx_node_s_span_end_get", _wrap_zx_node_s_span_end_get},
-{"zxidc::new_zx_node_s", _wrap_new_zx_node_s},
-{"zxidc::delete_zx_node_s", _wrap_delete_zx_node_s},
-{"zxidc::zx_elem_s_g_set", _wrap_zx_elem_s_g_set},
-{"zxidc::zx_elem_s_g_get", _wrap_zx_elem_s_g_get},
-{"zxidc::zx_elem_s_any_attr_set", _wrap_zx_elem_s_any_attr_set},
-{"zxidc::zx_elem_s_any_attr_get", _wrap_zx_elem_s_any_attr_get},
-{"zxidc::zx_elem_s_any_elem_set", _wrap_zx_elem_s_any_elem_set},
-{"zxidc::zx_elem_s_any_elem_get", _wrap_zx_elem_s_any_elem_get},
-{"zxidc::zx_elem_s_xmlns_set", _wrap_zx_elem_s_xmlns_set},
-{"zxidc::zx_elem_s_xmlns_get", _wrap_zx_elem_s_xmlns_get},
-{"zxidc::zx_elem_s_content_set", _wrap_zx_elem_s_content_set},
-{"zxidc::zx_elem_s_content_get", _wrap_zx_elem_s_content_get},
-{"zxidc::new_zx_elem_s", _wrap_new_zx_elem_s},
-{"zxidc::delete_zx_elem_s", _wrap_delete_zx_elem_s},
-{"zxidc::zx_new_simple_elem", _wrap_zx_new_simple_elem},
-{"zxidc::zx_ref_len_simple_elem", _wrap_zx_ref_len_simple_elem},
-{"zxidc::zx_ref_simple_elem", _wrap_zx_ref_simple_elem},
-{"zxidc::zx_dup_len_simple_elem", _wrap_zx_dup_len_simple_elem},
-{"zxidc::zx_dup_simple_elem", _wrap_zx_dup_simple_elem},
-{"zxidc::zx_str_s_g_set", _wrap_zx_str_s_g_set},
-{"zxidc::zx_str_s_g_get", _wrap_zx_str_s_g_get},
-{"zxidc::zx_str_s_len_set", _wrap_zx_str_s_len_set},
-{"zxidc::zx_str_s_len_get", _wrap_zx_str_s_len_get},
-{"zxidc::zx_str_s_s_set", _wrap_zx_str_s_s_set},
-{"zxidc::zx_str_s_s_get", _wrap_zx_str_s_s_get},
-{"zxidc::new_zx_str_s", _wrap_new_zx_str_s},
-{"zxidc::delete_zx_str_s", _wrap_delete_zx_str_s},
-{"zxidc::zx_ref_str", _wrap_zx_ref_str},
-{"zxidc::zx_ref_len_str", _wrap_zx_ref_len_str},
-{"zxidc::zx_dup_str", _wrap_zx_dup_str},
-{"zxidc::zx_dup_len_str", _wrap_zx_dup_len_str},
-{"zxidc::zx_strf", _wrap_zx_strf},
-{"zxidc::zx_str_free", _wrap_zx_str_free},
-{"zxidc::zx_str_to_c", _wrap_zx_str_to_c},
-{"zxidc::zx_any_elem_s_gg_set", _wrap_zx_any_elem_s_gg_set},
-{"zxidc::zx_any_elem_s_gg_get", _wrap_zx_any_elem_s_gg_get},
-{"zxidc::zx_any_elem_s_name_len_set", _wrap_zx_any_elem_s_name_len_set},
-{"zxidc::zx_any_elem_s_name_len_get", _wrap_zx_any_elem_s_name_len_get},
-{"zxidc::zx_any_elem_s_name_set", _wrap_zx_any_elem_s_name_set},
-{"zxidc::zx_any_elem_s_name_get", _wrap_zx_any_elem_s_name_get},
-{"zxidc::new_zx_any_elem_s", _wrap_new_zx_any_elem_s},
-{"zxidc::delete_zx_any_elem_s", _wrap_delete_zx_any_elem_s},
-{"zxidc::zx_any_attr_s_ss_set", _wrap_zx_any_attr_s_ss_set},
-{"zxidc::zx_any_attr_s_ss_get", _wrap_zx_any_attr_s_ss_get},
-{"zxidc::zx_any_attr_s_name_len_set", _wrap_zx_any_attr_s_name_len_set},
-{"zxidc::zx_any_attr_s_name_len_get", _wrap_zx_any_attr_s_name_len_get},
-{"zxidc::zx_any_attr_s_name_set", _wrap_zx_any_attr_s_name_set},
-{"zxidc::zx_any_attr_s_name_get", _wrap_zx_any_attr_s_name_get},
-{"zxidc::new_zx_any_attr_s", _wrap_new_zx_any_attr_s},
-{"zxidc::delete_zx_any_attr_s", _wrap_delete_zx_any_attr_s},
-{"zxidc::zx_alloc", _wrap_zx_alloc},
-{"zxidc::zx_zalloc", _wrap_zx_zalloc},
-{"zxidc::zx_free", _wrap_zx_free},
-{"zxidc::zx_tok_name_set", _wrap_zx_tok_name_set},
-{"zxidc::zx_tok_name_get", _wrap_zx_tok_name_get},
-{"zxidc::zx_tok_prefix_set", _wrap_zx_tok_prefix_set},
-{"zxidc::zx_tok_prefix_get", _wrap_zx_tok_prefix_get},
-{"zxidc::zx_tok_ns_set", _wrap_zx_tok_ns_set},
-{"zxidc::zx_tok_ns_get", _wrap_zx_tok_ns_get},
-{"zxidc::new_zx_tok", _wrap_new_zx_tok},
-{"zxidc::delete_zx_tok", _wrap_delete_zx_tok},
-{"zxidc::zx_fix_any_elem_dec", _wrap_zx_fix_any_elem_dec},
-{"zxidc::zx_locate_ns_by_prefix", _wrap_zx_locate_ns_by_prefix},
-{"zxidc::zx_locate_ns_by_url", _wrap_zx_locate_ns_by_url},
-{"zxidc::zx_is_ns_prefix", _wrap_zx_is_ns_prefix},
-{"zxidc::zx_xmlns_decl", _wrap_zx_xmlns_decl},
-{"zxidc::zx_scan_xmlns", _wrap_zx_scan_xmlns},
-{"zxidc::zx_len_common", _wrap_zx_len_common},
-{"zxidc::zx_enc_so_unknown_attrs", _wrap_zx_enc_so_unknown_attrs},
-{"zxidc::zx_enc_so_unknown_elems_and_content", _wrap_zx_enc_so_unknown_elems_and_content},
-{"zxidc::zx_easy_enc_common", _wrap_zx_easy_enc_common},
-{"zxidc::zx_attr_len", _wrap_zx_attr_len},
-{"zxidc::zx_attr_enc", _wrap_zx_attr_enc},
-{"zxidc::zx_dup_attr", _wrap_zx_dup_attr},
-{"zxidc::zx_free_attr", _wrap_zx_free_attr},
-{"zxidc::zx_clone_attr", _wrap_zx_clone_attr},
-{"zxidc::zx_free_elem_common", _wrap_zx_free_elem_common},
-{"zxidc::zx_clone_elem_common", _wrap_zx_clone_elem_common},
-{"zxidc::zx_dup_strs_common", _wrap_zx_dup_strs_common},
-{"zxidc::zx_walk_so_unknown_attributes", _wrap_zx_walk_so_unknown_attributes},
-{"zxidc::zx_walk_so_unknown_elems_and_content", _wrap_zx_walk_so_unknown_elems_and_content},
-{"zxidc::zx_deep_clone_simple_elems", _wrap_zx_deep_clone_simple_elems},
-{"zxidc::zx_walk_so_simple_elems", _wrap_zx_walk_so_simple_elems},
-{"zxidc::zx_free_simple_elems", _wrap_zx_free_simple_elems},
-{"zxidc::zx_dup_strs_simple_elems", _wrap_zx_dup_strs_simple_elems},
-{"zxidc::zxid_conf_ctx_set", _wrap_zxid_conf_ctx_set},
-{"zxidc::zxid_conf_ctx_get", _wrap_zxid_conf_ctx_get},
-{"zxidc::zxid_conf_cot_set", _wrap_zxid_conf_cot_set},
-{"zxidc::zxid_conf_cot_get", _wrap_zxid_conf_cot_get},
-{"zxidc::zxid_conf_path_len_set", _wrap_zxid_conf_path_len_set},
-{"zxidc::zxid_conf_path_len_get", _wrap_zxid_conf_path_len_get},
-{"zxidc::zxid_conf_path_set", _wrap_zxid_conf_path_set},
-{"zxidc::zxid_conf_path_get", _wrap_zxid_conf_path_get},
-{"zxidc::zxid_conf_url_set", _wrap_zxid_conf_url_set},
-{"zxidc::zxid_conf_url_get", _wrap_zxid_conf_url_get},
-{"zxidc::zxid_conf_cdc_choice_set", _wrap_zxid_conf_cdc_choice_set},
-{"zxidc::zxid_conf_cdc_choice_get", _wrap_zxid_conf_cdc_choice_get},
-{"zxidc::zxid_conf_cdc_url_set", _wrap_zxid_conf_cdc_url_set},
-{"zxidc::zxid_conf_cdc_url_get", _wrap_zxid_conf_cdc_url_get},
-{"zxidc::zxid_conf_md_fetch_set", _wrap_zxid_conf_md_fetch_set},
-{"zxidc::zxid_conf_md_fetch_get", _wrap_zxid_conf_md_fetch_get},
-{"zxidc::zxid_conf_md_populate_cache_set", _wrap_zxid_conf_md_populate_cache_set},
-{"zxidc::zxid_conf_md_populate_cache_get", _wrap_zxid_conf_md_populate_cache_get},
-{"zxidc::zxid_conf_md_cache_first_set", _wrap_zxid_conf_md_cache_first_set},
-{"zxidc::zxid_conf_md_cache_first_get", _wrap_zxid_conf_md_cache_first_get},
-{"zxidc::zxid_conf_md_cache_last_set", _wrap_zxid_conf_md_cache_last_set},
-{"zxidc::zxid_conf_md_cache_last_get", _wrap_zxid_conf_md_cache_last_get},
-{"zxidc::zxid_conf_authn_req_sign_set", _wrap_zxid_conf_authn_req_sign_set},
-{"zxidc::zxid_conf_authn_req_sign_get", _wrap_zxid_conf_authn_req_sign_get},
-{"zxidc::zxid_conf_want_sso_a7n_signed_set", _wrap_zxid_conf_want_sso_a7n_signed_set},
-{"zxidc::zxid_conf_want_sso_a7n_signed_get", _wrap_zxid_conf_want_sso_a7n_signed_get},
-{"zxidc::zxid_conf_affiliation_set", _wrap_zxid_conf_affiliation_set},
-{"zxidc::zxid_conf_affiliation_get", _wrap_zxid_conf_affiliation_get},
-{"zxidc::zxid_conf_nice_name_set", _wrap_zxid_conf_nice_name_set},
-{"zxidc::zxid_conf_nice_name_get", _wrap_zxid_conf_nice_name_get},
-{"zxidc::zxid_conf_ses_arch_dir_set", _wrap_zxid_conf_ses_arch_dir_set},
-{"zxidc::zxid_conf_ses_arch_dir_get", _wrap_zxid_conf_ses_arch_dir_get},
-{"zxidc::new_zxid_conf", _wrap_new_zxid_conf},
-{"zxidc::delete_zxid_conf", _wrap_delete_zxid_conf},
-{"zxidc::zxid_cgi_op_set", _wrap_zxid_cgi_op_set},
-{"zxidc::zxid_cgi_op_get", _wrap_zxid_cgi_op_get},
-{"zxidc::zxid_cgi_pr_ix_set", _wrap_zxid_cgi_pr_ix_set},
-{"zxidc::zxid_cgi_pr_ix_get", _wrap_zxid_cgi_pr_ix_get},
-{"zxidc::zxid_cgi_allow_create_set", _wrap_zxid_cgi_allow_create_set},
-{"zxidc::zxid_cgi_allow_create_get", _wrap_zxid_cgi_allow_create_get},
-{"zxidc::zxid_cgi_ispassive_set", _wrap_zxid_cgi_ispassive_set},
-{"zxidc::zxid_cgi_ispassive_get", _wrap_zxid_cgi_ispassive_get},
-{"zxidc::zxid_cgi_force_authn_set", _wrap_zxid_cgi_force_authn_set},
-{"zxidc::zxid_cgi_force_authn_get", _wrap_zxid_cgi_force_authn_get},
-{"zxidc::zxid_cgi_sid_set", _wrap_zxid_cgi_sid_set},
-{"zxidc::zxid_cgi_sid_get", _wrap_zxid_cgi_sid_get},
-{"zxidc::zxid_cgi_nid_set", _wrap_zxid_cgi_nid_set},
-{"zxidc::zxid_cgi_nid_get", _wrap_zxid_cgi_nid_get},
-{"zxidc::zxid_cgi_user_set", _wrap_zxid_cgi_user_set},
-{"zxidc::zxid_cgi_user_get", _wrap_zxid_cgi_user_get},
-{"zxidc::zxid_cgi_pw_set", _wrap_zxid_cgi_pw_set},
-{"zxidc::zxid_cgi_pw_get", _wrap_zxid_cgi_pw_get},
-{"zxidc::zxid_cgi_cdc_set", _wrap_zxid_cgi_cdc_set},
-{"zxidc::zxid_cgi_cdc_get", _wrap_zxid_cgi_cdc_get},
-{"zxidc::zxid_cgi_eid_set", _wrap_zxid_cgi_eid_set},
-{"zxidc::zxid_cgi_eid_get", _wrap_zxid_cgi_eid_get},
-{"zxidc::zxid_cgi_nid_fmt_set", _wrap_zxid_cgi_nid_fmt_set},
-{"zxidc::zxid_cgi_nid_fmt_get", _wrap_zxid_cgi_nid_fmt_get},
-{"zxidc::zxid_cgi_affil_set", _wrap_zxid_cgi_affil_set},
-{"zxidc::zxid_cgi_affil_get", _wrap_zxid_cgi_affil_get},
-{"zxidc::zxid_cgi_consent_set", _wrap_zxid_cgi_consent_set},
-{"zxidc::zxid_cgi_consent_get", _wrap_zxid_cgi_consent_get},
-{"zxidc::zxid_cgi_matching_rule_set", _wrap_zxid_cgi_matching_rule_set},
-{"zxidc::zxid_cgi_matching_rule_get", _wrap_zxid_cgi_matching_rule_get},
-{"zxidc::zxid_cgi_authn_ctx_set", _wrap_zxid_cgi_authn_ctx_set},
-{"zxidc::zxid_cgi_authn_ctx_get", _wrap_zxid_cgi_authn_ctx_get},
-{"zxidc::zxid_cgi_rs_set", _wrap_zxid_cgi_rs_set},
-{"zxidc::zxid_cgi_rs_get", _wrap_zxid_cgi_rs_get},
-{"zxidc::zxid_cgi_saml_art_set", _wrap_zxid_cgi_saml_art_set},
-{"zxidc::zxid_cgi_saml_art_get", _wrap_zxid_cgi_saml_art_get},
-{"zxidc::zxid_cgi_saml_resp_set", _wrap_zxid_cgi_saml_resp_set},
-{"zxidc::zxid_cgi_saml_resp_get", _wrap_zxid_cgi_saml_resp_get},
-{"zxidc::zxid_cgi_saml_req_set", _wrap_zxid_cgi_saml_req_set},
-{"zxidc::zxid_cgi_saml_req_get", _wrap_zxid_cgi_saml_req_get},
-{"zxidc::zxid_cgi_sigalg_set", _wrap_zxid_cgi_sigalg_set},
-{"zxidc::zxid_cgi_sigalg_get", _wrap_zxid_cgi_sigalg_get},
-{"zxidc::zxid_cgi_sig_set", _wrap_zxid_cgi_sig_set},
-{"zxidc::zxid_cgi_sig_get", _wrap_zxid_cgi_sig_get},
-{"zxidc::zxid_cgi_err_set", _wrap_zxid_cgi_err_set},
-{"zxidc::zxid_cgi_err_get", _wrap_zxid_cgi_err_get},
-{"zxidc::zxid_cgi_msg_set", _wrap_zxid_cgi_msg_set},
-{"zxidc::zxid_cgi_msg_get", _wrap_zxid_cgi_msg_get},
-{"zxidc::zxid_cgi_dbg_set", _wrap_zxid_cgi_dbg_set},
-{"zxidc::zxid_cgi_dbg_get", _wrap_zxid_cgi_dbg_get},
-{"zxidc::new_zxid_cgi", _wrap_new_zxid_cgi},
-{"zxidc::delete_zxid_cgi", _wrap_delete_zxid_cgi},
-{"zxidc::zxid_ses_sid_set", _wrap_zxid_ses_sid_set},
-{"zxidc::zxid_ses_sid_get", _wrap_zxid_ses_sid_get},
-{"zxidc::zxid_ses_nid_set", _wrap_zxid_ses_nid_set},
-{"zxidc::zxid_ses_nid_get", _wrap_zxid_ses_nid_get},
-{"zxidc::zxid_ses_a7n_set", _wrap_zxid_ses_a7n_set},
-{"zxidc::zxid_ses_a7n_get", _wrap_zxid_ses_a7n_get},
-{"zxidc::zxid_ses_sesbuf_set", _wrap_zxid_ses_sesbuf_set},
-{"zxidc::zxid_ses_sesbuf_get", _wrap_zxid_ses_sesbuf_get},
-{"zxidc::new_zxid_ses", _wrap_new_zxid_ses},
-{"zxidc::delete_zxid_ses", _wrap_delete_zxid_ses},
-{"zxidc::zxid_entity_n_set", _wrap_zxid_entity_n_set},
-{"zxidc::zxid_entity_n_get", _wrap_zxid_entity_n_get},
-{"zxidc::zxid_entity_eid_len_set", _wrap_zxid_entity_eid_len_set},
-{"zxidc::zxid_entity_eid_len_get", _wrap_zxid_entity_eid_len_get},
-{"zxidc::zxid_entity_eid_set", _wrap_zxid_entity_eid_set},
-{"zxidc::zxid_entity_eid_get", _wrap_zxid_entity_eid_get},
-{"zxidc::zxid_entity_sha1_name_set", _wrap_zxid_entity_sha1_name_set},
-{"zxidc::zxid_entity_sha1_name_get", _wrap_zxid_entity_sha1_name_get},
-{"zxidc::zxid_entity_ed_set", _wrap_zxid_entity_ed_set},
-{"zxidc::zxid_entity_ed_get", _wrap_zxid_entity_ed_get},
-{"zxidc::new_zxid_entity", _wrap_new_zxid_entity},
-{"zxidc::delete_zxid_entity", _wrap_delete_zxid_entity},
-{"zxidc::zxid_get_ent_from_file", _wrap_zxid_get_ent_from_file},
-{"zxidc::zxid_get_ent_from_cache", _wrap_zxid_get_ent_from_cache},
-{"zxidc::zxid_write_ent_to_cache", _wrap_zxid_write_ent_to_cache},
-{"zxidc::zxid_parse_meta", _wrap_zxid_parse_meta},
-{"zxidc::zxid_get_meta_ss", _wrap_zxid_get_meta_ss},
-{"zxidc::zxid_get_meta", _wrap_zxid_get_meta},
-{"zxidc::zxid_get_ent_ss", _wrap_zxid_get_ent_ss},
-{"zxidc::zxid_get_ent", _wrap_zxid_get_ent},
-{"zxidc::zxid_get_ent_by_succinct_id", _wrap_zxid_get_ent_by_succinct_id},
-{"zxidc::zxid_get_ent_by_sha1_name", _wrap_zxid_get_ent_by_sha1_name},
-{"zxidc::zxid_load_cot_cache", _wrap_zxid_load_cot_cache},
-{"zxidc::zxid_key_desc", _wrap_zxid_key_desc},
-{"zxidc::zxid_slo_desc", _wrap_zxid_slo_desc},
-{"zxidc::zxid_nireg_desc", _wrap_zxid_nireg_desc},
-{"zxidc::zxid_ac_desc", _wrap_zxid_ac_desc},
-{"zxidc::zxid_sp_sso_desc", _wrap_zxid_sp_sso_desc},
-{"zxidc::zxid_send_sp_meta", _wrap_zxid_send_sp_meta},
-{"zxidc::zxid_my_entity_id", _wrap_zxid_my_entity_id},
-{"zxidc::zxid_my_issuer", _wrap_zxid_my_issuer},
-{"zxidc::zxid_read_cert", _wrap_zxid_read_cert},
-{"zxidc::zxid_read_private_key", _wrap_zxid_read_private_key},
-{"zxidc::zxid_set_opt", _wrap_zxid_set_opt},
-{"zxidc::zxid_url_set", _wrap_zxid_url_set},
-{"zxidc::zxid_init_conf", _wrap_zxid_init_conf},
-{"zxidc::zxid_new_conf", _wrap_zxid_new_conf},
-{"zxidc::zxid_parse_cgi", _wrap_zxid_parse_cgi},
-{"zxidc::zxid_new_cgi", _wrap_zxid_new_cgi},
-{"zxidc::zxid_fetch_ses", _wrap_zxid_fetch_ses},
-{"zxidc::zxid_get_ses", _wrap_zxid_get_ses},
-{"zxidc::zxid_put_ses", _wrap_zxid_put_ses},
-{"zxidc::zxid_del_ses", _wrap_zxid_del_ses},
-{"zxidc::zxid_lecp_check", _wrap_zxid_lecp_check},
-{"zxidc::zxid_cdc_read", _wrap_zxid_cdc_read},
-{"zxidc::zxid_cdc_check", _wrap_zxid_cdc_check},
-{"zxidc::zxid_soap_call_body", _wrap_zxid_soap_call_body},
-{"zxidc::zxid_soap_cgi_resp_body", _wrap_zxid_soap_cgi_resp_body},
-{"zxidc::zxid_idp_loc_raw", _wrap_zxid_idp_loc_raw},
-{"zxidc::zxid_idp_loc", _wrap_zxid_idp_loc},
-{"zxidc::zxid_idp_soap", _wrap_zxid_idp_soap},
-{"zxidc::zxid_saml2_redir_enc", _wrap_zxid_saml2_redir_enc},
-{"zxidc::zxid_saml2_redir", _wrap_zxid_saml2_redir},
-{"zxidc::zxid_saml2_redir_url", _wrap_zxid_saml2_redir_url},
-{"zxidc::zxid_saml_ok", _wrap_zxid_saml_ok},
-{"zxidc::zxid_pick_sso_profile", _wrap_zxid_pick_sso_profile},
-{"zxidc::zxid_start_sso", _wrap_zxid_start_sso},
-{"zxidc::zxid_start_sso_url", _wrap_zxid_start_sso_url},
-{"zxidc::zxid_sp_deref_art", _wrap_zxid_sp_deref_art},
-{"zxidc::zxid_sp_sso_finalize", _wrap_zxid_sp_sso_finalize},
-{"zxidc::zxid_saml2_map_nid_fmt", _wrap_zxid_saml2_map_nid_fmt},
-{"zxidc::zxid_saml2_map_protocol_binding", _wrap_zxid_saml2_map_protocol_binding},
-{"zxidc::zxid_saml2_map_authn_ctx", _wrap_zxid_saml2_map_authn_ctx},
-{"zxidc::zxid_date_time", _wrap_zxid_date_time},
-{"zxidc::zxid_mk_id", _wrap_zxid_mk_id},
-{"zxidc::zxid_issuer", _wrap_zxid_issuer},
-{"zxidc::zxid_sp_slo_soap", _wrap_zxid_sp_slo_soap},
-{"zxidc::zxid_sp_slo_redir", _wrap_zxid_sp_slo_redir},
-{"zxidc::zxid_sp_nireg_soap", _wrap_zxid_sp_nireg_soap},
-{"zxidc::zxid_sp_nireg_redir", _wrap_zxid_sp_nireg_redir},
-{"zxidc::zxid_sp_dispatch", _wrap_zxid_sp_dispatch},
-{"zxidc::zxid_sp_soap_dispatch", _wrap_zxid_sp_soap_dispatch},
-{"zxidc::zxid_mk_authn_req", _wrap_zxid_mk_authn_req},
-{"zxidc::zxid_mk_art_deref", _wrap_zxid_mk_art_deref},
-{"zxidc::zxid_mk_Status", _wrap_zxid_mk_Status},
-{"zxidc::zxid_OK", _wrap_zxid_OK},
-{"zxidc::zxid_mk_logout", _wrap_zxid_mk_logout},
-{"zxidc::zxid_mk_logout_resp", _wrap_zxid_mk_logout_resp},
-{"zxidc::zxid_mk_nireg", _wrap_zxid_mk_nireg},
-{"zxidc::zxid_mk_nireg_resp", _wrap_zxid_mk_nireg_resp},
-{"zxidc::base64_fancy_raw", _wrap_base64_fancy_raw},
-{"zxidc::unbase64_raw", _wrap_unbase64_raw},
-{"zxidc::sha1_safe_base64", _wrap_sha1_safe_base64},
-{"zxidc::zx_zlib_raw_deflate", _wrap_zx_zlib_raw_deflate},
-{"zxidc::zx_zlib_raw_inflate", _wrap_zx_zlib_raw_inflate},
-{"zxidc::zx_url_encode", _wrap_zx_url_encode},
-{"zxidc::name_from_path", _wrap_name_from_path},
-{"zxidc::open_fd_from_path", _wrap_open_fd_from_path},
-{"zxidc::read_all_fd", _wrap_read_all_fd},
-{"zxidc::write_all_fd", _wrap_write_all_fd},
-{"zxidc::write_or_append_lock_c_path", _wrap_write_or_append_lock_c_path},
-{"zxidc::zxid_curl_ctx_p_set", _wrap_zxid_curl_ctx_p_set},
-{"zxidc::zxid_curl_ctx_p_get", _wrap_zxid_curl_ctx_p_get},
-{"zxidc::zxid_curl_ctx_lim_set", _wrap_zxid_curl_ctx_lim_set},
-{"zxidc::zxid_curl_ctx_lim_get", _wrap_zxid_curl_ctx_lim_get},
-{"zxidc::new_zxid_curl_ctx", _wrap_new_zxid_curl_ctx},
-{"zxidc::delete_zxid_curl_ctx", _wrap_delete_zxid_curl_ctx},
-{"zxidc::zxid_curl_write_data", _wrap_zxid_curl_write_data},
-{"zxidc::zxid_curl_read_data", _wrap_zxid_curl_read_data},
-{"zxidc::zxid_version", _wrap_zxid_version},
-{"zxidc::zxid_version_str", _wrap_zxid_version_str},
+{"Net::SAMLc::zx_ctx_base_set", _wrap_zx_ctx_base_set},
+{"Net::SAMLc::zx_ctx_base_get", _wrap_zx_ctx_base_get},
+{"Net::SAMLc::zx_ctx_p_set", _wrap_zx_ctx_p_set},
+{"Net::SAMLc::zx_ctx_p_get", _wrap_zx_ctx_p_get},
+{"Net::SAMLc::zx_ctx_lim_set", _wrap_zx_ctx_lim_set},
+{"Net::SAMLc::zx_ctx_lim_get", _wrap_zx_ctx_lim_get},
+{"Net::SAMLc::zx_ctx_ns_tab_set", _wrap_zx_ctx_ns_tab_set},
+{"Net::SAMLc::zx_ctx_ns_tab_get", _wrap_zx_ctx_ns_tab_get},
+{"Net::SAMLc::new_zx_ctx", _wrap_new_zx_ctx},
+{"Net::SAMLc::delete_zx_ctx", _wrap_delete_zx_ctx},
+{"Net::SAMLc::zx_ns_s_n_set", _wrap_zx_ns_s_n_set},
+{"Net::SAMLc::zx_ns_s_n_get", _wrap_zx_ns_s_n_get},
+{"Net::SAMLc::zx_ns_s_prefix_len_set", _wrap_zx_ns_s_prefix_len_set},
+{"Net::SAMLc::zx_ns_s_prefix_len_get", _wrap_zx_ns_s_prefix_len_get},
+{"Net::SAMLc::zx_ns_s_prefix_set", _wrap_zx_ns_s_prefix_set},
+{"Net::SAMLc::zx_ns_s_prefix_get", _wrap_zx_ns_s_prefix_get},
+{"Net::SAMLc::zx_ns_s_url_len_set", _wrap_zx_ns_s_url_len_set},
+{"Net::SAMLc::zx_ns_s_url_len_get", _wrap_zx_ns_s_url_len_get},
+{"Net::SAMLc::zx_ns_s_url_set", _wrap_zx_ns_s_url_set},
+{"Net::SAMLc::zx_ns_s_url_get", _wrap_zx_ns_s_url_get},
+{"Net::SAMLc::new_zx_ns_s", _wrap_new_zx_ns_s},
+{"Net::SAMLc::delete_zx_ns_s", _wrap_delete_zx_ns_s},
+{"Net::SAMLc::zx_node_s_n_set", _wrap_zx_node_s_n_set},
+{"Net::SAMLc::zx_node_s_n_get", _wrap_zx_node_s_n_get},
+{"Net::SAMLc::zx_node_s_wo_set", _wrap_zx_node_s_wo_set},
+{"Net::SAMLc::zx_node_s_wo_get", _wrap_zx_node_s_wo_get},
+{"Net::SAMLc::zx_node_s_ns_set", _wrap_zx_node_s_ns_set},
+{"Net::SAMLc::zx_node_s_ns_get", _wrap_zx_node_s_ns_get},
+{"Net::SAMLc::zx_node_s_tok_set", _wrap_zx_node_s_tok_set},
+{"Net::SAMLc::zx_node_s_tok_get", _wrap_zx_node_s_tok_get},
+{"Net::SAMLc::zx_node_s_err_set", _wrap_zx_node_s_err_set},
+{"Net::SAMLc::zx_node_s_err_get", _wrap_zx_node_s_err_get},
+{"Net::SAMLc::zx_node_s_span_start_set", _wrap_zx_node_s_span_start_set},
+{"Net::SAMLc::zx_node_s_span_start_get", _wrap_zx_node_s_span_start_get},
+{"Net::SAMLc::zx_node_s_span_end_set", _wrap_zx_node_s_span_end_set},
+{"Net::SAMLc::zx_node_s_span_end_get", _wrap_zx_node_s_span_end_get},
+{"Net::SAMLc::new_zx_node_s", _wrap_new_zx_node_s},
+{"Net::SAMLc::delete_zx_node_s", _wrap_delete_zx_node_s},
+{"Net::SAMLc::zx_elem_s_g_set", _wrap_zx_elem_s_g_set},
+{"Net::SAMLc::zx_elem_s_g_get", _wrap_zx_elem_s_g_get},
+{"Net::SAMLc::zx_elem_s_any_attr_set", _wrap_zx_elem_s_any_attr_set},
+{"Net::SAMLc::zx_elem_s_any_attr_get", _wrap_zx_elem_s_any_attr_get},
+{"Net::SAMLc::zx_elem_s_any_elem_set", _wrap_zx_elem_s_any_elem_set},
+{"Net::SAMLc::zx_elem_s_any_elem_get", _wrap_zx_elem_s_any_elem_get},
+{"Net::SAMLc::zx_elem_s_xmlns_set", _wrap_zx_elem_s_xmlns_set},
+{"Net::SAMLc::zx_elem_s_xmlns_get", _wrap_zx_elem_s_xmlns_get},
+{"Net::SAMLc::zx_elem_s_content_set", _wrap_zx_elem_s_content_set},
+{"Net::SAMLc::zx_elem_s_content_get", _wrap_zx_elem_s_content_get},
+{"Net::SAMLc::new_zx_elem_s", _wrap_new_zx_elem_s},
+{"Net::SAMLc::delete_zx_elem_s", _wrap_delete_zx_elem_s},
+{"Net::SAMLc::zx_new_simple_elem", _wrap_zx_new_simple_elem},
+{"Net::SAMLc::zx_ref_len_simple_elem", _wrap_zx_ref_len_simple_elem},
+{"Net::SAMLc::zx_ref_simple_elem", _wrap_zx_ref_simple_elem},
+{"Net::SAMLc::zx_dup_len_simple_elem", _wrap_zx_dup_len_simple_elem},
+{"Net::SAMLc::zx_dup_simple_elem", _wrap_zx_dup_simple_elem},
+{"Net::SAMLc::zx_str_s_g_set", _wrap_zx_str_s_g_set},
+{"Net::SAMLc::zx_str_s_g_get", _wrap_zx_str_s_g_get},
+{"Net::SAMLc::zx_str_s_len_set", _wrap_zx_str_s_len_set},
+{"Net::SAMLc::zx_str_s_len_get", _wrap_zx_str_s_len_get},
+{"Net::SAMLc::zx_str_s_s_set", _wrap_zx_str_s_s_set},
+{"Net::SAMLc::zx_str_s_s_get", _wrap_zx_str_s_s_get},
+{"Net::SAMLc::new_zx_str_s", _wrap_new_zx_str_s},
+{"Net::SAMLc::delete_zx_str_s", _wrap_delete_zx_str_s},
+{"Net::SAMLc::zx_ref_str", _wrap_zx_ref_str},
+{"Net::SAMLc::zx_ref_len_str", _wrap_zx_ref_len_str},
+{"Net::SAMLc::zx_dup_str", _wrap_zx_dup_str},
+{"Net::SAMLc::zx_dup_len_str", _wrap_zx_dup_len_str},
+{"Net::SAMLc::zx_strf", _wrap_zx_strf},
+{"Net::SAMLc::zx_str_free", _wrap_zx_str_free},
+{"Net::SAMLc::zx_str_to_c", _wrap_zx_str_to_c},
+{"Net::SAMLc::zx_str_conv", _wrap_zx_str_conv},
+{"Net::SAMLc::zx_any_elem_s_gg_set", _wrap_zx_any_elem_s_gg_set},
+{"Net::SAMLc::zx_any_elem_s_gg_get", _wrap_zx_any_elem_s_gg_get},
+{"Net::SAMLc::zx_any_elem_s_name_len_set", _wrap_zx_any_elem_s_name_len_set},
+{"Net::SAMLc::zx_any_elem_s_name_len_get", _wrap_zx_any_elem_s_name_len_get},
+{"Net::SAMLc::zx_any_elem_s_name_set", _wrap_zx_any_elem_s_name_set},
+{"Net::SAMLc::zx_any_elem_s_name_get", _wrap_zx_any_elem_s_name_get},
+{"Net::SAMLc::new_zx_any_elem_s", _wrap_new_zx_any_elem_s},
+{"Net::SAMLc::delete_zx_any_elem_s", _wrap_delete_zx_any_elem_s},
+{"Net::SAMLc::zx_any_attr_s_ss_set", _wrap_zx_any_attr_s_ss_set},
+{"Net::SAMLc::zx_any_attr_s_ss_get", _wrap_zx_any_attr_s_ss_get},
+{"Net::SAMLc::zx_any_attr_s_name_len_set", _wrap_zx_any_attr_s_name_len_set},
+{"Net::SAMLc::zx_any_attr_s_name_len_get", _wrap_zx_any_attr_s_name_len_get},
+{"Net::SAMLc::zx_any_attr_s_name_set", _wrap_zx_any_attr_s_name_set},
+{"Net::SAMLc::zx_any_attr_s_name_get", _wrap_zx_any_attr_s_name_get},
+{"Net::SAMLc::new_zx_any_attr_s", _wrap_new_zx_any_attr_s},
+{"Net::SAMLc::delete_zx_any_attr_s", _wrap_delete_zx_any_attr_s},
+{"Net::SAMLc::zx_alloc", _wrap_zx_alloc},
+{"Net::SAMLc::zx_zalloc", _wrap_zx_zalloc},
+{"Net::SAMLc::zx_free", _wrap_zx_free},
+{"Net::SAMLc::zx_tok_name_set", _wrap_zx_tok_name_set},
+{"Net::SAMLc::zx_tok_name_get", _wrap_zx_tok_name_get},
+{"Net::SAMLc::zx_tok_prefix_set", _wrap_zx_tok_prefix_set},
+{"Net::SAMLc::zx_tok_prefix_get", _wrap_zx_tok_prefix_get},
+{"Net::SAMLc::zx_tok_ns_set", _wrap_zx_tok_ns_set},
+{"Net::SAMLc::zx_tok_ns_get", _wrap_zx_tok_ns_get},
+{"Net::SAMLc::new_zx_tok", _wrap_new_zx_tok},
+{"Net::SAMLc::delete_zx_tok", _wrap_delete_zx_tok},
+{"Net::SAMLc::zx_fix_any_elem_dec", _wrap_zx_fix_any_elem_dec},
+{"Net::SAMLc::zx_locate_ns_by_prefix", _wrap_zx_locate_ns_by_prefix},
+{"Net::SAMLc::zx_locate_ns_by_url", _wrap_zx_locate_ns_by_url},
+{"Net::SAMLc::zx_is_ns_prefix", _wrap_zx_is_ns_prefix},
+{"Net::SAMLc::zx_xmlns_decl", _wrap_zx_xmlns_decl},
+{"Net::SAMLc::zx_scan_xmlns", _wrap_zx_scan_xmlns},
+{"Net::SAMLc::zx_len_common", _wrap_zx_len_common},
+{"Net::SAMLc::zx_enc_so_unknown_attrs", _wrap_zx_enc_so_unknown_attrs},
+{"Net::SAMLc::zx_enc_so_unknown_elems_and_content", _wrap_zx_enc_so_unknown_elems_and_content},
+{"Net::SAMLc::zx_easy_enc_common", _wrap_zx_easy_enc_common},
+{"Net::SAMLc::zx_attr_len", _wrap_zx_attr_len},
+{"Net::SAMLc::zx_attr_enc", _wrap_zx_attr_enc},
+{"Net::SAMLc::zx_dup_attr", _wrap_zx_dup_attr},
+{"Net::SAMLc::zx_free_attr", _wrap_zx_free_attr},
+{"Net::SAMLc::zx_clone_attr", _wrap_zx_clone_attr},
+{"Net::SAMLc::zx_free_elem_common", _wrap_zx_free_elem_common},
+{"Net::SAMLc::zx_clone_elem_common", _wrap_zx_clone_elem_common},
+{"Net::SAMLc::zx_dup_strs_common", _wrap_zx_dup_strs_common},
+{"Net::SAMLc::zx_walk_so_unknown_attributes", _wrap_zx_walk_so_unknown_attributes},
+{"Net::SAMLc::zx_walk_so_unknown_elems_and_content", _wrap_zx_walk_so_unknown_elems_and_content},
+{"Net::SAMLc::zx_deep_clone_simple_elems", _wrap_zx_deep_clone_simple_elems},
+{"Net::SAMLc::zx_walk_so_simple_elems", _wrap_zx_walk_so_simple_elems},
+{"Net::SAMLc::zx_free_simple_elems", _wrap_zx_free_simple_elems},
+{"Net::SAMLc::zx_dup_strs_simple_elems", _wrap_zx_dup_strs_simple_elems},
+{"Net::SAMLc::zxid_conf_ctx_set", _wrap_zxid_conf_ctx_set},
+{"Net::SAMLc::zxid_conf_ctx_get", _wrap_zxid_conf_ctx_get},
+{"Net::SAMLc::zxid_conf_cot_set", _wrap_zxid_conf_cot_set},
+{"Net::SAMLc::zxid_conf_cot_get", _wrap_zxid_conf_cot_get},
+{"Net::SAMLc::zxid_conf_path_len_set", _wrap_zxid_conf_path_len_set},
+{"Net::SAMLc::zxid_conf_path_len_get", _wrap_zxid_conf_path_len_get},
+{"Net::SAMLc::zxid_conf_path_set", _wrap_zxid_conf_path_set},
+{"Net::SAMLc::zxid_conf_path_get", _wrap_zxid_conf_path_get},
+{"Net::SAMLc::zxid_conf_url_set", _wrap_zxid_conf_url_set},
+{"Net::SAMLc::zxid_conf_url_get", _wrap_zxid_conf_url_get},
+{"Net::SAMLc::zxid_conf_cdc_choice_set", _wrap_zxid_conf_cdc_choice_set},
+{"Net::SAMLc::zxid_conf_cdc_choice_get", _wrap_zxid_conf_cdc_choice_get},
+{"Net::SAMLc::zxid_conf_cdc_url_set", _wrap_zxid_conf_cdc_url_set},
+{"Net::SAMLc::zxid_conf_cdc_url_get", _wrap_zxid_conf_cdc_url_get},
+{"Net::SAMLc::zxid_conf_md_fetch_set", _wrap_zxid_conf_md_fetch_set},
+{"Net::SAMLc::zxid_conf_md_fetch_get", _wrap_zxid_conf_md_fetch_get},
+{"Net::SAMLc::zxid_conf_md_populate_cache_set", _wrap_zxid_conf_md_populate_cache_set},
+{"Net::SAMLc::zxid_conf_md_populate_cache_get", _wrap_zxid_conf_md_populate_cache_get},
+{"Net::SAMLc::zxid_conf_md_cache_first_set", _wrap_zxid_conf_md_cache_first_set},
+{"Net::SAMLc::zxid_conf_md_cache_first_get", _wrap_zxid_conf_md_cache_first_get},
+{"Net::SAMLc::zxid_conf_md_cache_last_set", _wrap_zxid_conf_md_cache_last_set},
+{"Net::SAMLc::zxid_conf_md_cache_last_get", _wrap_zxid_conf_md_cache_last_get},
+{"Net::SAMLc::zxid_conf_authn_req_sign_set", _wrap_zxid_conf_authn_req_sign_set},
+{"Net::SAMLc::zxid_conf_authn_req_sign_get", _wrap_zxid_conf_authn_req_sign_get},
+{"Net::SAMLc::zxid_conf_want_sso_a7n_signed_set", _wrap_zxid_conf_want_sso_a7n_signed_set},
+{"Net::SAMLc::zxid_conf_want_sso_a7n_signed_get", _wrap_zxid_conf_want_sso_a7n_signed_get},
+{"Net::SAMLc::zxid_conf_affiliation_set", _wrap_zxid_conf_affiliation_set},
+{"Net::SAMLc::zxid_conf_affiliation_get", _wrap_zxid_conf_affiliation_get},
+{"Net::SAMLc::zxid_conf_nice_name_set", _wrap_zxid_conf_nice_name_set},
+{"Net::SAMLc::zxid_conf_nice_name_get", _wrap_zxid_conf_nice_name_get},
+{"Net::SAMLc::zxid_conf_ses_arch_dir_set", _wrap_zxid_conf_ses_arch_dir_set},
+{"Net::SAMLc::zxid_conf_ses_arch_dir_get", _wrap_zxid_conf_ses_arch_dir_get},
+{"Net::SAMLc::new_zxid_conf", _wrap_new_zxid_conf},
+{"Net::SAMLc::delete_zxid_conf", _wrap_delete_zxid_conf},
+{"Net::SAMLc::zxid_cgi_op_set", _wrap_zxid_cgi_op_set},
+{"Net::SAMLc::zxid_cgi_op_get", _wrap_zxid_cgi_op_get},
+{"Net::SAMLc::zxid_cgi_pr_ix_set", _wrap_zxid_cgi_pr_ix_set},
+{"Net::SAMLc::zxid_cgi_pr_ix_get", _wrap_zxid_cgi_pr_ix_get},
+{"Net::SAMLc::zxid_cgi_allow_create_set", _wrap_zxid_cgi_allow_create_set},
+{"Net::SAMLc::zxid_cgi_allow_create_get", _wrap_zxid_cgi_allow_create_get},
+{"Net::SAMLc::zxid_cgi_ispassive_set", _wrap_zxid_cgi_ispassive_set},
+{"Net::SAMLc::zxid_cgi_ispassive_get", _wrap_zxid_cgi_ispassive_get},
+{"Net::SAMLc::zxid_cgi_force_authn_set", _wrap_zxid_cgi_force_authn_set},
+{"Net::SAMLc::zxid_cgi_force_authn_get", _wrap_zxid_cgi_force_authn_get},
+{"Net::SAMLc::zxid_cgi_sid_set", _wrap_zxid_cgi_sid_set},
+{"Net::SAMLc::zxid_cgi_sid_get", _wrap_zxid_cgi_sid_get},
+{"Net::SAMLc::zxid_cgi_nid_set", _wrap_zxid_cgi_nid_set},
+{"Net::SAMLc::zxid_cgi_nid_get", _wrap_zxid_cgi_nid_get},
+{"Net::SAMLc::zxid_cgi_user_set", _wrap_zxid_cgi_user_set},
+{"Net::SAMLc::zxid_cgi_user_get", _wrap_zxid_cgi_user_get},
+{"Net::SAMLc::zxid_cgi_pw_set", _wrap_zxid_cgi_pw_set},
+{"Net::SAMLc::zxid_cgi_pw_get", _wrap_zxid_cgi_pw_get},
+{"Net::SAMLc::zxid_cgi_cdc_set", _wrap_zxid_cgi_cdc_set},
+{"Net::SAMLc::zxid_cgi_cdc_get", _wrap_zxid_cgi_cdc_get},
+{"Net::SAMLc::zxid_cgi_eid_set", _wrap_zxid_cgi_eid_set},
+{"Net::SAMLc::zxid_cgi_eid_get", _wrap_zxid_cgi_eid_get},
+{"Net::SAMLc::zxid_cgi_nid_fmt_set", _wrap_zxid_cgi_nid_fmt_set},
+{"Net::SAMLc::zxid_cgi_nid_fmt_get", _wrap_zxid_cgi_nid_fmt_get},
+{"Net::SAMLc::zxid_cgi_affil_set", _wrap_zxid_cgi_affil_set},
+{"Net::SAMLc::zxid_cgi_affil_get", _wrap_zxid_cgi_affil_get},
+{"Net::SAMLc::zxid_cgi_consent_set", _wrap_zxid_cgi_consent_set},
+{"Net::SAMLc::zxid_cgi_consent_get", _wrap_zxid_cgi_consent_get},
+{"Net::SAMLc::zxid_cgi_matching_rule_set", _wrap_zxid_cgi_matching_rule_set},
+{"Net::SAMLc::zxid_cgi_matching_rule_get", _wrap_zxid_cgi_matching_rule_get},
+{"Net::SAMLc::zxid_cgi_authn_ctx_set", _wrap_zxid_cgi_authn_ctx_set},
+{"Net::SAMLc::zxid_cgi_authn_ctx_get", _wrap_zxid_cgi_authn_ctx_get},
+{"Net::SAMLc::zxid_cgi_rs_set", _wrap_zxid_cgi_rs_set},
+{"Net::SAMLc::zxid_cgi_rs_get", _wrap_zxid_cgi_rs_get},
+{"Net::SAMLc::zxid_cgi_saml_art_set", _wrap_zxid_cgi_saml_art_set},
+{"Net::SAMLc::zxid_cgi_saml_art_get", _wrap_zxid_cgi_saml_art_get},
+{"Net::SAMLc::zxid_cgi_saml_resp_set", _wrap_zxid_cgi_saml_resp_set},
+{"Net::SAMLc::zxid_cgi_saml_resp_get", _wrap_zxid_cgi_saml_resp_get},
+{"Net::SAMLc::zxid_cgi_saml_req_set", _wrap_zxid_cgi_saml_req_set},
+{"Net::SAMLc::zxid_cgi_saml_req_get", _wrap_zxid_cgi_saml_req_get},
+{"Net::SAMLc::zxid_cgi_sigalg_set", _wrap_zxid_cgi_sigalg_set},
+{"Net::SAMLc::zxid_cgi_sigalg_get", _wrap_zxid_cgi_sigalg_get},
+{"Net::SAMLc::zxid_cgi_sig_set", _wrap_zxid_cgi_sig_set},
+{"Net::SAMLc::zxid_cgi_sig_get", _wrap_zxid_cgi_sig_get},
+{"Net::SAMLc::zxid_cgi_err_set", _wrap_zxid_cgi_err_set},
+{"Net::SAMLc::zxid_cgi_err_get", _wrap_zxid_cgi_err_get},
+{"Net::SAMLc::zxid_cgi_msg_set", _wrap_zxid_cgi_msg_set},
+{"Net::SAMLc::zxid_cgi_msg_get", _wrap_zxid_cgi_msg_get},
+{"Net::SAMLc::zxid_cgi_dbg_set", _wrap_zxid_cgi_dbg_set},
+{"Net::SAMLc::zxid_cgi_dbg_get", _wrap_zxid_cgi_dbg_get},
+{"Net::SAMLc::new_zxid_cgi", _wrap_new_zxid_cgi},
+{"Net::SAMLc::delete_zxid_cgi", _wrap_delete_zxid_cgi},
+{"Net::SAMLc::zxid_ses_sid_set", _wrap_zxid_ses_sid_set},
+{"Net::SAMLc::zxid_ses_sid_get", _wrap_zxid_ses_sid_get},
+{"Net::SAMLc::zxid_ses_nid_set", _wrap_zxid_ses_nid_set},
+{"Net::SAMLc::zxid_ses_nid_get", _wrap_zxid_ses_nid_get},
+{"Net::SAMLc::zxid_ses_a7n_set", _wrap_zxid_ses_a7n_set},
+{"Net::SAMLc::zxid_ses_a7n_get", _wrap_zxid_ses_a7n_get},
+{"Net::SAMLc::zxid_ses_sesbuf_set", _wrap_zxid_ses_sesbuf_set},
+{"Net::SAMLc::zxid_ses_sesbuf_get", _wrap_zxid_ses_sesbuf_get},
+{"Net::SAMLc::new_zxid_ses", _wrap_new_zxid_ses},
+{"Net::SAMLc::delete_zxid_ses", _wrap_delete_zxid_ses},
+{"Net::SAMLc::zxid_entity_n_set", _wrap_zxid_entity_n_set},
+{"Net::SAMLc::zxid_entity_n_get", _wrap_zxid_entity_n_get},
+{"Net::SAMLc::zxid_entity_eid_len_set", _wrap_zxid_entity_eid_len_set},
+{"Net::SAMLc::zxid_entity_eid_len_get", _wrap_zxid_entity_eid_len_get},
+{"Net::SAMLc::zxid_entity_eid_set", _wrap_zxid_entity_eid_set},
+{"Net::SAMLc::zxid_entity_eid_get", _wrap_zxid_entity_eid_get},
+{"Net::SAMLc::zxid_entity_sha1_name_set", _wrap_zxid_entity_sha1_name_set},
+{"Net::SAMLc::zxid_entity_sha1_name_get", _wrap_zxid_entity_sha1_name_get},
+{"Net::SAMLc::zxid_entity_ed_set", _wrap_zxid_entity_ed_set},
+{"Net::SAMLc::zxid_entity_ed_get", _wrap_zxid_entity_ed_get},
+{"Net::SAMLc::new_zxid_entity", _wrap_new_zxid_entity},
+{"Net::SAMLc::delete_zxid_entity", _wrap_delete_zxid_entity},
+{"Net::SAMLc::zxid_get_ent_from_file", _wrap_zxid_get_ent_from_file},
+{"Net::SAMLc::zxid_get_ent_from_cache", _wrap_zxid_get_ent_from_cache},
+{"Net::SAMLc::zxid_write_ent_to_cache", _wrap_zxid_write_ent_to_cache},
+{"Net::SAMLc::zxid_parse_meta", _wrap_zxid_parse_meta},
+{"Net::SAMLc::zxid_get_meta_ss", _wrap_zxid_get_meta_ss},
+{"Net::SAMLc::zxid_get_meta", _wrap_zxid_get_meta},
+{"Net::SAMLc::zxid_get_ent_ss", _wrap_zxid_get_ent_ss},
+{"Net::SAMLc::zxid_get_ent", _wrap_zxid_get_ent},
+{"Net::SAMLc::zxid_get_ent_by_succinct_id", _wrap_zxid_get_ent_by_succinct_id},
+{"Net::SAMLc::zxid_get_ent_by_sha1_name", _wrap_zxid_get_ent_by_sha1_name},
+{"Net::SAMLc::zxid_load_cot_cache", _wrap_zxid_load_cot_cache},
+{"Net::SAMLc::zxid_key_desc", _wrap_zxid_key_desc},
+{"Net::SAMLc::zxid_slo_desc", _wrap_zxid_slo_desc},
+{"Net::SAMLc::zxid_nireg_desc", _wrap_zxid_nireg_desc},
+{"Net::SAMLc::zxid_ac_desc", _wrap_zxid_ac_desc},
+{"Net::SAMLc::zxid_sp_sso_desc", _wrap_zxid_sp_sso_desc},
+{"Net::SAMLc::zxid_sp_meta", _wrap_zxid_sp_meta},
+{"Net::SAMLc::zxid_send_sp_meta", _wrap_zxid_send_sp_meta},
+{"Net::SAMLc::zxid_my_entity_id", _wrap_zxid_my_entity_id},
+{"Net::SAMLc::zxid_my_cdc_url", _wrap_zxid_my_cdc_url},
+{"Net::SAMLc::zxid_my_issuer", _wrap_zxid_my_issuer},
+{"Net::SAMLc::zxid_read_cert", _wrap_zxid_read_cert},
+{"Net::SAMLc::zxid_read_private_key", _wrap_zxid_read_private_key},
+{"Net::SAMLc::zxid_set_opt", _wrap_zxid_set_opt},
+{"Net::SAMLc::zxid_url_set", _wrap_zxid_url_set},
+{"Net::SAMLc::zxid_init_conf", _wrap_zxid_init_conf},
+{"Net::SAMLc::zxid_new_conf", _wrap_zxid_new_conf},
+{"Net::SAMLc::zxid_parse_cgi", _wrap_zxid_parse_cgi},
+{"Net::SAMLc::zxid_new_cgi", _wrap_zxid_new_cgi},
+{"Net::SAMLc::zxid_fetch_ses", _wrap_zxid_fetch_ses},
+{"Net::SAMLc::zxid_get_ses", _wrap_zxid_get_ses},
+{"Net::SAMLc::zxid_put_ses", _wrap_zxid_put_ses},
+{"Net::SAMLc::zxid_del_ses", _wrap_zxid_del_ses},
+{"Net::SAMLc::zxid_lecp_check", _wrap_zxid_lecp_check},
+{"Net::SAMLc::zxid_cdc_read", _wrap_zxid_cdc_read},
+{"Net::SAMLc::zxid_cdc_check", _wrap_zxid_cdc_check},
+{"Net::SAMLc::zxid_soap_call_body", _wrap_zxid_soap_call_body},
+{"Net::SAMLc::zxid_soap_cgi_resp_body", _wrap_zxid_soap_cgi_resp_body},
+{"Net::SAMLc::zxid_idp_loc_raw", _wrap_zxid_idp_loc_raw},
+{"Net::SAMLc::zxid_idp_loc", _wrap_zxid_idp_loc},
+{"Net::SAMLc::zxid_idp_soap", _wrap_zxid_idp_soap},
+{"Net::SAMLc::zxid_saml2_redir_enc", _wrap_zxid_saml2_redir_enc},
+{"Net::SAMLc::zxid_saml2_redir", _wrap_zxid_saml2_redir},
+{"Net::SAMLc::zxid_saml2_redir_url", _wrap_zxid_saml2_redir_url},
+{"Net::SAMLc::zxid_saml_ok", _wrap_zxid_saml_ok},
+{"Net::SAMLc::zxid_pick_sso_profile", _wrap_zxid_pick_sso_profile},
+{"Net::SAMLc::zxid_start_sso", _wrap_zxid_start_sso},
+{"Net::SAMLc::zxid_start_sso_url", _wrap_zxid_start_sso_url},
+{"Net::SAMLc::zxid_sp_deref_art", _wrap_zxid_sp_deref_art},
+{"Net::SAMLc::zxid_sp_sso_finalize", _wrap_zxid_sp_sso_finalize},
+{"Net::SAMLc::zxid_saml2_map_nid_fmt", _wrap_zxid_saml2_map_nid_fmt},
+{"Net::SAMLc::zxid_saml2_map_protocol_binding", _wrap_zxid_saml2_map_protocol_binding},
+{"Net::SAMLc::zxid_saml2_map_authn_ctx", _wrap_zxid_saml2_map_authn_ctx},
+{"Net::SAMLc::zxid_date_time", _wrap_zxid_date_time},
+{"Net::SAMLc::zxid_mk_id", _wrap_zxid_mk_id},
+{"Net::SAMLc::zxid_issuer", _wrap_zxid_issuer},
+{"Net::SAMLc::zxid_sp_slo_soap", _wrap_zxid_sp_slo_soap},
+{"Net::SAMLc::zxid_sp_slo_redir", _wrap_zxid_sp_slo_redir},
+{"Net::SAMLc::zxid_sp_nireg_soap", _wrap_zxid_sp_nireg_soap},
+{"Net::SAMLc::zxid_sp_nireg_redir", _wrap_zxid_sp_nireg_redir},
+{"Net::SAMLc::zxid_sp_dispatch", _wrap_zxid_sp_dispatch},
+{"Net::SAMLc::zxid_sp_soap_dispatch", _wrap_zxid_sp_soap_dispatch},
+{"Net::SAMLc::zxid_mk_authn_req", _wrap_zxid_mk_authn_req},
+{"Net::SAMLc::zxid_mk_art_deref", _wrap_zxid_mk_art_deref},
+{"Net::SAMLc::zxid_mk_Status", _wrap_zxid_mk_Status},
+{"Net::SAMLc::zxid_OK", _wrap_zxid_OK},
+{"Net::SAMLc::zxid_mk_logout", _wrap_zxid_mk_logout},
+{"Net::SAMLc::zxid_mk_logout_resp", _wrap_zxid_mk_logout_resp},
+{"Net::SAMLc::zxid_mk_nireg", _wrap_zxid_mk_nireg},
+{"Net::SAMLc::zxid_mk_nireg_resp", _wrap_zxid_mk_nireg_resp},
+{"Net::SAMLc::base64_fancy_raw", _wrap_base64_fancy_raw},
+{"Net::SAMLc::unbase64_raw", _wrap_unbase64_raw},
+{"Net::SAMLc::sha1_safe_base64", _wrap_sha1_safe_base64},
+{"Net::SAMLc::zx_zlib_raw_deflate", _wrap_zx_zlib_raw_deflate},
+{"Net::SAMLc::zx_zlib_raw_inflate", _wrap_zx_zlib_raw_inflate},
+{"Net::SAMLc::zx_url_encode", _wrap_zx_url_encode},
+{"Net::SAMLc::name_from_path", _wrap_name_from_path},
+{"Net::SAMLc::open_fd_from_path", _wrap_open_fd_from_path},
+{"Net::SAMLc::read_all_fd", _wrap_read_all_fd},
+{"Net::SAMLc::write_all_fd", _wrap_write_all_fd},
+{"Net::SAMLc::write_or_append_lock_c_path", _wrap_write_or_append_lock_c_path},
+{"Net::SAMLc::zxid_curl_ctx_p_set", _wrap_zxid_curl_ctx_p_set},
+{"Net::SAMLc::zxid_curl_ctx_p_get", _wrap_zxid_curl_ctx_p_get},
+{"Net::SAMLc::zxid_curl_ctx_lim_set", _wrap_zxid_curl_ctx_lim_set},
+{"Net::SAMLc::zxid_curl_ctx_lim_get", _wrap_zxid_curl_ctx_lim_get},
+{"Net::SAMLc::new_zxid_curl_ctx", _wrap_new_zxid_curl_ctx},
+{"Net::SAMLc::delete_zxid_curl_ctx", _wrap_delete_zxid_curl_ctx},
+{"Net::SAMLc::zxid_curl_write_data", _wrap_zxid_curl_write_data},
+{"Net::SAMLc::zxid_curl_read_data", _wrap_zxid_curl_read_data},
+{"Net::SAMLc::zxid_version", _wrap_zxid_version},
+{"Net::SAMLc::zxid_version_str", _wrap_zxid_version_str},
 {0,0}
 };
 /* -----------------------------------------------------------------------------
@@ -14867,13 +15066,13 @@ XS(SWIG_init) {
     sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(0x0400)));
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
-  SWIG_TypeClientData(SWIGTYPE_p_zx_ctx, (void*) "zxid::zx_ctx");
-  SWIG_TypeClientData(SWIGTYPE_p_zx_ns_s, (void*) "zxid::zx_ns_s");
-  SWIG_TypeClientData(SWIGTYPE_p_zx_node_s, (void*) "zxid::zx_node_s");
-  SWIG_TypeClientData(SWIGTYPE_p_zx_elem_s, (void*) "zxid::zx_elem_s");
-  SWIG_TypeClientData(SWIGTYPE_p_zx_str_s, (void*) "zxid::zx_str_s");
-  SWIG_TypeClientData(SWIGTYPE_p_zx_any_elem_s, (void*) "zxid::zx_any_elem_s");
-  SWIG_TypeClientData(SWIGTYPE_p_zx_any_attr_s, (void*) "zxid::zx_any_attr_s");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_ctx, (void*) "Net::SAML::zx_ctx");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_ns_s, (void*) "Net::SAML::zx_ns_s");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_node_s, (void*) "Net::SAML::zx_node_s");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_elem_s, (void*) "Net::SAML::zx_elem_s");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_str_s, (void*) "Net::SAML::zx_str_s");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_any_elem_s, (void*) "Net::SAML::zx_any_elem_s");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_any_attr_s, (void*) "Net::SAML::zx_any_attr_s");
   /*@SWIG:%set_constant@*/ do {
     SV *sv = get_sv((char*) SWIG_prefix "ZX_TOK_XMLNS", TRUE | 0x2);
     sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((-3))));
@@ -14889,11 +15088,11 @@ XS(SWIG_init) {
     sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((-1))));
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
-  SWIG_TypeClientData(SWIGTYPE_p_zx_tok, (void*) "zxid::zx_tok");
-  SWIG_TypeClientData(SWIGTYPE_p_zxid_conf, (void*) "zxid::zxid_conf");
-  SWIG_TypeClientData(SWIGTYPE_p_zxid_cgi, (void*) "zxid::zxid_cgi");
-  SWIG_TypeClientData(SWIGTYPE_p_zxid_ses, (void*) "zxid::zxid_ses");
-  SWIG_TypeClientData(SWIGTYPE_p_zxid_entity, (void*) "zxid::zxid_entity");
+  SWIG_TypeClientData(SWIGTYPE_p_zx_tok, (void*) "Net::SAML::zx_tok");
+  SWIG_TypeClientData(SWIGTYPE_p_zxid_conf, (void*) "Net::SAML::zxid_conf");
+  SWIG_TypeClientData(SWIGTYPE_p_zxid_cgi, (void*) "Net::SAML::zxid_cgi");
+  SWIG_TypeClientData(SWIGTYPE_p_zxid_ses, (void*) "Net::SAML::zxid_ses");
+  SWIG_TypeClientData(SWIGTYPE_p_zxid_entity, (void*) "Net::SAML::zxid_entity");
   /*@SWIG:%set_constant@*/ do {
     SV *sv = get_sv((char*) SWIG_prefix "ZXID_CDC_CHOICE_ALWAYS_FIRST", TRUE | 0x2);
     sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(1)));
@@ -14999,7 +15198,7 @@ XS(SWIG_init) {
     sv_setsv(sv, SWIG_FromCharPtr("\r\n\r\n"));
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
-  SWIG_TypeClientData(SWIGTYPE_p_zxid_curl_ctx, (void*) "zxid::zxid_curl_ctx");
+  SWIG_TypeClientData(SWIGTYPE_p_zxid_curl_ctx, (void*) "Net::SAML::zxid_curl_ctx");
   /*@SWIG:%set_constant@*/ do {
     SV *sv = get_sv((char*) SWIG_prefix "SAML2_PROTO", TRUE | 0x2);
     sv_setsv(sv, SWIG_FromCharPtr("urn:oasis:names:tc:SAML:2.0:protocol"));

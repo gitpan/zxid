@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxid.h,v 1.15 2006/09/05 05:09:37 sampo Exp $
+ * $Id: zxid.h,v 1.16 2006/09/16 20:00:36 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  */
@@ -122,8 +122,10 @@ struct zxmd_md_SingleLogoutService_s* zxid_slo_desc(struct zxid_conf* cf, char* 
 struct zxmd_md_ManageNameIDService_s* zxid_nireg_desc(struct zxid_conf* cf, char* binding, char* loc, char* resp_loc);
 struct zxmd_md_AssertionConsumerService_s* zxid_ac_desc(struct zxid_conf* cf, char* binding, char* loc, char* index);
 struct zxmd_md_SPSSODescriptor_s* zxid_sp_sso_desc(struct zxid_conf* cf);
+struct zx_str_s* zxid_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi);
 int zxid_send_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi);
 struct zx_str_s* zxid_my_entity_id(struct zxid_conf* cf);
+struct zx_str_s* zxid_my_cdc_url(struct zxid_conf* cf);
 struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf);
 
 /* zxidlib */

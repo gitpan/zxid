@@ -3,7 +3,7 @@
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing. See file COPYING.
-# $Id: zxid.pl,v 1.2 2006/09/05 05:09:37 sampo Exp $
+# $Id: zxid.pl,v 1.5 2006/09/16 20:00:36 sampo Exp $
 # 31.8.2006, created --Sampo
 
 use Net::SAML;
@@ -13,6 +13,7 @@ $| = 1;
 
 $cf = Net::SAML::new_conf("/var/zxid/");
 $url = "https://sp1.zxidsp.org:8443/zxid.pl";
+$cdc_url = "https://sp1.zxidcommon.org:8443/zxid.pl"; # NET::SAML::CDC_URL
 Net::SAML::url_set($cf, $url);
 Net::SAML::set_opt($cf, 1 ,1);  # Turn on libzxid level debugging
 $cgi = Net::SAML::new_cgi($cf, $ENV{'QUERY_STRING'});
@@ -38,7 +39,7 @@ warn "Not logged in case op($op) ses($ses)";
 
 if ($op eq 'M') {       # Invoke LECP or redirect to CDC reader.
     exit if Net::SAML::lecp_check($cf, $cgi);
-    printf "Location: %s?o=C\r\n\r\n", NET::SAML::CDC_URL;
+    print "Location: $cdc_url?o=C\r\n\r\n";
     exit;
 } elsif ($op eq 'C') {  # CDC Read: Common Domain Cookie Reader
     &Net::SAML::cdc_read($cf, $cgi);
@@ -50,35 +51,35 @@ if ($op eq 'M') {       # Invoke LECP or redirect to CDC reader.
     warn "Start login";
     $url = Net::SAML::start_sso_url($cf, $cgi);
     if ($url) {
-	$url_len = Net::SAML::zx_str_s::swig_len_get($url);
-	$url = substr(Net::SAML::zx_str_s::swig_s_get($url), 0, $url_len);
+	warn "Start SSO redirect($url)";
 	print "Location: $url\r\n\r\n";
 	exit;
     }
-    warn "Login trouble";
+    warn "Login trouble ($url)";
 } elsif ($op eq 'A') {
     $ret = Net::SAML::sp_deref_art($cf, $cgi, $ses);
     warn "deref art ret($ret)";
-    exit if $ret == NET::SAML::REDIR_OK;
-    if ($ret = NET::SAML::SSO_OK) {
+    exit if $ret == 2;
+    if ($ret == 3) {
 	exit if mgmt_screen($cf, $cgi, $ses, $op);
     }
 } elsif ($op eq 'P') {
     $ret = Net::SAML::sp_dispatch($cf, $cgi, $ses, Net::SAML::zxid_cgi::swig_saml_resp_get($cgi));
     warn "saml_resp ret($ret)";
-    exit if $ret == NET::SAML::REDIR_OK;
-    if ($ret = NET::SAML::SSO_OK) {
+    exit if $ret == 2;
+    if ($ret == 3) {
 	exit if mgmt_screen($cf, $cgi, $ses, $op);
     }
 } elsif ($op eq 'Q') {
     $ret = Net::SAML::sp_dispatch($cf, $cgi, $ses, Net::SAML::zxid_cgi::swig_saml_req_get($cgi));
-    exit if $ret == NET::SAML::REDIR_OK;
-    if ($ret = NET::SAML::SSO_OK) {
+    exit if $ret == 2;
+    if ($ret == 3) {
 	exit if mgmt_screen($cf, $cgi, $ses, $op);
     }
 } elsif ($op eq 'B') {
     print "CONTENT-TYPE: text/xml\r\n\r\n";
-    Net::SAML::send_sp_meta($cf, $cgi);
+    $md = Net::SAML::sp_meta($cf, $cgi);
+    print $md;
     exit;
 } else {
     die "Unknown op($op)";
@@ -88,14 +89,15 @@ print <<HTML;
 CONTENT-TYPE: text/html
 
 <title>ZXID SP PERL SSO</title>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 <body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>ZXID SP Perl Federated SSO (user NOT logged in, no session.)</h1><pre>
 </pre><form method=post action="zxid.pl?o=P">
 
 <h3>Login Using New IdP</h3>
 
 <i>A new IdP is one whose metadata we do not have yet. We need to know
-the Entity ID in oredr to fetch the metadata using the well known
-location method. You will need to ask the adiminstrator of the IdP to
+the Entity ID in order to fetch the metadata using the well known
+location method. You will need to ask the adminstrator of the IdP to
 tell you what the EntityID is.</i>
 
 <p>IdP EntityID URL <input name=e size=100>
@@ -121,6 +123,8 @@ HTML
 	$idp = Net::SAML::zxid_entity::swig_n_get($idp);
     }
 }
+
+$version_str = Net::SAML::version_str();
 
 print <<HTML;
 <h3>CoT configuration parameters your IdP may need to know</h3>
@@ -153,7 +157,7 @@ Matching Rule: <select name=fm><option value=exact>Exact
 <option value=better>Better
 <option value="">(none)</select><br>
 
-</form><hr><a href="http://zxid.org/">zxid.org</a>, 0.3 libzxid (zxid.org)
+</form><hr><a href="http://zxid.org/">zxid.org</a>, $version_str
 HTML
     ;
 
@@ -183,22 +187,26 @@ sub mgmt_screen {
 	$msg = "SP Initiated defederation (SOAP).";
     } elsif ($op eq 'P') {
 	$ret = Net::SAML::sp_dispatch($cf, $cgi, $ses, Net::SAML::zxid_cgi::swig_saml_resp_get($cgi));
-	return 0 if $ret == Net::SAML::OK;
-	return 1 if $ret == Net::SAML::REDIR_OK;
+	return 0 if $ret == 1;
+	return 1 if $ret == 2;
     } elsif ($op eq 'Q') {
 	$ret = Net::SAML::sp_dispatch($cf, $cgi, $ses, Net::SAML::zxid_cgi::swig_saml_req_get($cgi));
-	return 0 if $ret == Net::SAML::OK;
-	return 1 if $ret == Net::SAML::REDIR_OK;
+	return 0 if $ret == 1;
+	return 1 if $ret == 2;
     }
 
     $sid = Net::SAML::zxid_ses::swig_sid_get($ses);
     $nid = Net::SAML::zxid_ses::swig_nid_get($ses);
 
+    # In gimp flatten the image and Save Copy as pnm
+    # giftopnm favicon.gif | ppmtowinicon >favicon.ico
     #printf("COOKIE: foo\r\n");
     print <<HTML;
 CONTENT-TYPE: text/html
 
-<title>ZXID SP Mgmt</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans>
+<title>ZXID SP Mgmt</title>
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans>
 
 <h1>ZXID SP Perl Management (user logged in, session active)</h1><pre>
 </pre><form method=post action="zxid.pl?o=P">
@@ -211,7 +219,7 @@ CONTENT-TYPE: text/html
 
 <h3>Technical options (typically hidden fields on production site)</h3>
   
-sid($sid) nid($nid) <a href="zxid.pl?s=%s">Reload</a>
+sid($sid) nid($nid) <a href="zxid.pl?s=$sid">Reload</a>
 
 </form><hr>
 <a href="http://zxid.org/">zxid.org</a>

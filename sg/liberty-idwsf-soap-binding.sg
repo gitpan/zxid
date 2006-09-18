@@ -1,0 +1,14 @@
+# zxid/sg/liberty-idwsf-soap-binding.sg
+# Slightly edited, 14.9.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: liberty-idwsf-soap-binding.sg,v 1.2 2006/09/15 05:56:49 sampo Exp $
+
+target(sbf, urn:liberty:sb)
+
+%FrameworkType:
+  any*  processContents(lax)
+  @version	 -> %xs:string
+  @any
+  ;
+Framework	 -> %sbf:FrameworkType
+
+#EOF

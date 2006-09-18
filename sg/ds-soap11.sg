@@ -1,0 +1,90 @@
+# zxid/sg/ds-soap11.sg
+# Heavily edited, 14.9.2006, Sampo Kellomaki (sampo@iki.fi)
+# $Id: ds-soap11.sg,v 1.2 2006/09/15 05:56:49 sampo Exp $
+#
+# SOAP for Discovery Service 2.0 Metadata maintenance service (non ID service)
+#
+# Main purpose of this schema is to permit direct, one pass, parsing of
+# of SAML 2.0 content in SOAP envelope. Thus relevant SOAP extension
+# points have been replaced with actual SAML 2.0 elements.
+#
+# The Metadata maintenance is considered separately because it is
+# NOT an Identity Web Service.
+
+target(dise, http://schemas.xmlsoap.org/soap/envelope/)
+ns(xs,  http://www.w3.org/2001/XMLSchema)
+ns(a,   http://www.w3.org/2005/08/addressing)
+ns(sbf, urn:liberty:sb)
+ns(b,   urn:liberty:sb:2006-08)
+ns(di,  urn:liberty:disco:2006-08)
+
+Envelope -> %dise:Envelope
+%Envelope:
+  dise:Header?
+  dise:Body
+  any*
+  @any?
+  ;
+
+Header	 -> %dise:Header
+%Header:
+  a:MessageID?
+  a:RelatesTo?
+  a:ReplyTo?
+  a:From?
+  a:FaultTo?
+  a:To?
+  a:Action?
+  sbf:Framework?
+  b:Framework?
+  b:Sender?
+  b:CredentialsContext?
+  b:EndpointUpdate?
+  b:Timeout?
+  b:ProcessingContext?
+  b:ApplicationEPR?
+  b:RedirectRequest?
+  any*
+  @any?
+  ;
+
+Body	 -> %dise:Body
+%Body:
+  di:SvcMDAssociationAdd?
+  di:SvcMDAssociationAddResponse?
+  di:SvcMDAssociationDelete?
+  di:SvcMDAssociationDeleteResponse?
+  di:SvcMDAssociationQuery?
+  di:SvcMDAssociationQueryResponse?
+  di:SvcMDRegister?
+  di:SvcMDRegisterResponse?
+  di:SvcMDDelete?
+  di:SvcMDDeleteResponse?
+  di:SvcMDQuery?
+  di:SvcMDQueryResponse?
+  di:SvcMDReplace?
+  di:SvcMDReplaceResponse?
+  dise:Fault?
+  ;
+
+@mustUnderstand -> %xs:boolean
+@actor          -> %xs:anyURI
+@encodingStyle  -> %xs:anyURI
+&@encodingStyle: 
+  @dise:encodingStyle?
+  ;
+
+Fault	 -> %dise:Fault
+%Fault:
+  dise:faultcode   -> %xs:QName
+  dise:faultstring -> %xs:string
+  dise:faultactor? -> %xs:anyURI
+  dise:detail?     -> %dise:detail
+  ;
+
+%detail:
+  any*
+  @any
+  ;
+
+#EOF

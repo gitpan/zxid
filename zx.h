@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zx.h,v 1.12 2006/09/05 05:09:37 sampo Exp $
+ * $Id: zx.h,v 1.13 2006/09/16 20:00:36 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 7.8.2006,  renamed from dec.h to zx.h and added comments --Sampo
@@ -104,6 +104,7 @@ struct zx_str_s* zx_dup_len_str(struct zx_ctx* c, int len, char* s);
 struct zx_str_s* zx_strf(struct zx_ctx* c, char* f, ...);  /* data is new memory */
 void zx_str_free(struct zx_ctx* c, struct zx_str_s* ss);
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str_s* ss);
+void zx_str_conv(struct zx_str_s* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
 
 /* Elements that are unforeseen (errornous or extensions). */
 

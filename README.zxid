@@ -1,7 +1,21 @@
 README.zxid
 ###########
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: README.zxid,v 1.19 2006/09/05 05:09:37 sampo Exp $>>
+<<cvsid: $Id: README.zxid,v 1.30 2006/09/16 05:59:56 sampo Exp $>>
+
+<<abstract:
+
+ZXID ist eine C-Bibliothek, die den vollständigen SAML
+2.0-Stack implementiert und alle populären
+Identitätsverwaltungs-Protokolle wie Liberty ID-FF 1.2,
+WS-Federation, WS- Trust und ID-Webservices wie Liberty ID-WSF 1.1 und
+2.0 implementieren will. Sie beruht auf Schema-basierter
+Code-Erzeugung, woraus eine genaue Implementation resultiert. SWIG
+wird verwendet, um Schnittstellen zu Skriptsprachen wie Perl, PHP und
+Python sowie zu Java bereitzustellen. Sie kann als SP, IdP, WSC und
+WSP fungieren.
+
+>>
 
 1 Who needs this?
 =================
@@ -69,7 +83,7 @@ script in an existing web server. See later chapters for more details.
 This software depends on following packages:
 
 1. zlib from zlib.net. Generally whatever comes with your distro is sufficient.
-2. openssl-0.9.8b or later. See www.openssl.org. Generally openssl libraries
+2. openssl-0.9.8c or later. See www.openssl.org. Generally openssl libraries
    distributed with most Linux distros are sufficient.<<footnote: It is
    possible to compile without OpenSSL, e.g. for space constrained embedded
    system, but this has serious security implications.>>
@@ -284,7 +298,7 @@ Usually configuration of a system involves following tasks
       Cookie virtual host as well.
    b. Arrange for ZXID to be invoked. This could mean configuring
       zxid.x or zxid.pl to be recognized as a CGI script, or it could
-      mean setting up your ~modperl~ or ~modphp~ system to call
+      mean setting up your ~mod_perl~ or ~mod_php~ system to call
       ZXID at the appropriate place.
 2. Configure ZXID, including signing certificate and CoT with peer metadata
    a. generate or aquire certificate
@@ -435,11 +449,46 @@ zlib is used mainly in redirect profiles. Since zlib foot print is
 small, we have made no supported provision to compile without it. If
 you hack something together, let us know.
 
+3.3 Choosing Which Standards to Compile in (default: all)
+---------------------------------------------------------
+
+On space constrained systems you may shed additional weight by only
+compiling in the IdM standards you actully use.  Of course, if you do
+not use them the dead function eliminations should take care of them,
+but sometimes you can gain additional savings in space and especially
+compile time.
+
+Another reason could be, in the land of the free, if some modules
+are covered by a software patent, you may want to compile a binary
+without the contested functionality.<<footnote: Please do not
+ask me to add additional baggage to avoid patents. Software
+patents are a plague and your efforts are best spent in getting
+them overturned.>>
+
+You can tweak the flags, shown in accompanying table, in the Makefile
+or by supplying new values on commend line. For example
+
+  make TARGET=sol8 ENA_SAML2=0
+
+would disable SAML 2.0 (and trigger build for Sparc Solaris 8).
+
+<<table: Conditional inclusion of standards
+Makefile flag   Standard      Comments
+=============== ============= ======================================
+ENA_SSO=1       All SSO       Must be enabled for any of SSO to work
+ENA_SAML2=1     SAML 2.0
+ENA_FF12=1      ID-FF 1.2     Requires ENA_SAML11=1
+ENA_SAML11=1    SAML 1.1
+ENA_WSF=1       All WSF       Must be enabled for any of WSF to work
+ENA_WSF2=1      ID-WSF 2.0
+ENA_WSF11=1     ID-WSF 1.1
+>>
+
 4 Net::SAML Perl Module
 =======================
 
 * perl CGI example: zxid.pl
-* using with modperl
+* using with mod_perl
 
 After building the main zxid tree, you can
 
@@ -453,12 +502,90 @@ This assumes you use the pregenerated Net/SAML_wrap.c and Net/SAML.pm files
 that we distribute. If you wish to generate these files from origin,
 you need to have SWIG installed and then say in main zxid directory
 
-  make perlmod
+  make perlmod     # Makes all available perl modules (including heavy low level ones)
+  make samlmod     # Only makes Net::SAML (much faster)
+  make wsfmod      # Only makes Net::WSF (much faster)
+
+>  WARNING: Low level interface is baroque, and consequently, it
+>  will take a lot of disk space, RAM and CPU to build it: 100 MB
+>  would not be exageration and over an hour (on 1GHz CPU). Build
+>  time memory consumption of single cc1 process will be over
+>  256 MB of RAM. You have been warned.
+
+4.1 Current major modules are
+-----------------------------
+
+* Net::SAML - The high level interfaces for Single Sign-On (SSO)
+* Net::SAML::Raw - Low level assertion and protocol manipulation interfaces
+* Net::SAML::Metadata - Low level metadata manipulation interfaces
+
+4.2 Planned modules
+-------------------
+
+* Net::WSF - The high level interfaces for Web Services Frameworks (WSF)
+* Net::WSF::Raw - The low level interfaces for WSF variants
+* Net::WSF::WSC - The high level interfaces for Web Services Clients
+* Net::WSF::WSC:Raw
+
+4.3 Perl API Adaptations
+------------------------
+
+The perl APIs were generated from the C .h files using SWIG. Generally any
+C functions and constants that start by zxid_, ZXID_, SAML2_, or SAML_
+have that prefix changed to <<tt: Net::SAML::>>. Note, however, that
+the zx_ prefix is not stripped.
+
+Since ZXID wants to keep strings, in many places, in length + data representations,
+namesly as ~struct zx_str_s~, SWIG typemaps were used to make this happen
+automatically. Thus any C function that takes as argiment ~struct zx_str_s*~
+can take a perl string directly. Similarily any C function that returns
+such pointer, will return a perl string instead. As a final goodie, any
+C function, such as
+
+  struct zx_str_s* zx_ref_len_str(struct zx_ctx* c, int len, char* s);
+
+that takes ~length~ and ~s~ as explicit arguments, takes only single
+argument that is perl string (the one argument automatically satisfies
+two C arguments, thanks to a type map). The above could be called like
+
+  $a = Net::SAML::zx_ref_len_str(c, "foo");
+
+First the "foo" satisfies both ~len~ and ~s~, and then the return value
+is converted back to perl string.
 
 5 PHP Integration
 =================
 
-TBD using SWIG
+The PHP integration is incomplete due to incomplete support in SWIG
+for php5. However, enough interface exists to get most high level API
+working and thus successfully run an SP.
+
+After building main zxid distribution, say
+
+  make phpzxid
+
+You must have php-config(1) in path. If not, try
+
+  make phpzxid PHP_CONFIG=/path/to/php-config
+
+If the extension built successfully, you can use it by copying
+it to a suitable place, e.g.
+
+  make phpzxid_install
+
+The install again uses the php-config(1) to figure out where
+php(1) can find the module.
+
+and adding
+
+  dl("php_zxid.so");   // Load the module
+
+in your script. Alternately you can use the zxid.php file
+like this
+
+  include("zxid.php");
+
+You may need to tweak the paths to get this to work.
 
 6 Python Integration
 ====================
@@ -762,6 +889,73 @@ for validating signatures on other people's XML documents.
 All generated libraries are designed to be thread safe, provided
 that the underlying libc APIs, such as malloc(3) are thread safe.
 
+9 Creating New Interfaces Using ZXID Methodology
+================================================
+
+The ZXID code generation methodology can be used to create
+integraces to any XML document or protocol that can be
+described as Schema Grammar (which includes any document
+that can be expressed as XML Schema - XSD). The general
+steps are
+
+1. Convert .xsd file to .sg or write the .sg directly. For conversion
+   you would typically use a command like
+
+     ~/pd/xsd2sg.pl <foo.xsd >bar.xsd
+
+2. Tweak and rationalize the resulting .sg file. In ideal world
+   any construct expressible as .xsd should be nicely representable,
+   but in practise some work better than others so you can create
+   much nicer interface if you invest in some manual tweaking.
+
+   Note that the tweaked .sg still is able to represent the
+   same document as the original .xsd described, though
+   often the tweaking causes some relaxation.
+
+   Most common tweaks
+
+   a. If xsd is written so that the targetted namespace is
+      also the default namespace, you should introduce
+      a namespace prefix because this is needed during
+      code generation to keep different C identifiers
+      from clashing with each other. Ideally you
+      should coordinate the namespace prefixes globally
+      so that even two different projects will not clash.
+
+   b. Where the choice construct is used, indicated
+      by pipey symbol (|) in the .sg file, you
+      should refactor these into sequences
+      zero-or-one occurance (?) instances of the alternatives
+      of the choice. This is needed because for foreseeable
+      future xsd2sg.pl has a limitation in code generation
+      feature. If the choice has maxOccurs="unbounded"
+      you should use (*) instead.
+
+   c. xml:lang and other similar attributes may need to
+      be factored open to be just of type %xs:string. This
+      is a bug in xsd2sg.pl
+      
+3. "Connect" the schema to bigger framework. Usually this
+   means adding your schema grammar to the ZX_SG variable
+   in zxid/Makefile and supplying additional -r flags
+   in ZX_ROOT variable. This allows your new schema to
+   be visible at top level.
+
+   If your schema is meant to extend leafs or interior nodes of
+   the parse tree you would edit the SOAP schema to accept your
+   new protocol elements in the body. Or that the generic SOAP
+   header can accept your specific header schemata, or that
+   the SAML attribute definitions accept your kind of
+   attributes. Whatever makes sense in your context.
+
+   Alternative to this is to create an entirely new
+   monolothic encoder decoder, i.e. instead of extending
+   the existing ZXID project to accommodate your new
+   protocol, you just start a new project that uses the
+   same methodology. You should see how the SAML protocol
+   part is separated from the SAML metadata parsing in
+   the existing project.
+
 8 ZXID Project
 ==============
 
@@ -769,9 +963,9 @@ Immediate goal: build a SAML 2.0 SP and ID-WSF 1.1 WSC
 
 Goals of ZXID project include
 
-* SOAP 1.1 support
+* SOAP 1.1 support (done)
 * SAML 2.0 compliance
-  - SP role (highest short term priority)
+  - SP role (done)
   - IdP role
 * Liberty ID-FF 1.2 support
   - SP
@@ -797,6 +991,7 @@ in tarball releases, but may or may no be present in CVS checkouts.
 
   zxid-0.xx
    |
+   +-- Net    The Net::SAML perl module
    +-- xsd    XML schema descriptions of protocols (not distributed)
    +-- sg     Schema Grammar (.sg) descriptions of protocols
    +-- c      C code generated from the Schema Grammar descriptions
@@ -823,6 +1018,50 @@ There are three outputs from generation
 1. Data structures describing the data (xx.h)
 2. Encoder that linearizes the data structure to wire protocol (xx-enc.c)
 3. Decoder that converts wire protocol byte stream to a data structure (xx-dec.c)
+
+8.3 Standards and Namespaces
+----------------------------
+
+ZXID uses consistently same namespace prefixes throughout the project. The
+generated encoders and decoders support following schemas
+
+<<table: Namespaces
+Prefix URI                                         Description
+====== =========================================== =================================
+sa     urn:oasis:names:tc:SAML:2.0:assertion       SAML 2.0
+sp     urn:oasis:names:tc:SAML:2.0:protocol
+md     urn:oasis:names:tc:SAML:2.0:metadata
+sa11   urn:oasis:names:tc:SAML:1.0:assertion       SAML 1.1
+sp11   urn:oasis:names:tc:SAML:1.0:protocol
+ff12   urn:liberty:iff:2003-08                     ID-FF 1.2
+m20    urn:liberty:metadata:2004-12                v2.0 (almost asme as 1.2)
+ac     urn:liberty:ac:2004-12                      v2.0 (almost asme as 1.2)
+b12    urn:liberty:sb:2003-08                      ID-WSF 1.1 SOAP Binding
+sec12  urn:liberty:sec:2003-08                     ID-WSF 1.1 Security Mechanisms
+di12   urn:liberty:disco:2003-08                   ID-WSF 1.1 Discovery Service
+is12   urn:liberty:is:2003-08                      ID-WSF 1.1 Interaction Service
+lu     urn:liberty:util:2006-08                    ID-WSF 2.0 Utility Schema
+sbf    urn:liberty:sb                              Framework header
+b      urn:liberty:sb:2006-08                      ID-WSF 2.0 SOAP Binding
+sec    urn:liberty:security:2006-08                ID-WSF 2.0 Security Mechanisms
+di     urn:liberty:disco:2006-08                   ID-WSF 2.0 Discovery Service
+is     urn:liberty:is:2006-08                      ID-WSF 2.0 Interaction Service
+se     http://schemas.xmlsoap.org/soap/envelope/   SOAP 1.1, SSO variant
+e      http://schemas.xmlsoap.org/soap/envelope/   SOAP 1.1, WSF variant
+dise   http://schemas.xmlsoap.org/soap/envelope/   SOAP 1.1, DS MD update variant
+ds     http://www.w3.org/2000/09/xmldsig#          XML Signatures
+xenc   http://www.w3.org/2001/04/xmlenc#           XML Encryption
+a      http://www.w3.org/2005/08/addressing        WSA 1.0
+
+wsse
+http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd
+WS Security SecExt 1.0
+
+wsu
+http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd
+WS Security Utility 1.0
+xs     http://www.w3.org/2001/XMLSchema            Namespace only, no code
+>>
 
 9 Code Generation Tools
 =======================
@@ -922,12 +1161,54 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
+While the source distribution of ZXID does not contain
+SSLeay or OpenSSL code, if you use this code you will use OpenSSL
+library. Please give Eric Young and OpenSSL team credit (as required by
+their licenses).
+
+And remember, you, and nobody else but you, are responsible for
+auditing ZXID and OpenSSL library for security problems,
+backdoors, and general suitability for your application.
+
 12 FAQ
 ======
 
 *** real user FAQs are still lacking. Maybe this stuff is perfect?
 
-12.8 Author's Pet Peeves
+12.6 Mysterious Error Messages
+------------------------------
+
+"Random number generator not seeded!!!"
+
+This warning indicates that randomize() was not able to read
+/dev/random or /dev/urandom, possibly because your system does not
+have them or they are differently named. You can still use SSL, but
+the encryption will not be as strong. Investigate setting up
+EGD (entropy gathering daemon) or PRNG (Pseudo Random Number
+Generator). Both are available on the net.
+
+"msg 123: 1 - error:140770F8:SSL routines:SSL23_GET_SERVER_HELLO:unknown proto"
+
+SSLeay error string. First (123) number is PID, second number (1) indicates
+the position of the error message in SSLeay error stack. You often see
+a pile of these messages as errors cascade.
+
+"msg 123: 1 - error:02001002::lib(2) :func(1) :reason(2)"
+
+The same as above, but you didn't call load_error_strings() so SSLeay
+couldn't verbosely explain the error. You can still find out what it
+means with this command:
+
+     /usr/local/ssl/bin/ssleay errstr 02001002
+
+Password is being asked for private key
+
+This is normal behaviour if your private key is encrypted. Either
+you have to supply the password or you have to use unencrypted
+private key. Scan OpenSSL.org for the FAQ that explains how to
+do this.
+
+12.7 Author's Pet Peeves
 ------------------------
 
 1. What is Schema Grammar (.sg) and why are you using it?
@@ -991,6 +1272,68 @@ limitations under the License.
      inhabitants of the orrelevant systems can support themselves, probably
      learning a great deal on the side.
 
+12.8 What does ZXID aim at - an answer
+--------------------------------------
+
+A recent conversation that touched on the aims of ZXID project:
+
+> So just generally, what are your goals for it, are you interested in making
+> it work well with what other people are producing (e.g. SAML -> WSF
+> cross-over), etc? I'm certainly assuming the answer's yes to that.
+
+I aim at full stack client side implementation. ID-FF, SAML 2.0,
+WSF (both versions). The generation technique I use will yield
+the encoders and decoders for both WSP and WSC, but the hand written
+higher level logic will at first be only written for SP and WSC.
+
+It is Apache licensed project, of course, so if someone contributes
+the IdP and WSP capabilities, I'll merge them into the distribution.
+
+I am interested to have it working with other people's code at 3 levels:
+
+1. Over-the-wire iop
+2. I have split the functionality of the SP from the WSC such that
+   my SP could probably be used with oneone else's WSC and someone
+   else's SP would reasonably easily be able to use my WSC.
+3. Interfaces to non IdM parts of the complete system, typically
+   used to implement the application layer, shall be
+   plentiful: C/C++ API, Net::SAML/mod_perl, php - whatever you
+   can SWIGify.
+
+One thing I am NOT interested in is "layered" stack. I strongly
+believe it's better each vertically integrated slice is implemented by
+one mind. Thus, except for lowest HTTP, TLS, and TCP/IP layers,
+my SP, or WSC, handles the whole depth of the stack - SOAP, signature,
+and app interface layers (of course the actual app should be its
+own layer and probably user written). That is by design.
+
+I have found in practise that if you attempt a layered stack, you have
+impedance mismatches between the modules at different layers because
+they were designed and written by different minds. By having vertical
+integration I avoid impedance mismatches. This is the reason why
+monolithic TCP/IP implementations tend to be better than explicitly
+layered, such as the streams approach.
+
+Now, if someone else wanted to take my generated encoders and
+decoders and use them as a "layer" in their layered stack, I guess
+I would not have any issue. If you do that, please let me know
+because I would have to commit to API stability at that layer.
+I am willing to do that once there are real projects that depend
+on it, but until then I still may redesign those APIs, after
+all, I am at revision 0.4 :-)
+
+In the end, it seems that ZXID is actually somewhat layered approach -
+what I mean by "vertical integration" is that all the layers are
+designed and controlled by the same mind.
+
+> BTW, I gather that it's SAML 2.0 at the moment, which I can't offer any test
+> capability for, but if you get to SAML 1.1, I'm happy to set up some kind of
+> IdP test capability for that.
+
+In SSO world SAML 1.1 and ID-FF 1.2 capabilities are definitely on
+the road map. In ID-WSF world, I'll probably start with 2.0 DS-WSC
+(don't we all) followed by ID-DAP WSC and then tackle 1.1 after that.
+
 12.9 Annoyances and improvement ideas
 -------------------------------------
 
@@ -1004,6 +1347,253 @@ response" function. Perhaps this could be supported by some schema
 grammar level aliasing feature: if an element derives from base type
 without adding anything at all of its own, we might as well only
 generate code for the base type.
+
+Namespace aliasing scheme would allow us to consider two versions of
+schema the same. It seems to be fairly common that the schema
+changes are so minor that there is no justification for two
+different decoding engines.
+
+98 Support
+==========
+
+98.1 Mailing list and forums
+----------------------------
+
+Mail the author until we get the list set up. Or volunteer a list :-)
+
+98.2 Bugs
+---------
+
+Mail the author until we get bug tracking set up. Or volunteer.
+
+98.3 Developer access
+---------------------
+
+We use CVS, but access needs to be manually configured and is not
+anonymous. If you contribute significantly, I will bother. Others
+can send patches (good way to show you are worthy of CVS access)
+to me. I've heard some mixed experiences about open source
+sites like sourceforge. If you run such site and want to
+host ZXID Project, please contact me.
+
+If you just always want the latest source: get the tar ball from
+the downloads section. Trust me, this is still so much in flux
+that only the tar ball snapshots are in any usable state. CVS
+access just to get latest source would be pointless.
+
+98.9 Commercial Support
+-----------------------
+
+Following companies provice consultancy and support contracts for
+ZXID:
+
+* symlabs.com
+
+99 Appendix: Schema Grammars
+============================
+
+99.1 SAML 2.0
+-------------
+
+99.1.1 saml-schema-assertion-2.0 (sa)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/saml-schema-assertion-2.0.sg>>
+>>
+
+99.1.2 saml-schema-protocol-2.0 (sp)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/saml-schema-protocol-2.0.sg>>
+>>
+
+99.1.4 saml-schema-metadata-2.0 (m)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/saml-schema-metadata-2.0.sg>>
+>>
+
+99.2 SAML 1.1
+-------------
+
+99.2.1 oasis-sstc-saml-schema-assertion-1.1 (sa11)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/oasis-sstc-saml-schema-assertion-1.1.sg>>
+>>
+
+99.2.2 oasis-sstc-saml-schema-protocol-1.1 (sp11)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/oasis-sstc-saml-schema-protocol-1.1.sg>>
+>>
+
+99.3 Liberty ID-FF 1.2
+----------------------
+
+99.3.1 liberty-idff-protocols-schema-1.2 (ff12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg>>
+>>
+
+99.3.2 liberty-metadata-v2.0.sg (m20)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-metadata-v2.0.sg>>
+>>
+
+99.3.3 liberty-authentication-context-v2.0 (ac)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-authentication-context-v2.0.sg>>
+>>
+
+99.4 Liberty ID-WSF 1.1
+-----------------------
+
+99.4.1 liberty-idwsf-soap-binding-v1.2 (b12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-soap-binding-v1.2.sg>>
+>>
+
+99.4.2 liberty-idwsf-security-mechanisms-v1.2 (sec12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-security-mechanisms-v1.2.sg>>
+>>
+
+99.4.3 liberty-idwsf-disco-svc-v1.2 (di12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-disco-svc-v1.2.sg>>
+>>
+
+99.4.5 liberty-idwsf-interaction-svc-v1.1 (is12)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-interaction-svc-v1.1.sg>>
+>>
+
+99.5 Liberty ID-WSF 2.0
+-----------------------
+
+99.5.1 liberty-idwsf-utility-v2.0 (lu)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-utility-v2.0.sg>>
+>>
+
+99.5.2 liberty-idwsf-soap-binding (no version, sbf)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-soap-binding.sg>>
+>>
+
+99.5.3 liberty-idwsf-soap-binding-v2.0 (b)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-soap-binding-v2.0.sg>>
+>>
+
+99.5.4 liberty-idwsf-security-mechanisms-v2.0 (sec)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-security-mechanisms-v2.0.sg>>
+>>
+
+99.5.5 liberty-idwsf-disco-svc-v2.0 (di)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-disco-svc-v2.0.sg>>
+>>
+
+99.5.6 liberty-idwsf-interaction-svc-v2.0 (is)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/liberty-idwsf-interaction-svc-v2.0.sg>>
+>>
+
+99.6 SOAP 1.1 Processors
+------------------------
+
+99.6.1 saml20-soap11 (se)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/saml20-soap11.sg>>
+>>
+
+99.6.2 wsf-soap11 (e)
+~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/wsf-soap11.sg>>
+>>
+
+99.6.3 ds-soap11 (dise)
+~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/ds-soap11.sg>>
+>>
+
+99.7 XML and Web Services Infrastructure
+----------------------------------------
+
+99.7.1 xmldsig-core (ds)
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/xmldsig-core.sg>>
+>>
+
+99.7.2 xenc-schema (xenc)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/xenc-schema.sg>>
+>>
+
+99.7.3 ws-addr-1.0 (a)
+~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/ws-addr-1.0.sg>>
+>>
+
+99.7.4 wss-secext-1.0 (wsse)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/wss-secext-1.0.sg>>
+>>
+
+99.7.5 wss-util-1.0 (wsu)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+<<schema:
+<<sg/wss-util-1.0.sg>>
+>>
 
 <<htmlpreamble: <title>ZXID Home</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>README ZXID</h1> >>
 
