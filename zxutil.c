@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxutil.c,v 1.10 2006/09/01 05:36:32 sampo Exp $
+ * $Id: zxutil.c,v 1.12 2006/10/15 00:27:26 sampo Exp $
  *
  * 15.4.2006, created over Easter holiday --Sampo
  */
@@ -325,7 +325,8 @@ unsigned char zx_std_index_64[256] = {
 
 /*! Raw version. Can use any decoding table, but also assumes r has been allocated
  * to correct length. Is able to perform the operation in place, i.e. p and r can
- * point to the same buffer. Both canonical and safe base64 are handled. */
+ * point to the same buffer. Both canonical and safe base64 are handled.
+ * Returns pointer one past last output char written. */
 
 /* Called by:  unbase64 */
 char* unbase64_raw(char* p, char* lim, char* r, char* index_64)
@@ -354,7 +355,7 @@ char* unbase64_raw(char* p, char* lim, char* r, char* index_64)
     } while (i < 4);
     
     if (c[0] == Eq || c[1] == Eq) {
-      ERR("Premature end of base64 data. (incomplete base64 input) c0(%c)\n", c[0]);
+      ERR("Premature end of base64 data. (incomplete base64 input) c0(%x)\n", c[0]);
       break;
     }
     /* D("c0=%d,c1=%d,c2=%d,c3=%d\n", c[0],c[1],c[2],c[3]); */

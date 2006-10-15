@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: wsc.i,v 1.1 2006/09/14 23:18:48 sampo Exp $
+ * $Id: wsc.i,v 1.2 2006/09/30 06:24:49 sampo Exp $
  * 14.9.2006, created --Sampo
  */
 %module zxwsc
@@ -31,6 +31,26 @@ int trace = 0;
 %}
 
 %rename(use_is_perl_keyword) use;
+
+%typemap (in) (int len, char* s) {
+  $2 = SvPV($input, $1);
+}
+
+//%typemap (in) struct zx_str* {
+//  int len;
+//  char* s;
+//  s = SvPV($input, len);
+//  $1 = zx_str_dup_len_str(c/* *** where from ctx? */, len, s);
+//}
+
+%typemap (out) struct zx_str* {
+  if (argvi >= items) {
+    EXTEND(sp,1);
+  }
+  $result = newSVpv($1->s, $1->len);
+  /* Do not free underlying zx_str because they are usually returned by reference. */
+  ++argvi;
+}
 
 %include "zxwsc.h"
 

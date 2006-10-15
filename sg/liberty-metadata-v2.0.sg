@@ -1,6 +1,6 @@
 # zxid/sg/liberty-metadata-v2.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-metadata-v2.0.sg,v 1.3 2006/09/06 01:18:11 sampo Exp $
+# $Id: liberty-metadata-v2.0.sg,v 1.4 2006/09/24 04:20:42 sampo Exp $
 #
 # N.B. Older Liberty metadata, liberty-metadata-1.0-errata-v2.0.xsd,
 # urn:liberty:metadata:2003-08, is nearly identical to this one except
@@ -9,7 +9,9 @@
 
 target(m20, urn:liberty:metadata:2004-12)
 import(ds,  http://www.w3.org/2000/09/xmldsig#,   http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)
-import(xs,  http://www.w3.org/XML/1998/namespace, http://www.w3.org/2001/xml.xsd)
+
+import(xs,  http://www.w3.org/2001/XMLSchema, http://www.w3.org/2001/xml.xsd)
+#import(xs,  http://www.w3.org/XML/1998/namespace, http://www.w3.org/2001/xml.xsd)
 # include(liberty-idwsf-utility-v2.0.xsd)
 
 Extension        -> %m20:extensionType

@@ -1,10 +1,13 @@
 # zxid/sg/oasis-sstc-saml-schema-assertion-1.1.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: oasis-sstc-saml-schema-assertion-1.1.sg,v 1.1 2006/09/06 00:27:38 sampo Exp $
+# 15.10.2006, extended AttributeValue schema to cater for bootstraps --Sampo
+# $Id: oasis-sstc-saml-schema-assertion-1.1.sg,v 1.2 2006/10/15 00:27:55 sampo Exp $
 
 target(sa11, urn:oasis:names:tc:SAML:1.0:assertion)
 ns(xs,http://www.w3.org/2001/XMLSchema)
 import(ds, http://www.w3.org/2000/09/xmldsig#, http://www.w3.org/TR/xmldsig-core/xmldsig-core-schema.xsd)
+ns(di12, urn:liberty:disco:2003-08)
+ns(a,    http://www.w3.org/2005/08/addressing)
 
 %DecisionType:	 enum( Permit Deny Indeterminate ) ;
 AssertionIDReference	 -> %xs:NCName
@@ -138,6 +141,13 @@ Attribute	 -> %sa11:AttributeType
   sa11:AttributeValue+
   ;
 
-AttributeValue	 -> %xs:anyType
+# To cater for discovery bootstraps we add them to schema here
+#AttributeValue	   -> %xs:anyType
+
+AttributeValue -> %sa11:AttributeValueType
+%AttributeValueType:
+  di12:ResourceOffering*
+  a:EndpointReference*
+  ;
 
 #EOF

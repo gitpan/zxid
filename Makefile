@@ -3,22 +3,26 @@
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing. See file COPYING.
-# $Id: Makefile,v 1.44 2006/09/16 05:59:56 sampo Exp $
+# $Id: Makefile,v 1.52 2006/10/15 00:27:26 sampo Exp $
+# 15.10.2006, refactor sources to be per namespace --Sampo
+#
 # Build so far only tested on Linux. This makefile needs gmake-3.78 or newer.
-# (See dietlibc (fefe.de) Makefile for some usefule wizardry.)
+# (See dietlibc (fefe.de) Makefile for some useful wizardry.)
 # Try `make help'
 
 vpath %.c ../zxid
 vpath %.h ../zxid
 
-all: zxid libzxid.so.0.0
+all: zxid
 
-REL=0.6
-VERSION=0x000006
+REL=0.7
+VERSION=0x000007
 
+### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(REL)
 
-# If you change following, be sure to edit zxidconf.h as well. N.B. Trailing / is needed.
+### Where runtime configuration and temporary data is kept.
+### If you change following, be sure to edit zxidconf.h as well. N.B. Trailing / is needed.
 ZXID_PATH=/var/zxid/
 
 ###
@@ -39,12 +43,11 @@ ENA_WSF11=1
 ###
 
 TOP=$(shell pwd)
-CURL_ROOT=/apps
-OPENSSL_ROOT=/apps/openssl/std
-#OPENSSL_ROOT=/usr/local/ssl
+CURL_ROOT=/usr/local
+OPENSSL_ROOT=/usr/local/ssl
 PHP_CONFIG=php-config
 PERL=perl
-XSD2SG_PL= ~/pd/xsd2sg.pl
+XSD2SG_PL= ../pd/xsd2sg.pl
 XSD2SG=$(PERL) $(XSD2SG_PL)
 PULVERIZE=$(PERL) ./pulverize.pl
 GPERF=gperf
@@ -53,8 +56,16 @@ AR=ar -crs
 ARX=ar -x
 CC=gcc
 LD=gcc
-CDIR=  -I$(TOP) -I$(OPENSSL_ROOT)/include -I$(CURL_ROOT)/include
-CDEF=  -D_REENTRANT -DDEBUG -DZXID=$(VERSION) -DREL="\"$(REL)\"" -DCOMPILED_DATE=`date +%s`
+
+### To change any of the above options, you can either supply
+### alternate values on make command line, like `make PREFIX=/your/path'
+### or you can create localconf.mk file to hold your options. This
+### file is included here, but if it's missing, no problem.
+
+-include localconf.mk
+
+CDIR+= -I$(TOP) -I$(OPENSSL_ROOT)/include -I$(CURL_ROOT)/include
+CDEF+= -D_REENTRANT -DDEBUG -DZXID=$(VERSION) -DREL="\"$(REL)\"" -DCOMPILED_DATE=`date +%s`
 # Without cURL the Artifact Profile, WSC, and metadata fetch features are disabled.
 CDEF+= -DUSE_CURL
 # Without OpenSSL signing and signature verification are not possible
@@ -100,7 +111,7 @@ endif
 endif
 
 CFLAGS=-g -fpic -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing $(CDEF) $(CDIR)
-CFLAGS += -Os
+#CFLAGS += -Os    # gcc-3.4.6 miscompiles with -Os on ix86
 #CFLAGS += -Wall
 
 ###
@@ -109,11 +120,7 @@ CFLAGS += -Os
 ###
 
 ZXID_LIB_OBJ=zxidsso.o zxidslo.o zxidmk.o zxidlib.o zxidmeta.o
-ZX_OBJ=zxlib.o zxutil.o \
-  c/saml2-attrs.o  c/saml2md-attrs.o \
-  c/saml2-elems.o  c/saml2md-elems.o \
-  c/saml2-ns.o     c/saml2md-ns.o \
-  c/license.o
+ZX_OBJ=zxlib.o zxutil.o zxsig.o c/license.o c/zx-attrs.o c/zx-elems.o
 WSF_OBJ=
 
 ifeq ($(PULVER),1)
@@ -134,8 +141,6 @@ c_saml2_dec_c_o=$(shell cat pulver/c_saml2_dec_c.deps)
 c_saml2_enc_c_o=$(shell cat pulver/c_saml2_enc_c.deps)
 c_saml2_aux_c_o=$(shell cat pulver/c_saml2_aux_c.deps)
 c_saml2_getput_c_o=$(shell pulver/c_saml2_getput_c.deps)
-
-foo=$(c_saml2_enc_c_o)
 
 #pulver/c_saml2_dec_c.deps $(c_saml2_dec_c_o:.o=.c): c/saml2-dec.c	
 
@@ -184,17 +189,13 @@ ifeq ($(ENA_SSO),1)
 # Nonpulverized build. This will result in bigger binaries because gnu ld does
 # not understand to do dead function elimination. However, this is faster to build.
 
-ZX_OBJ += \
-  c/saml2-dec.o    c/saml2md-dec.o \
-  c/saml2-enc.o    c/saml2md-enc.o \
-  c/saml2-aux.o    c/saml2md-aux.o \
-  c/saml2-getput.o c/saml2md-getput.o
+#ZX_OBJ +=
 
 endif
 
 ifeq ($(ENA_WSF),1)
 
-WSF_OBJ += c/wsf-dec.o c/wsf-enc.o c/wsf-aux.o c/wsf-getput.o
+#WSF_OBJ +=
 
 endif
 
@@ -202,22 +203,27 @@ endif
 
 #ZXID_OBJ=zxid.o zxidlib.o zxidmeta.o $(ZX_OBJ)
 ZXID_OBJ=zxid.o
-ZXBENCH_OBJ=zxbench.o $(ZX_OBJ)
+ZXBENCH_OBJ=zxbench.o zxidlib.o zxidmeta.o zxidsso.o zxidmk.o zxidslo.o $(ZX_OBJ)
 
 #
 # Schemata and potential xml document roots.
 # See also sg/saml20-soap11.sg for a place to "glue" new functions in.
 #
 
+ZX_SG+=sg/xmldsig-core.sg sg/xenc-schema.sg
+
 # SAML 2.0
 
 ifeq ($(ENA_SAML2),1)
 
-ZX_SG+=sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg sg/saml20-soap11.sg
-ZX_ROOTS+=-r sa:Assertion -r sp:AuthnRequest -r sp:Response -r sp:LogoutRequest -r sp:LogoutResponse -r sp:ManageNameIDRequest -r sp:ManageNameIDResponse -r se:Envelope
+ZX_SG+=sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/saml20-soap11.sg
+ZX_ROOTS+=-r sa:Assertion -r sp:AuthnRequest -r sp:Response
+ZX_ROOTS+=-r sp:LogoutRequest -r sp:LogoutResponse
+ZX_ROOTS+=-r sp:ManageNameIDRequest -r sp:ManageNameIDResponse
+ZX_ROOTS+=-r se:Envelope
 
-ZXMD_SG+=sg/saml-schema-assertion-2.0.sg sg/saml-schema-metadata-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg
-ZXMD_ROOTS+=-r md:EntityDescriptor -r md:EntitiesDescriptor
+ZX_SG+=sg/saml-schema-metadata-2.0.sg
+ZX_ROOTS+=-r md:EntityDescriptor -r md:EntitiesDescriptor
 
 endif
 
@@ -234,10 +240,15 @@ endif
 
 ifeq ($(ENA_FF12),1)
 
-ZX_SG +=     sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg sg/liberty-authentication-context-v2.0.sg
-ZX_ROOTS +=  -r ff12:Assertion -r ff12:AuthnRequest -r ff12:AuthnResponse -r ff12:AuthnRequestEnvelope -r ff12:AuthnResponseEnvelope -r ff12:RegisterNameIdentifierRequest -r ff12:RegisterNameIdentifierResponse -r ff12:FederationTerminationNotification -r ff12:LogoutRequest -r ff12:LogoutResponse -r ff12:NameIdentifierMappingRequest -r ff12:NameIdentifierMappingResponse
-ZXMD_SG+=    sg/liberty-metadata-v2.0.sg
-ZXMD_ROOTS+= -r m20:EntityDescriptor -r m20:EntitiesDescriptor
+ZX_SG += sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg sg/liberty-authentication-context-v2.0.sg
+ZX_ROOTS+= -r ff12:Assertion -r ff12:AuthnRequest -r ff12:AuthnResponse
+ZX_ROOTS+= -r ff12:AuthnRequestEnvelope -r ff12:AuthnResponseEnvelope
+ZX_ROOTS+= -r ff12:RegisterNameIdentifierRequest -r ff12:RegisterNameIdentifierResponse
+ZX_ROOTS+= -r ff12:FederationTerminationNotification
+ZX_ROOTS+= -r ff12:LogoutRequest -r ff12:LogoutResponse
+ZX_ROOTS+= -r ff12:NameIdentifierMappingRequest -r ff12:NameIdentifierMappingResponse
+ZX_SG+=    sg/liberty-metadata-v2.0.sg
+ZX_ROOTS+= -r m20:EntityDescriptor -r m20:EntitiesDescriptor
 
 endif
 
@@ -245,8 +256,14 @@ endif
 
 ifeq ($(ENA_WSF2),1)
 
-WSF_SG += sg/wsf-soap11.sg sg/ds-soap11.sg sg/ws-addr-1.0.sg sg/wss-secext-1.0.sg sg/wss-util-1.0.sg sg/liberty-idwsf-soap-binding.sg sg/liberty-idwsf-soap-binding-v2.0.sg sg/liberty-idwsf-security-mechanisms-v2.0.sg sg/liberty-idwsf-disco-svc-v2.0.sg sg/liberty-idwsf-interaction-svc-v2.0.sg sg/liberty-idwsf-utility-v2.0.sg
-WSF_ROOTS+=-r e:Envelope -r dise:Envelope
+ZX_SG += sg/wsf-soap11.sg sg/ds-soap11.sg sg/ws-addr-1.0.sg
+ZX_SG += sg/wss-secext-1.0.sg sg/wss-util-1.0.sg
+ZX_SG += sg/liberty-idwsf-soap-binding.sg sg/liberty-idwsf-soap-binding-v2.0.sg
+ZX_SG += sg/liberty-idwsf-security-mechanisms-v2.0.sg sg/liberty-idwsf-disco-svc-v2.0.sg
+ZX_SG += sg/liberty-idwsf-interaction-svc-v2.0.sg sg/liberty-idwsf-utility-v2.0.sg
+ZX_ROOTS+=-r e:Envelope -r dise:Envelope
+
+#ZX_SG += sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg sg/saml-schema-metadata-2.0.sg sg/oasis-sstc-saml-schema-protocol-1.1.sg sg/oasis-sstc-saml-schema-assertion-1.1.sg sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg sg/liberty-authentication-context-v2.0.sg
 
 endif
 
@@ -254,51 +271,83 @@ endif
 
 ifeq ($(ENA_WSF11),1)
 
-WSF_SG += sg/liberty-idwsf-soap-binding-v1.2.sg sg/liberty-idwsf-security-mechanisms-v1.2.sg sg/liberty-idwsf-disco-svc-v1.2.sg sg/liberty-idwsf-interaction-svc-v1.1.sg
+ZX_SG += sg/liberty-idwsf-soap-binding-v1.2.sg  sg/liberty-idwsf-security-mechanisms-v1.2.sg
+ZX_SG += sg/liberty-idwsf-disco-svc-v1.2.sg     sg/liberty-idwsf-interaction-svc-v1.1.sg
 
 endif
 
 #
-# Binaries
+# Generated files (the zxid/c subdirectory)
 #
 
-zxid: $(ZXID_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxid $(ZXID_OBJ) -L. -lzxid $(LIBS)
+ZX_GEN_H=\
+ c/zx-a-data.h    c/zx-di12-data.h  c/zx-lu-data.h    c/zx-se-data.h     c/zx-xenc-data.h \
+ c/zx-ac-data.h   c/zx-dise-data.h  c/zx-m20-data.h   c/zx-sec-data.h    c/zx-xml-data.h \
+ c/zx-b-data.h    c/zx-ds-data.h    c/zx-md-data.h    c/zx-sec12-data.h  c/zx-xs-data.h \
+ c/zx-b12-data.h  c/zx-e-data.h     c/zx-ns.h         c/zx-sp-data.h \
+ c/zx-ff12-data.h c/zx-sa-data.h    c/zx-sp11-data.h \
+ c/zx-data.h      c/zx-is-data.h    c/zx-sa11-data.h  c/zx-wsse-data.h \
+ c/zx-di-data.h   c/zx-is12-data.h  c/zx-sbf-data.h   c/zx-wsu-data.h
+ZX_GEN_C=\
+ c/zx-a-aux.c      c/zx-di12-dec.c    c/zx-is-enc.c      c/zx-sa11-dec.c     c/zx-sp11-dec.c \
+ c/zx-a-dec.c      c/zx-di12-enc.c    c/zx-is-getput.c   c/zx-sa11-enc.c     c/zx-sp11-enc.c \
+ c/zx-a-enc.c      c/zx-di12-getput.c c/zx-is12-aux.c    c/zx-sa11-getput.c  c/zx-sp11-getput.c \
+ c/zx-a-getput.c   c/zx-dise-aux.c    c/zx-is12-dec.c    c/zx-sbf-aux.c      c/zx-wsse-aux.c \
+ c/zx-ac-aux.c     c/zx-dise-dec.c    c/zx-is12-enc.c    c/zx-sbf-dec.c      c/zx-wsse-dec.c \
+ c/zx-ac-dec.c     c/zx-dise-enc.c    c/zx-is12-getput.c c/zx-sbf-enc.c      c/zx-wsse-enc.c \
+ c/zx-ac-enc.c     c/zx-dise-getput.c c/zx-lu-aux.c      c/zx-sbf-getput.c   c/zx-wsse-getput.c \
+ c/zx-ac-getput.c  c/zx-ds-aux.c      c/zx-lu-dec.c      c/zx-se-aux.c       c/zx-wsu-aux.c \
+ c/zx-ds-dec.c     c/zx-lu-enc.c      c/zx-se-dec.c      c/zx-wsu-dec.c \
+ c/zx-aux.c        c/zx-ds-enc.c      c/zx-lu-getput.c   c/zx-se-enc.c       c/zx-wsu-enc.c \
+ c/zx-b-aux.c      c/zx-ds-getput.c   c/zx-m20-aux.c     c/zx-se-getput.c    c/zx-wsu-getput.c \
+ c/zx-b-dec.c      c/zx-e-aux.c       c/zx-m20-dec.c     c/zx-sec-aux.c      c/zx-xenc-aux.c \
+ c/zx-b-enc.c      c/zx-e-dec.c       c/zx-m20-enc.c     c/zx-sec-dec.c      c/zx-xenc-dec.c \
+ c/zx-b-getput.c   c/zx-e-enc.c       c/zx-m20-getput.c  c/zx-sec-enc.c      c/zx-xenc-enc.c \
+ c/zx-b12-aux.c    c/zx-e-getput.c    c/zx-md-aux.c      c/zx-sec-getput.c   c/zx-xenc-getput.c \
+ c/zx-b12-dec.c    c/zx-md-dec.c      c/zx-sec12-aux.c   c/zx-xml-aux.c \
+ c/zx-b12-enc.c    c/zx-enc.c         c/zx-md-enc.c      c/zx-sec12-dec.c    c/zx-xml-dec.c \
+ c/zx-b12-getput.c c/zx-ff12-aux.c    c/zx-md-getput.c   c/zx-sec12-enc.c    c/zx-xml-enc.c \
+ c/zx-dec.c        c/zx-ff12-dec.c    c/zx-ns.c          c/zx-sec12-getput.c c/zx-xml-getput.c \
+ c/zx-di-aux.c     c/zx-ff12-enc.c    c/zx-sa-aux.c      c/zx-sp-aux.c       c/zx-xs-aux.c \
+ c/zx-di-dec.c     c/zx-ff12-getput.c c/zx-sa-dec.c      c/zx-sp-dec.c       c/zx-xs-dec.c \
+ c/zx-di-enc.c     c/zx-getput.c      c/zx-sa-enc.c      c/zx-sp-enc.c       c/zx-xs-enc.c \
+ c/zx-di-getput.c  c/zx-is-aux.c      c/zx-sa-getput.c   c/zx-sp-getput.c    c/zx-xs-getput.c \
+ c/zx-di12-aux.c   c/zx-is-dec.c      c/zx-sa11-aux.c    c/zx-sp11-aux.c
 
-zxbench: $(ZXBENCH_OBJ)
-	$(LD) $(LDFLAGS) -o zxbench $^ $(LIBS)
+ifeq ($(ENA_GEN),1)
 
-sizeof:
-	$(CC) -o sizeof sizeof.c
+c/zx-attrs.c: c/zx-attrs.gperf
+	$(GPERF) -t -D -C -T -l -G -W zx_attrs -N zx_attr2tok $< | \
+          sed -e 's/lengthtable/zx_attrs_lens/' \
+	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
 
-#
-# Libraries
-#
+c/zx-elems.c: c/zx-elems.gperf
+	$(GPERF) -t -D -C -T -l -G -W zx_elems -N zx_elem2tok $< | \
+          sed -e 's/lengthtable/zx_elems_lens/' \
+	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
 
-ifeq ($(PULVER),1)
+c/zx-attrs.gperf c/zx-elems.gperf $(ZX_GEN_C) $(ZX_GEN_H): $(ZX_SG) dec-templ.c enc-templ.c aux-templ.c getput-templ.c $(XSD2SG_PL)
+	$(XSD2SG) -gen c/zx -p zx_ $(ZX_ROOTS) -S $(ZX_SG) >/dev/null
 
-libzxid.a: $(ZXID_LIB_OBJ) $(ZX_OBJ)
-	cat pulver/c_saml2_dec_c.deps      | xargs $(AR) libzxid.a
-	cat pulver/c_saml2_enc_c.deps      | xargs $(AR) libzxid.a
-	cat pulver/c_saml2_aux_c.deps      | xargs $(AR) libzxid.a
-	cat pulver/c_saml2_getput_c.deps   | xargs $(AR) libzxid.a
-	cat pulver/c_saml2md_dec_c.deps    | xargs $(AR) libzxid.a
-	cat pulver/c_saml2md_enc_c.deps    | xargs $(AR) libzxid.a
-	cat pulver/c_saml2md_aux_c.deps    | xargs $(AR) libzxid.a
-	cat pulver/c_saml2md_getput_c.deps | xargs $(AR) libzxid.a
-	$(AR) libzxid.a $(ZXID_LIB_OBJ)
+c/zx-const.h: c/zx-attrs.c c/zx-elems.c
+	cat c/zx-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ATTR zx_attrs >$@
+	cat c/zx-elems.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ELEM zx_elems >>$@
 
-#	$(foreach fil,$^,$(shell $(AR) libzxid.a $(fil)))
+# Other
 
-else
+c/license.c: LICENSE-2.0.txt
+	printf 'char* license = "' >$@
+	echo 'Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\' >>$@ #'
+	sed -e 's/"/\\"/g' -e 's/$$/\\n\\/' LICENSE-2.0.txt >>$@
+	echo '";' >>$@
 
-libzxid.a: $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ)
-	$(AR) libzxid.a $^
-
+c/zxidvers.h:
+	echo "#ifndef _zxidvers_h" >c/zxidvers.h
+	echo "#define _zxidvers_h" >>c/zxidvers.h
+	echo "#define ZXID_VERSION $(VERSION)" >>c/zxidvers.h
+	echo "#define ZXID_REL \"$(REL)\"" >>c/zxidvers.h
+	echo "#endif" >>c/zxidvers.h
 endif
-
-libzxid.so.0.0: libzxid.a
-	$(LD) -o libzxid.so.0.0 -shared --export-all-symbols -Wl,-whole-archive $^ -Wl,-no-whole-archive
 
 ###
 ###  Perl Modules
@@ -306,38 +355,45 @@ libzxid.so.0.0: libzxid.a
 
 # Main Net::SAML module - high level APIs
 
-Net/SAML_wrap.c Net/SAML.pm: c/saml2-data.h zxid.h zxid.i
+ifeq ($(ENA_GEN),1)
+
+Net/SAML_wrap.c Net/SAML.pm: $(ZX_GEN_H) zxid.h zxid.i
 	$(SWIG) -o Net/SAML_wrap.c -perl zxid.i
 	$(PERL) -pi -e 's/\*zxid_/*/i; s/\*SAML2?_/*/i' Net/SAML.pm
 
 # Net::SAML::Metadata - low level metadata APIs
 
-Metadata/Metadata_wrap.c Metadata/Metadata.pm: c/saml2md-data.h zxidmd.i
+Metadata/Metadata_wrap.c Metadata/Metadata.pm: $(ZX_GEN_H) zxidmd.i
 	$(SWIG) -o Metadata/Metadata_wrap.c -perl zxidmd.i
 	$(PERL) -pi -e 's/\*SAML2?_/*/i' Metadata/Metadata.pm
 
 # Net::SAML::Raw - low level assertion and protocol APIs
 
-Raw/Raw_wrap.c Raw/Raw.pm: c/saml2-data.h zxidraw.i
+Raw/Raw_wrap.c Raw/Raw.pm: $(ZX_GEN_H) zxidraw.i
 	$(SWIG) -o Raw/Raw_wrap.c -perl zxidraw.i
 	$(PERL) -pi -e 's/\*SAML2?_/*/i' Raw/Raw.pm
 
 # Net::WSF::WSC - high level APIs for implementing WSC
 
-WSC/WSC_wrap.c WSC/WSC.pm: c/wsf-data.h zxwsc.h wsc.i
+WSC/WSC_wrap.c WSC/WSC.pm: $(ZX_GEN_H) zxwsc.h wsc.i
 	$(SWIG) -o WSC/WSC_wrap.c -perl wsc.i
 	$(PERL) -pi -e 's/\*zxwsc_/*/i; s/\*SAML2?_/*/i' WSC/WSC.pm
 
 # Net::WSF::Raw - low level protocol APIs
 
-WSF_Raw/Raw_wrap.c WSF_Raw/Raw.pm: c/wsf-data.h wsfraw.i
+WSF_Raw/Raw_wrap.c WSF_Raw/Raw.pm: $(ZX_GEN_H) wsfraw.i
 	$(SWIG) -o WSF_Raw/Raw_wrap.c -perl wsfraw.i
 	$(PERL) -pi -e 's/\*zxwsc_/*/i; s/\*SAML2?_/*/i' WSF_Raw/Raw.pm
 
+endif
+
 # Overall
 
-samlmod: Net/SAML_wrap.c Net/SAML.pm
+samlmod Net/Makefile: Net/SAML_wrap.c Net/SAML.pm
 	cd Net; $(PERL) Makefile.PL && $(MAKE)
+
+samlmod_install: Net/Makefile
+	cd Net; $(MAKE) install
 
 mdmod: Metadata/Metadata_wrap.c Metadata/Metadata.pm
 	cd Metadata; $(PERL) Makefile.PL && $(MAKE)
@@ -373,8 +429,12 @@ perlcleaner: perlclean
 ###  PHP Module
 ###
 
-php/zxid_wrap.c php/zxid.php php/php_zxid.h php/Makefile: c/saml2-data.h zxid.h zxid.i
+ifeq ($(ENA_GEN),1)
+
+php/zxid_wrap.c php/zxid.php php/php_zxid.h php/Makefile: $(ZX_GEN_H) zxid.h zxid.i
 	cd php; $(SWIG) -o zxid_wrap.c -noproxy -php ../phpzxid.i
+
+endif
 
 php/zxid_wrap.o: php/zxid_wrap.c
 	$(CC) -c -o $@ `$(PHP_CONFIG) --includes` $(CFLAGS) $<
@@ -396,80 +456,46 @@ phpcleaner: phpclean
 	rm -rf php/php_zxid.h php/zxid.php php/zxid_wrap.c
 
 #
-# Generated files (the zxid/c subdirectory)
+# Binaries
 #
 
-# SSO
+zxid: $(ZXID_OBJ) libzxid.a
+	$(LD) $(LDFLAGS) -o zxid $(ZXID_OBJ) -L. -lzxid $(LIBS)
 
-c/saml2-attrs.c: c/saml2-attrs.gperf
-	$(GPERF) -t -D -C -T -l -G -W zx_attrs -N zx_attr2tok $< | \
-          sed -e 's/lengthtable/zx_attrs_lens/' \
-	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
+zxbench: $(ZXBENCH_OBJ)
+	$(LD) $(LDFLAGS) -o zxbench $^ $(LIBS)
 
-c/saml2-elems.c: c/saml2-elems.gperf
-	$(GPERF) -t -D -C -T -l -G -W zx_elems -N zx_elem2tok $< | \
-          sed -e 's/lengthtable/zx_elems_lens/' \
-	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
+sizeof:
+	$(CC) -o sizeof sizeof.c
 
-c/saml2-attrs.gperf c/saml2-elems.gperf c/saml2-dec.c c/saml2-enc.c c/saml2-aux.c c/saml2-getput.c c/saml2-data.h: $(ZX_SG) dec-templ.c enc-templ.c aux-templ.c getput-templ.c $(XSD2SG_PL)
-	$(XSD2SG) -gen c/saml2 -p zx_ $(ZX_ROOTS) -S $(ZX_SG) >/dev/null
+#
+# Libraries
+#
 
-c/saml2-const.h: c/saml2-attrs.c c/saml2-elems.c
-	cat c/saml2-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ATTR zx_attrs >$@
-	cat c/saml2-elems.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ELEM zx_elems >>$@
+ifeq ($(PULVER),1)
 
-# Metadata
+libzxid.a: $(ZXID_LIB_OBJ) $(ZX_OBJ)
+	cat pulver/c_saml2_dec_c.deps      | xargs $(AR) libzxid.a
+	cat pulver/c_saml2_enc_c.deps      | xargs $(AR) libzxid.a
+	cat pulver/c_saml2_aux_c.deps      | xargs $(AR) libzxid.a
+	cat pulver/c_saml2_getput_c.deps   | xargs $(AR) libzxid.a
+	cat pulver/c_saml2md_dec_c.deps    | xargs $(AR) libzxid.a
+	cat pulver/c_saml2md_enc_c.deps    | xargs $(AR) libzxid.a
+	cat pulver/c_saml2md_aux_c.deps    | xargs $(AR) libzxid.a
+	cat pulver/c_saml2md_getput_c.deps | xargs $(AR) libzxid.a
+	$(AR) libzxid.a $(ZXID_LIB_OBJ)
 
-c/saml2md-attrs.c: c/saml2md-attrs.gperf
-	$(GPERF) -t -D -C -T -l -G -W zxmd_attrs -N zxmd_attr2tok $< | \
-          sed -e 's/lengthtable/zxmd_attrs_lens/' \
-	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
+#	$(foreach fil,$^,$(shell $(AR) libzxid.a $(fil)))
 
-c/saml2md-elems.c: c/saml2md-elems.gperf
-	$(GPERF) -t -D -C -T -l -G -W zxmd_elems -N zxmd_elem2tok $< | \
-          sed -e 's/lengthtable/zxmd_elems_lens/' \
-	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
+else
 
-c/saml2md-attrs.gperf c/saml2md-elems.gperf c/saml2md-dec.c c/saml2md-enc.c c/saml2md-aux.c c/saml2md-getput.c c/saml2md-data.h: $(ZXMD_SG) dec-templ.c enc-templ.c aux-templ.c getput-templ.c $(XSD2SG_PL)
-	$(XSD2SG) -gen c/saml2md -p zxmd_ $(ZXMD_ROOTS) -S $(ZXMD_SG) >/dev/null
+libzxid.a: $(ZX_GEN_C:.c=.o) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ)
+	$(AR) libzxid.a $^
 
-c/saml2md-const.h: c/saml2md-attrs.c c/saml2md-elems.c
-	cat c/saml2md-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zxmd_ _ATTR zxmd_attrs >$@
-	cat c/saml2md-elems.c | $(PERL) gen-consts-from-gperf-output.pl zxmd_ _ELEM zxmd_elems >>$@
+endif
 
-# WSF
-
-c/wsf-attrs.c: c/wsf-attrs.gperf
-	$(GPERF) -t -D -C -T -l -G -W zxwsf_attrs -N zxwsf_attr2tok $< | \
-          sed -e 's/lengthtable/zxwsf_attrs_lens/' \
-	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
-
-c/wsf-elems.c: c/wsf-elems.gperf
-	$(GPERF) -t -D -C -T -l -G -W zxwsf_elems -N zxwsf_elem2tok $< | \
-          sed -e 's/lengthtable/zxwsf_elems_lens/' \
-	      -e 's/static const struct zx_tok/const struct zx_tok/' >$@
-
-c/wsf-attrs.gperf c/wsf-elems.gperf c/wsf-dec.c c/wsf-enc.c c/wsf-aux.c c/wsf-getput.c c/wsf-data.h: $(WSF_SG) dec-templ.c enc-templ.c aux-templ.c getput-templ.c $(XSD2SG_PL)
-	$(XSD2SG) -gen c/wsf -p zxwsf_ -ext ds -ext xenc -ext sp -ext md -ext sa11 -ext ff12 $(WSF_ROOTS) -S $(WSF_SG) >/dev/null
-
-c/wsf-const.h: c/wsf-attrs.c c/wsf-elems.c
-	cat c/wsf-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zxwsf_ _ATTR zxwsf_attrs >$@
-	cat c/wsf-elems.c | $(PERL) gen-consts-from-gperf-output.pl zxwsf_ _ELEM zxwsf_elems >>$@
-
-# Other
-
-c/license.c: LICENSE-2.0.txt
-	printf 'char* license = "' >$@
-	echo 'Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\' >>$@ #'
-	sed -e 's/"/\\"/g' -e 's/$$/\\n\\/' LICENSE-2.0.txt >>$@
-	echo '";' >>$@
-
-c/zxidvers.h:
-	echo "#ifndef _zxidvers_h" >c/zxidvers.h
-	echo "#define _zxidvers_h" >>c/zxidvers.h
-	echo "#define ZXID_VERSION $(VERSION)" >>c/zxidvers.h
-	echo "#define ZXID_REL \"$(REL)\"" >>c/zxidvers.h
-	echo "#endif" >>c/zxidvers.h
+libzxid.so.0.0: libzxid.a
+	$(LD) -o libzxid.so.0.0 -shared --export-all-symbols -Wl,-whole-archive $^ -Wl,-no-whole-archive
 
 #
 # Installation
@@ -523,7 +549,7 @@ tags:
 	etags *.[hc] c/*.[hc]
 
 megatags:
-	etags *.[hc] c/*.[hc] /d/aino/openssl-0.9.8a/*/*.[hc] /d/aino/openssl-0.9.8a/*/*/*.[hc] ~/ds/*/*.[hc] ~/ds/*/*.ds ~/slim/*/*.ds ~/pd/xsd2sg.pl ~/pd/pd2tex ~/ds/io/dsproxy-test.pl
+	etags *.[hc] c/*.[hc] /d/aino/openssl-0.9.8c/*/*.[hc] /d/aino/openssl-0.9.8c/*/*/*.[hc] ~/ds/*/*.[hc] ~/ds/*/*.ds ~/slim/*/*.ds ~/pd/xsd2sg.pl ~/pd/pd2tex ~/ds/io/dsproxy-test.pl
 
 docclean:
 	rm -f *.dbx *.tex
@@ -533,15 +559,15 @@ cleaner: clean perlcleaner
 	rm -f c/*.[hc] c/*.gperf c/*.y deps deps.dep c/*.deps
 	rm -rf pulver; mkdir pulver
 
-# N.B. The clean and dist targets deliberately does not delete contents of
+# N.B. The clean and dist targets deliberately do not delete contents of
 #      directory c/ although they are generated files. This is to allow
 #      zxid to be built without the tools needed to generate those files.
-clean: perlclean docclean
+clean: perlclean phpclean docclean
 	@echo ------------------ Making clean
-	rm -f *.o zxid zxbench libzxid.a sizeof zxid.stderr
+	rm -f *.o zxid zxbench libzxid.a libzxid.so* sizeof zxid.stderr
 	rm -f core* *~ .*~ .\#* c/*.o c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
 
-dist: clean
+old-dist: clean
 	rm -rf zxid-$(REL)
 	mkdir zxid-$(REL) zxid-$(REL)/c zxid-$(REL)/sg zxid-$(REL)/t  zxid-$(REL)/tex  zxid-$(REL)/html zxid-$(REL)/pulver zxid-$(REL)/Net zxid-$(REL)/Metadata zxid-$(REL)/Raw zxid-$(REL)/WSC zxid-$(REL)/WSF_Raw zxid-$(REL)/php
 	cp *.[hc] *.i Makefile LICENSE-2.0.txt zxid.pl zxid-$(REL)
@@ -557,11 +583,23 @@ dist: clean
 	-cp php/README.zxid-php php/php_zxid.h php/zxid.php php/zxid_wrap.c zxid-$(REL)/php
 	tar czf zxid-$(REL).tgz zxid-$(REL)
 
+dist: clean
+	rm -rf zxid-$(REL)
+	mkdir zxid-$(REL) zxid-$(REL)/c zxid-$(REL)/sg zxid-$(REL)/t  zxid-$(REL)/tex  zxid-$(REL)/html zxid-$(REL)/pulver zxid-$(REL)/Net zxid-$(REL)/Metadata zxid-$(REL)/Raw zxid-$(REL)/WSC zxid-$(REL)/WSF_Raw zxid-$(REL)/php
+	$(PERL) mkdist.pl zxid-$(REL) <Manifest
+	tar czf zxid-$(REL).tgz zxid-$(REL)
+
 release:
-	scp zxid-$(REL).tgz html/index.html html/apache.html html/README.zxid.html tex/README.zxid.pdf sampo@zxid.org:zxid.org
+	scp zxid-$(REL).tgz html/index.html html/apache.html html/README.zxid.html tex/README.zxid.pdf html/i-*.png zxid-frame.html sampo@zxid.org:zxid.org
+
+relhtml:
+	scp html/* sampo@zxid.org:zxid.org/html
 
 cvstag:
 	cvs tag ZXID_REL_$(VERSION)
+
+prep: c/saml2-const.h c/saml2md-const.h c/wsf-const.h c/zxidvers.h
+
 
 ifeq ($(PULVER),1)
 
@@ -587,7 +625,7 @@ else
 
 dep: deps
 
-deps: $(ZXID_OBJ:.o=.c) $(ZX_OBJ:.o=.c) c/saml2-const.h c/saml2md-const.h c/wsf-const.h c/zxidvers.h
+deps: $(ZXID_OBJ:.o=.c) $(ZX_OBJ:.o=.c) $(ZX_GEN_H) $(ZX_GEN_C) c/zx-const.h c/zxidvers.h
 	$(CC) $(CDEF) $(CDIR) -MM $^ >deps.dep
 
 endif

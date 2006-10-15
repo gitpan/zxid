@@ -3,9 +3,10 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidsso.c,v 1.8 2006/09/05 05:09:37 sampo Exp $
+ * $Id: zxidsso.c,v 1.11 2006/10/15 00:27:26 sampo Exp $
  *
  * 12.8.2006, created --Sampo
+ * 30.9.2006, added signature verification --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
@@ -33,12 +34,9 @@
 #include "zxid.h"
 #include "zxidconf.h"
 #include "saml2.h"
-#include "c/saml2-const.h"
-#include "c/saml2-ns.h"
-#include "c/saml2-data.h"
-#include "c/saml2md-const.h"
-#include "c/saml2md-ns.h"
-#include "c/saml2md-data.h"
+#include "c/zx-const.h"
+#include "c/zx-ns.h"
+#include "c/zx-data.h"
 
 /* ============== Generating and sending AuthnReq ============== */
 
@@ -49,7 +47,7 @@ int zxid_pick_sso_profile(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxi
   return ZXID_SAML2_ART;
 }
 
-struct zx_sa_Issuer_s* zxid_issuer(struct zxid_conf* cf, struct zx_str_s* nameid, struct zx_str_s* affiliation)
+struct zx_sa_Issuer_s* zxid_issuer(struct zxid_conf* cf, struct zx_str* nameid, struct zx_str* affiliation)
 {
   struct zx_sa_Issuer_s* is = zx_NEW_sa_Issuer(cf->ctx);
   is->gg.content = nameid;
@@ -57,7 +55,7 @@ struct zx_sa_Issuer_s* zxid_issuer(struct zxid_conf* cf, struct zx_str_s* nameid
   return is;
 }
 
-struct zx_str_s* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits)
+struct zx_str* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits)
 {
   char bit_buf[ZXID_ID_MAX_BITS/8];
   char base64_buf[ZXID_ID_MAX_BITS/6 + 1];
@@ -75,7 +73,7 @@ struct zx_str_s* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits)
   return zx_strf(cf->ctx, "%s%.*s", prefix?prefix:"", p-base64_buf, base64_buf);
 }
 
-struct zx_str_s* zxid_date_time(struct zxid_conf* cf, time_t secs)
+struct zx_str* zxid_date_time(struct zxid_conf* cf, time_t secs)
 {
   struct tm t;
   gmtime_r(&secs, &t);
@@ -131,11 +129,11 @@ char* zxid_saml2_map_authn_ctx(char* c)
   return c;
 }
 
-struct zx_str_s* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
+struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
-  struct zxmd_md_SingleSignOnService_s* sso_svc;
+  struct zx_md_SingleSignOnService_s* sso_svc;
   struct zx_sp_AuthnRequest_s* ar;
-  struct zx_str_s* ars;
+  struct zx_str* ars;
   int sso_profile_ix;
   struct zxid_entity* idp_meta;
   D("start_sso: eid(%s)", cgi->eid?cgi->eid:"-");
@@ -153,7 +151,7 @@ struct zx_str_s* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
     }
     for (sso_svc = idp_meta->ed->IDPSSODescriptor->SingleSignOnService;
 	 sso_svc;
-	 sso_svc = (struct zxmd_md_SingleSignOnService_s*)sso_svc->gg.g.n)
+	 sso_svc = (struct zx_md_SingleSignOnService_s*)sso_svc->gg.g.n)
       if (sso_svc->Binding && !memcmp(SAML2_REDIR, sso_svc->Binding->s, sso_svc->Binding->len))
 	break;
     if (!sso_svc) {
@@ -173,7 +171,7 @@ struct zx_str_s* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
 
 int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
-  struct zx_str_s* url = zxid_start_sso_url(cf, cgi);
+  struct zx_str* url = zxid_start_sso_url(cf, cgi);
   if (!url)
     return 0;
   printf("Location: %.*s" CRLF2, url->len, url->s);
@@ -184,7 +182,7 @@ int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi)
 
 int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
-  struct zxmd_md_ArtifactResolutionService_s* ar_svc;
+  struct zx_md_ArtifactResolutionService_s* ar_svc;
   struct zx_se_Body_s* body;
   struct zx_root_s* r;
   struct zxid_entity* idp_meta;
@@ -233,7 +231,7 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
     }
     for (ar_svc = idp_meta->ed->IDPSSODescriptor->ArtifactResolutionService;
 	 ar_svc;
-	 ar_svc = (struct zxmd_md_ArtifactResolutionService_s*)ar_svc->gg.g.n)
+	 ar_svc = (struct zx_md_ArtifactResolutionService_s*)ar_svc->gg.g.n)
       if (ar_svc->Binding  && !memcmp(SAML2_SOAP, ar_svc->Binding->s, ar_svc->Binding->len)
 	  && ar_svc->index && !memcmp(end_pt_ix, ar_svc->index->s, ar_svc->index->len)
 	  && ar_svc->Location)
@@ -261,13 +259,14 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
 {
   ses->a7n = a7n;
   if (!a7n || !a7n->AuthnStatement) {
-    ERR("SSO failed: no assertion supplied, or assertion did not contain AuthnStatement. %d", 0);
+    ERR("SSO failed: no assertion supplied, or assertion didn't contain AuthnStatement. %p", a7n);
     return 0;
   }
   D("SSO Assertion received. %d", 0);
   ses->nid = zx_str_to_c(cf->ctx, a7n->Subject->NameID->gg.content);
   zxid_put_ses(cf, ses);
   cgi->msg = "SSO completed and session created.";
+  cgi->op = '-';  /* Make sure management screen does not try to redispatch. */
   return ZXID_SSO_OK;
 }
 

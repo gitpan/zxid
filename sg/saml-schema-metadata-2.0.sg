@@ -29,12 +29,9 @@ Extensions	 -> %md:ExtensionsType
   @Binding	 -> %xs:anyURI
   @Location	 -> %xs:anyURI
   @ResponseLocation?	 -> %xs:anyURI
-  @any
-  ;
-
-%IndexedEndpointType:	 base(md:EndpointType)
-  @index	 -> %xs:unsignedShort
+  @index?	 -> %xs:unsignedShort
   @isDefault?	 -> %xs:boolean
+  @any
   ;
 
 EntitiesDescriptor	 -> %md:EntitiesDescriptorType
@@ -139,7 +136,7 @@ EncryptionMethod	 -> %xenc:EncryptionMethodType
   md:NameIDFormat*
   ;
 
-ArtifactResolutionService	 -> %md:IndexedEndpointType
+ArtifactResolutionService	 -> %md:EndpointType
 SingleLogoutService	 -> %md:EndpointType
 ManageNameIDService	 -> %md:EndpointType
 NameIDFormat	 -> %xs:anyURI
@@ -167,7 +164,7 @@ SPSSODescriptor	 -> %md:SPSSODescriptorType
   @WantAssertionsSigned?	 -> %xs:boolean
   ;
 
-AssertionConsumerService	 -> %md:IndexedEndpointType
+AssertionConsumerService	 -> %md:EndpointType
 
 AttributeConsumingService	 -> %md:AttributeConsumingServiceType
 %AttributeConsumingServiceType:

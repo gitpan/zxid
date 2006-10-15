@@ -3,11 +3,15 @@
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** $Id: dec-templ.c,v 1.13 2006/08/28 05:23:23 sampo Exp $
+ ** $Id: dec-templ.c,v 1.19 2006/09/30 06:24:49 sampo Exp $
  **
  ** 28.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 12.8.2006, added special scanning of xmlns to avoid backtracking elem recognition --Sampo
+ ** 23.9.2006, added collection of WO information --Sampo
+ **
+ ** N.B: This template is meant to be processed by pd/xsd2sg.pl. Beware
+ ** of special markers that xsd2sg.pl expects to find and understand.
  **/
 
 /* FUNC(TXDEC_ELNAME) */
@@ -17,19 +21,20 @@
 #define EL_NS     ELNS
 #define EL_TAG    ELTAG
 
-struct ELSTRUCT* TXDEC_ELNAME(struct zx_ctx* c)
+struct ELSTRUCT* TXDEC_ELNAME(struct zx_ctx* c, struct zx_ns_s* ns ROOT_N_DECODE)
 {
   int tok;
+  struct zx_elem_s* iternode;
   struct zx_elem_s* el;
-  struct zx_str_s* ss;
+  struct zx_str* ss;
   struct zx_any_attr_s* attr;
-  struct zx_any_elem_s* elem;
+  struct zx_ns_s* pop_seen;
   char* name;
   char* data;
   char quote;
   struct ELSTRUCT* x = ZX_ZALLOC(c, struct ELSTRUCT);
   x->gg.g.tok = TXELNAME_ELEM;
-  x->gg.g.ns = TXelems[TXELNAME_ELEM].ns;
+  x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
@@ -53,7 +58,7 @@ struct ELSTRUCT* TXDEC_ELNAME(struct zx_ctx* c)
     
     ZX_LOOK_FOR(c,quote,x);
     
-    tok = TXattr_lookup(c, name, data-2);
+    tok = TXattr_lookup(c, name, data-2, &ns);
     switch (tok) {
 ATTRS;
     case ZX_TOK_XMLNS:
@@ -74,9 +79,10 @@ ATTRS;
       ZX_UNKNOWN_ATTR_DEC_EXT(attr);
       goto set_attr_val;
     }
-    ss->g.ns = TXattrs[tok].ns;
+    ss->g.ns = ns;
 set_attr_val:
     ss->g.tok = tok;
+    ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
     ss->s = data;
 next_attr:
@@ -86,8 +92,7 @@ next_attr:
   if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
     ++c->p;
     x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    ZX_END_DEC_EXT(x);
-    return x;
+    goto out;
   }
 #endif
 
@@ -114,7 +119,7 @@ next_attr:
 	++c->p;
 	name = c->p;
 	ZX_LOOK_FOR(c,'>',x);
-	tok = TXelem_lookup(c, name, c->p);
+	tok = TXelem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok) {
 	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
 	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
@@ -124,16 +129,15 @@ next_attr:
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
 	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-	ZX_END_DEC_EXT(x);
-	return x;
+	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
 	  if (!c->p)
 	    return 0;
-	  zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
-	  tok = TXelem_lookup(c, name, c->p);
+	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
+	  tok = TXelem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
 ELEMS;
 	  default:
@@ -141,12 +145,16 @@ ELEMS;
 	    tok = ZX_TOK_NOT_FOUND;
 	    /* fall thru to classify it as any extension */
 	  case ZX_TOK_NOT_FOUND:
-	    elem = TXDEC_wrong_elem(c, name, c->p - name);
-	    elem->gg.g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = elem;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(elem);
+	    el = (struct zx_elem_s*)TXDEC_wrong_elem(c, ns, name, c->p - name);
+	    el->g.n = &x->gg.any_elem->gg.g;
+	    x->gg.any_elem = (struct zx_any_elem_s*)el;
+	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
+          el->g.wo = &x->gg.kids->g;
+          x->gg.kids = el;
+	  zx_pop_seen(pop_seen);
+	  ROOT_CHECK_N_DECODED;
 	  goto next_elem;
 	}
       }
@@ -155,15 +163,22 @@ ELEMS;
     /* Data */
     name = c->p;
     ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str_s);
+    ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
     ss->g.tok = ZX_TOK_DATA;
     ss->g.n = &x->gg.content->g;
     x->gg.content = ss;
+    ss->g.wo = &x->gg.kids->g;
+    x->gg.kids = (struct zx_elem_s*)ss;
     ZX_CONTENT_DEC(ss);
     goto potential_tag;
   }
+ out:
+  iternode = x->gg.kids;
+  REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  ZX_END_DEC_EXT(x);
+  return x;
 }
 
 #undef EL_NAME
@@ -182,10 +197,9 @@ ELEMS;
  * One of each (attr and elem) is needed for every prefix used in code generation.
  * The ...2tok() functions come from code generation via gperf. */
 
-int TXattr_lookup(struct zx_ctx* c, char* name, char* lim)
+int TXattr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 {
   const struct zx_tok* zt;
-  const struct zx_tok* ztt;
   char* prefix;
   char* p;
   
@@ -199,40 +213,28 @@ int TXattr_lookup(struct zx_ctx* c, char* name, char* lim)
   if (!zt) {
     if (prefix && (name-1)-prefix == sizeof("xmlns")-1
 	&& !memcmp("xmlns", prefix, sizeof("xmlns")-1)) {
-      /* Namespace declaration */
+      /* Namespace declaration. Skip because these were prescanned. */
       return ZX_TOK_XMLNS;
     }
     return ZX_TOK_NOT_FOUND;
   }
-  
-  /* The token hash can have duplicate entries (see -D flag to gperf). We differentiate
-   * between them by looking at the namespace prefix. If none of the tokens in the
-   * table match the namespace, we pick the first one (which, given hashing, is
-   * difficult to predict and should not be depended on), whether it's right or wrong. */
-  
-  for (ztt = zt; ; ++ztt) {
-    if (zx_is_ns_prefix(ztt->ns, prefix ? (name-1)-prefix : 0, prefix))
-      return ztt - TXattrs;
-    /* *** Following check can overflow the token table if zt is already last. Usually
-     * token table is followed by other constant tables so this should not be
-     * a problem. Easiest fix would be to add to toke table a trailer element,
-     * but that would mean altering gperf or sedding its output. */
-    if (memcmp(ztt[1].name, name, lim-name))
-      break;
-  }
+
   if (prefix)
-    D("No matching namespace found for attr(%.*s:%.*s)", prefix ? (name-1)-prefix : 0, prefix, lim-name, name);
+    *ns = zx_prefix_seen_whine(c, prefix ? (name-1)-prefix : 0, prefix, "TXattr_lookup");
   else
-    D("info: No matching namespace found for unqualified attr(%.*s)", lim-name, name);
+    *ns = 0;
+  /* Look for token whose namespace matches. */
+  zt = zx_tok_by_ns(zt, TXattrs + sizeof(TXattrs) / sizeof(struct zx_tok), lim-name, name, *ns);
+  if (!zt)
+    return ZX_TOK_NOT_FOUND;
   return zt - TXattrs;
 }
 
 /* FUNC(TXelem_lookup) */
 
-int TXelem_lookup(struct zx_ctx* c, char* name, char* lim)
+int TXelem_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 {
   const struct zx_tok* zt;
-  const struct zx_tok* ztt;
   char* prefix;
   char* p;
   
@@ -245,23 +247,13 @@ int TXelem_lookup(struct zx_ctx* c, char* name, char* lim)
   zt = TXelem2tok(name, lim-name);
   if (!zt)
     return ZX_TOK_NOT_FOUND;
+
+  *ns = zx_prefix_seen_whine(c, prefix ? (name-1)-prefix : 0, prefix, "TXelem_lookup");
   
-  /* The token hash can have duplicate entries (see -D flag to gperf). We differentiate
-   * between them by looking at the namespace prefix. If none of the tokens in the
-   * table match the namespace, we pick the first one (which, given hashing, is
-   * difficult to predict and should not be depended on), whether it's right or wrong. */
-  
-  for (ztt = zt; ; ++ztt) {
-    if (zx_is_ns_prefix(ztt->ns, prefix ? (name-1)-prefix : 0, prefix))
-      return ztt - TXelems;
-    /* *** Following check can overflow the token table if zt is already last. Usually
-     * token table is followed by other constant tables so this should not be
-     * a problem. Easiest fix would be to add to toke table a trailer element,
-     * but that would mean altering gperf or sedding its output. */
-    if (memcmp(ztt[1].name, name, lim-name))
-      break;
-  }
-  D("No matching namespace found for elem(%.*s:%.*s)", prefix ? (name-1)-prefix : 0, prefix, lim-name, name);
+  /* Look for token whose namespace matches. */
+  zt = zx_tok_by_ns(zt, TXelems + sizeof(TXelems) / sizeof(struct zx_tok), lim-name, name, *ns);
+  if (!zt)
+    return ZX_TOK_NOT_FOUND;
   return zt - TXelems;
 }
 

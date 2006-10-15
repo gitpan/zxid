@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * This is free software and comes with NO WARRANTY. For licensing
  * see file COPYING in the distribution directory.
- * $Id: errmac.h,v 1.4 2006/09/01 05:36:32 sampo Exp $
+ * $Id: errmac.h,v 1.6 2006/09/28 05:47:06 sampo Exp $
  *
  * 10.1.2003, added option to make ASSERT nonfatal --Sampo
  * 4.6.2003,  added STRERROR() macro --Sampo
@@ -167,9 +167,10 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
   else *((cv)++) = *((old)++); ME
 
 /* Usage: you must set nodes to root prior to calling this macro, for example
- * v = s->first; REVERSE_LIST_NEXT(s->first, v, vnext); */
+ * v = s->first; REVERSE_LIST_NEXT(s->first, v, vnext);
+ * The nodes argument is "iterator". The reveresed list is left in root. */
 #define REVERSE_LIST_NEXT(root,nodes,nxt) MB (root) = 0; \
-  while (nodes) { void* n = (nodes)->nxt; (nodes)->nxt = (root); \
+  while (nodes) { void* n = (nodes)->nxt; (nodes)->nxt = (void*)(root); \
     (root) = (nodes); (nodes) = n;  } ME
 
 #define REVERSE_LIST(root,nodes) REVERSE_LIST_NEXT((root),(nodes),next)

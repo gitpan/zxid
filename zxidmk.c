@@ -12,12 +12,9 @@
 #include "zxid.h"
 #include "zxidconf.h"
 #include "saml2.h"
-#include "c/saml2-const.h"
-#include "c/saml2-ns.h"
-#include "c/saml2-data.h"
-#include "c/saml2md-const.h"
-#include "c/saml2md-ns.h"
-#include "c/saml2md-data.h"
+#include "c/zx-const.h"
+#include "c/zx-ns.h"
+#include "c/zx-data.h"
 
 struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
@@ -80,7 +77,7 @@ struct zx_sp_Status_s* zxid_OK(struct zxid_conf* cf)
   return zxid_mk_Status(cf, SAML2_SC_SUCCESS, 0, 0);
 }
 
-struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str_s* ses_ix)
+struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* ses_ix)
 {
   struct zx_sp_LogoutRequest_s* r = zx_NEW_sp_LogoutRequest(cf->ctx);
   r->Issuer = zxid_my_issuer(cf);
@@ -93,7 +90,7 @@ struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_
   return r;
 }
 
-struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str_s* req_id)
+struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id)
 {
   struct zx_sp_LogoutResponse_s* r = zx_NEW_sp_LogoutResponse(cf->ctx);
   r->Issuer = zxid_my_issuer(cf);
@@ -106,7 +103,7 @@ struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct 
   return r;
 }
 
-struct zx_sp_ManageNameIDRequest_s* zxid_mk_nireg(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str_s* new_nym)
+struct zx_sp_ManageNameIDRequest_s* zxid_mk_nireg(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* new_nym)
 {
   struct zx_sp_ManageNameIDRequest_s* r = zx_NEW_sp_ManageNameIDRequest(cf->ctx);
   r->Issuer = zxid_my_issuer(cf);
@@ -114,14 +111,14 @@ struct zx_sp_ManageNameIDRequest_s* zxid_mk_nireg(struct zxid_conf* cf, struct z
   r->Version = zx_ref_str(cf->ctx, SAML2_VERSION);
   r->IssueInstant = zxid_date_time(cf, time(0));
   r->NameID = nid;
-  if (new_nym)
+  if (new_nym && new_nym->len)
     r->NewID = zx_new_simple_elem(cf->ctx, new_nym);
   else
     r->Terminate = zx_new_simple_elem(cf->ctx, 0);
   return r;
 }
 
-struct zx_sp_ManageNameIDResponse_s* zxid_mk_nireg_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str_s* req_id)
+struct zx_sp_ManageNameIDResponse_s* zxid_mk_nireg_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id)
 {
   struct zx_sp_ManageNameIDResponse_s* r = zx_NEW_sp_ManageNameIDResponse(cf->ctx);
   r->Issuer = zxid_my_issuer(cf);

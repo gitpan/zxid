@@ -3,13 +3,15 @@
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing. See file COPYING.
-# $Id: zxid.pl,v 1.5 2006/09/16 20:00:36 sampo Exp $
+# $Id: zxid.pl,v 1.6 2006/09/18 06:35:22 sampo Exp $
 # 31.8.2006, created --Sampo
 
 use Net::SAML;
 use Data::Dumper;
 
 $| = 1;
+
+#open STDERR, ">>zxid.stderr";   # Helps CGI debugging where web server eats the stderr
 
 $cf = Net::SAML::new_conf("/var/zxid/");
 $url = "https://sp1.zxidsp.org:8443/zxid.pl";
@@ -81,8 +83,10 @@ if ($op eq 'M') {       # Invoke LECP or redirect to CDC reader.
     $md = Net::SAML::sp_meta($cf, $cgi);
     print $md;
     exit;
+} elsif ($op eq 'K') {
+    warn "Redirect back from SLO";
 } else {
-    die "Unknown op($op)";
+    warn "Unknown op($op)";
 }
 
 print <<HTML;
@@ -180,10 +184,10 @@ sub mgmt_screen {
 	$msg = "SP Initiated logout (SOAP). Session terminated.";
 	return 0;  # Falls thru to login screen.
     } elsif ($op eq 't') {
-	Net::SAML::sp_nireg_redir($cf, $cgi, $ses, 0);
+	Net::SAML::sp_nireg_redir($cf, $cgi, $ses, '');
 	return 1;  # Redirect already happened. Do not show login screen.
     } elsif ($op eq 'u') {
-	Net::SAML::sp_nireg_soap($cf, $cgi, $ses, 0);
+	Net::SAML::sp_nireg_soap($cf, $cgi, $ses, '');
 	$msg = "SP Initiated defederation (SOAP).";
     } elsif ($op eq 'P') {
 	$ret = Net::SAML::sp_dispatch($cf, $cgi, $ses, Net::SAML::zxid_cgi::swig_saml_resp_get($cgi));

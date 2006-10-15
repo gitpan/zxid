@@ -1,0 +1,326 @@
+# zxid/Manifest
+# $Id: Manifest,v 1.4 2006/10/01 05:06:23 sampo Exp $
+# Packing list for distribution and explanation of files
+
+Manifest         - This file. Describes contents of the distribution.
+Changes          - Change log and revision history
+INSTALL.zxid     - Quick installation instructions for the impatient
+README.zxid      - How to build and operate ZXID, API documentation
+apache.pd        - Apache specific configuration instructions
+LICENSE-2.0.txt  - Apache License v2.0
+ca.crt           - Certification Authority certificate for zxid.pem
+zxid.pem         - Certificate and provatekwy combo for testing (not secure)
+favicon.ico      - A ZX/SP favicon for use in deno SPs
+
+# Handwritten code
+
+Makefile         - Used to build ZXID
+errmac.h         - Error reporting and utility macros
+saml2.h          - SAML related constants
+zx.h             - General data structures and prototypes used by generated code
+zxid.h           - Specific data structures and prototypes for handwritten code
+zxidconf.h       - Configuration parameters and default configuration of ZXID
+zxwsc.h          - Specific data structures and prototypes for Web Services Client
+aux-templ.c      - Code generation template for auxiliary functions
+dec-templ.c      - Code generation template for decoders
+enc-templ.c      - Code generation template for encoders
+getput-templ.c   - Code generation template for accessor functions
+zxbench.c        - A benchmarking tool
+zxsig.c          - XML DSIG support
+zxlib.c          - Functions used to capture commonalities in generated code
+zxutil.c         - Common library functions used by zx system
+zxidlib.c        - Common library functions for SSO (see zxid.h)
+zxidmeta.c       - Metadata generation, parsing, and cache
+zxidmk.c         - Handwritten constructors
+zxidslo.c        - Single Logout and other management functions
+zxidsso.c        - Single Sign-On functions
+zxid.c           - Main ZXID SP program (a CGI script)
+zxid.pl          - SAML 2.0 SP example written in perl
+zxid.php         - SAML 2.0 SP example written in php
+gen-consts-from-gperf-output.pl  - Used in build process
+gen-cot-links.pl - Handy tool for creating documentative symlinks in CoT directory
+pulverize.pl     - A build tool for generating pulverized libraries for dead function elimination
+
+# Module generation facilities
+
+phpzxid.i        - SWIG input file for php_zxid.so PHP extension
+wsc.i            - SWIG input file for Net::WSF::WSC perl module
+wsfraw.i         - SWIG input file for Net::WSF::Raw perl module
+zxid.i           - SWIG input file for Net::SAML perl module
+zxidmd.i         - SWIG input file for Net::SAML::Metadata perl module
+zxidraw.i        - SWIG input file for Net::SAML::Raw perl module
+
+# Schema grammar descriptions (used as input to code generation)
+
+sg/ds-soap11.sg  - SOAP parser for discovery service management interface
+sg/liberty-authentication-context-v2.0.sg
+sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg
+sg/liberty-idff-utility-v1.0.sg
+sg/liberty-idwsf-disco-svc-v1.2.sg
+sg/liberty-idwsf-disco-svc-v2.0.sg
+sg/liberty-idwsf-interaction-svc-v1.1.sg
+sg/liberty-idwsf-interaction-svc-v2.0.sg
+sg/liberty-idwsf-security-mechanisms-v1.2.sg
+sg/liberty-idwsf-security-mechanisms-v2.0.sg
+sg/liberty-idwsf-soap-binding-v1.2.sg
+sg/liberty-idwsf-soap-binding-v2.0.sg
+sg/liberty-idwsf-soap-binding.sg       - Framework SOAP header
+sg/liberty-idwsf-utility-1.0-errata-v1.0.sg
+sg/liberty-idwsf-utility-v1.1.sg
+sg/liberty-idwsf-utility-v2.0.sg
+sg/liberty-metadata-v2.0.sg
+sg/liberty-utility-v2.0.sg
+sg/oasis-sstc-saml-schema-assertion-1.1.sg
+sg/oasis-sstc-saml-schema-protocol-1.1.sg
+sg/saml-schema-assertion-2.0.sg
+sg/saml-schema-metadata-2.0.sg
+sg/saml-schema-protocol-2.0.sg
+sg/saml20-soap11.sg  - SOAP parser for SSO related messages
+sg/soap11.sg         - Generic SOAP inteface (not used, see specific SOAP interfaces)
+sg/ws-addr-1.0.sg
+sg/wsf-soap11.sg     - SOAP parser for ID-WSF messages
+sg/wss-secext-1.0.sg
+sg/wss-util-1.0.sg
+sg/xenc-schema.sg
+sg/xmldsig-core.sg
+
+# Schema generated C code
+
+c/license.c      - Generated file: License string
+c/zxidvers.h     - Generated file: version string
+
+c/zx-attrs.c  - Generated: Mapping of a string to attribute token
+c/zx-aux.c    - Generated from aux-templ.c and various .sg files
+c/zx-const.h  - Generated: Token value constants
+c/zx-data.h   - Generated: Data structures reflecting schemata (.sg files)
+c/zx-dec.c    - Generated from dec-templ.c and various .sg files
+c/zx-elems.c  - Generated: Mapping of a string to element token
+c/zx-enc.c    - Generated from enc-templ.c and various .sg files
+c/zx-getput.c - Generated from getput-templ.c and various .sg files
+c/zx-ns.c     - Generated: initializations of namespace tables
+c/zx-ns.h     - Generated: namespace constant and macro definitions
+
+c/zx-a-aux.c
+c/zx-a-data.h
+c/zx-a-dec.c
+c/zx-a-enc.c
+c/zx-a-getput.c
+
+c/zx-ac-aux.c
+c/zx-ac-data.h
+c/zx-ac-dec.c
+c/zx-ac-enc.c
+c/zx-ac-getput.c
+
+c/zx-b-aux.c
+c/zx-b-data.h
+c/zx-b-dec.c
+c/zx-b-enc.c
+c/zx-b-getput.c
+
+c/zx-b12-aux.c
+c/zx-b12-data.h
+c/zx-b12-dec.c
+c/zx-b12-enc.c
+c/zx-b12-getput.c
+
+c/zx-di-aux.c
+c/zx-di-data.h
+c/zx-di-dec.c
+c/zx-di-enc.c
+c/zx-di-getput.c
+
+c/zx-di12-aux.c
+c/zx-di12-data.h
+c/zx-di12-dec.c
+c/zx-di12-enc.c
+c/zx-di12-getput.c
+
+c/zx-dise-aux.c
+c/zx-dise-data.h
+c/zx-dise-dec.c
+c/zx-dise-enc.c
+c/zx-dise-getput.c
+
+c/zx-ds-aux.c
+c/zx-ds-data.h
+c/zx-ds-dec.c
+c/zx-ds-enc.c
+c/zx-ds-getput.c
+
+c/zx-e-aux.c
+c/zx-e-data.h
+c/zx-e-dec.c
+c/zx-e-enc.c
+c/zx-e-getput.c
+
+c/zx-ff12-aux.c
+c/zx-ff12-data.h
+c/zx-ff12-dec.c
+c/zx-ff12-enc.c
+c/zx-ff12-getput.c
+
+c/zx-is-aux.c
+c/zx-is-data.h
+c/zx-is-dec.c
+c/zx-is-enc.c
+c/zx-is-getput.c
+
+c/zx-is12-aux.c
+c/zx-is12-data.h
+c/zx-is12-dec.c
+c/zx-is12-enc.c
+c/zx-is12-getput.c
+
+c/zx-lu-aux.c
+c/zx-lu-data.h
+c/zx-lu-dec.c
+c/zx-lu-enc.c
+c/zx-lu-getput.c
+
+c/zx-m20-aux.c
+c/zx-m20-data.h
+c/zx-m20-dec.c
+c/zx-m20-enc.c
+c/zx-m20-getput.c
+
+c/zx-md-aux.c
+c/zx-md-data.h
+c/zx-md-dec.c
+c/zx-md-enc.c
+c/zx-md-getput.c
+
+c/zx-sa-aux.c
+c/zx-sa-data.h
+c/zx-sa-dec.c
+c/zx-sa-enc.c
+c/zx-sa-getput.c
+
+c/zx-sa11-aux.c
+c/zx-sa11-data.h
+c/zx-sa11-dec.c
+c/zx-sa11-enc.c
+c/zx-sa11-getput.c
+
+c/zx-sbf-aux.c
+c/zx-sbf-data.h
+c/zx-sbf-dec.c
+c/zx-sbf-enc.c
+c/zx-sbf-getput.c
+
+c/zx-se-aux.c
+c/zx-se-data.h
+c/zx-se-dec.c
+c/zx-se-enc.c
+c/zx-se-getput.c
+
+c/zx-sec-aux.c
+c/zx-sec-data.h
+c/zx-sec-dec.c
+c/zx-sec-enc.c
+c/zx-sec-getput.c
+
+c/zx-sec12-aux.c
+c/zx-sec12-data.h
+c/zx-sec12-dec.c
+c/zx-sec12-enc.c
+c/zx-sec12-getput.c
+
+c/zx-sp-aux.c
+c/zx-sp-data.h
+c/zx-sp-dec.c
+c/zx-sp-enc.c
+c/zx-sp-getput.c
+
+c/zx-sp11-aux.c
+c/zx-sp11-data.h
+c/zx-sp11-dec.c
+c/zx-sp11-enc.c
+c/zx-sp11-getput.c
+
+c/zx-wsse-aux.c
+c/zx-wsse-data.h
+c/zx-wsse-dec.c
+c/zx-wsse-enc.c
+c/zx-wsse-getput.c
+
+c/zx-wsu-aux.c
+c/zx-wsu-data.h
+c/zx-wsu-dec.c
+c/zx-wsu-enc.c
+c/zx-wsu-getput.c
+
+c/zx-xenc-aux.c
+c/zx-xenc-data.h
+c/zx-xenc-dec.c
+c/zx-xenc-enc.c
+c/zx-xenc-getput.c
+
+c/zx-xml-aux.c
+c/zx-xml-data.h
+c/zx-xml-dec.c
+c/zx-xml-enc.c
+c/zx-xml-getput.c
+
+c/zx-xs-aux.c
+c/zx-xs-data.h
+c/zx-xs-dec.c
+c/zx-xs-enc.c
+c/zx-xs-getput.c
+
+# Expected output for various test cases
+
+t/authnreq.xml
+t/se-req.xml
+t/se-req2.xml
+t/se-resp.xml
+
+# Net::SAML module (zxid.i)
+
+Net/README.zxid-perl
+Net/Makefile.PL        - How to build the module
+Net/SAML.pod           - Bare bones documentation
+Net/SAML.pm            - Generated with SWIG from zxid.i and headers
+Net/SAML_wrap.c        - Generated with SWIG from zxid.i and headers
+Net/test.pl            - Unit tests
+
+# Net::SAML::Metadata module (zxidmd.i)
+
+Metadata/Makefile.PL
+Metadata/Metadata.pod
+Metadata/Metadata.pm     - Generated
+Metadata/Metadata_wrap.c - Generated
+Metadata/test.pl
+
+# Net::SAML::Raw module (zxidraw.i)
+
+Raw/Makefile.PL
+Raw/Raw.pod
+Raw/Raw.pm            - Generated
+Raw/Raw_wrap.c        - Generated
+Raw/test.pl
+
+# Net::WSF::WSC module (wsc.i)
+
+WSC/Makefile.PL
+WSC/WSC.pod
+WSC/WSC.pm            - Generated
+WSC/WSC_wrap.c        - Generated
+WSC/test.pl
+
+# Net::WSF::Raw module (wsfraw.i)
+
+WSF_Raw/Makefile.PL
+WSF_Raw/Raw.pod
+WSF_Raw/Raw.pm        - Generated
+WSF_Raw/Raw_wrap.c    - Generated
+WSF_Raw/test.pl
+
+# php_zxid.so PHP extension (phpzxid.i)
+
+php/README.zxid-php
+php/php_zxid.h        - Generated
+php/zxid.php          - Generated
+php/zxid_wrap.c       - Generated
+
+#EOF

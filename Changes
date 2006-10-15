@@ -1,0 +1,22 @@
+# zxid/Changes
+# $Id: Changes,v 1.2 2006/09/25 05:05:42 sampo Exp $
+# Change log, minor credits, and release history
+
+zxid-0.7:: 25.9.2006
+    - WO encoding with namespace support
+    - First cut of XMLDSIG validation (very early signing, too)
+    - Fixes to PHP, mod_php, Perl, and mod_perl support
+zxid-0.6:: 18.9.2006
+    - PHP support, including mod_php
+zxid-0.5:: 15.9.2006
+    - Encoders and decoders for ID-WSF and ID-FF (various versions)
+zxid-0.4:: 4.9.2006
+    - mod_perl/Net::SAML SP
+zxid-0.3:: Late Ago 2005
+    - First fully functional release
+zxid-0.2:: Ago 2005
+    - SAML 2.0 encoders and decoders, metadata import works
+zxid-0.1:: Ago 2005
+    - Project founded.
+
+# EOF

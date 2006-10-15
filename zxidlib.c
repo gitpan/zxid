@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidlib.c,v 1.17 2006/09/16 20:00:36 sampo Exp $
+ * $Id: zxidlib.c,v 1.22 2006/10/15 00:27:26 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  *
@@ -37,12 +37,9 @@
 #include "zxid.h"
 #include "zxidconf.h"
 #include "saml2.h"
-#include "c/saml2-const.h"
-#include "c/saml2-ns.h"
-#include "c/saml2-data.h"
-#include "c/saml2md-const.h"
-#include "c/saml2md-ns.h"
-#include "c/saml2md-data.h"
+#include "c/zx-const.h"
+#include "c/zx-ns.h"
+#include "c/zx-data.h"
 
 #define PEM_CERT_START_MAKER  "-----BEGIN CERTIFICATE-----"
 #define PEM_CERT_END_MAKER    "-----END CERTIFICATE-----"
@@ -206,6 +203,9 @@ struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
 
 int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
 {
+  struct zx_root_s* r;
+  char* base;
+  char* lim;
   int gotall;
   int fd = strlen(sid);
   if (fd != strspn(sid, safe_basis_64)) {
@@ -227,12 +227,24 @@ int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
   ses->sesbuf[gotall] = 0;
   ses->sid = sid;
   ses->nid = strtok(ses->sesbuf, "|");
-  cf->ctx->base = cf->ctx->p = strtok(0,"|");
-  if (cf->ctx->base) {
-    cf->ctx->lim = cf->ctx->base + strlen(cf->ctx->base);
-    D("a7n(%.*s)", cf->ctx->lim - cf->ctx->base, cf->ctx->base);
-    ses->a7n = zx_DEC_sa_Assertion(cf->ctx);
-    ses->nid = zx_str_to_c(cf->ctx, ses->a7n->Subject->NameID->gg.content);
+  base = strtok(0,"|");
+  if (base) {
+    lim = base + strlen(base);
+    D("a7n(%.*s)", lim - base, base);
+    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, base, lim);
+    r = zx_DEC_root(cf->ctx, 0, 1);
+    if (r) {
+      ses->a7n   = r->Assertion;
+      ses->a7n11 = r->sa11_Assertion;
+      ses->a7n12 = r->ff12_Assertion;
+      if (ses->a7n)
+	ses->nid = zx_str_to_c(cf->ctx, ses->a7n->Subject->NameID->gg.content);
+      else if (ses->a7n11)
+	ses->nid = zx_str_to_c(cf->ctx, ses->a7n11->AuthenticationStatement->Subject->NameIdentifier->gg.content);
+      else if (ses->a7n12)
+	ses->nid = zx_str_to_c(cf->ctx, ses->a7n12->AuthenticationStatement->Subject->NameIdentifier->gg.content);
+    } else
+      ERR("Failed to decode the session(%s)", sid);
   }
   D("GOT ses(%s)", sid);
   return 1;
@@ -242,7 +254,7 @@ int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   char* sesbuf;
   int fd, len;
-  struct zx_str_s* ss;
+  struct zx_str* ss;
   
   if (ses->sid) {
     fd = strlen(ses->sid);
@@ -412,7 +424,7 @@ X509* zxid_read_cert(struct zxid_conf* cf, char* name)
   char* pp;
   char* p;
   char* e;
-  X509* x = 0;
+  X509* x = 0;  /* Forces d2i_X509() to alloc the memory. */
   
   fd = open_fd_from_path(cf->path, ZXID_PEM_DIR, name, O_RDONLY, 0);
   if (fd == -1) return 0;
@@ -458,7 +470,7 @@ RSA* zxid_read_private_key(struct zxid_conf* cf, char* name)
   char* pp;
   char* p;
   char* e;
-  EVP_PKEY* pk = 0;
+  EVP_PKEY* pk = 0;  /* Forces d2i_PrivateKey() to alloc the memory. */
   RSA* rsa = 0;
   
   fd = open_fd_from_path(cf->path, ZXID_PEM_DIR, name, O_RDONLY, 0);
@@ -550,6 +562,9 @@ struct zxid_conf* zxid_new_conf(char* zxid_path)
   }
   zxid_init_conf(cf, zxid_path);
   cf->ctx = malloc(sizeof(struct zx_ctx));
+  memset(cf->ctx, 0, sizeof(struct zx_ctx));
+  cf->ctx->guard_seen_n.seen_n = &cf->ctx->guard_seen_p;
+  cf->ctx->guard_seen_p.seen_p = &cf->ctx->guard_seen_n;
 #ifdef USE_CURL
   cf->curl = curl_easy_init();
   if (!cf->curl) {
@@ -564,10 +579,10 @@ struct zxid_conf* zxid_new_conf(char* zxid_path)
 
 /* *** figure out a way to leverage commonality. */
 
-struct zx_str_s* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sa_Issuer_s* Issuer, int svc_type, char* binding, int req)
+struct zx_str* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sa_Issuer_s* Issuer, int svc_type, char* binding, int req)
 {
-  struct zxmd_md_SingleLogoutService_s* slo_svc;
-  struct zxmd_md_ManageNameIDService_s* nireg_svc;
+  struct zx_md_SingleLogoutService_s* slo_svc;
+  struct zx_md_ManageNameIDService_s* nireg_svc;
   struct zxid_entity* idp_meta;
   idp_meta = zxid_get_ent_ss(cf, Issuer->gg.content);
   if (!idp_meta) {
@@ -584,7 +599,7 @@ struct zx_str_s* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, st
   case ZXID_SLO_SVC:
     for (slo_svc = idp_meta->ed->IDPSSODescriptor->SingleLogoutService;
 	 slo_svc;
-	 slo_svc = (struct zxmd_md_SingleLogoutService_s*)slo_svc->gg.g.n)
+	 slo_svc = (struct zx_md_SingleLogoutService_s*)slo_svc->gg.g.n)
       if (slo_svc->Binding  && !memcmp(binding, slo_svc->Binding->s, slo_svc->Binding->len)
 	  /*&& svc->index && !memcmp(end_pt_ix, svc->index->s, svc->index->len)*/
 	  && slo_svc->Location)
@@ -596,7 +611,7 @@ struct zx_str_s* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, st
   case ZXID_NIREG_SVC:
     for (nireg_svc = idp_meta->ed->IDPSSODescriptor->ManageNameIDService;
 	 nireg_svc;
-	 nireg_svc = (struct zxmd_md_ManageNameIDService_s*)nireg_svc->gg.g.n)
+	 nireg_svc = (struct zx_md_ManageNameIDService_s*)nireg_svc->gg.g.n)
       if (nireg_svc->Binding  && !memcmp(binding, nireg_svc->Binding->s, nireg_svc->Binding->len)
 	  /*&& svc->index && !memcmp(end_pt_ix, svc->index->s, svc->index->len)*/
 	  && nireg_svc->Location)
@@ -611,10 +626,10 @@ struct zx_str_s* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, st
   return 0;
 }
 
-struct zx_str_s* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int svc_type, char* binding)
+struct zx_str* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int svc_type, char* binding)
 {
-  struct zxmd_md_SingleLogoutService_s* slo_svc;
-  struct zxmd_md_ManageNameIDService_s* nireg_svc;
+  struct zx_md_SingleLogoutService_s* slo_svc;
+  struct zx_md_ManageNameIDService_s* nireg_svc;
   struct zxid_entity* idp_meta;
   
   if (!ses->a7n) {
@@ -626,7 +641,7 @@ struct zx_str_s* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct
 
 struct zx_root_s* zxid_idp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int svc_type, struct zx_se_Body_s* body)
 {
-  struct zx_str_s* loc = zxid_idp_loc(cf, cgi, ses, svc_type, SAML2_SOAP);
+  struct zx_str* loc = zxid_idp_loc(cf, cgi, ses, svc_type, SAML2_SOAP);
   if (!loc)
     return 0;
   return zxid_soap_call_body(cf, loc, body);
@@ -636,12 +651,12 @@ struct zx_root_s* zxid_idp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
 
 #define ZXID_MAX_SOAP (64*1024)
 
-struct zx_root_s* zxid_soap_call_body(struct zxid_conf* cf, struct zx_str_s* url, struct zx_se_Body_s* body)
+struct zx_root_s* zxid_soap_call_body(struct zxid_conf* cf, struct zx_str* url, struct zx_se_Body_s* body)
 {
 #ifdef USE_CURL
   struct zx_se_Envelope_s* env = zx_NEW_se_Envelope(cf->ctx);
   struct zx_root_s* r;
-  struct zx_str_s* ss;
+  struct zx_str* ss;
   CURLcode res;
   struct zxid_curl_ctx rc;
   struct zxid_curl_ctx wc;
@@ -682,10 +697,8 @@ struct zx_root_s* zxid_soap_call_body(struct zxid_conf* cf, struct zx_str_s* url
   rc.p[1] = 0;
   rc.p = buf;
   
-  cf->ctx->ns_tab = zx_ns_tab;
-  cf->ctx->base = cf->ctx->p = buf;
-  cf->ctx->lim = rc.lim;
-  r = zx_DEC_root(cf->ctx);
+  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, rc.lim);
+  r = zx_DEC_root(cf->ctx, 0, 1);
   if (!r || !r->Envelope || !r->Envelope->Body) {
     ERR("Failed to parse SOAP response url(%.*s) CURLcode(%d) CURLerr(%s) buf(%.*s)", url->len, url->s, res, curl_easy_strerror(res), rc.lim-buf, buf);
     return 0;
@@ -700,7 +713,7 @@ struct zx_root_s* zxid_soap_call_body(struct zxid_conf* cf, struct zx_str_s* url
 int zxid_soap_cgi_resp_body(struct zxid_conf* cf, struct zx_se_Body_s* body)
 {
   struct zx_se_Envelope_s* env = zx_NEW_se_Envelope(cf->ctx);
-  struct zx_str_s* ss;
+  struct zx_str* ss;
   
   env->Header = zx_NEW_se_Header(cf->ctx);
   env->Body = body;
@@ -713,7 +726,7 @@ int zxid_soap_cgi_resp_body(struct zxid_conf* cf, struct zx_se_Body_s* body)
 
 /* Returns query string part of redirection URL */
 
-struct zx_str_s* zxid_saml2_redir_enc(struct zxid_conf* cf, struct zx_str_s* pay_load)
+struct zx_str* zxid_saml2_redir_enc(struct zxid_conf* cf, struct zx_str* pay_load)
 {
   char* zbuf;
   char* b64;
@@ -736,9 +749,9 @@ struct zx_str_s* zxid_saml2_redir_enc(struct zxid_conf* cf, struct zx_str_s* pay
   return zx_ref_len_str(cf->ctx, len, url);
 }
 
-struct zx_str_s* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str_s* loc, struct zx_str_s* rs)
+struct zx_str* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
 {
-  struct zx_str_s* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
   if (!loc) {
     ERR("Redirection location URL missing. %d", 0);
     return 0;
@@ -747,9 +760,9 @@ struct zx_str_s* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str_s* loc
   return zx_strf(cf->ctx, "%.*s?SAMLRequest=%.*s", loc->len, loc->s, rse->len, rse->s);
 }
 
-int zxid_saml2_redir(struct zxid_conf* cf, struct zx_str_s* loc, struct zx_str_s* rs)
+int zxid_saml2_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
 {
-  struct zx_str_s* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
   if (!loc) {
     ERR("Redirection location URL missing. %d", 0);
     return 0;
@@ -760,9 +773,9 @@ int zxid_saml2_redir(struct zxid_conf* cf, struct zx_str_s* loc, struct zx_str_s
   return ZXID_REDIR_OK;
 }
 
-int zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str_s* loc, struct zx_str_s* rs)
+int zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
 {
-  struct zx_str_s* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
   if (!loc) {
     ERR("Redirection location URL missing. %d", 0);
     return 0;
@@ -774,10 +787,10 @@ int zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str_s* loc, struct zx_
 
 int zxid_saml_ok(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_Status_s* st, char* what)
 {
-  struct zx_str_s* ss;
-  struct zx_str_s* m = 0;
-  struct zx_str_s* sc1 = 0;
-  struct zx_str_s* sc2 = 0;
+  struct zx_str* ss;
+  struct zx_str* m = 0;
+  struct zx_str* sc1 = 0;
+  struct zx_str* sc2 = 0;
   struct zx_sp_StatusCode_s* sc = st->StatusCode;
   if (!memcmp(SAML2_SC_SUCCESS, sc->Value->s, sc->Value->len)) {
     D("SAML ok what(%s)", what);

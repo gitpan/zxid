@@ -1,14 +1,15 @@
 README.zxid
 ###########
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: README.zxid,v 1.30 2006/09/16 05:59:56 sampo Exp $>>
+<<cvsid: $Id: README.zxid,v 1.38 2006/10/01 19:35:50 sampo Exp $>>
+<<class: article!!!ZXID>>
 
 <<abstract:
 
 ZXID ist eine C-Bibliothek, die den vollständigen SAML
 2.0-Stack implementiert und alle populären
 Identitätsverwaltungs-Protokolle wie Liberty ID-FF 1.2,
-WS-Federation, WS- Trust und ID-Webservices wie Liberty ID-WSF 1.1 und
+WS-Federation, WS-Trust und ID-Webservices wie Liberty ID-WSF 1.1 und
 2.0 implementieren will. Sie beruht auf Schema-basierter
 Code-Erzeugung, woraus eine genaue Implementation resultiert. SWIG
 wird verwendet, um Schnittstellen zu Skriptsprachen wie Perl, PHP und
@@ -20,32 +21,40 @@ WSP fungieren.
 1 Who needs this?
 =================
 
-ZXID project has currently (Aug 2006) two outputs
+ZXID project has currently (Sept 2006) four main outputs
 
 libzxid:: A C library for supporting SAML 2.0, including federated Single Sign-On
 zxid:: A C program that implements a SAML Service Provider (SP) as a CGI script
+Net::SAML:: A Perl module wrapping libzxid. Also zxid.pl, that implements SP
+    in mod_perl environment, is supplied.
+php_zxid:: A PHP extension that wraps libzxid. Also supplied: zxid.php
+    that implements SP in mod_php environment.
 
-You need this if you are
+*You need this if you are*
 
-Web Master:: You want to enable SAML based Single Sign-On (SSO) to your web site. In this
-    case you would use the zxid SP CGI script directly, only configuring
-    it slightly.
+Web Master:: You want to enable SAML based Single Sign-On (SSO) to your
+    web site. In this case you would use the zxid SP CGI script directly,
+    only configuring it slightly. Or you can hint your PHP or perl
+    developer that this functionality is available and your want it.
 
 Perl Developer:: You can use the Net::SAML module to integrate SSO
-    to your application and web site. Given the direct perl support this is
-    easier than fully understanding the C interface.
+    to your application and web site. Given the direct perl, support this is
+    easier than fully understanding the C interface. Both mod_perl
+    and perl as CGI are supported.
 
-PHP Developer:: We expect to support functionality roughly equivalent
-    to perl Net::SAML. It does not help that swig.org project does
-    not officially support php5. Perhaps there is something the php5
-    community could do to fix this? (*** php4 vs. php5 penetration?)
+PHP Developer:: You can use ~dl("php_zxid.so")~ to load the module and
+    access the high level functionality, such as SAML 2.0 SSO. We
+    support functionality roughly equivalent to perl Net::SAML.
+    The PHP module is fully ready to use for SSO, but we expect to
+    add a lot more, such as WSC, in future. Both mod_php5 and php as
+    CGI are supported. php4 should also work.
 
-Web Developer:: You want to integrate SAML based SSO to your web site tool or product
-    so that your customers can enjoy SSO enabled web sites. In this case
-    you would study zxid.c for examples and use libzxid.a to implement the
-    functionality in your own program.
+Web Developer:: You want to integrate SAML based SSO to your web site
+    tool or product so that your customers can enjoy SSO enabled web
+    sites. In this case you would study zxid.c for examples and use
+    libzxid.a to implement the functionality in your own program.
 
-Identity Management hacker:: you need some building blocks: you
+Identity Management hacker:: You need some building blocks: you
     will study libzxid and add to it, contributing to the project.
 
 ZXID Project has vastly more ambitious goals. See the ZXID Project chapter
@@ -58,12 +67,17 @@ If you want to try ZXID out immediately, we recommend compiling the
 library and examples and installing one of the examples as a CGI
 script in an existing web server. See later chapters for more details.
 
-  tar xvzf zxid-0.4.tgz
-  cd zxid-0.4
-  # N.B. There is no configure script. The Makefile works for all supported platforms as is.
+  tar xvzf zxid-0.7.tgz
+  cd zxid-0.7
+  # N.B.  There is no configure script. The Makefile works for all
+  #       supported platforms as is.
+  # N.B2: We distribute some generated files. If they are missing you need
+  #       to regenrate them do make cleaner; make dep ENA_GEN=1
   make
-  make perlmod           # optional
-  cd Net; make install   # optional: install Net::SAML perl module
+  make samlmod           # optional
+  make samlmod_install   # optional: install Net::SAML perl module
+  make phpzxid           # optional
+  make phpzxid_install   # optional: install php_zxid.so PHP extension
   cp zxid <webroot>/
   # configure your web server to recognize zxid a CGI, e.g.
   mini_httpd -p 8443 -c zxid -S -E zxid.pem
@@ -93,7 +107,8 @@ This software depends on following packages:
    to support HTTPS.<<footnote: Compilation without libcurl is possible
    with some loss of functionality.>>
 4. HTTPS capable web server. For most trivial testing CGI support is needed. We
-   recommend mini_httpd available from http://www.acme.com/software/mini_httpd/
+   recommend mini_httpd(8) available from
+   http://www.acme.com/software/mini_httpd/
 
 Following additional packages are needed by developers who wish
 to build from scratch, including the code generation (the standard
@@ -101,15 +116,17 @@ distribution includes the output of the code generation, so most
 people do not need these).
 
 a. gperf from gnu.org (only for build process when generating code)
-b. swig from swig.org (only for build process and only if you want scripting interfaces)
-c. perl from cpan.org (only for build process and only if you want to generate code from .sg)
-d. plaindoc from http://mercnet.pt/plaindoc/pd.html (only for build process, for code
-   generation from .sg, and for documentation)
-e. mini_httpd from http://www.acme.com/software/mini_httpd/ (only for canned tutorial)
+b. swig from swig.org (only for build process and only if you
+   want scripting interfaces)
+c. perl from cpan.org (only for build process and only if you
+   want to generate code from .sg)
+d. plaindoc from http://mercnet.pt/plaindoc/pd.html (only for
+   build process, for code generation from .sg, and for documentation)
 
 Although technically not needed to build zxid, you will need an IdP
 to test against. We do not, at the time, supply one so you
-will need to find a third party.
+will need to find a third party, perhaps a free download of one of the
+commercial ones like http://symlabs.com/Products/SFIAM.html.
 
 2.2 Canned Tutorial: Running ZXID as CGI under mini_httpd
 ---------------------------------------------------------
@@ -148,10 +165,13 @@ where
   -S           specifies that https is to be used
   -E zxid.pem  specifies the SSL certificate to use
 
+See <<link:apache.html: Apache receipe>> for alternative that
+avoids mini_httpd, but is more complicated otherwise.
+
 > N.B. The zxid.pem certificate and private key combo is shipped with zxid
 > for demonstration purposes. Obviously everybody who downloads zxid
 > has that private key, so there is no real security what-so-ever.  For
-> production use, you must generate, or aquire, your own private
+> production use, you must generate, or acquire, your own private
 > key-certificate pair (and keep the private key secret). See Certificates
 > chapter for further info.
 
@@ -165,11 +185,11 @@ includes sp1.zxidcommon.org and sp1.zxidsp.org domain names, e.g:
 
 Point your browser to
 
-  https://sp1.zxidsp.org:8443/zxid
+> https://sp1.zxidsp.org:8443/zxid
 
 or if you do not want the common domain cookie check
 
-  https://sp1.zxidsp.org:8443/zxid?o=E
+> https://sp1.zxidsp.org:8443/zxid?o=E
 
 2.2.4 Setting up an IdP
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,14 +197,16 @@ or if you do not want the common domain cookie check
 Currently zxid does not ship with an IdP (though the necessary
 protocol encoders and decoders are latently available in libzxid,
 should anyone wish to make an attempt to hack an IdP together).
-For you to test zxid, you will need to aquire an IdP from
+For you to test zxid, you will need to acquire an IdP from
 somewhere - any vendor whose product is SAML 2.0 certified
 will do. One possible source is http://symlabs.com/Products/SFIAM.html
 who have a free download.
 
-If you do not want to install an IdP yourself (even for testing),
-find someone who already runs one and ask if they would be willing
-to load the metadata of your zxid SP.
+If you do not want to install an IdP yourself (even for testing), find
+someone who already runs one and ask if they would be willing to load
+the metadata of your zxid SP. If you do this, you will need to get
+externally visible domain names. This canned tutorial uses /etc/hosts
+(see previous step) which is only visible on your own machine.
 
 Once you get your IdP up and running, you need to make sure it accepts
 the zxid SP in its Circle of Trust (CoT). This is done by placing
@@ -197,7 +219,7 @@ CoT management on.>>
 If not, you can obtain the zxid SP metadata (which is slightly different
 for each install so you can't just copy it from existing install) from
 
-  https://sp1.zxidsp.org:8443/zxid?o=B
+> https://sp1.zxidsp.org:8443/zxid?o=B
 
 This URL is the +well known location method+ metadata URL. It is also
 the SP +Entity ID+ or Provider ID, should the IdP product ask for
@@ -228,11 +250,11 @@ do its job.
 
 1. Start at
 
-     https://sp1.zxidsp.org:8443/zxid
+   > https://sp1.zxidsp.org:8443/zxid
 
    or
 
-     https://sp1.zxidsp.org:8443/zxid?o=E
+   > https://sp1.zxidsp.org:8443/zxid?o=E
 
    If you had common domin cookie already in place, and you
    are already logged in the IdP, the SSO may happen
@@ -275,9 +297,9 @@ ZXID ships with working demo configuration so you can run it right
 away and once you are familiar with the concepts, you can return
 to this chapter.
 
-ZXID uses a configuration file in hardwired path<<footnote: As of version 0.2 the
-configuration file has not been implemented yet. You configure ZXID at compile
-time by editing zxidconf.h>>
+ZXID uses a configuration file in hardwired path<<footnote: As of
+version 0.2 the configuration file has not been implemented yet. You
+configure ZXID at compile time by editing zxidconf.h>>
 
   /var/zxid/zxid.conf
 
@@ -301,11 +323,13 @@ Usually configuration of a system involves following tasks
       mean setting up your ~mod_perl~ or ~mod_php~ system to call
       ZXID at the appropriate place.
 2. Configure ZXID, including signing certificate and CoT with peer metadata
-   a. generate or aquire certificate
-   b. Obtain peer metadata (from their well known location) or enable +Instant CoT+ feature.
+   a. generate or acquire certificate
+   b. Obtain peer metadata (from their well known location) or
+      enable +Instant CoT+ feature.
 3. Configure CoT peers with your metadata. They can download your
-   metadata from your well known location (which is the URL that is your entity ID). For this
-   to happen you need to have web server and ZXID up and running.
+   metadata from your well known location (which is the URL that
+   is your entity ID). For this to happen you need to have web
+   server and ZXID up and running.
 
 3.1 Configuration Parameters
 ----------------------------
@@ -330,31 +354,33 @@ is /var/zxid and has following directories and files in it
 Directory that holds various certificates. The certificates
 have hardwired names that are not configurable.
 
-ca.pem:: Certification Authority certificates. These are used for validating any
-    certificates received from peers (other sites on the CoT). The CA certificates
-    may also be shipped to the peers to facilitate them validating our signatures.
-    This is especially relevant if the certificate is issued by multilayer CA
+ca.pem:: Certification Authority certificates. These are used for
+    validating any certificates received from peers (other sites
+    on the CoT). The CA certificates may also be shipped to the
+    peers to facilitate them validating our signatures. This is
+    especially relevant if the certificate is issued by multilayer CA
     hierarchy where the peer may not have the intermediate CA certificates.
-sign-nopw-cert.pem:: The signing certificate AND private key (concatenated in one file).
-    The private key MUST NOT be encrypted (there will not be any opportunity to supply
-    decryption password).
-enc-nopw-cert.pem:: The encryption certificate AND private key (concatenated in one file).
-    The private key MUST NOT be encrypted (there will not be any opportunity to supply
-    decryption password). The signing certificate can be used as the encryption
-    certificate. If encryption certificate is not specified it will default to
-    signing certificate.
+sign-nopw-cert.pem:: The signing certificate AND private key (concatenated
+    in one file). The private key MUST NOT be encrypted (there will not
+    be any opportunity to supply decryption password).
+enc-nopw-cert.pem:: The encryption certificate AND private key (concatenated
+    in one file). The private key MUST NOT be encrypted (there will not be
+    any opportunity to supply decryption password). The signing certificate
+    can be used as the encryption certificate. If encryption certificate
+    is not specified it will default to signing certificate.
 
 In addition to the above certificates and private keys, you will need
-to configure your web server to use TLS or SSL certificates for the main site
-and the Common Domain site. We suggest the following naming
+to configure your web server to use TLS or SSL certificates for the
+main site and the Common Domain site. We suggest the following naming
 
-ssl-nopw-cert.pem:: SSL or TLS certificate for main site. In order to avoid browser
-    warnings, the CN field of this certificate should match the domain name of the
-    site. The SSL certificate can be same as signing or encryption certificate.
-cdc-nopw-cert.pem:: SSL or TLS certificate for Common Domain Cookie introduction site.
-    In order to avoid browser warnings, the CN field of this certificate should match
-    the domain name of the site. The SSL certificate can be same as signing or encryption
-    certificate.
+ssl-nopw-cert.pem:: SSL or TLS certificate for main site. In order to
+    avoid browser warnings, the CN field of this certificate should match
+    the domain name of the site. The SSL certificate can be same as
+    signing or encryption certificate.
+cdc-nopw-cert.pem:: SSL or TLS certificate for Common Domain Cookie
+    introduction site. In order to avoid browser warnings, the CN field
+    of this certificate should match the domain name of the site. The SSL
+    certificate can be same as signing or encryption certificate.
 
 3.1.3 cot
 ~~~~~~~~~
@@ -363,14 +389,65 @@ Directory that holds metadata of the Circle of Trust (CoT)
 partners. If +Instant CoT+ is enabled, this directory needs to be
 writable at run time.
 
-3.2 Special or embedded compile (reduced functionality)
+4 Compilation for Experts
+=========================
+
+  make cleaner
+  make dep ENA_GEN=1
+  make
+
+4.1 Build Process
+-----------------
+
+The build process of ZXID relies heavily on code generation techniques
+that are not for the faint of heart. Some of these techniques, like
+xsd2sg.pl were innovated for this project, while others like SWIG and
+gperf are existing software.  Here and there some additional perl(1)
+and sed(1) scripts are run to fix a thing or two.
+
+<<dot: zxid-build: ZXID Build Process
+
+margin=0
+
+sg [label=".sg"];
+i  [label=".i"];
+phpi  [label="phpzxid.i"];
+hc [label=".h and .c"];
+pm [label=".pm and glue"];
+php [label="php glue"];
+gperf [label=".gperf"];
+netsaml [label="Net::SAML"];
+
+sg -> hc [label="xsd2sg.pl"];
+sg -> gperf [label="xsd2sg.pl"];
+gperf -> hc [label="gperf"];
+hc -> hc [label="gen-consts-from-gperf-output.pl"];
+hc -> libzxid [label="gcc"];
+hc -> pm [label="swig"];
+i  -> pm [label="swig"];
+hc -> php [label="swig"];
+phpi -> php [label="swig"];
+
+libzxid -> zxid [label="ld"];
+
+libzxid -> netsaml [label="ld"];
+pm -> netsaml [label="perl, gcc, ld"];
+
+libzxid -> php_zxid [label="ld"];
+php -> php_zxid [label="gcc, ld"];
+
+>>
+
+Carefully study the Makefile and this should all start to make sense.
+
+4.2 Special or embedded compile (reduced functionality)
 -------------------------------------------------------
 
 libzxid contains thousands of functions and any given application is
 unlikely to use them all. Thus the easiest, safest, no loss of
 functionality, way to reduce the footprint is to simply enable
 compiler and linker flags that support dead function
-elimination.<<footnote: Unfortunately the gnu ld does not support dead
+elimination.<<footnote:  Unfortunately the gnu ld does not support dead
 function elimination. You should file this as a bug to them. If they
 tell you to put evey one of the 7000 some functions in a separate .c file,
 consider the scalability implications of this. Read the comments in
@@ -383,7 +460,7 @@ zxid and know what you are doing. The canned install instructions
 and tutorial walk throughs stop working if you omit
 significant functionality.
 
-3.2.1 Compilation without OpenSSL
+4.2.1 Compilation without OpenSSL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Comment out the -DUSE_OPENSSL flag from CFLAGS in Makefile and
@@ -402,7 +479,7 @@ layer. Given that SSL is used at web server layer, the savings
 you would gain from compiling zxid without OpenSSL may be
 neglible if you use dynamic linking.
 
-3.2.2 Compilation without libcurl
+4.2.2 Compilation without libcurl
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Comment out the -DUSE_CURL flag from CFLAGS in Makefile and
@@ -442,14 +519,14 @@ well be able to live without it.
    same functionality by calling the encoder and decoder
    functions manually.
 
-3.2.3 Compiling without zlib (not supported)
+4.2.3 Compiling without zlib (not supported)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 zlib is used mainly in redirect profiles. Since zlib foot print is
 small, we have made no supported provision to compile without it. If
 you hack something together, let us know.
 
-3.3 Choosing Which Standards to Compile in (default: all)
+4.3 Choosing Which Standards to Compile in (default: all)
 ---------------------------------------------------------
 
 On space constrained systems you may shed additional weight by only
@@ -473,18 +550,32 @@ or by supplying new values on commend line. For example
 would disable SAML 2.0 (and trigger build for Sparc Solaris 8).
 
 <<table: Conditional inclusion of standards
-Makefile flag   Standard      Comments
-=============== ============= ======================================
-ENA_SSO=1       All SSO       Must be enabled for any of SSO to work
-ENA_SAML2=1     SAML 2.0
-ENA_FF12=1      ID-FF 1.2     Requires ENA_SAML11=1
-ENA_SAML11=1    SAML 1.1
-ENA_WSF=1       All WSF       Must be enabled for any of WSF to work
-ENA_WSF2=1      ID-WSF 2.0
-ENA_WSF11=1     ID-WSF 1.1
+Makefile flag    Standard      Comments
+================ ============= ======================================
+ENA_SSO=1        All SSO       Must be enabled for any of SSO to work
+ENA_SAML2=1      SAML 2.0
+ENA_FF12=1       ID-FF 1.2     Requires ENA_SAML11=1
+ENA_SAML11=1     SAML 1.1
+ENA_WSF=1        All WSF       Must be enabled for any of WSF to work
+ENA_WSF2=1       ID-WSF 2.0
+ENA_WSF11=1      ID-WSF 1.1
 >>
 
-4 Net::SAML Perl Module
+4.4 localconf.mk
+----------------
+
+You can use localconf.mk to remember your own make options,
+such as TARGET and different ENA flags, wihtout editing
+the distributed Makefile.
+
+One useful option to put in localconf.mk is ENA_GEN which
+will turn on the dependencies that will trigger generation
+of the files in zxid/c directory. For example
+
+  echo 'ENA_GEN=1' >>localconf.mk
+  make
+
+5 Net::SAML Perl Module
 =======================
 
 * perl CGI example: zxid.pl
@@ -512,14 +603,14 @@ you need to have SWIG installed and then say in main zxid directory
 >  time memory consumption of single cc1 process will be over
 >  256 MB of RAM. You have been warned.
 
-4.1 Current major modules are
+5.1 Current major modules are
 -----------------------------
 
 * Net::SAML - The high level interfaces for Single Sign-On (SSO)
 * Net::SAML::Raw - Low level assertion and protocol manipulation interfaces
 * Net::SAML::Metadata - Low level metadata manipulation interfaces
 
-4.2 Planned modules
+5.2 Planned modules
 -------------------
 
 * Net::WSF - The high level interfaces for Web Services Frameworks (WSF)
@@ -527,7 +618,7 @@ you need to have SWIG installed and then say in main zxid directory
 * Net::WSF::WSC - The high level interfaces for Web Services Clients
 * Net::WSF::WSC:Raw
 
-4.3 Perl API Adaptations
+5.3 Perl API Adaptations
 ------------------------
 
 The perl APIs were generated from the C .h files using SWIG. Generally any
@@ -535,17 +626,18 @@ C functions and constants that start by zxid_, ZXID_, SAML2_, or SAML_
 have that prefix changed to <<tt: Net::SAML::>>. Note, however, that
 the zx_ prefix is not stripped.
 
-Since ZXID wants to keep strings, in many places, in length + data representations,
-namesly as ~struct zx_str_s~, SWIG typemaps were used to make this happen
-automatically. Thus any C function that takes as argiment ~struct zx_str_s*~
-can take a perl string directly. Similarily any C function that returns
-such pointer, will return a perl string instead. As a final goodie, any
-C function, such as
+Since ZXID wants to keep strings in many places in length + data
+representation, namely as ~struct zx_str_s~, SWIG typemaps were used
+to make this happen automatically. Thus any C function that takes as
+an argument <<tt: struct zx_str_s*>> can take a perl string
+directly. Similarily any C function that returns such a pointer, will
+return a perl string instead. As a final goodie, any C function, such
+as
 
   struct zx_str_s* zx_ref_len_str(struct zx_ctx* c, int len, char* s);
 
-that takes ~length~ and ~s~ as explicit arguments, takes only single
-argument that is perl string (the one argument automatically satisfies
+that takes ~length~ and <<tt: s>> as explicit arguments, takes only single
+argument that is a perl string (the one argument automatically satisfies
 two C arguments, thanks to a type map). The above could be called like
 
   $a = Net::SAML::zx_ref_len_str(c, "foo");
@@ -553,8 +645,62 @@ two C arguments, thanks to a type map). The above could be called like
 First the "foo" satisfies both ~len~ and ~s~, and then the return value
 is converted back to perl string.
 
-5 PHP Integration
-=================
+5.4 Testing Net::SAML and zxid.pl as CGI script
+-----------------------------------------------
+
+To test the perl module, you must restart the mini_httpd(8) so
+that it recognizes zxid.pl as CGI script:
+
+  mini_httpd -p 8443 -c zxid.pl -S -E zxid.pem
+
+Then start browsing from
+
+  https://sp1.zxidsp.org:8443/zxid.pl
+
+or if you want to avoid the common domain cookie check
+
+  https://sp1.zxidsp.org:8443/zxid.pl?o=E
+
+5.5 Testing Net::SAML and zxid.pl under mod_perl
+------------------------------------------------
+
+You can run zxid.pl under mod_perl using the Apache::Registry
+module. See <<link:apache.html: Apache receipe>> for how
+to compile Apache to support mod_perl. After configuration
+it should work the same as the CGI approach.
+
+5.6 Debugging Net::SAML with GDB
+--------------------------------
+
+As bizarre as it may sound, it is actually quite feasible to debug
+libzxid and the SAML_wrap.c using GDB while in perl. For example
+
+  cd zxid
+  gdb /usr/local/bin/perl
+  set env QUERY_STRING=o=E
+  r ./zxid.pl
+
+If the script crashes inside the C code, GDB will perfectly
+reasonably take control allowing you to see stack back-trace (bt)
+and examine variables. Of course it helps if openssl and perl
+were compiled with debug symbols (libzxid is compiled
+with debug symbols by default), but even if they weren't you
+can ususally at least get some clue.
+
+When preparing a perl module, generally Makefile.PL mechanism causes
+the same compilation flags to be used as were used to compile the perl
+itself. Generally this is good, but if libzxid was compiled with
+different flags, mysterious errors can crop up. For example, I compile
+my libzxid agains openssl that I have also compiled myself. However, I
+once had a bug where the perl had been compiled such that the Linux
+distribution's incompatible openssl would be picked by perl compile
+flags, resulting in mystery crashes deep inside openssl ASN.1 decoder
+routines (c2i_ASN1_INTEGER() while in d2i_X509() to be exact). When I
+issued `info files' in GDB I finally realized that I was using the
+wrong openssl library.
+
+6 PHP extension php_zxid.so
+===========================
 
 The PHP integration is incomplete due to incomplete support in SWIG
 for php5. However, enough interface exists to get most high level API
@@ -564,7 +710,7 @@ After building main zxid distribution, say
 
   make phpzxid
 
-You must have php-config(1) in path. If not, try
+You MUST have php-config(1) in path. If not, try
 
   make phpzxid PHP_CONFIG=/path/to/php-config
 
@@ -576,29 +722,115 @@ it to a suitable place, e.g.
 The install again uses the php-config(1) to figure out where
 php(1) can find the module.
 
-and adding
+Then add in your script
 
   dl("php_zxid.so");   // Load the module
 
-in your script. Alternately you can use the zxid.php file
-like this
+You may need to tweak the paths, or LD_LIBRARY_PATH, to get this to work.
 
-  include("zxid.php");
-
-You may need to tweak the paths to get this to work.
-
-6 Python Integration
-====================
+7 Python Extension
+==================
 
 TBD using SWIG
 
-7 Java Native API Integration
-=============================
+8 Java Native API
+=================
 
 TBD using SWIG
 
-8 Native C API
-==============
+9 Integration with Existing Web Sites
+=====================================
+
+Single Sign-On is used to protect some useful resources. ZXID does not
+have any means of serving these resources, rather a normal web server
+or application server should do it. ZXID should just concentrate on
+verifying that a user has valid session, and if not, establishing the
+session by way of SSO.
+
+9.1 Brief Overview of Control Flow
+----------------------------------
+
+The SAML 2.0 specifications mandate a wire protocol, and in order
+to speak the wire protocol, the SP application typically
+has to follow certain standard sequence of control flow.
+
+<<dia: sp-flow,,:bg: Typical control flow of ZXID SP>>
+
+First a user<<footnote: The user is often referred to as "Principal" in
+more technical jargon. Although the human user and web browser are
+distinct entities, we do not stress that separation here. Whatever
+user "does" really will, in protocol, appear as web browser sending
+requests.>> tries to access a web site that acts in SP role. This
+triggers following sequence of events
+
+1.  User is redirected to URL in a common domain. This is so that
+    we can read the Common Domain Cookie that indicates which
+    IdP the user uses. Alternatively, if you started at
+    https://sp1.zxidsp.org:8443/zxid?o=E, the CDC check is
+    by-passed and flow 2b. happens.
+
+2.  After the CDC check, a Authentication Request (AuthnReq) is
+    generated. The IdP may have been chosen automatically
+    using CDC (2a), or there may have been some user interface
+    interaction (not show in the diagram) to choose the IdP.
+
+3.  User is redirected to the IdP. The redirection carries
+    as a query string a compressed and encoded form of
+    the SAML 2.0 AuthnReq.
+
+4.  Once the IdP has authenticated the user, or observed
+    that there already is a valid IdP session (perhaps from
+    a cookie), the IdP redirects the user back to the SP.
+
+    The AuthnResponse may be carried in this redirection
+    in a number of alternate ways
+
+    a. The redirect contains a special token called
+       +artifact+. The artifact is a reference to the
+       AuthnResponse and the SP needs to get the
+       actual AuthnResponse by using a SOAP call (the
+       4bis step).
+
+    b. The "redirect" is actually a HTML page with
+       a form and little JavaScript that causes the
+       form to be automatically posted to the SP.
+       The AuthnResponse is carried as a form field.
+
+5.  After verifying that AuthnResponse indicated a
+    success, the SP establishes a local session for the
+    user (perhaps setting a cookie to indicate this).
+    
+    Depending on how the SP to web site integration
+    is done the user is taken to the web site in
+    one of the two ways
+
+    a. Redirect to the content. This time the session
+       is there, therefore the flow passes directly
+       from check session to the web content.
+
+    b. It is also possible to show the content directly
+       without any intervening redirection.
+
+9.2 Redirect Approach to Integration
+------------------------------------
+
+9.3 Pass-thru Approach to Integration
+-------------------------------------
+
+9.3.1 mod_perl pass-thru
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+9.3.2 PHP pass-thru
+~~~~~~~~~~~~~~~~~~~
+
+9.3.3 mod_zxid pass-thru
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+9.4 Proxy Approach to Integration
+---------------------------------
+
+10 Native C API
+===============
 
 The generated aspects of the native C API are in c/*-data.h, for example
 
@@ -606,10 +838,10 @@ The generated aspects of the native C API are in c/*-data.h, for example
 
 Studying this file is very instructive.
 
-8.1 C Data Structures
----------------------
+10.1 C Data Structures
+----------------------
 
-From .sg a header (.h) is generated. This header contains structs that
+From .sg a header (NN-data.h) is generated. This header contains structs that
 represent the data of the elements. Each element and attribute
 generates its own node. Even trivial nodes like strings have to be
 kept this way because the nodes form basis of remembering the ordering
@@ -635,8 +867,134 @@ enough.>>
 Simple elements and all attributes are represented by simple string node
 (even if they are booleans or integers).
 
-8.1.1 Handling Namespaces
-~~~~~~~~~~~~~~~~~~~~~~~~~
+*Example*
+
+Consider following XML
+
+  <ds:Signature>
+     <ds:SignedInfo>
+       <ds:CanonicalizationMethod
+           Algorithm="http://w3.org/xml-exc-c14n#"/>
+       <ds:SignatureMethod
+           Algorithm="http://w3.org/xmldsig#rsa-sha1"/>
+       <ds:Reference
+           URI="#RrcrNwFIw6n">
+         <ds:Transforms>
+           <ds:Transform
+               Algorithm="http://w3.org/xml-exc-c14n#"/>
+           <ds:Transform
+               Algorithm="http://w3.org/xmldsig#env-sig"/></>
+         <ds:DigestMethod
+             Algorithm="http://w3.org/xmldsig#sha1"/>
+         <ds:DigestValue>lNIzVMrp8CwTE=</></></>
+     <ds:SignatureValue>
+       GeMp7LS...vnjn8=</></>
+
+Decoding would produce the data structure in Fig-<<see: fig:decode-data>>. You
+should also look at c/saml2-data.h to see the structs involved in this
+example.
+
+<<dot: decode-data: Typical data structure produced by decode.
+
+// This graph crashes dot 1.12, but works in dot 2.8
+
+size="11.0,6.0"
+margin=0
+rankdir=LR
+
+{ rank=same; siginfo; sigval; }
+{ rank=same; canonmeth; sigmeth; ref; }
+//{ rank=same; canonmeth; sigmeth; ref; digmeth; digval; }
+//{ rank=same; xforms; xform_env; xform_c14n; }
+//{ rank=same; xform_env; xform_c14n; digmeth; digval; }
+{ rank=same; xforms; digmeth; digval; }
+{ rank=same; xform_c14n; xform_env; }
+
+sig [shape=record,label="zx_ds_Signature_s|{|{<f_kids>gg.kids|<f_siginfo>SignedInfo|<f_sigval>SignatureValue|KeyInfo (0)|Object (0)|Id (0)}}"];
+siginfo [shape=record,label="zx_ds_SignedInfo_s|{|{<f_kids>gg.kids|<f_wo>gg.g.wo|<f_canonmeth>CanonicalizationMethod|<f_sigmeth>SignatureMethod|<f_ref>Reference|Id (0)}}"];
+
+canonmeth [shape=record,label="zx_ds_CanonicalizationMethod_s|{|{<f_wo>gg.g.wo|Algorithm\n\"http://w3.org/xml-exc-c14n#\"}}"];
+
+sigmeth [shape=record,label="zx_ds_SignatureMethod_s|{|{<f_wo>gg.g.wo|Algorithm\n\"http://w3.org/xmldsig#rsa-sha1\"}}"];
+
+ref [shape=record,label="zx_ds_Reference_s|{|{<f_kids>gg.kids|gg.g.wo (0)|<f_xforms>Transforms|<f_digmeth>DigestMethod|<f_digval>DigestValue|Id (0)|Type (0)|URI\n\"#RrcrNwFIw6n\"}}"];
+
+xforms [shape=record,label="zx_ds_Transforms_s|{|{<f_kids>gg.kids|<f_wo>gg.g.wo|gg.g.n (0)|<f_xform>Transform}}"];
+
+xform_c14n [shape=record,label="zx_ds_Transform_s|{|{<f_wo>gg.g.wo|gg.g.n (0)|XPath (0)|<f_c14n_algo>Algorithm\n\"http://w3.org/xml-exc-c14n#\"}}"];
+
+xform_env [shape=record,label="zx_ds_Transform_s|{|{gg.g.wo (0)|<f_n>gg.g.n|XPath (0)|Algorithm\n\"http://w3.org/xmldsig#env-sig\"}}"];
+
+xforms:f_xform -> xform_env
+xform_env:f_n -> xform_c14n
+
+digmeth [shape=record,label="zx_ds_DigestMethod_s|{|{<f_wo>gg.g.wo|Algorithm\n\"http://w3.org/xmldsig#sha1\"}}"];
+digval [shape=record,label="zx_elem_s|{|{gg.g.wo (0)|content\n\"lNIzVMrp8CwTE=\"}}"];
+
+sigval [shape=record,label="zx_ds_SignatureValue_s|{|{gg.g.wo (0)|gg.content\n\"GeMp7LS...vnjn8=\"|Id (0)}}"];
+
+sig:f_siginfo -> siginfo
+sig:f_sigval  -> sigval
+
+siginfo:f_canonmeth -> canonmeth
+siginfo:f_sigmeth -> sigmeth
+siginfo:f_ref -> ref
+
+ref:f_xforms -> xforms
+ref:f_digmeth -> digmeth
+ref:f_digval -> digval
+
+sig:f_kids ->siginfo [weight=0,style=dashed,color=red]
+
+siginfo:f_wo ->sigval [weight=0,style=dashed,color=red]
+siginfo:f_kids -> canonmeth [weight=0,style=dashed,color=red]
+canonmeth:f_wo -> sigmeth [weight=0,style=dashed,color=red]
+sigmeth:f_wo -> ref [weight=0,style=dashed,color=red]
+
+ref:f_kids -> xforms [weight=0,style=dashed,color=red]
+xforms:f_wo -> digmeth [weight=0,style=dashed,color=red]
+digmeth:f_wo -> digval [weight=0,style=dashed,color=red]
+
+xforms:f_kids -> xform_c14n [weight=0,style=dashed,color=red]
+xform_c14n:f_wo -> xform_env [weight=0,style=dashed,color=red]
+
+>>
+
+There are two pointer systems at play here. The black solid arrows
+depict the logical structure of the XML document. For each child
+element there is a struct field that simply points to the child. If
+there are multiple occurances of the child, as in
+~sig->SignedInfo->Reference->Transforms->Transform~, the children are
+kept in a linked list connected by gg.g.n (next) fields.<<footnote:
+This linked list may be in inverted order depending on the phase of
+the moon and position of the trams in Helsinki. Until implementation
+matures, its better not to depend on the ordering.>>
+
+The +wide order+ structure, depicted by red dashed arrows, is
+maintained using gg.kids and gg.g.wo fields. For example
+~sig->SignedInfo->Reference->Transforms~ keeps its kids, the
+~zx_ds_Transform~ objects, in the original order hanging from the kids
+and linked with the wo field. As can be seen the order kept with wo
+fields can be different than the one kept using n (next) fields.
+What's more, the kids list can contain dissimilar objects, witness
+~sig->SignedInfo->Reference->gg.kids~. The wire order representation
+is only captured when decoding the document and is mainly useful for
+correctly cononicalizing the document for signature verification. If
+you are building a data structure in your own program, you typically
+will not set the gg.kids and gg.g.wo fields.
+
+In the diagram, the objects of type ~zx_str_s~ were collapsed to
+double quoted strings. Superfluous gg.kids, gg.g.wo, and gg.g.n fields
+were omitted: they exist in all structures, but are not shown when
+they are ~NULL~. The ~NULL~ is depicted as zero (0).<<footnote: All
+this gg.g business is just C's way of referencing the fields of a
+common base type of element objects.>>
+
+
+<<notacountry: so wo>>
+
+10.1.1 Handling Namespaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An annoying feature of XML documents is that they have variable
 namespace prefixes. The namespace prefix for the unqualified elements
@@ -645,37 +1003,167 @@ input. Name of an element in C code is formed by prefixing the element
 by the namespace prefix and an underscore.
 
 Attributes will only have namespace prefix if such was expressly
-specified in .sg input. However, pointer and length fields
-representing attributes take an "a" middlefix, thus giving a separate
-C identifier namespace for the attributes.
+specified in .sg input.
 
 When decoding, the actual namespace prefixes are recorded. The wire
 order encoder knows to use these recorded prefixes so that accurate
-canonicalization for XMLDSIG can be produced. The schema order encoder
-always uses the prefixes defined using target() directives in .sg
-files. The runtime notion of namespaces is handled by ~ns_tab~ field
-of the decoding and encoding context.  It is initialized to contain
-all namespaces known by virtue of .sg declarations.  The runtime
-assigned prefixes are held in a linked list hanging from ~n~ (next)
-field of ~struct zx_ns_s~. (*** more work needed here)
+canonicalization for XMLDSIG can be produced.
+
+If the message on wire uses wrong namespaces, the wrong ones are
+remembered so that canonicalization for signature validation will work
+irrespective. The ability to accept wrong namespaces only works as
+long as there is no ambiguity as to which tag was meant - there are
+some tags that need namespace information to distinguish. If you hit
+one of these then either you get lucky and the one that is arbitrarily
+picked by the decoder happens to be the correct one, or you are stuck
+with no easy way to make it right. Of course the XML document was
+wrong to start with so theoretically this is not a concern. Generally
+the more schemas that are simultaneously generated to one package, the
+greater the risk of collisions between tags.
+
+The schema order encoder always uses the prefixes defined
+using target() directives in .sg files. The runtime notion of
+namespaces is handled by ~ns_tab~ field of the decoding and encoding
+context.  It is initialized to contain all namespaces known by virtue
+of .sg declarations.  The runtime assigned prefixes are held in a
+linked list hanging from <<tt: n>> (next) field of ~struct
+zx_ns_s~. (*** more work needed here)
 
 The code generation creates a file such as c/saml2-ns.c which contains
 initialization for the table. The main program should point the ns_tab
 field of context as follows:
 
-  struct zx_ns_s my_ns_tab[] = {
-  #include "c/saml2-ns.c"
-    { 0,0,0,0,0 }
-  };
-  
   main {
     struct zx_ctx* ctx;
     ...
-    ctx->ns_tab = my_ns_tab;
+    ctx->ns_tab = zx_ns_tab;   /* Here zx_ is the chosen prefix */
   }
 
-8.1.2 Handling any and anyAttribute
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Consider following evil contortion
+
+  <e:E xmlns:e="uri">
+    <h:H xmlns:h="uri"/>
+    <b:B xmlns:b="uri">
+      <e:C xmlns:e="uri"/>
+      <e:D xmlns:e="iru">
+        <e:F xmlns:e="uri"/></></></>
+
+Assuming the ~ns_tab~ assigns prefix <<tt: y>> to the namespace
+URI, we would have following data structure as a result of a decode
+
+<<dot: ns-data,,: Decode of XML and resulting namespace structures.
+margin=0
+//rankdir=LR
+
+{ rank=same; ns_tab; e; h; b; }
+{ rank=same; H; B; }
+{ rank=same; C; D; }
+
+ns_tab [shape=record,label="{ns_tab|{y|uri|<uri_n>}|{z|iru|<iru_n>}}"]
+
+e [shape=record,label="e|uri|<n>"]
+h [shape=record,label="h|uri|<n>"]
+b [shape=record,label="b|uri|0"]
+i [shape=record,label="e|iru|0"]
+
+ns_tab:uri_n -> e
+ns_tab:iru_n -> i
+e:n -> h
+h:n -> b
+
+E -> H [style=bold]
+E -> B [style=bold]
+B -> C [style=bold]
+B -> D [style=bold]
+D -> F [style=bold]
+
+E -> e [color=red]
+H -> h [color=red]
+B -> b [color=red]
+C -> e [color=red]
+D -> i [color=red]
+F -> e [color=red]
+>>
+
+The red thin arrows indicate how the elements reference the
+namespaces. Since none of the elements used the prefix originally
+specified in the schema grammar target() directive, we ended up
+allocating "alias" nodes for the uri. However, since E and C use the
+same prefix, they share the alias node. Things get interesting with D:
+it redefines the prefix e to mean different namespace URI, "iru", which
+happens to be an alias of prefix z.
+
+Later, when wire order canonical encode is done, the red thin arrows
+are chased to determine the namespaces. However, we need to keep a
+separate "seen" table to track whether parent has already declared the
+prefix and URI. E would declare xmlns:e="uri", but C would not because
+it had already been "seen". However, F would have to declare it again
+because the xmlns:e="iru" in D masks the declaration. The ~zx_ctx~
+structure is used to track the namespaces and "seen" status
+through out decoders and encoders.
+
+<<dot: seen-data,,: Seen data structure (blue dotted and green dashed arrows) in the end of decoding F. S=seen, SN=seen_n.
+margin=0
+//rankdir=LR
+
+{ rank=same; ns_tab; ee; e; h; b; }
+{ rank=same; H; B; }
+{ rank=same; C; D; }
+
+ns_tab [shape=record,label="{ns_tab|{P|URI|S|SN|N}|{y|uri|0|0|<uri_n>}|{z|iru|0|0|<iru_n>}}"]
+
+e [shape=record,label="e|uri|0|0|<n>"]
+ee [shape=record,label="e|uri|<s>|0|<n>"]
+h [shape=record,label="h|uri|0|<sn>|<n>"]
+b [shape=record,label="b|uri|0|<sn>|0"]
+i [shape=record,label="e|iru|<s>|0|0"]
+
+ctx [shape=record,label="{ctx|{|{<ns>ns_tab|<sn>seen_n}}}"]
+
+ns_tab:uri_n -> ee
+ns_tab:iru_n -> i
+ee:n -> e
+e:n -> h
+h:n -> b
+
+E -> H [style=bold]
+E -> B [style=bold]
+B -> C [style=bold]
+B -> D [style=bold]
+D -> F [style=bold]
+
+E -> e [color=red]
+H -> h [color=red]
+B -> b [color=red]
+C -> e [color=red]
+D -> i [color=red]
+F -> ee [color=red]
+
+ns_tab -> ctx:ns [arrowhead=none,arrowtail=normal]
+b -> ctx:sn [color=blue,style=dotted,arrowhead=none,arrowtail=normal]
+b:sn -> h [color=blue,style=dotted]
+h:sn -> ee [color=blue,style=dotted]
+ee:s -> i [color=green,style=dashed]
+i:s -> e [color=green,style=dashed]
+>>
+
+Here we can see how the ~seen_n~ list, represented by the blue dotted
+arrows, was built: at the head of the list, ~ctx->seen_n~, is the last
+seen prefix, namely b (beacuse, although the meaning of e at F was
+different, e as a prefix had already been seen earlier at E), followed
+by other prefixes in inverse order of first occurance.<<footnote: This
+is a mere artifact of implementation: it's cheapest to add to the head
+of the list. This may change in future.>> The green dashed arrows from
+e:uri to e:iru and then on to second e:uri reflect the fact that e:uri
+(second) was put to the list first (when we were at E), but later, at
+D, a different meaning, iru, was given to prefix e. Finally at F we
+give again a different meaning for e, thus pushing to the "seen stack"
+another node. Although e at E and at F have namespace URI, "uri", we are
+not able to use the same node because we need to keep the stack order.
+Thus we are forced to allocate two identical nodes.
+
+10.1.2 Handling any and anyAttribute
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Since our aim is to be lax in what we accept, every element can handle
 unexpected additional attributes as well as unexpected elements. Thus
@@ -703,8 +1191,8 @@ fields are pointers, it will be your responsibility to free them. The
 standard free functions will not understand to free them. See the data
 structure walking functions, below for one way to accomplish this.
 
-8.1.3 Root data structure
-~~~~~~~~~~~~~~~~~~~~~~~~~
+10.1.3 Root data structure
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The root data structure
 
@@ -713,13 +1201,13 @@ The root data structure
 is a special structure that has a field for evey top level
 recognizable element.
 
-8.1.4 Per element data structures
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+10.1.4 Per element data structures
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *** TBW
 
-8.1.5 Memory Allocation
-~~~~~~~~~~~~~~~~~~~~~~~
+10.1.5 Memory Allocation
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 After decoding all string data points directly into the input buffer,
 i.e. strings are NOT copied. Be sure to not free the input buffer
@@ -741,40 +1229,53 @@ count on dying - the process exit(2) will free all the memory.
 If you need to free(3) the data structure, you will need to walk it
 using
 
-  void TPF_free_len_NS_EEE(struct zx_dec_ctx* c, struct TPF_NS_EEE_s* x, int free_strings);
-  void zx_free_any(struct zx_dec_ctx* c, struct zx_note_s* n, int free_strs);
+  void TPF_free_len_NS_EEE(struct zx_dec_ctx* c,
+                           struct TPF_NS_EEE_s* x,
+                           int free_strings);
+  void zx_free_any(struct zx_dec_ctx* c,
+                   struct zx_note_s* n,
+                   int free_strs);
 
 The zx_free_any() works by having a gigantic switch statement that calls
 the appropriate specific free function.
 
 You can deep clone the data structure with
 
-  void TPF_deep_clone_NS_EEE(struct zx_dec_ctx* c, struct TPF_NS_EEE_s* x, int dup_strings);
-  struct zx_note_s* zx_clone_any(struct zx_dec_ctx* c, struct zx_note_s* n, int dup_strs);
+  void TPF_deep_clone_NS_EEE(struct zx_dec_ctx* c,
+                             struct TPF_NS_EEE_s* x,
+                             int dup_strings);
+  struct zx_note_s* zx_clone_any(struct zx_dec_ctx* c,
+                                 struct zx_note_s* n,
+                                 int dup_strs);
 
 The zx_clone_any() works by having a gigantic switch statement that calls
 the appropriate specific free function.
 
-8.2 Decoder as Recursive Descent Parser
----------------------------------------
+10.2 Decoder as Recursive Descent Parser
+----------------------------------------
 
 The entry point to the decoder is
 
-  struct zx_root_s* zx_dec_root(struct zx_dec_ctx* c, int n);
+  struct zx_root_s* zx_DEC_root(struct zx_dec_ctx* c,
+                                struct zx_ns_s* dummy,
+                                int n_decode);
 
-The decoding context holds pointer to the raw data and must
-be initialized prior to calling the decoder. The second
-argument specifies how many recognized elements are decoded
-before returning. Usually you would specify 1 to consume
-one top level element from the stream.
+The decoding context holds pointer to the raw data and must be
+initialized prior to calling the decoder. The third argument specifies
+how many recognized elements are decoded before returning. Usually you
+would specify 1 to consume one top level element from the
+stream.<<footnote: The second argument, the dummy namespace, is
+meaningless for root node, but makes sense for element decoders. For
+root you can simply supply 0 (NULL).>>
 
-The returned datastructure, ~struct zx_root_s~, contains
+The returned data structure, ~struct zx_root_s~, contains
 one pointer for each type of top level element that can
 be recognized. The ~tok~ field of the returned value
 identifies the last top level element recognized and can
 be used to dispatch to correct request handler:
 
-  struct TPF_root_s* x = TPF_dec_root(c, 1);
+  zx_prepare_dec_ctx(c, TPF_ns_tab, start_ptr, end_ptr);
+  struct TPF_root_s* x = TPF_DEC_root(c, 0, 1);
   switch (x->gg.g.tok) {
   case TPF_NS_EEE_ELEM: return process_EEE_req(x->NN_EEE);
   }
@@ -784,23 +1285,44 @@ which type of response you are expecting, so you can simply
 check for NULLness of the respective pointer in the returned
 data structure.
 
-Internally zx_dec_root() works much the same way: it scans
+Internally zx_DEC_root() works much the same way: it scans
 a beginning of an element from the stream, looks up the token
 number corresponding to the element name, and switches on
 that, calling element specific decoder functions (see next
 section) to do the detailed processing.
 
-8.2.1 Element Decoders
-~~~~~~~~~~~~~~~~~~~~~~
+In the above code fragment, you should note the call to
+zx_prepare_dec_ctx() which initializes the decoder machinery.
+It takes +ns_tab+ argument, which specifies which namespaces
+will be recognized. This table MUST match the TPF_DEC_root()
+function you call (i.e. both must have been generated as
+part of the same xsd2sg.pl invocation). The other arguments
+are the start of the buffer to decode and pointer one past
+the end of the buffer to decode.
+
+10.2.1 Element Decoders
+~~~~~~~~~~~~~~~~~~~~~~~
 
 For each recognizable element there is a function of form
 
-  struct TPF_NS_EEE_s* zx_dec_NS_ELEM(struct zx_dec_ctx* c, int tok);
+  struct TPF_NS_EEE_s* zx_DEC_NS_EEE(struct zx_dec_ctx* c);
 
-This function works much the same way as ???
+where TPF is the prefix, NS is the namespace prefix, and
+EEE is the element name. For example:
 
-8.2.2 Decoder Extension Points
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  struct zx_se_Envelope_s* zx_DEC_se_Envelope(struct zx_ctx* c);
+
+These functions work much the same way as the root decoder. You
+should consult dec-templ.c for the skeleton of the decoder. Generally
+you should not be calling element specific decoders: they
+exist so that zx_DEC_root() can call them. They have somewhat
+nonintuitive requirtements, for example the opening <, the
+namespace prefix, and the element name must have already been
+scanned from the input stream by the time you call element
+specific decoder.
+
+10.2.2 Decoder Extension Points
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The generated code is instrumented with following macros
 
@@ -824,8 +1346,8 @@ EL_STRUCT:: Name of the struct that describes the element
 EL_NS:: Namespace prefix of the element (as seen in input schema)
 EL_TAG:: Name of the element without any namespace qualification.
 
-8.3 Exclusive Canonical Encoder
--------------------------------
+10.3 Exclusive Canonical Encoder
+--------------------------------
 
 The encoder receives a C data structure and generates a gigantic
 string containing an XML document corresponding to the data structure
@@ -838,75 +1360,278 @@ generation. Often these encoders share code for interior nodes.
 The encoders allow two pass rendering. You can first use the length
 computation method to calculate the amount of storage needed and
 then call one of the rendering functions to actually render. Or
-if you simply have large enough buffer, you can render directly.
+if you simply have large enough buffer, you can just render directly.
 
-8.3.1 Length computation
-~~~~~~~~~~~~~~~~~~~~~~~~
+The encoders take as argument next free position in buffer
+and return a char pointer one past the last byte used. Thus
+you can discover the length after rendering by subtracting the
+pointers. This is guaranteed to result same length as returned
+by the length computation method.<<footnote: This is a useful
+sanity check. If the two ever disagree, please report a bug.>>
+You can also call the next encoder with the return value
+of the previous encoder to render back-to-back elements.
+
+The XML namespace and XML attribute handling of the encoders
+is novel in that the specified sort is done already at code
+generation time, i.e. the renderers are already in the order
+that the sort mandates.
+
+For attributes we know the sort order directly from the schema
+because [xml-c14n], sec 2.2, p.7, specifies that they
+sort first by namespace URI and then by name, bot of which
+we know from the schema.
+
+For ~xmlns~ specifications the situation is similarily easy in the
+schema order encoder case because we know the namespace prefixes
+already at code generation time. However, for the wire order encoder
+we actually need a runtime sort because we can not control which
+namespace prefixes get used. However, for both cases we can make a
+pretty good guess about which namespaces might need to be declared at
+any given element: the element's own namespace and namespaces of each
+of its attribuites. That's all, and it's all known at code generation
+time. At runtime we only need to check if the namespace has already
+been seen at outer layer.
+
+10.3.1 Length computation
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Compute length of an element (and its subelements). The XML attributes
-and elements are processed in schema order, although this should
-not really matter as length in wire order should be the same.
+and elements are processed in schema order.
 
-  int TPF_enc_len_NS_EEE(struct zx_enc_ctx* c, struct TPF_NS_EEE_s* x);
+  int TPF_LEN_SO_NS_EEE(struct zx_ctx* c,
+                        struct TPF_NS_EEE_s* x);
 
-8.3.2 Encoding in schema order
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For example:
 
-Render element into string. The XML attributes and elements are
-processed in schema order. This is what you generally want for
-rendering new data structure to a string. The wo pointers are not
-used.
+  int zx_LEN_SO_se_Envelope(struct zx_ctx* c,
+                            struct zx_se_Envelope_s* x);
 
-  char* TPF_enc_so_NS_EEE(struct zx_enc_ctx* c, struct TPF_NS_EEE_s* x, char* p);
+Compute length of an element (and its subelements). The XML namespaces
+and elements are processed in wire order.
 
-8.3.3 Encoding in wire order
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  int TPF_LEN_WO_NS_EEE(struct zx_ctx* c,
+                        struct TPF_NS_EEE_s* x);
 
-Render element into string. The XML attributes and elements are
+For example:
+
+  int zx_LEN_WO_se_Envelope(struct zx_ctx* c,
+                            struct zx_se_Envelope_s* x);
+
+10.3.2 Encoding in schema order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Render an element into string. The XML elements are processed in
+schema order. The xmlns declarations and XML attributes are always
+sorted per [xml-exc-c14n] rules.<<footnote: The sort is actually done
+already at code generation time by xsd2sg.pl.>> This is what you
+generally want for rendering new data structure to a string. The wo
+pointers are not used.
+
+  char* TPF_ENC_SO_NS_EEE(struct zx_ctx* c,
+                          struct TPF_NS_EEE_s* x,
+                          char* p);
+
+For example:
+
+  char* zx_ENC_SO_se_Envelope(struct zx_ctx* c,
+                              struct zx_se_Envelope_s* x,
+                              char* p);
+
+Since it is a very common requirement to allocate correct
+sized buffer and then render an element, a helper function
+is provided to do this in one step.
+
+  struct zx_str_s* zx_EASY_ENC_SO_se_Envelope(struct zx_ctx* c,
+                                    struct zx_se_Envelope_s* x);
+
+The returned string is allocated from allocation arena described
+by ~zx_ctx~.
+
+10.3.3 Encoding in wire order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Render element into string. The XML elements are
 processed in wire order by chasing wo pointers. This is what you want
-for validating signatures on other people's XML documents.
+for validating signatures on other people's XML documents. If the wire
+representation was schema invalid, e.g. elements were in wrong order,
+the wire representation is still respected, except for xmlns
+declarations and XML attributes, which are always sorted, per exc-c14n
+rules. For each element a function is generated as follows
 
-  char* TPF_enc_wo_NS_EEE(struct zx_enc_ctx* c, struct TPF_NS_EEE_s* x, char* p);
+  char* TPF_ENC_WO_NS_EEE(struct zx_ctx* c,
+                          struct TPF_NS_EEE_s* x,
+                          char* p);
 
-8.4 Data Accessor Functions
----------------------------
+For example
+
+  char* zx_ENC_WO_se_Envelope(struct zx_ctx* c,
+                              struct zx_se_Envelope_s* x,
+                              char* p);
+
+A helper function is also available
+
+  struct zx_str_s* zx_EASY_ENC_WO_se_Envelope(struct zx_ctx* c,
+                                    struct zx_se_Envelope_s* x);
+
+10.4 Signatures (XMLDSIG)
+-------------------------
+
+10.4.1 Signature Generation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *** TBW
 
-8.5 Memory Allocation and Free
-------------------------------
+10.4.2 Signature Validation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For signature validation you need to walk the decoded data structure
+to locate the signature as well as the references and pass them to
+zxsig_validate(). The validation involves wire order exclusive
+canonical encoding of the referenced XML blobs, computation of SHA1 or
+MD5 checksums over them, and finally computation of SHA1 check sum
+over the <SignedInfo> element and validation of the actual
+<SignatureValue> against that. The validation involves public key
+decryption using the signer's certificate.
+
+A nasty problem in exclusive canonicalization is that the namespaces
+that are needed in the blob may actually appear in the containing XML
+structures, thus in order to know the correct meaning of a namespace
+prefix, we need to perform the +seen+ computation for all elements
+outside and above the blob of interest.<<footnote: This is yet another
+indication of how botched the XML namespace concept is. Or this could
+have been fixed in the exclusive canonicalization spec by not using
+namespace prefixes at all.>>
+
+To verify signature, you have to do certain amount of preparatory work
+to locate the signature and the data that was signed. Generally what
+should be signed will be evident from protocol specifications or from
+the security requirements of your application environment. Conversely,
+if there is a signature, but it does not reference the appropriate
+elements, its worthless and you might as well reject the document
+without even verifying the signature.
+
+*Example*
+
+    struct zxsig_ref refs[1];
+    cf = zxid_new_conf("/var/zxid/");
+    ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4.");
+    
+    refs[0].ref = r->Envelope->Body->ArtifactResolve
+                   ->Signature->SignedInfo->Reference;
+    refs[0].blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResolve;
+    res = zxsig_validate(cf->ctx, ent->sign_cert,
+			 r->Envelope->Body->ArtifactResolve->Signature,
+			 1, refs);
+    if (res == ZXSIG_OK) {
+      D("sig vfy ok %d", res);
+    } else {
+      ERR("sig vfy failed due to(%d)", res);
+    }
+
+This code illustrates
+
+1. You have to determine who signed and provide the entity
+   object that corresponds to the signer. Often you
+   would determine the entity from <Issuer> element somewhere
+   inside the message.
+
+   The entity is used for retrieving the signing certificate.
+   Another alternative is that the signature itself contains
+   a <KeyInfo> element and you extract the certificate from
+   there. You would still need to have a way to know if you
+   trust the certificate.
+
+2. You have to prepare the refs array. It contains pairs of
+   <SignedInfo><Reference> specifications combined with the
+   actual elements that are signed. Generally the URI
+   XML attribute of the <Reference> element points to the
+   data that was signed. However, it is application dependent
+   what type of ID XML attribute the URI actually references
+   or the URI could even reference something outside the
+   document. It would be way too unreliable for the
+   zxsig_validate() to attempt guessing how to locate the
+   signed data: therefore we push the responsibility to
+   you. Your code will have to walk the data to locate
+   all referenced bits and pieces.
+
+   In the above example, locating the one signed bit was
+   very easy: the specification says where it is (and this
+   location is fixed so there really is no need to check
+   the URI either).
+
+   You pass the length of the refs array and the array
+   itself as two last arguments to zxsig_validate().
+
+3. You need to locate the <Signature> element in the document
+   and pass it as argument to zxsig_validate(). Usually
+   a protocol specification will say where the <Signature>
+   element is to be found, so locating it is not difficult.
+
+4. The return value will indicate validation status. ZXSIG_OK,
+   which has numerical value of 0, indicates success. Other
+   nonzero values indicate various kinds of failure.
+
+10.4.3 Certificate Validation and Trust Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Trust models for TLS and signature validation are separate.
+
+In signature validation the primary trust mechanism is that entity's
+metadata specifies the signing certificate and there is no
+Certification Authority check at all.<<footnote: If you develop CA
+check, please submit pathces to ZXID project.>>
+This model works well if you control the admission
+to your CoT. However, ZXID ships by default with the
+automatic CoT feature turned on, thus anyone can get
+added to the CoT and therefore signature with any
+certificate they declare is "valid". This hardly
+is acceptable for anything involving money.
+
+10.5 Data Accessor Functions
+----------------------------
+
+Simple read access to data should, in C, be done by
+simply referencing the fields of the struct, e.g.
+
+  if (!r->EntitiesDescriptor->EntityDescriptor)
+      goto bad_md;
 
 *** TBW
 
-8.6 Walking the data structure
-------------------------------
+10.6 Memory Allocation and Free
+-------------------------------
 
 *** TBW
 
-8.9 Thread Safety
------------------
+10.7 Walking the data structure
+-------------------------------
+
+*** TBW
+
+10.9 Thread Safety
+------------------
 
 All generated libraries are designed to be thread safe, provided
 that the underlying libc APIs, such as malloc(3) are thread safe.
 
-9 Creating New Interfaces Using ZXID Methodology
-================================================
+11 Creating New Interfaces Using ZXID Methodology
+=================================================
 
 The ZXID code generation methodology can be used to create
-integraces to any XML document or protocol that can be
-described as Schema Grammar (which includes any document
+interfaces to any XML document or protocol that can be
+described as a Schema Grammar (which includes any document
 that can be expressed as XML Schema - XSD). The general
 steps are
 
-1. Convert .xsd file to .sg or write the .sg directly. For conversion
+1. Convert .xsd file to .sg, or write the .sg directly. For conversion,
    you would typically use a command like
 
-     ~/pd/xsd2sg.pl <foo.xsd >bar.xsd
+     ~/pd/xsd2sg.pl <foo.xsd >foo.sg
 
 2. Tweak and rationalize the resulting .sg file. In ideal world
    any construct expressible as .xsd should be nicely representable,
-   but in practise some work better than others so you can create
-   much nicer interface if you invest in some manual tweaking.
+   but in practise some work better than others, thus you can create
+   a much nicer interface if you invest in some manual tweaking.
 
    Note that the tweaked .sg still is able to represent the
    same document as the original .xsd described, though
@@ -914,7 +1639,7 @@ steps are
 
    Most common tweaks
 
-   a. If xsd is written so that the targetted namespace is
+   a. If the .xsd is written so that the targetted namespace is
       also the default namespace, you should introduce
       a namespace prefix because this is needed during
       code generation to keep different C identifiers
@@ -924,9 +1649,9 @@ steps are
 
    b. Where the choice construct is used, indicated
       by pipey symbol (|) in the .sg file, you
-      should refactor these into sequences
+      should refactor these into sequences of
       zero-or-one occurance (?) instances of the alternatives
-      of the choice. This is needed because for foreseeable
+      of the choice. This is needed because for the foreseeable
       future xsd2sg.pl has a limitation in code generation
       feature. If the choice has maxOccurs="unbounded"
       you should use (*) instead.
@@ -942,22 +1667,23 @@ steps are
    be visible at top level.
 
    If your schema is meant to extend leafs or interior nodes of
-   the parse tree you would edit the SOAP schema to accept your
-   new protocol elements in the body. Or that the generic SOAP
+   the parse tree, such as SOAP Body, you would edit
+   the SOAP schema to accept your
+   new protocol elements in the Body. Or that the generic SOAP
    header can accept your specific header schemata, or that
    the SAML attribute definitions accept your kind of
-   attributes. Whatever makes sense in your context.
+   attributes - whatever makes sense in your context.
 
    Alternative to this is to create an entirely new
    monolothic encoder decoder, i.e. instead of extending
    the existing ZXID project to accommodate your new
    protocol, you just start a new project that uses the
    same methodology. You should see how the SAML protocol
-   part is separated from the SAML metadata parsing in
-   the existing project.
+   part is separated from the SAML metadata parsing and
+   from the WSF parsing in the existing project.
 
-8 ZXID Project
-==============
+12 ZXID Project
+===============
 
 Immediate goal: build a SAML 2.0 SP and ID-WSF 1.1 WSC
 
@@ -982,8 +1708,8 @@ Goals of ZXID project include
   - ID-DAP WSC
   - ID-DAP WSP
 
-8.1 Project Layout
-------------------
+12.1 Project Layout
+-------------------
 
 Following directory layout is used by the project. Many of the specified
 directories are used by intermediate outputs that are not distributed
@@ -1001,8 +1727,14 @@ in tarball releases, but may or may no be present in CVS checkouts.
    +-- t      Test scripts and expected test outputs
    `-- tmp    Temporary files, such as actual test outputs
 
-8.2 Protocol Encoders and Decoders
-----------------------------------
+The Manifest file, that follows, explains each file in more detail.
+
+<<logoutput:
+<<Manifest>>
+>>
+
+12.2 Protocol Encoders and Decoders
+-----------------------------------
 
 The protocol encoders and decoders are generated automatically from
 the schema grammar (.sg) descriptions. This ensures accurate protocol
@@ -1019,10 +1751,10 @@ There are three outputs from generation
 2. Encoder that linearizes the data structure to wire protocol (xx-enc.c)
 3. Decoder that converts wire protocol byte stream to a data structure (xx-dec.c)
 
-8.3 Standards and Namespaces
-----------------------------
+12.3 Standards and Namespaces
+-----------------------------
 
-ZXID uses consistently same namespace prefixes throughout the project. The
+ZXID uses consistently the same namespace prefixes throughout the project. The
 generated encoders and decoders support following schemas
 
 <<table: Namespaces
@@ -1063,8 +1795,8 @@ WS Security Utility 1.0
 xs     http://www.w3.org/2001/XMLSchema            Namespace only, no code
 >>
 
-9 Code Generation Tools
-=======================
+13 Code Generation Tools
+========================
 
 Main work horse of code generation is xsd2sg.pl, which serves multiple
 purposes
@@ -1110,8 +1842,8 @@ To generate SAML 2.0 Metadata engine you would issue
 
 <<ignore: ~/plaindoc/xsd2sg.pl -d -gen saml2md -p zx_ -r md:EntityDescriptor -r md:EntitiesDescriptor -S sg/saml-schema-assertion-2.0.sg sg/saml-schema-metadata-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg >/dev/null >>
 
-9.1 Special Support for Specific Programming Languages
-------------------------------------------------------
+13.1 Special Support for Specific Programming Languages
+-------------------------------------------------------
 
 While C code generation is the main output, and this can always be
 converted to other languages using SWIG, sometimes a more natural
@@ -1121,7 +1853,7 @@ We plan to enhance the code generation to do something like this. At
 least direct hash-of-hashes-of-arrays-of-hashes type datastructure
 generation for benefit of some scripting languages is planned.
 
-10 ZXID SP
+14 ZXID SP
 ==========
 
 *** warning: not checked lately, may be wrong!
@@ -1140,12 +1872,30 @@ URL          Description
 
 *** add description of CGI fields
 
-10 Certificates
+15 Certificates
 ===============
 
-TBD
+*** TBD - This chapter should be elaborated to be a certificate tutorial with
+following contents:
 
-11 License
+* Intro to certs and private keys
+* Generating self signed cert
+* Generating certificate signing request and using it to obtain
+  commercially issued cert
+* Installing root certs so you can recognize other people's certs
+* Client TLS considerations
+
+For the time being, the short answer is that ZXID uses OpenSSL and
+PEM format certificates. You can use same techniques as you would use for
+Apache / mod_ssl for acquiring certificates.
+
+You should NEVER password protect your private key. There will not
+be any opportunity to supply the password. You should insted protect
+your private key using Unix filesystem permissions. See OpenSSL.org
+or modssl.org FAQs for further information, including how to remove
+a password if you accidentally enabled it.
+
+16 License
 ==========
 
 Copyright (c) 2006 Sampo Kellomäki (sampo@iki.fi), All Rights Reserved.
@@ -1170,12 +1920,63 @@ And remember, you, and nobody else but you, are responsible for
 auditing ZXID and OpenSSL library for security problems,
 backdoors, and general suitability for your application.
 
-12 FAQ
+17 FAQ
 ======
 
 *** real user FAQs are still lacking. Maybe this stuff is perfect?
 
-12.6 Mysterious Error Messages
+17.4 Vendor products
+--------------------
+
+17.4.1 Symlabs Federated Identity Access Manager (FIAM)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Metadata import to IdP?
+
+What I usually do is
+
+  cd /opt/SYMfiam/3.0.x/conf/symdemo-idpa
+  echo 'sp: zxid-sp1$https://sp1.zxidsp.org:8443/zxid?o=B$$' >>cot.ldif
+
+Double check with text editor that the file is sensible.
+Note that the single quotes are essential as the dollars
+are to be interpretted literally, as separators.
+
+  cd pem
+  wget https://sp1.zxidsp.org:8443/zxid?o=B >zxid-sp1.xml
+
+Here the intent is to fetch the metadata from the SP and
+store it in a file whose name (without .xml extension)
+matches the first component of the sp: line. I am not
+100% on the wget syntax. You can also use browser
+to fetch the metadata and simply Save as under the
+correct name.
+
+  cd /opt/SYMfiam/3.0.x/conf/symdemo-idpa/start.sh restart
+
+This should restart the IdP server process and cause a
+refresh of the metadata it may have cached. You may
+want to
+
+  tail -f /opt/SYMfiam/3.0.x/conf/symdemo-idpa/log/debug.log
+
+to see if its getting indigestion.
+
+17.5 Known Bugs
+---------------
+
+Following are known limitations. We document them here
+because we do not plan to fix them in foreseeable future.
+
+1. Unknown XML attributes are not sorted according to rules
+   of exc-c14n. Instead they appear always +after+ known
+   XML attributes and in the order they happen to be
+   in the linked list.
+
+   *Work around:* Add the attribute to schema (.sg) and
+   regenerate and rebuild.
+
+17.6 Mysterious Error Messages
 ------------------------------
 
 "Random number generator not seeded!!!"
@@ -1189,7 +1990,7 @@ Generator). Both are available on the net.
 
 "msg 123: 1 - error:140770F8:SSL routines:SSL23_GET_SERVER_HELLO:unknown proto"
 
-SSLeay error string. First (123) number is PID, second number (1) indicates
+SSLeay error string. First number (123) is PID, second number (1) indicates
 the position of the error message in SSLeay error stack. You often see
 a pile of these messages as errors cascade.
 
@@ -1208,7 +2009,7 @@ you have to supply the password or you have to use unencrypted
 private key. Scan OpenSSL.org for the FAQ that explains how to
 do this.
 
-12.7 Author's Pet Peeves
+17.7 Author's Pet Peeves
 ------------------------
 
 1. What is Schema Grammar (.sg) and why are you using it?
@@ -1269,10 +2070,10 @@ do this.
    * If the deterministic and predictable results are wrong, they can
      at least be debugged and fixed with a finite amount of work.
    * Supporting all relevant systems manually is not that much of work. The
-     inhabitants of the orrelevant systems can support themselves, probably
+     inhabitants of the irrelevant systems can support themselves, probably
      learning a great deal on the side.
 
-12.8 What does ZXID aim at - an answer
+17.8 What does ZXID aim at - an answer
 --------------------------------------
 
 A recent conversation that touched on the aims of ZXID project:
@@ -1334,7 +2135,7 @@ In SSO world SAML 1.1 and ID-FF 1.2 capabilities are definitely on
 the road map. In ID-WSF world, I'll probably start with 2.0 DS-WSC
 (don't we all) followed by ID-DAP WSC and then tackle 1.1 after that.
 
-12.9 Annoyances and improvement ideas
+17.9 Annoyances and improvement ideas
 -------------------------------------
 
 There is a lot of commonality that is not leveraged, especially in the
@@ -1384,13 +2185,20 @@ access just to get latest source would be pointless.
 98.9 Commercial Support
 -----------------------
 
-Following companies provice consultancy and support contracts for
+Following companies provide consultancy and support contracts for
 ZXID:
 
 * symlabs.com
 
 99 Appendix: Schema Grammars
 ============================
+
+Large parts of ZXID code are generated from +schema grammars+ which
+are a convenient notation for describing XML schmata. This appendix
+contains the schema grammars that are currently implemented and
+distributed in the ZXID package.
+
+<<tex: \small>>
 
 99.1 SAML 2.0
 -------------
@@ -1409,8 +2217,8 @@ ZXID:
 <<sg/saml-schema-protocol-2.0.sg>>
 >>
 
-99.1.4 saml-schema-metadata-2.0 (m)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+99.1.4 saml-schema-metadata-2.0 (md)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 <<schema:
 <<sg/saml-schema-metadata-2.0.sg>>
@@ -1443,8 +2251,8 @@ ZXID:
 <<sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg>>
 >>
 
-99.3.2 liberty-metadata-v2.0.sg (m20)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+99.3.2 liberty-metadata-v2.0 (m20)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 <<schema:
 <<sg/liberty-metadata-v2.0.sg>>
@@ -1595,6 +2403,48 @@ ZXID:
 <<sg/wss-util-1.0.sg>>
 >>
 
-<<htmlpreamble: <title>ZXID Home</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>README ZXID</h1> >>
+<<references:
+
+[SAMLCore11] SAML 1.1 Core
+
+[SAMLCore2] SAML 2.0 Core
+
+[xml-c14n] XML Canonicalization (non-exclusive), http://www.w3.org/TR/2001/REC-xml-c14n-20010315
+
+[xml-exc-c14n] Exclusive XML Canonicalization, http://www.w3.org/TR/xml-exc-c14n/
+
+[Disco2] Liberty ID-WSF Discovery service 2.0
+
+[Disco12] Liberty ID-WSF Discovery service 1.1 (liberty-idwsf-disco-svc-v1.2.pdf)
+
+[SecMech2] Liberty ID-WSF 2.0 Security Mechanisms
+
+[SOAPAuthn2] Liberty ID-WSF 2.0 Authentication Service
+
+[SOAPBinding2] Liberty ID-WSF 2.0 framework document that pulls together all aspects
+
+[DST21] Liberty Data Services Template 2.1
+
+[DST20] Liberty DST v2.0
+
+[DST11] Liberty DST v1.1
+
+[IDDAP] Liberty Identity based Directory Access Protocol
+
+[IDPP] Liberty Personal Profile specification.
+
+[Interact11] Liberty ID-WSF Interaction Service protocol 1.1
+
+[FF12] Liberty ID Federation Framework 1.2, Protocols and Schemas
+
+[SUBS2] Liberty Subscriptions and Notifications specification
+
+[Schema1-2] Henry S. Thompson et al. (eds): XML Schema Part 1: Structures, 2nd Ed., WSC Recommendation, 28. Oct. 2004, http://www.w3.org/2002/XMLSchema
+
+[XML] http://www.w3.org/TR/REC-xml
+
+>>
+
+<<htmlpreamble: <title>README ZXID</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>README ZXID</h1> >>
 
 <<EOF: >>

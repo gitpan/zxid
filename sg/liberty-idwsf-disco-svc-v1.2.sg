@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-disco-svc-v1.2.sg
 # Slightly edited, 14.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-disco-svc-v1.2.sg,v 1.1 2006/09/15 04:44:47 sampo Exp $
+# $Id: liberty-idwsf-disco-svc-v1.2.sg,v 1.2 2006/10/15 00:27:55 sampo Exp $
 
 target(di12, urn:liberty:disco:2003-08)
 import(xenc, http://www.w3.org/2001/04/xmlenc#, http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd)
@@ -22,7 +22,8 @@ ResourceID -> %di12:ResourceIDType
 EncryptedResourceID -> %di12:EncryptedResourceIDType
 
 &ResourceIDGroup: 
-  di12:ResourceID | di12:EncryptedResourceID
+  di12:ResourceID?
+  di12:EncryptedResourceID?
   ;
 
 %DescriptionType:

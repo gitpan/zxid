@@ -1,5 +1,5 @@
 # File : zxid/Raw/Makefile.PL
-# $Id: Makefile.PL,v 1.1 2006/09/14 23:18:48 sampo Exp $
+# $Id: Makefile.PL,v 1.2 2006/09/18 06:35:23 sampo Exp $
 use ExtUtils::MakeMaker;
 WriteMakefile(
   NAME    => "Net::SAML::Raw",

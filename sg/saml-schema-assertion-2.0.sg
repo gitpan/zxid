@@ -1,13 +1,16 @@
 # zxid/sg/saml-schema-assertion-2.0.sg
-# $Id: saml-schema-assertion-2.0.sg,v 1.2 2006/05/30 21:31:40 sampo Exp $
+# $Id: saml-schema-assertion-2.0.sg,v 1.3 2006/10/15 00:27:55 sampo Exp $
 #
 # N.B. This file is not a direct conversion. Instead it has been manually edited to
 # make it simpler and to facilitate code generation.
+# 15.10.2006, extended AttributeValue schema to cater for bootstrap, Sampo Kellomaki (sampo@iki.fi)
 
 target(sa, urn:oasis:names:tc:SAML:2.0:assertion)
 ns(xs,http://www.w3.org/2001/XMLSchema)
 import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)
 import(xenc,http://www.w3.org/2001/04/xmlenc#,http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd)
+ns(di12, urn:liberty:disco:2003-08)
+ns(a,    http://www.w3.org/2005/08/addressing)
 
 &@IDNameQualifiers: 
   @NameQualifier?	 -> %xs:string
@@ -191,7 +194,15 @@ Attribute	 -> %sa:AttributeType
   @any
   ;
 
-AttributeValue	   -> %xs:anyType
+# To cater for discovery bootstraps we add them to schema here
+#AttributeValue	   -> %xs:anyType
+
+AttributeValue -> %sa:AttributeValueType
+%AttributeValueType:
+  di12:ResourceOffering*
+  a:EndpointReference*
+  ;
+
 EncryptedAttribute -> %sa:EncryptedElementType
 
 TestElem:

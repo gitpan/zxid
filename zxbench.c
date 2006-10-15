@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxbench.c,v 1.5 2006/08/14 01:01:03 sampo Exp $
+ * $Id: zxbench.c,v 1.13 2006/10/15 00:27:26 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  *
@@ -21,16 +21,15 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <openssl/x509.h>
 
 #include "errmac.h"
 
 #include "zx.h"
-#include "c/saml2-data.h"
-#include "c/saml2md-data.h"
-#include "c/saml2-const.h"
-#include "c/saml2md-const.h"
-#include "c/saml2-ns.h"
-#include "c/saml2md-ns.h"
+#include "zxid.h"
+#include "c/zx-data.h"
+#include "c/zx-const.h"
+#include "c/zx-ns.h"
 
 int read_all_fd(int fd, char* p, int want, int* got_all);
 int write_all_fd(int fd, char* p, int pending);
@@ -260,10 +259,15 @@ int main(int argc, char** argv, char** env)
 {
   struct zx_ctx ctx;
   struct zx_root_s* r;
-  int got_all, len;
+  struct zxsig_ref refs;
+  struct zxid_entity* ent;
+  struct zxid_conf* cf;
+  int got_all, len_so, len_wo, res;
   char buf[32*1024];
   char out[32*1024];
   char* p;
+  char wo_out[32*1024];
+  char* wo_p;
   opt(&argc, &argv, &env);
 
   /*if (stats_prefix) init_cmdline(argc, argv, env, stats_prefix);*/
@@ -289,7 +293,7 @@ int main(int argc, char** argv, char** env)
   if (drop_gid) if (setgid(drop_gid)) { perror("setgid"); exit(1); }
   if (drop_uid) if (setuid(drop_uid)) { perror("setuid"); exit(1); }
   
-  len = read_all_fd(0, buf, sizeof(buf)-1, &got_all);
+  len_so = read_all_fd(0, buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
   
@@ -297,28 +301,54 @@ int main(int argc, char** argv, char** env)
   
   for (;n_iter; --n_iter) {
     memset(&ctx, 0, sizeof(ctx));
-    ctx.ns_tab = zx_ns_tab;
-    ctx.base = ctx.p = buf;
-    ctx.lim = buf + got_all;
-    r = zx_dec_root(&ctx, 0);
+    zx_prepare_dec_ctx(&ctx, zx_ns_tab, buf, buf + got_all);
+    r = zx_DEC_root(&ctx, 0, 1000);
     if (!r) DIE("Decode failure");
+    
+    cf = zxid_new_conf("/var/zxid/");
+    ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4." /* cxp06 */);
+    
+    refs.ref = r->Envelope->Body->ArtifactResolve->Signature->SignedInfo->Reference;
+    refs.blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResolve;
+    res = zxsig_validate(&ctx, ent->sign_cert,
+			 r->Envelope->Body->ArtifactResolve->Signature,
+			 1, &refs);
+    if (res == ZXSIG_OK) {
+      D("sig vfy ok %d", res);
+    } else {
+      ERR("sig vfy failed due to(%d)", res);
+    }
 
-#if 1
-    len = zx_len_root(&ctx, r);
-    D("Enc len %d chars", got_all);
+    len_so = zx_LEN_SO_root(&ctx, r);
+    D("Enc so len %d chars", len_so);
 
-    p = zx_enc_so_root(&ctx, r, out);
+    p = zx_ENC_SO_root(&ctx, r, out);
     if (!p)
       DIE("encoding error");
-#endif
-    zx_free_root(&ctx, r, 0);
+
+    len_wo = zx_LEN_WO_root(&ctx, r);
+    D("Enc wo len %d chars", len_wo);
+
+    wo_p = zx_ENC_WO_root(&ctx, r, wo_out);
+    if (!wo_p)
+      DIE("encoding error");
+
+    zx_FREE_root(&ctx, r, 0);
   }
-  printf("Re-encoded result:\n%.*s\n", len, out);
-  if (p - out != len)
-    DIE("encode length mismatch");
+  printf("Re-encoded result SO:\n%.*s\n", len_so, out);
+  if (p - out != len_so)
+    D("encode length mismatch %d vs. %d (len)", p - out, len_so);
+
+  printf("Re-encoded result WO:\n%.*s\n", len_wo, wo_out);
+  if (wo_p - wo_out != len_wo)
+    D("encode length mismatch %d vs %d (len)", wo_p - wo_out, len_wo);
+
+  if (memcmp(out, wo_out, MIN(len_so, len_wo)))
+    printf("SO and WO differ.\n");
+  
   return 0;
 }
 
 char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately provoking a core dump.\nSorry for the inconvenience.\n";
 
-/* EOF  --  zxid.c */
+/* EOF  --  zxbench.c */

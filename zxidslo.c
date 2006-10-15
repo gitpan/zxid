@@ -3,7 +3,7 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidslo.c,v 1.3 2006/09/05 05:09:37 sampo Exp $
+ * $Id: zxidslo.c,v 1.7 2006/10/15 00:27:26 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  */
@@ -12,12 +12,9 @@
 #include "zxid.h"
 #include "zxidconf.h"
 #include "saml2.h"
-#include "c/saml2-const.h"
-#include "c/saml2-ns.h"
-#include "c/saml2-data.h"
-#include "c/saml2md-const.h"
-#include "c/saml2md-ns.h"
-#include "c/saml2md-data.h"
+#include "c/zx-const.h"
+#include "c/zx-ns.h"
+#include "c/zx-data.h"
 
 /* ============== Single Logout ============== */
 
@@ -36,9 +33,9 @@ struct zx_se_Body_s* body = zx_NEW_se_Body(cf->ctx);
 int zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
   struct zx_sp_LogoutRequest_s* r;
-  struct zx_str_s* rs;
-  struct zx_str_s* rse;
-  struct zx_str_s* loc = zxid_idp_loc(cf, cgi, ses, ZXID_SLO_SVC, SAML2_REDIR);
+  struct zx_str* rs;
+  struct zx_str* rse;
+  struct zx_str* loc = zxid_idp_loc(cf, cgi, ses, ZXID_SLO_SVC, SAML2_REDIR);
   r = zxid_mk_logout(cf, ses->a7n->Subject->NameID,
 		     ses->a7n->AuthnStatement->SessionIndex);
   rs = zx_EASY_ENC_SO_sp_LogoutRequest(cf->ctx, r);
@@ -48,7 +45,7 @@ int zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
 
 /* ============== NID Mgmt / Defederation ============== */
 
-int zxid_sp_nireg_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str_s* new_nym)
+int zxid_sp_nireg_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
 {
   struct zx_root_s* r;
   struct zx_se_Body_s* body = zx_NEW_se_Body(cf->ctx);
@@ -60,11 +57,11 @@ int zxid_sp_nireg_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
   return 1;
 }
 
-int zxid_sp_nireg_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str_s* new_nym)
+int zxid_sp_nireg_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
 {
   struct zx_sp_ManageNameIDRequest_s* r;
-  struct zx_str_s* rs;
-  struct zx_str_s* loc = zxid_idp_loc(cf, cgi, ses, ZXID_NIREG_SVC, SAML2_REDIR);
+  struct zx_str* rs;
+  struct zx_str* loc = zxid_idp_loc(cf, cgi, ses, ZXID_NIREG_SVC, SAML2_REDIR);
   r = zxid_mk_nireg(cf, ses->a7n->Subject->NameID, new_nym);
   rs = zx_EASY_ENC_SO_sp_ManageNameIDRequest(cf->ctx, r);
   D("NIReq(%.*s)", rs->len, rs->s);
@@ -75,8 +72,8 @@ int zxid_sp_nireg_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_
 
 int zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, char* msg)
 {
-  struct zx_str_s* loc;
-  struct zx_str_s* ss;
+  struct zx_str* loc;
+  struct zx_str* ss;
   struct zx_root_s* r;
   int len;
   char* p;
@@ -84,6 +81,7 @@ int zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
     ERR("Empty msg?! %d", 0);
     return 0;
   }
+  D("msg(%s)", msg);
   len = strlen(msg);
   p = unbase64_raw(msg, msg + len, msg, zx_std_index_64);
   *p = 0;
@@ -94,10 +92,8 @@ int zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   } else
     p = zx_zlib_raw_inflate(cf->ctx, p-msg, msg, &len);  /* Redir uses compressed payload. */
 
-  cf->ctx->ns_tab = zx_ns_tab;
-  cf->ctx->base = cf->ctx->p = p;
-  cf->ctx->lim = p + len;
-  r = zx_DEC_root(cf->ctx);
+  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, p, p + len);
+  r = zx_DEC_root(cf->ctx, 0, 1);
   if (!r) {
     ERR("Failed to parse redir buf(%.*s)", len, p);
     return 0;
@@ -183,10 +179,8 @@ int zxid_sp_soap_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxi
 int zxid_sp_soap_parse(struct zxid_conf* cf, int len, char* buf)
 {
   struct zx_root_s* r;
-  cf->ctx->ns_tab = zx_ns_tab;
-  cf->ctx->base = cf->ctx->p = buf;
-  cf->ctx->lim = buf + len;
-  r = zx_DEC_root(cf->ctx);
+  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + len);
+  r = zx_DEC_root(cf->ctx, 0, 1);
   if (!r || !r->Envelope || !r->Envelope->Body) {
     ERR("Failed to parse SOAP request buf(%.*s)", len, buf);
     return 0;

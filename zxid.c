@@ -3,11 +3,12 @@
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxid.c,v 1.17 2006/09/05 05:09:37 sampo Exp $
+ * $Id: zxid.c,v 1.20 2006/10/15 00:27:26 sampo Exp $
  *
  * 15.4.2006, started work over Easter holiday --Sampo
  * 22.4.2006, added more options over the weekend --Sampo
  * 28.5.2006, adopted structure from s5066d --Sampo
+ * 30.9.2006, added signature verification --Sampo
  *
  * This file contains option processing, configuration, and main().
  *
@@ -35,6 +36,7 @@
 #include "zx.h"
 #include "zxid.h"
 #include "zxidconf.h"
+#include "c/zx-ns.h"
 
 CU8* help =
 "zxid  -  SAML 2.0 SP CGI - R" REL "\n\
@@ -245,6 +247,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       switch ((*argv)[0][2]) {
       case 'e':
 	if (!strcmp((*argv)[0],"-meta")) {
+	  cf->ctx->ns_tab = zx_ns_tab;
 	  zxid_send_sp_meta(cf, cgi);
 	  exit(0);
 	}
@@ -259,6 +262,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
 	  struct zxid_entity* ent;
 	  ++(*argv); --(*argc);
 	  if (!(*argc)) break;
+	  cf->ctx->ns_tab = zx_ns_tab;
 	  ent = zxid_get_meta(cf, (*argv)[0]);
 	  if (ent)
 	    zxid_write_ent_to_cache(cf, ent);
@@ -284,6 +288,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
 
 int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
+  D("op(%c)", cgi->op);
   switch (cgi->op) {
   case 'l':
     zxid_del_ses(cf, ses);
@@ -361,7 +366,7 @@ int main(int argc, char** argv, char** env)
   int got;
   char* qs;
   char* cont_len;
-  struct zx_str_s* ss;
+  struct zx_str* ss;
   struct zxid_entity* idp;
   
 #if 1
@@ -507,7 +512,7 @@ int main(int argc, char** argv, char** env)
   //printf("<input name=login value=\" Login \" type=submit>");
 
   printf("<h3>Login Using New IdP</h3>\n");
-  printf("<i>A new IdP is one whose metadata we do not have yet. We need to know the Entity ID in oredr to fetch the metadata using the well known location method. You will need to ask the adiminstrator of the IdP to tell you what the EntityID is.</i>\n");
+  printf("<i>A new IdP is one whose metadata we do not have yet. We need to know the Entity ID in oredr to fetch the metadata using the well known location method. You will need to ask the adminstrator of the IdP to tell you what the EntityID is.</i>\n");
   printf("<p>IdP EntityID URL <input name=e size=100>");
   printf("<input type=submit name=l1 value=\" Login (SAML20:Artifact) \">\n");
   printf("<input type=submit name=l2 value=\" Login (SAML20:POST) \"><br>\n");
@@ -517,6 +522,8 @@ int main(int argc, char** argv, char** env)
   if (idp) {
     printf("<h3>Login Using Known IdP</h3>\n");
     for (; idp; idp = idp->n) {
+      if (!idp->ed->IDPSSODescriptor)
+	continue;
       printf("<input type=submit name=\"l1%.*s\" value=\" Login to %.*s (SAML20:Artifact) \">\n",
 	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
       printf("<input type=submit name=\"l2%.*s\" value=\" Login to %.*s (SAML20:POST) \">\n",
