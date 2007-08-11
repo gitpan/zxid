@@ -7,16 +7,19 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** dec-templ.c  -  XML decoder template, used in code generation
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: dec-templ.c,v 1.19 2006/09/30 06:24:49 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: dec-templ.c,v 1.23 2007-06-21 23:32:32 sampo Exp $
  **
  ** 28.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 12.8.2006, added special scanning of xmlns to avoid backtracking elem recognition --Sampo
  ** 23.9.2006, added collection of WO information --Sampo
+ ** 21.6.2007, improved handling of undeclared namespace prefixes --Sampo
  **
  ** N.B: This template is meant to be processed by pd/xsd2sg.pl. Beware
  ** of special markers that xsd2sg.pl expects to find and understand.
@@ -79,6 +82,7 @@
 #define EL_NS     wsu
 #define EL_TAG    Created
 
+/* Called by: */
 struct zx_wsu_Created_s* zx_DEC_wsu_Created(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -100,7 +104,7 @@ struct zx_wsu_Created_s* zx_DEC_wsu_Created(struct zx_ctx* c, struct zx_ns_s* ns
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -152,11 +156,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -164,7 +170,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -226,7 +232,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -262,6 +268,7 @@ next_attr:
 #define EL_NS     wsu
 #define EL_TAG    Expires
 
+/* Called by: */
 struct zx_wsu_Expires_s* zx_DEC_wsu_Expires(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -283,7 +290,7 @@ struct zx_wsu_Expires_s* zx_DEC_wsu_Expires(struct zx_ctx* c, struct zx_ns_s* ns
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -335,11 +342,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -347,7 +356,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -409,7 +418,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -445,6 +454,7 @@ next_attr:
 #define EL_NS     wsu
 #define EL_TAG    Timestamp
 
+/* Called by: */
 struct zx_wsu_Timestamp_s* zx_DEC_wsu_Timestamp(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -466,7 +476,7 @@ struct zx_wsu_Timestamp_s* zx_DEC_wsu_Timestamp(struct zx_ctx* c, struct zx_ns_s
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -518,11 +528,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -530,7 +542,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -602,7 +614,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;

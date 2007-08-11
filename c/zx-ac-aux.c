@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** aux-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: aux-templ.c,v 1.8 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: aux-templ.c,v 1.11 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -46,6 +48,55 @@
 #define EL_NS     ac
 #define EL_TAG    ActivationLimit
 
+/* FUNC(zx_FREE_ac_ActivationLimit) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_ActivationLimitDuration_s* e;
+      struct zx_ac_ActivationLimitDuration_s* en;
+      for (e = x->ActivationLimitDuration; e; e = en) {
+	  en = (struct zx_ac_ActivationLimitDuration_s*)e->gg.g.n;
+	  zx_FREE_ac_ActivationLimitDuration(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_ActivationLimitUsages_s* e;
+      struct zx_ac_ActivationLimitUsages_s* en;
+      for (e = x->ActivationLimitUsages; e; e = en) {
+	  en = (struct zx_ac_ActivationLimitUsages_s*)e->gg.g.n;
+	  zx_FREE_ac_ActivationLimitUsages(c, e, free_strs);
+      }
+  }
+  zx_free_simple_elems(c, x->ActivationLimitSession, free_strs);
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_ActivationLimit) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_ActivationLimit_s* zx_NEW_ac_ActivationLimit(struct zx_ctx* c)
+{
+  struct zx_ac_ActivationLimit_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimit_s);
+  x->gg.g.tok = zx_ac_ActivationLimit_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_ActivationLimit) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -55,6 +106,7 @@
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -80,6 +132,7 @@ void zx_DUP_STRS_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLim
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_ActivationLimit_s* zx_DEEP_CLONE_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit_s* x, int dup_strs)
 {
   x = (struct zx_ac_ActivationLimit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ActivationLimit_s), dup_strs);
@@ -114,51 +167,6 @@ struct zx_ac_ActivationLimit_s* zx_DEEP_CLONE_ac_ActivationLimit(struct zx_ctx* 
   }
   x->ActivationLimitSession = zx_deep_clone_simple_elems(c,x->ActivationLimitSession, dup_strs);
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_ActivationLimit) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_ActivationLimitDuration_s* e;
-      struct zx_ac_ActivationLimitDuration_s* en;
-      for (e = x->ActivationLimitDuration; e; e = en) {
-	  en = (struct zx_ac_ActivationLimitDuration_s*)e->gg.g.n;
-	  zx_FREE_ac_ActivationLimitDuration(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_ActivationLimitUsages_s* e;
-      struct zx_ac_ActivationLimitUsages_s* en;
-      for (e = x->ActivationLimitUsages; e; e = en) {
-	  en = (struct zx_ac_ActivationLimitUsages_s*)e->gg.g.n;
-	  zx_FREE_ac_ActivationLimitUsages(c, e, free_strs);
-      }
-  }
-  zx_free_simple_elems(c, x->ActivationLimitSession, free_strs);
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_ActivationLimit) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_ActivationLimit_s* zx_NEW_ac_ActivationLimit(struct zx_ctx* c)
-{
-  struct zx_ac_ActivationLimit_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimit_s);
-  x->gg.g.tok = zx_ac_ActivationLimit_ELEM;
   return x;
 }
 
@@ -212,6 +220,8 @@ int zx_WALK_WO_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit
   return 0;
 }
 
+#endif
+
 
 
 
@@ -233,41 +243,6 @@ int zx_WALK_WO_ac_ActivationLimit(struct zx_ctx* c, struct zx_ac_ActivationLimit
 #define EL_NS     ac
 #define EL_TAG    ActivationLimitDuration
 
-/* FUNC(zx_DUP_STRS_ac_ActivationLimitDuration) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->duration);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_ActivationLimitDuration) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_ActivationLimitDuration_s* zx_DEEP_CLONE_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x, int dup_strs)
-{
-  x = (struct zx_ac_ActivationLimitDuration_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ActivationLimitDuration_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->duration = zx_clone_attr(c, x->duration);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_ActivationLimitDuration) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -275,6 +250,7 @@ struct zx_ac_ActivationLimitDuration_s* zx_DEEP_CLONE_ac_ActivationLimitDuration
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -290,10 +266,50 @@ void zx_FREE_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_Activatio
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_ActivationLimitDuration_s* zx_NEW_ac_ActivationLimitDuration(struct zx_ctx* c)
 {
   struct zx_ac_ActivationLimitDuration_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimitDuration_s);
   x->gg.g.tok = zx_ac_ActivationLimitDuration_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_ActivationLimitDuration) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->duration);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_ActivationLimitDuration) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_ActivationLimitDuration_s* zx_DEEP_CLONE_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_ActivationLimitDuration_s* x, int dup_strs)
+{
+  x = (struct zx_ac_ActivationLimitDuration_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ActivationLimitDuration_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->duration = zx_clone_attr(c, x->duration);
+
+
   return x;
 }
 
@@ -328,6 +344,8 @@ int zx_WALK_WO_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_Activat
   return 0;
 }
 
+#endif
+
 
 
 
@@ -349,41 +367,6 @@ int zx_WALK_WO_ac_ActivationLimitDuration(struct zx_ctx* c, struct zx_ac_Activat
 #define EL_NS     ac
 #define EL_TAG    ActivationLimitUsages
 
-/* FUNC(zx_DUP_STRS_ac_ActivationLimitUsages) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->number);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_ActivationLimitUsages) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_ActivationLimitUsages_s* zx_DEEP_CLONE_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x, int dup_strs)
-{
-  x = (struct zx_ac_ActivationLimitUsages_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ActivationLimitUsages_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->number = zx_clone_attr(c, x->number);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_ActivationLimitUsages) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -391,6 +374,7 @@ struct zx_ac_ActivationLimitUsages_s* zx_DEEP_CLONE_ac_ActivationLimitUsages(str
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -406,10 +390,50 @@ void zx_FREE_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationL
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_ActivationLimitUsages_s* zx_NEW_ac_ActivationLimitUsages(struct zx_ctx* c)
 {
   struct zx_ac_ActivationLimitUsages_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimitUsages_s);
   x->gg.g.tok = zx_ac_ActivationLimitUsages_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_ActivationLimitUsages) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->number);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_ActivationLimitUsages) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_ActivationLimitUsages_s* zx_DEEP_CLONE_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_ActivationLimitUsages_s* x, int dup_strs)
+{
+  x = (struct zx_ac_ActivationLimitUsages_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ActivationLimitUsages_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->number = zx_clone_attr(c, x->number);
+
+
   return x;
 }
 
@@ -444,6 +468,8 @@ int zx_WALK_WO_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_Activatio
   return 0;
 }
 
+#endif
+
 
 
 
@@ -465,6 +491,78 @@ int zx_WALK_WO_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_Activatio
 #define EL_NS     ac
 #define EL_TAG    ActivationPin
 
+/* FUNC(zx_FREE_ac_ActivationPin) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Length_s* e;
+      struct zx_ac_Length_s* en;
+      for (e = x->Length; e; e = en) {
+	  en = (struct zx_ac_Length_s*)e->gg.g.n;
+	  zx_FREE_ac_Length(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Alphabet_s* e;
+      struct zx_ac_Alphabet_s* en;
+      for (e = x->Alphabet; e; e = en) {
+	  en = (struct zx_ac_Alphabet_s*)e->gg.g.n;
+	  zx_FREE_ac_Alphabet(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Generation_s* e;
+      struct zx_ac_Generation_s* en;
+      for (e = x->Generation; e; e = en) {
+	  en = (struct zx_ac_Generation_s*)e->gg.g.n;
+	  zx_FREE_ac_Generation(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_ActivationLimit_s* e;
+      struct zx_ac_ActivationLimit_s* en;
+      for (e = x->ActivationLimit; e; e = en) {
+	  en = (struct zx_ac_ActivationLimit_s*)e->gg.g.n;
+	  zx_FREE_ac_ActivationLimit(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_ActivationPin) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_ActivationPin_s* zx_NEW_ac_ActivationPin(struct zx_ctx* c)
+{
+  struct zx_ac_ActivationPin_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationPin_s);
+  x->gg.g.tok = zx_ac_ActivationPin_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_ActivationPin) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -474,6 +572,7 @@ int zx_WALK_WO_ac_ActivationLimitUsages(struct zx_ctx* c, struct zx_ac_Activatio
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -513,6 +612,7 @@ void zx_DUP_STRS_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_ActivationPin_s* zx_DEEP_CLONE_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* x, int dup_strs)
 {
   x = (struct zx_ac_ActivationPin_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ActivationPin_s), dup_strs);
@@ -588,74 +688,6 @@ struct zx_ac_ActivationPin_s* zx_DEEP_CLONE_ac_ActivationPin(struct zx_ctx* c, s
   return x;
 }
 
-/* FUNC(zx_FREE_ac_ActivationPin) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Length_s* e;
-      struct zx_ac_Length_s* en;
-      for (e = x->Length; e; e = en) {
-	  en = (struct zx_ac_Length_s*)e->gg.g.n;
-	  zx_FREE_ac_Length(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Alphabet_s* e;
-      struct zx_ac_Alphabet_s* en;
-      for (e = x->Alphabet; e; e = en) {
-	  en = (struct zx_ac_Alphabet_s*)e->gg.g.n;
-	  zx_FREE_ac_Alphabet(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Generation_s* e;
-      struct zx_ac_Generation_s* en;
-      for (e = x->Generation; e; e = en) {
-	  en = (struct zx_ac_Generation_s*)e->gg.g.n;
-	  zx_FREE_ac_Generation(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_ActivationLimit_s* e;
-      struct zx_ac_ActivationLimit_s* en;
-      for (e = x->ActivationLimit; e; e = en) {
-	  en = (struct zx_ac_ActivationLimit_s*)e->gg.g.n;
-	  zx_FREE_ac_ActivationLimit(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_ActivationPin) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_ActivationPin_s* zx_NEW_ac_ActivationPin(struct zx_ctx* c)
-{
-  struct zx_ac_ActivationPin_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationPin_s);
-  x->gg.g.tok = zx_ac_ActivationPin_ELEM;
-  return x;
-}
-
 /* FUNC(zx_WALK_SO_ac_ActivationPin) */
 
 /* Depth first traversal of the tree in either schema order or the wire order. */
@@ -727,6 +759,8 @@ int zx_WALK_WO_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -748,45 +782,6 @@ int zx_WALK_WO_ac_ActivationPin(struct zx_ctx* c, struct zx_ac_ActivationPin_s* 
 #define EL_NS     ac
 #define EL_TAG    Alphabet
 
-/* FUNC(zx_DUP_STRS_ac_Alphabet) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->case_is_c_keyword);
-  zx_dup_attr(c, x->excludedChars);
-  zx_dup_attr(c, x->requiredChars);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_Alphabet) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_Alphabet_s* zx_DEEP_CLONE_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, int dup_strs)
-{
-  x = (struct zx_ac_Alphabet_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Alphabet_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->case_is_c_keyword = zx_clone_attr(c, x->case_is_c_keyword);
-  x->excludedChars = zx_clone_attr(c, x->excludedChars);
-  x->requiredChars = zx_clone_attr(c, x->requiredChars);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_Alphabet) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -794,13 +789,14 @@ struct zx_ac_Alphabet_s* zx_DEEP_CLONE_ac_Alphabet(struct zx_ctx* c, struct zx_a
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->case_is_c_keyword, free_strs);
-  zx_free_attr(c, x->excludedChars, free_strs);
   zx_free_attr(c, x->requiredChars, free_strs);
+  zx_free_attr(c, x->excludedChars, free_strs);
+  zx_free_attr(c, x->case_is_c_keyword, free_strs);
 
 
 
@@ -811,10 +807,54 @@ void zx_FREE_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, int free_
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_Alphabet_s* zx_NEW_ac_Alphabet(struct zx_ctx* c)
 {
   struct zx_ac_Alphabet_s* x = ZX_ZALLOC(c, struct zx_ac_Alphabet_s);
   x->gg.g.tok = zx_ac_Alphabet_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_Alphabet) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->requiredChars);
+  zx_dup_attr(c, x->excludedChars);
+  zx_dup_attr(c, x->case_is_c_keyword);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_Alphabet) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_Alphabet_s* zx_DEEP_CLONE_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, int dup_strs)
+{
+  x = (struct zx_ac_Alphabet_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Alphabet_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->requiredChars = zx_clone_attr(c, x->requiredChars);
+  x->excludedChars = zx_clone_attr(c, x->excludedChars);
+  x->case_is_c_keyword = zx_clone_attr(c, x->case_is_c_keyword);
+
+
   return x;
 }
 
@@ -849,6 +889,8 @@ int zx_WALK_WO_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, void* c
   return 0;
 }
 
+#endif
+
 
 
 
@@ -870,57 +912,6 @@ int zx_WALK_WO_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, void* c
 #define EL_NS     ac
 #define EL_TAG    AsymmetricDecryption
 
-/* FUNC(zx_DUP_STRS_ac_AsymmetricDecryption) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_AsymmetricDecryption) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_AsymmetricDecryption_s* zx_DEEP_CLONE_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x, int dup_strs)
-{
-  x = (struct zx_ac_AsymmetricDecryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AsymmetricDecryption_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_AsymmetricDecryption) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -928,6 +919,7 @@ struct zx_ac_AsymmetricDecryption_s* zx_DEEP_CLONE_ac_AsymmetricDecryption(struc
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -950,10 +942,66 @@ void zx_FREE_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDe
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_AsymmetricDecryption_s* zx_NEW_ac_AsymmetricDecryption(struct zx_ctx* c)
 {
   struct zx_ac_AsymmetricDecryption_s* x = ZX_ZALLOC(c, struct zx_ac_AsymmetricDecryption_s);
   x->gg.g.tok = zx_ac_AsymmetricDecryption_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_AsymmetricDecryption) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_AsymmetricDecryption) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_AsymmetricDecryption_s* zx_DEEP_CLONE_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_AsymmetricDecryption_s* x, int dup_strs)
+{
+  x = (struct zx_ac_AsymmetricDecryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AsymmetricDecryption_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -996,6 +1044,8 @@ int zx_WALK_WO_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_Asymmetric
   return 0;
 }
 
+#endif
+
 
 
 
@@ -1017,57 +1067,6 @@ int zx_WALK_WO_ac_AsymmetricDecryption(struct zx_ctx* c, struct zx_ac_Asymmetric
 #define EL_NS     ac
 #define EL_TAG    AsymmetricKeyAgreement
 
-/* FUNC(zx_DUP_STRS_ac_AsymmetricKeyAgreement) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_AsymmetricKeyAgreement) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_AsymmetricKeyAgreement_s* zx_DEEP_CLONE_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x, int dup_strs)
-{
-  x = (struct zx_ac_AsymmetricKeyAgreement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AsymmetricKeyAgreement_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_AsymmetricKeyAgreement) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -1075,6 +1074,7 @@ struct zx_ac_AsymmetricKeyAgreement_s* zx_DEEP_CLONE_ac_AsymmetricKeyAgreement(s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -1097,10 +1097,66 @@ void zx_FREE_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_Asymmetric
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_AsymmetricKeyAgreement_s* zx_NEW_ac_AsymmetricKeyAgreement(struct zx_ctx* c)
 {
   struct zx_ac_AsymmetricKeyAgreement_s* x = ZX_ZALLOC(c, struct zx_ac_AsymmetricKeyAgreement_s);
   x->gg.g.tok = zx_ac_AsymmetricKeyAgreement_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_AsymmetricKeyAgreement) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_AsymmetricKeyAgreement) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_AsymmetricKeyAgreement_s* zx_DEEP_CLONE_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_AsymmetricKeyAgreement_s* x, int dup_strs)
+{
+  x = (struct zx_ac_AsymmetricKeyAgreement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AsymmetricKeyAgreement_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -1143,6 +1199,8 @@ int zx_WALK_WO_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_Asymmetr
   return 0;
 }
 
+#endif
+
 
 
 
@@ -1164,59 +1222,6 @@ int zx_WALK_WO_ac_AsymmetricKeyAgreement(struct zx_ctx* c, struct zx_ac_Asymmetr
 #define EL_NS     ac
 #define EL_TAG    AuthenticatingAuthority
 
-/* FUNC(zx_DUP_STRS_ac_AuthenticatingAuthority) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->ID);
-
-  {
-      struct zx_ac_GoverningAgreements_s* e;
-      for (e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_GoverningAgreements(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_AuthenticatingAuthority) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_AuthenticatingAuthority_s* zx_DEEP_CLONE_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x, int dup_strs)
-{
-  x = (struct zx_ac_AuthenticatingAuthority_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AuthenticatingAuthority_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->ID = zx_clone_attr(c, x->ID);
-
-  {
-      struct zx_ac_GoverningAgreements_s* e;
-      struct zx_ac_GoverningAgreements_s* en;
-      struct zx_ac_GoverningAgreements_s* enn;
-      for (enn = 0, e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_GoverningAgreements(c, e, dup_strs);
-	  if (!enn)
-	      x->GoverningAgreements = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_AuthenticatingAuthority) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -1224,6 +1229,7 @@ struct zx_ac_AuthenticatingAuthority_s* zx_DEEP_CLONE_ac_AuthenticatingAuthority
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -1247,10 +1253,68 @@ void zx_FREE_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_Authentic
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_AuthenticatingAuthority_s* zx_NEW_ac_AuthenticatingAuthority(struct zx_ctx* c)
 {
   struct zx_ac_AuthenticatingAuthority_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticatingAuthority_s);
   x->gg.g.tok = zx_ac_AuthenticatingAuthority_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_AuthenticatingAuthority) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->ID);
+
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      for (e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_GoverningAgreements(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_AuthenticatingAuthority) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_AuthenticatingAuthority_s* zx_DEEP_CLONE_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_AuthenticatingAuthority_s* x, int dup_strs)
+{
+  x = (struct zx_ac_AuthenticatingAuthority_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AuthenticatingAuthority_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->ID = zx_clone_attr(c, x->ID);
+
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      struct zx_ac_GoverningAgreements_s* en;
+      struct zx_ac_GoverningAgreements_s* enn;
+      for (enn = 0, e = x->GoverningAgreements; e; e = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_GoverningAgreements(c, e, dup_strs);
+	  if (!enn)
+	      x->GoverningAgreements = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -1293,6 +1357,8 @@ int zx_WALK_WO_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_Authent
   return 0;
 }
 
+#endif
+
 
 
 
@@ -1314,6 +1380,95 @@ int zx_WALK_WO_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_Authent
 #define EL_NS     ac
 #define EL_TAG    AuthenticationContextStatement
 
+/* FUNC(zx_FREE_ac_AuthenticationContextStatement) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_AuthenticationContextStatement_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_free_attr(c, x->ID, free_strs);
+
+  {
+      struct zx_ac_Identification_s* e;
+      struct zx_ac_Identification_s* en;
+      for (e = x->Identification; e; e = en) {
+	  en = (struct zx_ac_Identification_s*)e->gg.g.n;
+	  zx_FREE_ac_Identification(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_TechnicalProtection_s* e;
+      struct zx_ac_TechnicalProtection_s* en;
+      for (e = x->TechnicalProtection; e; e = en) {
+	  en = (struct zx_ac_TechnicalProtection_s*)e->gg.g.n;
+	  zx_FREE_ac_TechnicalProtection(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_OperationalProtection_s* e;
+      struct zx_ac_OperationalProtection_s* en;
+      for (e = x->OperationalProtection; e; e = en) {
+	  en = (struct zx_ac_OperationalProtection_s*)e->gg.g.n;
+	  zx_FREE_ac_OperationalProtection(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_AuthenticationMethod_s* e;
+      struct zx_ac_AuthenticationMethod_s* en;
+      for (e = x->AuthenticationMethod; e; e = en) {
+	  en = (struct zx_ac_AuthenticationMethod_s*)e->gg.g.n;
+	  zx_FREE_ac_AuthenticationMethod(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_GoverningAgreements_s* e;
+      struct zx_ac_GoverningAgreements_s* en;
+      for (e = x->GoverningAgreements; e; e = en) {
+	  en = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n;
+	  zx_FREE_ac_GoverningAgreements(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_AuthenticatingAuthority_s* e;
+      struct zx_ac_AuthenticatingAuthority_s* en;
+      for (e = x->AuthenticatingAuthority; e; e = en) {
+	  en = (struct zx_ac_AuthenticatingAuthority_s*)e->gg.g.n;
+	  zx_FREE_ac_AuthenticatingAuthority(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_AuthenticationContextStatement) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_AuthenticationContextStatement_s* zx_NEW_ac_AuthenticationContextStatement(struct zx_ctx* c)
+{
+  struct zx_ac_AuthenticationContextStatement_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticationContextStatement_s);
+  x->gg.g.tok = zx_ac_AuthenticationContextStatement_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_AuthenticationContextStatement) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -1323,6 +1478,7 @@ int zx_WALK_WO_ac_AuthenticatingAuthority(struct zx_ctx* c, struct zx_ac_Authent
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_AuthenticationContextStatement_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -1373,6 +1529,7 @@ void zx_DUP_STRS_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_a
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_AuthenticationContextStatement_s* zx_DEEP_CLONE_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_AuthenticationContextStatement_s* x, int dup_strs)
 {
   x = (struct zx_ac_AuthenticationContextStatement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AuthenticationContextStatement_s), dup_strs);
@@ -1475,91 +1632,6 @@ struct zx_ac_AuthenticationContextStatement_s* zx_DEEP_CLONE_ac_AuthenticationCo
   return x;
 }
 
-/* FUNC(zx_FREE_ac_AuthenticationContextStatement) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_AuthenticationContextStatement_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_free_attr(c, x->ID, free_strs);
-
-  {
-      struct zx_ac_Identification_s* e;
-      struct zx_ac_Identification_s* en;
-      for (e = x->Identification; e; e = en) {
-	  en = (struct zx_ac_Identification_s*)e->gg.g.n;
-	  zx_FREE_ac_Identification(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_TechnicalProtection_s* e;
-      struct zx_ac_TechnicalProtection_s* en;
-      for (e = x->TechnicalProtection; e; e = en) {
-	  en = (struct zx_ac_TechnicalProtection_s*)e->gg.g.n;
-	  zx_FREE_ac_TechnicalProtection(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_OperationalProtection_s* e;
-      struct zx_ac_OperationalProtection_s* en;
-      for (e = x->OperationalProtection; e; e = en) {
-	  en = (struct zx_ac_OperationalProtection_s*)e->gg.g.n;
-	  zx_FREE_ac_OperationalProtection(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_AuthenticationMethod_s* e;
-      struct zx_ac_AuthenticationMethod_s* en;
-      for (e = x->AuthenticationMethod; e; e = en) {
-	  en = (struct zx_ac_AuthenticationMethod_s*)e->gg.g.n;
-	  zx_FREE_ac_AuthenticationMethod(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_GoverningAgreements_s* e;
-      struct zx_ac_GoverningAgreements_s* en;
-      for (e = x->GoverningAgreements; e; e = en) {
-	  en = (struct zx_ac_GoverningAgreements_s*)e->gg.g.n;
-	  zx_FREE_ac_GoverningAgreements(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_AuthenticatingAuthority_s* e;
-      struct zx_ac_AuthenticatingAuthority_s* en;
-      for (e = x->AuthenticatingAuthority; e; e = en) {
-	  en = (struct zx_ac_AuthenticatingAuthority_s*)e->gg.g.n;
-	  zx_FREE_ac_AuthenticatingAuthority(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_AuthenticationContextStatement) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_AuthenticationContextStatement_s* zx_NEW_ac_AuthenticationContextStatement(struct zx_ctx* c)
-{
-  struct zx_ac_AuthenticationContextStatement_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticationContextStatement_s);
-  x->gg.g.tok = zx_ac_AuthenticationContextStatement_ELEM;
-  return x;
-}
-
 /* FUNC(zx_WALK_SO_ac_AuthenticationContextStatement) */
 
 /* Depth first traversal of the tree in either schema order or the wire order. */
@@ -1647,6 +1719,8 @@ int zx_WALK_WO_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_
   return 0;
 }
 
+#endif
+
 
 
 
@@ -1668,6 +1742,70 @@ int zx_WALK_WO_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_
 #define EL_NS     ac
 #define EL_TAG    AuthenticationMethod
 
+/* FUNC(zx_FREE_ac_AuthenticationMethod) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_AuthenticationMethod_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_PrincipalAuthenticationMechanism_s* e;
+      struct zx_ac_PrincipalAuthenticationMechanism_s* en;
+      for (e = x->PrincipalAuthenticationMechanism; e; e = en) {
+	  en = (struct zx_ac_PrincipalAuthenticationMechanism_s*)e->gg.g.n;
+	  zx_FREE_ac_PrincipalAuthenticationMechanism(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Authenticator_s* e;
+      struct zx_ac_Authenticator_s* en;
+      for (e = x->Authenticator; e; e = en) {
+	  en = (struct zx_ac_Authenticator_s*)e->gg.g.n;
+	  zx_FREE_ac_Authenticator(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_AuthenticatorTransportProtocol_s* e;
+      struct zx_ac_AuthenticatorTransportProtocol_s* en;
+      for (e = x->AuthenticatorTransportProtocol; e; e = en) {
+	  en = (struct zx_ac_AuthenticatorTransportProtocol_s*)e->gg.g.n;
+	  zx_FREE_ac_AuthenticatorTransportProtocol(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_AuthenticationMethod) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_AuthenticationMethod_s* zx_NEW_ac_AuthenticationMethod(struct zx_ctx* c)
+{
+  struct zx_ac_AuthenticationMethod_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticationMethod_s);
+  x->gg.g.tok = zx_ac_AuthenticationMethod_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_AuthenticationMethod) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -1677,6 +1815,7 @@ int zx_WALK_WO_ac_AuthenticationContextStatement(struct zx_ctx* c, struct zx_ac_
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_AuthenticationMethod_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -1711,6 +1850,7 @@ void zx_DUP_STRS_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_Authenti
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_AuthenticationMethod_s* zx_DEEP_CLONE_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_AuthenticationMethod_s* x, int dup_strs)
 {
   x = (struct zx_ac_AuthenticationMethod_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AuthenticationMethod_s), dup_strs);
@@ -1770,66 +1910,6 @@ struct zx_ac_AuthenticationMethod_s* zx_DEEP_CLONE_ac_AuthenticationMethod(struc
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_AuthenticationMethod) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_AuthenticationMethod_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_PrincipalAuthenticationMechanism_s* e;
-      struct zx_ac_PrincipalAuthenticationMechanism_s* en;
-      for (e = x->PrincipalAuthenticationMechanism; e; e = en) {
-	  en = (struct zx_ac_PrincipalAuthenticationMechanism_s*)e->gg.g.n;
-	  zx_FREE_ac_PrincipalAuthenticationMechanism(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Authenticator_s* e;
-      struct zx_ac_Authenticator_s* en;
-      for (e = x->Authenticator; e; e = en) {
-	  en = (struct zx_ac_Authenticator_s*)e->gg.g.n;
-	  zx_FREE_ac_Authenticator(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_AuthenticatorTransportProtocol_s* e;
-      struct zx_ac_AuthenticatorTransportProtocol_s* en;
-      for (e = x->AuthenticatorTransportProtocol; e; e = en) {
-	  en = (struct zx_ac_AuthenticatorTransportProtocol_s*)e->gg.g.n;
-	  zx_FREE_ac_AuthenticatorTransportProtocol(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_AuthenticationMethod) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_AuthenticationMethod_s* zx_NEW_ac_AuthenticationMethod(struct zx_ctx* c)
-{
-  struct zx_ac_AuthenticationMethod_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticationMethod_s);
-  x->gg.g.tok = zx_ac_AuthenticationMethod_ELEM;
   return x;
 }
 
@@ -1896,6 +1976,8 @@ int zx_WALK_WO_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_Authentica
   return 0;
 }
 
+#endif
+
 
 
 
@@ -1917,6 +1999,126 @@ int zx_WALK_WO_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_Authentica
 #define EL_NS     ac
 #define EL_TAG    Authenticator
 
+/* FUNC(zx_FREE_ac_Authenticator) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_PreviousSession_s* e;
+      struct zx_ac_PreviousSession_s* en;
+      for (e = x->PreviousSession; e; e = en) {
+	  en = (struct zx_ac_PreviousSession_s*)e->gg.g.n;
+	  zx_FREE_ac_PreviousSession(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_ResumeSession_s* e;
+      struct zx_ac_ResumeSession_s* en;
+      for (e = x->ResumeSession; e; e = en) {
+	  en = (struct zx_ac_ResumeSession_s*)e->gg.g.n;
+	  zx_FREE_ac_ResumeSession(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_DigSig_s* e;
+      struct zx_ac_DigSig_s* en;
+      for (e = x->DigSig; e; e = en) {
+	  en = (struct zx_ac_DigSig_s*)e->gg.g.n;
+	  zx_FREE_ac_DigSig(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Password_s* e;
+      struct zx_ac_Password_s* en;
+      for (e = x->Password; e; e = en) {
+	  en = (struct zx_ac_Password_s*)e->gg.g.n;
+	  zx_FREE_ac_Password(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_ZeroKnowledge_s* e;
+      struct zx_ac_ZeroKnowledge_s* en;
+      for (e = x->ZeroKnowledge; e; e = en) {
+	  en = (struct zx_ac_ZeroKnowledge_s*)e->gg.g.n;
+	  zx_FREE_ac_ZeroKnowledge(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_SharedSecretChallengeResponse_s* e;
+      struct zx_ac_SharedSecretChallengeResponse_s* en;
+      for (e = x->SharedSecretChallengeResponse; e; e = en) {
+	  en = (struct zx_ac_SharedSecretChallengeResponse_s*)e->gg.g.n;
+	  zx_FREE_ac_SharedSecretChallengeResponse(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_SharedSecretDynamicPlaintext_s* e;
+      struct zx_ac_SharedSecretDynamicPlaintext_s* en;
+      for (e = x->SharedSecretDynamicPlaintext; e; e = en) {
+	  en = (struct zx_ac_SharedSecretDynamicPlaintext_s*)e->gg.g.n;
+	  zx_FREE_ac_SharedSecretDynamicPlaintext(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_IPAddress_s* e;
+      struct zx_ac_IPAddress_s* en;
+      for (e = x->IPAddress; e; e = en) {
+	  en = (struct zx_ac_IPAddress_s*)e->gg.g.n;
+	  zx_FREE_ac_IPAddress(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_AsymmetricDecryption_s* e;
+      struct zx_ac_AsymmetricDecryption_s* en;
+      for (e = x->AsymmetricDecryption; e; e = en) {
+	  en = (struct zx_ac_AsymmetricDecryption_s*)e->gg.g.n;
+	  zx_FREE_ac_AsymmetricDecryption(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_AsymmetricKeyAgreement_s* e;
+      struct zx_ac_AsymmetricKeyAgreement_s* en;
+      for (e = x->AsymmetricKeyAgreement; e; e = en) {
+	  en = (struct zx_ac_AsymmetricKeyAgreement_s*)e->gg.g.n;
+	  zx_FREE_ac_AsymmetricKeyAgreement(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_Authenticator) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_Authenticator_s* zx_NEW_ac_Authenticator(struct zx_ctx* c)
+{
+  struct zx_ac_Authenticator_s* x = ZX_ZALLOC(c, struct zx_ac_Authenticator_s);
+  x->gg.g.tok = zx_ac_Authenticator_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_Authenticator) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -1926,6 +2128,7 @@ int zx_WALK_WO_ac_AuthenticationMethod(struct zx_ctx* c, struct zx_ac_Authentica
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -1995,6 +2198,7 @@ void zx_DUP_STRS_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_Authenticator_s* zx_DEEP_CLONE_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* x, int dup_strs)
 {
   x = (struct zx_ac_Authenticator_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Authenticator_s), dup_strs);
@@ -2148,122 +2352,6 @@ struct zx_ac_Authenticator_s* zx_DEEP_CLONE_ac_Authenticator(struct zx_ctx* c, s
   return x;
 }
 
-/* FUNC(zx_FREE_ac_Authenticator) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_PreviousSession_s* e;
-      struct zx_ac_PreviousSession_s* en;
-      for (e = x->PreviousSession; e; e = en) {
-	  en = (struct zx_ac_PreviousSession_s*)e->gg.g.n;
-	  zx_FREE_ac_PreviousSession(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_ResumeSession_s* e;
-      struct zx_ac_ResumeSession_s* en;
-      for (e = x->ResumeSession; e; e = en) {
-	  en = (struct zx_ac_ResumeSession_s*)e->gg.g.n;
-	  zx_FREE_ac_ResumeSession(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_DigSig_s* e;
-      struct zx_ac_DigSig_s* en;
-      for (e = x->DigSig; e; e = en) {
-	  en = (struct zx_ac_DigSig_s*)e->gg.g.n;
-	  zx_FREE_ac_DigSig(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Password_s* e;
-      struct zx_ac_Password_s* en;
-      for (e = x->Password; e; e = en) {
-	  en = (struct zx_ac_Password_s*)e->gg.g.n;
-	  zx_FREE_ac_Password(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_ZeroKnowledge_s* e;
-      struct zx_ac_ZeroKnowledge_s* en;
-      for (e = x->ZeroKnowledge; e; e = en) {
-	  en = (struct zx_ac_ZeroKnowledge_s*)e->gg.g.n;
-	  zx_FREE_ac_ZeroKnowledge(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_SharedSecretChallengeResponse_s* e;
-      struct zx_ac_SharedSecretChallengeResponse_s* en;
-      for (e = x->SharedSecretChallengeResponse; e; e = en) {
-	  en = (struct zx_ac_SharedSecretChallengeResponse_s*)e->gg.g.n;
-	  zx_FREE_ac_SharedSecretChallengeResponse(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_SharedSecretDynamicPlaintext_s* e;
-      struct zx_ac_SharedSecretDynamicPlaintext_s* en;
-      for (e = x->SharedSecretDynamicPlaintext; e; e = en) {
-	  en = (struct zx_ac_SharedSecretDynamicPlaintext_s*)e->gg.g.n;
-	  zx_FREE_ac_SharedSecretDynamicPlaintext(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_IPAddress_s* e;
-      struct zx_ac_IPAddress_s* en;
-      for (e = x->IPAddress; e; e = en) {
-	  en = (struct zx_ac_IPAddress_s*)e->gg.g.n;
-	  zx_FREE_ac_IPAddress(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_AsymmetricDecryption_s* e;
-      struct zx_ac_AsymmetricDecryption_s* en;
-      for (e = x->AsymmetricDecryption; e; e = en) {
-	  en = (struct zx_ac_AsymmetricDecryption_s*)e->gg.g.n;
-	  zx_FREE_ac_AsymmetricDecryption(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_AsymmetricKeyAgreement_s* e;
-      struct zx_ac_AsymmetricKeyAgreement_s* en;
-      for (e = x->AsymmetricKeyAgreement; e; e = en) {
-	  en = (struct zx_ac_AsymmetricKeyAgreement_s*)e->gg.g.n;
-	  zx_FREE_ac_AsymmetricKeyAgreement(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_Authenticator) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_Authenticator_s* zx_NEW_ac_Authenticator(struct zx_ctx* c)
-{
-  struct zx_ac_Authenticator_s* x = ZX_ZALLOC(c, struct zx_ac_Authenticator_s);
-  x->gg.g.tok = zx_ac_Authenticator_ELEM;
-  return x;
-}
-
 /* FUNC(zx_WALK_SO_ac_Authenticator) */
 
 /* Depth first traversal of the tree in either schema order or the wire order. */
@@ -2383,6 +2471,8 @@ int zx_WALK_WO_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -2404,6 +2494,102 @@ int zx_WALK_WO_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* 
 #define EL_NS     ac
 #define EL_TAG    AuthenticatorTransportProtocol
 
+/* FUNC(zx_FREE_ac_AuthenticatorTransportProtocol) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_AuthenticatorTransportProtocol_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_HTTP_s* e;
+      struct zx_ac_HTTP_s* en;
+      for (e = x->HTTP; e; e = en) {
+	  en = (struct zx_ac_HTTP_s*)e->gg.g.n;
+	  zx_FREE_ac_HTTP(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_SSL_s* e;
+      struct zx_ac_SSL_s* en;
+      for (e = x->SSL; e; e = en) {
+	  en = (struct zx_ac_SSL_s*)e->gg.g.n;
+	  zx_FREE_ac_SSL(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_MobileNetworkNoEncryption_s* e;
+      struct zx_ac_MobileNetworkNoEncryption_s* en;
+      for (e = x->MobileNetworkNoEncryption; e; e = en) {
+	  en = (struct zx_ac_MobileNetworkNoEncryption_s*)e->gg.g.n;
+	  zx_FREE_ac_MobileNetworkNoEncryption(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_MobileNetworkRadioEncryption_s* e;
+      struct zx_ac_MobileNetworkRadioEncryption_s* en;
+      for (e = x->MobileNetworkRadioEncryption; e; e = en) {
+	  en = (struct zx_ac_MobileNetworkRadioEncryption_s*)e->gg.g.n;
+	  zx_FREE_ac_MobileNetworkRadioEncryption(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_MobileNetworkEndToEndEncryption_s* e;
+      struct zx_ac_MobileNetworkEndToEndEncryption_s* en;
+      for (e = x->MobileNetworkEndToEndEncryption; e; e = en) {
+	  en = (struct zx_ac_MobileNetworkEndToEndEncryption_s*)e->gg.g.n;
+	  zx_FREE_ac_MobileNetworkEndToEndEncryption(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_WTLS_s* e;
+      struct zx_ac_WTLS_s* en;
+      for (e = x->WTLS; e; e = en) {
+	  en = (struct zx_ac_WTLS_s*)e->gg.g.n;
+	  zx_FREE_ac_WTLS(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_IPSec_s* e;
+      struct zx_ac_IPSec_s* en;
+      for (e = x->IPSec; e; e = en) {
+	  en = (struct zx_ac_IPSec_s*)e->gg.g.n;
+	  zx_FREE_ac_IPSec(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_AuthenticatorTransportProtocol) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_AuthenticatorTransportProtocol_s* zx_NEW_ac_AuthenticatorTransportProtocol(struct zx_ctx* c)
+{
+  struct zx_ac_AuthenticatorTransportProtocol_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticatorTransportProtocol_s);
+  x->gg.g.tok = zx_ac_AuthenticatorTransportProtocol_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_AuthenticatorTransportProtocol) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -2413,6 +2599,7 @@ int zx_WALK_WO_ac_Authenticator(struct zx_ctx* c, struct zx_ac_Authenticator_s* 
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_AuthenticatorTransportProtocol_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -2467,6 +2654,7 @@ void zx_DUP_STRS_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_a
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_AuthenticatorTransportProtocol_s* zx_DEEP_CLONE_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_AuthenticatorTransportProtocol_s* x, int dup_strs)
 {
   x = (struct zx_ac_AuthenticatorTransportProtocol_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_AuthenticatorTransportProtocol_s), dup_strs);
@@ -2581,98 +2769,6 @@ struct zx_ac_AuthenticatorTransportProtocol_s* zx_DEEP_CLONE_ac_AuthenticatorTra
   return x;
 }
 
-/* FUNC(zx_FREE_ac_AuthenticatorTransportProtocol) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_AuthenticatorTransportProtocol_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_HTTP_s* e;
-      struct zx_ac_HTTP_s* en;
-      for (e = x->HTTP; e; e = en) {
-	  en = (struct zx_ac_HTTP_s*)e->gg.g.n;
-	  zx_FREE_ac_HTTP(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_SSL_s* e;
-      struct zx_ac_SSL_s* en;
-      for (e = x->SSL; e; e = en) {
-	  en = (struct zx_ac_SSL_s*)e->gg.g.n;
-	  zx_FREE_ac_SSL(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_MobileNetworkNoEncryption_s* e;
-      struct zx_ac_MobileNetworkNoEncryption_s* en;
-      for (e = x->MobileNetworkNoEncryption; e; e = en) {
-	  en = (struct zx_ac_MobileNetworkNoEncryption_s*)e->gg.g.n;
-	  zx_FREE_ac_MobileNetworkNoEncryption(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_MobileNetworkRadioEncryption_s* e;
-      struct zx_ac_MobileNetworkRadioEncryption_s* en;
-      for (e = x->MobileNetworkRadioEncryption; e; e = en) {
-	  en = (struct zx_ac_MobileNetworkRadioEncryption_s*)e->gg.g.n;
-	  zx_FREE_ac_MobileNetworkRadioEncryption(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_MobileNetworkEndToEndEncryption_s* e;
-      struct zx_ac_MobileNetworkEndToEndEncryption_s* en;
-      for (e = x->MobileNetworkEndToEndEncryption; e; e = en) {
-	  en = (struct zx_ac_MobileNetworkEndToEndEncryption_s*)e->gg.g.n;
-	  zx_FREE_ac_MobileNetworkEndToEndEncryption(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_WTLS_s* e;
-      struct zx_ac_WTLS_s* en;
-      for (e = x->WTLS; e; e = en) {
-	  en = (struct zx_ac_WTLS_s*)e->gg.g.n;
-	  zx_FREE_ac_WTLS(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_IPSec_s* e;
-      struct zx_ac_IPSec_s* en;
-      for (e = x->IPSec; e; e = en) {
-	  en = (struct zx_ac_IPSec_s*)e->gg.g.n;
-	  zx_FREE_ac_IPSec(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_AuthenticatorTransportProtocol) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_AuthenticatorTransportProtocol_s* zx_NEW_ac_AuthenticatorTransportProtocol(struct zx_ctx* c)
-{
-  struct zx_ac_AuthenticatorTransportProtocol_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticatorTransportProtocol_s);
-  x->gg.g.tok = zx_ac_AuthenticatorTransportProtocol_ELEM;
-  return x;
-}
-
 /* FUNC(zx_WALK_SO_ac_AuthenticatorTransportProtocol) */
 
 /* Depth first traversal of the tree in either schema order or the wire order. */
@@ -2768,6 +2864,8 @@ int zx_WALK_WO_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_
   return 0;
 }
 
+#endif
+
 
 
 
@@ -2789,57 +2887,6 @@ int zx_WALK_WO_ac_AuthenticatorTransportProtocol(struct zx_ctx* c, struct zx_ac_
 #define EL_NS     ac
 #define EL_TAG    DeactivationCallCenter
 
-/* FUNC(zx_DUP_STRS_ac_DeactivationCallCenter) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_DeactivationCallCenter) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_DeactivationCallCenter_s* zx_DEEP_CLONE_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x, int dup_strs)
-{
-  x = (struct zx_ac_DeactivationCallCenter_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_DeactivationCallCenter_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_DeactivationCallCenter) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -2847,6 +2894,7 @@ struct zx_ac_DeactivationCallCenter_s* zx_DEEP_CLONE_ac_DeactivationCallCenter(s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -2869,10 +2917,66 @@ void zx_FREE_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_Deactivati
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_DeactivationCallCenter_s* zx_NEW_ac_DeactivationCallCenter(struct zx_ctx* c)
 {
   struct zx_ac_DeactivationCallCenter_s* x = ZX_ZALLOC(c, struct zx_ac_DeactivationCallCenter_s);
   x->gg.g.tok = zx_ac_DeactivationCallCenter_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_DeactivationCallCenter) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_DeactivationCallCenter) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_DeactivationCallCenter_s* zx_DEEP_CLONE_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_DeactivationCallCenter_s* x, int dup_strs)
+{
+  x = (struct zx_ac_DeactivationCallCenter_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_DeactivationCallCenter_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -2915,6 +3019,8 @@ int zx_WALK_WO_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_Deactiva
   return 0;
 }
 
+#endif
+
 
 
 
@@ -2936,57 +3042,6 @@ int zx_WALK_WO_ac_DeactivationCallCenter(struct zx_ctx* c, struct zx_ac_Deactiva
 #define EL_NS     ac
 #define EL_TAG    DigSig
 
-/* FUNC(zx_DUP_STRS_ac_DigSig) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_DigSig) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_DigSig_s* zx_DEEP_CLONE_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x, int dup_strs)
-{
-  x = (struct zx_ac_DigSig_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_DigSig_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_DigSig) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -2994,6 +3049,7 @@ struct zx_ac_DigSig_s* zx_DEEP_CLONE_ac_DigSig(struct zx_ctx* c, struct zx_ac_Di
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3016,10 +3072,66 @@ void zx_FREE_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x, int free_strs
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_DigSig_s* zx_NEW_ac_DigSig(struct zx_ctx* c)
 {
   struct zx_ac_DigSig_s* x = ZX_ZALLOC(c, struct zx_ac_DigSig_s);
   x->gg.g.tok = zx_ac_DigSig_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_DigSig) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_DigSig) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_DigSig_s* zx_DEEP_CLONE_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x, int dup_strs)
+{
+  x = (struct zx_ac_DigSig_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_DigSig_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -3062,6 +3174,8 @@ int zx_WALK_WO_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x, void* ctx, 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3083,39 +3197,6 @@ int zx_WALK_WO_ac_DigSig(struct zx_ctx* c, struct zx_ac_DigSig_s* x, void* ctx, 
 #define EL_NS     ac
 #define EL_TAG    Extension
 
-/* FUNC(zx_DUP_STRS_ac_Extension) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_Extension) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_Extension_s* zx_DEEP_CLONE_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x, int dup_strs)
-{
-  x = (struct zx_ac_Extension_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Extension_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_Extension) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3123,6 +3204,7 @@ struct zx_ac_Extension_s* zx_DEEP_CLONE_ac_Extension(struct zx_ctx* c, struct zx
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3137,10 +3219,48 @@ void zx_FREE_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x, int fre
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_Extension_s* zx_NEW_ac_Extension(struct zx_ctx* c)
 {
   struct zx_ac_Extension_s* x = ZX_ZALLOC(c, struct zx_ac_Extension_s);
   x->gg.g.tok = zx_ac_Extension_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_Extension) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_Extension) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_Extension_s* zx_DEEP_CLONE_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x, int dup_strs)
+{
+  x = (struct zx_ac_Extension_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Extension_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+
   return x;
 }
 
@@ -3175,6 +3295,8 @@ int zx_WALK_WO_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x, void*
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3196,41 +3318,6 @@ int zx_WALK_WO_ac_Extension(struct zx_ctx* c, struct zx_ac_Extension_s* x, void*
 #define EL_NS     ac
 #define EL_TAG    Generation
 
-/* FUNC(zx_DUP_STRS_ac_Generation) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->mechanism);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_Generation) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_Generation_s* zx_DEEP_CLONE_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x, int dup_strs)
-{
-  x = (struct zx_ac_Generation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Generation_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->mechanism = zx_clone_attr(c, x->mechanism);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_Generation) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3238,6 +3325,7 @@ struct zx_ac_Generation_s* zx_DEEP_CLONE_ac_Generation(struct zx_ctx* c, struct 
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3253,10 +3341,50 @@ void zx_FREE_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x, int f
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_Generation_s* zx_NEW_ac_Generation(struct zx_ctx* c)
 {
   struct zx_ac_Generation_s* x = ZX_ZALLOC(c, struct zx_ac_Generation_s);
   x->gg.g.tok = zx_ac_Generation_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_Generation) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->mechanism);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_Generation) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_Generation_s* zx_DEEP_CLONE_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x, int dup_strs)
+{
+  x = (struct zx_ac_Generation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Generation_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->mechanism = zx_clone_attr(c, x->mechanism);
+
+
   return x;
 }
 
@@ -3291,6 +3419,8 @@ int zx_WALK_WO_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x, voi
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3312,41 +3442,6 @@ int zx_WALK_WO_ac_Generation(struct zx_ctx* c, struct zx_ac_Generation_s* x, voi
 #define EL_NS     ac
 #define EL_TAG    GoverningAgreementRef
 
-/* FUNC(zx_DUP_STRS_ac_GoverningAgreementRef) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->governingAgreementRef);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_GoverningAgreementRef) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_GoverningAgreementRef_s* zx_DEEP_CLONE_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x, int dup_strs)
-{
-  x = (struct zx_ac_GoverningAgreementRef_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_GoverningAgreementRef_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->governingAgreementRef = zx_clone_attr(c, x->governingAgreementRef);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_GoverningAgreementRef) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3354,6 +3449,7 @@ struct zx_ac_GoverningAgreementRef_s* zx_DEEP_CLONE_ac_GoverningAgreementRef(str
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3369,10 +3465,50 @@ void zx_FREE_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAg
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_GoverningAgreementRef_s* zx_NEW_ac_GoverningAgreementRef(struct zx_ctx* c)
 {
   struct zx_ac_GoverningAgreementRef_s* x = ZX_ZALLOC(c, struct zx_ac_GoverningAgreementRef_s);
   x->gg.g.tok = zx_ac_GoverningAgreementRef_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_GoverningAgreementRef) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->governingAgreementRef);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_GoverningAgreementRef) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_GoverningAgreementRef_s* zx_DEEP_CLONE_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_GoverningAgreementRef_s* x, int dup_strs)
+{
+  x = (struct zx_ac_GoverningAgreementRef_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_GoverningAgreementRef_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->governingAgreementRef = zx_clone_attr(c, x->governingAgreementRef);
+
+
   return x;
 }
 
@@ -3407,6 +3543,8 @@ int zx_WALK_WO_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_Governing
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3428,57 +3566,6 @@ int zx_WALK_WO_ac_GoverningAgreementRef(struct zx_ctx* c, struct zx_ac_Governing
 #define EL_NS     ac
 #define EL_TAG    GoverningAgreements
 
-/* FUNC(zx_DUP_STRS_ac_GoverningAgreements) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_GoverningAgreementRef_s* e;
-      for (e = x->GoverningAgreementRef; e; e = (struct zx_ac_GoverningAgreementRef_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_GoverningAgreementRef(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_GoverningAgreements) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_GoverningAgreements_s* zx_DEEP_CLONE_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x, int dup_strs)
-{
-  x = (struct zx_ac_GoverningAgreements_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_GoverningAgreements_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_GoverningAgreementRef_s* e;
-      struct zx_ac_GoverningAgreementRef_s* en;
-      struct zx_ac_GoverningAgreementRef_s* enn;
-      for (enn = 0, e = x->GoverningAgreementRef; e; e = (struct zx_ac_GoverningAgreementRef_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_GoverningAgreementRef(c, e, dup_strs);
-	  if (!enn)
-	      x->GoverningAgreementRef = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_GoverningAgreements) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3486,6 +3573,7 @@ struct zx_ac_GoverningAgreements_s* zx_DEEP_CLONE_ac_GoverningAgreements(struct 
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3508,10 +3596,66 @@ void zx_FREE_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgre
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_GoverningAgreements_s* zx_NEW_ac_GoverningAgreements(struct zx_ctx* c)
 {
   struct zx_ac_GoverningAgreements_s* x = ZX_ZALLOC(c, struct zx_ac_GoverningAgreements_s);
   x->gg.g.tok = zx_ac_GoverningAgreements_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_GoverningAgreements) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_GoverningAgreementRef_s* e;
+      for (e = x->GoverningAgreementRef; e; e = (struct zx_ac_GoverningAgreementRef_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_GoverningAgreementRef(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_GoverningAgreements) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_GoverningAgreements_s* zx_DEEP_CLONE_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAgreements_s* x, int dup_strs)
+{
+  x = (struct zx_ac_GoverningAgreements_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_GoverningAgreements_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_GoverningAgreementRef_s* e;
+      struct zx_ac_GoverningAgreementRef_s* en;
+      struct zx_ac_GoverningAgreementRef_s* enn;
+      for (enn = 0, e = x->GoverningAgreementRef; e; e = (struct zx_ac_GoverningAgreementRef_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_GoverningAgreementRef(c, e, dup_strs);
+	  if (!enn)
+	      x->GoverningAgreementRef = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -3554,6 +3698,8 @@ int zx_WALK_WO_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAg
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3575,57 +3721,6 @@ int zx_WALK_WO_ac_GoverningAgreements(struct zx_ctx* c, struct zx_ac_GoverningAg
 #define EL_NS     ac
 #define EL_TAG    HTTP
 
-/* FUNC(zx_DUP_STRS_ac_HTTP) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_HTTP) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_HTTP_s* zx_DEEP_CLONE_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x, int dup_strs)
-{
-  x = (struct zx_ac_HTTP_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_HTTP_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_HTTP) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3633,6 +3728,7 @@ struct zx_ac_HTTP_s* zx_DEEP_CLONE_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3655,10 +3751,66 @@ void zx_FREE_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x, int free_strs)
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_HTTP_s* zx_NEW_ac_HTTP(struct zx_ctx* c)
 {
   struct zx_ac_HTTP_s* x = ZX_ZALLOC(c, struct zx_ac_HTTP_s);
   x->gg.g.tok = zx_ac_HTTP_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_HTTP) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_HTTP) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_HTTP_s* zx_DEEP_CLONE_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x, int dup_strs)
+{
+  x = (struct zx_ac_HTTP_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_HTTP_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -3701,6 +3853,8 @@ int zx_WALK_WO_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x, void* ctx, int 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3722,57 +3876,6 @@ int zx_WALK_WO_ac_HTTP(struct zx_ctx* c, struct zx_ac_HTTP_s* x, void* ctx, int 
 #define EL_NS     ac
 #define EL_TAG    IPAddress
 
-/* FUNC(zx_DUP_STRS_ac_IPAddress) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_IPAddress) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_IPAddress_s* zx_DEEP_CLONE_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x, int dup_strs)
-{
-  x = (struct zx_ac_IPAddress_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_IPAddress_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_IPAddress) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3780,6 +3883,7 @@ struct zx_ac_IPAddress_s* zx_DEEP_CLONE_ac_IPAddress(struct zx_ctx* c, struct zx
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3802,10 +3906,66 @@ void zx_FREE_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x, int fre
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_IPAddress_s* zx_NEW_ac_IPAddress(struct zx_ctx* c)
 {
   struct zx_ac_IPAddress_s* x = ZX_ZALLOC(c, struct zx_ac_IPAddress_s);
   x->gg.g.tok = zx_ac_IPAddress_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_IPAddress) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_IPAddress) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_IPAddress_s* zx_DEEP_CLONE_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x, int dup_strs)
+{
+  x = (struct zx_ac_IPAddress_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_IPAddress_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -3848,6 +4008,8 @@ int zx_WALK_WO_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x, void*
   return 0;
 }
 
+#endif
+
 
 
 
@@ -3869,57 +4031,6 @@ int zx_WALK_WO_ac_IPAddress(struct zx_ctx* c, struct zx_ac_IPAddress_s* x, void*
 #define EL_NS     ac
 #define EL_TAG    IPSec
 
-/* FUNC(zx_DUP_STRS_ac_IPSec) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_IPSec) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_IPSec_s* zx_DEEP_CLONE_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, int dup_strs)
-{
-  x = (struct zx_ac_IPSec_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_IPSec_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_IPSec) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -3927,6 +4038,7 @@ struct zx_ac_IPSec_s* zx_DEEP_CLONE_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSe
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -3949,10 +4061,66 @@ void zx_FREE_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, int free_strs)
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_IPSec_s* zx_NEW_ac_IPSec(struct zx_ctx* c)
 {
   struct zx_ac_IPSec_s* x = ZX_ZALLOC(c, struct zx_ac_IPSec_s);
   x->gg.g.tok = zx_ac_IPSec_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_IPSec) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_IPSec) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_IPSec_s* zx_DEEP_CLONE_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, int dup_strs)
+{
+  x = (struct zx_ac_IPSec_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_IPSec_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -3995,6 +4163,8 @@ int zx_WALK_WO_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, void* ctx, in
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4016,6 +4186,63 @@ int zx_WALK_WO_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, void* ctx, in
 #define EL_NS     ac
 #define EL_TAG    Identification
 
+/* FUNC(zx_FREE_ac_Identification) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_free_attr(c, x->nym, free_strs);
+
+  {
+      struct zx_ac_PhysicalVerification_s* e;
+      struct zx_ac_PhysicalVerification_s* en;
+      for (e = x->PhysicalVerification; e; e = en) {
+	  en = (struct zx_ac_PhysicalVerification_s*)e->gg.g.n;
+	  zx_FREE_ac_PhysicalVerification(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_WrittenConsent_s* e;
+      struct zx_ac_WrittenConsent_s* en;
+      for (e = x->WrittenConsent; e; e = en) {
+	  en = (struct zx_ac_WrittenConsent_s*)e->gg.g.n;
+	  zx_FREE_ac_WrittenConsent(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_Identification) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_Identification_s* zx_NEW_ac_Identification(struct zx_ctx* c)
+{
+  struct zx_ac_Identification_s* x = ZX_ZALLOC(c, struct zx_ac_Identification_s);
+  x->gg.g.tok = zx_ac_Identification_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_Identification) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -4025,6 +4252,7 @@ int zx_WALK_WO_ac_IPSec(struct zx_ctx* c, struct zx_ac_IPSec_s* x, void* ctx, in
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -4055,6 +4283,7 @@ void zx_DUP_STRS_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_Identification_s* zx_DEEP_CLONE_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s* x, int dup_strs)
 {
   x = (struct zx_ac_Identification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Identification_s), dup_strs);
@@ -4102,59 +4331,6 @@ struct zx_ac_Identification_s* zx_DEEP_CLONE_ac_Identification(struct zx_ctx* c,
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_Identification) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_free_attr(c, x->nym, free_strs);
-
-  {
-      struct zx_ac_PhysicalVerification_s* e;
-      struct zx_ac_PhysicalVerification_s* en;
-      for (e = x->PhysicalVerification; e; e = en) {
-	  en = (struct zx_ac_PhysicalVerification_s*)e->gg.g.n;
-	  zx_FREE_ac_PhysicalVerification(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_WrittenConsent_s* e;
-      struct zx_ac_WrittenConsent_s* en;
-      for (e = x->WrittenConsent; e; e = en) {
-	  en = (struct zx_ac_WrittenConsent_s*)e->gg.g.n;
-	  zx_FREE_ac_WrittenConsent(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_Identification) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_Identification_s* zx_NEW_ac_Identification(struct zx_ctx* c)
-{
-  struct zx_ac_Identification_s* x = ZX_ZALLOC(c, struct zx_ac_Identification_s);
-  x->gg.g.tok = zx_ac_Identification_ELEM;
   return x;
 }
 
@@ -4213,6 +4389,8 @@ int zx_WALK_WO_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4234,6 +4412,54 @@ int zx_WALK_WO_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s
 #define EL_NS     ac
 #define EL_TAG    KeyActivation
 
+/* FUNC(zx_FREE_ac_KeyActivation) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_ActivationPin_s* e;
+      struct zx_ac_ActivationPin_s* en;
+      for (e = x->ActivationPin; e; e = en) {
+	  en = (struct zx_ac_ActivationPin_s*)e->gg.g.n;
+	  zx_FREE_ac_ActivationPin(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_KeyActivation) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_KeyActivation_s* zx_NEW_ac_KeyActivation(struct zx_ctx* c)
+{
+  struct zx_ac_KeyActivation_s* x = ZX_ZALLOC(c, struct zx_ac_KeyActivation_s);
+  x->gg.g.tok = zx_ac_KeyActivation_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_KeyActivation) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -4243,6 +4469,7 @@ int zx_WALK_WO_ac_Identification(struct zx_ctx* c, struct zx_ac_Identification_s
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -4267,6 +4494,7 @@ void zx_DUP_STRS_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_KeyActivation_s* zx_DEEP_CLONE_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* x, int dup_strs)
 {
   x = (struct zx_ac_KeyActivation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_KeyActivation_s), dup_strs);
@@ -4300,50 +4528,6 @@ struct zx_ac_KeyActivation_s* zx_DEEP_CLONE_ac_KeyActivation(struct zx_ctx* c, s
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_KeyActivation) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_ActivationPin_s* e;
-      struct zx_ac_ActivationPin_s* en;
-      for (e = x->ActivationPin; e; e = en) {
-	  en = (struct zx_ac_ActivationPin_s*)e->gg.g.n;
-	  zx_FREE_ac_ActivationPin(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_KeyActivation) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_KeyActivation_s* zx_NEW_ac_KeyActivation(struct zx_ctx* c)
-{
-  struct zx_ac_KeyActivation_s* x = ZX_ZALLOC(c, struct zx_ac_KeyActivation_s);
-  x->gg.g.tok = zx_ac_KeyActivation_ELEM;
   return x;
 }
 
@@ -4394,6 +4578,8 @@ int zx_WALK_WO_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4415,41 +4601,6 @@ int zx_WALK_WO_ac_KeyActivation(struct zx_ctx* c, struct zx_ac_KeyActivation_s* 
 #define EL_NS     ac
 #define EL_TAG    KeySharing
 
-/* FUNC(zx_DUP_STRS_ac_KeySharing) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->sharing);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_KeySharing) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_KeySharing_s* zx_DEEP_CLONE_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x, int dup_strs)
-{
-  x = (struct zx_ac_KeySharing_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_KeySharing_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->sharing = zx_clone_attr(c, x->sharing);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_KeySharing) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -4457,6 +4608,7 @@ struct zx_ac_KeySharing_s* zx_DEEP_CLONE_ac_KeySharing(struct zx_ctx* c, struct 
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -4472,10 +4624,50 @@ void zx_FREE_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x, int f
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_KeySharing_s* zx_NEW_ac_KeySharing(struct zx_ctx* c)
 {
   struct zx_ac_KeySharing_s* x = ZX_ZALLOC(c, struct zx_ac_KeySharing_s);
   x->gg.g.tok = zx_ac_KeySharing_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_KeySharing) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->sharing);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_KeySharing) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_KeySharing_s* zx_DEEP_CLONE_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x, int dup_strs)
+{
+  x = (struct zx_ac_KeySharing_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_KeySharing_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->sharing = zx_clone_attr(c, x->sharing);
+
+
   return x;
 }
 
@@ -4510,6 +4702,8 @@ int zx_WALK_WO_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x, voi
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4531,41 +4725,6 @@ int zx_WALK_WO_ac_KeySharing(struct zx_ctx* c, struct zx_ac_KeySharing_s* x, voi
 #define EL_NS     ac
 #define EL_TAG    KeyStorage
 
-/* FUNC(zx_DUP_STRS_ac_KeyStorage) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->medium);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_KeyStorage) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_KeyStorage_s* zx_DEEP_CLONE_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x, int dup_strs)
-{
-  x = (struct zx_ac_KeyStorage_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_KeyStorage_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->medium = zx_clone_attr(c, x->medium);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_KeyStorage) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -4573,6 +4732,7 @@ struct zx_ac_KeyStorage_s* zx_DEEP_CLONE_ac_KeyStorage(struct zx_ctx* c, struct 
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -4588,10 +4748,50 @@ void zx_FREE_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x, int f
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_KeyStorage_s* zx_NEW_ac_KeyStorage(struct zx_ctx* c)
 {
   struct zx_ac_KeyStorage_s* x = ZX_ZALLOC(c, struct zx_ac_KeyStorage_s);
   x->gg.g.tok = zx_ac_KeyStorage_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_KeyStorage) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->medium);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_KeyStorage) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_KeyStorage_s* zx_DEEP_CLONE_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x, int dup_strs)
+{
+  x = (struct zx_ac_KeyStorage_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_KeyStorage_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->medium = zx_clone_attr(c, x->medium);
+
+
   return x;
 }
 
@@ -4626,6 +4826,8 @@ int zx_WALK_WO_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x, voi
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4647,43 +4849,6 @@ int zx_WALK_WO_ac_KeyStorage(struct zx_ctx* c, struct zx_ac_KeyStorage_s* x, voi
 #define EL_NS     ac
 #define EL_TAG    Length
 
-/* FUNC(zx_DUP_STRS_ac_Length) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->max);
-  zx_dup_attr(c, x->min);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_Length) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_Length_s* zx_DEEP_CLONE_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, int dup_strs)
-{
-  x = (struct zx_ac_Length_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Length_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->max = zx_clone_attr(c, x->max);
-  x->min = zx_clone_attr(c, x->min);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_Length) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -4691,12 +4856,13 @@ struct zx_ac_Length_s* zx_DEEP_CLONE_ac_Length(struct zx_ctx* c, struct zx_ac_Le
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->max, free_strs);
   zx_free_attr(c, x->min, free_strs);
+  zx_free_attr(c, x->max, free_strs);
 
 
 
@@ -4707,10 +4873,52 @@ void zx_FREE_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, int free_strs
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_Length_s* zx_NEW_ac_Length(struct zx_ctx* c)
 {
   struct zx_ac_Length_s* x = ZX_ZALLOC(c, struct zx_ac_Length_s);
   x->gg.g.tok = zx_ac_Length_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_Length) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->min);
+  zx_dup_attr(c, x->max);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_Length) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_Length_s* zx_DEEP_CLONE_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, int dup_strs)
+{
+  x = (struct zx_ac_Length_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Length_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->min = zx_clone_attr(c, x->min);
+  x->max = zx_clone_attr(c, x->max);
+
+
   return x;
 }
 
@@ -4745,6 +4953,8 @@ int zx_WALK_WO_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, void* ctx, 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4766,57 +4976,6 @@ int zx_WALK_WO_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, void* ctx, 
 #define EL_NS     ac
 #define EL_TAG    MobileNetworkEndToEndEncryption
 
-/* FUNC(zx_DUP_STRS_ac_MobileNetworkEndToEndEncryption) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_MobileNetworkEndToEndEncryption) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_MobileNetworkEndToEndEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x, int dup_strs)
-{
-  x = (struct zx_ac_MobileNetworkEndToEndEncryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_MobileNetworkEndToEndEncryption_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_MobileNetworkEndToEndEncryption) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -4824,6 +4983,7 @@ struct zx_ac_MobileNetworkEndToEndEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkEn
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -4846,10 +5006,66 @@ void zx_FREE_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_M
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_MobileNetworkEndToEndEncryption_s* zx_NEW_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c)
 {
   struct zx_ac_MobileNetworkEndToEndEncryption_s* x = ZX_ZALLOC(c, struct zx_ac_MobileNetworkEndToEndEncryption_s);
   x->gg.g.tok = zx_ac_MobileNetworkEndToEndEncryption_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_MobileNetworkEndToEndEncryption) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_MobileNetworkEndToEndEncryption) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_MobileNetworkEndToEndEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkEndToEndEncryption_s* x, int dup_strs)
+{
+  x = (struct zx_ac_MobileNetworkEndToEndEncryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_MobileNetworkEndToEndEncryption_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -4892,6 +5108,8 @@ int zx_WALK_WO_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac
   return 0;
 }
 
+#endif
+
 
 
 
@@ -4913,57 +5131,6 @@ int zx_WALK_WO_ac_MobileNetworkEndToEndEncryption(struct zx_ctx* c, struct zx_ac
 #define EL_NS     ac
 #define EL_TAG    MobileNetworkNoEncryption
 
-/* FUNC(zx_DUP_STRS_ac_MobileNetworkNoEncryption) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_MobileNetworkNoEncryption) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_MobileNetworkNoEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x, int dup_strs)
-{
-  x = (struct zx_ac_MobileNetworkNoEncryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_MobileNetworkNoEncryption_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_MobileNetworkNoEncryption) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -4971,6 +5138,7 @@ struct zx_ac_MobileNetworkNoEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkNoEncryp
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -4993,10 +5161,66 @@ void zx_FREE_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileN
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_MobileNetworkNoEncryption_s* zx_NEW_ac_MobileNetworkNoEncryption(struct zx_ctx* c)
 {
   struct zx_ac_MobileNetworkNoEncryption_s* x = ZX_ZALLOC(c, struct zx_ac_MobileNetworkNoEncryption_s);
   x->gg.g.tok = zx_ac_MobileNetworkNoEncryption_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_MobileNetworkNoEncryption) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_MobileNetworkNoEncryption) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_MobileNetworkNoEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkNoEncryption_s* x, int dup_strs)
+{
+  x = (struct zx_ac_MobileNetworkNoEncryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_MobileNetworkNoEncryption_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -5039,6 +5263,8 @@ int zx_WALK_WO_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_Mobil
   return 0;
 }
 
+#endif
+
 
 
 
@@ -5060,57 +5286,6 @@ int zx_WALK_WO_ac_MobileNetworkNoEncryption(struct zx_ctx* c, struct zx_ac_Mobil
 #define EL_NS     ac
 #define EL_TAG    MobileNetworkRadioEncryption
 
-/* FUNC(zx_DUP_STRS_ac_MobileNetworkRadioEncryption) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_MobileNetworkRadioEncryption) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_MobileNetworkRadioEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x, int dup_strs)
-{
-  x = (struct zx_ac_MobileNetworkRadioEncryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_MobileNetworkRadioEncryption_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_MobileNetworkRadioEncryption) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -5118,6 +5293,7 @@ struct zx_ac_MobileNetworkRadioEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkRadio
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -5140,10 +5316,66 @@ void zx_FREE_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_Mobi
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_MobileNetworkRadioEncryption_s* zx_NEW_ac_MobileNetworkRadioEncryption(struct zx_ctx* c)
 {
   struct zx_ac_MobileNetworkRadioEncryption_s* x = ZX_ZALLOC(c, struct zx_ac_MobileNetworkRadioEncryption_s);
   x->gg.g.tok = zx_ac_MobileNetworkRadioEncryption_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_MobileNetworkRadioEncryption) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_MobileNetworkRadioEncryption) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_MobileNetworkRadioEncryption_s* zx_DEEP_CLONE_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_MobileNetworkRadioEncryption_s* x, int dup_strs)
+{
+  x = (struct zx_ac_MobileNetworkRadioEncryption_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_MobileNetworkRadioEncryption_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -5186,6 +5418,8 @@ int zx_WALK_WO_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_Mo
   return 0;
 }
 
+#endif
+
 
 
 
@@ -5207,6 +5441,62 @@ int zx_WALK_WO_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_Mo
 #define EL_NS     ac
 #define EL_TAG    OperationalProtection
 
+/* FUNC(zx_FREE_ac_OperationalProtection) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_OperationalProtection_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_SecurityAudit_s* e;
+      struct zx_ac_SecurityAudit_s* en;
+      for (e = x->SecurityAudit; e; e = en) {
+	  en = (struct zx_ac_SecurityAudit_s*)e->gg.g.n;
+	  zx_FREE_ac_SecurityAudit(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_DeactivationCallCenter_s* e;
+      struct zx_ac_DeactivationCallCenter_s* en;
+      for (e = x->DeactivationCallCenter; e; e = en) {
+	  en = (struct zx_ac_DeactivationCallCenter_s*)e->gg.g.n;
+	  zx_FREE_ac_DeactivationCallCenter(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_OperationalProtection) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_OperationalProtection_s* zx_NEW_ac_OperationalProtection(struct zx_ctx* c)
+{
+  struct zx_ac_OperationalProtection_s* x = ZX_ZALLOC(c, struct zx_ac_OperationalProtection_s);
+  x->gg.g.tok = zx_ac_OperationalProtection_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_OperationalProtection) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -5216,6 +5506,7 @@ int zx_WALK_WO_ac_MobileNetworkRadioEncryption(struct zx_ctx* c, struct zx_ac_Mo
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_OperationalProtection_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -5245,6 +5536,7 @@ void zx_DUP_STRS_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_Operati
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_OperationalProtection_s* zx_DEEP_CLONE_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_OperationalProtection_s* x, int dup_strs)
 {
   x = (struct zx_ac_OperationalProtection_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_OperationalProtection_s), dup_strs);
@@ -5291,58 +5583,6 @@ struct zx_ac_OperationalProtection_s* zx_DEEP_CLONE_ac_OperationalProtection(str
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_OperationalProtection) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_OperationalProtection_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_SecurityAudit_s* e;
-      struct zx_ac_SecurityAudit_s* en;
-      for (e = x->SecurityAudit; e; e = en) {
-	  en = (struct zx_ac_SecurityAudit_s*)e->gg.g.n;
-	  zx_FREE_ac_SecurityAudit(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_DeactivationCallCenter_s* e;
-      struct zx_ac_DeactivationCallCenter_s* en;
-      for (e = x->DeactivationCallCenter; e; e = en) {
-	  en = (struct zx_ac_DeactivationCallCenter_s*)e->gg.g.n;
-	  zx_FREE_ac_DeactivationCallCenter(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_OperationalProtection) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_OperationalProtection_s* zx_NEW_ac_OperationalProtection(struct zx_ctx* c)
-{
-  struct zx_ac_OperationalProtection_s* x = ZX_ZALLOC(c, struct zx_ac_OperationalProtection_s);
-  x->gg.g.tok = zx_ac_OperationalProtection_ELEM;
   return x;
 }
 
@@ -5401,6 +5641,8 @@ int zx_WALK_WO_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_Operation
   return 0;
 }
 
+#endif
+
 
 
 
@@ -5422,6 +5664,70 @@ int zx_WALK_WO_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_Operation
 #define EL_NS     ac
 #define EL_TAG    Password
 
+/* FUNC(zx_FREE_ac_Password) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Length_s* e;
+      struct zx_ac_Length_s* en;
+      for (e = x->Length; e; e = en) {
+	  en = (struct zx_ac_Length_s*)e->gg.g.n;
+	  zx_FREE_ac_Length(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Alphabet_s* e;
+      struct zx_ac_Alphabet_s* en;
+      for (e = x->Alphabet; e; e = en) {
+	  en = (struct zx_ac_Alphabet_s*)e->gg.g.n;
+	  zx_FREE_ac_Alphabet(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Generation_s* e;
+      struct zx_ac_Generation_s* en;
+      for (e = x->Generation; e; e = en) {
+	  en = (struct zx_ac_Generation_s*)e->gg.g.n;
+	  zx_FREE_ac_Generation(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_Password) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_Password_s* zx_NEW_ac_Password(struct zx_ctx* c)
+{
+  struct zx_ac_Password_s* x = ZX_ZALLOC(c, struct zx_ac_Password_s);
+  x->gg.g.tok = zx_ac_Password_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_Password) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -5431,6 +5737,7 @@ int zx_WALK_WO_ac_OperationalProtection(struct zx_ctx* c, struct zx_ac_Operation
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -5465,6 +5772,7 @@ void zx_DUP_STRS_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x)
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_Password_s* zx_DEEP_CLONE_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x, int dup_strs)
 {
   x = (struct zx_ac_Password_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Password_s), dup_strs);
@@ -5524,66 +5832,6 @@ struct zx_ac_Password_s* zx_DEEP_CLONE_ac_Password(struct zx_ctx* c, struct zx_a
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_Password) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Length_s* e;
-      struct zx_ac_Length_s* en;
-      for (e = x->Length; e; e = en) {
-	  en = (struct zx_ac_Length_s*)e->gg.g.n;
-	  zx_FREE_ac_Length(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Alphabet_s* e;
-      struct zx_ac_Alphabet_s* en;
-      for (e = x->Alphabet; e; e = en) {
-	  en = (struct zx_ac_Alphabet_s*)e->gg.g.n;
-	  zx_FREE_ac_Alphabet(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Generation_s* e;
-      struct zx_ac_Generation_s* en;
-      for (e = x->Generation; e; e = en) {
-	  en = (struct zx_ac_Generation_s*)e->gg.g.n;
-	  zx_FREE_ac_Generation(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_Password) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_Password_s* zx_NEW_ac_Password(struct zx_ctx* c)
-{
-  struct zx_ac_Password_s* x = ZX_ZALLOC(c, struct zx_ac_Password_s);
-  x->gg.g.tok = zx_ac_Password_ELEM;
   return x;
 }
 
@@ -5650,6 +5898,8 @@ int zx_WALK_WO_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x, void* c
   return 0;
 }
 
+#endif
+
 
 
 
@@ -5671,41 +5921,6 @@ int zx_WALK_WO_ac_Password(struct zx_ctx* c, struct zx_ac_Password_s* x, void* c
 #define EL_NS     ac
 #define EL_TAG    PhysicalVerification
 
-/* FUNC(zx_DUP_STRS_ac_PhysicalVerification) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->credentialLevel);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_PhysicalVerification) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_PhysicalVerification_s* zx_DEEP_CLONE_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x, int dup_strs)
-{
-  x = (struct zx_ac_PhysicalVerification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_PhysicalVerification_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->credentialLevel = zx_clone_attr(c, x->credentialLevel);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_PhysicalVerification) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -5713,6 +5928,7 @@ struct zx_ac_PhysicalVerification_s* zx_DEEP_CLONE_ac_PhysicalVerification(struc
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -5728,10 +5944,50 @@ void zx_FREE_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVeri
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_PhysicalVerification_s* zx_NEW_ac_PhysicalVerification(struct zx_ctx* c)
 {
   struct zx_ac_PhysicalVerification_s* x = ZX_ZALLOC(c, struct zx_ac_PhysicalVerification_s);
   x->gg.g.tok = zx_ac_PhysicalVerification_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_PhysicalVerification) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->credentialLevel);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_PhysicalVerification) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_PhysicalVerification_s* zx_DEEP_CLONE_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVerification_s* x, int dup_strs)
+{
+  x = (struct zx_ac_PhysicalVerification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_PhysicalVerification_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->credentialLevel = zx_clone_attr(c, x->credentialLevel);
+
+
   return x;
 }
 
@@ -5766,6 +6022,8 @@ int zx_WALK_WO_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVe
   return 0;
 }
 
+#endif
+
 
 
 
@@ -5787,57 +6045,6 @@ int zx_WALK_WO_ac_PhysicalVerification(struct zx_ctx* c, struct zx_ac_PhysicalVe
 #define EL_NS     ac
 #define EL_TAG    PreviousSession
 
-/* FUNC(zx_DUP_STRS_ac_PreviousSession) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_PreviousSession) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_PreviousSession_s* zx_DEEP_CLONE_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x, int dup_strs)
-{
-  x = (struct zx_ac_PreviousSession_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_PreviousSession_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_PreviousSession) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -5845,6 +6052,7 @@ struct zx_ac_PreviousSession_s* zx_DEEP_CLONE_ac_PreviousSession(struct zx_ctx* 
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -5867,10 +6075,66 @@ void zx_FREE_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_PreviousSession_s* zx_NEW_ac_PreviousSession(struct zx_ctx* c)
 {
   struct zx_ac_PreviousSession_s* x = ZX_ZALLOC(c, struct zx_ac_PreviousSession_s);
   x->gg.g.tok = zx_ac_PreviousSession_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_PreviousSession) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_PreviousSession) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_PreviousSession_s* zx_DEEP_CLONE_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession_s* x, int dup_strs)
+{
+  x = (struct zx_ac_PreviousSession_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_PreviousSession_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -5913,6 +6177,8 @@ int zx_WALK_WO_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession
   return 0;
 }
 
+#endif
+
 
 
 
@@ -5934,6 +6200,78 @@ int zx_WALK_WO_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession
 #define EL_NS     ac
 #define EL_TAG    PrincipalAuthenticationMechanism
 
+/* FUNC(zx_FREE_ac_PrincipalAuthenticationMechanism) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_ac_PrincipalAuthenticationMechanism_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Password_s* e;
+      struct zx_ac_Password_s* en;
+      for (e = x->Password; e; e = en) {
+	  en = (struct zx_ac_Password_s*)e->gg.g.n;
+	  zx_FREE_ac_Password(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Token_s* e;
+      struct zx_ac_Token_s* en;
+      for (e = x->Token; e; e = en) {
+	  en = (struct zx_ac_Token_s*)e->gg.g.n;
+	  zx_FREE_ac_Token(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Smartcard_s* e;
+      struct zx_ac_Smartcard_s* en;
+      for (e = x->Smartcard; e; e = en) {
+	  en = (struct zx_ac_Smartcard_s*)e->gg.g.n;
+	  zx_FREE_ac_Smartcard(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_ActivationPin_s* e;
+      struct zx_ac_ActivationPin_s* en;
+      for (e = x->ActivationPin; e; e = en) {
+	  en = (struct zx_ac_ActivationPin_s*)e->gg.g.n;
+	  zx_FREE_ac_ActivationPin(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_PrincipalAuthenticationMechanism) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_PrincipalAuthenticationMechanism_s* zx_NEW_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c)
+{
+  struct zx_ac_PrincipalAuthenticationMechanism_s* x = ZX_ZALLOC(c, struct zx_ac_PrincipalAuthenticationMechanism_s);
+  x->gg.g.tok = zx_ac_PrincipalAuthenticationMechanism_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_PrincipalAuthenticationMechanism) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -5943,6 +6281,7 @@ int zx_WALK_WO_ac_PreviousSession(struct zx_ctx* c, struct zx_ac_PreviousSession
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_ac_PrincipalAuthenticationMechanism_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -5982,6 +6321,7 @@ void zx_DUP_STRS_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_PrincipalAuthenticationMechanism_s* zx_DEEP_CLONE_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_ac_PrincipalAuthenticationMechanism_s* x, int dup_strs)
 {
   x = (struct zx_ac_PrincipalAuthenticationMechanism_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_PrincipalAuthenticationMechanism_s), dup_strs);
@@ -6057,74 +6397,6 @@ struct zx_ac_PrincipalAuthenticationMechanism_s* zx_DEEP_CLONE_ac_PrincipalAuthe
   return x;
 }
 
-/* FUNC(zx_FREE_ac_PrincipalAuthenticationMechanism) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_ac_PrincipalAuthenticationMechanism_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Password_s* e;
-      struct zx_ac_Password_s* en;
-      for (e = x->Password; e; e = en) {
-	  en = (struct zx_ac_Password_s*)e->gg.g.n;
-	  zx_FREE_ac_Password(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Token_s* e;
-      struct zx_ac_Token_s* en;
-      for (e = x->Token; e; e = en) {
-	  en = (struct zx_ac_Token_s*)e->gg.g.n;
-	  zx_FREE_ac_Token(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Smartcard_s* e;
-      struct zx_ac_Smartcard_s* en;
-      for (e = x->Smartcard; e; e = en) {
-	  en = (struct zx_ac_Smartcard_s*)e->gg.g.n;
-	  zx_FREE_ac_Smartcard(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_ActivationPin_s* e;
-      struct zx_ac_ActivationPin_s* en;
-      for (e = x->ActivationPin; e; e = en) {
-	  en = (struct zx_ac_ActivationPin_s*)e->gg.g.n;
-	  zx_FREE_ac_ActivationPin(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_PrincipalAuthenticationMechanism) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_PrincipalAuthenticationMechanism_s* zx_NEW_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c)
-{
-  struct zx_ac_PrincipalAuthenticationMechanism_s* x = ZX_ZALLOC(c, struct zx_ac_PrincipalAuthenticationMechanism_s);
-  x->gg.g.tok = zx_ac_PrincipalAuthenticationMechanism_ELEM;
-  return x;
-}
-
 /* FUNC(zx_WALK_SO_ac_PrincipalAuthenticationMechanism) */
 
 /* Depth first traversal of the tree in either schema order or the wire order. */
@@ -6196,6 +6468,8 @@ int zx_WALK_WO_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_a
   return 0;
 }
 
+#endif
+
 
 
 
@@ -6217,6 +6491,70 @@ int zx_WALK_WO_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_a
 #define EL_NS     ac
 #define EL_TAG    PrivateKeyProtection
 
+/* FUNC(zx_FREE_ac_PrivateKeyProtection) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKeyProtection_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_KeyActivation_s* e;
+      struct zx_ac_KeyActivation_s* en;
+      for (e = x->KeyActivation; e; e = en) {
+	  en = (struct zx_ac_KeyActivation_s*)e->gg.g.n;
+	  zx_FREE_ac_KeyActivation(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_KeyStorage_s* e;
+      struct zx_ac_KeyStorage_s* en;
+      for (e = x->KeyStorage; e; e = en) {
+	  en = (struct zx_ac_KeyStorage_s*)e->gg.g.n;
+	  zx_FREE_ac_KeyStorage(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_KeySharing_s* e;
+      struct zx_ac_KeySharing_s* en;
+      for (e = x->KeySharing; e; e = en) {
+	  en = (struct zx_ac_KeySharing_s*)e->gg.g.n;
+	  zx_FREE_ac_KeySharing(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_PrivateKeyProtection) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_PrivateKeyProtection_s* zx_NEW_ac_PrivateKeyProtection(struct zx_ctx* c)
+{
+  struct zx_ac_PrivateKeyProtection_s* x = ZX_ZALLOC(c, struct zx_ac_PrivateKeyProtection_s);
+  x->gg.g.tok = zx_ac_PrivateKeyProtection_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_PrivateKeyProtection) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -6226,6 +6564,7 @@ int zx_WALK_WO_ac_PrincipalAuthenticationMechanism(struct zx_ctx* c, struct zx_a
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKeyProtection_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -6260,6 +6599,7 @@ void zx_DUP_STRS_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateK
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_PrivateKeyProtection_s* zx_DEEP_CLONE_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKeyProtection_s* x, int dup_strs)
 {
   x = (struct zx_ac_PrivateKeyProtection_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_PrivateKeyProtection_s), dup_strs);
@@ -6319,66 +6659,6 @@ struct zx_ac_PrivateKeyProtection_s* zx_DEEP_CLONE_ac_PrivateKeyProtection(struc
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_PrivateKeyProtection) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKeyProtection_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_KeyActivation_s* e;
-      struct zx_ac_KeyActivation_s* en;
-      for (e = x->KeyActivation; e; e = en) {
-	  en = (struct zx_ac_KeyActivation_s*)e->gg.g.n;
-	  zx_FREE_ac_KeyActivation(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_KeyStorage_s* e;
-      struct zx_ac_KeyStorage_s* en;
-      for (e = x->KeyStorage; e; e = en) {
-	  en = (struct zx_ac_KeyStorage_s*)e->gg.g.n;
-	  zx_FREE_ac_KeyStorage(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_KeySharing_s* e;
-      struct zx_ac_KeySharing_s* en;
-      for (e = x->KeySharing; e; e = en) {
-	  en = (struct zx_ac_KeySharing_s*)e->gg.g.n;
-	  zx_FREE_ac_KeySharing(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_PrivateKeyProtection) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_PrivateKeyProtection_s* zx_NEW_ac_PrivateKeyProtection(struct zx_ctx* c)
-{
-  struct zx_ac_PrivateKeyProtection_s* x = ZX_ZALLOC(c, struct zx_ac_PrivateKeyProtection_s);
-  x->gg.g.tok = zx_ac_PrivateKeyProtection_ELEM;
   return x;
 }
 
@@ -6445,6 +6725,8 @@ int zx_WALK_WO_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKey
   return 0;
 }
 
+#endif
+
 
 
 
@@ -6466,57 +6748,6 @@ int zx_WALK_WO_ac_PrivateKeyProtection(struct zx_ctx* c, struct zx_ac_PrivateKey
 #define EL_NS     ac
 #define EL_TAG    ResumeSession
 
-/* FUNC(zx_DUP_STRS_ac_ResumeSession) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_ResumeSession) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_ResumeSession_s* zx_DEEP_CLONE_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x, int dup_strs)
-{
-  x = (struct zx_ac_ResumeSession_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ResumeSession_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_ResumeSession) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -6524,6 +6755,7 @@ struct zx_ac_ResumeSession_s* zx_DEEP_CLONE_ac_ResumeSession(struct zx_ctx* c, s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -6546,10 +6778,66 @@ void zx_FREE_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x,
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_ResumeSession_s* zx_NEW_ac_ResumeSession(struct zx_ctx* c)
 {
   struct zx_ac_ResumeSession_s* x = ZX_ZALLOC(c, struct zx_ac_ResumeSession_s);
   x->gg.g.tok = zx_ac_ResumeSession_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_ResumeSession) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_ResumeSession) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_ResumeSession_s* zx_DEEP_CLONE_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* x, int dup_strs)
+{
+  x = (struct zx_ac_ResumeSession_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ResumeSession_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -6592,6 +6880,8 @@ int zx_WALK_WO_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -6613,57 +6903,6 @@ int zx_WALK_WO_ac_ResumeSession(struct zx_ctx* c, struct zx_ac_ResumeSession_s* 
 #define EL_NS     ac
 #define EL_TAG    SSL
 
-/* FUNC(zx_DUP_STRS_ac_SSL) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_SSL) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_SSL_s* zx_DEEP_CLONE_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, int dup_strs)
-{
-  x = (struct zx_ac_SSL_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SSL_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_SSL) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -6671,6 +6910,7 @@ struct zx_ac_SSL_s* zx_DEEP_CLONE_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -6693,10 +6933,66 @@ void zx_FREE_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, int free_strs)
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_SSL_s* zx_NEW_ac_SSL(struct zx_ctx* c)
 {
   struct zx_ac_SSL_s* x = ZX_ZALLOC(c, struct zx_ac_SSL_s);
   x->gg.g.tok = zx_ac_SSL_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_SSL) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_SSL) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_SSL_s* zx_DEEP_CLONE_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, int dup_strs)
+{
+  x = (struct zx_ac_SSL_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SSL_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -6739,6 +7035,8 @@ int zx_WALK_WO_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, void* ctx, int (*
   return 0;
 }
 
+#endif
+
 
 
 
@@ -6760,6 +7058,62 @@ int zx_WALK_WO_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, void* ctx, int (*
 #define EL_NS     ac
 #define EL_TAG    SecretKeyProtection
 
+/* FUNC(zx_FREE_ac_SecretKeyProtection) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyProtection_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_KeyActivation_s* e;
+      struct zx_ac_KeyActivation_s* en;
+      for (e = x->KeyActivation; e; e = en) {
+	  en = (struct zx_ac_KeyActivation_s*)e->gg.g.n;
+	  zx_FREE_ac_KeyActivation(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_KeyStorage_s* e;
+      struct zx_ac_KeyStorage_s* en;
+      for (e = x->KeyStorage; e; e = en) {
+	  en = (struct zx_ac_KeyStorage_s*)e->gg.g.n;
+	  zx_FREE_ac_KeyStorage(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_SecretKeyProtection) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_SecretKeyProtection_s* zx_NEW_ac_SecretKeyProtection(struct zx_ctx* c)
+{
+  struct zx_ac_SecretKeyProtection_s* x = ZX_ZALLOC(c, struct zx_ac_SecretKeyProtection_s);
+  x->gg.g.tok = zx_ac_SecretKeyProtection_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_SecretKeyProtection) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -6769,6 +7123,7 @@ int zx_WALK_WO_ac_SSL(struct zx_ctx* c, struct zx_ac_SSL_s* x, void* ctx, int (*
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyProtection_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -6798,6 +7153,7 @@ void zx_DUP_STRS_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKey
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_SecretKeyProtection_s* zx_DEEP_CLONE_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyProtection_s* x, int dup_strs)
 {
   x = (struct zx_ac_SecretKeyProtection_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SecretKeyProtection_s), dup_strs);
@@ -6844,58 +7200,6 @@ struct zx_ac_SecretKeyProtection_s* zx_DEEP_CLONE_ac_SecretKeyProtection(struct 
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_SecretKeyProtection) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyProtection_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_KeyActivation_s* e;
-      struct zx_ac_KeyActivation_s* en;
-      for (e = x->KeyActivation; e; e = en) {
-	  en = (struct zx_ac_KeyActivation_s*)e->gg.g.n;
-	  zx_FREE_ac_KeyActivation(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_KeyStorage_s* e;
-      struct zx_ac_KeyStorage_s* en;
-      for (e = x->KeyStorage; e; e = en) {
-	  en = (struct zx_ac_KeyStorage_s*)e->gg.g.n;
-	  zx_FREE_ac_KeyStorage(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_SecretKeyProtection) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_SecretKeyProtection_s* zx_NEW_ac_SecretKeyProtection(struct zx_ctx* c)
-{
-  struct zx_ac_SecretKeyProtection_s* x = ZX_ZALLOC(c, struct zx_ac_SecretKeyProtection_s);
-  x->gg.g.tok = zx_ac_SecretKeyProtection_ELEM;
   return x;
 }
 
@@ -6954,6 +7258,8 @@ int zx_WALK_WO_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyPr
   return 0;
 }
 
+#endif
+
 
 
 
@@ -6975,6 +7281,54 @@ int zx_WALK_WO_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyPr
 #define EL_NS     ac
 #define EL_TAG    SecurityAudit
 
+/* FUNC(zx_FREE_ac_SecurityAudit) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_SwitchAudit_s* e;
+      struct zx_ac_SwitchAudit_s* en;
+      for (e = x->SwitchAudit; e; e = en) {
+	  en = (struct zx_ac_SwitchAudit_s*)e->gg.g.n;
+	  zx_FREE_ac_SwitchAudit(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_SecurityAudit) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_SecurityAudit_s* zx_NEW_ac_SecurityAudit(struct zx_ctx* c)
+{
+  struct zx_ac_SecurityAudit_s* x = ZX_ZALLOC(c, struct zx_ac_SecurityAudit_s);
+  x->gg.g.tok = zx_ac_SecurityAudit_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_SecurityAudit) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -6984,6 +7338,7 @@ int zx_WALK_WO_ac_SecretKeyProtection(struct zx_ctx* c, struct zx_ac_SecretKeyPr
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -7008,6 +7363,7 @@ void zx_DUP_STRS_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_SecurityAudit_s* zx_DEEP_CLONE_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* x, int dup_strs)
 {
   x = (struct zx_ac_SecurityAudit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SecurityAudit_s), dup_strs);
@@ -7041,50 +7397,6 @@ struct zx_ac_SecurityAudit_s* zx_DEEP_CLONE_ac_SecurityAudit(struct zx_ctx* c, s
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_SecurityAudit) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_SwitchAudit_s* e;
-      struct zx_ac_SwitchAudit_s* en;
-      for (e = x->SwitchAudit; e; e = en) {
-	  en = (struct zx_ac_SwitchAudit_s*)e->gg.g.n;
-	  zx_FREE_ac_SwitchAudit(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_SecurityAudit) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_SecurityAudit_s* zx_NEW_ac_SecurityAudit(struct zx_ctx* c)
-{
-  struct zx_ac_SecurityAudit_s* x = ZX_ZALLOC(c, struct zx_ac_SecurityAudit_s);
-  x->gg.g.tok = zx_ac_SecurityAudit_ELEM;
   return x;
 }
 
@@ -7135,6 +7447,8 @@ int zx_WALK_WO_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -7156,57 +7470,6 @@ int zx_WALK_WO_ac_SecurityAudit(struct zx_ctx* c, struct zx_ac_SecurityAudit_s* 
 #define EL_NS     ac
 #define EL_TAG    SharedSecretChallengeResponse
 
-/* FUNC(zx_DUP_STRS_ac_SharedSecretChallengeResponse) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_SharedSecretChallengeResponse) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_SharedSecretChallengeResponse_s* zx_DEEP_CLONE_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x, int dup_strs)
-{
-  x = (struct zx_ac_SharedSecretChallengeResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SharedSecretChallengeResponse_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_SharedSecretChallengeResponse) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -7214,6 +7477,7 @@ struct zx_ac_SharedSecretChallengeResponse_s* zx_DEEP_CLONE_ac_SharedSecretChall
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -7236,10 +7500,66 @@ void zx_FREE_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_Sha
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_SharedSecretChallengeResponse_s* zx_NEW_ac_SharedSecretChallengeResponse(struct zx_ctx* c)
 {
   struct zx_ac_SharedSecretChallengeResponse_s* x = ZX_ZALLOC(c, struct zx_ac_SharedSecretChallengeResponse_s);
   x->gg.g.tok = zx_ac_SharedSecretChallengeResponse_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_SharedSecretChallengeResponse) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_SharedSecretChallengeResponse) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_SharedSecretChallengeResponse_s* zx_DEEP_CLONE_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_SharedSecretChallengeResponse_s* x, int dup_strs)
+{
+  x = (struct zx_ac_SharedSecretChallengeResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SharedSecretChallengeResponse_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -7282,6 +7602,8 @@ int zx_WALK_WO_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_S
   return 0;
 }
 
+#endif
+
 
 
 
@@ -7303,57 +7625,6 @@ int zx_WALK_WO_ac_SharedSecretChallengeResponse(struct zx_ctx* c, struct zx_ac_S
 #define EL_NS     ac
 #define EL_TAG    SharedSecretDynamicPlaintext
 
-/* FUNC(zx_DUP_STRS_ac_SharedSecretDynamicPlaintext) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_SharedSecretDynamicPlaintext) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_SharedSecretDynamicPlaintext_s* zx_DEEP_CLONE_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x, int dup_strs)
-{
-  x = (struct zx_ac_SharedSecretDynamicPlaintext_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SharedSecretDynamicPlaintext_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_SharedSecretDynamicPlaintext) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -7361,6 +7632,7 @@ struct zx_ac_SharedSecretDynamicPlaintext_s* zx_DEEP_CLONE_ac_SharedSecretDynami
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -7383,10 +7655,66 @@ void zx_FREE_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_Shar
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_SharedSecretDynamicPlaintext_s* zx_NEW_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c)
 {
   struct zx_ac_SharedSecretDynamicPlaintext_s* x = ZX_ZALLOC(c, struct zx_ac_SharedSecretDynamicPlaintext_s);
   x->gg.g.tok = zx_ac_SharedSecretDynamicPlaintext_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_SharedSecretDynamicPlaintext) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_SharedSecretDynamicPlaintext) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_SharedSecretDynamicPlaintext_s* zx_DEEP_CLONE_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_SharedSecretDynamicPlaintext_s* x, int dup_strs)
+{
+  x = (struct zx_ac_SharedSecretDynamicPlaintext_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SharedSecretDynamicPlaintext_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -7429,6 +7757,8 @@ int zx_WALK_WO_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_Sh
   return 0;
 }
 
+#endif
+
 
 
 
@@ -7450,57 +7780,6 @@ int zx_WALK_WO_ac_SharedSecretDynamicPlaintext(struct zx_ctx* c, struct zx_ac_Sh
 #define EL_NS     ac
 #define EL_TAG    Smartcard
 
-/* FUNC(zx_DUP_STRS_ac_Smartcard) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_Smartcard) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_Smartcard_s* zx_DEEP_CLONE_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x, int dup_strs)
-{
-  x = (struct zx_ac_Smartcard_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Smartcard_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_Smartcard) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -7508,6 +7787,7 @@ struct zx_ac_Smartcard_s* zx_DEEP_CLONE_ac_Smartcard(struct zx_ctx* c, struct zx
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -7530,10 +7810,66 @@ void zx_FREE_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x, int fre
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_Smartcard_s* zx_NEW_ac_Smartcard(struct zx_ctx* c)
 {
   struct zx_ac_Smartcard_s* x = ZX_ZALLOC(c, struct zx_ac_Smartcard_s);
   x->gg.g.tok = zx_ac_Smartcard_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_Smartcard) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_Smartcard) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_Smartcard_s* zx_DEEP_CLONE_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x, int dup_strs)
+{
+  x = (struct zx_ac_Smartcard_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Smartcard_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -7576,6 +7912,8 @@ int zx_WALK_WO_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x, void*
   return 0;
 }
 
+#endif
+
 
 
 
@@ -7597,57 +7935,6 @@ int zx_WALK_WO_ac_Smartcard(struct zx_ctx* c, struct zx_ac_Smartcard_s* x, void*
 #define EL_NS     ac
 #define EL_TAG    SwitchAudit
 
-/* FUNC(zx_DUP_STRS_ac_SwitchAudit) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_SwitchAudit) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_SwitchAudit_s* zx_DEEP_CLONE_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, int dup_strs)
-{
-  x = (struct zx_ac_SwitchAudit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SwitchAudit_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_SwitchAudit) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -7655,6 +7942,7 @@ struct zx_ac_SwitchAudit_s* zx_DEEP_CLONE_ac_SwitchAudit(struct zx_ctx* c, struc
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -7677,10 +7965,66 @@ void zx_FREE_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, int
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_SwitchAudit_s* zx_NEW_ac_SwitchAudit(struct zx_ctx* c)
 {
   struct zx_ac_SwitchAudit_s* x = ZX_ZALLOC(c, struct zx_ac_SwitchAudit_s);
   x->gg.g.tok = zx_ac_SwitchAudit_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_SwitchAudit) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_SwitchAudit) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_SwitchAudit_s* zx_DEEP_CLONE_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, int dup_strs)
+{
+  x = (struct zx_ac_SwitchAudit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_SwitchAudit_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -7723,6 +8067,8 @@ int zx_WALK_WO_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, v
   return 0;
 }
 
+#endif
+
 
 
 
@@ -7744,6 +8090,62 @@ int zx_WALK_WO_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, v
 #define EL_NS     ac
 #define EL_TAG    TechnicalProtection
 
+/* FUNC(zx_FREE_ac_TechnicalProtection) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalProtection_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_PrivateKeyProtection_s* e;
+      struct zx_ac_PrivateKeyProtection_s* en;
+      for (e = x->PrivateKeyProtection; e; e = en) {
+	  en = (struct zx_ac_PrivateKeyProtection_s*)e->gg.g.n;
+	  zx_FREE_ac_PrivateKeyProtection(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_SecretKeyProtection_s* e;
+      struct zx_ac_SecretKeyProtection_s* en;
+      for (e = x->SecretKeyProtection; e; e = en) {
+	  en = (struct zx_ac_SecretKeyProtection_s*)e->gg.g.n;
+	  zx_FREE_ac_SecretKeyProtection(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_TechnicalProtection) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_TechnicalProtection_s* zx_NEW_ac_TechnicalProtection(struct zx_ctx* c)
+{
+  struct zx_ac_TechnicalProtection_s* x = ZX_ZALLOC(c, struct zx_ac_TechnicalProtection_s);
+  x->gg.g.tok = zx_ac_TechnicalProtection_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_TechnicalProtection) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -7753,6 +8155,7 @@ int zx_WALK_WO_ac_SwitchAudit(struct zx_ctx* c, struct zx_ac_SwitchAudit_s* x, v
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalProtection_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -7782,6 +8185,7 @@ void zx_DUP_STRS_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_Technical
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_TechnicalProtection_s* zx_DEEP_CLONE_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalProtection_s* x, int dup_strs)
 {
   x = (struct zx_ac_TechnicalProtection_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_TechnicalProtection_s), dup_strs);
@@ -7828,58 +8232,6 @@ struct zx_ac_TechnicalProtection_s* zx_DEEP_CLONE_ac_TechnicalProtection(struct 
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_TechnicalProtection) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalProtection_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_PrivateKeyProtection_s* e;
-      struct zx_ac_PrivateKeyProtection_s* en;
-      for (e = x->PrivateKeyProtection; e; e = en) {
-	  en = (struct zx_ac_PrivateKeyProtection_s*)e->gg.g.n;
-	  zx_FREE_ac_PrivateKeyProtection(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_SecretKeyProtection_s* e;
-      struct zx_ac_SecretKeyProtection_s* en;
-      for (e = x->SecretKeyProtection; e; e = en) {
-	  en = (struct zx_ac_SecretKeyProtection_s*)e->gg.g.n;
-	  zx_FREE_ac_SecretKeyProtection(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_TechnicalProtection) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_TechnicalProtection_s* zx_NEW_ac_TechnicalProtection(struct zx_ctx* c)
-{
-  struct zx_ac_TechnicalProtection_s* x = ZX_ZALLOC(c, struct zx_ac_TechnicalProtection_s);
-  x->gg.g.tok = zx_ac_TechnicalProtection_ELEM;
   return x;
 }
 
@@ -7938,6 +8290,8 @@ int zx_WALK_WO_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalPr
   return 0;
 }
 
+#endif
+
 
 
 
@@ -7959,45 +8313,6 @@ int zx_WALK_WO_ac_TechnicalProtection(struct zx_ctx* c, struct zx_ac_TechnicalPr
 #define EL_NS     ac
 #define EL_TAG    TimeSyncToken
 
-/* FUNC(zx_DUP_STRS_ac_TimeSyncToken) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->DeviceInHand);
-  zx_dup_attr(c, x->DeviceType);
-  zx_dup_attr(c, x->SeedLength);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_TimeSyncToken) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_TimeSyncToken_s* zx_DEEP_CLONE_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x, int dup_strs)
-{
-  x = (struct zx_ac_TimeSyncToken_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_TimeSyncToken_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->DeviceInHand = zx_clone_attr(c, x->DeviceInHand);
-  x->DeviceType = zx_clone_attr(c, x->DeviceType);
-  x->SeedLength = zx_clone_attr(c, x->SeedLength);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_TimeSyncToken) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -8005,13 +8320,14 @@ struct zx_ac_TimeSyncToken_s* zx_DEEP_CLONE_ac_TimeSyncToken(struct zx_ctx* c, s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->DeviceInHand, free_strs);
   zx_free_attr(c, x->DeviceType, free_strs);
   zx_free_attr(c, x->SeedLength, free_strs);
+  zx_free_attr(c, x->DeviceInHand, free_strs);
 
 
 
@@ -8022,10 +8338,54 @@ void zx_FREE_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x,
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_TimeSyncToken_s* zx_NEW_ac_TimeSyncToken(struct zx_ctx* c)
 {
   struct zx_ac_TimeSyncToken_s* x = ZX_ZALLOC(c, struct zx_ac_TimeSyncToken_s);
   x->gg.g.tok = zx_ac_TimeSyncToken_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_TimeSyncToken) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->DeviceType);
+  zx_dup_attr(c, x->SeedLength);
+  zx_dup_attr(c, x->DeviceInHand);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_TimeSyncToken) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_TimeSyncToken_s* zx_DEEP_CLONE_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x, int dup_strs)
+{
+  x = (struct zx_ac_TimeSyncToken_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_TimeSyncToken_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->DeviceType = zx_clone_attr(c, x->DeviceType);
+  x->SeedLength = zx_clone_attr(c, x->SeedLength);
+  x->DeviceInHand = zx_clone_attr(c, x->DeviceInHand);
+
+
   return x;
 }
 
@@ -8060,6 +8420,8 @@ int zx_WALK_WO_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -8081,6 +8443,54 @@ int zx_WALK_WO_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* 
 #define EL_NS     ac
 #define EL_TAG    Token
 
+/* FUNC(zx_FREE_ac_Token) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_TimeSyncToken_s* e;
+      struct zx_ac_TimeSyncToken_s* en;
+      for (e = x->TimeSyncToken; e; e = en) {
+	  en = (struct zx_ac_TimeSyncToken_s*)e->gg.g.n;
+	  zx_FREE_ac_TimeSyncToken(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      for (e = x->Extension; e; e = en) {
+	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
+	  zx_FREE_ac_Extension(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_ac_Token) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_ac_Token_s* zx_NEW_ac_Token(struct zx_ctx* c)
+{
+  struct zx_ac_Token_s* x = ZX_ZALLOC(c, struct zx_ac_Token_s);
+  x->gg.g.tok = zx_ac_Token_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
 /* FUNC(zx_DUP_STRS_ac_Token) */
 
 /* Depth first traversal of data structure to copy its simple strings
@@ -8090,6 +8500,7 @@ int zx_WALK_WO_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* 
  * datastructure needs to outlast the protocol data or needs a different
  * memory allocation strategy, you need to call this function.  */
 
+/* Called by: */
 void zx_DUP_STRS_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x)
 {
   zx_dup_strs_common(c, &x->gg);
@@ -8114,6 +8525,7 @@ void zx_DUP_STRS_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x)
 /* Depth first traversal of data structure to clone it and its sublements.
  * The simple strings are handled as a special case according to dup_strs flag. */
 
+/* Called by: */
 struct zx_ac_Token_s* zx_DEEP_CLONE_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x, int dup_strs)
 {
   x = (struct zx_ac_Token_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Token_s), dup_strs);
@@ -8147,50 +8559,6 @@ struct zx_ac_Token_s* zx_DEEP_CLONE_ac_Token(struct zx_ctx* c, struct zx_ac_Toke
       }
   }
 
-  return x;
-}
-
-/* FUNC(zx_FREE_ac_Token) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-void zx_FREE_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_TimeSyncToken_s* e;
-      struct zx_ac_TimeSyncToken_s* en;
-      for (e = x->TimeSyncToken; e; e = en) {
-	  en = (struct zx_ac_TimeSyncToken_s*)e->gg.g.n;
-	  zx_FREE_ac_TimeSyncToken(c, e, free_strs);
-      }
-  }
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      for (e = x->Extension; e; e = en) {
-	  en = (struct zx_ac_Extension_s*)e->gg.g.n;
-	  zx_FREE_ac_Extension(c, e, free_strs);
-      }
-  }
-
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
-/* FUNC(zx_NEW_ac_Token) */
-
-/* Trivial allocator/constructor for the datatype. */
-
-struct zx_ac_Token_s* zx_NEW_ac_Token(struct zx_ctx* c)
-{
-  struct zx_ac_Token_s* x = ZX_ZALLOC(c, struct zx_ac_Token_s);
-  x->gg.g.tok = zx_ac_Token_ELEM;
   return x;
 }
 
@@ -8241,6 +8609,8 @@ int zx_WALK_WO_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x, void* ctx, in
   return 0;
 }
 
+#endif
+
 
 
 
@@ -8262,57 +8632,6 @@ int zx_WALK_WO_ac_Token(struct zx_ctx* c, struct zx_ac_Token_s* x, void* ctx, in
 #define EL_NS     ac
 #define EL_TAG    WTLS
 
-/* FUNC(zx_DUP_STRS_ac_WTLS) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_WTLS) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_WTLS_s* zx_DEEP_CLONE_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x, int dup_strs)
-{
-  x = (struct zx_ac_WTLS_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_WTLS_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_WTLS) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -8320,6 +8639,7 @@ struct zx_ac_WTLS_s* zx_DEEP_CLONE_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -8342,10 +8662,66 @@ void zx_FREE_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x, int free_strs)
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_WTLS_s* zx_NEW_ac_WTLS(struct zx_ctx* c)
 {
   struct zx_ac_WTLS_s* x = ZX_ZALLOC(c, struct zx_ac_WTLS_s);
   x->gg.g.tok = zx_ac_WTLS_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_WTLS) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_WTLS) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_WTLS_s* zx_DEEP_CLONE_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x, int dup_strs)
+{
+  x = (struct zx_ac_WTLS_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_WTLS_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -8388,6 +8764,8 @@ int zx_WALK_WO_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x, void* ctx, int 
   return 0;
 }
 
+#endif
+
 
 
 
@@ -8409,57 +8787,6 @@ int zx_WALK_WO_ac_WTLS(struct zx_ctx* c, struct zx_ac_WTLS_s* x, void* ctx, int 
 #define EL_NS     ac
 #define EL_TAG    WrittenConsent
 
-/* FUNC(zx_DUP_STRS_ac_WrittenConsent) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_WrittenConsent) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_WrittenConsent_s* zx_DEEP_CLONE_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x, int dup_strs)
-{
-  x = (struct zx_ac_WrittenConsent_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_WrittenConsent_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_WrittenConsent) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -8467,6 +8794,7 @@ struct zx_ac_WrittenConsent_s* zx_DEEP_CLONE_ac_WrittenConsent(struct zx_ctx* c,
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -8489,10 +8817,66 @@ void zx_FREE_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* 
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_WrittenConsent_s* zx_NEW_ac_WrittenConsent(struct zx_ctx* c)
 {
   struct zx_ac_WrittenConsent_s* x = ZX_ZALLOC(c, struct zx_ac_WrittenConsent_s);
   x->gg.g.tok = zx_ac_WrittenConsent_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_WrittenConsent) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_WrittenConsent) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_WrittenConsent_s* zx_DEEP_CLONE_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s* x, int dup_strs)
+{
+  x = (struct zx_ac_WrittenConsent_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_WrittenConsent_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -8535,6 +8919,8 @@ int zx_WALK_WO_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s
   return 0;
 }
 
+#endif
+
 
 
 
@@ -8556,57 +8942,6 @@ int zx_WALK_WO_ac_WrittenConsent(struct zx_ctx* c, struct zx_ac_WrittenConsent_s
 #define EL_NS     ac
 #define EL_TAG    ZeroKnowledge
 
-/* FUNC(zx_DUP_STRS_ac_ZeroKnowledge) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
-	  zx_DUP_STRS_ac_Extension(c, e);
-  }
-
-}
-
-/* FUNC(zx_DEEP_CLONE_ac_ZeroKnowledge) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_ac_ZeroKnowledge_s* zx_DEEP_CLONE_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x, int dup_strs)
-{
-  x = (struct zx_ac_ZeroKnowledge_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ZeroKnowledge_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-
-  {
-      struct zx_ac_Extension_s* e;
-      struct zx_ac_Extension_s* en;
-      struct zx_ac_Extension_s* enn;
-      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
-	  if (!enn)
-	      x->Extension = en;
-	  else
-	      enn->gg.g.n = &en->gg.g;
-	  enn = en;
-      }
-  }
-
-  return x;
-}
-
 /* FUNC(zx_FREE_ac_ZeroKnowledge) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -8614,6 +8949,7 @@ struct zx_ac_ZeroKnowledge_s* zx_DEEP_CLONE_ac_ZeroKnowledge(struct zx_ctx* c, s
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -8636,10 +8972,66 @@ void zx_FREE_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x,
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_ac_ZeroKnowledge_s* zx_NEW_ac_ZeroKnowledge(struct zx_ctx* c)
 {
   struct zx_ac_ZeroKnowledge_s* x = ZX_ZALLOC(c, struct zx_ac_ZeroKnowledge_s);
   x->gg.g.tok = zx_ac_ZeroKnowledge_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_ac_ZeroKnowledge) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      for (e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n)
+	  zx_DUP_STRS_ac_Extension(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_ac_ZeroKnowledge) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_ac_ZeroKnowledge_s* zx_DEEP_CLONE_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* x, int dup_strs)
+{
+  x = (struct zx_ac_ZeroKnowledge_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_ZeroKnowledge_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  {
+      struct zx_ac_Extension_s* e;
+      struct zx_ac_Extension_s* en;
+      struct zx_ac_Extension_s* enn;
+      for (enn = 0, e = x->Extension; e; e = (struct zx_ac_Extension_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_ac_Extension(c, e, dup_strs);
+	  if (!enn)
+	      x->Extension = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
   return x;
 }
 
@@ -8681,6 +9073,8 @@ int zx_WALK_WO_ac_ZeroKnowledge(struct zx_ctx* c, struct zx_ac_ZeroKnowledge_s* 
   ERR("*** walk_wo not implemented %d", 0);
   return 0;
 }
+
+#endif
 
 
 /* EOF -- c/zx-ac-aux.c */

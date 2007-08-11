@@ -7,16 +7,19 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** dec-templ.c  -  XML decoder template, used in code generation
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: dec-templ.c,v 1.19 2006/09/30 06:24:49 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: dec-templ.c,v 1.23 2007-06-21 23:32:32 sampo Exp $
  **
  ** 28.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 12.8.2006, added special scanning of xmlns to avoid backtracking elem recognition --Sampo
  ** 23.9.2006, added collection of WO information --Sampo
+ ** 21.6.2007, improved handling of undeclared namespace prefixes --Sampo
  **
  ** N.B: This template is meant to be processed by pd/xsd2sg.pl. Beware
  ** of special markers that xsd2sg.pl expects to find and understand.
@@ -79,6 +82,7 @@
 #define EL_NS     xenc
 #define EL_TAG    AgreementMethod
 
+/* Called by: */
 struct zx_xenc_AgreementMethod_s* zx_DEC_xenc_AgreementMethod(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -100,7 +104,7 @@ struct zx_xenc_AgreementMethod_s* zx_DEC_xenc_AgreementMethod(struct zx_ctx* c, 
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -152,11 +156,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -164,7 +170,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -241,7 +247,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -277,6 +283,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    CipherData
 
+/* Called by: */
 struct zx_xenc_CipherData_s* zx_DEC_xenc_CipherData(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -298,7 +305,7 @@ struct zx_xenc_CipherData_s* zx_DEC_xenc_CipherData(struct zx_ctx* c, struct zx_
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -344,11 +351,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -356,7 +365,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -428,7 +437,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -464,6 +473,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    CipherReference
 
+/* Called by: */
 struct zx_xenc_CipherReference_s* zx_DEC_xenc_CipherReference(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -485,7 +495,7 @@ struct zx_xenc_CipherReference_s* zx_DEC_xenc_CipherReference(struct zx_ctx* c, 
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -537,11 +547,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -549,7 +561,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -616,7 +628,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -652,6 +664,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    DataReference
 
+/* Called by: */
 struct zx_xenc_DataReference_s* zx_DEC_xenc_DataReference(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -673,7 +686,7 @@ struct zx_xenc_DataReference_s* zx_DEC_xenc_DataReference(struct zx_ctx* c, stru
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -725,11 +738,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -737,7 +752,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -799,7 +814,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -835,6 +850,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    EncryptedData
 
+/* Called by: */
 struct zx_xenc_EncryptedData_s* zx_DEC_xenc_EncryptedData(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -856,7 +872,7 @@ struct zx_xenc_EncryptedData_s* zx_DEC_xenc_EncryptedData(struct zx_ctx* c, stru
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -874,16 +890,16 @@ struct zx_xenc_EncryptedData_s* zx_DEC_xenc_EncryptedData(struct zx_ctx* c, stru
     
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
-    case zx_Encoding_ATTR:
-      ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->Encoding->g;
-      x->Encoding = ss;
-      ZX_ATTR_DEC_EXT(ss);
-      break;
     case zx_Id_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
       ss->g.n = &x->Id->g;
       x->Id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zx_Type_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str);
+      ss->g.n = &x->Type->g;
+      x->Type = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
     case zx_MimeType_ATTR:
@@ -892,10 +908,10 @@ struct zx_xenc_EncryptedData_s* zx_DEC_xenc_EncryptedData(struct zx_ctx* c, stru
       x->MimeType = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
-    case zx_Type_ATTR:
+    case zx_Encoding_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->Type->g;
-      x->Type = ss;
+      ss->g.n = &x->Encoding->g;
+      x->Encoding = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
 
@@ -926,11 +942,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -938,7 +956,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -1020,7 +1038,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -1056,6 +1074,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    EncryptedKey
 
+/* Called by: */
 struct zx_xenc_EncryptedKey_s* zx_DEC_xenc_EncryptedKey(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -1077,7 +1096,7 @@ struct zx_xenc_EncryptedKey_s* zx_DEC_xenc_EncryptedKey(struct zx_ctx* c, struct
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -1095,16 +1114,16 @@ struct zx_xenc_EncryptedKey_s* zx_DEC_xenc_EncryptedKey(struct zx_ctx* c, struct
     
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
-    case zx_Encoding_ATTR:
-      ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->Encoding->g;
-      x->Encoding = ss;
-      ZX_ATTR_DEC_EXT(ss);
-      break;
     case zx_Id_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
       ss->g.n = &x->Id->g;
       x->Id = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zx_Type_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str);
+      ss->g.n = &x->Type->g;
+      x->Type = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
     case zx_MimeType_ATTR:
@@ -1113,16 +1132,16 @@ struct zx_xenc_EncryptedKey_s* zx_DEC_xenc_EncryptedKey(struct zx_ctx* c, struct
       x->MimeType = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
+    case zx_Encoding_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str);
+      ss->g.n = &x->Encoding->g;
+      x->Encoding = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
     case zx_Recipient_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
       ss->g.n = &x->Recipient->g;
       x->Recipient = ss;
-      ZX_ATTR_DEC_EXT(ss);
-      break;
-    case zx_Type_ATTR:
-      ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->Type->g;
-      x->Type = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
 
@@ -1153,11 +1172,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -1165,7 +1186,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -1257,7 +1278,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -1293,6 +1314,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    EncryptionMethod
 
+/* Called by: */
 struct zx_xenc_EncryptionMethod_s* zx_DEC_xenc_EncryptionMethod(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -1314,7 +1336,7 @@ struct zx_xenc_EncryptionMethod_s* zx_DEC_xenc_EncryptionMethod(struct zx_ctx* c
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -1366,11 +1388,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -1378,7 +1402,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -1450,7 +1474,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -1486,6 +1510,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    EncryptionProperties
 
+/* Called by: */
 struct zx_xenc_EncryptionProperties_s* zx_DEC_xenc_EncryptionProperties(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -1507,7 +1532,7 @@ struct zx_xenc_EncryptionProperties_s* zx_DEC_xenc_EncryptionProperties(struct z
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -1559,11 +1584,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -1571,7 +1598,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -1638,7 +1665,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -1674,6 +1701,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    EncryptionProperty
 
+/* Called by: */
 struct zx_xenc_EncryptionProperty_s* zx_DEC_xenc_EncryptionProperty(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -1695,7 +1723,7 @@ struct zx_xenc_EncryptionProperty_s* zx_DEC_xenc_EncryptionProperty(struct zx_ct
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -1713,16 +1741,16 @@ struct zx_xenc_EncryptionProperty_s* zx_DEC_xenc_EncryptionProperty(struct zx_ct
     
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
-    case zx_Id_ATTR:
-      ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->Id->g;
-      x->Id = ss;
-      ZX_ATTR_DEC_EXT(ss);
-      break;
     case zx_Target_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
       ss->g.n = &x->Target->g;
       x->Target = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
+    case zx_Id_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str);
+      ss->g.n = &x->Id->g;
+      x->Id = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
 
@@ -1753,11 +1781,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -1765,7 +1795,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -1827,7 +1857,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -1863,6 +1893,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    KeyReference
 
+/* Called by: */
 struct zx_xenc_KeyReference_s* zx_DEC_xenc_KeyReference(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -1884,7 +1915,7 @@ struct zx_xenc_KeyReference_s* zx_DEC_xenc_KeyReference(struct zx_ctx* c, struct
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -1936,11 +1967,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -1948,7 +1981,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -2010,7 +2043,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -2046,6 +2079,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    OriginatorKeyInfo
 
+/* Called by: */
 struct zx_xenc_OriginatorKeyInfo_s* zx_DEC_xenc_OriginatorKeyInfo(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -2067,7 +2101,7 @@ struct zx_xenc_OriginatorKeyInfo_s* zx_DEC_xenc_OriginatorKeyInfo(struct zx_ctx*
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -2119,11 +2153,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -2131,7 +2167,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -2228,7 +2264,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -2264,6 +2300,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    RecipientKeyInfo
 
+/* Called by: */
 struct zx_xenc_RecipientKeyInfo_s* zx_DEC_xenc_RecipientKeyInfo(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -2285,7 +2322,7 @@ struct zx_xenc_RecipientKeyInfo_s* zx_DEC_xenc_RecipientKeyInfo(struct zx_ctx* c
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -2337,11 +2374,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -2349,7 +2388,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -2446,7 +2485,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -2482,6 +2521,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    ReferenceList
 
+/* Called by: */
 struct zx_xenc_ReferenceList_s* zx_DEC_xenc_ReferenceList(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -2503,7 +2543,7 @@ struct zx_xenc_ReferenceList_s* zx_DEC_xenc_ReferenceList(struct zx_ctx* c, stru
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -2549,11 +2589,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -2561,7 +2603,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -2633,7 +2675,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -2669,6 +2711,7 @@ next_attr:
 #define EL_NS     xenc
 #define EL_TAG    Transforms
 
+/* Called by: */
 struct zx_xenc_Transforms_s* zx_DEC_xenc_Transforms(struct zx_ctx* c, struct zx_ns_s* ns )
 {
   int tok;
@@ -2690,7 +2733,7 @@ struct zx_xenc_Transforms_s* zx_DEC_xenc_Transforms(struct zx_ctx* c, struct zx_
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -2736,11 +2779,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -2748,7 +2793,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -2815,7 +2860,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;

@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -28,6 +30,8 @@
 #include "c/zx-sp11-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_AttributeQuery_NUM_Subject) */
 
@@ -157,7 +161,11 @@ void zx_sp11_AttributeQuery_DEL_Subject(struct zx_sp11_AttributeQuery_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_AttributeQuery_NUM_AttributeDesignator) */
 
@@ -287,6 +295,8 @@ void zx_sp11_AttributeQuery_DEL_AttributeDesignator(struct zx_sp11_AttributeQuer
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_sp11_AttributeQuery_GET_Resource) */
 struct zx_str* zx_sp11_AttributeQuery_GET_Resource(struct zx_sp11_AttributeQuery_s* x) { return x->Resource; }
 /* FUNC(zx_sp11_AttributeQuery_PUT_Resource) */
@@ -297,6 +307,8 @@ void zx_sp11_AttributeQuery_PUT_Resource(struct zx_sp11_AttributeQuery_s* x, str
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_AuthenticationQuery_NUM_Subject) */
 
@@ -426,6 +438,8 @@ void zx_sp11_AuthenticationQuery_DEL_Subject(struct zx_sp11_AuthenticationQuery_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_sp11_AuthenticationQuery_GET_AuthenticationMethod) */
 struct zx_str* zx_sp11_AuthenticationQuery_GET_AuthenticationMethod(struct zx_sp11_AuthenticationQuery_s* x) { return x->AuthenticationMethod; }
 /* FUNC(zx_sp11_AuthenticationQuery_PUT_AuthenticationMethod) */
@@ -436,6 +450,8 @@ void zx_sp11_AuthenticationQuery_PUT_AuthenticationMethod(struct zx_sp11_Authent
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_AuthorizationDecisionQuery_NUM_Subject) */
 
@@ -565,7 +581,11 @@ void zx_sp11_AuthorizationDecisionQuery_DEL_Subject(struct zx_sp11_Authorization
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_AuthorizationDecisionQuery_NUM_Action) */
 
@@ -695,7 +715,11 @@ void zx_sp11_AuthorizationDecisionQuery_DEL_Action(struct zx_sp11_AuthorizationD
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_AuthorizationDecisionQuery_NUM_Evidence) */
 
@@ -825,6 +849,8 @@ void zx_sp11_AuthorizationDecisionQuery_DEL_Evidence(struct zx_sp11_Authorizatio
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_sp11_AuthorizationDecisionQuery_GET_Resource) */
 struct zx_str* zx_sp11_AuthorizationDecisionQuery_GET_Resource(struct zx_sp11_AuthorizationDecisionQuery_s* x) { return x->Resource; }
 /* FUNC(zx_sp11_AuthorizationDecisionQuery_PUT_Resource) */
@@ -835,6 +861,8 @@ void zx_sp11_AuthorizationDecisionQuery_PUT_Resource(struct zx_sp11_Authorizatio
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_RespondWith) */
 
@@ -964,7 +992,11 @@ void zx_sp11_Request_DEL_RespondWith(struct zx_sp11_Request_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_Signature) */
 
@@ -1094,7 +1126,11 @@ void zx_sp11_Request_DEL_Signature(struct zx_sp11_Request_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_Query) */
 
@@ -1224,7 +1260,11 @@ void zx_sp11_Request_DEL_Query(struct zx_sp11_Request_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_SubjectQuery) */
 
@@ -1354,7 +1394,11 @@ void zx_sp11_Request_DEL_SubjectQuery(struct zx_sp11_Request_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_AuthenticationQuery) */
 
@@ -1484,7 +1528,11 @@ void zx_sp11_Request_DEL_AuthenticationQuery(struct zx_sp11_Request_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_AttributeQuery) */
 
@@ -1614,7 +1662,11 @@ void zx_sp11_Request_DEL_AttributeQuery(struct zx_sp11_Request_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_AuthorizationDecisionQuery) */
 
@@ -1744,7 +1796,11 @@ void zx_sp11_Request_DEL_AuthorizationDecisionQuery(struct zx_sp11_Request_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_AssertionIDReference) */
 
@@ -1874,7 +1930,11 @@ void zx_sp11_Request_DEL_AssertionIDReference(struct zx_sp11_Request_s* x, int n
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Request_NUM_AssertionArtifact) */
 
@@ -2004,10 +2064,12 @@ void zx_sp11_Request_DEL_AssertionArtifact(struct zx_sp11_Request_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
-/* FUNC(zx_sp11_Request_GET_IssueInstant) */
-struct zx_str* zx_sp11_Request_GET_IssueInstant(struct zx_sp11_Request_s* x) { return x->IssueInstant; }
-/* FUNC(zx_sp11_Request_PUT_IssueInstant) */
-void zx_sp11_Request_PUT_IssueInstant(struct zx_sp11_Request_s* x, struct zx_str* y) { x->IssueInstant = y; }
+#endif
+
+/* FUNC(zx_sp11_Request_GET_RequestID) */
+struct zx_str* zx_sp11_Request_GET_RequestID(struct zx_sp11_Request_s* x) { return x->RequestID; }
+/* FUNC(zx_sp11_Request_PUT_RequestID) */
+void zx_sp11_Request_PUT_RequestID(struct zx_sp11_Request_s* x, struct zx_str* y) { x->RequestID = y; }
 /* FUNC(zx_sp11_Request_GET_MajorVersion) */
 struct zx_str* zx_sp11_Request_GET_MajorVersion(struct zx_sp11_Request_s* x) { return x->MajorVersion; }
 /* FUNC(zx_sp11_Request_PUT_MajorVersion) */
@@ -2016,16 +2078,18 @@ void zx_sp11_Request_PUT_MajorVersion(struct zx_sp11_Request_s* x, struct zx_str
 struct zx_str* zx_sp11_Request_GET_MinorVersion(struct zx_sp11_Request_s* x) { return x->MinorVersion; }
 /* FUNC(zx_sp11_Request_PUT_MinorVersion) */
 void zx_sp11_Request_PUT_MinorVersion(struct zx_sp11_Request_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_sp11_Request_GET_RequestID) */
-struct zx_str* zx_sp11_Request_GET_RequestID(struct zx_sp11_Request_s* x) { return x->RequestID; }
-/* FUNC(zx_sp11_Request_PUT_RequestID) */
-void zx_sp11_Request_PUT_RequestID(struct zx_sp11_Request_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_sp11_Request_GET_IssueInstant) */
+struct zx_str* zx_sp11_Request_GET_IssueInstant(struct zx_sp11_Request_s* x) { return x->IssueInstant; }
+/* FUNC(zx_sp11_Request_PUT_IssueInstant) */
+void zx_sp11_Request_PUT_IssueInstant(struct zx_sp11_Request_s* x, struct zx_str* y) { x->IssueInstant = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Response_NUM_Signature) */
 
@@ -2155,7 +2219,11 @@ void zx_sp11_Response_DEL_Signature(struct zx_sp11_Response_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Response_NUM_Status) */
 
@@ -2285,7 +2353,11 @@ void zx_sp11_Response_DEL_Status(struct zx_sp11_Response_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Response_NUM_Assertion) */
 
@@ -2415,14 +2487,16 @@ void zx_sp11_Response_DEL_Assertion(struct zx_sp11_Response_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
+/* FUNC(zx_sp11_Response_GET_ResponseID) */
+struct zx_str* zx_sp11_Response_GET_ResponseID(struct zx_sp11_Response_s* x) { return x->ResponseID; }
+/* FUNC(zx_sp11_Response_PUT_ResponseID) */
+void zx_sp11_Response_PUT_ResponseID(struct zx_sp11_Response_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_sp11_Response_GET_InResponseTo) */
 struct zx_str* zx_sp11_Response_GET_InResponseTo(struct zx_sp11_Response_s* x) { return x->InResponseTo; }
 /* FUNC(zx_sp11_Response_PUT_InResponseTo) */
 void zx_sp11_Response_PUT_InResponseTo(struct zx_sp11_Response_s* x, struct zx_str* y) { x->InResponseTo = y; }
-/* FUNC(zx_sp11_Response_GET_IssueInstant) */
-struct zx_str* zx_sp11_Response_GET_IssueInstant(struct zx_sp11_Response_s* x) { return x->IssueInstant; }
-/* FUNC(zx_sp11_Response_PUT_IssueInstant) */
-void zx_sp11_Response_PUT_IssueInstant(struct zx_sp11_Response_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_sp11_Response_GET_MajorVersion) */
 struct zx_str* zx_sp11_Response_GET_MajorVersion(struct zx_sp11_Response_s* x) { return x->MajorVersion; }
 /* FUNC(zx_sp11_Response_PUT_MajorVersion) */
@@ -2431,20 +2505,22 @@ void zx_sp11_Response_PUT_MajorVersion(struct zx_sp11_Response_s* x, struct zx_s
 struct zx_str* zx_sp11_Response_GET_MinorVersion(struct zx_sp11_Response_s* x) { return x->MinorVersion; }
 /* FUNC(zx_sp11_Response_PUT_MinorVersion) */
 void zx_sp11_Response_PUT_MinorVersion(struct zx_sp11_Response_s* x, struct zx_str* y) { x->MinorVersion = y; }
+/* FUNC(zx_sp11_Response_GET_IssueInstant) */
+struct zx_str* zx_sp11_Response_GET_IssueInstant(struct zx_sp11_Response_s* x) { return x->IssueInstant; }
+/* FUNC(zx_sp11_Response_PUT_IssueInstant) */
+void zx_sp11_Response_PUT_IssueInstant(struct zx_sp11_Response_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_sp11_Response_GET_Recipient) */
 struct zx_str* zx_sp11_Response_GET_Recipient(struct zx_sp11_Response_s* x) { return x->Recipient; }
 /* FUNC(zx_sp11_Response_PUT_Recipient) */
 void zx_sp11_Response_PUT_Recipient(struct zx_sp11_Response_s* x, struct zx_str* y) { x->Recipient = y; }
-/* FUNC(zx_sp11_Response_GET_ResponseID) */
-struct zx_str* zx_sp11_Response_GET_ResponseID(struct zx_sp11_Response_s* x) { return x->ResponseID; }
-/* FUNC(zx_sp11_Response_PUT_ResponseID) */
-void zx_sp11_Response_PUT_ResponseID(struct zx_sp11_Response_s* x, struct zx_str* y) { x->ResponseID = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Status_NUM_StatusCode) */
 
@@ -2574,7 +2650,11 @@ void zx_sp11_Status_DEL_StatusCode(struct zx_sp11_Status_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Status_NUM_StatusMessage) */
 
@@ -2704,7 +2784,11 @@ void zx_sp11_Status_DEL_StatusMessage(struct zx_sp11_Status_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_Status_NUM_StatusDetail) */
 
@@ -2834,12 +2918,16 @@ void zx_sp11_Status_DEL_StatusDetail(struct zx_sp11_Status_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_StatusCode_NUM_StatusCode) */
 
@@ -2969,6 +3057,8 @@ void zx_sp11_StatusCode_DEL_StatusCode(struct zx_sp11_StatusCode_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_sp11_StatusCode_GET_Value) */
 struct zx_str* zx_sp11_StatusCode_GET_Value(struct zx_sp11_StatusCode_s* x) { return x->Value; }
 /* FUNC(zx_sp11_StatusCode_PUT_Value) */
@@ -2984,6 +3074,8 @@ void zx_sp11_StatusCode_PUT_Value(struct zx_sp11_StatusCode_s* x, struct zx_str*
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sp11_SubjectQuery_NUM_Subject) */
 
@@ -3112,6 +3204,8 @@ void zx_sp11_SubjectQuery_DEL_Subject(struct zx_sp11_SubjectQuery_s* x, int n)
   }
   y->gg.g.n = y->gg.g.n->n;
 }
+
+#endif
 
 
 

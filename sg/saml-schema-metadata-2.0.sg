@@ -1,6 +1,6 @@
 # zxid/sg/saml-schema-metadata-2.0.sh .sg
 # Slightly edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: saml-schema-metadata-2.0.sg,v 1.1 2006/09/06 00:27:38 sampo Exp $
+# $Id: saml-schema-metadata-2.0.sg,v 1.2 2006/10/15 12:21:23 sampo Exp $
 
 target(md,urn:oasis:names:tc:SAML:2.0:metadata)
 import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)

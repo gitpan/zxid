@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -28,6 +30,8 @@
 #include "c/zx-is12-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Confirm_NUM_Help) */
 
@@ -157,7 +161,11 @@ void zx_is12_Confirm_DEL_Help(struct zx_is12_Confirm_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Confirm_NUM_Hint) */
 
@@ -287,7 +295,11 @@ void zx_is12_Confirm_DEL_Hint(struct zx_is12_Confirm_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Confirm_NUM_Label) */
 
@@ -417,7 +429,11 @@ void zx_is12_Confirm_DEL_Label(struct zx_is12_Confirm_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Confirm_NUM_Value) */
 
@@ -547,6 +563,8 @@ void zx_is12_Confirm_DEL_Value(struct zx_is12_Confirm_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_Confirm_GET_name) */
 struct zx_str* zx_is12_Confirm_GET_name(struct zx_is12_Confirm_s* x) { return x->name; }
 /* FUNC(zx_is12_Confirm_PUT_name) */
@@ -557,6 +575,8 @@ void zx_is12_Confirm_PUT_name(struct zx_is12_Confirm_s* x, struct zx_str* y) { x
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_EncryptedResourceID_NUM_EncryptedData) */
 
@@ -686,7 +706,11 @@ void zx_is12_EncryptedResourceID_DEL_EncryptedData(struct zx_is12_EncryptedResou
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_EncryptedResourceID_NUM_EncryptedKey) */
 
@@ -816,6 +840,8 @@ void zx_is12_EncryptedResourceID_DEL_EncryptedKey(struct zx_is12_EncryptedResour
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 
 
 
@@ -844,6 +870,8 @@ void zx_is12_Help_PUT_moreLink(struct zx_is12_Help_s* x, struct zx_str* y) { x->
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Inquiry_NUM_Help) */
 
@@ -973,7 +1001,11 @@ void zx_is12_Inquiry_DEL_Help(struct zx_is12_Inquiry_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Inquiry_NUM_Select) */
 
@@ -1103,7 +1135,11 @@ void zx_is12_Inquiry_DEL_Select(struct zx_is12_Inquiry_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Inquiry_NUM_Confirm) */
 
@@ -1233,7 +1269,11 @@ void zx_is12_Inquiry_DEL_Confirm(struct zx_is12_Inquiry_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Inquiry_NUM_Text) */
 
@@ -1363,6 +1403,8 @@ void zx_is12_Inquiry_DEL_Text(struct zx_is12_Inquiry_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_Inquiry_GET_id) */
 struct zx_str* zx_is12_Inquiry_GET_id(struct zx_is12_Inquiry_s* x) { return x->id; }
 /* FUNC(zx_is12_Inquiry_PUT_id) */
@@ -1377,6 +1419,8 @@ void zx_is12_Inquiry_PUT_title(struct zx_is12_Inquiry_s* x, struct zx_str* y) { 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionRequest_NUM_Inquiry) */
 
@@ -1506,7 +1550,11 @@ void zx_is12_InteractionRequest_DEL_Inquiry(struct zx_is12_InteractionRequest_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionRequest_NUM_KeyInfo) */
 
@@ -1636,6 +1684,8 @@ void zx_is12_InteractionRequest_DEL_KeyInfo(struct zx_is12_InteractionRequest_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_InteractionRequest_GET_id) */
 struct zx_str* zx_is12_InteractionRequest_GET_id(struct zx_is12_InteractionRequest_s* x) { return x->id; }
 /* FUNC(zx_is12_InteractionRequest_PUT_id) */
@@ -1658,6 +1708,8 @@ void zx_is12_InteractionRequest_PUT_signed_is_c_keyword(struct zx_is12_Interacti
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionResponse_NUM_Status) */
 
@@ -1787,7 +1839,11 @@ void zx_is12_InteractionResponse_DEL_Status(struct zx_is12_InteractionResponse_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionResponse_NUM_InteractionStatement) */
 
@@ -1917,7 +1973,11 @@ void zx_is12_InteractionResponse_DEL_InteractionStatement(struct zx_is12_Interac
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionResponse_NUM_Parameter) */
 
@@ -2047,12 +2107,16 @@ void zx_is12_InteractionResponse_DEL_Parameter(struct zx_is12_InteractionRespons
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionService_NUM_ResourceID) */
 
@@ -2182,7 +2246,11 @@ void zx_is12_InteractionService_DEL_ResourceID(struct zx_is12_InteractionService
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionService_NUM_EncryptedResourceID) */
 
@@ -2312,7 +2380,11 @@ void zx_is12_InteractionService_DEL_EncryptedResourceID(struct zx_is12_Interacti
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionService_NUM_ServiceInstance) */
 
@@ -2442,7 +2514,11 @@ void zx_is12_InteractionService_DEL_ServiceInstance(struct zx_is12_InteractionSe
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionService_NUM_Options) */
 
@@ -2572,7 +2648,11 @@ void zx_is12_InteractionService_DEL_Options(struct zx_is12_InteractionService_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionService_NUM_Abstract) */
 
@@ -2702,6 +2782,8 @@ void zx_is12_InteractionService_DEL_Abstract(struct zx_is12_InteractionService_s
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_InteractionService_GET_entryID) */
 struct zx_str* zx_is12_InteractionService_GET_entryID(struct zx_is12_InteractionService_s* x) { return x->entryID; }
 /* FUNC(zx_is12_InteractionService_PUT_entryID) */
@@ -2712,6 +2794,8 @@ void zx_is12_InteractionService_PUT_entryID(struct zx_is12_InteractionService_s*
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionStatement_NUM_Inquiry) */
 
@@ -2841,7 +2925,11 @@ void zx_is12_InteractionStatement_DEL_Inquiry(struct zx_is12_InteractionStatemen
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_InteractionStatement_NUM_Signature) */
 
@@ -2971,12 +3059,16 @@ void zx_is12_InteractionStatement_DEL_Signature(struct zx_is12_InteractionStatem
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Item_NUM_Hint) */
 
@@ -3106,6 +3198,8 @@ void zx_is12_Item_DEL_Hint(struct zx_is12_Item_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_Item_GET_label) */
 struct zx_str* zx_is12_Item_GET_label(struct zx_is12_Item_s* x) { return x->label; }
 /* FUNC(zx_is12_Item_PUT_label) */
@@ -3151,6 +3245,8 @@ void zx_is12_ResourceID_PUT_id(struct zx_is12_ResourceID_s* x, struct zx_str* y)
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Select_NUM_Help) */
 
@@ -3280,7 +3376,11 @@ void zx_is12_Select_DEL_Help(struct zx_is12_Select_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Select_NUM_Hint) */
 
@@ -3410,7 +3510,11 @@ void zx_is12_Select_DEL_Hint(struct zx_is12_Select_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Select_NUM_Label) */
 
@@ -3540,7 +3644,11 @@ void zx_is12_Select_DEL_Label(struct zx_is12_Select_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Select_NUM_Value) */
 
@@ -3670,7 +3778,11 @@ void zx_is12_Select_DEL_Value(struct zx_is12_Select_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Select_NUM_Item) */
 
@@ -3800,20 +3912,24 @@ void zx_is12_Select_DEL_Item(struct zx_is12_Select_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_is12_Select_GET_multiple) */
-struct zx_str* zx_is12_Select_GET_multiple(struct zx_is12_Select_s* x) { return x->multiple; }
-/* FUNC(zx_is12_Select_PUT_multiple) */
-void zx_is12_Select_PUT_multiple(struct zx_is12_Select_s* x, struct zx_str* y) { x->multiple = y; }
+#endif
+
 /* FUNC(zx_is12_Select_GET_name) */
 struct zx_str* zx_is12_Select_GET_name(struct zx_is12_Select_s* x) { return x->name; }
 /* FUNC(zx_is12_Select_PUT_name) */
 void zx_is12_Select_PUT_name(struct zx_is12_Select_s* x, struct zx_str* y) { x->name = y; }
+/* FUNC(zx_is12_Select_GET_multiple) */
+struct zx_str* zx_is12_Select_GET_multiple(struct zx_is12_Select_s* x) { return x->multiple; }
+/* FUNC(zx_is12_Select_PUT_multiple) */
+void zx_is12_Select_PUT_multiple(struct zx_is12_Select_s* x, struct zx_str* y) { x->multiple = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Status_NUM_Status) */
 
@@ -3943,24 +4059,28 @@ void zx_is12_Status_DEL_Status(struct zx_is12_Status_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_Status_GET_code) */
 struct zx_str* zx_is12_Status_GET_code(struct zx_is12_Status_s* x) { return x->code; }
 /* FUNC(zx_is12_Status_PUT_code) */
 void zx_is12_Status_PUT_code(struct zx_is12_Status_s* x, struct zx_str* y) { x->code = y; }
-/* FUNC(zx_is12_Status_GET_comment) */
-struct zx_str* zx_is12_Status_GET_comment(struct zx_is12_Status_s* x) { return x->comment; }
-/* FUNC(zx_is12_Status_PUT_comment) */
-void zx_is12_Status_PUT_comment(struct zx_is12_Status_s* x, struct zx_str* y) { x->comment = y; }
 /* FUNC(zx_is12_Status_GET_ref) */
 struct zx_str* zx_is12_Status_GET_ref(struct zx_is12_Status_s* x) { return x->ref; }
 /* FUNC(zx_is12_Status_PUT_ref) */
 void zx_is12_Status_PUT_ref(struct zx_is12_Status_s* x, struct zx_str* y) { x->ref = y; }
+/* FUNC(zx_is12_Status_GET_comment) */
+struct zx_str* zx_is12_Status_GET_comment(struct zx_is12_Status_s* x) { return x->comment; }
+/* FUNC(zx_is12_Status_PUT_comment) */
+void zx_is12_Status_PUT_comment(struct zx_is12_Status_s* x, struct zx_str* y) { x->comment = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Text_NUM_Help) */
 
@@ -4090,7 +4210,11 @@ void zx_is12_Text_DEL_Help(struct zx_is12_Text_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Text_NUM_Hint) */
 
@@ -4220,7 +4344,11 @@ void zx_is12_Text_DEL_Hint(struct zx_is12_Text_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Text_NUM_Label) */
 
@@ -4350,7 +4478,11 @@ void zx_is12_Text_DEL_Label(struct zx_is12_Text_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_Text_NUM_Value) */
 
@@ -4480,28 +4612,32 @@ void zx_is12_Text_DEL_Value(struct zx_is12_Text_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
-/* FUNC(zx_is12_Text_GET_format) */
-struct zx_str* zx_is12_Text_GET_format(struct zx_is12_Text_s* x) { return x->format; }
-/* FUNC(zx_is12_Text_PUT_format) */
-void zx_is12_Text_PUT_format(struct zx_is12_Text_s* x, struct zx_str* y) { x->format = y; }
-/* FUNC(zx_is12_Text_GET_maxChars) */
-struct zx_str* zx_is12_Text_GET_maxChars(struct zx_is12_Text_s* x) { return x->maxChars; }
-/* FUNC(zx_is12_Text_PUT_maxChars) */
-void zx_is12_Text_PUT_maxChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->maxChars = y; }
-/* FUNC(zx_is12_Text_GET_minChars) */
-struct zx_str* zx_is12_Text_GET_minChars(struct zx_is12_Text_s* x) { return x->minChars; }
-/* FUNC(zx_is12_Text_PUT_minChars) */
-void zx_is12_Text_PUT_minChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->minChars = y; }
+#endif
+
 /* FUNC(zx_is12_Text_GET_name) */
 struct zx_str* zx_is12_Text_GET_name(struct zx_is12_Text_s* x) { return x->name; }
 /* FUNC(zx_is12_Text_PUT_name) */
 void zx_is12_Text_PUT_name(struct zx_is12_Text_s* x, struct zx_str* y) { x->name = y; }
+/* FUNC(zx_is12_Text_GET_minChars) */
+struct zx_str* zx_is12_Text_GET_minChars(struct zx_is12_Text_s* x) { return x->minChars; }
+/* FUNC(zx_is12_Text_PUT_minChars) */
+void zx_is12_Text_PUT_minChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->minChars = y; }
+/* FUNC(zx_is12_Text_GET_maxChars) */
+struct zx_str* zx_is12_Text_GET_maxChars(struct zx_is12_Text_s* x) { return x->maxChars; }
+/* FUNC(zx_is12_Text_PUT_maxChars) */
+void zx_is12_Text_PUT_maxChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->maxChars = y; }
+/* FUNC(zx_is12_Text_GET_format) */
+struct zx_str* zx_is12_Text_GET_format(struct zx_is12_Text_s* x) { return x->format; }
+/* FUNC(zx_is12_Text_PUT_format) */
+void zx_is12_Text_PUT_format(struct zx_is12_Text_s* x, struct zx_str* y) { x->format = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_is12_UserInteraction_NUM_InteractionService) */
 
@@ -4631,6 +4767,8 @@ void zx_is12_UserInteraction_DEL_InteractionService(struct zx_is12_UserInteracti
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_is12_UserInteraction_GET_id) */
 struct zx_str* zx_is12_UserInteraction_GET_id(struct zx_is12_UserInteraction_s* x) { return x->id; }
 /* FUNC(zx_is12_UserInteraction_PUT_id) */
@@ -4643,14 +4781,14 @@ void zx_is12_UserInteraction_PUT_interact(struct zx_is12_UserInteraction_s* x, s
 struct zx_str* zx_is12_UserInteraction_GET_language(struct zx_is12_UserInteraction_s* x) { return x->language; }
 /* FUNC(zx_is12_UserInteraction_PUT_language) */
 void zx_is12_UserInteraction_PUT_language(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->language = y; }
-/* FUNC(zx_is12_UserInteraction_GET_maxInteractTime) */
-struct zx_str* zx_is12_UserInteraction_GET_maxInteractTime(struct zx_is12_UserInteraction_s* x) { return x->maxInteractTime; }
-/* FUNC(zx_is12_UserInteraction_PUT_maxInteractTime) */
-void zx_is12_UserInteraction_PUT_maxInteractTime(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->maxInteractTime = y; }
 /* FUNC(zx_is12_UserInteraction_GET_redirect) */
 struct zx_str* zx_is12_UserInteraction_GET_redirect(struct zx_is12_UserInteraction_s* x) { return x->redirect; }
 /* FUNC(zx_is12_UserInteraction_PUT_redirect) */
 void zx_is12_UserInteraction_PUT_redirect(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->redirect = y; }
+/* FUNC(zx_is12_UserInteraction_GET_maxInteractTime) */
+struct zx_str* zx_is12_UserInteraction_GET_maxInteractTime(struct zx_is12_UserInteraction_s* x) { return x->maxInteractTime; }
+/* FUNC(zx_is12_UserInteraction_PUT_maxInteractTime) */
+void zx_is12_UserInteraction_PUT_maxInteractTime(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->maxInteractTime = y; }
 /* FUNC(zx_is12_UserInteraction_GET_actor) */
 struct zx_str* zx_is12_UserInteraction_GET_actor(struct zx_is12_UserInteraction_s* x) { return x->actor; }
 /* FUNC(zx_is12_UserInteraction_PUT_actor) */

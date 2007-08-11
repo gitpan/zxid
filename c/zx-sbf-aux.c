@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** aux-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: aux-templ.c,v 1.8 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: aux-templ.c,v 1.11 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -46,41 +48,6 @@
 #define EL_NS     sbf
 #define EL_TAG    Framework
 
-/* FUNC(zx_DUP_STRS_sbf_Framework) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void zx_DUP_STRS_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  zx_dup_attr(c, x->version);
-
-
-}
-
-/* FUNC(zx_DEEP_CLONE_sbf_Framework) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct zx_sbf_Framework_s* zx_DEEP_CLONE_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, int dup_strs)
-{
-  x = (struct zx_sbf_Framework_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sbf_Framework_s), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-  x->version = zx_clone_attr(c, x->version);
-
-
-  return x;
-}
-
 /* FUNC(zx_FREE_sbf_Framework) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -88,11 +55,15 @@ struct zx_sbf_Framework_s* zx_DEEP_CLONE_sbf_Framework(struct zx_ctx* c, struct 
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void zx_FREE_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->version, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->Id, free_strs);
 
 
 
@@ -103,10 +74,56 @@ void zx_FREE_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, int f
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct zx_sbf_Framework_s* zx_NEW_sbf_Framework(struct zx_ctx* c)
 {
   struct zx_sbf_Framework_s* x = ZX_ZALLOC(c, struct zx_sbf_Framework_s);
   x->gg.g.tok = zx_sbf_Framework_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_sbf_Framework) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->version);
+  zx_dup_attr(c, x->mustUnderstand);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->Id);
+
+
+}
+
+/* FUNC(zx_DEEP_CLONE_sbf_Framework) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_sbf_Framework_s* zx_DEEP_CLONE_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, int dup_strs)
+{
+  x = (struct zx_sbf_Framework_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sbf_Framework_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->version = zx_clone_attr(c, x->version);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->Id = zx_clone_attr(c, x->Id);
+
+
   return x;
 }
 
@@ -140,6 +157,8 @@ int zx_WALK_WO_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, voi
   ERR("*** walk_wo not implemented %d", 0);
   return 0;
 }
+
+#endif
 
 
 /* EOF -- c/zx-sbf-aux.c */

@@ -1,9 +1,11 @@
 /* zxid.c  -  CGI binary for SAML 2 SP
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxid.c,v 1.20 2006/10/15 00:27:26 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxid.c,v 1.32 2007/03/06 07:39:13 sampo Exp $
  *
  * 15.4.2006, started work over Easter holiday --Sampo
  * 22.4.2006, added more options over the weekend --Sampo
@@ -15,10 +17,10 @@
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
 
-#include <pthread.h>
+//#include <pthread.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <netdb.h>
+//#include <netdb.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +28,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 
 #ifdef USE_CURL
 #include <curl/curl.h>
@@ -36,12 +38,14 @@
 #include "zx.h"
 #include "zxid.h"
 #include "zxidconf.h"
+#include "c/zxidvers.h"
 #include "c/zx-ns.h"
 
 CU8* help =
-"zxid  -  SAML 2.0 SP CGI - R" REL "\n\
+"zxid  -  SAML 2.0 SP CGI - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated idenity and Sinlg Sign-On.\n\
-Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
+Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well researched bug reports to the author. Home: zxid.org\n\
@@ -51,9 +55,11 @@ Usage: zxid [options]   (when used as CGI, no options can be supplied)\n\
   -import URL      Import metadata of others from URL, usually their Entity ID\n\
                    or Provider ID, aka well known location. The imported metadata\n\
                    is written to CoT cache directory.\n\
-  -t  SECONDS      Timeout. Default: 0=no timeout.\n\
-  -c  CIPHER       Enable crypto on DTS interface using specified cipher. Use '?' for list.\n\
-  -k  FDNUMBER     File descriptor for reading symmetric key. Use 0 for stdin.\n\
+  -C CONFPATH      Path to (optional) config file, default /var/zxid/zxid.conf\n\
+  -O OPT=VAL       Override default or config file option. Only after -C, if any.\n\
+  -t SECONDS       Timeout. Default: 0=no timeout.\n\
+  -c CIPHER        Enable crypto on DTS interface using specified cipher. Use '?' for list.\n\
+  -k FDNUMBER      File descriptor for reading symmetric key. Use 0 for stdin.\n\
   -egd PATH        Specify path of Entropy Gathering Daemon socket, default on\n\
                    Solaris: /tmp/entropy. On Linux /dev/urandom is used instead\n\
                    See http://www.lothar.com/tech/crypto/ or\n\
@@ -71,30 +77,31 @@ Usage: zxid [options]   (when used as CGI, no options can be supplied)\n\
 char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
-int debug = 0;
 int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
-int assert_nonfatal = 0;
 int drop_uid = 0;
 int drop_gid = 0;
 char* rand_path;
 char* egd_path;
 char  symmetric_key[1024];
 int symmetric_key_len;
+char buf[32*1024];
 
 /* N.B. This options processing is a skeleton. In reality CGI scripts do not have
  * an opportunity to process any options. */
 
+/* Called by:  main x4 */
 void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
+  char* conf_path = 0;
   if (*argc <= 1) return;
   
   while (1) {
     ++(*argv); --(*argc);
     
-    if (!(*argc) || ((*argv)[0][0] != '-')) break;  /* probably the remote host and port */
+    if (!(*argc) || ((*argv)[0][0] != '-')) break;  /* normal exit from options loop */
     
     switch ((*argv)[0][1]) {
     case '-': if ((*argv)[0][2]) break;
@@ -102,10 +109,24 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       DD("End of options by --");
       return;  /* -- ends the options */
 
-    case 't': if ((*argv)[0][2]) break;
+    case 'C': if ((*argv)[0][2]) break;
       ++(*argv); --(*argc);
       if (!(*argc)) break;
-      timeout = atoi((*argv)[0]);
+      conf_path = **argv;
+      continue;
+
+    case 'O': if ((*argv)[0][2]) break;
+      ++(*argv); --(*argc);
+      if (!(*argc)) break;
+      if (conf_path != (char*)1) {
+	if (conf_path)
+	  read_all(sizeof(buf), buf, "new conf path in opt", "%s", conf_path);
+	else
+	  read_all(sizeof(buf), buf, "no conf path in opt", "%szxid.conf", cf->path);
+	zxid_parse_conf(cf, buf);
+	conf_path = (char*)1;
+      }
+      zxid_parse_conf(cf, **argv);
       continue;
 
     case 'd':
@@ -124,22 +145,6 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       }
       break;
 
-    case 'v':
-      switch ((*argv)[0][2]) {
-      case '\0':
-	++verbose;
-	continue;
-      }
-      break;
-
-    case 'q':
-      switch ((*argv)[0][2]) {
-      case '\0':
-	verbose = 0;
-	continue;
-      }
-      break;
-
     case 'e':
       switch ((*argv)[0][2]) {
       case 'g': if ((*argv)[0][3] != 'd' || (*argv)[0][4]) break;
@@ -150,53 +155,18 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       }
       break;
       
-    case 'r':
+    case 'i':
       switch ((*argv)[0][2]) {
-      case 'f':
-	/*AFR_TS(LEAK, 0, "memory leaks enabled");*/
-#if 1
-	ERR("*** WARNING: You have turned memory frees to memory leaks. We will (eventually) run out of memory. Using -rf is not recommended. %d\n", 0);
-#endif
-	++leak_free;
-	continue;
-#if 0
-      case 'e':
-	if ((*argv)[0][3]) break;
-	++(*argv); --(*argc);
-	if ((*argc) < 4) break;
-	sscanf((*argv)[0], "%i", &abort_funcno);
-	++(*argv); --(*argc);
-	sscanf((*argv)[0], "%i", &abort_line);
-	++(*argv); --(*argc);
-	sscanf((*argv)[0], "%i", &abort_error_code);
-	++(*argv); --(*argc);
-	sscanf((*argv)[0], "%i", &abort_iter);
-	fprintf(stderr, "Will force core upon %x:%x err=%d iter=%d\n",
-		abort_funcno, abort_line, abort_error_code, abort_iter);
-	continue;
-#endif
-      case 'g':
-	if ((*argv)[0][3]) break;
-	++(*argv); --(*argc);
-	if (!(*argc)) break;
-	gcthreshold = atoi((*argv)[0]);
-	if (!gcthreshold)
-	  ERR("*** WARNING: You have disabled garbage collection. This may lead to increased memory consumption for scripts that handle a lot of PDUs or run for long time. Using `-rg 0' is not recommended. %d\n", 0);
-	continue;
-      case 'a':
-	if ((*argv)[0][3] == 0) {
-	  /*AFR_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
-#if 1
-	  ERR("*** WARNING: YOU HAVE TURNED ASSERTS OFF USING -ra FLAG. THIS MEANS THAT YOU WILL NOT BE ABLE TO OBTAIN ANY SUPPORT. IF PROGRAM NOW TRIES TO ASSERT IT MAY MYSTERIOUSLY AND UNPREDICTABLY CRASH INSTEAD, AND NOBODY WILL BE ABLE TO FIGURE OUT WHAT WENT WRONG OR HOW MUCH DAMAGE MAY BE DONE. USING -ra IS NOT RECOMMENDED. %d\n", assert_nonfatal);
-#endif
-	  ++assert_nonfatal;
-	  continue;
-	}
-	if (!strcmp((*argv)[0],"-rand")) {
+      case 'm':
+	if (!strcmp((*argv)[0],"-import")) {
+	  struct zxid_entity* ent;
 	  ++(*argv); --(*argc);
 	  if (!(*argc)) break;
-	  rand_path = (*argv)[0];
-	  continue;
+	  cf->ctx->ns_tab = zx_ns_tab;
+	  ent = zxid_get_meta(cf, (*argv)[0]);
+	  if (ent)
+	    zxid_write_ent_to_cache(cf, ent);
+	  exit(0);
 	}
 	break;
       }
@@ -209,24 +179,6 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
 	if (!(*argc)) break;
 	read_all_fd(atoi((*argv)[0]), symmetric_key, sizeof(symmetric_key), &symmetric_key_len);
 	D("Got %d characters of symmetric key", symmetric_key_len);
-	continue;
-      }
-      break;
-
-    case 'c': if ((*argv)[0][2]) break;
-      ++(*argv); --(*argc);
-      if (!(*argc)) break;
-#ifndef ENCRYPTION
-      ERR("Encryption not compiled in. %d",0);
-#endif
-      continue;
-
-    case 'u':
-      switch ((*argv)[0][2]) {
-      case 'i': if ((*argv)[0][3] != 'd' || (*argv)[0][4]) break;
-	++(*argv); --(*argc);
-	if (!(*argc)) break;
-	sscanf((*argv)[0], "%i:%i", &drop_uid, &drop_gid);
 	continue;
       }
       break;
@@ -255,20 +207,85 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       }
       break;
 
-    case 'i':
+    case 'q':
       switch ((*argv)[0][2]) {
-      case 'm':
-	if (!strcmp((*argv)[0],"-import")) {
-	  struct zxid_entity* ent;
+      case '\0':
+	verbose = 0;
+	continue;
+      }
+      break;
+
+    case 'r':
+      switch ((*argv)[0][2]) {
+      case 'f':
+	/*AFR_TS(LEAK, 0, "memory leaks enabled");*/
+	ERR("*** WARNING: You have turned memory frees to memory leaks. We will (eventually) run out of memory. Using -rf is not recommended. %d\n", 0);
+	++leak_free;
+	continue;
+#if 0
+      case 'e':  /* -re */
+	if ((*argv)[0][3]) break;
+	++(*argv); --(*argc);
+	if ((*argc) < 4) break;
+	sscanf((*argv)[0], "%i", &abort_funcno);
+	++(*argv); --(*argc);
+	sscanf((*argv)[0], "%i", &abort_line);
+	++(*argv); --(*argc);
+	sscanf((*argv)[0], "%i", &abort_error_code);
+	++(*argv); --(*argc);
+	sscanf((*argv)[0], "%i", &abort_iter);
+	fprintf(stderr, "Will force core upon %x:%x err=%d iter=%d\n",
+		abort_funcno, abort_line, abort_error_code, abort_iter);
+	continue;
+#endif
+      case 'g':  /* -rg */
+	if ((*argv)[0][3]) break;
+	++(*argv); --(*argc);
+	if (!(*argc)) break;
+	gcthreshold = atoi((*argv)[0]);
+	if (!gcthreshold)
+	  ERR("*** WARNING: You have disabled garbage collection. This may lead to increased memory consumption for scripts that handle a lot of PDUs or run for long time. Using `-rg 0' is not recommended. %d\n", 0);
+	continue;
+      case 'a': /* -ra */
+	if ((*argv)[0][3] == 0) {
+	  /*AFR_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
+#if 1
+	  ERR("*** WARNING: YOU HAVE TURNED ASSERTS OFF USING -ra FLAG. THIS MEANS THAT YOU WILL NOT BE ABLE TO OBTAIN ANY SUPPORT. IF PROGRAM NOW TRIES TO ASSERT IT MAY MYSTERIOUSLY AND UNPREDICTABLY CRASH INSTEAD, AND NOBODY WILL BE ABLE TO FIGURE OUT WHAT WENT WRONG OR HOW MUCH DAMAGE MAY BE DONE. USING -ra IS NOT RECOMMENDED. %d\n", assert_nonfatal);
+#endif
+	  ++assert_nonfatal;
+	  continue;
+	}
+	if (!strcmp((*argv)[0],"-rand")) {
 	  ++(*argv); --(*argc);
 	  if (!(*argc)) break;
-	  cf->ctx->ns_tab = zx_ns_tab;
-	  ent = zxid_get_meta(cf, (*argv)[0]);
-	  if (ent)
-	    zxid_write_ent_to_cache(cf, ent);
-	  exit(0);
+	  rand_path = (*argv)[0];
+	  continue;
 	}
 	break;
+      }
+      break;
+
+    case 't': if ((*argv)[0][2]) break;
+      ++(*argv); --(*argc);
+      if (!(*argc)) break;
+      timeout = atoi((*argv)[0]);
+      continue;
+
+    case 'u':
+      switch ((*argv)[0][2]) {
+      case 'i': if ((*argv)[0][3] != 'd' || (*argv)[0][4]) break;
+	++(*argv); --(*argc);
+	if (!(*argc)) break;
+	sscanf((*argv)[0], "%i:%i", &drop_uid, &drop_gid);
+	continue;
+      }
+      break;
+
+    case 'v':
+      switch ((*argv)[0][2]) {
+      case '\0':
+	++verbose;
+	continue;
       }
       break;
 
@@ -280,12 +297,21 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
     fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());
     exit(3);
   }
+  if (conf_path != (char*)1) {
+    if (conf_path)
+      read_all(sizeof(buf), buf, "conf_path in end of opt", "%s", conf_path);
+    else
+      read_all(sizeof(buf), buf, "no conf_path in end of opt", "%szxid.conf", cf->path);
+    zxid_parse_conf(cf, buf);
+  }
 }
 
 /* ============== Management Screen ============== */
 
-/* This screen is only invoked if session is active. */
+/* This screen is only invoked if session is active. Zero return
+ * value causes the login screen to be rendered. */
 
+/* Called by:  main x4 */
 int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
   D("op(%c)", cgi->op);
@@ -325,7 +351,7 @@ int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
   }
 
   //printf("COOKIE: foo\r\n");
-  printf("CONTENT-TYPE: text/html\r\n\r\n");
+  printf("Content-Type: text/html\r\n\r\n");
   printf("<title>ZXID SP Mgmt</title>" ZXID_BODY_TAG "<h1>ZXID SP Management (user logged in, session active)</h1><pre>\n");
   //if (qs) printf("QS(%s)\n", qs);
   //if (got>0) printf("GOT(%.*s)\n", got, buf);
@@ -356,8 +382,7 @@ int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 
 /* ============== M A I N ============== */
 
-char buf[32*1024];
-
+/* Called by: */
 int main(int argc, char** argv, char** env)
 {
   struct zxid_conf* cf = zxid_new_conf(ZXID_PATH);
@@ -385,8 +410,9 @@ int main(int argc, char** argv, char** env)
   CMDLINE("init");
   
 #ifndef MINGW  
+  /* *** all this cruft does not work on MINGW, but perhaps it should not even exist for Unix */
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {   /* Ignore SIGPIPE */
-    perror("signal ignore pipe");
+    perror("Init: signal ignore pipe");
     exit(2);
   }
 
@@ -394,15 +420,15 @@ int main(int argc, char** argv, char** env)
    * written to disk before we die. If not stopped with `kill -USR1' but you
    * use plain kill instead, the profile will indicate many unexecuted (#####) lines. */
   if (signal(SIGUSR1, exit) == SIG_ERR) {
-    perror("signal USR1 exit");
+    perror("Init: signal USR1 exit");
     exit(2);
   }
-#endif
   
   /* Drop privileges, if requested. */
   
-  if (drop_gid) if (setgid(drop_gid)) { perror("setgid"); exit(1); }
-  if (drop_uid) if (setuid(drop_uid)) { perror("setuid"); exit(1); }
+  if (drop_gid) if (setgid(drop_gid)) { perror("Init: setgid"); exit(1); }
+  if (drop_uid) if (setuid(drop_uid)) { perror("Init: setuid"); exit(1); }
+#endif
 
   /* Pick up application variables from query string and post content (indicated by o=P in QS) */
   
@@ -416,18 +442,18 @@ int main(int argc, char** argv, char** env)
       if (cont_len) {
 	sscanf(cont_len, "%d", &got);
 	if (read_all_fd(0, buf, got, &got) == -1) {
-	  perror("Trouble reading post content.");
+	  perror("Trouble reading post content");
 	} else {
 	  buf[got] = 0;
 	  D("POST(%s) got=%d cont_len(%s)", buf, got, cont_len);
 	  if (buf[0] == '<') {  /* No BOM and looks XML */
-	    return zxid_sp_soap_parse(cf, got, buf);
+	    return zxid_sp_soap_parse(cf, &cgi, &ses, got, buf);
 	  }
 	  if (buf[2] == '<') {  /* UTF-16 BOM and looks XML */
-	    return zxid_sp_soap_parse(cf, got-2, buf+2);
+	    return zxid_sp_soap_parse(cf, &cgi, &ses, got-2, buf+2);
 	  }
 	  if (buf[3] == '<') {  /* UTF-8 BOM and looks XML */
-	    return zxid_sp_soap_parse(cf, got-3, buf+3);
+	    return zxid_sp_soap_parse(cf, &cgi, &ses, got-3, buf+3);
 	  }
 	  zxid_parse_cgi(&cgi, buf);
 	}
@@ -493,13 +519,13 @@ int main(int argc, char** argv, char** env)
     }
     break;
   case 'B':  /* Metadata */
-    write_all_fd(1, "CONTENT-TYPE: text/xml\r\n\r\n", sizeof("CONTENT-TYPE: text/xml\r\n\r\n")-1);
+    write_all_fd(1, "Content-Type: text/xml\r\n\r\n", sizeof("Content-Type: text/xml\r\n\r\n")-1);
     return zxid_send_sp_meta(cf, &cgi);
   default: D("unknown op(%c)", cgi.op);
   }
   
   //printf("COOKIE: foo\r\n");
-  printf("CONTENT-TYPE: text/html\r\n\r\n");
+  printf("Content-Type: text/html\r\n\r\n");
   printf("<title>ZXID SP SSO</title>" ZXID_BODY_TAG "<h1>ZXID SP Federated SSO (user NOT logged in, no session)</h1><pre>\n");
   //if (qs) printf("QS(%s)\n", qs);
   //if (got>0) printf("GOT(%.*s)\n", got, buf);
@@ -512,7 +538,7 @@ int main(int argc, char** argv, char** env)
   //printf("<input name=login value=\" Login \" type=submit>");
 
   printf("<h3>Login Using New IdP</h3>\n");
-  printf("<i>A new IdP is one whose metadata we do not have yet. We need to know the Entity ID in oredr to fetch the metadata using the well known location method. You will need to ask the adminstrator of the IdP to tell you what the EntityID is.</i>\n");
+  printf("<i>A new IdP is one whose metadata we do not have yet. We need to know the Entity ID in order to fetch the metadata using the well known location method. You will need to ask the adminstrator of the IdP to tell you what the EntityID is.</i>\n");
   printf("<p>IdP EntityID URL <input name=e size=100>");
   printf("<input type=submit name=l1 value=\" Login (SAML20:Artifact) \">\n");
   printf("<input type=submit name=l2 value=\" Login (SAML20:POST) \"><br>\n");
@@ -561,7 +587,5 @@ int main(int argc, char** argv, char** env)
     printf("<p><form><textarea cols=100 row=10>%s</textarea></form>\n", cgi.dbg);
   return 0;
 }
-
-char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately provoking a core dump.\nSorry for the inconvenience.\n";
 
 /* EOF  --  zxid.c */

@@ -1,9 +1,11 @@
 /* zxwsc.h  -  Definitions for zxid WSF Web Services Client
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxwsc.h,v 1.1 2006/09/14 23:18:48 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxwsc.h,v 1.2 2006/11/19 06:19:40 sampo Exp $
  *
  * 14.9.2006, created --Sampo
  */

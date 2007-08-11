@@ -1,9 +1,11 @@
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** $Id: enc-templ.c,v 1.21 2006/10/01 19:35:50 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** $Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
@@ -39,6 +41,7 @@
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int TXLEN_SO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x SIMPLELENNS)
 {
   struct zx_ns_s* pop_seen = 0;
@@ -65,6 +68,7 @@ ELEMS_SO_LEN;
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int TXLEN_WO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x SIMPLELEN)
 {
   struct zx_ns_s* pop_seen = 0;
@@ -95,6 +99,7 @@ ELEMS_WO_LEN;
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* TXENC_SO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, char* p SIMPLETAGLENNS)
 {
   struct zx_ns_s* pop_seen = 0;
@@ -126,6 +131,7 @@ ELEMS_SO_ENC;
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* TXENC_WO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, char* p SIMPLETAGLEN)
 {
   struct zx_elem_s* kid;
@@ -141,6 +147,8 @@ char* TXENC_WO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, char* p SIMPLETAGLEN
   }
   ZX_OUT_MEM(p, "ELTAG", sizeof("ELTAG")-1);
   qq = p;
+
+  /* *** sort the namespaces */
 XMLNS_WO_ENC;
   p = zx_enc_seen(p, pop_seen); 
 ATTRS_WO_ENC;
@@ -166,6 +174,7 @@ ATTRS_WO_ENC;
 
 /* FUNC(TXEASY_ENC_SO_ELNAME) */
 
+/* Called by: */
 struct zx_str* TXEASY_ENC_SO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x SIMPLETAGLENNS)
 {
   int len;
@@ -179,6 +188,7 @@ struct zx_str* TXEASY_ENC_SO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x SIMPLET
 
 /* FUNC(TXEASY_ENC_WO_ELNAME) */
 
+/* Called by: */
 struct zx_str* TXEASY_ENC_WO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x SIMPLETAGLEN)
 {
   int len;
@@ -194,6 +204,7 @@ struct zx_str* TXEASY_ENC_WO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x SIMPLET
 
 /* FUNC(TXENC_WO_any_elem) */
 
+/* Called by: */
 int TXLEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
 {
   int len;
@@ -217,6 +228,7 @@ ANYELEM_WO_LEN;
 
 /* FUNC(TXENC_WO_any_elem) */
 
+/* Called by: */
 char* TXENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
 {
   struct zx_elem_s* kid;
@@ -256,6 +268,7 @@ ANYELEM_WO_ENC;
 
 /* FUNC(TXEASY_ENC_WO_any_elem) */
 
+/* Called by: */
 struct zx_str* TXEASY_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
 {
   int len = TXLEN_WO_any_elem(c, x);

@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -27,6 +29,8 @@
 #include "c/zx-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_Assertion) */
 
@@ -156,7 +160,11 @@ void zx_root_DEL_Assertion(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_AuthnRequest) */
 
@@ -286,7 +294,11 @@ void zx_root_DEL_AuthnRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_Response) */
 
@@ -416,7 +428,11 @@ void zx_root_DEL_Response(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_LogoutRequest) */
 
@@ -546,7 +562,11 @@ void zx_root_DEL_LogoutRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_LogoutResponse) */
 
@@ -676,7 +696,11 @@ void zx_root_DEL_LogoutResponse(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_ManageNameIDRequest) */
 
@@ -806,7 +830,11 @@ void zx_root_DEL_ManageNameIDRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_ManageNameIDResponse) */
 
@@ -936,44 +964,48 @@ void zx_root_DEL_ManageNameIDResponse(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_Envelope) */
 
 int zx_root_NUM_Envelope(struct zx_root_s* x)
 {
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->Envelope; y; ++n, y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+  for (y = x->Envelope; y; ++n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
   return n;
 }
 
 /* FUNC(zx_root_GET_Envelope) */
 
-struct zx_se_Envelope_s* zx_root_GET_Envelope(struct zx_root_s* x, int n)
+struct zx_e_Envelope_s* zx_root_GET_Envelope(struct zx_root_s* x, int n)
 {
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* y;
   if (!x) return 0;
-  for (y = x->Envelope; n>=0 && y; --n, y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+  for (y = x->Envelope; n>=0 && y; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
   return y;
 }
 
 /* FUNC(zx_root_POP_Envelope) */
 
-struct zx_se_Envelope_s* zx_root_POP_Envelope(struct zx_root_s* x)
+struct zx_e_Envelope_s* zx_root_POP_Envelope(struct zx_root_s* x)
 {
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* y;
   if (!x) return 0;
   y = x->Envelope;
   if (y)
-    x->Envelope = (struct zx_se_Envelope_s*)y->gg.g.n;
+    x->Envelope = (struct zx_e_Envelope_s*)y->gg.g.n;
   return y;
 }
 
 /* FUNC(zx_root_PUSH_Envelope) */
 
-void zx_root_PUSH_Envelope(struct zx_root_s* x, struct zx_se_Envelope_s* z)
+void zx_root_PUSH_Envelope(struct zx_root_s* x, struct zx_e_Envelope_s* z)
 {
   if (!x || !z) return;
   z->gg.g.n = &x->Envelope->gg.g;
@@ -984,14 +1016,14 @@ void zx_root_PUSH_Envelope(struct zx_root_s* x, struct zx_se_Envelope_s* z)
 
 void zx_root_REV_Envelope(struct zx_root_s* x)
 {
-  struct zx_se_Envelope_s* nxt;
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* nxt;
+  struct zx_e_Envelope_s* y;
   if (!x) return;
   y = x->Envelope;
   if (!y) return;
   x->Envelope = 0;
   while (y) {
-    nxt = (struct zx_se_Envelope_s*)y->gg.g.n;
+    nxt = (struct zx_e_Envelope_s*)y->gg.g.n;
     y->gg.g.n = &x->Envelope->gg.g;
     x->Envelope = y;
     y = nxt;
@@ -1000,9 +1032,9 @@ void zx_root_REV_Envelope(struct zx_root_s* x)
 
 /* FUNC(zx_root_PUT_Envelope) */
 
-void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z)
+void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z)
 {
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* y;
   if (!x || !z) return;
   y = x->Envelope;
   if (!y) return;
@@ -1012,7 +1044,7 @@ void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z
     x->Envelope = z;
     return;
   default:
-    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
     z->gg.g.n = y->gg.g.n->n;
     y->gg.g.n = &z->gg.g;
@@ -1021,9 +1053,9 @@ void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z
 
 /* FUNC(zx_root_ADD_Envelope) */
 
-void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z)
+void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z)
 {
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
@@ -1034,10 +1066,10 @@ void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z
   case -1:
     y = x->Envelope;
     if (!y) goto add_to_start;
-    for (; y->gg.g.n; y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->Envelope; n > 1 && y; --n, y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+    for (y = x->Envelope; n > 1 && y; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
     if (!y) return;
   }
   z->gg.g.n = y->gg.g.n;
@@ -1048,25 +1080,29 @@ void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z
 
 void zx_root_DEL_Envelope(struct zx_root_s* x, int n)
 {
-  struct zx_se_Envelope_s* y;
+  struct zx_e_Envelope_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->Envelope = (struct zx_se_Envelope_s*)x->Envelope->gg.g.n;
+    x->Envelope = (struct zx_e_Envelope_s*)x->Envelope->gg.g.n;
     return;
   case -1:
-    y = (struct zx_se_Envelope_s*)x->Envelope;
+    y = (struct zx_e_Envelope_s*)x->Envelope;
     if (!y) return;
-    for (; y->gg.g.n; y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->Envelope; n > 1 && y->gg.g.n; --n, y = (struct zx_se_Envelope_s*)y->gg.g.n) ;
+    for (y = x->Envelope; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
   }
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_EntityDescriptor) */
 
@@ -1196,7 +1232,11 @@ void zx_root_DEL_EntityDescriptor(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_EntitiesDescriptor) */
 
@@ -1326,7 +1366,11 @@ void zx_root_DEL_EntitiesDescriptor(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_sa11_Assertion) */
 
@@ -1456,7 +1500,11 @@ void zx_root_DEL_sa11_Assertion(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_Request) */
 
@@ -1586,7 +1634,11 @@ void zx_root_DEL_Request(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_sp11_Response) */
 
@@ -1716,7 +1768,11 @@ void zx_root_DEL_sp11_Response(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_ff12_Assertion) */
 
@@ -1846,7 +1902,11 @@ void zx_root_DEL_ff12_Assertion(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_ff12_AuthnRequest) */
 
@@ -1976,7 +2036,11 @@ void zx_root_DEL_ff12_AuthnRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_AuthnResponse) */
 
@@ -2106,7 +2170,11 @@ void zx_root_DEL_AuthnResponse(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_AuthnRequestEnvelope) */
 
@@ -2236,7 +2304,11 @@ void zx_root_DEL_AuthnRequestEnvelope(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_AuthnResponseEnvelope) */
 
@@ -2366,7 +2438,11 @@ void zx_root_DEL_AuthnResponseEnvelope(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_RegisterNameIdentifierRequest) */
 
@@ -2496,7 +2572,11 @@ void zx_root_DEL_RegisterNameIdentifierRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_RegisterNameIdentifierResponse) */
 
@@ -2626,7 +2706,11 @@ void zx_root_DEL_RegisterNameIdentifierResponse(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_FederationTerminationNotification) */
 
@@ -2756,7 +2840,11 @@ void zx_root_DEL_FederationTerminationNotification(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_ff12_LogoutRequest) */
 
@@ -2886,7 +2974,11 @@ void zx_root_DEL_ff12_LogoutRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_ff12_LogoutResponse) */
 
@@ -3016,7 +3108,11 @@ void zx_root_DEL_ff12_LogoutResponse(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_NameIdentifierMappingRequest) */
 
@@ -3146,7 +3242,11 @@ void zx_root_DEL_NameIdentifierMappingRequest(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_NameIdentifierMappingResponse) */
 
@@ -3276,7 +3376,11 @@ void zx_root_DEL_NameIdentifierMappingResponse(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_m20_EntityDescriptor) */
 
@@ -3406,7 +3510,11 @@ void zx_root_DEL_m20_EntityDescriptor(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_root_NUM_m20_EntitiesDescriptor) */
 
@@ -3536,265 +3644,543 @@ void zx_root_DEL_m20_EntitiesDescriptor(struct zx_root_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
-/* FUNC(zx_root_NUM_e_Envelope) */
 
-int zx_root_NUM_e_Envelope(struct zx_root_s* x)
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_root_NUM_EndpointReference) */
+
+int zx_root_NUM_EndpointReference(struct zx_root_s* x)
 {
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->e_Envelope; y; ++n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+  for (y = x->EndpointReference; y; ++n, y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
   return n;
 }
 
-/* FUNC(zx_root_GET_e_Envelope) */
+/* FUNC(zx_root_GET_EndpointReference) */
 
-struct zx_e_Envelope_s* zx_root_GET_e_Envelope(struct zx_root_s* x, int n)
+struct zx_a_EndpointReference_s* zx_root_GET_EndpointReference(struct zx_root_s* x, int n)
 {
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* y;
   if (!x) return 0;
-  for (y = x->e_Envelope; n>=0 && y; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+  for (y = x->EndpointReference; n>=0 && y; --n, y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
   return y;
 }
 
-/* FUNC(zx_root_POP_e_Envelope) */
+/* FUNC(zx_root_POP_EndpointReference) */
 
-struct zx_e_Envelope_s* zx_root_POP_e_Envelope(struct zx_root_s* x)
+struct zx_a_EndpointReference_s* zx_root_POP_EndpointReference(struct zx_root_s* x)
 {
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* y;
   if (!x) return 0;
-  y = x->e_Envelope;
+  y = x->EndpointReference;
   if (y)
-    x->e_Envelope = (struct zx_e_Envelope_s*)y->gg.g.n;
+    x->EndpointReference = (struct zx_a_EndpointReference_s*)y->gg.g.n;
   return y;
 }
 
-/* FUNC(zx_root_PUSH_e_Envelope) */
+/* FUNC(zx_root_PUSH_EndpointReference) */
 
-void zx_root_PUSH_e_Envelope(struct zx_root_s* x, struct zx_e_Envelope_s* z)
+void zx_root_PUSH_EndpointReference(struct zx_root_s* x, struct zx_a_EndpointReference_s* z)
 {
   if (!x || !z) return;
-  z->gg.g.n = &x->e_Envelope->gg.g;
-  x->e_Envelope = z;
+  z->gg.g.n = &x->EndpointReference->gg.g;
+  x->EndpointReference = z;
 }
 
-/* FUNC(zx_root_REV_e_Envelope) */
+/* FUNC(zx_root_REV_EndpointReference) */
 
-void zx_root_REV_e_Envelope(struct zx_root_s* x)
+void zx_root_REV_EndpointReference(struct zx_root_s* x)
 {
-  struct zx_e_Envelope_s* nxt;
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* nxt;
+  struct zx_a_EndpointReference_s* y;
   if (!x) return;
-  y = x->e_Envelope;
+  y = x->EndpointReference;
   if (!y) return;
-  x->e_Envelope = 0;
+  x->EndpointReference = 0;
   while (y) {
-    nxt = (struct zx_e_Envelope_s*)y->gg.g.n;
-    y->gg.g.n = &x->e_Envelope->gg.g;
-    x->e_Envelope = y;
+    nxt = (struct zx_a_EndpointReference_s*)y->gg.g.n;
+    y->gg.g.n = &x->EndpointReference->gg.g;
+    x->EndpointReference = y;
     y = nxt;
   }
 }
 
-/* FUNC(zx_root_PUT_e_Envelope) */
+/* FUNC(zx_root_PUT_EndpointReference) */
 
-void zx_root_PUT_e_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z)
+void zx_root_PUT_EndpointReference(struct zx_root_s* x, int n, struct zx_a_EndpointReference_s* z)
 {
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* y;
   if (!x || !z) return;
-  y = x->e_Envelope;
+  y = x->EndpointReference;
   if (!y) return;
   switch (n) {
   case 0:
     z->gg.g.n = y->gg.g.n;
-    x->e_Envelope = z;
+    x->EndpointReference = z;
     return;
   default:
-    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
     z->gg.g.n = y->gg.g.n->n;
     y->gg.g.n = &z->gg.g;
   }
 }
 
-/* FUNC(zx_root_ADD_e_Envelope) */
+/* FUNC(zx_root_ADD_EndpointReference) */
 
-void zx_root_ADD_e_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z)
+void zx_root_ADD_EndpointReference(struct zx_root_s* x, int n, struct zx_a_EndpointReference_s* z)
 {
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
   add_to_start:
-    z->gg.g.n = &x->e_Envelope->gg.g;
-    x->e_Envelope = z;
+    z->gg.g.n = &x->EndpointReference->gg.g;
+    x->EndpointReference = z;
     return;
   case -1:
-    y = x->e_Envelope;
+    y = x->EndpointReference;
     if (!y) goto add_to_start;
-    for (; y->gg.g.n; y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->e_Envelope; n > 1 && y; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+    for (y = x->EndpointReference; n > 1 && y; --n, y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
     if (!y) return;
   }
   z->gg.g.n = y->gg.g.n;
   y->gg.g.n = &z->gg.g;
 }
 
-/* FUNC(zx_root_DEL_e_Envelope) */
+/* FUNC(zx_root_DEL_EndpointReference) */
 
-void zx_root_DEL_e_Envelope(struct zx_root_s* x, int n)
+void zx_root_DEL_EndpointReference(struct zx_root_s* x, int n)
 {
-  struct zx_e_Envelope_s* y;
+  struct zx_a_EndpointReference_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->e_Envelope = (struct zx_e_Envelope_s*)x->e_Envelope->gg.g.n;
+    x->EndpointReference = (struct zx_a_EndpointReference_s*)x->EndpointReference->gg.g.n;
     return;
   case -1:
-    y = (struct zx_e_Envelope_s*)x->e_Envelope;
+    y = (struct zx_a_EndpointReference_s*)x->EndpointReference;
     if (!y) return;
-    for (; y->gg.g.n; y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->e_Envelope; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Envelope_s*)y->gg.g.n) ;
+    for (y = x->EndpointReference; n > 1 && y->gg.g.n; --n, y = (struct zx_a_EndpointReference_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
   }
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
-/* FUNC(zx_root_NUM_dise_Envelope) */
 
-int zx_root_NUM_dise_Envelope(struct zx_root_s* x)
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_root_NUM_Candidate) */
+
+int zx_root_NUM_Candidate(struct zx_root_s* x)
 {
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->dise_Envelope; y; ++n, y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+  for (y = x->Candidate; y; ++n, y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
   return n;
 }
 
-/* FUNC(zx_root_GET_dise_Envelope) */
+/* FUNC(zx_root_GET_Candidate) */
 
-struct zx_dise_Envelope_s* zx_root_GET_dise_Envelope(struct zx_root_s* x, int n)
+struct zx_hrxml_Candidate_s* zx_root_GET_Candidate(struct zx_root_s* x, int n)
 {
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* y;
   if (!x) return 0;
-  for (y = x->dise_Envelope; n>=0 && y; --n, y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+  for (y = x->Candidate; n>=0 && y; --n, y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
   return y;
 }
 
-/* FUNC(zx_root_POP_dise_Envelope) */
+/* FUNC(zx_root_POP_Candidate) */
 
-struct zx_dise_Envelope_s* zx_root_POP_dise_Envelope(struct zx_root_s* x)
+struct zx_hrxml_Candidate_s* zx_root_POP_Candidate(struct zx_root_s* x)
 {
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* y;
   if (!x) return 0;
-  y = x->dise_Envelope;
+  y = x->Candidate;
   if (y)
-    x->dise_Envelope = (struct zx_dise_Envelope_s*)y->gg.g.n;
+    x->Candidate = (struct zx_hrxml_Candidate_s*)y->gg.g.n;
   return y;
 }
 
-/* FUNC(zx_root_PUSH_dise_Envelope) */
+/* FUNC(zx_root_PUSH_Candidate) */
 
-void zx_root_PUSH_dise_Envelope(struct zx_root_s* x, struct zx_dise_Envelope_s* z)
+void zx_root_PUSH_Candidate(struct zx_root_s* x, struct zx_hrxml_Candidate_s* z)
 {
   if (!x || !z) return;
-  z->gg.g.n = &x->dise_Envelope->gg.g;
-  x->dise_Envelope = z;
+  z->gg.g.n = &x->Candidate->gg.g;
+  x->Candidate = z;
 }
 
-/* FUNC(zx_root_REV_dise_Envelope) */
+/* FUNC(zx_root_REV_Candidate) */
 
-void zx_root_REV_dise_Envelope(struct zx_root_s* x)
+void zx_root_REV_Candidate(struct zx_root_s* x)
 {
-  struct zx_dise_Envelope_s* nxt;
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* nxt;
+  struct zx_hrxml_Candidate_s* y;
   if (!x) return;
-  y = x->dise_Envelope;
+  y = x->Candidate;
   if (!y) return;
-  x->dise_Envelope = 0;
+  x->Candidate = 0;
   while (y) {
-    nxt = (struct zx_dise_Envelope_s*)y->gg.g.n;
-    y->gg.g.n = &x->dise_Envelope->gg.g;
-    x->dise_Envelope = y;
+    nxt = (struct zx_hrxml_Candidate_s*)y->gg.g.n;
+    y->gg.g.n = &x->Candidate->gg.g;
+    x->Candidate = y;
     y = nxt;
   }
 }
 
-/* FUNC(zx_root_PUT_dise_Envelope) */
+/* FUNC(zx_root_PUT_Candidate) */
 
-void zx_root_PUT_dise_Envelope(struct zx_root_s* x, int n, struct zx_dise_Envelope_s* z)
+void zx_root_PUT_Candidate(struct zx_root_s* x, int n, struct zx_hrxml_Candidate_s* z)
 {
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* y;
   if (!x || !z) return;
-  y = x->dise_Envelope;
+  y = x->Candidate;
   if (!y) return;
   switch (n) {
   case 0:
     z->gg.g.n = y->gg.g.n;
-    x->dise_Envelope = z;
+    x->Candidate = z;
     return;
   default:
-    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
     z->gg.g.n = y->gg.g.n->n;
     y->gg.g.n = &z->gg.g;
   }
 }
 
-/* FUNC(zx_root_ADD_dise_Envelope) */
+/* FUNC(zx_root_ADD_Candidate) */
 
-void zx_root_ADD_dise_Envelope(struct zx_root_s* x, int n, struct zx_dise_Envelope_s* z)
+void zx_root_ADD_Candidate(struct zx_root_s* x, int n, struct zx_hrxml_Candidate_s* z)
 {
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
   add_to_start:
-    z->gg.g.n = &x->dise_Envelope->gg.g;
-    x->dise_Envelope = z;
+    z->gg.g.n = &x->Candidate->gg.g;
+    x->Candidate = z;
     return;
   case -1:
-    y = x->dise_Envelope;
+    y = x->Candidate;
     if (!y) goto add_to_start;
-    for (; y->gg.g.n; y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->dise_Envelope; n > 1 && y; --n, y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+    for (y = x->Candidate; n > 1 && y; --n, y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
     if (!y) return;
   }
   z->gg.g.n = y->gg.g.n;
   y->gg.g.n = &z->gg.g;
 }
 
-/* FUNC(zx_root_DEL_dise_Envelope) */
+/* FUNC(zx_root_DEL_Candidate) */
 
-void zx_root_DEL_dise_Envelope(struct zx_root_s* x, int n)
+void zx_root_DEL_Candidate(struct zx_root_s* x, int n)
 {
-  struct zx_dise_Envelope_s* y;
+  struct zx_hrxml_Candidate_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->dise_Envelope = (struct zx_dise_Envelope_s*)x->dise_Envelope->gg.g.n;
+    x->Candidate = (struct zx_hrxml_Candidate_s*)x->Candidate->gg.g.n;
     return;
   case -1:
-    y = (struct zx_dise_Envelope_s*)x->dise_Envelope;
+    y = (struct zx_hrxml_Candidate_s*)x->Candidate;
     if (!y) return;
-    for (; y->gg.g.n; y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->dise_Envelope; n > 1 && y->gg.g.n; --n, y = (struct zx_dise_Envelope_s*)y->gg.g.n) ;
+    for (y = x->Candidate; n > 1 && y->gg.g.n; --n, y = (struct zx_hrxml_Candidate_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
   }
   y->gg.g.n = y->gg.g.n->n;
 }
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_root_NUM_XACMLAuthzDecisionQuery) */
+
+int zx_root_NUM_XACMLAuthzDecisionQuery(struct zx_root_s* x)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->XACMLAuthzDecisionQuery; y; ++n, y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_root_GET_XACMLAuthzDecisionQuery) */
+
+struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_GET_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  if (!x) return 0;
+  for (y = x->XACMLAuthzDecisionQuery; n>=0 && y; --n, y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_root_POP_XACMLAuthzDecisionQuery) */
+
+struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_POP_XACMLAuthzDecisionQuery(struct zx_root_s* x)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  if (!x) return 0;
+  y = x->XACMLAuthzDecisionQuery;
+  if (y)
+    x->XACMLAuthzDecisionQuery = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_root_PUSH_XACMLAuthzDecisionQuery) */
+
+void zx_root_PUSH_XACMLAuthzDecisionQuery(struct zx_root_s* x, struct zx_xasp_XACMLAuthzDecisionQuery_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->XACMLAuthzDecisionQuery->gg.g;
+  x->XACMLAuthzDecisionQuery = z;
+}
+
+/* FUNC(zx_root_REV_XACMLAuthzDecisionQuery) */
+
+void zx_root_REV_XACMLAuthzDecisionQuery(struct zx_root_s* x)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* nxt;
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  if (!x) return;
+  y = x->XACMLAuthzDecisionQuery;
+  if (!y) return;
+  x->XACMLAuthzDecisionQuery = 0;
+  while (y) {
+    nxt = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n;
+    y->gg.g.n = &x->XACMLAuthzDecisionQuery->gg.g;
+    x->XACMLAuthzDecisionQuery = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_root_PUT_XACMLAuthzDecisionQuery) */
+
+void zx_root_PUT_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLAuthzDecisionQuery_s* z)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  if (!x || !z) return;
+  y = x->XACMLAuthzDecisionQuery;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->XACMLAuthzDecisionQuery = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_root_ADD_XACMLAuthzDecisionQuery) */
+
+void zx_root_ADD_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLAuthzDecisionQuery_s* z)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->XACMLAuthzDecisionQuery->gg.g;
+    x->XACMLAuthzDecisionQuery = z;
+    return;
+  case -1:
+    y = x->XACMLAuthzDecisionQuery;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->XACMLAuthzDecisionQuery; n > 1 && y; --n, y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_root_DEL_XACMLAuthzDecisionQuery) */
+
+void zx_root_DEL_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->XACMLAuthzDecisionQuery = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)x->XACMLAuthzDecisionQuery->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)x->XACMLAuthzDecisionQuery;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->XACMLAuthzDecisionQuery; n > 1 && y->gg.g.n; --n, y = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_root_NUM_XACMLPolicyQuery) */
+
+int zx_root_NUM_XACMLPolicyQuery(struct zx_root_s* x)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->XACMLPolicyQuery; y; ++n, y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_root_GET_XACMLPolicyQuery) */
+
+struct zx_xasp_XACMLPolicyQuery_s* zx_root_GET_XACMLPolicyQuery(struct zx_root_s* x, int n)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  if (!x) return 0;
+  for (y = x->XACMLPolicyQuery; n>=0 && y; --n, y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_root_POP_XACMLPolicyQuery) */
+
+struct zx_xasp_XACMLPolicyQuery_s* zx_root_POP_XACMLPolicyQuery(struct zx_root_s* x)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  if (!x) return 0;
+  y = x->XACMLPolicyQuery;
+  if (y)
+    x->XACMLPolicyQuery = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_root_PUSH_XACMLPolicyQuery) */
+
+void zx_root_PUSH_XACMLPolicyQuery(struct zx_root_s* x, struct zx_xasp_XACMLPolicyQuery_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->XACMLPolicyQuery->gg.g;
+  x->XACMLPolicyQuery = z;
+}
+
+/* FUNC(zx_root_REV_XACMLPolicyQuery) */
+
+void zx_root_REV_XACMLPolicyQuery(struct zx_root_s* x)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* nxt;
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  if (!x) return;
+  y = x->XACMLPolicyQuery;
+  if (!y) return;
+  x->XACMLPolicyQuery = 0;
+  while (y) {
+    nxt = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n;
+    y->gg.g.n = &x->XACMLPolicyQuery->gg.g;
+    x->XACMLPolicyQuery = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_root_PUT_XACMLPolicyQuery) */
+
+void zx_root_PUT_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* z)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  if (!x || !z) return;
+  y = x->XACMLPolicyQuery;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->XACMLPolicyQuery = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_root_ADD_XACMLPolicyQuery) */
+
+void zx_root_ADD_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* z)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->XACMLPolicyQuery->gg.g;
+    x->XACMLPolicyQuery = z;
+    return;
+  case -1:
+    y = x->XACMLPolicyQuery;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->XACMLPolicyQuery; n > 1 && y; --n, y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_root_DEL_XACMLPolicyQuery) */
+
+void zx_root_DEL_XACMLPolicyQuery(struct zx_root_s* x, int n)
+{
+  struct zx_xasp_XACMLPolicyQuery_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->XACMLPolicyQuery = (struct zx_xasp_XACMLPolicyQuery_s*)x->XACMLPolicyQuery->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xasp_XACMLPolicyQuery_s*)x->XACMLPolicyQuery;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->XACMLPolicyQuery; n > 1 && y->gg.g.n; --n, y = (struct zx_xasp_XACMLPolicyQuery_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
 
 
 

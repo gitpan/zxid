@@ -1,5 +1,5 @@
 # zxid/sg/saml-schema-protocol-2.0.sg
-# $Id: saml-schema-protocol-2.0.sg,v 1.3 2006/08/05 21:37:39 sampo Exp $
+# $Id: saml-schema-protocol-2.0.sg,v 1.4 2007/03/04 08:21:32 sampo Exp $
 #
 # N.B. This file is not a direct conversion. Instead it has been manually edited to
 # make it simpler and to facilitate code generation.
@@ -7,7 +7,7 @@
 target(sp,urn:oasis:names:tc:SAML:2.0:protocol)
 import(sa,urn:oasis:names:tc:SAML:2.0:assertion,saml-schema-assertion-2.0.xsd)
 import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)
-ns(xs,http://www.w3.org/2001/XMLSchema)
+ns(xs, http://www.w3.org/2001/XMLSchema)
 
 %RequestAbstractType:
   sa:Issuer?

@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -33,6 +35,8 @@
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_lu_Status_NUM_Status) */
 
@@ -162,18 +166,20 @@ void zx_lu_Status_DEL_Status(struct zx_lu_Status_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_lu_Status_GET_code) */
 struct zx_str* zx_lu_Status_GET_code(struct zx_lu_Status_s* x) { return x->code; }
 /* FUNC(zx_lu_Status_PUT_code) */
 void zx_lu_Status_PUT_code(struct zx_lu_Status_s* x, struct zx_str* y) { x->code = y; }
-/* FUNC(zx_lu_Status_GET_comment) */
-struct zx_str* zx_lu_Status_GET_comment(struct zx_lu_Status_s* x) { return x->comment; }
-/* FUNC(zx_lu_Status_PUT_comment) */
-void zx_lu_Status_PUT_comment(struct zx_lu_Status_s* x, struct zx_str* y) { x->comment = y; }
 /* FUNC(zx_lu_Status_GET_ref) */
 struct zx_str* zx_lu_Status_GET_ref(struct zx_lu_Status_s* x) { return x->ref; }
 /* FUNC(zx_lu_Status_PUT_ref) */
 void zx_lu_Status_PUT_ref(struct zx_lu_Status_s* x, struct zx_str* y) { x->ref = y; }
+/* FUNC(zx_lu_Status_GET_comment) */
+struct zx_str* zx_lu_Status_GET_comment(struct zx_lu_Status_s* x) { return x->comment; }
+/* FUNC(zx_lu_Status_PUT_comment) */
+void zx_lu_Status_PUT_comment(struct zx_lu_Status_s* x, struct zx_str* y) { x->comment = y; }
 
 
 

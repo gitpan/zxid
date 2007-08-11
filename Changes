@@ -1,7 +1,49 @@
 # zxid/Changes
-# $Id: Changes,v 1.2 2006/09/25 05:05:42 sampo Exp $
+# $Id: Changes,v 1.9 2007-08-10 19:19:10 sampo Exp $
 # Change log, minor credits, and release history
 
+zxid-0.18:: 17.7.2007 PEND
+    - Added HR-XML WSC and WSP support
+    - Much stabilization of ID-WSF code
+zxid-0.17:: 6.3.2007
+    - bug fixes
+zxid-0.16:: 4.3.2007
+    - Added ID-DAP support
+    - Added ID-MM7 support
+    - Added Contact Book support
+    - Added Geo Location support
+    - Added People Service support
+    - Added ID Mapping support
+    - Added Authentication Service support
+    - Added DST and Subscriptions support
+    - Added XACML2 support
+    - Added WS-Trust 1.3 support
+zxid-0.15:: 22.2.2007
+    - JAVAC_FLAGS tweak to avoid insufficient heap from Sean Doyle
+    - Fixed zxid_fed_mgmt_cf() unimplemented warning
+    - Documented fix for __init_array_start linking problem
+    - Annotated sources with call graph information, added call-anal.pl
+zxid-0.14:: 21.2.2007
+    - zxidhlo.java and Tomcat example perfected
+zxid-0.13:: 20.2.2007
+    - Java interface cleanup
+    - Mac compile fixes
+    - minor bug fixes
+zxid-0.12:: 10.2.2007
+    - WSF bootstrap handling
+    - rework of session system
+    - bug fixes
+zxid-0.11:: 1.2.2007
+    - MinGW DLL fixes
+zxid-0.10:: 31.1.2007
+    - MinGW DLL production works
+zxid-0.9:: 26.1.2007
+    - fixed compilation
+    - preliminary Windows support using MinGW
+zxid-0.8:: 1.12.2006
+    - Improved signature checking
+    - New logging infrastructure, document logging
+    - Support config files, document the format
 zxid-0.7:: 25.9.2006
     - WO encoding with namespace support
     - First cut of XMLDSIG validation (very early signing, too)

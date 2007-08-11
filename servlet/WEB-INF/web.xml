@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+<!-- $Id: web.xml,v 1.1 2007/02/21 00:14:24 sampo Exp $ -->
+<web-app>
+
+<display-name>ZXID Example</display-name>
+<description>ZXID Example.</description>
+
+<servlet>
+<servlet-name>ZXIDhello</servlet-name>
+<servlet-class>zxidhlo</servlet-class>
+</servlet>
+
+<servlet-mapping>
+<servlet-name>ZXIDhello</servlet-name>
+<url-pattern>/zxidHLO</url-pattern>
+</servlet-mapping>
+
+</web-app>

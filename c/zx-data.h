@@ -14,32 +14,56 @@
 #include "c/zx-const.h"
 #include "c/zx-a-data.h"
 #include "c/zx-ac-data.h"
+#include "c/zx-as-data.h"
 #include "c/zx-b-data.h"
 #include "c/zx-b12-data.h"
+#include "c/zx-cb-data.h"
+#include "c/zx-cdm-data.h"
+#include "c/zx-dap-data.h"
+#include "c/zx-demomed-data.h"
 #include "c/zx-di-data.h"
 #include "c/zx-di12-data.h"
-#include "c/zx-dise-data.h"
+#include "c/zx-dp-data.h"
 #include "c/zx-ds-data.h"
+#include "c/zx-dst-data.h"
 #include "c/zx-e-data.h"
+#include "c/zx-ecp-data.h"
+#include "c/zx-exca-data.h"
 #include "c/zx-ff12-data.h"
+#include "c/zx-gl-data.h"
+#include "c/zx-hrxml-data.h"
+#include "c/zx-idhrxml-data.h"
+#include "c/zx-idp-data.h"
+#include "c/zx-im-data.h"
 #include "c/zx-is-data.h"
 #include "c/zx-is12-data.h"
 #include "c/zx-lu-data.h"
 #include "c/zx-m20-data.h"
 #include "c/zx-md-data.h"
+#include "c/zx-mm7-data.h"
+#include "c/zx-paos-data.h"
+#include "c/zx-pmm-data.h"
+#include "c/zx-prov-data.h"
+#include "c/zx-ps-data.h"
 #include "c/zx-sa-data.h"
 #include "c/zx-sa11-data.h"
 #include "c/zx-sbf-data.h"
-#include "c/zx-se-data.h"
 #include "c/zx-sec-data.h"
 #include "c/zx-sec12-data.h"
+#include "c/zx-shps-data.h"
 #include "c/zx-sp-data.h"
 #include "c/zx-sp11-data.h"
+#include "c/zx-subs-data.h"
+#include "c/zx-wsc-data.h"
+#include "c/zx-wsp-data.h"
 #include "c/zx-wsse-data.h"
+#include "c/zx-wst-data.h"
 #include "c/zx-wsu-data.h"
+#include "c/zx-xa-data.h"
+#include "c/zx-xac-data.h"
+#include "c/zx-xasa-data.h"
+#include "c/zx-xasp-data.h"
 #include "c/zx-xenc-data.h"
-#include "c/zx-xml-data.h"
-#include "c/zx-xs-data.h"
 
 
 #ifndef ZX_ELEM_EXT
@@ -61,11 +85,13 @@ int zx_elem_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 
 struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns, int n_decode);
 struct zx_root_s* zx_NEW_root(struct zx_ctx* c);
+void zx_FREE_root(struct zx_ctx* c, struct zx_root_s* x, int free_strs);
+#ifdef ZX_ENA_AUX
 struct zx_root_s* zx_DEEP_CLONE_root(struct zx_ctx* c, struct zx_root_s* x, int dup_strs);
 void zx_DUP_STRS_root(struct zx_ctx* c, struct zx_root_s* x);
-void zx_FREE_root(struct zx_ctx* c, struct zx_root_s* x, int free_strs);
 int zx_WALK_SO_root(struct zx_ctx* c, struct zx_root_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
 int zx_WALK_WO_root(struct zx_ctx* c, struct zx_root_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+#endif
 int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x);
 int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x);
 char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p);
@@ -83,7 +109,7 @@ struct zx_root_s {
   struct zx_sp_LogoutResponse_s* LogoutResponse;	/* {0,-1} root */
   struct zx_sp_ManageNameIDRequest_s* ManageNameIDRequest;	/* {0,-1} root */
   struct zx_sp_ManageNameIDResponse_s* ManageNameIDResponse;	/* {0,-1} root */
-  struct zx_se_Envelope_s* Envelope;	/* {0,-1} root */
+  struct zx_e_Envelope_s* Envelope;	/* {0,-1} root */
   struct zx_md_EntityDescriptor_s* EntityDescriptor;	/* {0,-1} root */
   struct zx_md_EntitiesDescriptor_s* EntitiesDescriptor;	/* {0,-1} root */
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,-1} root */
@@ -103,9 +129,13 @@ struct zx_root_s {
   struct zx_ff12_NameIdentifierMappingResponse_s* NameIdentifierMappingResponse;	/* {0,-1} root */
   struct zx_m20_EntityDescriptor_s* m20_EntityDescriptor;	/* {0,-1} root */
   struct zx_m20_EntitiesDescriptor_s* m20_EntitiesDescriptor;	/* {0,-1}  */
-  struct zx_e_Envelope_s* e_Envelope;	/* {0,-1} root */
-  struct zx_dise_Envelope_s* dise_Envelope;	/* {0,-1} root */
+  struct zx_a_EndpointReference_s* EndpointReference;	/* {0,-1} root */
+  struct zx_hrxml_Candidate_s* Candidate;	/* {0,-1} root */
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* XACMLAuthzDecisionQuery;	/* {0,-1} root */
+  struct zx_xasp_XACMLPolicyQuery_s* XACMLPolicyQuery;	/* {0,-1} root */
 };
+
+#ifdef ZX_ENA_GETPUT
 
 struct zx_sa_Assertion_s* zx_root_GET_Assertion(struct zx_root_s* x, int n);
 struct zx_sp_AuthnRequest_s* zx_root_GET_AuthnRequest(struct zx_root_s* x, int n);
@@ -114,7 +144,7 @@ struct zx_sp_LogoutRequest_s* zx_root_GET_LogoutRequest(struct zx_root_s* x, int
 struct zx_sp_LogoutResponse_s* zx_root_GET_LogoutResponse(struct zx_root_s* x, int n);
 struct zx_sp_ManageNameIDRequest_s* zx_root_GET_ManageNameIDRequest(struct zx_root_s* x, int n);
 struct zx_sp_ManageNameIDResponse_s* zx_root_GET_ManageNameIDResponse(struct zx_root_s* x, int n);
-struct zx_se_Envelope_s* zx_root_GET_Envelope(struct zx_root_s* x, int n);
+struct zx_e_Envelope_s* zx_root_GET_Envelope(struct zx_root_s* x, int n);
 struct zx_md_EntityDescriptor_s* zx_root_GET_EntityDescriptor(struct zx_root_s* x, int n);
 struct zx_md_EntitiesDescriptor_s* zx_root_GET_EntitiesDescriptor(struct zx_root_s* x, int n);
 struct zx_sa11_Assertion_s* zx_root_GET_sa11_Assertion(struct zx_root_s* x, int n);
@@ -134,8 +164,11 @@ struct zx_ff12_NameIdentifierMappingRequest_s* zx_root_GET_NameIdentifierMapping
 struct zx_ff12_NameIdentifierMappingResponse_s* zx_root_GET_NameIdentifierMappingResponse(struct zx_root_s* x, int n);
 struct zx_m20_EntityDescriptor_s* zx_root_GET_m20_EntityDescriptor(struct zx_root_s* x, int n);
 struct zx_m20_EntitiesDescriptor_s* zx_root_GET_m20_EntitiesDescriptor(struct zx_root_s* x, int n);
-struct zx_e_Envelope_s* zx_root_GET_e_Envelope(struct zx_root_s* x, int n);
-struct zx_dise_Envelope_s* zx_root_GET_dise_Envelope(struct zx_root_s* x, int n);
+struct zx_a_EndpointReference_s* zx_root_GET_EndpointReference(struct zx_root_s* x, int n);
+struct zx_hrxml_Candidate_s* zx_root_GET_Candidate(struct zx_root_s* x, int n);
+struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_GET_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
+struct zx_xasp_XACMLPolicyQuery_s* zx_root_GET_XACMLPolicyQuery(struct zx_root_s* x, int n);
+
 int zx_root_NUM_Assertion(struct zx_root_s* x);
 int zx_root_NUM_AuthnRequest(struct zx_root_s* x);
 int zx_root_NUM_Response(struct zx_root_s* x);
@@ -163,8 +196,11 @@ int zx_root_NUM_NameIdentifierMappingRequest(struct zx_root_s* x);
 int zx_root_NUM_NameIdentifierMappingResponse(struct zx_root_s* x);
 int zx_root_NUM_m20_EntityDescriptor(struct zx_root_s* x);
 int zx_root_NUM_m20_EntitiesDescriptor(struct zx_root_s* x);
-int zx_root_NUM_e_Envelope(struct zx_root_s* x);
-int zx_root_NUM_dise_Envelope(struct zx_root_s* x);
+int zx_root_NUM_EndpointReference(struct zx_root_s* x);
+int zx_root_NUM_Candidate(struct zx_root_s* x);
+int zx_root_NUM_XACMLAuthzDecisionQuery(struct zx_root_s* x);
+int zx_root_NUM_XACMLPolicyQuery(struct zx_root_s* x);
+
 struct zx_sa_Assertion_s* zx_root_POP_Assertion(struct zx_root_s* x);
 struct zx_sp_AuthnRequest_s* zx_root_POP_AuthnRequest(struct zx_root_s* x);
 struct zx_sp_Response_s* zx_root_POP_Response(struct zx_root_s* x);
@@ -172,7 +208,7 @@ struct zx_sp_LogoutRequest_s* zx_root_POP_LogoutRequest(struct zx_root_s* x);
 struct zx_sp_LogoutResponse_s* zx_root_POP_LogoutResponse(struct zx_root_s* x);
 struct zx_sp_ManageNameIDRequest_s* zx_root_POP_ManageNameIDRequest(struct zx_root_s* x);
 struct zx_sp_ManageNameIDResponse_s* zx_root_POP_ManageNameIDResponse(struct zx_root_s* x);
-struct zx_se_Envelope_s* zx_root_POP_Envelope(struct zx_root_s* x);
+struct zx_e_Envelope_s* zx_root_POP_Envelope(struct zx_root_s* x);
 struct zx_md_EntityDescriptor_s* zx_root_POP_EntityDescriptor(struct zx_root_s* x);
 struct zx_md_EntitiesDescriptor_s* zx_root_POP_EntitiesDescriptor(struct zx_root_s* x);
 struct zx_sa11_Assertion_s* zx_root_POP_sa11_Assertion(struct zx_root_s* x);
@@ -192,8 +228,11 @@ struct zx_ff12_NameIdentifierMappingRequest_s* zx_root_POP_NameIdentifierMapping
 struct zx_ff12_NameIdentifierMappingResponse_s* zx_root_POP_NameIdentifierMappingResponse(struct zx_root_s* x);
 struct zx_m20_EntityDescriptor_s* zx_root_POP_m20_EntityDescriptor(struct zx_root_s* x);
 struct zx_m20_EntitiesDescriptor_s* zx_root_POP_m20_EntitiesDescriptor(struct zx_root_s* x);
-struct zx_e_Envelope_s* zx_root_POP_e_Envelope(struct zx_root_s* x);
-struct zx_dise_Envelope_s* zx_root_POP_dise_Envelope(struct zx_root_s* x);
+struct zx_a_EndpointReference_s* zx_root_POP_EndpointReference(struct zx_root_s* x);
+struct zx_hrxml_Candidate_s* zx_root_POP_Candidate(struct zx_root_s* x);
+struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_POP_XACMLAuthzDecisionQuery(struct zx_root_s* x);
+struct zx_xasp_XACMLPolicyQuery_s* zx_root_POP_XACMLPolicyQuery(struct zx_root_s* x);
+
 void zx_root_PUSH_Assertion(struct zx_root_s* x, struct zx_sa_Assertion_s* y);
 void zx_root_PUSH_AuthnRequest(struct zx_root_s* x, struct zx_sp_AuthnRequest_s* y);
 void zx_root_PUSH_Response(struct zx_root_s* x, struct zx_sp_Response_s* y);
@@ -201,7 +240,7 @@ void zx_root_PUSH_LogoutRequest(struct zx_root_s* x, struct zx_sp_LogoutRequest_
 void zx_root_PUSH_LogoutResponse(struct zx_root_s* x, struct zx_sp_LogoutResponse_s* y);
 void zx_root_PUSH_ManageNameIDRequest(struct zx_root_s* x, struct zx_sp_ManageNameIDRequest_s* y);
 void zx_root_PUSH_ManageNameIDResponse(struct zx_root_s* x, struct zx_sp_ManageNameIDResponse_s* y);
-void zx_root_PUSH_Envelope(struct zx_root_s* x, struct zx_se_Envelope_s* y);
+void zx_root_PUSH_Envelope(struct zx_root_s* x, struct zx_e_Envelope_s* y);
 void zx_root_PUSH_EntityDescriptor(struct zx_root_s* x, struct zx_md_EntityDescriptor_s* y);
 void zx_root_PUSH_EntitiesDescriptor(struct zx_root_s* x, struct zx_md_EntitiesDescriptor_s* y);
 void zx_root_PUSH_sa11_Assertion(struct zx_root_s* x, struct zx_sa11_Assertion_s* y);
@@ -221,8 +260,12 @@ void zx_root_PUSH_NameIdentifierMappingRequest(struct zx_root_s* x, struct zx_ff
 void zx_root_PUSH_NameIdentifierMappingResponse(struct zx_root_s* x, struct zx_ff12_NameIdentifierMappingResponse_s* y);
 void zx_root_PUSH_m20_EntityDescriptor(struct zx_root_s* x, struct zx_m20_EntityDescriptor_s* y);
 void zx_root_PUSH_m20_EntitiesDescriptor(struct zx_root_s* x, struct zx_m20_EntitiesDescriptor_s* y);
-void zx_root_PUSH_e_Envelope(struct zx_root_s* x, struct zx_e_Envelope_s* y);
-void zx_root_PUSH_dise_Envelope(struct zx_root_s* x, struct zx_dise_Envelope_s* y);
+void zx_root_PUSH_EndpointReference(struct zx_root_s* x, struct zx_a_EndpointReference_s* y);
+void zx_root_PUSH_Candidate(struct zx_root_s* x, struct zx_hrxml_Candidate_s* y);
+void zx_root_PUSH_XACMLAuthzDecisionQuery(struct zx_root_s* x, struct zx_xasp_XACMLAuthzDecisionQuery_s* y);
+void zx_root_PUSH_XACMLPolicyQuery(struct zx_root_s* x, struct zx_xasp_XACMLPolicyQuery_s* y);
+
+
 void zx_root_PUT_Assertion(struct zx_root_s* x, int n, struct zx_sa_Assertion_s* y);
 void zx_root_PUT_AuthnRequest(struct zx_root_s* x, int n, struct zx_sp_AuthnRequest_s* y);
 void zx_root_PUT_Response(struct zx_root_s* x, int n, struct zx_sp_Response_s* y);
@@ -230,7 +273,7 @@ void zx_root_PUT_LogoutRequest(struct zx_root_s* x, int n, struct zx_sp_LogoutRe
 void zx_root_PUT_LogoutResponse(struct zx_root_s* x, int n, struct zx_sp_LogoutResponse_s* y);
 void zx_root_PUT_ManageNameIDRequest(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDRequest_s* y);
 void zx_root_PUT_ManageNameIDResponse(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDResponse_s* y);
-void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* y);
+void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* y);
 void zx_root_PUT_EntityDescriptor(struct zx_root_s* x, int n, struct zx_md_EntityDescriptor_s* y);
 void zx_root_PUT_EntitiesDescriptor(struct zx_root_s* x, int n, struct zx_md_EntitiesDescriptor_s* y);
 void zx_root_PUT_sa11_Assertion(struct zx_root_s* x, int n, struct zx_sa11_Assertion_s* y);
@@ -250,8 +293,11 @@ void zx_root_PUT_NameIdentifierMappingRequest(struct zx_root_s* x, int n, struct
 void zx_root_PUT_NameIdentifierMappingResponse(struct zx_root_s* x, int n, struct zx_ff12_NameIdentifierMappingResponse_s* y);
 void zx_root_PUT_m20_EntityDescriptor(struct zx_root_s* x, int n, struct zx_m20_EntityDescriptor_s* y);
 void zx_root_PUT_m20_EntitiesDescriptor(struct zx_root_s* x, int n, struct zx_m20_EntitiesDescriptor_s* y);
-void zx_root_PUT_e_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* y);
-void zx_root_PUT_dise_Envelope(struct zx_root_s* x, int n, struct zx_dise_Envelope_s* y);
+void zx_root_PUT_EndpointReference(struct zx_root_s* x, int n, struct zx_a_EndpointReference_s* y);
+void zx_root_PUT_Candidate(struct zx_root_s* x, int n, struct zx_hrxml_Candidate_s* y);
+void zx_root_PUT_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLAuthzDecisionQuery_s* y);
+void zx_root_PUT_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* y);
+
 void zx_root_ADD_Assertion(struct zx_root_s* x, int n, struct zx_sa_Assertion_s* z);
 void zx_root_ADD_AuthnRequest(struct zx_root_s* x, int n, struct zx_sp_AuthnRequest_s* z);
 void zx_root_ADD_Response(struct zx_root_s* x, int n, struct zx_sp_Response_s* z);
@@ -259,7 +305,7 @@ void zx_root_ADD_LogoutRequest(struct zx_root_s* x, int n, struct zx_sp_LogoutRe
 void zx_root_ADD_LogoutResponse(struct zx_root_s* x, int n, struct zx_sp_LogoutResponse_s* z);
 void zx_root_ADD_ManageNameIDRequest(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDRequest_s* z);
 void zx_root_ADD_ManageNameIDResponse(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDResponse_s* z);
-void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_se_Envelope_s* z);
+void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z);
 void zx_root_ADD_EntityDescriptor(struct zx_root_s* x, int n, struct zx_md_EntityDescriptor_s* z);
 void zx_root_ADD_EntitiesDescriptor(struct zx_root_s* x, int n, struct zx_md_EntitiesDescriptor_s* z);
 void zx_root_ADD_sa11_Assertion(struct zx_root_s* x, int n, struct zx_sa11_Assertion_s* z);
@@ -279,8 +325,11 @@ void zx_root_ADD_NameIdentifierMappingRequest(struct zx_root_s* x, int n, struct
 void zx_root_ADD_NameIdentifierMappingResponse(struct zx_root_s* x, int n, struct zx_ff12_NameIdentifierMappingResponse_s* z);
 void zx_root_ADD_m20_EntityDescriptor(struct zx_root_s* x, int n, struct zx_m20_EntityDescriptor_s* z);
 void zx_root_ADD_m20_EntitiesDescriptor(struct zx_root_s* x, int n, struct zx_m20_EntitiesDescriptor_s* z);
-void zx_root_ADD_e_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z);
-void zx_root_ADD_dise_Envelope(struct zx_root_s* x, int n, struct zx_dise_Envelope_s* z);
+void zx_root_ADD_EndpointReference(struct zx_root_s* x, int n, struct zx_a_EndpointReference_s* z);
+void zx_root_ADD_Candidate(struct zx_root_s* x, int n, struct zx_hrxml_Candidate_s* z);
+void zx_root_ADD_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLAuthzDecisionQuery_s* z);
+void zx_root_ADD_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* z);
+
 void zx_root_DEL_Assertion(struct zx_root_s* x, int n);
 void zx_root_DEL_AuthnRequest(struct zx_root_s* x, int n);
 void zx_root_DEL_Response(struct zx_root_s* x, int n);
@@ -308,8 +357,11 @@ void zx_root_DEL_NameIdentifierMappingRequest(struct zx_root_s* x, int n);
 void zx_root_DEL_NameIdentifierMappingResponse(struct zx_root_s* x, int n);
 void zx_root_DEL_m20_EntityDescriptor(struct zx_root_s* x, int n);
 void zx_root_DEL_m20_EntitiesDescriptor(struct zx_root_s* x, int n);
-void zx_root_DEL_e_Envelope(struct zx_root_s* x, int n);
-void zx_root_DEL_dise_Envelope(struct zx_root_s* x, int n);
+void zx_root_DEL_EndpointReference(struct zx_root_s* x, int n);
+void zx_root_DEL_Candidate(struct zx_root_s* x, int n);
+void zx_root_DEL_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
+void zx_root_DEL_XACMLPolicyQuery(struct zx_root_s* x, int n);
+
 void zx_root_REV_Assertion(struct zx_root_s* x);
 void zx_root_REV_AuthnRequest(struct zx_root_s* x);
 void zx_root_REV_Response(struct zx_root_s* x);
@@ -337,9 +389,12 @@ void zx_root_REV_NameIdentifierMappingRequest(struct zx_root_s* x);
 void zx_root_REV_NameIdentifierMappingResponse(struct zx_root_s* x);
 void zx_root_REV_m20_EntityDescriptor(struct zx_root_s* x);
 void zx_root_REV_m20_EntitiesDescriptor(struct zx_root_s* x);
-void zx_root_REV_e_Envelope(struct zx_root_s* x);
-void zx_root_REV_dise_Envelope(struct zx_root_s* x);
+void zx_root_REV_EndpointReference(struct zx_root_s* x);
+void zx_root_REV_Candidate(struct zx_root_s* x);
+void zx_root_REV_XACMLAuthzDecisionQuery(struct zx_root_s* x);
+void zx_root_REV_XACMLPolicyQuery(struct zx_root_s* x);
 
+#endif
 int zx_LEN_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, int simplelen, struct zx_ns_s* ns);
 int zx_LEN_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, int simplelen);
 char* zx_ENC_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p, char* simpletag, int simplelen, struct zx_ns_s* ns);
@@ -356,6 +411,5 @@ struct zx_elem_s* zx_DEEP_CLONE_simple_elem(struct zx_ctx* c, struct zx_elem_s* 
 void zx_FREE_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, int free_strs);
 int zx_WALK_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
 int zx_WALK_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
-struct zx_elem_s* zx_NEXT_simple_elem(struct zx_ctx* c, struct zx_elem_s* x);
 
 #endif

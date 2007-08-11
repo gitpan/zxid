@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -28,6 +30,8 @@
 #include "c/zx-sec12-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxyInfoConfirmationData_NUM_AssertionIDReference) */
 
@@ -157,7 +161,11 @@ void zx_sec12_ProxyInfoConfirmationData_DEL_AssertionIDReference(struct zx_sec12
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxyInfoConfirmationData_NUM_Issuer) */
 
@@ -287,7 +295,11 @@ void zx_sec12_ProxyInfoConfirmationData_DEL_Issuer(struct zx_sec12_ProxyInfoConf
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxyInfoConfirmationData_NUM_IssueInstant) */
 
@@ -417,7 +429,11 @@ void zx_sec12_ProxyInfoConfirmationData_DEL_IssueInstant(struct zx_sec12_ProxyIn
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxyInfoConfirmationData_NUM_Signature) */
 
@@ -547,6 +563,8 @@ void zx_sec12_ProxyInfoConfirmationData_DEL_Signature(struct zx_sec12_ProxyInfoC
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_sec12_ProxyInfoConfirmationData_GET_id) */
 struct zx_str* zx_sec12_ProxyInfoConfirmationData_GET_id(struct zx_sec12_ProxyInfoConfirmationData_s* x) { return x->id; }
 /* FUNC(zx_sec12_ProxyInfoConfirmationData_PUT_id) */
@@ -557,6 +575,8 @@ void zx_sec12_ProxyInfoConfirmationData_PUT_id(struct zx_sec12_ProxyInfoConfirma
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxySubject_NUM_NameIdentifier) */
 
@@ -686,7 +706,11 @@ void zx_sec12_ProxySubject_DEL_NameIdentifier(struct zx_sec12_ProxySubject_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxySubject_NUM_SubjectConfirmation) */
 
@@ -816,12 +840,16 @@ void zx_sec12_ProxySubject_DEL_SubjectConfirmation(struct zx_sec12_ProxySubject_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ProxyTransitedStatement_NUM_Subject) */
 
@@ -951,12 +979,16 @@ void zx_sec12_ProxyTransitedStatement_DEL_Subject(struct zx_sec12_ProxyTransited
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ResourceAccessStatement_NUM_Subject) */
 
@@ -1086,7 +1118,11 @@ void zx_sec12_ResourceAccessStatement_DEL_Subject(struct zx_sec12_ResourceAccess
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ResourceAccessStatement_NUM_ResourceID) */
 
@@ -1216,7 +1252,11 @@ void zx_sec12_ResourceAccessStatement_DEL_ResourceID(struct zx_sec12_ResourceAcc
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ResourceAccessStatement_NUM_EncryptedResourceID) */
 
@@ -1346,7 +1386,11 @@ void zx_sec12_ResourceAccessStatement_DEL_EncryptedResourceID(struct zx_sec12_Re
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ResourceAccessStatement_NUM_ProxySubject) */
 
@@ -1476,7 +1520,11 @@ void zx_sec12_ResourceAccessStatement_DEL_ProxySubject(struct zx_sec12_ResourceA
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ResourceAccessStatement_NUM_SessionContext) */
 
@@ -1606,12 +1654,16 @@ void zx_sec12_ResourceAccessStatement_DEL_SessionContext(struct zx_sec12_Resourc
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionContext_NUM_SessionSubject) */
 
@@ -1741,7 +1793,11 @@ void zx_sec12_SessionContext_DEL_SessionSubject(struct zx_sec12_SessionContext_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionContext_NUM_ProviderID) */
 
@@ -1871,7 +1927,11 @@ void zx_sec12_SessionContext_DEL_ProviderID(struct zx_sec12_SessionContext_s* x,
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionContext_NUM_RequestAuthnContext) */
 
@@ -2001,24 +2061,28 @@ void zx_sec12_SessionContext_DEL_RequestAuthnContext(struct zx_sec12_SessionCont
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_sec12_SessionContext_GET_AssertionIssueInstant) */
-struct zx_str* zx_sec12_SessionContext_GET_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x) { return x->AssertionIssueInstant; }
-/* FUNC(zx_sec12_SessionContext_PUT_AssertionIssueInstant) */
-void zx_sec12_SessionContext_PUT_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AssertionIssueInstant = y; }
-/* FUNC(zx_sec12_SessionContext_GET_AuthenticationInstant) */
-struct zx_str* zx_sec12_SessionContext_GET_AuthenticationInstant(struct zx_sec12_SessionContext_s* x) { return x->AuthenticationInstant; }
-/* FUNC(zx_sec12_SessionContext_PUT_AuthenticationInstant) */
-void zx_sec12_SessionContext_PUT_AuthenticationInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AuthenticationInstant = y; }
+#endif
+
 /* FUNC(zx_sec12_SessionContext_GET_SessionIndex) */
 struct zx_str* zx_sec12_SessionContext_GET_SessionIndex(struct zx_sec12_SessionContext_s* x) { return x->SessionIndex; }
 /* FUNC(zx_sec12_SessionContext_PUT_SessionIndex) */
 void zx_sec12_SessionContext_PUT_SessionIndex(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->SessionIndex = y; }
+/* FUNC(zx_sec12_SessionContext_GET_AuthenticationInstant) */
+struct zx_str* zx_sec12_SessionContext_GET_AuthenticationInstant(struct zx_sec12_SessionContext_s* x) { return x->AuthenticationInstant; }
+/* FUNC(zx_sec12_SessionContext_PUT_AuthenticationInstant) */
+void zx_sec12_SessionContext_PUT_AuthenticationInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AuthenticationInstant = y; }
+/* FUNC(zx_sec12_SessionContext_GET_AssertionIssueInstant) */
+struct zx_str* zx_sec12_SessionContext_GET_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x) { return x->AssertionIssueInstant; }
+/* FUNC(zx_sec12_SessionContext_PUT_AssertionIssueInstant) */
+void zx_sec12_SessionContext_PUT_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AssertionIssueInstant = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionContextStatement_NUM_Subject) */
 
@@ -2148,7 +2212,11 @@ void zx_sec12_SessionContextStatement_DEL_Subject(struct zx_sec12_SessionContext
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionContextStatement_NUM_ProxySubject) */
 
@@ -2278,7 +2346,11 @@ void zx_sec12_SessionContextStatement_DEL_ProxySubject(struct zx_sec12_SessionCo
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionContextStatement_NUM_SessionContext) */
 
@@ -2408,12 +2480,16 @@ void zx_sec12_SessionContextStatement_DEL_SessionContext(struct zx_sec12_Session
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionSubject_NUM_NameIdentifier) */
 
@@ -2543,7 +2619,11 @@ void zx_sec12_SessionSubject_DEL_NameIdentifier(struct zx_sec12_SessionSubject_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionSubject_NUM_SubjectConfirmation) */
 
@@ -2673,7 +2753,11 @@ void zx_sec12_SessionSubject_DEL_SubjectConfirmation(struct zx_sec12_SessionSubj
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_SessionSubject_NUM_IDPProvidedNameIdentifier) */
 
@@ -2803,12 +2887,16 @@ void zx_sec12_SessionSubject_DEL_IDPProvidedNameIdentifier(struct zx_sec12_Sessi
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_sec12_ValidityRestrictionCondition_NUM_NumberOfUses) */
 
@@ -2937,6 +3025,8 @@ void zx_sec12_ValidityRestrictionCondition_DEL_NumberOfUses(struct zx_sec12_Vali
   }
   y->g.n = y->g.n->n;
 }
+
+#endif
 
 
 

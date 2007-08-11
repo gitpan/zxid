@@ -1,9 +1,11 @@
-#!/usr/local/bin/perl
-# Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+#!/usr/bin/perl
+# Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+# Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
-# Distribution prohibited unless authorized in writing. See file COPYING.
-# $Id: zxid.pl,v 1.6 2006/09/18 06:35:22 sampo Exp $
+# Distribution prohibited unless authorized in writing.
+# Licensed under Apache License 2.0, see file COPYING.
+# $Id: zxid.pl,v 1.9 2007/02/26 04:38:21 sampo Exp $
 # 31.8.2006, created --Sampo
 
 use Net::SAML;
@@ -11,7 +13,7 @@ use Data::Dumper;
 
 $| = 1;
 
-#open STDERR, ">>zxid.stderr";   # Helps CGI debugging where web server eats the stderr
+open STDERR, ">>tmp/zxid.stderr";   # Helps CGI debugging where web server eats the stderr
 
 $cf = Net::SAML::new_conf("/var/zxid/");
 $url = "https://sp1.zxidsp.org:8443/zxid.pl";
@@ -47,7 +49,7 @@ if ($op eq 'M') {       # Invoke LECP or redirect to CDC reader.
     &Net::SAML::cdc_read($cf, $cgi);
     exit;
 } elsif ($op eq 'E') {  # Return from CDC read, or start here to by-pass CDC read.
-    exit if Net::SAML::lecp_check($cf, $cgi);
+    #exit if Net::SAML::lecp_check($cf, $cgi);
     exit if Net::SAML::cdc_check($cf, $cgi);
 } elsif ($op eq 'L') {
     warn "Start login";
@@ -79,9 +81,8 @@ if ($op eq 'M') {       # Invoke LECP or redirect to CDC reader.
 	exit if mgmt_screen($cf, $cgi, $ses, $op);
     }
 } elsif ($op eq 'B') {
-    print "CONTENT-TYPE: text/xml\r\n\r\n";
     $md = Net::SAML::sp_meta($cf, $cgi);
-    print $md;
+    printf "CONTENT-LENGTH: %d\r\nCONTENT-TYPE: text/xml\r\n\r\n%s", length $md, $md;
     exit;
 } elsif ($op eq 'K') {
     warn "Redirect back from SLO";

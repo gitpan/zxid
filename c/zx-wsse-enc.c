@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: enc-templ.c,v 1.21 2006/10/01 19:35:50 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
@@ -57,6 +59,7 @@
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySecurityToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -68,7 +71,7 @@ int zx_LEN_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySe
 
   len += zx_attr_so_len(x->EncodingType, sizeof("EncodingType")-1);
   len += zx_attr_so_len(x->ValueType, sizeof("ValueType")-1);
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
@@ -88,6 +91,7 @@ int zx_LEN_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySe
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySecurityToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -123,6 +127,7 @@ int zx_LEN_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySe
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySecurityToken_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -134,7 +139,7 @@ char* zx_ENC_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_Binary
 
   p = zx_attr_so_enc(p, x->EncodingType, " EncodingType=\"", sizeof(" EncodingType=\"")-1);
   p = zx_attr_so_enc(p, x->ValueType, " ValueType=\"", sizeof(" ValueType=\"")-1);
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -159,6 +164,7 @@ char* zx_ENC_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_Binary
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySecurityToken_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -174,6 +180,8 @@ char* zx_ENC_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_Binary
   }
   ZX_OUT_MEM(p, "BinarySecurityToken", sizeof("BinarySecurityToken")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
@@ -204,6 +212,7 @@ char* zx_ENC_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_Binary
 
 /* FUNC(zx_EASY_ENC_SO_wsse_BinarySecurityToken) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySecurityToken_s* x )
 {
   int len;
@@ -217,6 +226,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_BinarySecurityToken(struct zx_ctx* c, struct 
 
 /* FUNC(zx_EASY_ENC_WO_wsse_BinarySecurityToken) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct zx_wsse_BinarySecurityToken_s* x )
 {
   int len;
@@ -256,6 +266,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_BinarySecurityToken(struct zx_ctx* c, struct 
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -284,6 +295,7 @@ int zx_LEN_SO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x )
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -316,6 +328,7 @@ int zx_LEN_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x )
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -349,6 +362,7 @@ char* zx_ENC_SO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x, ch
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -364,6 +378,8 @@ char* zx_ENC_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x, ch
   }
   ZX_OUT_MEM(p, "Embedded", sizeof("Embedded")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -391,6 +407,7 @@ char* zx_ENC_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x, ch
 
 /* FUNC(zx_EASY_ENC_SO_wsse_Embedded) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x )
 {
   int len;
@@ -404,6 +421,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Emb
 
 /* FUNC(zx_EASY_ENC_WO_wsse_Embedded) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Embedded_s* x )
 {
   int len;
@@ -443,6 +461,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_Embedded(struct zx_ctx* c, struct zx_wsse_Emb
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -454,7 +473,7 @@ int zx_LEN_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_
 
   len += zx_attr_so_len(x->EncodingType, sizeof("EncodingType")-1);
   len += zx_attr_so_len(x->ValueType, sizeof("ValueType")-1);
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
@@ -474,6 +493,7 @@ int zx_LEN_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -509,6 +529,7 @@ int zx_LEN_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -520,7 +541,7 @@ char* zx_ENC_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifie
 
   p = zx_attr_so_enc(p, x->EncodingType, " EncodingType=\"", sizeof(" EncodingType=\"")-1);
   p = zx_attr_so_enc(p, x->ValueType, " ValueType=\"", sizeof(" ValueType=\"")-1);
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -545,6 +566,7 @@ char* zx_ENC_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifie
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -560,6 +582,8 @@ char* zx_ENC_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifie
   }
   ZX_OUT_MEM(p, "KeyIdentifier", sizeof("KeyIdentifier")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
@@ -590,6 +614,7 @@ char* zx_ENC_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifie
 
 /* FUNC(zx_EASY_ENC_SO_wsse_KeyIdentifier) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_s* x )
 {
   int len;
@@ -603,6 +628,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wss
 
 /* FUNC(zx_EASY_ENC_WO_wsse_KeyIdentifier) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wsse_KeyIdentifier_s* x )
 {
   int len;
@@ -642,6 +668,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_KeyIdentifier(struct zx_ctx* c, struct zx_wss
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -652,7 +679,7 @@ int zx_LEN_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   len += zx_attr_so_len(x->EncodingType, sizeof("EncodingType")-1);
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
@@ -672,6 +699,7 @@ int zx_LEN_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -706,6 +734,7 @@ int zx_LEN_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -716,7 +745,7 @@ char* zx_ENC_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x, char* p 
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   p = zx_attr_so_enc(p, x->EncodingType, " EncodingType=\"", sizeof(" EncodingType=\"")-1);
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -741,6 +770,7 @@ char* zx_ENC_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x, char* p 
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -756,6 +786,8 @@ char* zx_ENC_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x, char* p 
   }
   ZX_OUT_MEM(p, "Nonce", sizeof("Nonce")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
@@ -785,6 +817,7 @@ char* zx_ENC_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x, char* p 
 
 /* FUNC(zx_EASY_ENC_SO_wsse_Nonce) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
 {
   int len;
@@ -798,6 +831,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_
 
 /* FUNC(zx_EASY_ENC_WO_wsse_Nonce) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_s* x )
 {
   int len;
@@ -837,6 +871,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_Nonce(struct zx_ctx* c, struct zx_wsse_Nonce_
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -847,7 +882,7 @@ int zx_LEN_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   len += zx_attr_so_len(x->Type, sizeof("Type")-1);
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
@@ -867,6 +902,7 @@ int zx_LEN_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -901,6 +937,7 @@ int zx_LEN_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -911,7 +948,7 @@ char* zx_ENC_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x, ch
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   p = zx_attr_so_enc(p, x->Type, " Type=\"", sizeof(" Type=\"")-1);
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -936,6 +973,7 @@ char* zx_ENC_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x, ch
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -951,6 +989,8 @@ char* zx_ENC_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x, ch
   }
   ZX_OUT_MEM(p, "Password", sizeof("Password")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
@@ -980,6 +1020,7 @@ char* zx_ENC_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x, ch
 
 /* FUNC(zx_EASY_ENC_SO_wsse_Password) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
 {
   int len;
@@ -993,6 +1034,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Pas
 
 /* FUNC(zx_EASY_ENC_WO_wsse_Password) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Password_s* x )
 {
   int len;
@@ -1032,6 +1074,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_Password(struct zx_ctx* c, struct zx_wsse_Pas
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1061,6 +1104,7 @@ int zx_LEN_SO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x )
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1094,6 +1138,7 @@ int zx_LEN_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x )
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1128,6 +1173,7 @@ char* zx_ENC_SO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x, 
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -1143,6 +1189,8 @@ char* zx_ENC_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x, 
   }
   ZX_OUT_MEM(p, "Reference", sizeof("Reference")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1171,6 +1219,7 @@ char* zx_ENC_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x, 
 
 /* FUNC(zx_EASY_ENC_SO_wsse_Reference) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x )
 {
   int len;
@@ -1184,6 +1233,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Re
 
 /* FUNC(zx_EASY_ENC_WO_wsse_Reference) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Reference_s* x )
 {
   int len;
@@ -1223,20 +1273,63 @@ struct zx_str* zx_EASY_ENC_WO_wsse_Reference(struct zx_ctx* c, struct zx_wsse_Re
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
   struct zx_elem_s* se;
 #if 1 /* NORMALMODE */
   int len = sizeof("<wsse:Security")-1 + 1 + sizeof("</wsse:Security>")-1;
+  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
+  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
+  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
+  len += zx_attr_so_len(x->mustUnderstand, sizeof("e:mustUnderstand")-1);
+  len += zx_attr_so_len(x->actor, sizeof("e:actor")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
   int len = 0;
 #endif
   
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  if (e != c->exclude_sig)
+              len += zx_LEN_SO_ds_Signature(c, e);
+  }
+  {
+      struct zx_sa_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa_Assertion(c, e);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa11_Assertion(c, e);
+  }
+  {
+      struct zx_ff12_Assertion_s* e;
+      for (e = x->ff12_Assertion; e; e = (struct zx_ff12_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_SO_ff12_Assertion(c, e);
+  }
+  {
+      struct zx_wsse_BinarySecurityToken_s* e;
+      for (e = x->BinarySecurityToken; e; e = (struct zx_wsse_BinarySecurityToken_s*)e->gg.g.n)
+	  len += zx_LEN_SO_wsse_BinarySecurityToken(c, e);
+  }
+  {
+      struct zx_wsse_SecurityTokenReference_s* e;
+      for (e = x->SecurityTokenReference; e; e = (struct zx_wsse_SecurityTokenReference_s*)e->gg.g.n)
+	  len += zx_LEN_SO_wsse_SecurityTokenReference(c, e);
+  }
+  {
+      struct zx_wsu_Timestamp_s* e;
+      for (e = x->Timestamp; e; e = (struct zx_wsu_Timestamp_s*)e->gg.g.n)
+	  len += zx_LEN_SO_wsu_Timestamp(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg); 
@@ -1250,6 +1343,7 @@ int zx_LEN_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1261,13 +1355,55 @@ int zx_LEN_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
     len += (x->gg.g.ns->prefix_len + 1) * 2;
 
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
+  len += zx_attr_wo_len(x->mustUnderstand, sizeof("mustUnderstand")-1);
+  len += zx_attr_wo_len(x->actor, sizeof("actor")-1);
+  len += zx_attr_wo_len(x->Id, sizeof("Id")-1);
 
 #else
   /* root node has no begin tag */
   int len = 0;
 #endif
   
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  if (e != c->exclude_sig)
+              len += zx_LEN_WO_ds_Signature(c, e);
+  }
+  {
+      struct zx_sa_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa_Assertion(c, e);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa11_Assertion(c, e);
+  }
+  {
+      struct zx_ff12_Assertion_s* e;
+      for (e = x->ff12_Assertion; e; e = (struct zx_ff12_Assertion_s*)e->gg.g.n)
+	  len += zx_LEN_WO_ff12_Assertion(c, e);
+  }
+  {
+      struct zx_wsse_BinarySecurityToken_s* e;
+      for (e = x->BinarySecurityToken; e; e = (struct zx_wsse_BinarySecurityToken_s*)e->gg.g.n)
+	  len += zx_LEN_WO_wsse_BinarySecurityToken(c, e);
+  }
+  {
+      struct zx_wsse_SecurityTokenReference_s* e;
+      for (e = x->SecurityTokenReference; e; e = (struct zx_wsse_SecurityTokenReference_s*)e->gg.g.n)
+	  len += zx_LEN_WO_wsse_SecurityTokenReference(c, e);
+  }
+  {
+      struct zx_wsu_Timestamp_s* e;
+      for (e = x->Timestamp; e; e = (struct zx_wsu_Timestamp_s*)e->gg.g.n)
+	  len += zx_LEN_WO_wsu_Timestamp(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -1281,20 +1417,63 @@ int zx_LEN_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
   struct zx_elem_s* se;
 #if 1 /* NORMALMODE */
   ZX_OUT_TAG(p, "<wsse:Security");
+  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
+  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
+  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
+  p = zx_attr_so_enc(p, x->mustUnderstand, " e:mustUnderstand=\"", sizeof(" e:mustUnderstand=\"")-1);
+  p = zx_attr_so_enc(p, x->actor, " e:actor=\"", sizeof(" e:actor=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
   /* root node has no begin tag */
 #endif
   
+  {
+      struct zx_ds_Signature_s* e;
+      for (e = x->Signature; e; e = (struct zx_ds_Signature_s*)e->gg.g.n)
+	  if (e != c->exclude_sig)
+              p = zx_ENC_SO_ds_Signature(c, e, p);
+  }
+  {
+      struct zx_sa_Assertion_s* e;
+      for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa_Assertion(c, e, p);
+  }
+  {
+      struct zx_sa11_Assertion_s* e;
+      for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa11_Assertion(c, e, p);
+  }
+  {
+      struct zx_ff12_Assertion_s* e;
+      for (e = x->ff12_Assertion; e; e = (struct zx_ff12_Assertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_ff12_Assertion(c, e, p);
+  }
+  {
+      struct zx_wsse_BinarySecurityToken_s* e;
+      for (e = x->BinarySecurityToken; e; e = (struct zx_wsse_BinarySecurityToken_s*)e->gg.g.n)
+	  p = zx_ENC_SO_wsse_BinarySecurityToken(c, e, p);
+  }
+  {
+      struct zx_wsse_SecurityTokenReference_s* e;
+      for (e = x->SecurityTokenReference; e; e = (struct zx_wsse_SecurityTokenReference_s*)e->gg.g.n)
+	  p = zx_ENC_SO_wsse_SecurityTokenReference(c, e, p);
+  }
+  {
+      struct zx_wsu_Timestamp_s* e;
+      for (e = x->Timestamp; e; e = (struct zx_wsu_Timestamp_s*)e->gg.g.n)
+	  p = zx_ENC_SO_wsu_Timestamp(c, e, p);
+  }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
   
@@ -1313,6 +1492,7 @@ char* zx_ENC_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, ch
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -1328,9 +1508,17 @@ char* zx_ENC_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, ch
   }
   ZX_OUT_MEM(p, "Security", sizeof("Security")-1);
   qq = p;
+
+  /* *** sort the namespaces */
+  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
+  p = zx_attr_wo_enc(p, x->mustUnderstand, "mustUnderstand=\"", sizeof("mustUnderstand=\"")-1);
+  p = zx_attr_wo_enc(p, x->actor, "actor=\"", sizeof("actor=\"")-1);
+  p = zx_attr_wo_enc(p, x->Id, "Id=\"", sizeof("Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -1354,6 +1542,7 @@ char* zx_ENC_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, ch
 
 /* FUNC(zx_EASY_ENC_SO_wsse_Security) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
 {
   int len;
@@ -1367,6 +1556,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Sec
 
 /* FUNC(zx_EASY_ENC_WO_wsse_Security) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
 {
   int len;
@@ -1406,6 +1596,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Sec
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_SecurityTokenReference_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1416,14 +1607,19 @@ int zx_LEN_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Secur
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
-  len += zx_attr_so_len(x->Usage, sizeof("wsse_Usage")-1);
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Usage, sizeof("wsse:Usage")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
   int len = 0;
 #endif
   
+  {
+      struct zx_wsse_KeyIdentifier_s* e;
+      for (e = x->KeyIdentifier; e; e = (struct zx_wsse_KeyIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_SO_wsse_KeyIdentifier(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg); 
@@ -1437,6 +1633,7 @@ int zx_LEN_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Secur
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_SecurityTokenReference_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1459,6 +1656,11 @@ int zx_LEN_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Secur
   int len = 0;
 #endif
   
+  {
+      struct zx_wsse_KeyIdentifier_s* e;
+      for (e = x->KeyIdentifier; e; e = (struct zx_wsse_KeyIdentifier_s*)e->gg.g.n)
+	  len += zx_LEN_WO_wsse_KeyIdentifier(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -1472,6 +1674,7 @@ int zx_LEN_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Secur
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_SecurityTokenReference_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1482,14 +1685,19 @@ char* zx_ENC_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Sec
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->Usage, " wsse_Usage=\"", sizeof(" wsse_Usage=\"")-1);
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Usage, " wsse:Usage=\"", sizeof(" wsse:Usage=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
   /* root node has no begin tag */
 #endif
   
+  {
+      struct zx_wsse_KeyIdentifier_s* e;
+      for (e = x->KeyIdentifier; e; e = (struct zx_wsse_KeyIdentifier_s*)e->gg.g.n)
+	  p = zx_ENC_SO_wsse_KeyIdentifier(c, e, p);
+  }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
   
@@ -1508,6 +1716,7 @@ char* zx_ENC_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Sec
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_SecurityTokenReference_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -1523,6 +1732,8 @@ char* zx_ENC_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Sec
   }
   ZX_OUT_MEM(p, "SecurityTokenReference", sizeof("SecurityTokenReference")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
@@ -1553,6 +1764,7 @@ char* zx_ENC_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_Sec
 
 /* FUNC(zx_EASY_ENC_SO_wsse_SecurityTokenReference) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_SecurityTokenReference_s* x )
 {
   int len;
@@ -1566,6 +1778,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_SecurityTokenReference(struct zx_ctx* c, stru
 
 /* FUNC(zx_EASY_ENC_WO_wsse_SecurityTokenReference) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_SecurityTokenReference(struct zx_ctx* c, struct zx_wsse_SecurityTokenReference_s* x )
 {
   int len;
@@ -1605,6 +1818,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_SecurityTokenReference(struct zx_ctx* c, stru
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_TransformationParameters_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1632,6 +1846,7 @@ int zx_LEN_SO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_Tra
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_TransformationParameters_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1663,6 +1878,7 @@ int zx_LEN_WO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_Tra
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_TransformationParameters_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1695,6 +1911,7 @@ char* zx_ENC_SO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_T
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_TransformationParameters_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -1710,6 +1927,8 @@ char* zx_ENC_WO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_T
   }
   ZX_OUT_MEM(p, "TransformationParameters", sizeof("TransformationParameters")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1736,6 +1955,7 @@ char* zx_ENC_WO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_T
 
 /* FUNC(zx_EASY_ENC_SO_wsse_TransformationParameters) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_TransformationParameters_s* x )
 {
   int len;
@@ -1749,6 +1969,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_TransformationParameters(struct zx_ctx* c, st
 
 /* FUNC(zx_EASY_ENC_WO_wsse_TransformationParameters) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_TransformationParameters(struct zx_ctx* c, struct zx_wsse_TransformationParameters_s* x )
 {
   int len;
@@ -1788,6 +2009,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_TransformationParameters(struct zx_ctx* c, st
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1797,7 +2019,7 @@ int zx_LEN_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
@@ -1817,6 +2039,7 @@ int zx_LEN_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1850,6 +2073,7 @@ int zx_LEN_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1859,7 +2083,7 @@ char* zx_ENC_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x, ch
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -1884,6 +2108,7 @@ char* zx_ENC_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x, ch
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -1899,6 +2124,8 @@ char* zx_ENC_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x, ch
   }
   ZX_OUT_MEM(p, "Username", sizeof("Username")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
@@ -1927,6 +2154,7 @@ char* zx_ENC_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x, ch
 
 /* FUNC(zx_EASY_ENC_SO_wsse_Username) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
 {
   int len;
@@ -1940,6 +2168,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Use
 
 /* FUNC(zx_EASY_ENC_WO_wsse_Username) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Username_s* x )
 {
   int len;
@@ -1979,6 +2208,7 @@ struct zx_str* zx_EASY_ENC_WO_wsse_Username(struct zx_ctx* c, struct zx_wsse_Use
 /* Compute length of an element (and its subelements). The XML attributes
  * and elements are processed in schema order. */
 
+/* Called by: */
 int zx_LEN_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -1988,7 +2218,7 @@ int zx_LEN_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
-  len += zx_attr_so_len(x->Id, sizeof("wsu_Id")-1);
+  len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
 #else
   /* root node has no begin tag */
@@ -2013,6 +2243,7 @@ int zx_LEN_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_
  * and elements are processed in wire order and no assumptions
  * are made about namespace prefixes. */
 
+/* Called by: */
 int zx_LEN_WO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -2051,6 +2282,7 @@ int zx_LEN_WO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_
  * processed in schema order. This is what you generally want for
  * rendering new data structure to a string. The wo pointers are not used. */
 
+/* Called by: */
 char* zx_ENC_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_s* x, char* p )
 {
   struct zx_ns_s* pop_seen = 0;
@@ -2060,7 +2292,7 @@ char* zx_ENC_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToke
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsse, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->Id, " wsu_Id=\"", sizeof(" wsu_Id=\"")-1);
+  p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -2090,6 +2322,7 @@ char* zx_ENC_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToke
  * processed in wire order by chasing wo pointers. This is what you want for
  * validating signatures on other people's XML documents. */
 
+/* Called by: */
 char* zx_ENC_WO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_s* x, char* p )
 {
   struct zx_elem_s* kid;
@@ -2105,6 +2338,8 @@ char* zx_ENC_WO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToke
   }
   ZX_OUT_MEM(p, "UsernameToken", sizeof("UsernameToken")-1);
   qq = p;
+
+  /* *** sort the namespaces */
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
@@ -2133,6 +2368,7 @@ char* zx_ENC_WO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToke
 
 /* FUNC(zx_EASY_ENC_SO_wsse_UsernameToken) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_s* x )
 {
   int len;
@@ -2146,6 +2382,7 @@ struct zx_str* zx_EASY_ENC_SO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wss
 
 /* FUNC(zx_EASY_ENC_WO_wsse_UsernameToken) */
 
+/* Called by: */
 struct zx_str* zx_EASY_ENC_WO_wsse_UsernameToken(struct zx_ctx* c, struct zx_wsse_UsernameToken_s* x )
 {
   int len;

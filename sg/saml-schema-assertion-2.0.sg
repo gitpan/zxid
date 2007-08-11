@@ -1,9 +1,11 @@
 # zxid/sg/saml-schema-assertion-2.0.sg
-# $Id: saml-schema-assertion-2.0.sg,v 1.3 2006/10/15 00:27:55 sampo Exp $
+# $Id: saml-schema-assertion-2.0.sg,v 1.6 2007-06-19 15:17:04 sampo Exp $
 #
 # N.B. This file is not a direct conversion. Instead it has been manually edited to
 # make it simpler and to facilitate code generation.
 # 15.10.2006, extended AttributeValue schema to cater for bootstrap, Sampo Kellomaki (sampo@iki.fi)
+# 10.2.2007, added other types of assertions as potential Advice content --Sampo
+# 3.3.2007, added XACML support --Sampo
 
 target(sa, urn:oasis:names:tc:SAML:2.0:assertion)
 ns(xs,http://www.w3.org/2001/XMLSchema)
@@ -11,10 +13,13 @@ import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmlds
 import(xenc,http://www.w3.org/2001/04/xmlenc#,http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd)
 ns(di12, urn:liberty:disco:2003-08)
 ns(a,    http://www.w3.org/2005/08/addressing)
+ns(sa11, urn:oasis:names:tc:SAML:1.0:assertion)
+ns(ff12, urn:liberty:iff:2003-08)
+ns(xasa, urn:oasis:xacml:2.0:saml:assertion:schema:os)
 
 &@IDNameQualifiers: 
-  @NameQualifier?	 -> %xs:string
-  @SPNameQualifier?	 -> %xs:string
+  @NameQualifier?   -> %xs:string
+  @SPNameQualifier? -> %xs:string
   ;
 
 BaseID	 -> %sa:BaseIDAbstractType
@@ -34,12 +39,12 @@ NameID	 -> %sa:NameIDType
   xenc:EncryptedKey*
   ;
 
-EncryptedID	 -> %sa:EncryptedElementType
+EncryptedID      -> %sa:EncryptedElementType
 Issuer           -> %sa:NameIDType
-AssertionIDRef	 -> %xs:NCName
-AssertionURIRef	 -> %xs:anyURI
+AssertionIDRef   -> %xs:NCName
+AssertionURIRef  -> %xs:anyURI
 
-Assertion	 -> %sa:AssertionType
+Assertion        -> %sa:AssertionType
 %AssertionType:
   sa:Issuer
   ds:Signature?
@@ -50,9 +55,11 @@ Assertion	 -> %sa:AssertionType
   sa:AuthnStatement*
   sa:AuthzDecisionStatement*
   sa:AttributeStatement*
-  @Version	 -> %xs:string
+  xasa:XACMLAuthzDecisionStatement*
+  xasa:XACMLPolicyStatement*
+  @Version       -> %xs:string
   @ID	         -> %xs:ID
-  @IssueInstant	 -> %xs:dateTime
+  @IssueInstant  -> %xs:dateTime
   ;
 
 Subject	 -> %sa:SubjectType
@@ -74,7 +81,7 @@ SubjectConfirmation	 -> %sa:SubjectConfirmationType
 
 SubjectConfirmationData	 -> %sa:SubjectConfirmationDataType
 %SubjectConfirmationDataType:	 base(anyType)
-  any*  processContents(lax)
+  ds:KeyInfo+
   @NotBefore?	 -> %xs:dateTime
   @NotOnOrAfter? -> %xs:dateTime
   @Recipient?	 -> %xs:anyURI
@@ -121,6 +128,8 @@ Advice	 -> %sa:AdviceType
   sa:AssertionURIRef*
   sa:Assertion*
   sa:EncryptedAssertion*
+  sa11:Assertion*
+  ff12:Assertion*
   any*  ns(##other)  processContents(lax)
   ;
 

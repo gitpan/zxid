@@ -1,9 +1,11 @@
 /* zxidmd.i  -  SWIG interface file for metadata low level functions
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidmd.i,v 1.2 2006/09/30 06:24:49 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxidmd.i,v 1.4 2007-08-10 19:19:10 sampo Exp $
  * 31.8.2006, created --Sampo
  */
 %module zxidmd
@@ -17,12 +19,10 @@
 #include "zxid.h"
 #include "saml2.h"
 
-#include "c/saml2-const.h"
-#include "c/saml2-data.h"
-#include "c/saml2-ns.h"
-#include "c/saml2md-const.h"
-#include "c/saml2md-data.h"
-#include "c/saml2md-ns.h"
+#include "c/zx-const.h"
+#include "c/zx-data.h"
+#include "c/zx-ns.h"
+#include "c/zx-md-data.h"
 #include "c/zxidvers.h"
 
 char* instance = "zxid module";
@@ -55,8 +55,6 @@ int trace = 0;
   ++argvi;
 }
 
-%include "c/saml2md-const.h"
-%include "c/saml2md-data.h"
-%include "c/saml2md-ns.h"
+%include "c/zx-md-data.h"
 
 /* EOF */

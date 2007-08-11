@@ -1,9 +1,11 @@
 /* zxidmk.c  -  Handwritten nitty-gritty functions for constructing various elems
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidslo.c,v 1.1 2006/08/30 04:47:26 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxidmk.c,v 1.4 2007/02/23 05:00:29 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  */
@@ -16,6 +18,11 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
+#define BOOL_STR_TEST(x) ((x) && (x) != '0')
+
+/* Interpret ZXID standard form fields to construct a XML structure for AuthnRequest */
+
+/* Called by:  zxid_lecp_check, zxid_start_sso_url */
 struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   char index[2] = "1";
@@ -25,14 +32,15 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid
   ar->Version = zx_ref_str(cf->ctx, SAML2_VERSION);
   ar->IssueInstant = zxid_date_time(cf, time(0));
   if (cf->nice_name && cf->nice_name[0])  ar->ProviderName = zx_ref_str(cf->ctx, cf->nice_name);
-  if (cgi->force_authn)                   ar->ForceAuthn = zx_ref_str(cf->ctx, ZXID_TRUE);
-  if (cgi->ispassive)                     ar->IsPassive = zx_ref_str(cf->ctx, ZXID_TRUE);
+  if (BOOL_STR_TEST(cgi->force_authn))    ar->ForceAuthn = zx_ref_str(cf->ctx, ZXID_TRUE);
+  if (BOOL_STR_TEST(cgi->ispassive))      ar->IsPassive = zx_ref_str(cf->ctx, ZXID_TRUE);
   if (cgi->consent && cgi->consent[0])    ar->Consent = zx_ref_str(cf->ctx, cgi->consent);
-  D("nid_fmt(%s)", cgi->nid_fmt);
+  D("nid_fmt(%s) allow_create=%d", cgi->nid_fmt, cgi->allow_create);
   if (cgi->nid_fmt && cgi->nid_fmt[0]) {
     ar->NameIDPolicy = zx_NEW_sp_NameIDPolicy(cf->ctx);
     ar->NameIDPolicy->Format = zx_ref_str(cf->ctx, zxid_saml2_map_nid_fmt(cgi->nid_fmt));
-    ar->NameIDPolicy->AllowCreate = zx_ref_str(cf->ctx, cgi->allow_create?ZXID_TRUE:ZXID_FALSE);
+    ar->NameIDPolicy->AllowCreate
+      = zx_ref_str(cf->ctx, BOOL_STR_TEST(cgi->allow_create)?ZXID_TRUE:ZXID_FALSE);
   }
   if (cgi->authn_ctx && cgi->authn_ctx[0]) {
     ar->RequestedAuthnContext = zx_NEW_sp_RequestedAuthnContext(cf->ctx);
@@ -47,6 +55,7 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid
   return ar;
 }
 
+/* Called by:  zxid_sp_deref_art */
 struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(struct zxid_conf* cf, struct zxid_entity* idp_meta, char* artifact)
 {
   struct zx_sp_ArtifactResolve_s* ar = zx_NEW_sp_ArtifactResolve(cf->ctx);
@@ -58,6 +67,7 @@ struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(struct zxid_conf* cf, struct z
   return ar;
 }
 
+/* Called by:  zxid_OK */
 struct zx_sp_Status_s* zxid_mk_Status(struct zxid_conf* cf, char* sc1, char* sc2, char* msg)
 {
   struct zx_sp_Status_s* st = zx_NEW_sp_Status(cf->ctx);
@@ -72,11 +82,13 @@ struct zx_sp_Status_s* zxid_mk_Status(struct zxid_conf* cf, char* sc1, char* sc2
   return st;
 }
 
+/* Called by:  zxid_sp_dispatch x2, zxid_sp_dispatch_location x2, zxid_sp_soap_dispatch x2 */
 struct zx_sp_Status_s* zxid_OK(struct zxid_conf* cf)
 {
   return zxid_mk_Status(cf, SAML2_SC_SUCCESS, 0, 0);
 }
 
+/* Called by:  zxid_sp_slo_location, zxid_sp_slo_redir, zxid_sp_slo_soap */
 struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* ses_ix)
 {
   struct zx_sp_LogoutRequest_s* r = zx_NEW_sp_LogoutRequest(cf->ctx);
@@ -90,6 +102,7 @@ struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_
   return r;
 }
 
+/* Called by:  zxid_sp_dispatch, zxid_sp_dispatch_location, zxid_sp_soap_dispatch */
 struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id)
 {
   struct zx_sp_LogoutResponse_s* r = zx_NEW_sp_LogoutResponse(cf->ctx);
@@ -103,6 +116,7 @@ struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct 
   return r;
 }
 
+/* Called by:  zxid_sp_nireg_location, zxid_sp_nireg_redir, zxid_sp_nireg_soap */
 struct zx_sp_ManageNameIDRequest_s* zxid_mk_nireg(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* new_nym)
 {
   struct zx_sp_ManageNameIDRequest_s* r = zx_NEW_sp_ManageNameIDRequest(cf->ctx);
@@ -118,6 +132,7 @@ struct zx_sp_ManageNameIDRequest_s* zxid_mk_nireg(struct zxid_conf* cf, struct z
   return r;
 }
 
+/* Called by:  zxid_sp_dispatch, zxid_sp_dispatch_location, zxid_sp_soap_dispatch */
 struct zx_sp_ManageNameIDResponse_s* zxid_mk_nireg_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id)
 {
   struct zx_sp_ManageNameIDResponse_s* r = zx_NEW_sp_ManageNameIDResponse(cf->ctx);

@@ -1,0 +1,346 @@
+/* zxidhrxmlwsc.c  -  ID-SIS HR-XML WSC
+ * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
+ * This is confidential unpublished proprietary source code of the author.
+ * NO WARRANTY, not even implied warranties. Contains trade secrets.
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxidhrxmlwsc.c,v 1.3 2007-06-21 23:32:32 sampo Exp $
+ *
+ * 19.6.2007, created --Sampo
+ *
+ * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
+ *           README-zxid, section 10 "zxid_simple() API"
+ */
+
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#include <zx/errmac.h>
+#include <zx/zxid.h>      /* ZXID main API, including zxid_simple(). */
+#include <zx/zxidconf.h>  /* Default and compile-time configuration options. */
+#include <zx/wsf.h>
+#include <zx/c/zxidvers.h>
+#include <zx/c/zx-ns.h>
+
+char* help =
+"zxidhrxmlwsc  -  SAML 2.0 SP + WSC CGI - R" ZXID_REL "\n\
+SAML 2.0 is a standard for federated idenity and Sinlg Sign-On.\n\
+Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+Author: Sampo Kellomaki (sampo@iki.fi)\n\
+NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
+See http://www.apache.org/licenses/LICENSE-2.0\n\
+Send well-researched bug reports to the author. Home: zxid.org\n\
+\n\
+Usage: zxidhrxmlwsc [options]   (when used as CGI, no options can be supplied)\n\
+  -h               This help message\n\
+  --               End of options\n";
+
+#define HRXMLOP_CREATE 1
+#define HRXMLOP_QUERY  2
+#define HRXMLOP_MODIFY 3
+#define HRXMLOP_DELETE 4
+
+struct hrxml_cgi {
+  int op;
+  char* select;
+  char* data;
+};
+
+int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
+{
+  char *p, *n, *v, *val, *name;
+  D("START qs(%s)", qs);
+  while (*qs) {
+    for (; *qs == '&'; ++qs) ;                  /* Skip over & or && */
+    if (!*qs) break;
+    
+    for (name = qs; *qs && *qs != '='; ++qs) ;  /* Scan name (until '=') */
+    if (!*qs) break;
+    if (qs == name) {                           /* Key was an empty string: skip it */
+      for (; *qs && *qs != '&'; ++qs) ;         /* Scan value (until '&') */
+      continue;
+    }
+    for (; name < qs && *name <= ' '; ++name) ; /* Skip over initial whitespace before name */
+    n = p = name;
+    URL_DECODE(name, p, qs);
+    *p = 0;
+    
+    for (val = ++qs; *qs && *qs != '&'; ++qs) ; /* Skip over = and scan value (until '&') */
+    v = p = val;
+    URL_DECODE(val, p, qs);
+    if (*qs)
+      ++qs;
+    *p = 0;
+    
+    printf("<input name=hrxmlselect value=\"\"><br>\n");
+    printf("<p>HR-XML Data<br><textarea name=hrxmldata cols=100 rows=5>%.*s</textarea>\n", 0, "");
+
+    switch (n[0]) {
+    case 'h':
+      if (!strcmp(n, "hrxmlcreate")) {	cgi->op = HRXMLOP_CREATE;	break;      }
+      if (!strcmp(n, "hrxmlquery")) {	cgi->op = HRXMLOP_QUERY;	break;      }
+      if (!strcmp(n, "hrxmlmodify")) {	cgi->op = HRXMLOP_MODIFY;	break;      }
+      if (!strcmp(n, "hrxmldelete")) {	cgi->op = HRXMLOP_DELETE;	break;      }
+      if (!strcmp(n, "hrxmlselect")) {	cgi->select = v;	break;      }
+      if (!strcmp(n, "hrxmldata")) {	cgi->data = v;	break;      }
+      /* fall thru */
+    unknown:
+    default:  break; //D("Unknown CGI field(%s) val(%s)", n, v);
+    }
+  }
+  //D("END cgi=%p cgi->eid=%p eid(%s) op(%c) magic=%x", cgi, cgi->eid,cgi->eid, cgi->op, cgi->magic);
+  return 0;
+}
+
+/* ============== M A I N ============== */
+
+#if 1
+#define ZXIDHLO "zxidhrxmlwsc"
+#define CONF "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:8443/" ZXIDHLO
+#else
+#define ZXIDHLO "zxidhrxmlwsc"
+#define CONF "PATH=/var/zxid/&URL=https://sampo:8443/" ZXIDHLO
+#endif
+
+/* Called by: */
+int main(int argc, char** argv)
+{
+  struct hrxml_cgi cgi;
+  struct zxid_conf* cf;
+  struct zxid_ses sess;
+  struct zxid_ses* ses;
+  struct zx_root_s* r;
+  struct zx_e_Envelope_s* env;
+  struct zx_a_EndpointReference_s* epr;
+  struct zx_str* ss;
+  char* p;
+  char* sid;
+  char* nid;
+  char* res;
+  char* hrxml_resp = 0;
+  char* qs;
+  char* qs2;
+  char buf[64*1024];
+  int got, cl=0;
+
+  qs = getenv("CONTENT_LENGTH");
+  if (qs)
+    sscanf(qs, "%d", &cl);
+
+  if (cl) {
+    read_all_fd(0, buf, MIN(cl, sizeof(buf)-1), &got);
+    buf[got] = 0;
+    qs2 = buf;
+  } else {
+    qs2 = getenv("QUERY_STRING");
+    cl = strlen(qs2);
+  }
+  qs = strdup(qs2);
+#if 1
+  /* Helps debugging CGI scripts if you see stderr. */
+  close(2);
+  if (open("tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
+    exit(2);
+  fprintf(stderr, "=================== Running ===================\n");
+  debug = 1;
+#endif
+
+  if (argc > 1) {
+    fprintf(stderr, "This is a CGI script (written in C). No arguments are accepted.\n%s", help);
+    exit(1);
+  }
+  cf = zxid_new_conf_to_cf(CONF);
+  
+  res = zxid_simple_cf(cf, cl, qs2, 0, 0x1fff);
+  switch (res[0]) {
+  default:
+    ERR("Unknown zxid_simple() response(%s)", res);
+  case 'd': break; /* Logged in case */
+  }
+
+  /* Parse the LDIF to figure out session ID and the federated ID */
+
+  sid = strstr(res, "sesid: ");
+  nid = strstr(res, "idpnid: ");
+  if (sid) {
+    sid += sizeof("sesid: ") - 1;
+    p = strchr(sid, '\n');
+    if (p)
+      *p = 0;  /* nul termination */
+  }
+  if (nid) {
+    nid += sizeof("idpnid: ") - 1;
+    p = strchr(nid, '\n');
+    if (p)
+      *p = 0;  /* nul termination */
+  }
+
+  D("HERE qs(%s)", qs);
+  memset(&cgi, 0, sizeof(cgi));
+  hrxml_parse_cgi(&cgi, qs);  
+  
+  ses = &sess;
+  zxid_get_ses(cf, ses, sid);
+
+  D("HERE cgi.op=%d qs(%s)", cgi.op, qs);
+  
+  switch (cgi.op) {
+
+  case HRXMLOP_CREATE:
+    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+    if (!epr) {
+      ERR("EPR could not be discovered %d", 0);
+      break;
+    }
+    env = zx_NEW_e_Envelope(cf->ctx);
+    env->Header = zx_NEW_e_Header(cf->ctx);
+    env->Body = zx_NEW_e_Body(cf->ctx);
+    env->Body->idhrxml_Create = zx_NEW_idhrxml_Create(cf->ctx);
+    env->Body->idhrxml_Create->CreateItem = zx_NEW_idhrxml_CreateItem(cf->ctx);
+    env->Body->idhrxml_Create->CreateItem->NewData = zx_NEW_idhrxml_NewData(cf->ctx);
+    
+    /* Parse the XML from the form field into data structure and include it as NewData. */
+    
+    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, cgi.data, cgi.data + strlen(cgi.data));
+    r = zx_DEC_root(cf->ctx, 0, 1);
+    if (!r->Candidate) {
+      ERR("No hrxml:Candidate tag found in form field hrxmldata(%s)", cgi.data);
+      hrxml_resp = "No hrxml:Candidate tag found in form field hrxmldata.";
+      break;
+    }
+    env->Body->idhrxml_Create->CreateItem->NewData->Candidate = r->Candidate;
+    
+    env = zxid_wsc_call(cf, ses, epr, env);
+    if (!env) {
+      ERR("Web services call failed %p", env);
+      break;
+    }
+    if (!env->Body->idhrxml_CreateResponse) {
+      ERR("There was no result %p", env->Body);
+      break;
+    }
+    if (!memcmp(env->Body->idhrxml_CreateResponse->Status->code->s, "OK", 2)) {
+      hrxml_resp = "Create OK.";
+    } else {
+      hrxml_resp = "Create Failed.";
+      D("Non OK status(%.*s)", env->Body->idhrxml_CreateResponse->Status->code->len, env->Body->idhrxml_CreateResponse->Status->code->s);
+    }
+    break;
+
+  case HRXMLOP_QUERY:
+    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+    if (!epr) {
+      ERR("EPR could not be discovered %d", 0);
+      break;
+    }
+    env = zx_NEW_e_Envelope(cf->ctx);
+    env->Header = zx_NEW_e_Header(cf->ctx);
+    env->Body = zx_NEW_e_Body(cf->ctx);
+    env->Body->idhrxml_Query = zx_NEW_idhrxml_Query(cf->ctx);
+    env->Body->idhrxml_Query->QueryItem = zx_NEW_idhrxml_QueryItem(cf->ctx);
+    env->Body->idhrxml_Query->QueryItem->Select = zx_ref_simple_elem(cf->ctx, cgi.select);
+        
+    env = zxid_wsc_call(cf, ses, epr, env);
+    D("HERE env=%p", env);
+    if (!env) {
+      ERR("Web services call failed %d", 0);
+      break;
+    }
+    if (!env->Body->idhrxml_QueryResponse) {
+      ERR("There was no result %p", env->Body);
+      break;
+    }
+    if (!memcmp(env->Body->idhrxml_QueryResponse->Status->code->s, "OK", 2)) {
+      if (!env->Body->idhrxml_QueryResponse->Data) {
+	hrxml_resp = "No data in otherwise successful response.";
+	ERR("There was no data %p", env->Body);
+	break;
+      }
+      if (!env->Body->idhrxml_QueryResponse->Data->Candidate) {
+	hrxml_resp = "No Candidate in otherwise successful response.";
+	ERR("There was no candidate %p", env->Body);
+	break;
+      }
+      ss = zx_EASY_ENC_WO_hrxml_Candidate(cf->ctx, env->Body->idhrxml_QueryResponse->Data->Candidate);
+      hrxml_resp = ss->s;
+    } else {
+      hrxml_resp = "Query Failed.";
+      D("Non OK status(%.*s)", env->Body->idhrxml_QueryResponse->Status->code->len, env->Body->idhrxml_QueryResponse->Status->code->s);
+    }
+    break;
+
+  case HRXMLOP_MODIFY:
+    env = zxid_callf(cf, ses, zx_xmlns_idhrxml, "<idhrxml:Modify><idhrxml:ModifyItem><idhrxml:Select>%s</idhrxml:Select><idhrxml:NewData>%s</idhrxml:NewData></idhrxml:ModifyItem></idhrxml:Modify>", cgi.select, cgi.data);
+    ZXID_CHK_STATUS(env, idhrxml_ModifyResponse, hrxml_resp = "Modify failed"; break);
+    hrxml_resp = "Modify OK";
+    break;
+
+  case HRXMLOP_DELETE:
+    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+    if (!epr) {
+      ERR("EPR could not be discovered %d", 0);
+      break;
+    }
+    env = zxid_new_envf(cf, "<idhrxml:Delete><idhrxml:DeleteItem><idhrxml:Select>%s</idhrxml:Select></idhrxml:DeleteItem></idhrxml:Delete>", cgi.select);
+    env = zxid_wsc_call(cf, ses, epr, env);
+    D("HERE env=%p", env);
+    if (!env) {
+      ERR("Web services call failed %p", env);
+      break;
+    }
+    if (!env->Body->idhrxml_DeleteResponse) {
+      ERR("There was no result %p", env->Body);
+      break;
+    }
+    if (!memcmp(env->Body->idhrxml_DeleteResponse->Status->code->s, "OK", 2)) {
+      hrxml_resp = "Delete OK.";
+    } else {
+      hrxml_resp = "Delete Failed.";
+      D("Non OK status(%.*s)", env->Body->idhrxml_DeleteResponse->Status->code->len, env->Body->idhrxml_DeleteResponse->Status->code->s);
+    }
+    break;
+  }
+  
+  /* Render protected content page. You should replace this
+   * with your own content, or establishment of your own session
+   * and then redirect to your own content. Whatever makes sense. */
+  
+  printf("Content-Type: text/html\r\n\r\n");
+  printf("<title>ZXID HELLO SP Mgmt</title>" ZXID_BODY_TAG "<h1>ZXID HELLO SP Management (user logged in, session active)</h1><pre>\n");
+  printf("</pre><form method=post action=\"" ZXIDHLO "?o=P\">");
+  //if (err) printf("<p><font color=red><i>%s</i></font></p>\n", err);
+  //if (msg) printf("<p><i>%s</i></p>\n", msg);
+  if (sid) {
+    printf("<input type=hidden name=s value=\"%s\">", sid);
+    printf("<input type=submit name=gl value=\" Local Logout \">\n");
+    printf("<input type=submit name=gr value=\" Single Logout (Redir) \">\n");
+    printf("<input type=submit name=gs value=\" Single Logout (SOAP) \">\n");
+    printf("<input type=submit name=gt value=\" Defederate (Redir) \">\n");
+    printf("<input type=submit name=gu value=\" Defederate (SOAP) \"><br>\n");
+    printf("sid(%s) nid(%s) <a href=\"" ZXIDHLO "?s=%s\">Reload</a>", sid, nid?nid:"?!?", sid);
+    printf("<hr><h1>ID-SIS HR-XML Client</h1>\n");
+    printf("<input type=submit name=hrxmlcreate value=\" Create \"><br>\n");
+    printf("<input type=submit name=hrxmlquery value=\" Query \">\n");
+    printf(" Select: <input name=hrxmlselect value=\"\"><br>\n");
+    printf("<input type=submit name=hrxmlmodify value=\" Modify \"><br>\n");
+    printf("<input type=submit name=hrxmldelete value=\" Delete \"><br>\n");
+    printf("<p>HR-XML Data<br><textarea name=hrxmldata cols=100 rows=5>%s</textarea>\n",
+	   "<hrxml:Candidate xmlns:hrxml=\"http://ns.hr-xml.org/2007-04-15\"></hrxml:Candidate>");
+
+    printf("<p>HR-XML Response<br><textarea name=hrxmlresp cols=100 rows=5>%s</textarea>\n",
+	   hrxml_resp?hrxml_resp:"");
+  }
+  
+  printf("</form><hr>\n");
+  printf("<a href=\"http://zxid.org/\">zxid.org</a>, %s", zxid_version_str());
+  return 0;
+}
+
+/* EOF  --  zxidhlowsf.c */

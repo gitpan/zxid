@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -28,6 +30,8 @@
 #include "c/zx-xenc-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_AgreementMethod_NUM_KA_Nonce) */
 
@@ -157,7 +161,11 @@ void zx_xenc_AgreementMethod_DEL_KA_Nonce(struct zx_xenc_AgreementMethod_s* x, i
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_AgreementMethod_NUM_OriginatorKeyInfo) */
 
@@ -287,7 +295,11 @@ void zx_xenc_AgreementMethod_DEL_OriginatorKeyInfo(struct zx_xenc_AgreementMetho
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_AgreementMethod_NUM_RecipientKeyInfo) */
 
@@ -417,6 +429,8 @@ void zx_xenc_AgreementMethod_DEL_RecipientKeyInfo(struct zx_xenc_AgreementMethod
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_xenc_AgreementMethod_GET_Algorithm) */
 struct zx_str* zx_xenc_AgreementMethod_GET_Algorithm(struct zx_xenc_AgreementMethod_s* x) { return x->Algorithm; }
 /* FUNC(zx_xenc_AgreementMethod_PUT_Algorithm) */
@@ -427,6 +441,8 @@ void zx_xenc_AgreementMethod_PUT_Algorithm(struct zx_xenc_AgreementMethod_s* x, 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_CipherData_NUM_CipherValue) */
 
@@ -556,7 +572,11 @@ void zx_xenc_CipherData_DEL_CipherValue(struct zx_xenc_CipherData_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_CipherData_NUM_CipherReference) */
 
@@ -686,12 +706,16 @@ void zx_xenc_CipherData_DEL_CipherReference(struct zx_xenc_CipherData_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_CipherReference_NUM_Transforms) */
 
@@ -821,6 +845,8 @@ void zx_xenc_CipherReference_DEL_Transforms(struct zx_xenc_CipherReference_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_xenc_CipherReference_GET_URI) */
 struct zx_str* zx_xenc_CipherReference_GET_URI(struct zx_xenc_CipherReference_s* x) { return x->URI; }
 /* FUNC(zx_xenc_CipherReference_PUT_URI) */
@@ -840,6 +866,8 @@ void zx_xenc_DataReference_PUT_URI(struct zx_xenc_DataReference_s* x, struct zx_
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedData_NUM_EncryptionMethod) */
 
@@ -969,7 +997,11 @@ void zx_xenc_EncryptedData_DEL_EncryptionMethod(struct zx_xenc_EncryptedData_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedData_NUM_KeyInfo) */
 
@@ -1099,7 +1131,11 @@ void zx_xenc_EncryptedData_DEL_KeyInfo(struct zx_xenc_EncryptedData_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedData_NUM_CipherData) */
 
@@ -1229,7 +1265,11 @@ void zx_xenc_EncryptedData_DEL_CipherData(struct zx_xenc_EncryptedData_s* x, int
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedData_NUM_EncryptionProperties) */
 
@@ -1359,28 +1399,32 @@ void zx_xenc_EncryptedData_DEL_EncryptionProperties(struct zx_xenc_EncryptedData
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_xenc_EncryptedData_GET_Encoding) */
-struct zx_str* zx_xenc_EncryptedData_GET_Encoding(struct zx_xenc_EncryptedData_s* x) { return x->Encoding; }
-/* FUNC(zx_xenc_EncryptedData_PUT_Encoding) */
-void zx_xenc_EncryptedData_PUT_Encoding(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Encoding = y; }
+#endif
+
 /* FUNC(zx_xenc_EncryptedData_GET_Id) */
 struct zx_str* zx_xenc_EncryptedData_GET_Id(struct zx_xenc_EncryptedData_s* x) { return x->Id; }
 /* FUNC(zx_xenc_EncryptedData_PUT_Id) */
 void zx_xenc_EncryptedData_PUT_Id(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Id = y; }
-/* FUNC(zx_xenc_EncryptedData_GET_MimeType) */
-struct zx_str* zx_xenc_EncryptedData_GET_MimeType(struct zx_xenc_EncryptedData_s* x) { return x->MimeType; }
-/* FUNC(zx_xenc_EncryptedData_PUT_MimeType) */
-void zx_xenc_EncryptedData_PUT_MimeType(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->MimeType = y; }
 /* FUNC(zx_xenc_EncryptedData_GET_Type) */
 struct zx_str* zx_xenc_EncryptedData_GET_Type(struct zx_xenc_EncryptedData_s* x) { return x->Type; }
 /* FUNC(zx_xenc_EncryptedData_PUT_Type) */
 void zx_xenc_EncryptedData_PUT_Type(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Type = y; }
+/* FUNC(zx_xenc_EncryptedData_GET_MimeType) */
+struct zx_str* zx_xenc_EncryptedData_GET_MimeType(struct zx_xenc_EncryptedData_s* x) { return x->MimeType; }
+/* FUNC(zx_xenc_EncryptedData_PUT_MimeType) */
+void zx_xenc_EncryptedData_PUT_MimeType(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->MimeType = y; }
+/* FUNC(zx_xenc_EncryptedData_GET_Encoding) */
+struct zx_str* zx_xenc_EncryptedData_GET_Encoding(struct zx_xenc_EncryptedData_s* x) { return x->Encoding; }
+/* FUNC(zx_xenc_EncryptedData_PUT_Encoding) */
+void zx_xenc_EncryptedData_PUT_Encoding(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Encoding = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedKey_NUM_EncryptionMethod) */
 
@@ -1510,7 +1554,11 @@ void zx_xenc_EncryptedKey_DEL_EncryptionMethod(struct zx_xenc_EncryptedKey_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedKey_NUM_KeyInfo) */
 
@@ -1640,7 +1688,11 @@ void zx_xenc_EncryptedKey_DEL_KeyInfo(struct zx_xenc_EncryptedKey_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedKey_NUM_CipherData) */
 
@@ -1770,7 +1822,11 @@ void zx_xenc_EncryptedKey_DEL_CipherData(struct zx_xenc_EncryptedKey_s* x, int n
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedKey_NUM_EncryptionProperties) */
 
@@ -1900,7 +1956,11 @@ void zx_xenc_EncryptedKey_DEL_EncryptionProperties(struct zx_xenc_EncryptedKey_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedKey_NUM_ReferenceList) */
 
@@ -2030,7 +2090,11 @@ void zx_xenc_EncryptedKey_DEL_ReferenceList(struct zx_xenc_EncryptedKey_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptedKey_NUM_CarriedKeyName) */
 
@@ -2160,32 +2224,36 @@ void zx_xenc_EncryptedKey_DEL_CarriedKeyName(struct zx_xenc_EncryptedKey_s* x, i
   y->g.n = y->g.n->n;
 }
 
-/* FUNC(zx_xenc_EncryptedKey_GET_Encoding) */
-struct zx_str* zx_xenc_EncryptedKey_GET_Encoding(struct zx_xenc_EncryptedKey_s* x) { return x->Encoding; }
-/* FUNC(zx_xenc_EncryptedKey_PUT_Encoding) */
-void zx_xenc_EncryptedKey_PUT_Encoding(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Encoding = y; }
+#endif
+
 /* FUNC(zx_xenc_EncryptedKey_GET_Id) */
 struct zx_str* zx_xenc_EncryptedKey_GET_Id(struct zx_xenc_EncryptedKey_s* x) { return x->Id; }
 /* FUNC(zx_xenc_EncryptedKey_PUT_Id) */
 void zx_xenc_EncryptedKey_PUT_Id(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Id = y; }
-/* FUNC(zx_xenc_EncryptedKey_GET_MimeType) */
-struct zx_str* zx_xenc_EncryptedKey_GET_MimeType(struct zx_xenc_EncryptedKey_s* x) { return x->MimeType; }
-/* FUNC(zx_xenc_EncryptedKey_PUT_MimeType) */
-void zx_xenc_EncryptedKey_PUT_MimeType(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->MimeType = y; }
-/* FUNC(zx_xenc_EncryptedKey_GET_Recipient) */
-struct zx_str* zx_xenc_EncryptedKey_GET_Recipient(struct zx_xenc_EncryptedKey_s* x) { return x->Recipient; }
-/* FUNC(zx_xenc_EncryptedKey_PUT_Recipient) */
-void zx_xenc_EncryptedKey_PUT_Recipient(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Recipient = y; }
 /* FUNC(zx_xenc_EncryptedKey_GET_Type) */
 struct zx_str* zx_xenc_EncryptedKey_GET_Type(struct zx_xenc_EncryptedKey_s* x) { return x->Type; }
 /* FUNC(zx_xenc_EncryptedKey_PUT_Type) */
 void zx_xenc_EncryptedKey_PUT_Type(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Type = y; }
+/* FUNC(zx_xenc_EncryptedKey_GET_MimeType) */
+struct zx_str* zx_xenc_EncryptedKey_GET_MimeType(struct zx_xenc_EncryptedKey_s* x) { return x->MimeType; }
+/* FUNC(zx_xenc_EncryptedKey_PUT_MimeType) */
+void zx_xenc_EncryptedKey_PUT_MimeType(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->MimeType = y; }
+/* FUNC(zx_xenc_EncryptedKey_GET_Encoding) */
+struct zx_str* zx_xenc_EncryptedKey_GET_Encoding(struct zx_xenc_EncryptedKey_s* x) { return x->Encoding; }
+/* FUNC(zx_xenc_EncryptedKey_PUT_Encoding) */
+void zx_xenc_EncryptedKey_PUT_Encoding(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Encoding = y; }
+/* FUNC(zx_xenc_EncryptedKey_GET_Recipient) */
+struct zx_str* zx_xenc_EncryptedKey_GET_Recipient(struct zx_xenc_EncryptedKey_s* x) { return x->Recipient; }
+/* FUNC(zx_xenc_EncryptedKey_PUT_Recipient) */
+void zx_xenc_EncryptedKey_PUT_Recipient(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Recipient = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptionMethod_NUM_KeySize) */
 
@@ -2315,7 +2383,11 @@ void zx_xenc_EncryptionMethod_DEL_KeySize(struct zx_xenc_EncryptionMethod_s* x, 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptionMethod_NUM_OAEPparams) */
 
@@ -2445,6 +2517,8 @@ void zx_xenc_EncryptionMethod_DEL_OAEPparams(struct zx_xenc_EncryptionMethod_s* 
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_xenc_EncryptionMethod_GET_Algorithm) */
 struct zx_str* zx_xenc_EncryptionMethod_GET_Algorithm(struct zx_xenc_EncryptionMethod_s* x) { return x->Algorithm; }
 /* FUNC(zx_xenc_EncryptionMethod_PUT_Algorithm) */
@@ -2455,6 +2529,8 @@ void zx_xenc_EncryptionMethod_PUT_Algorithm(struct zx_xenc_EncryptionMethod_s* x
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_EncryptionProperties_NUM_EncryptionProperty) */
 
@@ -2584,6 +2660,8 @@ void zx_xenc_EncryptionProperties_DEL_EncryptionProperty(struct zx_xenc_Encrypti
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_xenc_EncryptionProperties_GET_Id) */
 struct zx_str* zx_xenc_EncryptionProperties_GET_Id(struct zx_xenc_EncryptionProperties_s* x) { return x->Id; }
 /* FUNC(zx_xenc_EncryptionProperties_PUT_Id) */
@@ -2593,14 +2671,14 @@ void zx_xenc_EncryptionProperties_PUT_Id(struct zx_xenc_EncryptionProperties_s* 
 
 
 
-/* FUNC(zx_xenc_EncryptionProperty_GET_Id) */
-struct zx_str* zx_xenc_EncryptionProperty_GET_Id(struct zx_xenc_EncryptionProperty_s* x) { return x->Id; }
-/* FUNC(zx_xenc_EncryptionProperty_PUT_Id) */
-void zx_xenc_EncryptionProperty_PUT_Id(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y) { x->Id = y; }
 /* FUNC(zx_xenc_EncryptionProperty_GET_Target) */
 struct zx_str* zx_xenc_EncryptionProperty_GET_Target(struct zx_xenc_EncryptionProperty_s* x) { return x->Target; }
 /* FUNC(zx_xenc_EncryptionProperty_PUT_Target) */
 void zx_xenc_EncryptionProperty_PUT_Target(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y) { x->Target = y; }
+/* FUNC(zx_xenc_EncryptionProperty_GET_Id) */
+struct zx_str* zx_xenc_EncryptionProperty_GET_Id(struct zx_xenc_EncryptionProperty_s* x) { return x->Id; }
+/* FUNC(zx_xenc_EncryptionProperty_PUT_Id) */
+void zx_xenc_EncryptionProperty_PUT_Id(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y) { x->Id = y; }
 
 
 
@@ -2616,6 +2694,8 @@ void zx_xenc_KeyReference_PUT_URI(struct zx_xenc_KeyReference_s* x, struct zx_st
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_KeyName) */
 
@@ -2745,7 +2825,11 @@ void zx_xenc_OriginatorKeyInfo_DEL_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_KeyValue) */
 
@@ -2875,7 +2959,11 @@ void zx_xenc_OriginatorKeyInfo_DEL_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_RetrievalMethod) */
 
@@ -3005,7 +3093,11 @@ void zx_xenc_OriginatorKeyInfo_DEL_RetrievalMethod(struct zx_xenc_OriginatorKeyI
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_X509Data) */
 
@@ -3135,7 +3227,11 @@ void zx_xenc_OriginatorKeyInfo_DEL_X509Data(struct zx_xenc_OriginatorKeyInfo_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_PGPData) */
 
@@ -3265,7 +3361,11 @@ void zx_xenc_OriginatorKeyInfo_DEL_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_SPKIData) */
 
@@ -3395,7 +3495,11 @@ void zx_xenc_OriginatorKeyInfo_DEL_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_OriginatorKeyInfo_NUM_MgmtData) */
 
@@ -3525,6 +3629,8 @@ void zx_xenc_OriginatorKeyInfo_DEL_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* 
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_xenc_OriginatorKeyInfo_GET_Id) */
 struct zx_str* zx_xenc_OriginatorKeyInfo_GET_Id(struct zx_xenc_OriginatorKeyInfo_s* x) { return x->Id; }
 /* FUNC(zx_xenc_OriginatorKeyInfo_PUT_Id) */
@@ -3535,6 +3641,8 @@ void zx_xenc_OriginatorKeyInfo_PUT_Id(struct zx_xenc_OriginatorKeyInfo_s* x, str
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_KeyName) */
 
@@ -3664,7 +3772,11 @@ void zx_xenc_RecipientKeyInfo_DEL_KeyName(struct zx_xenc_RecipientKeyInfo_s* x, 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_KeyValue) */
 
@@ -3794,7 +3906,11 @@ void zx_xenc_RecipientKeyInfo_DEL_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_RetrievalMethod) */
 
@@ -3924,7 +4040,11 @@ void zx_xenc_RecipientKeyInfo_DEL_RetrievalMethod(struct zx_xenc_RecipientKeyInf
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_X509Data) */
 
@@ -4054,7 +4174,11 @@ void zx_xenc_RecipientKeyInfo_DEL_X509Data(struct zx_xenc_RecipientKeyInfo_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_PGPData) */
 
@@ -4184,7 +4308,11 @@ void zx_xenc_RecipientKeyInfo_DEL_PGPData(struct zx_xenc_RecipientKeyInfo_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_SPKIData) */
 
@@ -4314,7 +4442,11 @@ void zx_xenc_RecipientKeyInfo_DEL_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_RecipientKeyInfo_NUM_MgmtData) */
 
@@ -4444,6 +4576,8 @@ void zx_xenc_RecipientKeyInfo_DEL_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x,
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_xenc_RecipientKeyInfo_GET_Id) */
 struct zx_str* zx_xenc_RecipientKeyInfo_GET_Id(struct zx_xenc_RecipientKeyInfo_s* x) { return x->Id; }
 /* FUNC(zx_xenc_RecipientKeyInfo_PUT_Id) */
@@ -4454,6 +4588,8 @@ void zx_xenc_RecipientKeyInfo_PUT_Id(struct zx_xenc_RecipientKeyInfo_s* x, struc
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_ReferenceList_NUM_DataReference) */
 
@@ -4583,7 +4719,11 @@ void zx_xenc_ReferenceList_DEL_DataReference(struct zx_xenc_ReferenceList_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_ReferenceList_NUM_KeyReference) */
 
@@ -4713,12 +4853,16 @@ void zx_xenc_ReferenceList_DEL_KeyReference(struct zx_xenc_ReferenceList_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_xenc_Transforms_NUM_Transform) */
 
@@ -4847,6 +4991,8 @@ void zx_xenc_Transforms_DEL_Transform(struct zx_xenc_Transforms_s* x, int n)
   }
   y->gg.g.n = y->gg.g.n->n;
 }
+
+#endif
 
 
 

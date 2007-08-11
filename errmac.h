@@ -1,10 +1,10 @@
 /* errmac.h  -  Utility, debugging, and error checking macros
  *
  * Copyright (c) 1998,2001,2006 Sampo Kellomaki <sampo@iki.fi>, All Rights Reserved.
- * Copyright (c) 2001-2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2001-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * This is free software and comes with NO WARRANTY. For licensing
  * see file COPYING in the distribution directory.
- * $Id: errmac.h,v 1.6 2006/09/28 05:47:06 sampo Exp $
+ * $Id: errmac.h,v 1.10 2007/02/01 06:35:32 sampo Exp $
  *
  * 10.1.2003, added option to make ASSERT nonfatal --Sampo
  * 4.6.2003,  added STRERROR() macro --Sampo
@@ -19,7 +19,23 @@
 #ifndef _macro_h
 #define _macro_h
 
+#ifdef MINGW
+#include <windows.h>
+#define MS_LONG LONG
+#define MKDIR(d,p) mkdir(d)
+#define pthread_self() GetCurrentThreadId()
+#define GETTIMEOFDAY(tv, tz) ((tv) ? (((tv)->tv_sec = time(0)) && ((tv)->tv_usec = 0)) : -1)
+#define GMTIME_R(secs,stm) do { struct tm* stx_tm = gmtime(&(secs)); if (stx_tm) memcpy(&stm, stx_tm, sizeof(struct tm)); } while(0)   /* *** still not thread safe */
+
+#define MINGW_RW_PERM (GENERIC_READ | GENERIC_WRITE)
+
+#else
+
 #include <pthread.h>
+#define MKDIR(d,p) mkdir((d),(p))
+#define GETTIMEOFDAY gettimeofday
+#define GMTIME_R(t, res) gmtime_r(&(t),&(res))
+#endif
 #include <stdio.h>    /* For stderr */
 
 /* CONFIG */
@@ -346,17 +362,22 @@ void dserr_cmdline(const char* f, ...);
 
 /* =============== Debugging macro system =============== */
 
-extern char* instance;
+#ifndef ERRMAC_INSTANCE
+#define ERRMAC_INSTANCE "zxid"
+/*extern char* instance;*/
+#endif
+
 extern int debug;
-#define D(format,...) (debug && (fprintf(stderr, "t%x %9s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, instance, __VA_ARGS__), fflush(stderr)))
+#define D(format,...) (debug && (fprintf(stderr, "t%x %9s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))
 #define DD(format,...)  /* Documentative */
 
+int hexdmp(char* msg, char* p, int len, int max);
 int hexdump(char* msg, char* p, char* lim, int max);
 #define HEXDUMP(msg, p, lim, max) (debug > 1 && hexdump((msg), (p), (lim), (max)))
 #define DHEXDUMP(msg, p, lim, max) /* Disabled hex dump */
 
-#define ERR(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, instance, __VA_ARGS__), fflush(stderr))
-#define INFO(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s I " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, instance, __VA_ARGS__), fflush(stderr))
+#define ERR(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
+#define INFO(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s I " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
 
 #define DUMP_CORE() ASSERT(0)
 #define NEVER(explanation,val) D(explanation,(val))
@@ -426,7 +447,7 @@ int hexdump(char* msg, char* p, char* lim, int max);
 /* Try to produce some exception, unless global setting says asserting is NOT ok. */
 
 extern char* assert_msg;
-#define DIE_ACTION(b) MB fprintf(stderr, assert_msg, instance); if (assert_nonfatal == 0) { *((int*)0xffffffff) = 1; } ME
+#define DIE_ACTION(b) MB fprintf(stderr, assert_msg, ERRMAC_INSTANCE); if (assert_nonfatal == 0) { *((int*)0xffffffff) = 1; } ME
 
 /* Many development time sanity checks use these macros so that they can be compiled away from
  * the final version. ASSERT macros are more convenient than their library counter
@@ -471,7 +492,7 @@ extern char* assert_msg;
 #endif /* DEBUG */
 
 /* -------------------------------------------------------- */
-/* Complimentary Macros */
+/* Asseting and sanity checks */
  
 #define ASSERT(c)      CHK(!(c), 1)
 #define CHK_NULL(n)    ASSERT((int)(n))
@@ -597,4 +618,4 @@ extern char* assert_msg;
                                  *((p)++) =  (x) & 0xff; }      \
   else { NEVER("length %d too big to encode in BERLEN\n",(x)); }; ME
 
-#endif /* macro.h */
+#endif /* errmac.h */

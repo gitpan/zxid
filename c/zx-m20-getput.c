@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -37,6 +39,8 @@ void zx_m20_AdditionalMetaLocation_PUT_namespace(struct zx_m20_AdditionalMetaLoc
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_AffiliationDescriptor_NUM_AffiliateMember) */
 
@@ -166,7 +170,11 @@ void zx_m20_AffiliationDescriptor_DEL_AffiliateMember(struct zx_m20_AffiliationD
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_AffiliationDescriptor_NUM_Extension) */
 
@@ -296,7 +304,11 @@ void zx_m20_AffiliationDescriptor_DEL_Extension(struct zx_m20_AffiliationDescrip
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_AffiliationDescriptor_NUM_KeyDescriptor) */
 
@@ -426,7 +438,11 @@ void zx_m20_AffiliationDescriptor_DEL_KeyDescriptor(struct zx_m20_AffiliationDes
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_AffiliationDescriptor_NUM_Signature) */
 
@@ -556,10 +572,16 @@ void zx_m20_AffiliationDescriptor_DEL_Signature(struct zx_m20_AffiliationDescrip
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_m20_AffiliationDescriptor_GET_affiliationOwnerID) */
 struct zx_str* zx_m20_AffiliationDescriptor_GET_affiliationOwnerID(struct zx_m20_AffiliationDescriptor_s* x) { return x->affiliationOwnerID; }
 /* FUNC(zx_m20_AffiliationDescriptor_PUT_affiliationOwnerID) */
 void zx_m20_AffiliationDescriptor_PUT_affiliationOwnerID(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->affiliationOwnerID = y; }
+/* FUNC(zx_m20_AffiliationDescriptor_GET_validUntil) */
+struct zx_str* zx_m20_AffiliationDescriptor_GET_validUntil(struct zx_m20_AffiliationDescriptor_s* x) { return x->validUntil; }
+/* FUNC(zx_m20_AffiliationDescriptor_PUT_validUntil) */
+void zx_m20_AffiliationDescriptor_PUT_validUntil(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 /* FUNC(zx_m20_AffiliationDescriptor_GET_cacheDuration) */
 struct zx_str* zx_m20_AffiliationDescriptor_GET_cacheDuration(struct zx_m20_AffiliationDescriptor_s* x) { return x->cacheDuration; }
 /* FUNC(zx_m20_AffiliationDescriptor_PUT_cacheDuration) */
@@ -568,10 +590,6 @@ void zx_m20_AffiliationDescriptor_PUT_cacheDuration(struct zx_m20_AffiliationDes
 struct zx_str* zx_m20_AffiliationDescriptor_GET_id(struct zx_m20_AffiliationDescriptor_s* x) { return x->id; }
 /* FUNC(zx_m20_AffiliationDescriptor_PUT_id) */
 void zx_m20_AffiliationDescriptor_PUT_id(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_m20_AffiliationDescriptor_GET_validUntil) */
-struct zx_str* zx_m20_AffiliationDescriptor_GET_validUntil(struct zx_m20_AffiliationDescriptor_s* x) { return x->validUntil; }
-/* FUNC(zx_m20_AffiliationDescriptor_PUT_validUntil) */
-void zx_m20_AffiliationDescriptor_PUT_validUntil(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 
 
 
@@ -591,6 +609,8 @@ void zx_m20_AssertionConsumerServiceURL_PUT_isDefault(struct zx_m20_AssertionCon
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_ContactPerson_NUM_Company) */
 
@@ -720,7 +740,11 @@ void zx_m20_ContactPerson_DEL_Company(struct zx_m20_ContactPerson_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_ContactPerson_NUM_GivenName) */
 
@@ -850,7 +874,11 @@ void zx_m20_ContactPerson_DEL_GivenName(struct zx_m20_ContactPerson_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_ContactPerson_NUM_SurName) */
 
@@ -980,7 +1008,11 @@ void zx_m20_ContactPerson_DEL_SurName(struct zx_m20_ContactPerson_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_ContactPerson_NUM_EmailAddress) */
 
@@ -1110,7 +1142,11 @@ void zx_m20_ContactPerson_DEL_EmailAddress(struct zx_m20_ContactPerson_s* x, int
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_ContactPerson_NUM_TelephoneNumber) */
 
@@ -1240,7 +1276,11 @@ void zx_m20_ContactPerson_DEL_TelephoneNumber(struct zx_m20_ContactPerson_s* x, 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_ContactPerson_NUM_Extension) */
 
@@ -1370,20 +1410,24 @@ void zx_m20_ContactPerson_DEL_Extension(struct zx_m20_ContactPerson_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_m20_ContactPerson_GET_contactType) */
-struct zx_str* zx_m20_ContactPerson_GET_contactType(struct zx_m20_ContactPerson_s* x) { return x->contactType; }
-/* FUNC(zx_m20_ContactPerson_PUT_contactType) */
-void zx_m20_ContactPerson_PUT_contactType(struct zx_m20_ContactPerson_s* x, struct zx_str* y) { x->contactType = y; }
+#endif
+
 /* FUNC(zx_m20_ContactPerson_GET_libertyPrincipalIdentifier) */
 struct zx_str* zx_m20_ContactPerson_GET_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x) { return x->libertyPrincipalIdentifier; }
 /* FUNC(zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier) */
 void zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x, struct zx_str* y) { x->libertyPrincipalIdentifier = y; }
+/* FUNC(zx_m20_ContactPerson_GET_contactType) */
+struct zx_str* zx_m20_ContactPerson_GET_contactType(struct zx_m20_ContactPerson_s* x) { return x->contactType; }
+/* FUNC(zx_m20_ContactPerson_PUT_contactType) */
+void zx_m20_ContactPerson_PUT_contactType(struct zx_m20_ContactPerson_s* x, struct zx_str* y) { x->contactType = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntitiesDescriptor_NUM_EntityDescriptor) */
 
@@ -1513,12 +1557,16 @@ void zx_m20_EntitiesDescriptor_DEL_EntityDescriptor(struct zx_m20_EntitiesDescri
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_IDPDescriptor) */
 
@@ -1648,7 +1696,11 @@ void zx_m20_EntityDescriptor_DEL_IDPDescriptor(struct zx_m20_EntityDescriptor_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_SPDescriptor) */
 
@@ -1778,7 +1830,11 @@ void zx_m20_EntityDescriptor_DEL_SPDescriptor(struct zx_m20_EntityDescriptor_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_AffiliationDescriptor) */
 
@@ -1908,7 +1964,11 @@ void zx_m20_EntityDescriptor_DEL_AffiliationDescriptor(struct zx_m20_EntityDescr
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_ContactPerson) */
 
@@ -2038,7 +2098,11 @@ void zx_m20_EntityDescriptor_DEL_ContactPerson(struct zx_m20_EntityDescriptor_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_Organization) */
 
@@ -2168,7 +2232,11 @@ void zx_m20_EntityDescriptor_DEL_Organization(struct zx_m20_EntityDescriptor_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_Extension) */
 
@@ -2298,7 +2366,11 @@ void zx_m20_EntityDescriptor_DEL_Extension(struct zx_m20_EntityDescriptor_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_EntityDescriptor_NUM_Signature) */
 
@@ -2428,22 +2500,24 @@ void zx_m20_EntityDescriptor_DEL_Signature(struct zx_m20_EntityDescriptor_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_m20_EntityDescriptor_GET_cacheDuration) */
-struct zx_str* zx_m20_EntityDescriptor_GET_cacheDuration(struct zx_m20_EntityDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_m20_EntityDescriptor_PUT_cacheDuration) */
-void zx_m20_EntityDescriptor_PUT_cacheDuration(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_m20_EntityDescriptor_GET_id) */
-struct zx_str* zx_m20_EntityDescriptor_GET_id(struct zx_m20_EntityDescriptor_s* x) { return x->id; }
-/* FUNC(zx_m20_EntityDescriptor_PUT_id) */
-void zx_m20_EntityDescriptor_PUT_id(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->id = y; }
+#endif
+
 /* FUNC(zx_m20_EntityDescriptor_GET_providerID) */
 struct zx_str* zx_m20_EntityDescriptor_GET_providerID(struct zx_m20_EntityDescriptor_s* x) { return x->providerID; }
 /* FUNC(zx_m20_EntityDescriptor_PUT_providerID) */
 void zx_m20_EntityDescriptor_PUT_providerID(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->providerID = y; }
+/* FUNC(zx_m20_EntityDescriptor_GET_id) */
+struct zx_str* zx_m20_EntityDescriptor_GET_id(struct zx_m20_EntityDescriptor_s* x) { return x->id; }
+/* FUNC(zx_m20_EntityDescriptor_PUT_id) */
+void zx_m20_EntityDescriptor_PUT_id(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_m20_EntityDescriptor_GET_validUntil) */
 struct zx_str* zx_m20_EntityDescriptor_GET_validUntil(struct zx_m20_EntityDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_m20_EntityDescriptor_PUT_validUntil) */
 void zx_m20_EntityDescriptor_PUT_validUntil(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_m20_EntityDescriptor_GET_cacheDuration) */
+struct zx_str* zx_m20_EntityDescriptor_GET_cacheDuration(struct zx_m20_EntityDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_m20_EntityDescriptor_PUT_cacheDuration) */
+void zx_m20_EntityDescriptor_PUT_cacheDuration(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
 
 
 
@@ -2455,6 +2529,8 @@ void zx_m20_EntityDescriptor_PUT_validUntil(struct zx_m20_EntityDescriptor_s* x,
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_KeyDescriptor) */
 
@@ -2584,7 +2660,11 @@ void zx_m20_IDPDescriptor_DEL_KeyDescriptor(struct zx_m20_IDPDescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_SoapEndpoint) */
 
@@ -2714,7 +2794,11 @@ void zx_m20_IDPDescriptor_DEL_SoapEndpoint(struct zx_m20_IDPDescriptor_s* x, int
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_SingleLogoutServiceURL) */
 
@@ -2844,7 +2928,11 @@ void zx_m20_IDPDescriptor_DEL_SingleLogoutServiceURL(struct zx_m20_IDPDescriptor
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_SingleLogoutServiceReturnURL) */
 
@@ -2974,7 +3062,11 @@ void zx_m20_IDPDescriptor_DEL_SingleLogoutServiceReturnURL(struct zx_m20_IDPDesc
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_FederationTerminationServiceURL) */
 
@@ -3104,7 +3196,11 @@ void zx_m20_IDPDescriptor_DEL_FederationTerminationServiceURL(struct zx_m20_IDPD
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_FederationTerminationServiceReturnURL) */
 
@@ -3234,7 +3330,11 @@ void zx_m20_IDPDescriptor_DEL_FederationTerminationServiceReturnURL(struct zx_m2
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_FederationTerminationNotificationProtocolProfile) */
 
@@ -3364,7 +3464,11 @@ void zx_m20_IDPDescriptor_DEL_FederationTerminationNotificationProtocolProfile(s
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_SingleLogoutProtocolProfile) */
 
@@ -3494,7 +3598,11 @@ void zx_m20_IDPDescriptor_DEL_SingleLogoutProtocolProfile(struct zx_m20_IDPDescr
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_RegisterNameIdentifierProtocolProfile) */
 
@@ -3624,7 +3732,11 @@ void zx_m20_IDPDescriptor_DEL_RegisterNameIdentifierProtocolProfile(struct zx_m2
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_RegisterNameIdentifierServiceURL) */
 
@@ -3754,7 +3866,11 @@ void zx_m20_IDPDescriptor_DEL_RegisterNameIdentifierServiceURL(struct zx_m20_IDP
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_RegisterNameIdentifierServiceReturnURL) */
 
@@ -3884,7 +4000,11 @@ void zx_m20_IDPDescriptor_DEL_RegisterNameIdentifierServiceReturnURL(struct zx_m
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_NameIdentifierMappingProtocolProfile) */
 
@@ -4014,7 +4134,11 @@ void zx_m20_IDPDescriptor_DEL_NameIdentifierMappingProtocolProfile(struct zx_m20
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_NameIdentifierMappingEncryptionProfile) */
 
@@ -4144,7 +4268,11 @@ void zx_m20_IDPDescriptor_DEL_NameIdentifierMappingEncryptionProfile(struct zx_m
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_Organization) */
 
@@ -4274,7 +4402,11 @@ void zx_m20_IDPDescriptor_DEL_Organization(struct zx_m20_IDPDescriptor_s* x, int
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_ContactPerson) */
 
@@ -4404,7 +4536,11 @@ void zx_m20_IDPDescriptor_DEL_ContactPerson(struct zx_m20_IDPDescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_AdditionalMetaLocation) */
 
@@ -4534,7 +4670,11 @@ void zx_m20_IDPDescriptor_DEL_AdditionalMetaLocation(struct zx_m20_IDPDescriptor
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_Extension) */
 
@@ -4664,7 +4804,11 @@ void zx_m20_IDPDescriptor_DEL_Extension(struct zx_m20_IDPDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_Signature) */
 
@@ -4794,7 +4938,11 @@ void zx_m20_IDPDescriptor_DEL_Signature(struct zx_m20_IDPDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_SingleSignOnServiceURL) */
 
@@ -4924,7 +5072,11 @@ void zx_m20_IDPDescriptor_DEL_SingleSignOnServiceURL(struct zx_m20_IDPDescriptor
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_SingleSignOnProtocolProfile) */
 
@@ -5054,7 +5206,11 @@ void zx_m20_IDPDescriptor_DEL_SingleSignOnProtocolProfile(struct zx_m20_IDPDescr
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_IDPDescriptor_NUM_AuthnServiceURL) */
 
@@ -5184,28 +5340,32 @@ void zx_m20_IDPDescriptor_DEL_AuthnServiceURL(struct zx_m20_IDPDescriptor_s* x, 
   y->g.n = y->g.n->n;
 }
 
-/* FUNC(zx_m20_IDPDescriptor_GET_cacheDuration) */
-struct zx_str* zx_m20_IDPDescriptor_GET_cacheDuration(struct zx_m20_IDPDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_m20_IDPDescriptor_PUT_cacheDuration) */
-void zx_m20_IDPDescriptor_PUT_cacheDuration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_m20_IDPDescriptor_GET_id) */
-struct zx_str* zx_m20_IDPDescriptor_GET_id(struct zx_m20_IDPDescriptor_s* x) { return x->id; }
-/* FUNC(zx_m20_IDPDescriptor_PUT_id) */
-void zx_m20_IDPDescriptor_PUT_id(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->id = y; }
+#endif
+
 /* FUNC(zx_m20_IDPDescriptor_GET_protocolSupportEnumeration) */
 struct zx_str* zx_m20_IDPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x) { return x->protocolSupportEnumeration; }
 /* FUNC(zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration) */
 void zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_m20_IDPDescriptor_GET_id) */
+struct zx_str* zx_m20_IDPDescriptor_GET_id(struct zx_m20_IDPDescriptor_s* x) { return x->id; }
+/* FUNC(zx_m20_IDPDescriptor_PUT_id) */
+void zx_m20_IDPDescriptor_PUT_id(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_m20_IDPDescriptor_GET_validUntil) */
 struct zx_str* zx_m20_IDPDescriptor_GET_validUntil(struct zx_m20_IDPDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_m20_IDPDescriptor_PUT_validUntil) */
 void zx_m20_IDPDescriptor_PUT_validUntil(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_m20_IDPDescriptor_GET_cacheDuration) */
+struct zx_str* zx_m20_IDPDescriptor_GET_cacheDuration(struct zx_m20_IDPDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_m20_IDPDescriptor_PUT_cacheDuration) */
+void zx_m20_IDPDescriptor_PUT_cacheDuration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_KeyDescriptor_NUM_EncryptionMethod) */
 
@@ -5335,7 +5495,11 @@ void zx_m20_KeyDescriptor_DEL_EncryptionMethod(struct zx_m20_KeyDescriptor_s* x,
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_KeyDescriptor_NUM_KeySize) */
 
@@ -5465,7 +5629,11 @@ void zx_m20_KeyDescriptor_DEL_KeySize(struct zx_m20_KeyDescriptor_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_KeyDescriptor_NUM_KeyInfo) */
 
@@ -5595,7 +5763,11 @@ void zx_m20_KeyDescriptor_DEL_KeyInfo(struct zx_m20_KeyDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_KeyDescriptor_NUM_Extension) */
 
@@ -5725,6 +5897,8 @@ void zx_m20_KeyDescriptor_DEL_Extension(struct zx_m20_KeyDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_m20_KeyDescriptor_GET_use) */
 struct zx_str* zx_m20_KeyDescriptor_GET_use(struct zx_m20_KeyDescriptor_s* x) { return x->use; }
 /* FUNC(zx_m20_KeyDescriptor_PUT_use) */
@@ -5735,6 +5909,8 @@ void zx_m20_KeyDescriptor_PUT_use(struct zx_m20_KeyDescriptor_s* x, struct zx_st
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_Organization_NUM_OrganizationName) */
 
@@ -5864,7 +6040,11 @@ void zx_m20_Organization_DEL_OrganizationName(struct zx_m20_Organization_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_Organization_NUM_OrganizationDisplayName) */
 
@@ -5994,7 +6174,11 @@ void zx_m20_Organization_DEL_OrganizationDisplayName(struct zx_m20_Organization_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_Organization_NUM_OrganizationURL) */
 
@@ -6124,7 +6308,11 @@ void zx_m20_Organization_DEL_OrganizationURL(struct zx_m20_Organization_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_Organization_NUM_Extension) */
 
@@ -6254,6 +6442,8 @@ void zx_m20_Organization_DEL_Extension(struct zx_m20_Organization_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 
 
 
@@ -6287,6 +6477,8 @@ void zx_m20_OrganizationURL_PUT_lang(struct zx_m20_OrganizationURL_s* x, struct 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_KeyDescriptor) */
 
@@ -6416,7 +6608,11 @@ void zx_m20_SPDescriptor_DEL_KeyDescriptor(struct zx_m20_SPDescriptor_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_SoapEndpoint) */
 
@@ -6546,7 +6742,11 @@ void zx_m20_SPDescriptor_DEL_SoapEndpoint(struct zx_m20_SPDescriptor_s* x, int n
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_SingleLogoutServiceURL) */
 
@@ -6676,7 +6876,11 @@ void zx_m20_SPDescriptor_DEL_SingleLogoutServiceURL(struct zx_m20_SPDescriptor_s
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_SingleLogoutServiceReturnURL) */
 
@@ -6806,7 +7010,11 @@ void zx_m20_SPDescriptor_DEL_SingleLogoutServiceReturnURL(struct zx_m20_SPDescri
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_FederationTerminationServiceURL) */
 
@@ -6936,7 +7144,11 @@ void zx_m20_SPDescriptor_DEL_FederationTerminationServiceURL(struct zx_m20_SPDes
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_FederationTerminationServiceReturnURL) */
 
@@ -7066,7 +7278,11 @@ void zx_m20_SPDescriptor_DEL_FederationTerminationServiceReturnURL(struct zx_m20
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_FederationTerminationNotificationProtocolProfile) */
 
@@ -7196,7 +7412,11 @@ void zx_m20_SPDescriptor_DEL_FederationTerminationNotificationProtocolProfile(st
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_SingleLogoutProtocolProfile) */
 
@@ -7326,7 +7546,11 @@ void zx_m20_SPDescriptor_DEL_SingleLogoutProtocolProfile(struct zx_m20_SPDescrip
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_RegisterNameIdentifierProtocolProfile) */
 
@@ -7456,7 +7680,11 @@ void zx_m20_SPDescriptor_DEL_RegisterNameIdentifierProtocolProfile(struct zx_m20
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_RegisterNameIdentifierServiceURL) */
 
@@ -7586,7 +7814,11 @@ void zx_m20_SPDescriptor_DEL_RegisterNameIdentifierServiceURL(struct zx_m20_SPDe
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_RegisterNameIdentifierServiceReturnURL) */
 
@@ -7716,7 +7948,11 @@ void zx_m20_SPDescriptor_DEL_RegisterNameIdentifierServiceReturnURL(struct zx_m2
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_NameIdentifierMappingProtocolProfile) */
 
@@ -7846,7 +8082,11 @@ void zx_m20_SPDescriptor_DEL_NameIdentifierMappingProtocolProfile(struct zx_m20_
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_NameIdentifierMappingEncryptionProfile) */
 
@@ -7976,7 +8216,11 @@ void zx_m20_SPDescriptor_DEL_NameIdentifierMappingEncryptionProfile(struct zx_m2
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_Organization) */
 
@@ -8106,7 +8350,11 @@ void zx_m20_SPDescriptor_DEL_Organization(struct zx_m20_SPDescriptor_s* x, int n
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_ContactPerson) */
 
@@ -8236,7 +8484,11 @@ void zx_m20_SPDescriptor_DEL_ContactPerson(struct zx_m20_SPDescriptor_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_AdditionalMetaLocation) */
 
@@ -8366,7 +8618,11 @@ void zx_m20_SPDescriptor_DEL_AdditionalMetaLocation(struct zx_m20_SPDescriptor_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_Extension) */
 
@@ -8496,7 +8752,11 @@ void zx_m20_SPDescriptor_DEL_Extension(struct zx_m20_SPDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_Signature) */
 
@@ -8626,7 +8886,11 @@ void zx_m20_SPDescriptor_DEL_Signature(struct zx_m20_SPDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_AssertionConsumerServiceURL) */
 
@@ -8756,7 +9020,11 @@ void zx_m20_SPDescriptor_DEL_AssertionConsumerServiceURL(struct zx_m20_SPDescrip
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_m20_SPDescriptor_NUM_AuthnRequestsSigned) */
 
@@ -8886,22 +9154,24 @@ void zx_m20_SPDescriptor_DEL_AuthnRequestsSigned(struct zx_m20_SPDescriptor_s* x
   y->g.n = y->g.n->n;
 }
 
-/* FUNC(zx_m20_SPDescriptor_GET_cacheDuration) */
-struct zx_str* zx_m20_SPDescriptor_GET_cacheDuration(struct zx_m20_SPDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_m20_SPDescriptor_PUT_cacheDuration) */
-void zx_m20_SPDescriptor_PUT_cacheDuration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_m20_SPDescriptor_GET_id) */
-struct zx_str* zx_m20_SPDescriptor_GET_id(struct zx_m20_SPDescriptor_s* x) { return x->id; }
-/* FUNC(zx_m20_SPDescriptor_PUT_id) */
-void zx_m20_SPDescriptor_PUT_id(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->id = y; }
+#endif
+
 /* FUNC(zx_m20_SPDescriptor_GET_protocolSupportEnumeration) */
 struct zx_str* zx_m20_SPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x) { return x->protocolSupportEnumeration; }
 /* FUNC(zx_m20_SPDescriptor_PUT_protocolSupportEnumeration) */
 void zx_m20_SPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_m20_SPDescriptor_GET_id) */
+struct zx_str* zx_m20_SPDescriptor_GET_id(struct zx_m20_SPDescriptor_s* x) { return x->id; }
+/* FUNC(zx_m20_SPDescriptor_PUT_id) */
+void zx_m20_SPDescriptor_PUT_id(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_m20_SPDescriptor_GET_validUntil) */
 struct zx_str* zx_m20_SPDescriptor_GET_validUntil(struct zx_m20_SPDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_m20_SPDescriptor_PUT_validUntil) */
 void zx_m20_SPDescriptor_PUT_validUntil(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_m20_SPDescriptor_GET_cacheDuration) */
+struct zx_str* zx_m20_SPDescriptor_GET_cacheDuration(struct zx_m20_SPDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_m20_SPDescriptor_PUT_cacheDuration) */
+void zx_m20_SPDescriptor_PUT_cacheDuration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
 
 
 

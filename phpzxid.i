@@ -1,9 +1,11 @@
 /* phpzxid.i  -  SWIG interface file for PHP extension for libzxid
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: phpzxid.i,v 1.3 2006/09/30 06:24:49 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: phpzxid.i,v 1.6 2007/01/25 22:18:06 sampo Exp $
  * 31.8.2006, created --Sampo
  */
 %module "zxid"
@@ -18,12 +20,6 @@
 #include "c/zx-data.h"
 #include "c/zx-ns.h"
 #include "c/zxidvers.h"
-
-char* instance = "zxid php module";
-char* assert_msg = "An assert happened in zxid php module.";
-int assert_nonfatal = 0;
-int debug = 0;
-int trace = 0;
 
 %}
 

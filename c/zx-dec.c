@@ -7,16 +7,19 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** dec-templ.c  -  XML decoder template, used in code generation
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: dec-templ.c,v 1.19 2006/09/30 06:24:49 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: dec-templ.c,v 1.23 2007-06-21 23:32:32 sampo Exp $
  **
  ** 28.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 12.8.2006, added special scanning of xmlns to avoid backtracking elem recognition --Sampo
  ** 23.9.2006, added collection of WO information --Sampo
+ ** 21.6.2007, improved handling of undeclared namespace prefixes --Sampo
  **
  ** N.B: This template is meant to be processed by pd/xsd2sg.pl. Beware
  ** of special markers that xsd2sg.pl expects to find and understand.
@@ -78,6 +81,7 @@
 #define EL_NS     
 #define EL_TAG    root
 
+/* Called by: */
 struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decode)
 {
   int tok;
@@ -100,7 +104,7 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -174,10 +178,10 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
             el->g.n = &x->ManageNameIDResponse->gg.g;
             x->ManageNameIDResponse = (struct zx_sp_ManageNameIDResponse_s*)el;
             break;
-          case zx_se_Envelope_ELEM:
-            el = (struct zx_elem_s*)zx_DEC_se_Envelope(c, ns);
+          case zx_e_Envelope_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_e_Envelope(c, ns);
             el->g.n = &x->Envelope->gg.g;
-            x->Envelope = (struct zx_se_Envelope_s*)el;
+            x->Envelope = (struct zx_e_Envelope_s*)el;
             break;
           case zx_md_EntityDescriptor_ELEM:
             el = (struct zx_elem_s*)zx_DEC_md_EntityDescriptor(c, ns);
@@ -274,15 +278,25 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
             el->g.n = &x->m20_EntitiesDescriptor->gg.g;
             x->m20_EntitiesDescriptor = (struct zx_m20_EntitiesDescriptor_s*)el;
             break;
-          case zx_e_Envelope_ELEM:
-            el = (struct zx_elem_s*)zx_DEC_e_Envelope(c, ns);
-            el->g.n = &x->e_Envelope->gg.g;
-            x->e_Envelope = (struct zx_e_Envelope_s*)el;
+          case zx_a_EndpointReference_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_a_EndpointReference(c, ns);
+            el->g.n = &x->EndpointReference->gg.g;
+            x->EndpointReference = (struct zx_a_EndpointReference_s*)el;
             break;
-          case zx_dise_Envelope_ELEM:
-            el = (struct zx_elem_s*)zx_DEC_dise_Envelope(c, ns);
-            el->g.n = &x->dise_Envelope->gg.g;
-            x->dise_Envelope = (struct zx_dise_Envelope_s*)el;
+          case zx_hrxml_Candidate_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_hrxml_Candidate(c, ns);
+            el->g.n = &x->Candidate->gg.g;
+            x->Candidate = (struct zx_hrxml_Candidate_s*)el;
+            break;
+          case zx_xasp_XACMLAuthzDecisionQuery_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xasp_XACMLAuthzDecisionQuery(c, ns);
+            el->g.n = &x->XACMLAuthzDecisionQuery->gg.g;
+            x->XACMLAuthzDecisionQuery = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)el;
+            break;
+          case zx_xasp_XACMLPolicyQuery_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xasp_XACMLPolicyQuery(c, ns);
+            el->g.n = &x->XACMLPolicyQuery->gg.g;
+            x->XACMLPolicyQuery = (struct zx_xasp_XACMLPolicyQuery_s*)el;
             break;
 
 	  default:
@@ -307,7 +321,7 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -343,6 +357,7 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
 #define EL_NS     
 #define EL_TAG    simple_elem
 
+/* Called by: */
 struct zx_elem_s* zx_DEC_simple_elem(struct zx_ctx* c, struct zx_ns_s* ns , int toke)
 {
   int tok;
@@ -364,7 +379,7 @@ struct zx_elem_s* zx_DEC_simple_elem(struct zx_ctx* c, struct zx_ns_s* ns , int 
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -410,11 +425,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -422,7 +439,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -484,7 +501,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -520,6 +537,7 @@ next_attr:
 #define EL_NS     
 #define EL_TAG    wrong_elem
 
+/* Called by: */
 struct zx_any_elem_s* zx_DEC_wrong_elem(struct zx_ctx* c, struct zx_ns_s* ns , char* nam, int namlen)
 {
   int tok;
@@ -541,7 +559,7 @@ struct zx_any_elem_s* zx_DEC_wrong_elem(struct zx_ctx* c, struct zx_ns_s* ns , c
 
   /* The tag name has already been detected. Process attributes until '>' */
   
-  for (; 1; ++c->p) {
+  for (; c->p; ++c->p) {
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
@@ -587,11 +605,13 @@ set_attr_val:
 next_attr:
     continue;
   }
-  ++c->p;
-  if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+  if (c->p) {
     ++c->p;
-    x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
-    goto out;
+    if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
+      ++c->p;
+      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      goto out;
+    }
   }
 #endif
 
@@ -599,7 +619,7 @@ next_attr:
   
   ZX_START_BODY_DEC_EXT(x);
   
-  while (1) {
+  while (c->p) {
   next_elem:
     ZX_SKIP_WS(c,x);
     if (*c->p == '<') {
@@ -661,7 +681,7 @@ next_attr:
     }
     /* Data */
     name = c->p;
-    ZX_LOOK_FOR(c,'<',x);
+    if (c->p) ZX_LOOK_FOR(c,'<',x);
     ss = ZX_ZALLOC(c, struct zx_str);
     ss->len = c->p - name;
     ss->s = name;
@@ -699,6 +719,7 @@ next_attr:
  * One of each (attr and elem) is needed for every prefix used in code generation.
  * The ...2tok() functions come from code generation via gperf. */
 
+/* Called by:  zx_DEC_ELNAME */
 int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 {
   const struct zx_tok* zt;
@@ -715,7 +736,7 @@ int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
   if (!zt) {
     if (prefix && (name-1)-prefix == sizeof("xmlns")-1
 	&& !memcmp("xmlns", prefix, sizeof("xmlns")-1)) {
-      /* Namespace declaration. Skip because these were prescanned. */
+      /* Namespace declaration. Skip because these were prescanned (see ablec in this file). */
       return ZX_TOK_XMLNS;
     }
     return ZX_TOK_NOT_FOUND;
@@ -734,6 +755,7 @@ int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 
 /* FUNC(zx_elem_lookup) */
 
+/* Called by:  zx_DEC_ELNAME x2 */
 int zx_elem_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 {
   const struct zx_tok* zt;

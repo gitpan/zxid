@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -28,6 +30,8 @@
 #include "c/zx-di-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_EndpointContext_NUM_Address) */
 
@@ -157,7 +161,11 @@ void zx_di_EndpointContext_DEL_Address(struct zx_di_EndpointContext_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_EndpointContext_NUM_Framework) */
 
@@ -287,7 +295,11 @@ void zx_di_EndpointContext_DEL_Framework(struct zx_di_EndpointContext_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_EndpointContext_NUM_SecurityMechID) */
 
@@ -417,7 +429,11 @@ void zx_di_EndpointContext_DEL_SecurityMechID(struct zx_di_EndpointContext_s* x,
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_EndpointContext_NUM_Action) */
 
@@ -547,6 +563,8 @@ void zx_di_EndpointContext_DEL_Action(struct zx_di_EndpointContext_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 
 
 
@@ -556,12 +574,26 @@ void zx_di_EndpointContext_DEL_Action(struct zx_di_EndpointContext_s* x, int n)
 struct zx_str* zx_di_Framework_GET_version(struct zx_di_Framework_s* x) { return x->version; }
 /* FUNC(zx_di_Framework_PUT_version) */
 void zx_di_Framework_PUT_version(struct zx_di_Framework_s* x, struct zx_str* y) { x->version = y; }
+/* FUNC(zx_di_Framework_GET_mustUnderstand) */
+struct zx_str* zx_di_Framework_GET_mustUnderstand(struct zx_di_Framework_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_di_Framework_PUT_mustUnderstand) */
+void zx_di_Framework_PUT_mustUnderstand(struct zx_di_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_di_Framework_GET_actor) */
+struct zx_str* zx_di_Framework_GET_actor(struct zx_di_Framework_s* x) { return x->actor; }
+/* FUNC(zx_di_Framework_PUT_actor) */
+void zx_di_Framework_PUT_actor(struct zx_di_Framework_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_di_Framework_GET_Id) */
+struct zx_str* zx_di_Framework_GET_Id(struct zx_di_Framework_s* x) { return x->Id; }
+/* FUNC(zx_di_Framework_PUT_Id) */
+void zx_di_Framework_PUT_Id(struct zx_di_Framework_s* x, struct zx_str* y) { x->Id = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_Keys_NUM_KeyDescriptor) */
 
@@ -691,12 +723,16 @@ void zx_di_Keys_DEL_KeyDescriptor(struct zx_di_Keys_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_Options_NUM_Option) */
 
@@ -826,12 +862,16 @@ void zx_di_Options_DEL_Option(struct zx_di_Options_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_Query_NUM_RequestedService) */
 
@@ -961,12 +1001,16 @@ void zx_di_Query_DEL_RequestedService(struct zx_di_Query_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_QueryResponse_NUM_Status) */
 
@@ -1096,7 +1140,11 @@ void zx_di_QueryResponse_DEL_Status(struct zx_di_QueryResponse_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_QueryResponse_NUM_EndpointReference) */
 
@@ -1226,12 +1274,16 @@ void zx_di_QueryResponse_DEL_EndpointReference(struct zx_di_QueryResponse_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_RequestedService_NUM_ServiceType) */
 
@@ -1361,7 +1413,11 @@ void zx_di_RequestedService_DEL_ServiceType(struct zx_di_RequestedService_s* x, 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_RequestedService_NUM_ProviderID) */
 
@@ -1491,7 +1547,11 @@ void zx_di_RequestedService_DEL_ProviderID(struct zx_di_RequestedService_s* x, i
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_RequestedService_NUM_Options) */
 
@@ -1621,7 +1681,11 @@ void zx_di_RequestedService_DEL_Options(struct zx_di_RequestedService_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_RequestedService_NUM_SecurityMechID) */
 
@@ -1751,7 +1815,11 @@ void zx_di_RequestedService_DEL_SecurityMechID(struct zx_di_RequestedService_s* 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_RequestedService_NUM_Framework) */
 
@@ -1881,7 +1949,11 @@ void zx_di_RequestedService_DEL_Framework(struct zx_di_RequestedService_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_RequestedService_NUM_Action) */
 
@@ -2011,6 +2083,8 @@ void zx_di_RequestedService_DEL_Action(struct zx_di_RequestedService_s* x, int n
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_di_RequestedService_GET_reqID) */
 struct zx_str* zx_di_RequestedService_GET_reqID(struct zx_di_RequestedService_s* x) { return x->reqID; }
 /* FUNC(zx_di_RequestedService_PUT_reqID) */
@@ -2025,6 +2099,8 @@ void zx_di_RequestedService_PUT_resultsType(struct zx_di_RequestedService_s* x, 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SecurityContext_NUM_SecurityMechID) */
 
@@ -2154,7 +2230,11 @@ void zx_di_SecurityContext_DEL_SecurityMechID(struct zx_di_SecurityContext_s* x,
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SecurityContext_NUM_Token) */
 
@@ -2284,12 +2364,16 @@ void zx_di_SecurityContext_DEL_Token(struct zx_di_SecurityContext_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_ServiceContext_NUM_ServiceType) */
 
@@ -2419,7 +2503,11 @@ void zx_di_ServiceContext_DEL_ServiceType(struct zx_di_ServiceContext_s* x, int 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_ServiceContext_NUM_Options) */
 
@@ -2549,7 +2637,11 @@ void zx_di_ServiceContext_DEL_Options(struct zx_di_ServiceContext_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_ServiceContext_NUM_EndpointContext) */
 
@@ -2679,12 +2771,16 @@ void zx_di_ServiceContext_DEL_EndpointContext(struct zx_di_ServiceContext_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMD_NUM_Abstract) */
 
@@ -2814,7 +2910,11 @@ void zx_di_SvcMD_DEL_Abstract(struct zx_di_SvcMD_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMD_NUM_ProviderID) */
 
@@ -2944,7 +3044,11 @@ void zx_di_SvcMD_DEL_ProviderID(struct zx_di_SvcMD_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMD_NUM_ServiceContext) */
 
@@ -3074,6 +3178,8 @@ void zx_di_SvcMD_DEL_ServiceContext(struct zx_di_SvcMD_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_di_SvcMD_GET_svcMDID) */
 struct zx_str* zx_di_SvcMD_GET_svcMDID(struct zx_di_SvcMD_s* x) { return x->svcMDID; }
 /* FUNC(zx_di_SvcMD_PUT_svcMDID) */
@@ -3084,6 +3190,8 @@ void zx_di_SvcMD_PUT_svcMDID(struct zx_di_SvcMD_s* x, struct zx_str* y) { x->svc
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationAdd_NUM_SvcMDID) */
 
@@ -3213,12 +3321,16 @@ void zx_di_SvcMDAssociationAdd_DEL_SvcMDID(struct zx_di_SvcMDAssociationAdd_s* x
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationAddResponse_NUM_Status) */
 
@@ -3348,12 +3460,16 @@ void zx_di_SvcMDAssociationAddResponse_DEL_Status(struct zx_di_SvcMDAssociationA
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationDelete_NUM_SvcMDID) */
 
@@ -3483,12 +3599,16 @@ void zx_di_SvcMDAssociationDelete_DEL_SvcMDID(struct zx_di_SvcMDAssociationDelet
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationDeleteResponse_NUM_Status) */
 
@@ -3618,12 +3738,16 @@ void zx_di_SvcMDAssociationDeleteResponse_DEL_Status(struct zx_di_SvcMDAssociati
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationQuery_NUM_SvcMDID) */
 
@@ -3753,12 +3877,16 @@ void zx_di_SvcMDAssociationQuery_DEL_SvcMDID(struct zx_di_SvcMDAssociationQuery_
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationQueryResponse_NUM_Status) */
 
@@ -3888,7 +4016,11 @@ void zx_di_SvcMDAssociationQueryResponse_DEL_Status(struct zx_di_SvcMDAssociatio
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDAssociationQueryResponse_NUM_SvcMDID) */
 
@@ -4018,12 +4150,16 @@ void zx_di_SvcMDAssociationQueryResponse_DEL_SvcMDID(struct zx_di_SvcMDAssociati
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDDelete_NUM_SvcMDID) */
 
@@ -4153,12 +4289,16 @@ void zx_di_SvcMDDelete_DEL_SvcMDID(struct zx_di_SvcMDDelete_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDDeleteResponse_NUM_Status) */
 
@@ -4288,12 +4428,16 @@ void zx_di_SvcMDDeleteResponse_DEL_Status(struct zx_di_SvcMDDeleteResponse_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDQuery_NUM_SvcMDID) */
 
@@ -4423,12 +4567,16 @@ void zx_di_SvcMDQuery_DEL_SvcMDID(struct zx_di_SvcMDQuery_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDQueryResponse_NUM_Status) */
 
@@ -4558,7 +4706,11 @@ void zx_di_SvcMDQueryResponse_DEL_Status(struct zx_di_SvcMDQueryResponse_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDQueryResponse_NUM_SvcMD) */
 
@@ -4688,12 +4840,16 @@ void zx_di_SvcMDQueryResponse_DEL_SvcMD(struct zx_di_SvcMDQueryResponse_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDRegister_NUM_SvcMD) */
 
@@ -4823,12 +4979,16 @@ void zx_di_SvcMDRegister_DEL_SvcMD(struct zx_di_SvcMDRegister_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDRegisterResponse_NUM_Status) */
 
@@ -4958,7 +5118,11 @@ void zx_di_SvcMDRegisterResponse_DEL_Status(struct zx_di_SvcMDRegisterResponse_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDRegisterResponse_NUM_SvcMDID) */
 
@@ -5088,7 +5252,11 @@ void zx_di_SvcMDRegisterResponse_DEL_SvcMDID(struct zx_di_SvcMDRegisterResponse_
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDRegisterResponse_NUM_Keys) */
 
@@ -5218,12 +5386,16 @@ void zx_di_SvcMDRegisterResponse_DEL_Keys(struct zx_di_SvcMDRegisterResponse_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDReplace_NUM_SvcMD) */
 
@@ -5353,12 +5525,16 @@ void zx_di_SvcMDReplace_DEL_SvcMD(struct zx_di_SvcMDReplace_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_di_SvcMDReplaceResponse_NUM_Status) */
 
@@ -5487,6 +5663,8 @@ void zx_di_SvcMDReplaceResponse_DEL_Status(struct zx_di_SvcMDReplaceResponse_s* 
   }
   y->gg.g.n = y->gg.g.n->n;
 }
+
+#endif
 
 
 

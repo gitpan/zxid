@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -31,6 +33,18 @@
 struct zx_str* zx_sbf_Framework_GET_version(struct zx_sbf_Framework_s* x) { return x->version; }
 /* FUNC(zx_sbf_Framework_PUT_version) */
 void zx_sbf_Framework_PUT_version(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->version = y; }
+/* FUNC(zx_sbf_Framework_GET_mustUnderstand) */
+struct zx_str* zx_sbf_Framework_GET_mustUnderstand(struct zx_sbf_Framework_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_sbf_Framework_PUT_mustUnderstand) */
+void zx_sbf_Framework_PUT_mustUnderstand(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_sbf_Framework_GET_actor) */
+struct zx_str* zx_sbf_Framework_GET_actor(struct zx_sbf_Framework_s* x) { return x->actor; }
+/* FUNC(zx_sbf_Framework_PUT_actor) */
+void zx_sbf_Framework_PUT_actor(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_sbf_Framework_GET_Id) */
+struct zx_str* zx_sbf_Framework_GET_Id(struct zx_sbf_Framework_s* x) { return x->Id; }
+/* FUNC(zx_sbf_Framework_PUT_Id) */
+void zx_sbf_Framework_PUT_Id(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->Id = y; }
 
 
 

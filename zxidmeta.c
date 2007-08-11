@@ -1,9 +1,11 @@
-/* zxidmeta.c  -  Handwritten functions for metadata and CoT handling
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+/* zxidmeta.c  -  Handwritten functions for metadata parsing and generation as well as CoT handling
+ * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxidmeta.c,v 1.16 2006/10/15 00:27:26 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxidmeta.c,v 1.31 2007/03/28 20:31:54 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  *
@@ -11,10 +13,10 @@
  *           http://curl.haxx.se/libcurl/
  */
 
-#include <pthread.h>
+//#include <pthread.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <netdb.h>
+//#include <netdb.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +25,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+//#include <sys/wait.h>
 
 #ifdef USE_OPENSSL
 #include <openssl/sha.h>
@@ -54,6 +56,7 @@
 #define ZXID_COT_DIR "cot/"
 #define ZXID_MAX_MD (64*1024)
 
+/* Called by: */
 size_t zxid_curl_write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
   int len = size*nmemb;
@@ -73,6 +76,7 @@ size_t zxid_curl_write_data(void *buffer, size_t size, size_t nmemb, void *userp
   return len;
 }
 
+/* Called by: */
 size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
   int len = size*nmemb;
@@ -85,6 +89,7 @@ size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
   return len;
 }
 
+/* Called by:  opt, zxid_get_meta_ss */
 struct zxid_entity* zxid_get_meta(struct zxid_conf* cf, char* url)
 {
   struct zxid_entity* ent;
@@ -97,10 +102,11 @@ struct zxid_entity* zxid_get_meta(struct zxid_conf* cf, char* url)
   rc.lim = md_buf + ZXID_MAX_MD;
   curl_easy_setopt(cf->curl, CURLOPT_WRITEDATA, &rc);
 #else
-  int fd = open_fd_from_path(cf->path, ZXID_COT_DIR, "test", O_CREAT | O_WRONLY | O_TRUNC, 0666);
+  /* TEST CODE (usually disabled) */
+  int fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "get_meta TEST", "%s" ZXID_COT_DIR "test", cf->path);
   if (fd == -1) {
-    perror("open");
-    ERR("Failed to open file(%s) for writing", url);
+    perror("open meta to write");
+    ERR("Failed to open file(%s) for writing metadata", url);
     return 0;
   }
   curl_easy_setopt(cf->curl, CURLOPT_WRITEDATA, fd);
@@ -138,14 +144,17 @@ struct zxid_entity* zxid_get_meta(struct zxid_conf* cf, char* url)
 #endif
 }
 
+/* Called by:  zxid_get_ent_ss */
 struct zxid_entity* zxid_get_meta_ss(struct zxid_conf* cf, struct zx_str* url)
 {
   return zxid_get_meta(cf, zx_str_to_c(cf->ctx, url));
 }
 
+/* Called by:  zxid_parse_meta x2 */
 static void zxid_process_keys(struct zxid_conf* cf, struct zxid_entity* ent,
-			      struct zx_md_KeyDescriptor_s* kd)
+			      struct zx_md_KeyDescriptor_s* kd, char* logkey)
 {
+  int len;
   char* pp;
   char* p;
   char* e;
@@ -153,23 +162,29 @@ static void zxid_process_keys(struct zxid_conf* cf, struct zxid_entity* ent,
 
   for (; kd; kd = (struct zx_md_KeyDescriptor_s*)kd->gg.g.n) {
     p = kd->KeyInfo->X509Data->X509Certificate->content->s;
-    e = p + kd->KeyInfo->X509Data->X509Certificate->content->len;
+    len = kd->KeyInfo->X509Data->X509Certificate->content->len;
+    e = p + len;
     pp = ZX_ALLOC(cf->ctx, SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(e-p));
     e = unbase64_raw(p, e, pp, zx_std_index_64);
     if (!d2i_X509(&x, (const unsigned char**)&pp, e-pp) || !x) {
-      ERR("DER decoding of X509 certificate failed. use(%.*s)", kd->use->len, kd->use->s);
+      ERR("DER decoding of X509 certificate for %s failed. use(%.*s)", logkey, kd->use->len, kd->use->s);
+      D("Extracted %s base64 form of cert(%.*s)", logkey, len, p);
       return;
     }
     if (!memcmp("signing", kd->use->s, kd->use->len)) {
       ent->sign_cert = x;
+      DD("Extracted %s sign cert(%.*s)", logkey, len, p);
     } else if (!memcmp("encryption", kd->use->s, kd->use->len)) {
       ent->enc_cert = x;
+      DD("Extracted %s enc cert(%.*s)", logkey, len, p);
     } else {
       ERR("Unknown key use(%.*s)", kd->use->len, kd->use->s);
+      D("Extracted %s cert(%.*s)", logkey, len, p);
     }
   }
 }
 
+/* Called by:  zxid_get_ent_from_file, zxid_get_meta */
 struct zxid_entity* zxid_parse_meta(struct zxid_conf* cf, char** md, char* lim)
 {
   struct zxid_entity* ent;
@@ -197,13 +212,13 @@ struct zxid_entity* zxid_parse_meta(struct zxid_conf* cf, char** md, char* lim)
     goto bad_md;
   ent->eid_len = ed->entityID->len;
   ent->eid = ed->entityID->s;
-  ent->sha1_name = ZX_ALLOC(cf->ctx, 28+1);
   sha1_safe_base64(ent->sha1_name, ent->eid_len, ent->eid);
-
+  ent->sha1_name[27] = 0;
+  
   if (ed->IDPSSODescriptor)
-    zxid_process_keys(cf, ent, ed->IDPSSODescriptor->KeyDescriptor);
+    zxid_process_keys(cf, ent, ed->IDPSSODescriptor->KeyDescriptor, "IDP SSO");
   if (ed->SPSSODescriptor)
-    zxid_process_keys(cf, ent, ed->SPSSODescriptor->KeyDescriptor);
+    zxid_process_keys(cf, ent, ed->SPSSODescriptor->KeyDescriptor, "SP SSO");
 
   return ent;
   
@@ -213,14 +228,14 @@ struct zxid_entity* zxid_parse_meta(struct zxid_conf* cf, char** md, char* lim)
   return 0;
 }
 
+/* Called by:  opt, zxid_get_ent_ss */
 int zxid_write_ent_to_cache(struct zxid_conf* cf, struct zxid_entity* ent)
 {
   struct zx_str* ss;
-  int fd = open_fd_from_path(cf->path, ZXID_COT_DIR, ent->sha1_name,
-			     O_CREAT | O_WRONLY | O_TRUNC, 0666);
+  int fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "write_ent_to_cache", "%s" ZXID_COT_DIR "%s", cf->path, ent->sha1_name);
   if (fd == -1) {
-    perror("open metadata for write");
-    ERR("Failed to open file for writing: sha1_name(%s)", ent->sha1_name);
+    perror("open metadata for writing metadata to cache");
+    ERR("Failed to open file for writing: sha1_name(%s) to metadata cache", ent->sha1_name);
     return 0;
   }
   
@@ -233,6 +248,7 @@ int zxid_write_ent_to_cache(struct zxid_conf* cf, struct zxid_entity* ent)
   return 1;
 }
 
+/* Called by:  main, zxid_get_ent_by_sha1_name, zxid_get_ent_from_cache */
 struct zxid_entity* zxid_get_ent_from_file(struct zxid_conf* cf, char* sha1_name)
 {
   int fd,n,got;
@@ -240,9 +256,9 @@ struct zxid_entity* zxid_get_ent_from_file(struct zxid_conf* cf, char* sha1_name
   char* p;
   struct zxid_entity* ent;
   
-  fd = open_fd_from_path(cf->path, ZXID_COT_DIR, sha1_name, O_RDONLY, 0);
+  fd = open_fd_from_path(O_RDONLY, 0, "get_ent_from_file", "%s" ZXID_COT_DIR "%s", cf->path, sha1_name);
   if (fd == -1) {
-    perror("open metadata");
+    perror("open metadata to read");
     D("No metadata file found for sha1_name(%s)", sha1_name);
     return 0;
   }
@@ -265,26 +281,29 @@ struct zxid_entity* zxid_get_ent_from_file(struct zxid_conf* cf, char* sha1_name
   }
   ent->n = cf->cot;
   cf->cot = ent;
-  D("GOT sha1_name(%s)", sha1_name);
+  D("GOT sha1_name(%s) eid(%.*s)", sha1_name, ent->eid_len, ent->eid);
   return ent;
 }
 
+/* Called by:  zxid_get_ent_ss x2 */
 struct zxid_entity* zxid_get_ent_from_cache(struct zxid_conf* cf, struct zx_str* eid)
 {
   struct zxid_entity* ent;
-  char sha1_name[28+1];
+  char sha1_name[28];
   for (ent = cf->cot; ent; ent = ent->n)  /* Check in memory cache. */
     if (eid->len == ent->eid_len && !memcmp(eid->s, ent->eid, eid->len))
       return ent;
   sha1_safe_base64(sha1_name, eid->len, eid->s);
+  sha1_name[27] = 0;
   return zxid_get_ent_from_file(cf, sha1_name);
 }
 
+/* Called by:  zxid_get_ent, zxid_idp_loc_raw, zxid_sp_sso_finalize */
 struct zxid_entity* zxid_get_ent_ss(struct zxid_conf* cf, struct zx_str* eid)
 {
   struct zxid_entity* ent;
   
-  D("get_ent: eid(%.*s)\n", eid->len, eid->s);
+  D("get_ent: eid(%.*s) path(%.*s) cf->magic=%x\n", eid->len, eid->s, cf->path_len, cf->path, cf->magic);
   if (cf->md_cache_first) {
     ent = zxid_get_ent_from_cache(cf, eid);
     if (ent)
@@ -312,6 +331,7 @@ struct zxid_entity* zxid_get_ent_ss(struct zxid_conf* cf, struct zx_str* eid)
   return 0;
 }
 
+/* Called by:  zxid_cdc_check, zxid_start_sso_url */
 struct zxid_entity* zxid_get_ent(struct zxid_conf* cf, char* eid)
 {
   struct zx_str ss;
@@ -322,6 +342,7 @@ struct zxid_entity* zxid_get_ent(struct zxid_conf* cf, char* eid)
   return zxid_get_ent_ss(cf, &ss);
 }
 
+/* Called by:  zxid_get_ent_by_succinct_id, zxid_load_cot_cache */
 struct zxid_entity* zxid_get_ent_by_sha1_name(struct zxid_conf* cf, char* sha1_name)
 {
   struct zxid_entity* ent;
@@ -332,12 +353,13 @@ struct zxid_entity* zxid_get_ent_by_sha1_name(struct zxid_conf* cf, char* sha1_n
   return zxid_get_ent_from_file(cf, sha1_name);
 }
 
+/* Called by:  zxid_sp_deref_art */
 struct zxid_entity* zxid_get_ent_by_succinct_id(struct zxid_conf* cf, char* raw_succinct_id)
 {
   struct zxid_entity* ent;
-  char sha1_name[28+1];
+  char sha1_name[28];
   char* p = base64_fancy_raw(raw_succinct_id, 20, sha1_name, safe_basis_64, 1<<31, 0, 0, '.');
-  *p = 0;
+  sha1_name[27] = 0;
   return zxid_get_ent_by_sha1_name(cf, sha1_name);
 }
 
@@ -347,6 +369,7 @@ struct zxid_entity* zxid_get_ent_by_succinct_id(struct zxid_conf* cf, char* raw_
  * available entities, as may be the case  when rendering login
  * buttons for all IdPs in a user interface. */
 
+/* Called by:  main, zxid_idp_list_cf, zxid_mk_idp_list */
 struct zxid_entity* zxid_load_cot_cache(struct zxid_conf* cf)
 {
   struct dirent* de;
@@ -363,7 +386,7 @@ struct zxid_entity* zxid_load_cot_cache(struct zxid_conf* cf)
 
   dir = opendir(buf);
   if (!dir) {
-    perror("opendir for /var/zxid/cot (or other if configured)");
+    perror("opendir for /var/zxid/cot (or other if configured) for loading cot cache");
     D("failed path(%s)", buf);
     return 0;
   }
@@ -378,6 +401,9 @@ struct zxid_entity* zxid_load_cot_cache(struct zxid_conf* cf)
 
 /* ============== Our Metadata ============== */
 
+#if 0
+/* In the metadata the PEM start/end cert markers are NOT used. */
+/* Called by:  zxid_sp_sso_desc x2 */
 struct zx_md_KeyDescriptor_s* zxid_key_desc(struct zxid_conf* cf, char* use, X509* x)
 {
   int len;
@@ -417,9 +443,44 @@ struct zx_md_KeyDescriptor_s* zxid_key_desc(struct zxid_conf* cf, char* use, X50
 #endif
   return kd;
 }
+#endif
 
+/* Called by:  zxid_sp_sso_desc x2 */
+struct zx_md_KeyDescriptor_s* zxid_key_desc(struct zxid_conf* cf, char* use, X509* x)
+{
+  int len;
+  char* dd;
+  char* d;
+  char* pp;
+  char* p;
+  struct zx_md_KeyDescriptor_s* kd = zx_NEW_md_KeyDescriptor(cf->ctx);
+  kd->use = zx_ref_str(cf->ctx, use);
+  kd->KeyInfo = zx_NEW_ds_KeyInfo(cf->ctx);
+  kd->KeyInfo->X509Data = zx_NEW_ds_X509Data(cf->ctx);
+
+#ifdef USE_OPENSSL
+  /* Build PEM encoding (which is base64 of the DER encoding + header and footer) */
+  
+  len = i2d_X509(x, 0);  /* Length of the DER encoding */
+  if (len <= 0) {
+    ERR("DER encoding certificate failed: %d", len);
+  } else {
+    dd = d = ZX_ALLOC(cf->ctx, len);
+    i2d_X509(x, (unsigned char**)&d);  /* DER encoding of the cert */
+    pp = p = ZX_ALLOC(cf->ctx, (len+4) * 4 / 3 + (len/64) + 6);    
+    p = base64_fancy_raw(dd, len, p, std_basis_64, 64, 1, "\n", '=');
+    *p = 0;
+    kd->KeyInfo->X509Data->X509Certificate = zx_ref_len_simple_elem(cf->ctx, p-pp, pp);
+  }
+#else
+  ERR("This copy of zxid was compiled to NOT use OpenSSL. Generating KeyInfo is not supported. Add -DUSE_OPENSSL and recompile. %d", 0);
+#endif
+  return kd;
+}
+
+/* Called by:  zxid_sp_sso_desc x2 */
 struct zx_md_SingleLogoutService_s* zxid_slo_desc(struct zxid_conf* cf,
-						    char* binding, char* loc, char* resp_loc)
+						  char* binding, char* loc, char* resp_loc)
 {
   struct zx_md_SingleLogoutService_s* d = zx_NEW_md_SingleLogoutService(cf->ctx);
   d->Binding = zx_ref_str(cf->ctx, binding);
@@ -429,6 +490,7 @@ struct zx_md_SingleLogoutService_s* zxid_slo_desc(struct zxid_conf* cf,
   return d;
 }
 
+/* Called by:  zxid_sp_sso_desc x2 */
 struct zx_md_ManageNameIDService_s* zxid_nireg_desc(struct zxid_conf* cf,
 						      char* binding, char* loc, char* resp_loc)
 {
@@ -440,6 +502,7 @@ struct zx_md_ManageNameIDService_s* zxid_nireg_desc(struct zxid_conf* cf,
   return d;
 }
 
+/* Called by:  zxid_sp_sso_desc x4 */
 struct zx_md_AssertionConsumerService_s* zxid_ac_desc(struct zxid_conf* cf,
 							char* binding, char* loc, char* ix)
 {
@@ -450,67 +513,114 @@ struct zx_md_AssertionConsumerService_s* zxid_ac_desc(struct zxid_conf* cf,
   return d;
 }
 
+/* Called by:  zxid_sp_meta */
 struct zx_md_SPSSODescriptor_s* zxid_sp_sso_desc(struct zxid_conf* cf)
 {
+  struct zx_md_AssertionConsumerService_s* za;
+  struct zx_elem_s* ze;
+  struct zx_md_ManageNameIDService_s* z3;
+  struct zx_md_SingleLogoutService_s* z2;
+  struct zx_md_KeyDescriptor_s* zk;
   struct zx_md_SPSSODescriptor_s* sp_ssod = zx_NEW_md_SPSSODescriptor(cf->ctx);
-  sp_ssod->AuthnRequestsSigned        = zx_ref_str(cf->ctx, cf->authn_req_sign);
-  sp_ssod->WantAssertionsSigned       = zx_ref_str(cf->ctx, cf->want_sso_a7n_signed);
+  sp_ssod->AuthnRequestsSigned        = zx_ref_str(cf->ctx, cf->authn_req_sign?"1":"0");
+  sp_ssod->WantAssertionsSigned       = zx_ref_str(cf->ctx, cf->want_sso_a7n_signed?"1":"0");
   sp_ssod->errorURL                   = zx_strf(cf->ctx, "%s?o=E", cf->url);
   sp_ssod->protocolSupportEnumeration = zx_ref_str(cf->ctx, SAML2_PROTO);
 
-  zx_md_SPSSODescriptor_PUSH_KeyDescriptor(sp_ssod,
-					zxid_key_desc(cf, "encryption", cf->enc_cert));
-  zx_md_SPSSODescriptor_PUSH_KeyDescriptor(sp_ssod,
-					zxid_key_desc(cf, "signing", cf->sign_cert));
+  if (!cf->enc_cert)
+    cf->enc_cert = zxid_read_cert(cf, "enc-nopw-cert.pem");
 
-  zx_md_SPSSODescriptor_PUSH_SingleLogoutService(sp_ssod,
-     zxid_slo_desc(cf, SAML2_REDIR, "?o=K", "?o=K"));
-  zx_md_SPSSODescriptor_PUSH_SingleLogoutService(sp_ssod,
-     zxid_slo_desc(cf, SAML2_SOAP, "?o=S", 0));
+  if (!cf->sign_cert)
+    cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
 
-  zx_md_SPSSODescriptor_PUSH_ManageNameIDService(sp_ssod,
-     zxid_nireg_desc(cf, SAML2_REDIR, "?o=I", "?o=I"));
-  zx_md_SPSSODescriptor_PUSH_ManageNameIDService(sp_ssod,
-     zxid_nireg_desc(cf, SAML2_SOAP, "?o=S", 0));
+  if (!cf->enc_cert || !cf->sign_cert) {
+    ERR("Signing or encryption certificate not found (or both are corrupt). %p", cf->enc_cert);
+  } else {
+    zk = zxid_key_desc(cf, "encryption", cf->enc_cert);
+    zk->gg.g.n = &sp_ssod->KeyDescriptor->gg.g;
+    sp_ssod->KeyDescriptor = zk;
+    
+    zk = zxid_key_desc(cf, "signing", cf->enc_cert);
+    zk->gg.g.n = &sp_ssod->KeyDescriptor->gg.g;
+    sp_ssod->KeyDescriptor = zk;
+  }
 
-  zx_md_SPSSODescriptor_PUSH_NameIDFormat(sp_ssod,
-     zx_ref_simple_elem(cf->ctx, SAML2_PERSISTENT_NID_FMT));
-  zx_md_SPSSODescriptor_PUSH_NameIDFormat(sp_ssod,
-     zx_ref_simple_elem(cf->ctx, SAML2_TRANSIENT_NID_FMT));
+  z2 = zxid_slo_desc(cf, SAML2_REDIR, "?o=K", "?o=K");
+  z2->gg.g.n = &sp_ssod->SingleLogoutService->gg.g;
+  sp_ssod->SingleLogoutService = z2;
+
+  z2 = zxid_slo_desc(cf, SAML2_SOAP, "?o=S", 0);
+  z2->gg.g.n = &sp_ssod->SingleLogoutService->gg.g;
+  sp_ssod->SingleLogoutService = z2;
+
+  z3 = zxid_nireg_desc(cf, SAML2_REDIR, "?o=I", "?o=I");
+  z3->gg.g.n = &sp_ssod->ManageNameIDService->gg.g;
+  sp_ssod->ManageNameIDService = z3;
+
+  z3 = zxid_nireg_desc(cf, SAML2_SOAP, "?o=S", 0);
+  z3->gg.g.n = &sp_ssod->ManageNameIDService->gg.g;
+  sp_ssod->ManageNameIDService = z3;
+
+  ze = zx_ref_simple_elem(cf->ctx, SAML2_PERSISTENT_NID_FMT);
+  ze->g.n = &sp_ssod->NameIDFormat->g;
+  sp_ssod->NameIDFormat = ze;
+
+  ze = zx_ref_simple_elem(cf->ctx, SAML2_TRANSIENT_NID_FMT);
+  ze->g.n = &sp_ssod->NameIDFormat->g;
+  sp_ssod->NameIDFormat = ze;
 
   /* N.B. The index values should not be changed. They are used in
    * AuthnReq to choose profile using AssertionConsumerServiceIndex */
-  zx_md_SPSSODescriptor_PUSH_AssertionConsumerService(sp_ssod,
-     zxid_ac_desc(cf, SAML2_PAOS, "?o=A", "4"));
-  zx_md_SPSSODescriptor_PUSH_AssertionConsumerService(sp_ssod,
-     zxid_ac_desc(cf, SAML2_SOAP, "?o=S", "3"));
-  zx_md_SPSSODescriptor_PUSH_AssertionConsumerService(sp_ssod,
-     zxid_ac_desc(cf, SAML2_POST, "?o=P", "2"));
-  zx_md_SPSSODescriptor_PUSH_AssertionConsumerService(sp_ssod,
-     zxid_ac_desc(cf, SAML2_ART, "", "1"));
+
+  za = zxid_ac_desc(cf, SAML2_PAOS, "?o=P", "4");
+  za->gg.g.n = &sp_ssod->AssertionConsumerService->gg.g;
+  sp_ssod->AssertionConsumerService = za;
+
+  za = zxid_ac_desc(cf, SAML2_SOAP, "?o=S", "3");
+  za->gg.g.n = &sp_ssod->AssertionConsumerService->gg.g;
+  sp_ssod->AssertionConsumerService = za;
+
+  za = zxid_ac_desc(cf, SAML2_POST, "?o=P", "2");
+  za->gg.g.n = &sp_ssod->AssertionConsumerService->gg.g;
+  sp_ssod->AssertionConsumerService = za;
+
+  za = zxid_ac_desc(cf, SAML2_ART, "", "1");
+  za->gg.g.n = &sp_ssod->AssertionConsumerService->gg.g;
+  sp_ssod->AssertionConsumerService = za;
   
   return sp_ssod;
 }
 
+/* Called by:  main, zxid_idp_select, zxid_mk_ecp_Request_hdr, zxid_my_issuer, zxid_sp_meta, zxid_sp_sso_finalize */
 struct zx_str* zxid_my_entity_id(struct zxid_conf* cf)
 {
+  D("my_entity_id url(%s)", cf->url);
   return zx_strf(cf->ctx, "%s?o=B", cf->url);
 }
 
+/* Called by: */
 struct zx_str* zxid_my_cdc_url(struct zxid_conf* cf)
 {
   return zx_strf(cf->ctx, "%s?o=C", cf->cdc_url);
 }
 
-struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf)
+/* Called by:  zxid_my_issuer */
+struct zx_sa_Issuer_s* zxid_issuer(struct zxid_conf* cf, struct zx_str* nameid, char* affiliation)
 {
   struct zx_sa_Issuer_s* is = zx_NEW_sa_Issuer(cf->ctx);
-  is->gg.content = zxid_my_entity_id(cf);
-  if (cf->affiliation && cf->affiliation[0])
-    is->NameQualifier = zx_ref_str(cf->ctx, cf->affiliation);
+  is->gg.content = nameid;
+  if (affiliation && affiliation[0])
+    is->NameQualifier = zx_ref_str(cf->ctx, affiliation);
+  /*is->Format = zx_ref_str(cf->ctx, );*/
   return is;
 }
 
+/* Called by:  zxid_mk_art_deref x2, zxid_mk_authn_req, zxid_mk_ecp_Request_hdr, zxid_mk_logout x2, zxid_mk_logout_resp x2, zxid_mk_nireg, zxid_mk_nireg_resp */
+struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf) {
+  return zxid_issuer(cf, zxid_my_entity_id(cf), cf->affiliation);
+}
+
+/* Called by:  zxid_send_sp_meta, zxid_simple_cf */
 struct zx_str* zxid_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   struct zx_md_EntityDescriptor_s* ed;
@@ -522,6 +632,7 @@ struct zx_str* zxid_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
   return zx_EASY_ENC_SO_md_EntityDescriptor(cf->ctx, ed);
 }
 
+/* Called by:  main, opt */
 int zxid_send_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   struct zx_str* ss = zxid_sp_meta(cf, cgi);

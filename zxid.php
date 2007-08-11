@@ -1,13 +1,16 @@
 <?
 # zxid/zxid.php  -  Implement SAML SP role in PHP using zxid extension
 #
-# Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+# Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+# Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
-# Distribution prohibited unless authorized in writing. See file COPYING.
-# $Id: zxid.php,v 1.4 2006/09/18 06:35:22 sampo Exp $
+# Distribution prohibited unless authorized in writing.
+# Licensed under Apache License 2.0, see file COPYING.
+# $Id: zxid.php,v 1.7 2007/03/06 07:39:14 sampo Exp $
 # 31.8.2006, created --Sampo
 # 15.9.2006, enhanced to actually support SSO --Sampo
+# 5.3.2007, double checked and fixed to work against 0.16 --Sampo
 
 dl("php_zxid.so");
 
@@ -40,8 +43,9 @@ function mgmt_screen($cf, $cgi, $ses, $op)
         $msg = "Local logout Ok. Session terminated.";
 	return 0;  # Simply abandon local session. Falls thru to login screen.
     case 'r':
-	zxid_sp_slo_redir($cf, $cgi, $ses);
+	$loc = zxid_sp_slo_location($cf, $cgi, $ses);
 	zxid_del_ses($cf, $ses);
+        header($loc);
 	return 1;  # Redirect already happened. Do not show login screen.
     case 's':
 	zxid_sp_slo_soap($cf, $cgi, $ses);
@@ -49,7 +53,8 @@ function mgmt_screen($cf, $cgi, $ses, $op)
 	$msg = "SP Initiated logout (SOAP). Session terminated.";
 	return 0;  # Falls thru to login screen.
     case 't':
-	zxid_sp_nireg_redir($cf, $cgi, $ses, 0);
+	$loc = zxid_sp_nireg_location($cf, $cgi, $ses, 0);
+        header($loc);
 	return 1;  # Redirect already happened. Do not show login screen.
     case 'u':
 	zxid_sp_nireg_soap($cf, $cgi, $ses, 0);
@@ -111,24 +116,22 @@ error_log("Not logged-in case: op($op) ses($ses)", 0);
 
 switch ($op) {
 case 'M':       # Invoke LECP or redirect to CDC reader.
-    if (zxid_lecp_check($cf, $cgi)) exit;
+    #if (zxid_lecp_check($cf, $cgi)) exit;
     header("Location: $cdc_url?o=C");
     exit;
 case 'C':  # CDC Read: Common Domain Cookie Reader
     zxid_cdc_read($cf, $cgi);
     exit;
 case 'E':  # Return from CDC read, or start here to by-pass CDC read.
-    if (zxid_lecp_check($cf, $cgi)) exit;
+    #if (zxid_lecp_check($cf, $cgi)) exit;
     if (zxid_cdc_check($cf, $cgi)) exit;
     break;
 case 'L':
     error_log("Start login", 0);
-    $url = zxid_start_sso_url($cf, $cgi);
-    if ($url) {
-	#$url_len = zx_str_s_len_get($url);
-	#$url = substr(zx_str_s_s_get($url), 0, $url_len);
-	error_log("login redir($url)", 0);
-	header("Location: $url");
+    $loc = zxid_start_sso_location($cf, $cgi);
+    if ($loc) {
+	error_log("login redir($loc)", 0);
+	header($loc);
 	exit;
     }
     error_log("Login trouble", 0);
@@ -178,7 +181,7 @@ the Entity ID in order to fetch the metadata using the well known
 location method. You will need to ask the adminstrator of the IdP to
 tell you what the EntityID is.</i>
 
-<p>IdP EntityID URL <input name=e size=100>
+<p>IdP EntityID URL <input name=e size=60>
 <input type=submit name=l1 value=" Login (SAML20:Artifact) ">
 <input type=submit name=l2 value=" Login (SAML20:POST) ">
 <?

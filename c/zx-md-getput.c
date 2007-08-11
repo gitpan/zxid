@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -37,6 +39,8 @@ void zx_md_AdditionalMetadataLocation_PUT_namespace(struct zx_md_AdditionalMetad
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AffiliationDescriptor_NUM_Signature) */
 
@@ -166,7 +170,11 @@ void zx_md_AffiliationDescriptor_DEL_Signature(struct zx_md_AffiliationDescripto
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AffiliationDescriptor_NUM_Extensions) */
 
@@ -296,7 +304,11 @@ void zx_md_AffiliationDescriptor_DEL_Extensions(struct zx_md_AffiliationDescript
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AffiliationDescriptor_NUM_AffiliateMember) */
 
@@ -426,7 +438,11 @@ void zx_md_AffiliationDescriptor_DEL_AffiliateMember(struct zx_md_AffiliationDes
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AffiliationDescriptor_NUM_KeyDescriptor) */
 
@@ -556,22 +572,24 @@ void zx_md_AffiliationDescriptor_DEL_KeyDescriptor(struct zx_md_AffiliationDescr
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_md_AffiliationDescriptor_GET_ID) */
-struct zx_str* zx_md_AffiliationDescriptor_GET_ID(struct zx_md_AffiliationDescriptor_s* x) { return x->ID; }
-/* FUNC(zx_md_AffiliationDescriptor_PUT_ID) */
-void zx_md_AffiliationDescriptor_PUT_ID(struct zx_md_AffiliationDescriptor_s* x, struct zx_str* y) { x->ID = y; }
+#endif
+
 /* FUNC(zx_md_AffiliationDescriptor_GET_affiliationOwnerID) */
 struct zx_str* zx_md_AffiliationDescriptor_GET_affiliationOwnerID(struct zx_md_AffiliationDescriptor_s* x) { return x->affiliationOwnerID; }
 /* FUNC(zx_md_AffiliationDescriptor_PUT_affiliationOwnerID) */
 void zx_md_AffiliationDescriptor_PUT_affiliationOwnerID(struct zx_md_AffiliationDescriptor_s* x, struct zx_str* y) { x->affiliationOwnerID = y; }
-/* FUNC(zx_md_AffiliationDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_AffiliationDescriptor_GET_cacheDuration(struct zx_md_AffiliationDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_AffiliationDescriptor_PUT_cacheDuration) */
-void zx_md_AffiliationDescriptor_PUT_cacheDuration(struct zx_md_AffiliationDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
 /* FUNC(zx_md_AffiliationDescriptor_GET_validUntil) */
 struct zx_str* zx_md_AffiliationDescriptor_GET_validUntil(struct zx_md_AffiliationDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_AffiliationDescriptor_PUT_validUntil) */
 void zx_md_AffiliationDescriptor_PUT_validUntil(struct zx_md_AffiliationDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_AffiliationDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_AffiliationDescriptor_GET_cacheDuration(struct zx_md_AffiliationDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_AffiliationDescriptor_PUT_cacheDuration) */
+void zx_md_AffiliationDescriptor_PUT_cacheDuration(struct zx_md_AffiliationDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_AffiliationDescriptor_GET_ID) */
+struct zx_str* zx_md_AffiliationDescriptor_GET_ID(struct zx_md_AffiliationDescriptor_s* x) { return x->ID; }
+/* FUNC(zx_md_AffiliationDescriptor_PUT_ID) */
+void zx_md_AffiliationDescriptor_PUT_ID(struct zx_md_AffiliationDescriptor_s* x, struct zx_str* y) { x->ID = y; }
 
 
 
@@ -653,6 +671,8 @@ void zx_md_AssertionIDRequestService_PUT_isDefault(struct zx_md_AssertionIDReque
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_Signature) */
 
@@ -782,7 +802,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_Signature(struct zx_md_AttributeAuth
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_Extensions) */
 
@@ -912,7 +936,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_Extensions(struct zx_md_AttributeAut
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_KeyDescriptor) */
 
@@ -1042,7 +1070,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_KeyDescriptor(struct zx_md_Attribute
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_Organization) */
 
@@ -1172,7 +1204,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_Organization(struct zx_md_AttributeA
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_ContactPerson) */
 
@@ -1302,7 +1338,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_ContactPerson(struct zx_md_Attribute
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_AttributeService) */
 
@@ -1432,7 +1472,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_AttributeService(struct zx_md_Attrib
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_AssertionIDRequestService) */
 
@@ -1562,7 +1606,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_AssertionIDRequestService(struct zx_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_NameIDFormat) */
 
@@ -1692,7 +1740,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_NameIDFormat(struct zx_md_AttributeA
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_AttributeProfile) */
 
@@ -1822,7 +1874,11 @@ void zx_md_AttributeAuthorityDescriptor_DEL_AttributeProfile(struct zx_md_Attrib
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeAuthorityDescriptor_NUM_Attribute) */
 
@@ -1952,32 +2008,36 @@ void zx_md_AttributeAuthorityDescriptor_DEL_Attribute(struct zx_md_AttributeAuth
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_AttributeAuthorityDescriptor_GET_ID) */
 struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_ID(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_ID) */
 void zx_md_AttributeAuthorityDescriptor_PUT_ID(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_AttributeAuthorityDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_cacheDuration(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_cacheDuration) */
-void zx_md_AttributeAuthorityDescriptor_PUT_cacheDuration(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_AttributeAuthorityDescriptor_GET_errorURL) */
-struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_errorURL(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->errorURL; }
-/* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_errorURL) */
-void zx_md_AttributeAuthorityDescriptor_PUT_errorURL(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
-/* FUNC(zx_md_AttributeAuthorityDescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_protocolSupportEnumeration(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_protocolSupportEnumeration) */
-void zx_md_AttributeAuthorityDescriptor_PUT_protocolSupportEnumeration(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
 /* FUNC(zx_md_AttributeAuthorityDescriptor_GET_validUntil) */
 struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_validUntil(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_validUntil) */
 void zx_md_AttributeAuthorityDescriptor_PUT_validUntil(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_AttributeAuthorityDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_cacheDuration(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_cacheDuration) */
+void zx_md_AttributeAuthorityDescriptor_PUT_cacheDuration(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_AttributeAuthorityDescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_protocolSupportEnumeration(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_protocolSupportEnumeration) */
+void zx_md_AttributeAuthorityDescriptor_PUT_protocolSupportEnumeration(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_md_AttributeAuthorityDescriptor_GET_errorURL) */
+struct zx_str* zx_md_AttributeAuthorityDescriptor_GET_errorURL(struct zx_md_AttributeAuthorityDescriptor_s* x) { return x->errorURL; }
+/* FUNC(zx_md_AttributeAuthorityDescriptor_PUT_errorURL) */
+void zx_md_AttributeAuthorityDescriptor_PUT_errorURL(struct zx_md_AttributeAuthorityDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeConsumingService_NUM_ServiceName) */
 
@@ -2107,7 +2167,11 @@ void zx_md_AttributeConsumingService_DEL_ServiceName(struct zx_md_AttributeConsu
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeConsumingService_NUM_ServiceDescription) */
 
@@ -2237,7 +2301,11 @@ void zx_md_AttributeConsumingService_DEL_ServiceDescription(struct zx_md_Attribu
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AttributeConsumingService_NUM_RequestedAttribute) */
 
@@ -2367,6 +2435,8 @@ void zx_md_AttributeConsumingService_DEL_RequestedAttribute(struct zx_md_Attribu
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_AttributeConsumingService_GET_index) */
 struct zx_str* zx_md_AttributeConsumingService_GET_index(struct zx_md_AttributeConsumingService_s* x) { return x->index; }
 /* FUNC(zx_md_AttributeConsumingService_PUT_index) */
@@ -2406,6 +2476,8 @@ void zx_md_AttributeService_PUT_isDefault(struct zx_md_AttributeService_s* x, st
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_Signature) */
 
@@ -2535,7 +2607,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_Signature(struct zx_md_AuthnAuthorityDes
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_Extensions) */
 
@@ -2665,7 +2741,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_Extensions(struct zx_md_AuthnAuthorityDe
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_KeyDescriptor) */
 
@@ -2795,7 +2875,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_KeyDescriptor(struct zx_md_AuthnAuthorit
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_Organization) */
 
@@ -2925,7 +3009,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_Organization(struct zx_md_AuthnAuthority
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_ContactPerson) */
 
@@ -3055,7 +3143,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_ContactPerson(struct zx_md_AuthnAuthorit
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_AuthnQueryService) */
 
@@ -3185,7 +3277,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_AuthnQueryService(struct zx_md_AuthnAuth
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_AssertionIDRequestService) */
 
@@ -3315,7 +3411,11 @@ void zx_md_AuthnAuthorityDescriptor_DEL_AssertionIDRequestService(struct zx_md_A
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_AuthnAuthorityDescriptor_NUM_NameIDFormat) */
 
@@ -3445,26 +3545,28 @@ void zx_md_AuthnAuthorityDescriptor_DEL_NameIDFormat(struct zx_md_AuthnAuthority
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_AuthnAuthorityDescriptor_GET_ID) */
 struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_ID(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_ID) */
 void zx_md_AuthnAuthorityDescriptor_PUT_ID(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_AuthnAuthorityDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_cacheDuration(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_cacheDuration) */
-void zx_md_AuthnAuthorityDescriptor_PUT_cacheDuration(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_AuthnAuthorityDescriptor_GET_errorURL) */
-struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_errorURL(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->errorURL; }
-/* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_errorURL) */
-void zx_md_AuthnAuthorityDescriptor_PUT_errorURL(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
-/* FUNC(zx_md_AuthnAuthorityDescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_protocolSupportEnumeration(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_protocolSupportEnumeration) */
-void zx_md_AuthnAuthorityDescriptor_PUT_protocolSupportEnumeration(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
 /* FUNC(zx_md_AuthnAuthorityDescriptor_GET_validUntil) */
 struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_validUntil(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_validUntil) */
 void zx_md_AuthnAuthorityDescriptor_PUT_validUntil(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_AuthnAuthorityDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_cacheDuration(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_cacheDuration) */
+void zx_md_AuthnAuthorityDescriptor_PUT_cacheDuration(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_AuthnAuthorityDescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_protocolSupportEnumeration(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_protocolSupportEnumeration) */
+void zx_md_AuthnAuthorityDescriptor_PUT_protocolSupportEnumeration(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_md_AuthnAuthorityDescriptor_GET_errorURL) */
+struct zx_str* zx_md_AuthnAuthorityDescriptor_GET_errorURL(struct zx_md_AuthnAuthorityDescriptor_s* x) { return x->errorURL; }
+/* FUNC(zx_md_AuthnAuthorityDescriptor_PUT_errorURL) */
+void zx_md_AuthnAuthorityDescriptor_PUT_errorURL(struct zx_md_AuthnAuthorityDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
 
 
 
@@ -3521,6 +3623,8 @@ void zx_md_AuthzService_PUT_isDefault(struct zx_md_AuthzService_s* x, struct zx_
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_ContactPerson_NUM_Extensions) */
 
@@ -3650,7 +3754,11 @@ void zx_md_ContactPerson_DEL_Extensions(struct zx_md_ContactPerson_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_ContactPerson_NUM_Company) */
 
@@ -3780,7 +3888,11 @@ void zx_md_ContactPerson_DEL_Company(struct zx_md_ContactPerson_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_ContactPerson_NUM_GivenName) */
 
@@ -3910,7 +4022,11 @@ void zx_md_ContactPerson_DEL_GivenName(struct zx_md_ContactPerson_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_ContactPerson_NUM_SurName) */
 
@@ -4040,7 +4156,11 @@ void zx_md_ContactPerson_DEL_SurName(struct zx_md_ContactPerson_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_ContactPerson_NUM_EmailAddress) */
 
@@ -4170,7 +4290,11 @@ void zx_md_ContactPerson_DEL_EmailAddress(struct zx_md_ContactPerson_s* x, int n
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_ContactPerson_NUM_TelephoneNumber) */
 
@@ -4300,6 +4424,8 @@ void zx_md_ContactPerson_DEL_TelephoneNumber(struct zx_md_ContactPerson_s* x, in
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_ContactPerson_GET_contactType) */
 struct zx_str* zx_md_ContactPerson_GET_contactType(struct zx_md_ContactPerson_s* x) { return x->contactType; }
 /* FUNC(zx_md_ContactPerson_PUT_contactType) */
@@ -4310,6 +4436,8 @@ void zx_md_ContactPerson_PUT_contactType(struct zx_md_ContactPerson_s* x, struct
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EncryptionMethod_NUM_KeySize) */
 
@@ -4439,7 +4567,11 @@ void zx_md_EncryptionMethod_DEL_KeySize(struct zx_md_EncryptionMethod_s* x, int 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EncryptionMethod_NUM_OAEPparams) */
 
@@ -4569,6 +4701,8 @@ void zx_md_EncryptionMethod_DEL_OAEPparams(struct zx_md_EncryptionMethod_s* x, i
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_EncryptionMethod_GET_Algorithm) */
 struct zx_str* zx_md_EncryptionMethod_GET_Algorithm(struct zx_md_EncryptionMethod_s* x) { return x->Algorithm; }
 /* FUNC(zx_md_EncryptionMethod_PUT_Algorithm) */
@@ -4579,6 +4713,8 @@ void zx_md_EncryptionMethod_PUT_Algorithm(struct zx_md_EncryptionMethod_s* x, st
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntitiesDescriptor_NUM_Signature) */
 
@@ -4708,7 +4844,11 @@ void zx_md_EntitiesDescriptor_DEL_Signature(struct zx_md_EntitiesDescriptor_s* x
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntitiesDescriptor_NUM_Extensions) */
 
@@ -4838,7 +4978,11 @@ void zx_md_EntitiesDescriptor_DEL_Extensions(struct zx_md_EntitiesDescriptor_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntitiesDescriptor_NUM_EntityDescriptor) */
 
@@ -4968,7 +5112,11 @@ void zx_md_EntitiesDescriptor_DEL_EntityDescriptor(struct zx_md_EntitiesDescript
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntitiesDescriptor_NUM_EntitiesDescriptor) */
 
@@ -5098,6 +5246,16 @@ void zx_md_EntitiesDescriptor_DEL_EntitiesDescriptor(struct zx_md_EntitiesDescri
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
+/* FUNC(zx_md_EntitiesDescriptor_GET_validUntil) */
+struct zx_str* zx_md_EntitiesDescriptor_GET_validUntil(struct zx_md_EntitiesDescriptor_s* x) { return x->validUntil; }
+/* FUNC(zx_md_EntitiesDescriptor_PUT_validUntil) */
+void zx_md_EntitiesDescriptor_PUT_validUntil(struct zx_md_EntitiesDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_EntitiesDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_EntitiesDescriptor_GET_cacheDuration(struct zx_md_EntitiesDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_EntitiesDescriptor_PUT_cacheDuration) */
+void zx_md_EntitiesDescriptor_PUT_cacheDuration(struct zx_md_EntitiesDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
 /* FUNC(zx_md_EntitiesDescriptor_GET_ID) */
 struct zx_str* zx_md_EntitiesDescriptor_GET_ID(struct zx_md_EntitiesDescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_EntitiesDescriptor_PUT_ID) */
@@ -5106,20 +5264,14 @@ void zx_md_EntitiesDescriptor_PUT_ID(struct zx_md_EntitiesDescriptor_s* x, struc
 struct zx_str* zx_md_EntitiesDescriptor_GET_Name(struct zx_md_EntitiesDescriptor_s* x) { return x->Name; }
 /* FUNC(zx_md_EntitiesDescriptor_PUT_Name) */
 void zx_md_EntitiesDescriptor_PUT_Name(struct zx_md_EntitiesDescriptor_s* x, struct zx_str* y) { x->Name = y; }
-/* FUNC(zx_md_EntitiesDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_EntitiesDescriptor_GET_cacheDuration(struct zx_md_EntitiesDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_EntitiesDescriptor_PUT_cacheDuration) */
-void zx_md_EntitiesDescriptor_PUT_cacheDuration(struct zx_md_EntitiesDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_EntitiesDescriptor_GET_validUntil) */
-struct zx_str* zx_md_EntitiesDescriptor_GET_validUntil(struct zx_md_EntitiesDescriptor_s* x) { return x->validUntil; }
-/* FUNC(zx_md_EntitiesDescriptor_PUT_validUntil) */
-void zx_md_EntitiesDescriptor_PUT_validUntil(struct zx_md_EntitiesDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_Signature) */
 
@@ -5249,7 +5401,11 @@ void zx_md_EntityDescriptor_DEL_Signature(struct zx_md_EntityDescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_Extensions) */
 
@@ -5379,7 +5535,11 @@ void zx_md_EntityDescriptor_DEL_Extensions(struct zx_md_EntityDescriptor_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_RoleDescriptor) */
 
@@ -5509,7 +5669,11 @@ void zx_md_EntityDescriptor_DEL_RoleDescriptor(struct zx_md_EntityDescriptor_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_IDPSSODescriptor) */
 
@@ -5639,7 +5803,11 @@ void zx_md_EntityDescriptor_DEL_IDPSSODescriptor(struct zx_md_EntityDescriptor_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_SPSSODescriptor) */
 
@@ -5769,7 +5937,11 @@ void zx_md_EntityDescriptor_DEL_SPSSODescriptor(struct zx_md_EntityDescriptor_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_AuthnAuthorityDescriptor) */
 
@@ -5899,7 +6071,11 @@ void zx_md_EntityDescriptor_DEL_AuthnAuthorityDescriptor(struct zx_md_EntityDesc
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_AttributeAuthorityDescriptor) */
 
@@ -6029,7 +6205,11 @@ void zx_md_EntityDescriptor_DEL_AttributeAuthorityDescriptor(struct zx_md_Entity
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_PDPDescriptor) */
 
@@ -6159,7 +6339,11 @@ void zx_md_EntityDescriptor_DEL_PDPDescriptor(struct zx_md_EntityDescriptor_s* x
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_AffiliationDescriptor) */
 
@@ -6289,7 +6473,11 @@ void zx_md_EntityDescriptor_DEL_AffiliationDescriptor(struct zx_md_EntityDescrip
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_Organization) */
 
@@ -6419,7 +6607,11 @@ void zx_md_EntityDescriptor_DEL_Organization(struct zx_md_EntityDescriptor_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_ContactPerson) */
 
@@ -6549,7 +6741,11 @@ void zx_md_EntityDescriptor_DEL_ContactPerson(struct zx_md_EntityDescriptor_s* x
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_EntityDescriptor_NUM_AdditionalMetadataLocation) */
 
@@ -6679,14 +6875,8 @@ void zx_md_EntityDescriptor_DEL_AdditionalMetadataLocation(struct zx_md_EntityDe
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_md_EntityDescriptor_GET_ID) */
-struct zx_str* zx_md_EntityDescriptor_GET_ID(struct zx_md_EntityDescriptor_s* x) { return x->ID; }
-/* FUNC(zx_md_EntityDescriptor_PUT_ID) */
-void zx_md_EntityDescriptor_PUT_ID(struct zx_md_EntityDescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_EntityDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_EntityDescriptor_GET_cacheDuration(struct zx_md_EntityDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_EntityDescriptor_PUT_cacheDuration) */
-void zx_md_EntityDescriptor_PUT_cacheDuration(struct zx_md_EntityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+#endif
+
 /* FUNC(zx_md_EntityDescriptor_GET_entityID) */
 struct zx_str* zx_md_EntityDescriptor_GET_entityID(struct zx_md_EntityDescriptor_s* x) { return x->entityID; }
 /* FUNC(zx_md_EntityDescriptor_PUT_entityID) */
@@ -6695,6 +6885,14 @@ void zx_md_EntityDescriptor_PUT_entityID(struct zx_md_EntityDescriptor_s* x, str
 struct zx_str* zx_md_EntityDescriptor_GET_validUntil(struct zx_md_EntityDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_EntityDescriptor_PUT_validUntil) */
 void zx_md_EntityDescriptor_PUT_validUntil(struct zx_md_EntityDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_EntityDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_EntityDescriptor_GET_cacheDuration(struct zx_md_EntityDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_EntityDescriptor_PUT_cacheDuration) */
+void zx_md_EntityDescriptor_PUT_cacheDuration(struct zx_md_EntityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_EntityDescriptor_GET_ID) */
+struct zx_str* zx_md_EntityDescriptor_GET_ID(struct zx_md_EntityDescriptor_s* x) { return x->ID; }
+/* FUNC(zx_md_EntityDescriptor_PUT_ID) */
+void zx_md_EntityDescriptor_PUT_ID(struct zx_md_EntityDescriptor_s* x, struct zx_str* y) { x->ID = y; }
 
 
 
@@ -6706,6 +6904,8 @@ void zx_md_EntityDescriptor_PUT_validUntil(struct zx_md_EntityDescriptor_s* x, s
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_Signature) */
 
@@ -6835,7 +7035,11 @@ void zx_md_IDPSSODescriptor_DEL_Signature(struct zx_md_IDPSSODescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_Extensions) */
 
@@ -6965,7 +7169,11 @@ void zx_md_IDPSSODescriptor_DEL_Extensions(struct zx_md_IDPSSODescriptor_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_KeyDescriptor) */
 
@@ -7095,7 +7303,11 @@ void zx_md_IDPSSODescriptor_DEL_KeyDescriptor(struct zx_md_IDPSSODescriptor_s* x
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_Organization) */
 
@@ -7225,7 +7437,11 @@ void zx_md_IDPSSODescriptor_DEL_Organization(struct zx_md_IDPSSODescriptor_s* x,
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_ContactPerson) */
 
@@ -7355,7 +7571,11 @@ void zx_md_IDPSSODescriptor_DEL_ContactPerson(struct zx_md_IDPSSODescriptor_s* x
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_ArtifactResolutionService) */
 
@@ -7485,7 +7705,11 @@ void zx_md_IDPSSODescriptor_DEL_ArtifactResolutionService(struct zx_md_IDPSSODes
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_SingleLogoutService) */
 
@@ -7615,7 +7839,11 @@ void zx_md_IDPSSODescriptor_DEL_SingleLogoutService(struct zx_md_IDPSSODescripto
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_ManageNameIDService) */
 
@@ -7745,7 +7973,11 @@ void zx_md_IDPSSODescriptor_DEL_ManageNameIDService(struct zx_md_IDPSSODescripto
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_NameIDFormat) */
 
@@ -7875,7 +8107,11 @@ void zx_md_IDPSSODescriptor_DEL_NameIDFormat(struct zx_md_IDPSSODescriptor_s* x,
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_SingleSignOnService) */
 
@@ -8005,7 +8241,11 @@ void zx_md_IDPSSODescriptor_DEL_SingleSignOnService(struct zx_md_IDPSSODescripto
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_NameIDMappingService) */
 
@@ -8135,7 +8375,11 @@ void zx_md_IDPSSODescriptor_DEL_NameIDMappingService(struct zx_md_IDPSSODescript
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_AssertionIDRequestService) */
 
@@ -8265,7 +8509,11 @@ void zx_md_IDPSSODescriptor_DEL_AssertionIDRequestService(struct zx_md_IDPSSODes
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_AttributeProfile) */
 
@@ -8395,7 +8643,11 @@ void zx_md_IDPSSODescriptor_DEL_AttributeProfile(struct zx_md_IDPSSODescriptor_s
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_IDPSSODescriptor_NUM_Attribute) */
 
@@ -8525,36 +8777,40 @@ void zx_md_IDPSSODescriptor_DEL_Attribute(struct zx_md_IDPSSODescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_IDPSSODescriptor_GET_ID) */
 struct zx_str* zx_md_IDPSSODescriptor_GET_ID(struct zx_md_IDPSSODescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_IDPSSODescriptor_PUT_ID) */
 void zx_md_IDPSSODescriptor_PUT_ID(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_IDPSSODescriptor_GET_WantAuthnRequestsSigned) */
-struct zx_str* zx_md_IDPSSODescriptor_GET_WantAuthnRequestsSigned(struct zx_md_IDPSSODescriptor_s* x) { return x->WantAuthnRequestsSigned; }
-/* FUNC(zx_md_IDPSSODescriptor_PUT_WantAuthnRequestsSigned) */
-void zx_md_IDPSSODescriptor_PUT_WantAuthnRequestsSigned(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->WantAuthnRequestsSigned = y; }
-/* FUNC(zx_md_IDPSSODescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_IDPSSODescriptor_GET_cacheDuration(struct zx_md_IDPSSODescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_IDPSSODescriptor_PUT_cacheDuration) */
-void zx_md_IDPSSODescriptor_PUT_cacheDuration(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_IDPSSODescriptor_GET_errorURL) */
-struct zx_str* zx_md_IDPSSODescriptor_GET_errorURL(struct zx_md_IDPSSODescriptor_s* x) { return x->errorURL; }
-/* FUNC(zx_md_IDPSSODescriptor_PUT_errorURL) */
-void zx_md_IDPSSODescriptor_PUT_errorURL(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
-/* FUNC(zx_md_IDPSSODescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_md_IDPSSODescriptor_GET_protocolSupportEnumeration(struct zx_md_IDPSSODescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_md_IDPSSODescriptor_PUT_protocolSupportEnumeration) */
-void zx_md_IDPSSODescriptor_PUT_protocolSupportEnumeration(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
 /* FUNC(zx_md_IDPSSODescriptor_GET_validUntil) */
 struct zx_str* zx_md_IDPSSODescriptor_GET_validUntil(struct zx_md_IDPSSODescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_IDPSSODescriptor_PUT_validUntil) */
 void zx_md_IDPSSODescriptor_PUT_validUntil(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_IDPSSODescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_IDPSSODescriptor_GET_cacheDuration(struct zx_md_IDPSSODescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_IDPSSODescriptor_PUT_cacheDuration) */
+void zx_md_IDPSSODescriptor_PUT_cacheDuration(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_IDPSSODescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_md_IDPSSODescriptor_GET_protocolSupportEnumeration(struct zx_md_IDPSSODescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_md_IDPSSODescriptor_PUT_protocolSupportEnumeration) */
+void zx_md_IDPSSODescriptor_PUT_protocolSupportEnumeration(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_md_IDPSSODescriptor_GET_errorURL) */
+struct zx_str* zx_md_IDPSSODescriptor_GET_errorURL(struct zx_md_IDPSSODescriptor_s* x) { return x->errorURL; }
+/* FUNC(zx_md_IDPSSODescriptor_PUT_errorURL) */
+void zx_md_IDPSSODescriptor_PUT_errorURL(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
+/* FUNC(zx_md_IDPSSODescriptor_GET_WantAuthnRequestsSigned) */
+struct zx_str* zx_md_IDPSSODescriptor_GET_WantAuthnRequestsSigned(struct zx_md_IDPSSODescriptor_s* x) { return x->WantAuthnRequestsSigned; }
+/* FUNC(zx_md_IDPSSODescriptor_PUT_WantAuthnRequestsSigned) */
+void zx_md_IDPSSODescriptor_PUT_WantAuthnRequestsSigned(struct zx_md_IDPSSODescriptor_s* x, struct zx_str* y) { x->WantAuthnRequestsSigned = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_KeyDescriptor_NUM_KeyInfo) */
 
@@ -8684,7 +8940,11 @@ void zx_md_KeyDescriptor_DEL_KeyInfo(struct zx_md_KeyDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_KeyDescriptor_NUM_EncryptionMethod) */
 
@@ -8814,6 +9074,8 @@ void zx_md_KeyDescriptor_DEL_EncryptionMethod(struct zx_md_KeyDescriptor_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_KeyDescriptor_GET_use) */
 struct zx_str* zx_md_KeyDescriptor_GET_use(struct zx_md_KeyDescriptor_s* x) { return x->use; }
 /* FUNC(zx_md_KeyDescriptor_PUT_use) */
@@ -8874,6 +9136,8 @@ void zx_md_NameIDMappingService_PUT_isDefault(struct zx_md_NameIDMappingService_
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_Organization_NUM_Extensions) */
 
@@ -9003,7 +9267,11 @@ void zx_md_Organization_DEL_Extensions(struct zx_md_Organization_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_Organization_NUM_OrganizationName) */
 
@@ -9133,7 +9401,11 @@ void zx_md_Organization_DEL_OrganizationName(struct zx_md_Organization_s* x, int
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_Organization_NUM_OrganizationDisplayName) */
 
@@ -9263,7 +9535,11 @@ void zx_md_Organization_DEL_OrganizationDisplayName(struct zx_md_Organization_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_Organization_NUM_OrganizationURL) */
 
@@ -9393,6 +9669,8 @@ void zx_md_Organization_DEL_OrganizationURL(struct zx_md_Organization_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 
 
 
@@ -9426,6 +9704,8 @@ void zx_md_OrganizationURL_PUT_lang(struct zx_md_OrganizationURL_s* x, struct zx
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_Signature) */
 
@@ -9555,7 +9835,11 @@ void zx_md_PDPDescriptor_DEL_Signature(struct zx_md_PDPDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_Extensions) */
 
@@ -9685,7 +9969,11 @@ void zx_md_PDPDescriptor_DEL_Extensions(struct zx_md_PDPDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_KeyDescriptor) */
 
@@ -9815,7 +10103,11 @@ void zx_md_PDPDescriptor_DEL_KeyDescriptor(struct zx_md_PDPDescriptor_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_Organization) */
 
@@ -9945,7 +10237,11 @@ void zx_md_PDPDescriptor_DEL_Organization(struct zx_md_PDPDescriptor_s* x, int n
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_ContactPerson) */
 
@@ -10075,7 +10371,11 @@ void zx_md_PDPDescriptor_DEL_ContactPerson(struct zx_md_PDPDescriptor_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_AuthzService) */
 
@@ -10205,7 +10505,11 @@ void zx_md_PDPDescriptor_DEL_AuthzService(struct zx_md_PDPDescriptor_s* x, int n
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_AssertionIDRequestService) */
 
@@ -10335,7 +10639,11 @@ void zx_md_PDPDescriptor_DEL_AssertionIDRequestService(struct zx_md_PDPDescripto
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_PDPDescriptor_NUM_NameIDFormat) */
 
@@ -10465,32 +10773,36 @@ void zx_md_PDPDescriptor_DEL_NameIDFormat(struct zx_md_PDPDescriptor_s* x, int n
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_PDPDescriptor_GET_ID) */
 struct zx_str* zx_md_PDPDescriptor_GET_ID(struct zx_md_PDPDescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_PDPDescriptor_PUT_ID) */
 void zx_md_PDPDescriptor_PUT_ID(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_PDPDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_PDPDescriptor_GET_cacheDuration(struct zx_md_PDPDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_PDPDescriptor_PUT_cacheDuration) */
-void zx_md_PDPDescriptor_PUT_cacheDuration(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_PDPDescriptor_GET_errorURL) */
-struct zx_str* zx_md_PDPDescriptor_GET_errorURL(struct zx_md_PDPDescriptor_s* x) { return x->errorURL; }
-/* FUNC(zx_md_PDPDescriptor_PUT_errorURL) */
-void zx_md_PDPDescriptor_PUT_errorURL(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
-/* FUNC(zx_md_PDPDescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_md_PDPDescriptor_GET_protocolSupportEnumeration(struct zx_md_PDPDescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_md_PDPDescriptor_PUT_protocolSupportEnumeration) */
-void zx_md_PDPDescriptor_PUT_protocolSupportEnumeration(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
 /* FUNC(zx_md_PDPDescriptor_GET_validUntil) */
 struct zx_str* zx_md_PDPDescriptor_GET_validUntil(struct zx_md_PDPDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_PDPDescriptor_PUT_validUntil) */
 void zx_md_PDPDescriptor_PUT_validUntil(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_PDPDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_PDPDescriptor_GET_cacheDuration(struct zx_md_PDPDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_PDPDescriptor_PUT_cacheDuration) */
+void zx_md_PDPDescriptor_PUT_cacheDuration(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_PDPDescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_md_PDPDescriptor_GET_protocolSupportEnumeration(struct zx_md_PDPDescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_md_PDPDescriptor_PUT_protocolSupportEnumeration) */
+void zx_md_PDPDescriptor_PUT_protocolSupportEnumeration(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_md_PDPDescriptor_GET_errorURL) */
+struct zx_str* zx_md_PDPDescriptor_GET_errorURL(struct zx_md_PDPDescriptor_s* x) { return x->errorURL; }
+/* FUNC(zx_md_PDPDescriptor_PUT_errorURL) */
+void zx_md_PDPDescriptor_PUT_errorURL(struct zx_md_PDPDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_RequestedAttribute_NUM_AttributeValue) */
 
@@ -10620,10 +10932,8 @@ void zx_md_RequestedAttribute_DEL_AttributeValue(struct zx_md_RequestedAttribute
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_md_RequestedAttribute_GET_FriendlyName) */
-struct zx_str* zx_md_RequestedAttribute_GET_FriendlyName(struct zx_md_RequestedAttribute_s* x) { return x->FriendlyName; }
-/* FUNC(zx_md_RequestedAttribute_PUT_FriendlyName) */
-void zx_md_RequestedAttribute_PUT_FriendlyName(struct zx_md_RequestedAttribute_s* x, struct zx_str* y) { x->FriendlyName = y; }
+#endif
+
 /* FUNC(zx_md_RequestedAttribute_GET_Name) */
 struct zx_str* zx_md_RequestedAttribute_GET_Name(struct zx_md_RequestedAttribute_s* x) { return x->Name; }
 /* FUNC(zx_md_RequestedAttribute_PUT_Name) */
@@ -10632,6 +10942,10 @@ void zx_md_RequestedAttribute_PUT_Name(struct zx_md_RequestedAttribute_s* x, str
 struct zx_str* zx_md_RequestedAttribute_GET_NameFormat(struct zx_md_RequestedAttribute_s* x) { return x->NameFormat; }
 /* FUNC(zx_md_RequestedAttribute_PUT_NameFormat) */
 void zx_md_RequestedAttribute_PUT_NameFormat(struct zx_md_RequestedAttribute_s* x, struct zx_str* y) { x->NameFormat = y; }
+/* FUNC(zx_md_RequestedAttribute_GET_FriendlyName) */
+struct zx_str* zx_md_RequestedAttribute_GET_FriendlyName(struct zx_md_RequestedAttribute_s* x) { return x->FriendlyName; }
+/* FUNC(zx_md_RequestedAttribute_PUT_FriendlyName) */
+void zx_md_RequestedAttribute_PUT_FriendlyName(struct zx_md_RequestedAttribute_s* x, struct zx_str* y) { x->FriendlyName = y; }
 /* FUNC(zx_md_RequestedAttribute_GET_isRequired) */
 struct zx_str* zx_md_RequestedAttribute_GET_isRequired(struct zx_md_RequestedAttribute_s* x) { return x->isRequired; }
 /* FUNC(zx_md_RequestedAttribute_PUT_isRequired) */
@@ -10642,6 +10956,8 @@ void zx_md_RequestedAttribute_PUT_isRequired(struct zx_md_RequestedAttribute_s* 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_RoleDescriptor_NUM_Signature) */
 
@@ -10771,7 +11087,11 @@ void zx_md_RoleDescriptor_DEL_Signature(struct zx_md_RoleDescriptor_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_RoleDescriptor_NUM_Extensions) */
 
@@ -10901,7 +11221,11 @@ void zx_md_RoleDescriptor_DEL_Extensions(struct zx_md_RoleDescriptor_s* x, int n
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_RoleDescriptor_NUM_KeyDescriptor) */
 
@@ -11031,7 +11355,11 @@ void zx_md_RoleDescriptor_DEL_KeyDescriptor(struct zx_md_RoleDescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_RoleDescriptor_NUM_Organization) */
 
@@ -11161,7 +11489,11 @@ void zx_md_RoleDescriptor_DEL_Organization(struct zx_md_RoleDescriptor_s* x, int
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_RoleDescriptor_NUM_ContactPerson) */
 
@@ -11291,32 +11623,36 @@ void zx_md_RoleDescriptor_DEL_ContactPerson(struct zx_md_RoleDescriptor_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_md_RoleDescriptor_GET_ID) */
 struct zx_str* zx_md_RoleDescriptor_GET_ID(struct zx_md_RoleDescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_RoleDescriptor_PUT_ID) */
 void zx_md_RoleDescriptor_PUT_ID(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_RoleDescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_RoleDescriptor_GET_cacheDuration(struct zx_md_RoleDescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_RoleDescriptor_PUT_cacheDuration) */
-void zx_md_RoleDescriptor_PUT_cacheDuration(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_RoleDescriptor_GET_errorURL) */
-struct zx_str* zx_md_RoleDescriptor_GET_errorURL(struct zx_md_RoleDescriptor_s* x) { return x->errorURL; }
-/* FUNC(zx_md_RoleDescriptor_PUT_errorURL) */
-void zx_md_RoleDescriptor_PUT_errorURL(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
-/* FUNC(zx_md_RoleDescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_md_RoleDescriptor_GET_protocolSupportEnumeration(struct zx_md_RoleDescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_md_RoleDescriptor_PUT_protocolSupportEnumeration) */
-void zx_md_RoleDescriptor_PUT_protocolSupportEnumeration(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
 /* FUNC(zx_md_RoleDescriptor_GET_validUntil) */
 struct zx_str* zx_md_RoleDescriptor_GET_validUntil(struct zx_md_RoleDescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_RoleDescriptor_PUT_validUntil) */
 void zx_md_RoleDescriptor_PUT_validUntil(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_RoleDescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_RoleDescriptor_GET_cacheDuration(struct zx_md_RoleDescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_RoleDescriptor_PUT_cacheDuration) */
+void zx_md_RoleDescriptor_PUT_cacheDuration(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_RoleDescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_md_RoleDescriptor_GET_protocolSupportEnumeration(struct zx_md_RoleDescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_md_RoleDescriptor_PUT_protocolSupportEnumeration) */
+void zx_md_RoleDescriptor_PUT_protocolSupportEnumeration(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_md_RoleDescriptor_GET_errorURL) */
+struct zx_str* zx_md_RoleDescriptor_GET_errorURL(struct zx_md_RoleDescriptor_s* x) { return x->errorURL; }
+/* FUNC(zx_md_RoleDescriptor_PUT_errorURL) */
+void zx_md_RoleDescriptor_PUT_errorURL(struct zx_md_RoleDescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_Signature) */
 
@@ -11446,7 +11782,11 @@ void zx_md_SPSSODescriptor_DEL_Signature(struct zx_md_SPSSODescriptor_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_Extensions) */
 
@@ -11576,7 +11916,11 @@ void zx_md_SPSSODescriptor_DEL_Extensions(struct zx_md_SPSSODescriptor_s* x, int
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_KeyDescriptor) */
 
@@ -11706,7 +12050,11 @@ void zx_md_SPSSODescriptor_DEL_KeyDescriptor(struct zx_md_SPSSODescriptor_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_Organization) */
 
@@ -11836,7 +12184,11 @@ void zx_md_SPSSODescriptor_DEL_Organization(struct zx_md_SPSSODescriptor_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_ContactPerson) */
 
@@ -11966,7 +12318,11 @@ void zx_md_SPSSODescriptor_DEL_ContactPerson(struct zx_md_SPSSODescriptor_s* x, 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_ArtifactResolutionService) */
 
@@ -12096,7 +12452,11 @@ void zx_md_SPSSODescriptor_DEL_ArtifactResolutionService(struct zx_md_SPSSODescr
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_SingleLogoutService) */
 
@@ -12226,7 +12586,11 @@ void zx_md_SPSSODescriptor_DEL_SingleLogoutService(struct zx_md_SPSSODescriptor_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_ManageNameIDService) */
 
@@ -12356,7 +12720,11 @@ void zx_md_SPSSODescriptor_DEL_ManageNameIDService(struct zx_md_SPSSODescriptor_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_NameIDFormat) */
 
@@ -12486,7 +12854,11 @@ void zx_md_SPSSODescriptor_DEL_NameIDFormat(struct zx_md_SPSSODescriptor_s* x, i
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_AssertionConsumerService) */
 
@@ -12616,7 +12988,11 @@ void zx_md_SPSSODescriptor_DEL_AssertionConsumerService(struct zx_md_SPSSODescri
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_md_SPSSODescriptor_NUM_AttributeConsumingService) */
 
@@ -12746,34 +13122,36 @@ void zx_md_SPSSODescriptor_DEL_AttributeConsumingService(struct zx_md_SPSSODescr
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_md_SPSSODescriptor_GET_AuthnRequestsSigned) */
-struct zx_str* zx_md_SPSSODescriptor_GET_AuthnRequestsSigned(struct zx_md_SPSSODescriptor_s* x) { return x->AuthnRequestsSigned; }
-/* FUNC(zx_md_SPSSODescriptor_PUT_AuthnRequestsSigned) */
-void zx_md_SPSSODescriptor_PUT_AuthnRequestsSigned(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->AuthnRequestsSigned = y; }
+#endif
+
 /* FUNC(zx_md_SPSSODescriptor_GET_ID) */
 struct zx_str* zx_md_SPSSODescriptor_GET_ID(struct zx_md_SPSSODescriptor_s* x) { return x->ID; }
 /* FUNC(zx_md_SPSSODescriptor_PUT_ID) */
 void zx_md_SPSSODescriptor_PUT_ID(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->ID = y; }
-/* FUNC(zx_md_SPSSODescriptor_GET_WantAssertionsSigned) */
-struct zx_str* zx_md_SPSSODescriptor_GET_WantAssertionsSigned(struct zx_md_SPSSODescriptor_s* x) { return x->WantAssertionsSigned; }
-/* FUNC(zx_md_SPSSODescriptor_PUT_WantAssertionsSigned) */
-void zx_md_SPSSODescriptor_PUT_WantAssertionsSigned(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->WantAssertionsSigned = y; }
-/* FUNC(zx_md_SPSSODescriptor_GET_cacheDuration) */
-struct zx_str* zx_md_SPSSODescriptor_GET_cacheDuration(struct zx_md_SPSSODescriptor_s* x) { return x->cacheDuration; }
-/* FUNC(zx_md_SPSSODescriptor_PUT_cacheDuration) */
-void zx_md_SPSSODescriptor_PUT_cacheDuration(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
-/* FUNC(zx_md_SPSSODescriptor_GET_errorURL) */
-struct zx_str* zx_md_SPSSODescriptor_GET_errorURL(struct zx_md_SPSSODescriptor_s* x) { return x->errorURL; }
-/* FUNC(zx_md_SPSSODescriptor_PUT_errorURL) */
-void zx_md_SPSSODescriptor_PUT_errorURL(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
-/* FUNC(zx_md_SPSSODescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_md_SPSSODescriptor_GET_protocolSupportEnumeration(struct zx_md_SPSSODescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_md_SPSSODescriptor_PUT_protocolSupportEnumeration) */
-void zx_md_SPSSODescriptor_PUT_protocolSupportEnumeration(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
 /* FUNC(zx_md_SPSSODescriptor_GET_validUntil) */
 struct zx_str* zx_md_SPSSODescriptor_GET_validUntil(struct zx_md_SPSSODescriptor_s* x) { return x->validUntil; }
 /* FUNC(zx_md_SPSSODescriptor_PUT_validUntil) */
 void zx_md_SPSSODescriptor_PUT_validUntil(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
+/* FUNC(zx_md_SPSSODescriptor_GET_cacheDuration) */
+struct zx_str* zx_md_SPSSODescriptor_GET_cacheDuration(struct zx_md_SPSSODescriptor_s* x) { return x->cacheDuration; }
+/* FUNC(zx_md_SPSSODescriptor_PUT_cacheDuration) */
+void zx_md_SPSSODescriptor_PUT_cacheDuration(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_md_SPSSODescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_md_SPSSODescriptor_GET_protocolSupportEnumeration(struct zx_md_SPSSODescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_md_SPSSODescriptor_PUT_protocolSupportEnumeration) */
+void zx_md_SPSSODescriptor_PUT_protocolSupportEnumeration(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_md_SPSSODescriptor_GET_errorURL) */
+struct zx_str* zx_md_SPSSODescriptor_GET_errorURL(struct zx_md_SPSSODescriptor_s* x) { return x->errorURL; }
+/* FUNC(zx_md_SPSSODescriptor_PUT_errorURL) */
+void zx_md_SPSSODescriptor_PUT_errorURL(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->errorURL = y; }
+/* FUNC(zx_md_SPSSODescriptor_GET_AuthnRequestsSigned) */
+struct zx_str* zx_md_SPSSODescriptor_GET_AuthnRequestsSigned(struct zx_md_SPSSODescriptor_s* x) { return x->AuthnRequestsSigned; }
+/* FUNC(zx_md_SPSSODescriptor_PUT_AuthnRequestsSigned) */
+void zx_md_SPSSODescriptor_PUT_AuthnRequestsSigned(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->AuthnRequestsSigned = y; }
+/* FUNC(zx_md_SPSSODescriptor_GET_WantAssertionsSigned) */
+struct zx_str* zx_md_SPSSODescriptor_GET_WantAssertionsSigned(struct zx_md_SPSSODescriptor_s* x) { return x->WantAssertionsSigned; }
+/* FUNC(zx_md_SPSSODescriptor_PUT_WantAssertionsSigned) */
+void zx_md_SPSSODescriptor_PUT_WantAssertionsSigned(struct zx_md_SPSSODescriptor_s* x, struct zx_str* y) { x->WantAssertionsSigned = y; }
 
 
 

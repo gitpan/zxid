@@ -1,9 +1,11 @@
 /* wsfraw.i  -  SWIG interface file for WSF low level functions
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: wsfraw.i,v 1.3 2006/09/30 06:24:49 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: wsfraw.i,v 1.4 2006/11/19 06:19:40 sampo Exp $
  * 14.9.2006, created --Sampo
  */
 %module "Net::WSF::Raw"

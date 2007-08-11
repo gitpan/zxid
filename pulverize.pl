@@ -3,7 +3,7 @@
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing. See file COPYING.
-# $Id: gen-consts-from-gperf-output.pl,v 1.2 2006/08/09 04:33:34 sampo Exp $
+# $Id: pulverize.pl,v 1.1 2007/03/27 10:48:56 sampo Exp $
 # 17.8.2006, created --Sampo
 #
 # Split input files so that each function is in its own file.

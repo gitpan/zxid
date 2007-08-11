@@ -1,9 +1,11 @@
 /* zx.h  -  Common definitions for zx generated code (encoders, decoders, etc.)
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zx.h,v 1.21 2006/10/01 19:35:50 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zx.h,v 1.26 2007-06-21 23:32:32 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 7.8.2006,  renamed from dec.h to zx.h and added comments --Sampo
@@ -143,17 +145,19 @@ struct zx_any_attr_s {
 
 #define ZX_ELEM_EXT struct zx_elem_s gg;
 
+char* zx_memmem(char* haystack, int haystack_len, char* needle, int needle_len);
 void* zx_alloc(struct zx_ctx* c, int size);
 void* zx_zalloc(struct zx_ctx* c, int size);
 void* zx_free(struct zx_ctx* c, void* p);
-#define ZX_ALLOC(c, size) zx_zalloc((c), (size))
+char* zx_dup_cstr(struct zx_ctx* c, char* str);
+#define ZX_ALLOC(c, size) zx_alloc((c), (size))
 #define ZX_ZALLOC(c, typ) ((typ*)zx_zalloc((c), sizeof(typ)))
 #define ZX_DUPALLOC(c, typ, n, o) (n) = (typ*)zx_alloc((c), sizeof(typ)); memcpy((n), (o), sizeof(typ))
 #define ZX_FREE(c, p) zx_free((c), (p))
 
 /* N.B. All string scanning assumes buffer is terminated with C string style nul byte. */
 #define ZX_SKIP_WS_P(c,p,x) MB for (; ONE_OF_4(*(p), ' ', '\n', '\r', '\t'); ++(p)) ; if (!*(p)) return x; ME
-#define ZX_LOOK_FOR_P(c,ch,p,x) MB (p) = memchr((p), (ch), (c)->lim - (p)); if (!(p)) return x; ME
+#define ZX_LOOK_FOR_P(c,ch,p,x) MB (p) = memchr((p), (ch), (c)->lim - (p)); if (!(p)) { ERR("XML parse error: ZX_LOOK_FOR failed to find `%c'", (ch)); return x; } ME
 #define ZX_SKIP_WS(c,x)       ZX_SKIP_WS_P((c),(c)->p,x)
 #define ZX_LOOK_FOR(c,ch,x)   ZX_LOOK_FOR_P((c),(ch),(c)->p,x)
 

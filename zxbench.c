@@ -1,9 +1,11 @@
 /* zxbench.c  -  Benchmark zxid libraries
- * Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing. See file COPYING.
- * $Id: zxbench.c,v 1.13 2006/10/15 00:27:26 sampo Exp $
+ * Distribution prohibited unless authorized in writing.
+ * Licensed under Apache License 2.0, see file COPYING.
+ * $Id: zxbench.c,v 1.19 2007-06-19 15:17:03 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  *
@@ -33,12 +35,12 @@
 
 int read_all_fd(int fd, char* p, int want, int* got_all);
 int write_all_fd(int fd, char* p, int pending);
-int write_or_append_lock_c_path(char* c_path, char* data, int len, CU8* lk, int seeky, int flag);
 
 CU8* help =
 "zxbench  -  SAML 2.0 encoding and decoding benchmark - R" REL "\n\
 SAML 2.0 is a standard for federated idenity and Single Sign-On.\n\
-Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
+Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well researched bug reports to the author. Home: zxid.org\n\
@@ -67,12 +69,12 @@ Usage: zxbench [options] <saml-assertion.xml >reencoded-a7n.xml\n\
 char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
-int debug = 0;
+extern int debug;
 int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
-int assert_nonfatal = 0;
+extern int assert_nonfatal;
 int drop_uid = 0;
 int drop_gid = 0;
 char* rand_path;
@@ -81,6 +83,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
+/* Called by:  main x4 */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;
@@ -255,6 +258,7 @@ void opt(int* argc, char*** argv, char*** env)
 
 /* ============== M A I N ============== */
 
+/* Called by: */
 int main(int argc, char** argv, char** env)
 {
   struct zx_ctx ctx;
@@ -275,7 +279,7 @@ int main(int argc, char** argv, char** env)
   
 #ifndef MINGW  
   if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {   /* Ignore SIGPIPE */
-    perror("signal ignore pipe");
+    perror("INIT: signal ignore pipe");
     exit(2);
   }
 
@@ -283,15 +287,15 @@ int main(int argc, char** argv, char** env)
    * written to disk before we die. If dsproxy is not stopped `kill -USR1' but you
    * use plain kill instead, the profile will indicate many unexecuted (#####) lines. */
   if (signal(SIGUSR1, exit) == SIG_ERR) {
-    perror("signal USR1 exit");
+    perror("INIT: signal USR1 exit");
     exit(2);
   }
 #endif
   
   /* Drop privileges, if requested. */
   
-  if (drop_gid) if (setgid(drop_gid)) { perror("setgid"); exit(1); }
-  if (drop_uid) if (setuid(drop_uid)) { perror("setuid"); exit(1); }
+  if (drop_gid) if (setgid(drop_gid)) { perror("INIT: setgid"); exit(1); }
+  if (drop_uid) if (setuid(drop_uid)) { perror("INIT: setuid"); exit(1); }
   
   len_so = read_all_fd(0, buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
@@ -306,7 +310,7 @@ int main(int argc, char** argv, char** env)
     if (!r) DIE("Decode failure");
     
     cf = zxid_new_conf("/var/zxid/");
-    ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4." /* cxp06 */);
+    ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4" /* cxp06 */);
     
     refs.ref = r->Envelope->Body->ArtifactResolve->Signature->SignedInfo->Reference;
     refs.blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResolve;
@@ -348,7 +352,5 @@ int main(int argc, char** argv, char** env)
   
   return 0;
 }
-
-char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately provoking a core dump.\nSorry for the inconvenience.\n";
 
 /* EOF  --  zxbench.c */

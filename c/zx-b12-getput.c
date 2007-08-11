@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -27,35 +29,31 @@
 #include "c/zx-data.h"
 #include "c/zx-b12-data.h"
 
-/* FUNC(zx_b12_Consent_GET_id) */
-struct zx_str* zx_b12_Consent_GET_id(struct zx_b12_Consent_s* x) { return x->id; }
-/* FUNC(zx_b12_Consent_PUT_id) */
-void zx_b12_Consent_PUT_id(struct zx_b12_Consent_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_b12_Consent_GET_timestamp) */
-struct zx_str* zx_b12_Consent_GET_timestamp(struct zx_b12_Consent_s* x) { return x->timestamp; }
-/* FUNC(zx_b12_Consent_PUT_timestamp) */
-void zx_b12_Consent_PUT_timestamp(struct zx_b12_Consent_s* x, struct zx_str* y) { x->timestamp = y; }
 /* FUNC(zx_b12_Consent_GET_uri) */
 struct zx_str* zx_b12_Consent_GET_uri(struct zx_b12_Consent_s* x) { return x->uri; }
 /* FUNC(zx_b12_Consent_PUT_uri) */
 void zx_b12_Consent_PUT_uri(struct zx_b12_Consent_s* x, struct zx_str* y) { x->uri = y; }
-/* FUNC(zx_b12_Consent_GET_actor) */
-struct zx_str* zx_b12_Consent_GET_actor(struct zx_b12_Consent_s* x) { return x->actor; }
-/* FUNC(zx_b12_Consent_PUT_actor) */
-void zx_b12_Consent_PUT_actor(struct zx_b12_Consent_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b12_Consent_GET_timestamp) */
+struct zx_str* zx_b12_Consent_GET_timestamp(struct zx_b12_Consent_s* x) { return x->timestamp; }
+/* FUNC(zx_b12_Consent_PUT_timestamp) */
+void zx_b12_Consent_PUT_timestamp(struct zx_b12_Consent_s* x, struct zx_str* y) { x->timestamp = y; }
+/* FUNC(zx_b12_Consent_GET_id) */
+struct zx_str* zx_b12_Consent_GET_id(struct zx_b12_Consent_s* x) { return x->id; }
+/* FUNC(zx_b12_Consent_PUT_id) */
+void zx_b12_Consent_PUT_id(struct zx_b12_Consent_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b12_Consent_GET_mustUnderstand) */
 struct zx_str* zx_b12_Consent_GET_mustUnderstand(struct zx_b12_Consent_s* x) { return x->mustUnderstand; }
 /* FUNC(zx_b12_Consent_PUT_mustUnderstand) */
 void zx_b12_Consent_PUT_mustUnderstand(struct zx_b12_Consent_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_b12_Consent_GET_actor) */
+struct zx_str* zx_b12_Consent_GET_actor(struct zx_b12_Consent_s* x) { return x->actor; }
+/* FUNC(zx_b12_Consent_PUT_actor) */
+void zx_b12_Consent_PUT_actor(struct zx_b12_Consent_s* x, struct zx_str* y) { x->actor = y; }
 
 
 
 
 
-/* FUNC(zx_b12_Correlation_GET_id) */
-struct zx_str* zx_b12_Correlation_GET_id(struct zx_b12_Correlation_s* x) { return x->id; }
-/* FUNC(zx_b12_Correlation_PUT_id) */
-void zx_b12_Correlation_PUT_id(struct zx_b12_Correlation_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b12_Correlation_GET_messageID) */
 struct zx_str* zx_b12_Correlation_GET_messageID(struct zx_b12_Correlation_s* x) { return x->messageID; }
 /* FUNC(zx_b12_Correlation_PUT_messageID) */
@@ -68,14 +66,18 @@ void zx_b12_Correlation_PUT_refToMessageID(struct zx_b12_Correlation_s* x, struc
 struct zx_str* zx_b12_Correlation_GET_timestamp(struct zx_b12_Correlation_s* x) { return x->timestamp; }
 /* FUNC(zx_b12_Correlation_PUT_timestamp) */
 void zx_b12_Correlation_PUT_timestamp(struct zx_b12_Correlation_s* x, struct zx_str* y) { x->timestamp = y; }
-/* FUNC(zx_b12_Correlation_GET_actor) */
-struct zx_str* zx_b12_Correlation_GET_actor(struct zx_b12_Correlation_s* x) { return x->actor; }
-/* FUNC(zx_b12_Correlation_PUT_actor) */
-void zx_b12_Correlation_PUT_actor(struct zx_b12_Correlation_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b12_Correlation_GET_id) */
+struct zx_str* zx_b12_Correlation_GET_id(struct zx_b12_Correlation_s* x) { return x->id; }
+/* FUNC(zx_b12_Correlation_PUT_id) */
+void zx_b12_Correlation_PUT_id(struct zx_b12_Correlation_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b12_Correlation_GET_mustUnderstand) */
 struct zx_str* zx_b12_Correlation_GET_mustUnderstand(struct zx_b12_Correlation_s* x) { return x->mustUnderstand; }
 /* FUNC(zx_b12_Correlation_PUT_mustUnderstand) */
 void zx_b12_Correlation_PUT_mustUnderstand(struct zx_b12_Correlation_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_b12_Correlation_GET_actor) */
+struct zx_str* zx_b12_Correlation_GET_actor(struct zx_b12_Correlation_s* x) { return x->actor; }
+/* FUNC(zx_b12_Correlation_PUT_actor) */
+void zx_b12_Correlation_PUT_actor(struct zx_b12_Correlation_s* x, struct zx_str* y) { x->actor = y; }
 
 
 
@@ -85,19 +87,23 @@ void zx_b12_Correlation_PUT_mustUnderstand(struct zx_b12_Correlation_s* x, struc
 struct zx_str* zx_b12_ProcessingContext_GET_id(struct zx_b12_ProcessingContext_s* x) { return x->id; }
 /* FUNC(zx_b12_ProcessingContext_PUT_id) */
 void zx_b12_ProcessingContext_PUT_id(struct zx_b12_ProcessingContext_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_b12_ProcessingContext_GET_actor) */
-struct zx_str* zx_b12_ProcessingContext_GET_actor(struct zx_b12_ProcessingContext_s* x) { return x->actor; }
-/* FUNC(zx_b12_ProcessingContext_PUT_actor) */
-void zx_b12_ProcessingContext_PUT_actor(struct zx_b12_ProcessingContext_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b12_ProcessingContext_GET_mustUnderstand) */
 struct zx_str* zx_b12_ProcessingContext_GET_mustUnderstand(struct zx_b12_ProcessingContext_s* x) { return x->mustUnderstand; }
 /* FUNC(zx_b12_ProcessingContext_PUT_mustUnderstand) */
 void zx_b12_ProcessingContext_PUT_mustUnderstand(struct zx_b12_ProcessingContext_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_b12_ProcessingContext_GET_actor) */
+struct zx_str* zx_b12_ProcessingContext_GET_actor(struct zx_b12_ProcessingContext_s* x) { return x->actor; }
+/* FUNC(zx_b12_ProcessingContext_PUT_actor) */
+void zx_b12_ProcessingContext_PUT_actor(struct zx_b12_ProcessingContext_s* x, struct zx_str* y) { x->actor = y; }
 
 
 
 
 
+/* FUNC(zx_b12_Provider_GET_providerID) */
+struct zx_str* zx_b12_Provider_GET_providerID(struct zx_b12_Provider_s* x) { return x->providerID; }
+/* FUNC(zx_b12_Provider_PUT_providerID) */
+void zx_b12_Provider_PUT_providerID(struct zx_b12_Provider_s* x, struct zx_str* y) { x->providerID = y; }
 /* FUNC(zx_b12_Provider_GET_affiliationID) */
 struct zx_str* zx_b12_Provider_GET_affiliationID(struct zx_b12_Provider_s* x) { return x->affiliationID; }
 /* FUNC(zx_b12_Provider_PUT_affiliationID) */
@@ -106,18 +112,14 @@ void zx_b12_Provider_PUT_affiliationID(struct zx_b12_Provider_s* x, struct zx_st
 struct zx_str* zx_b12_Provider_GET_id(struct zx_b12_Provider_s* x) { return x->id; }
 /* FUNC(zx_b12_Provider_PUT_id) */
 void zx_b12_Provider_PUT_id(struct zx_b12_Provider_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_b12_Provider_GET_providerID) */
-struct zx_str* zx_b12_Provider_GET_providerID(struct zx_b12_Provider_s* x) { return x->providerID; }
-/* FUNC(zx_b12_Provider_PUT_providerID) */
-void zx_b12_Provider_PUT_providerID(struct zx_b12_Provider_s* x, struct zx_str* y) { x->providerID = y; }
-/* FUNC(zx_b12_Provider_GET_actor) */
-struct zx_str* zx_b12_Provider_GET_actor(struct zx_b12_Provider_s* x) { return x->actor; }
-/* FUNC(zx_b12_Provider_PUT_actor) */
-void zx_b12_Provider_PUT_actor(struct zx_b12_Provider_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b12_Provider_GET_mustUnderstand) */
 struct zx_str* zx_b12_Provider_GET_mustUnderstand(struct zx_b12_Provider_s* x) { return x->mustUnderstand; }
 /* FUNC(zx_b12_Provider_PUT_mustUnderstand) */
 void zx_b12_Provider_PUT_mustUnderstand(struct zx_b12_Provider_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_b12_Provider_GET_actor) */
+struct zx_str* zx_b12_Provider_GET_actor(struct zx_b12_Provider_s* x) { return x->actor; }
+/* FUNC(zx_b12_Provider_PUT_actor) */
+void zx_b12_Provider_PUT_actor(struct zx_b12_Provider_s* x, struct zx_str* y) { x->actor = y; }
 
 
 
@@ -131,14 +133,14 @@ void zx_b12_UsageDirective_PUT_id(struct zx_b12_UsageDirective_s* x, struct zx_s
 struct zx_str* zx_b12_UsageDirective_GET_ref(struct zx_b12_UsageDirective_s* x) { return x->ref; }
 /* FUNC(zx_b12_UsageDirective_PUT_ref) */
 void zx_b12_UsageDirective_PUT_ref(struct zx_b12_UsageDirective_s* x, struct zx_str* y) { x->ref = y; }
-/* FUNC(zx_b12_UsageDirective_GET_actor) */
-struct zx_str* zx_b12_UsageDirective_GET_actor(struct zx_b12_UsageDirective_s* x) { return x->actor; }
-/* FUNC(zx_b12_UsageDirective_PUT_actor) */
-void zx_b12_UsageDirective_PUT_actor(struct zx_b12_UsageDirective_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b12_UsageDirective_GET_mustUnderstand) */
 struct zx_str* zx_b12_UsageDirective_GET_mustUnderstand(struct zx_b12_UsageDirective_s* x) { return x->mustUnderstand; }
 /* FUNC(zx_b12_UsageDirective_PUT_mustUnderstand) */
 void zx_b12_UsageDirective_PUT_mustUnderstand(struct zx_b12_UsageDirective_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_b12_UsageDirective_GET_actor) */
+struct zx_str* zx_b12_UsageDirective_GET_actor(struct zx_b12_UsageDirective_s* x) { return x->actor; }
+/* FUNC(zx_b12_UsageDirective_PUT_actor) */
+void zx_b12_UsageDirective_PUT_actor(struct zx_b12_UsageDirective_s* x, struct zx_str* y) { x->actor = y; }
 
 
 

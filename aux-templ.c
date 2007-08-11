@@ -1,9 +1,11 @@
 /** aux-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** $Id: aux-templ.c,v 1.8 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** $Id: aux-templ.c,v 1.11 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -29,39 +31,6 @@
 #define EL_NS     ELNS
 #define EL_TAG    ELTAG
 
-/* FUNC(TXDUP_STRS_ELNAME) */
-
-/* Depth first traversal of data structure to copy its simple strings
- * to memory allocated from the memory allocator. The decoder will
- * use the underlying wireprotocol PDU buffer for strings, i.e.
- * strings are not copied - they point to the real data. If the
- * datastructure needs to outlast the protocol data or needs a different
- * memory allocation strategy, you need to call this function.  */
-
-void TXDUP_STRS_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x)
-{
-  zx_dup_strs_common(c, &x->gg);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-ATTRS_DUP_STRS;
-ELEMS_DUP_STRS;
-}
-
-/* FUNC(TXDEEP_CLONE_ELNAME) */
-
-/* Depth first traversal of data structure to clone it and its sublements.
- * The simple strings are handled as a special case according to dup_strs flag. */
-
-struct ELSTRUCT* TXDEEP_CLONE_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, int dup_strs)
-{
-  x = (struct ELSTRUCT*)zx_clone_elem_common(c, &x->gg, sizeof(struct ELSTRUCT), dup_strs);
-  /* *** deal with xmlns specifications in exc c14n way */
-
-ATTRS_CLONE;
-ELEMS_CLONE;
-  return x;
-}
-
 /* FUNC(TXFREE_ELNAME) */
 
 /* Depth first traversal of data structure to free it and its subelements. Simple
@@ -69,6 +38,7 @@ ELEMS_CLONE;
  * is useful if the strings point to underlying data from the wire that was
  * allocated differently. */
 
+/* Called by: */
 void TXFREE_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
@@ -83,10 +53,48 @@ ELEMS_FREE;
 
 /* Trivial allocator/constructor for the datatype. */
 
+/* Called by: */
 struct ELSTRUCT* TXNEW_ELNAME(struct zx_ctx* c)
 {
   struct ELSTRUCT* x = ZX_ZALLOC(c, struct ELSTRUCT);
   x->gg.g.tok = TXELNAME_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(TXDUP_STRS_ELNAME) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void TXDUP_STRS_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+ATTRS_DUP_STRS;
+ELEMS_DUP_STRS;
+}
+
+/* FUNC(TXDEEP_CLONE_ELNAME) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct ELSTRUCT* TXDEEP_CLONE_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, int dup_strs)
+{
+  x = (struct ELSTRUCT*)zx_clone_elem_common(c, &x->gg, sizeof(struct ELSTRUCT), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+ATTRS_CLONE;
+ELEMS_CLONE;
   return x;
 }
 
@@ -120,5 +128,7 @@ int TXWALK_WO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, void* ctx, int (*call
   ERR("*** walk_wo not implemented %d", 0);
   return 0;
 }
+
+#endif
 
 /* EOF */

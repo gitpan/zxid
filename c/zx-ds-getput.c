@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -37,6 +39,8 @@ void zx_ds_CanonicalizationMethod_PUT_Algorithm(struct zx_ds_CanonicalizationMet
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_P) */
 
@@ -166,7 +170,11 @@ void zx_ds_DSAKeyValue_DEL_P(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_Q) */
 
@@ -296,7 +304,11 @@ void zx_ds_DSAKeyValue_DEL_Q(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_G) */
 
@@ -426,7 +438,11 @@ void zx_ds_DSAKeyValue_DEL_G(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_Y) */
 
@@ -556,7 +572,11 @@ void zx_ds_DSAKeyValue_DEL_Y(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_J) */
 
@@ -686,7 +706,11 @@ void zx_ds_DSAKeyValue_DEL_J(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_Seed) */
 
@@ -816,7 +840,11 @@ void zx_ds_DSAKeyValue_DEL_Seed(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_DSAKeyValue_NUM_PgenCounter) */
 
@@ -946,6 +974,8 @@ void zx_ds_DSAKeyValue_DEL_PgenCounter(struct zx_ds_DSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 
 
 
@@ -961,6 +991,8 @@ void zx_ds_DigestMethod_PUT_Algorithm(struct zx_ds_DigestMethod_s* x, struct zx_
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_KeyName) */
 
@@ -1090,7 +1122,11 @@ void zx_ds_KeyInfo_DEL_KeyName(struct zx_ds_KeyInfo_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_KeyValue) */
 
@@ -1220,7 +1256,11 @@ void zx_ds_KeyInfo_DEL_KeyValue(struct zx_ds_KeyInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_RetrievalMethod) */
 
@@ -1350,7 +1390,11 @@ void zx_ds_KeyInfo_DEL_RetrievalMethod(struct zx_ds_KeyInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_X509Data) */
 
@@ -1480,7 +1524,11 @@ void zx_ds_KeyInfo_DEL_X509Data(struct zx_ds_KeyInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_PGPData) */
 
@@ -1610,7 +1658,11 @@ void zx_ds_KeyInfo_DEL_PGPData(struct zx_ds_KeyInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_SPKIData) */
 
@@ -1740,7 +1792,11 @@ void zx_ds_KeyInfo_DEL_SPKIData(struct zx_ds_KeyInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyInfo_NUM_MgmtData) */
 
@@ -1870,6 +1926,8 @@ void zx_ds_KeyInfo_DEL_MgmtData(struct zx_ds_KeyInfo_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_KeyInfo_GET_Id) */
 struct zx_str* zx_ds_KeyInfo_GET_Id(struct zx_ds_KeyInfo_s* x) { return x->Id; }
 /* FUNC(zx_ds_KeyInfo_PUT_Id) */
@@ -1880,6 +1938,8 @@ void zx_ds_KeyInfo_PUT_Id(struct zx_ds_KeyInfo_s* x, struct zx_str* y) { x->Id =
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyValue_NUM_DSAKeyValue) */
 
@@ -2009,7 +2069,11 @@ void zx_ds_KeyValue_DEL_DSAKeyValue(struct zx_ds_KeyValue_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_KeyValue_NUM_RSAKeyValue) */
 
@@ -2139,12 +2203,16 @@ void zx_ds_KeyValue_DEL_RSAKeyValue(struct zx_ds_KeyValue_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Manifest_NUM_Reference) */
 
@@ -2274,6 +2342,8 @@ void zx_ds_Manifest_DEL_Reference(struct zx_ds_Manifest_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_Manifest_GET_Id) */
 struct zx_str* zx_ds_Manifest_GET_Id(struct zx_ds_Manifest_s* x) { return x->Id; }
 /* FUNC(zx_ds_Manifest_PUT_Id) */
@@ -2283,10 +2353,6 @@ void zx_ds_Manifest_PUT_Id(struct zx_ds_Manifest_s* x, struct zx_str* y) { x->Id
 
 
 
-/* FUNC(zx_ds_Object_GET_Encoding) */
-struct zx_str* zx_ds_Object_GET_Encoding(struct zx_ds_Object_s* x) { return x->Encoding; }
-/* FUNC(zx_ds_Object_PUT_Encoding) */
-void zx_ds_Object_PUT_Encoding(struct zx_ds_Object_s* x, struct zx_str* y) { x->Encoding = y; }
 /* FUNC(zx_ds_Object_GET_Id) */
 struct zx_str* zx_ds_Object_GET_Id(struct zx_ds_Object_s* x) { return x->Id; }
 /* FUNC(zx_ds_Object_PUT_Id) */
@@ -2295,12 +2361,18 @@ void zx_ds_Object_PUT_Id(struct zx_ds_Object_s* x, struct zx_str* y) { x->Id = y
 struct zx_str* zx_ds_Object_GET_MimeType(struct zx_ds_Object_s* x) { return x->MimeType; }
 /* FUNC(zx_ds_Object_PUT_MimeType) */
 void zx_ds_Object_PUT_MimeType(struct zx_ds_Object_s* x, struct zx_str* y) { x->MimeType = y; }
+/* FUNC(zx_ds_Object_GET_Encoding) */
+struct zx_str* zx_ds_Object_GET_Encoding(struct zx_ds_Object_s* x) { return x->Encoding; }
+/* FUNC(zx_ds_Object_PUT_Encoding) */
+void zx_ds_Object_PUT_Encoding(struct zx_ds_Object_s* x, struct zx_str* y) { x->Encoding = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_PGPData_NUM_PGPKeyID) */
 
@@ -2430,7 +2502,11 @@ void zx_ds_PGPData_DEL_PGPKeyID(struct zx_ds_PGPData_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_PGPData_NUM_PGPKeyPacket) */
 
@@ -2560,12 +2636,16 @@ void zx_ds_PGPData_DEL_PGPKeyPacket(struct zx_ds_PGPData_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_RSAKeyValue_NUM_Modulus) */
 
@@ -2695,7 +2775,11 @@ void zx_ds_RSAKeyValue_DEL_Modulus(struct zx_ds_RSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_RSAKeyValue_NUM_Exponent) */
 
@@ -2825,12 +2909,16 @@ void zx_ds_RSAKeyValue_DEL_Exponent(struct zx_ds_RSAKeyValue_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Reference_NUM_Transforms) */
 
@@ -2960,7 +3048,11 @@ void zx_ds_Reference_DEL_Transforms(struct zx_ds_Reference_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Reference_NUM_DigestMethod) */
 
@@ -3090,7 +3182,11 @@ void zx_ds_Reference_DEL_DigestMethod(struct zx_ds_Reference_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Reference_NUM_DigestValue) */
 
@@ -3220,24 +3316,28 @@ void zx_ds_Reference_DEL_DigestValue(struct zx_ds_Reference_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_Reference_GET_Id) */
 struct zx_str* zx_ds_Reference_GET_Id(struct zx_ds_Reference_s* x) { return x->Id; }
 /* FUNC(zx_ds_Reference_PUT_Id) */
 void zx_ds_Reference_PUT_Id(struct zx_ds_Reference_s* x, struct zx_str* y) { x->Id = y; }
-/* FUNC(zx_ds_Reference_GET_Type) */
-struct zx_str* zx_ds_Reference_GET_Type(struct zx_ds_Reference_s* x) { return x->Type; }
-/* FUNC(zx_ds_Reference_PUT_Type) */
-void zx_ds_Reference_PUT_Type(struct zx_ds_Reference_s* x, struct zx_str* y) { x->Type = y; }
 /* FUNC(zx_ds_Reference_GET_URI) */
 struct zx_str* zx_ds_Reference_GET_URI(struct zx_ds_Reference_s* x) { return x->URI; }
 /* FUNC(zx_ds_Reference_PUT_URI) */
 void zx_ds_Reference_PUT_URI(struct zx_ds_Reference_s* x, struct zx_str* y) { x->URI = y; }
+/* FUNC(zx_ds_Reference_GET_Type) */
+struct zx_str* zx_ds_Reference_GET_Type(struct zx_ds_Reference_s* x) { return x->Type; }
+/* FUNC(zx_ds_Reference_PUT_Type) */
+void zx_ds_Reference_PUT_Type(struct zx_ds_Reference_s* x, struct zx_str* y) { x->Type = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_RetrievalMethod_NUM_Transforms) */
 
@@ -3367,20 +3467,24 @@ void zx_ds_RetrievalMethod_DEL_Transforms(struct zx_ds_RetrievalMethod_s* x, int
   y->gg.g.n = y->gg.g.n->n;
 }
 
-/* FUNC(zx_ds_RetrievalMethod_GET_Type) */
-struct zx_str* zx_ds_RetrievalMethod_GET_Type(struct zx_ds_RetrievalMethod_s* x) { return x->Type; }
-/* FUNC(zx_ds_RetrievalMethod_PUT_Type) */
-void zx_ds_RetrievalMethod_PUT_Type(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y) { x->Type = y; }
+#endif
+
 /* FUNC(zx_ds_RetrievalMethod_GET_URI) */
 struct zx_str* zx_ds_RetrievalMethod_GET_URI(struct zx_ds_RetrievalMethod_s* x) { return x->URI; }
 /* FUNC(zx_ds_RetrievalMethod_PUT_URI) */
 void zx_ds_RetrievalMethod_PUT_URI(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y) { x->URI = y; }
+/* FUNC(zx_ds_RetrievalMethod_GET_Type) */
+struct zx_str* zx_ds_RetrievalMethod_GET_Type(struct zx_ds_RetrievalMethod_s* x) { return x->Type; }
+/* FUNC(zx_ds_RetrievalMethod_PUT_Type) */
+void zx_ds_RetrievalMethod_PUT_Type(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y) { x->Type = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_SPKIData_NUM_SPKISexp) */
 
@@ -3510,12 +3614,16 @@ void zx_ds_SPKIData_DEL_SPKISexp(struct zx_ds_SPKIData_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Signature_NUM_SignedInfo) */
 
@@ -3645,7 +3753,11 @@ void zx_ds_Signature_DEL_SignedInfo(struct zx_ds_Signature_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Signature_NUM_SignatureValue) */
 
@@ -3775,7 +3887,11 @@ void zx_ds_Signature_DEL_SignatureValue(struct zx_ds_Signature_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Signature_NUM_KeyInfo) */
 
@@ -3905,7 +4021,11 @@ void zx_ds_Signature_DEL_KeyInfo(struct zx_ds_Signature_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Signature_NUM_Object) */
 
@@ -4035,6 +4155,8 @@ void zx_ds_Signature_DEL_Object(struct zx_ds_Signature_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_Signature_GET_Id) */
 struct zx_str* zx_ds_Signature_GET_Id(struct zx_ds_Signature_s* x) { return x->Id; }
 /* FUNC(zx_ds_Signature_PUT_Id) */
@@ -4045,6 +4167,8 @@ void zx_ds_Signature_PUT_Id(struct zx_ds_Signature_s* x, struct zx_str* y) { x->
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_SignatureMethod_NUM_HMACOutputLength) */
 
@@ -4174,6 +4298,8 @@ void zx_ds_SignatureMethod_DEL_HMACOutputLength(struct zx_ds_SignatureMethod_s* 
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_SignatureMethod_GET_Algorithm) */
 struct zx_str* zx_ds_SignatureMethod_GET_Algorithm(struct zx_ds_SignatureMethod_s* x) { return x->Algorithm; }
 /* FUNC(zx_ds_SignatureMethod_PUT_Algorithm) */
@@ -4184,6 +4310,8 @@ void zx_ds_SignatureMethod_PUT_Algorithm(struct zx_ds_SignatureMethod_s* x, stru
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_SignatureProperties_NUM_SignatureProperty) */
 
@@ -4313,6 +4441,8 @@ void zx_ds_SignatureProperties_DEL_SignatureProperty(struct zx_ds_SignaturePrope
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_SignatureProperties_GET_Id) */
 struct zx_str* zx_ds_SignatureProperties_GET_Id(struct zx_ds_SignatureProperties_s* x) { return x->Id; }
 /* FUNC(zx_ds_SignatureProperties_PUT_Id) */
@@ -4322,14 +4452,14 @@ void zx_ds_SignatureProperties_PUT_Id(struct zx_ds_SignatureProperties_s* x, str
 
 
 
-/* FUNC(zx_ds_SignatureProperty_GET_Id) */
-struct zx_str* zx_ds_SignatureProperty_GET_Id(struct zx_ds_SignatureProperty_s* x) { return x->Id; }
-/* FUNC(zx_ds_SignatureProperty_PUT_Id) */
-void zx_ds_SignatureProperty_PUT_Id(struct zx_ds_SignatureProperty_s* x, struct zx_str* y) { x->Id = y; }
 /* FUNC(zx_ds_SignatureProperty_GET_Target) */
 struct zx_str* zx_ds_SignatureProperty_GET_Target(struct zx_ds_SignatureProperty_s* x) { return x->Target; }
 /* FUNC(zx_ds_SignatureProperty_PUT_Target) */
 void zx_ds_SignatureProperty_PUT_Target(struct zx_ds_SignatureProperty_s* x, struct zx_str* y) { x->Target = y; }
+/* FUNC(zx_ds_SignatureProperty_GET_Id) */
+struct zx_str* zx_ds_SignatureProperty_GET_Id(struct zx_ds_SignatureProperty_s* x) { return x->Id; }
+/* FUNC(zx_ds_SignatureProperty_PUT_Id) */
+void zx_ds_SignatureProperty_PUT_Id(struct zx_ds_SignatureProperty_s* x, struct zx_str* y) { x->Id = y; }
 
 
 
@@ -4345,6 +4475,8 @@ void zx_ds_SignatureValue_PUT_Id(struct zx_ds_SignatureValue_s* x, struct zx_str
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_SignedInfo_NUM_CanonicalizationMethod) */
 
@@ -4474,7 +4606,11 @@ void zx_ds_SignedInfo_DEL_CanonicalizationMethod(struct zx_ds_SignedInfo_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_SignedInfo_NUM_SignatureMethod) */
 
@@ -4604,7 +4740,11 @@ void zx_ds_SignedInfo_DEL_SignatureMethod(struct zx_ds_SignedInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_SignedInfo_NUM_Reference) */
 
@@ -4734,6 +4874,8 @@ void zx_ds_SignedInfo_DEL_Reference(struct zx_ds_SignedInfo_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ds_SignedInfo_GET_Id) */
 struct zx_str* zx_ds_SignedInfo_GET_Id(struct zx_ds_SignedInfo_s* x) { return x->Id; }
 /* FUNC(zx_ds_SignedInfo_PUT_Id) */
@@ -4744,6 +4886,8 @@ void zx_ds_SignedInfo_PUT_Id(struct zx_ds_SignedInfo_s* x, struct zx_str* y) { x
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Transform_NUM_XPath) */
 
@@ -4873,6 +5017,142 @@ void zx_ds_Transform_DEL_XPath(struct zx_ds_Transform_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_ds_Transform_NUM_InclusiveNamespaces) */
+
+int zx_ds_Transform_NUM_InclusiveNamespaces(struct zx_ds_Transform_s* x)
+{
+  struct zx_exca_InclusiveNamespaces_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->InclusiveNamespaces; y; ++n, y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_ds_Transform_GET_InclusiveNamespaces) */
+
+struct zx_exca_InclusiveNamespaces_s* zx_ds_Transform_GET_InclusiveNamespaces(struct zx_ds_Transform_s* x, int n)
+{
+  struct zx_exca_InclusiveNamespaces_s* y;
+  if (!x) return 0;
+  for (y = x->InclusiveNamespaces; n>=0 && y; --n, y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_ds_Transform_POP_InclusiveNamespaces) */
+
+struct zx_exca_InclusiveNamespaces_s* zx_ds_Transform_POP_InclusiveNamespaces(struct zx_ds_Transform_s* x)
+{
+  struct zx_exca_InclusiveNamespaces_s* y;
+  if (!x) return 0;
+  y = x->InclusiveNamespaces;
+  if (y)
+    x->InclusiveNamespaces = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_ds_Transform_PUSH_InclusiveNamespaces) */
+
+void zx_ds_Transform_PUSH_InclusiveNamespaces(struct zx_ds_Transform_s* x, struct zx_exca_InclusiveNamespaces_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->InclusiveNamespaces->gg.g;
+  x->InclusiveNamespaces = z;
+}
+
+/* FUNC(zx_ds_Transform_REV_InclusiveNamespaces) */
+
+void zx_ds_Transform_REV_InclusiveNamespaces(struct zx_ds_Transform_s* x)
+{
+  struct zx_exca_InclusiveNamespaces_s* nxt;
+  struct zx_exca_InclusiveNamespaces_s* y;
+  if (!x) return;
+  y = x->InclusiveNamespaces;
+  if (!y) return;
+  x->InclusiveNamespaces = 0;
+  while (y) {
+    nxt = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n;
+    y->gg.g.n = &x->InclusiveNamespaces->gg.g;
+    x->InclusiveNamespaces = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_ds_Transform_PUT_InclusiveNamespaces) */
+
+void zx_ds_Transform_PUT_InclusiveNamespaces(struct zx_ds_Transform_s* x, int n, struct zx_exca_InclusiveNamespaces_s* z)
+{
+  struct zx_exca_InclusiveNamespaces_s* y;
+  if (!x || !z) return;
+  y = x->InclusiveNamespaces;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->InclusiveNamespaces = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_ds_Transform_ADD_InclusiveNamespaces) */
+
+void zx_ds_Transform_ADD_InclusiveNamespaces(struct zx_ds_Transform_s* x, int n, struct zx_exca_InclusiveNamespaces_s* z)
+{
+  struct zx_exca_InclusiveNamespaces_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->InclusiveNamespaces->gg.g;
+    x->InclusiveNamespaces = z;
+    return;
+  case -1:
+    y = x->InclusiveNamespaces;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->InclusiveNamespaces; n > 1 && y; --n, y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_ds_Transform_DEL_InclusiveNamespaces) */
+
+void zx_ds_Transform_DEL_InclusiveNamespaces(struct zx_ds_Transform_s* x, int n)
+{
+  struct zx_exca_InclusiveNamespaces_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->InclusiveNamespaces = (struct zx_exca_InclusiveNamespaces_s*)x->InclusiveNamespaces->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_exca_InclusiveNamespaces_s*)x->InclusiveNamespaces;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->InclusiveNamespaces; n > 1 && y->gg.g.n; --n, y = (struct zx_exca_InclusiveNamespaces_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
 /* FUNC(zx_ds_Transform_GET_Algorithm) */
 struct zx_str* zx_ds_Transform_GET_Algorithm(struct zx_ds_Transform_s* x) { return x->Algorithm; }
 /* FUNC(zx_ds_Transform_PUT_Algorithm) */
@@ -4883,6 +5163,8 @@ void zx_ds_Transform_PUT_Algorithm(struct zx_ds_Transform_s* x, struct zx_str* y
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_Transforms_NUM_Transform) */
 
@@ -5012,12 +5294,16 @@ void zx_ds_Transforms_DEL_Transform(struct zx_ds_Transforms_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509Data_NUM_X509IssuerSerial) */
 
@@ -5147,7 +5433,11 @@ void zx_ds_X509Data_DEL_X509IssuerSerial(struct zx_ds_X509Data_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509Data_NUM_X509SKI) */
 
@@ -5277,7 +5567,11 @@ void zx_ds_X509Data_DEL_X509SKI(struct zx_ds_X509Data_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509Data_NUM_X509SubjectName) */
 
@@ -5407,7 +5701,11 @@ void zx_ds_X509Data_DEL_X509SubjectName(struct zx_ds_X509Data_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509Data_NUM_X509Certificate) */
 
@@ -5537,7 +5835,11 @@ void zx_ds_X509Data_DEL_X509Certificate(struct zx_ds_X509Data_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509Data_NUM_X509CRL) */
 
@@ -5667,12 +5969,16 @@ void zx_ds_X509Data_DEL_X509CRL(struct zx_ds_X509Data_s* x, int n)
   y->g.n = y->g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509IssuerSerial_NUM_X509IssuerName) */
 
@@ -5802,7 +6108,11 @@ void zx_ds_X509IssuerSerial_DEL_X509IssuerName(struct zx_ds_X509IssuerSerial_s* 
   y->g.n = y->g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ds_X509IssuerSerial_NUM_X509SerialNumber) */
 
@@ -5931,6 +6241,8 @@ void zx_ds_X509IssuerSerial_DEL_X509SerialNumber(struct zx_ds_X509IssuerSerial_s
   }
   y->g.n = y->g.n->n;
 }
+
+#endif
 
 
 

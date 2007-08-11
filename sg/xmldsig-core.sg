@@ -1,8 +1,9 @@
 # xmldsig-core.sg  --  Slightly edited after generation
-# $Id: xmldsig-core.sg,v 1.1 2006/05/28 05:47:17 sampo Exp $
+# $Id: xmldsig-core.sg,v 1.2 2007-08-10 19:19:10 sampo Exp $
 
-target(ds,http://www.w3.org/2000/09/xmldsig#)
-ns(xs,http://www.w3.org/2001/XMLSchema)
+target(ds, http://www.w3.org/2000/09/xmldsig#)
+ns(xs, http://www.w3.org/2001/XMLSchema)
+ns(exca, http://www.w3.org/2001/10/xml-exc-c14n#)
 
 %CryptoBinary:	 base(xs:base64Binary) ;
 
@@ -59,6 +60,7 @@ Transforms	 -> %ds:TransformsType
 Transform	 -> %ds:TransformType
 %TransformType:
   ds:XPath*	 -> %xs:string
+  exca:InclusiveNamespaces?
   any*
   @Algorithm	 -> %xs:anyURI
   ;

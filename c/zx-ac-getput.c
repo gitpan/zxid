@@ -7,11 +7,13 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** getput-templ.c  -  Auxiliary functions template: cloning, freeing, walking data
- ** Copyright (c) 2006 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
- ** Distribution prohibited unless authorized in writing. See file COPYING.
- ** Id: getput-templ.c,v 1.5 2006/08/28 05:23:23 sampo Exp $
+ ** Distribution prohibited unless authorized in writing.
+ ** Licensed under Apache License 2.0, see file COPYING.
+ ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -28,6 +30,8 @@
 #include "c/zx-ac-data.h"
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationLimit_NUM_ActivationLimitDuration) */
 
@@ -157,7 +161,11 @@ void zx_ac_ActivationLimit_DEL_ActivationLimitDuration(struct zx_ac_ActivationLi
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationLimit_NUM_ActivationLimitUsages) */
 
@@ -287,7 +295,11 @@ void zx_ac_ActivationLimit_DEL_ActivationLimitUsages(struct zx_ac_ActivationLimi
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationLimit_NUM_ActivationLimitSession) */
 
@@ -417,6 +429,8 @@ void zx_ac_ActivationLimit_DEL_ActivationLimitSession(struct zx_ac_ActivationLim
   y->g.n = y->g.n->n;
 }
 
+#endif
+
 
 
 
@@ -441,6 +455,8 @@ void zx_ac_ActivationLimitUsages_PUT_number(struct zx_ac_ActivationLimitUsages_s
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationPin_NUM_Length) */
 
@@ -570,7 +586,11 @@ void zx_ac_ActivationPin_DEL_Length(struct zx_ac_ActivationPin_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationPin_NUM_Alphabet) */
 
@@ -700,7 +720,11 @@ void zx_ac_ActivationPin_DEL_Alphabet(struct zx_ac_ActivationPin_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationPin_NUM_Generation) */
 
@@ -830,7 +854,11 @@ void zx_ac_ActivationPin_DEL_Generation(struct zx_ac_ActivationPin_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationPin_NUM_ActivationLimit) */
 
@@ -960,7 +988,11 @@ void zx_ac_ActivationPin_DEL_ActivationLimit(struct zx_ac_ActivationPin_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ActivationPin_NUM_Extension) */
 
@@ -1090,29 +1122,33 @@ void zx_ac_ActivationPin_DEL_Extension(struct zx_ac_ActivationPin_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
-/* FUNC(zx_ac_Alphabet_GET_case_is_c_keyword) */
-struct zx_str* zx_ac_Alphabet_GET_case_is_c_keyword(struct zx_ac_Alphabet_s* x) { return x->case_is_c_keyword; }
-/* FUNC(zx_ac_Alphabet_PUT_case_is_c_keyword) */
-void zx_ac_Alphabet_PUT_case_is_c_keyword(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->case_is_c_keyword = y; }
-/* FUNC(zx_ac_Alphabet_GET_excludedChars) */
-struct zx_str* zx_ac_Alphabet_GET_excludedChars(struct zx_ac_Alphabet_s* x) { return x->excludedChars; }
-/* FUNC(zx_ac_Alphabet_PUT_excludedChars) */
-void zx_ac_Alphabet_PUT_excludedChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->excludedChars = y; }
+
 /* FUNC(zx_ac_Alphabet_GET_requiredChars) */
 struct zx_str* zx_ac_Alphabet_GET_requiredChars(struct zx_ac_Alphabet_s* x) { return x->requiredChars; }
 /* FUNC(zx_ac_Alphabet_PUT_requiredChars) */
 void zx_ac_Alphabet_PUT_requiredChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->requiredChars = y; }
+/* FUNC(zx_ac_Alphabet_GET_excludedChars) */
+struct zx_str* zx_ac_Alphabet_GET_excludedChars(struct zx_ac_Alphabet_s* x) { return x->excludedChars; }
+/* FUNC(zx_ac_Alphabet_PUT_excludedChars) */
+void zx_ac_Alphabet_PUT_excludedChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->excludedChars = y; }
+/* FUNC(zx_ac_Alphabet_GET_case_is_c_keyword) */
+struct zx_str* zx_ac_Alphabet_GET_case_is_c_keyword(struct zx_ac_Alphabet_s* x) { return x->case_is_c_keyword; }
+/* FUNC(zx_ac_Alphabet_PUT_case_is_c_keyword) */
+void zx_ac_Alphabet_PUT_case_is_c_keyword(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->case_is_c_keyword = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AsymmetricDecryption_NUM_Extension) */
 
@@ -1242,12 +1278,16 @@ void zx_ac_AsymmetricDecryption_DEL_Extension(struct zx_ac_AsymmetricDecryption_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AsymmetricKeyAgreement_NUM_Extension) */
 
@@ -1377,12 +1417,16 @@ void zx_ac_AsymmetricKeyAgreement_DEL_Extension(struct zx_ac_AsymmetricKeyAgreem
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatingAuthority_NUM_GoverningAgreements) */
 
@@ -1512,6 +1556,8 @@ void zx_ac_AuthenticatingAuthority_DEL_GoverningAgreements(struct zx_ac_Authenti
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ac_AuthenticatingAuthority_GET_ID) */
 struct zx_str* zx_ac_AuthenticatingAuthority_GET_ID(struct zx_ac_AuthenticatingAuthority_s* x) { return x->ID; }
 /* FUNC(zx_ac_AuthenticatingAuthority_PUT_ID) */
@@ -1522,6 +1568,8 @@ void zx_ac_AuthenticatingAuthority_PUT_ID(struct zx_ac_AuthenticatingAuthority_s
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_Identification) */
 
@@ -1651,7 +1699,11 @@ void zx_ac_AuthenticationContextStatement_DEL_Identification(struct zx_ac_Authen
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_TechnicalProtection) */
 
@@ -1781,7 +1833,11 @@ void zx_ac_AuthenticationContextStatement_DEL_TechnicalProtection(struct zx_ac_A
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_OperationalProtection) */
 
@@ -1911,7 +1967,11 @@ void zx_ac_AuthenticationContextStatement_DEL_OperationalProtection(struct zx_ac
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_AuthenticationMethod) */
 
@@ -2041,7 +2101,11 @@ void zx_ac_AuthenticationContextStatement_DEL_AuthenticationMethod(struct zx_ac_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_GoverningAgreements) */
 
@@ -2171,7 +2235,11 @@ void zx_ac_AuthenticationContextStatement_DEL_GoverningAgreements(struct zx_ac_A
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_AuthenticatingAuthority) */
 
@@ -2301,7 +2369,11 @@ void zx_ac_AuthenticationContextStatement_DEL_AuthenticatingAuthority(struct zx_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationContextStatement_NUM_Extension) */
 
@@ -2431,6 +2503,8 @@ void zx_ac_AuthenticationContextStatement_DEL_Extension(struct zx_ac_Authenticat
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ac_AuthenticationContextStatement_GET_ID) */
 struct zx_str* zx_ac_AuthenticationContextStatement_GET_ID(struct zx_ac_AuthenticationContextStatement_s* x) { return x->ID; }
 /* FUNC(zx_ac_AuthenticationContextStatement_PUT_ID) */
@@ -2441,6 +2515,8 @@ void zx_ac_AuthenticationContextStatement_PUT_ID(struct zx_ac_AuthenticationCont
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationMethod_NUM_PrincipalAuthenticationMechanism) */
 
@@ -2570,7 +2646,11 @@ void zx_ac_AuthenticationMethod_DEL_PrincipalAuthenticationMechanism(struct zx_a
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationMethod_NUM_Authenticator) */
 
@@ -2700,7 +2780,11 @@ void zx_ac_AuthenticationMethod_DEL_Authenticator(struct zx_ac_AuthenticationMet
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationMethod_NUM_AuthenticatorTransportProtocol) */
 
@@ -2830,7 +2914,11 @@ void zx_ac_AuthenticationMethod_DEL_AuthenticatorTransportProtocol(struct zx_ac_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticationMethod_NUM_Extension) */
 
@@ -2960,12 +3048,16 @@ void zx_ac_AuthenticationMethod_DEL_Extension(struct zx_ac_AuthenticationMethod_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_PreviousSession) */
 
@@ -3095,7 +3187,11 @@ void zx_ac_Authenticator_DEL_PreviousSession(struct zx_ac_Authenticator_s* x, in
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_ResumeSession) */
 
@@ -3225,7 +3321,11 @@ void zx_ac_Authenticator_DEL_ResumeSession(struct zx_ac_Authenticator_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_DigSig) */
 
@@ -3355,7 +3455,11 @@ void zx_ac_Authenticator_DEL_DigSig(struct zx_ac_Authenticator_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_Password) */
 
@@ -3485,7 +3589,11 @@ void zx_ac_Authenticator_DEL_Password(struct zx_ac_Authenticator_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_ZeroKnowledge) */
 
@@ -3615,7 +3723,11 @@ void zx_ac_Authenticator_DEL_ZeroKnowledge(struct zx_ac_Authenticator_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_SharedSecretChallengeResponse) */
 
@@ -3745,7 +3857,11 @@ void zx_ac_Authenticator_DEL_SharedSecretChallengeResponse(struct zx_ac_Authenti
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_SharedSecretDynamicPlaintext) */
 
@@ -3875,7 +3991,11 @@ void zx_ac_Authenticator_DEL_SharedSecretDynamicPlaintext(struct zx_ac_Authentic
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_IPAddress) */
 
@@ -4005,7 +4125,11 @@ void zx_ac_Authenticator_DEL_IPAddress(struct zx_ac_Authenticator_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_AsymmetricDecryption) */
 
@@ -4135,7 +4259,11 @@ void zx_ac_Authenticator_DEL_AsymmetricDecryption(struct zx_ac_Authenticator_s* 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_AsymmetricKeyAgreement) */
 
@@ -4265,7 +4393,11 @@ void zx_ac_Authenticator_DEL_AsymmetricKeyAgreement(struct zx_ac_Authenticator_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Authenticator_NUM_Extension) */
 
@@ -4395,12 +4527,16 @@ void zx_ac_Authenticator_DEL_Extension(struct zx_ac_Authenticator_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_HTTP) */
 
@@ -4530,7 +4666,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_HTTP(struct zx_ac_AuthenticatorTra
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_SSL) */
 
@@ -4660,7 +4800,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_SSL(struct zx_ac_AuthenticatorTran
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_MobileNetworkNoEncryption) */
 
@@ -4790,7 +4934,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_MobileNetworkNoEncryption(struct z
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_MobileNetworkRadioEncryption) */
 
@@ -4920,7 +5068,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_MobileNetworkRadioEncryption(struc
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_MobileNetworkEndToEndEncryption) */
 
@@ -5050,7 +5202,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_MobileNetworkEndToEndEncryption(st
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_WTLS) */
 
@@ -5180,7 +5336,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_WTLS(struct zx_ac_AuthenticatorTra
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_IPSec) */
 
@@ -5310,7 +5470,11 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_IPSec(struct zx_ac_AuthenticatorTr
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_AuthenticatorTransportProtocol_NUM_Extension) */
 
@@ -5440,12 +5604,16 @@ void zx_ac_AuthenticatorTransportProtocol_DEL_Extension(struct zx_ac_Authenticat
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_DeactivationCallCenter_NUM_Extension) */
 
@@ -5575,12 +5743,16 @@ void zx_ac_DeactivationCallCenter_DEL_Extension(struct zx_ac_DeactivationCallCen
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_DigSig_NUM_Extension) */
 
@@ -5710,6 +5882,8 @@ void zx_ac_DigSig_DEL_Extension(struct zx_ac_DigSig_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 
 
 
@@ -5739,6 +5913,8 @@ void zx_ac_GoverningAgreementRef_PUT_governingAgreementRef(struct zx_ac_Governin
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_GoverningAgreements_NUM_GoverningAgreementRef) */
 
@@ -5868,12 +6044,16 @@ void zx_ac_GoverningAgreements_DEL_GoverningAgreementRef(struct zx_ac_GoverningA
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_HTTP_NUM_Extension) */
 
@@ -6003,12 +6183,16 @@ void zx_ac_HTTP_DEL_Extension(struct zx_ac_HTTP_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_IPAddress_NUM_Extension) */
 
@@ -6138,12 +6322,16 @@ void zx_ac_IPAddress_DEL_Extension(struct zx_ac_IPAddress_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_IPSec_NUM_Extension) */
 
@@ -6273,12 +6461,16 @@ void zx_ac_IPSec_DEL_Extension(struct zx_ac_IPSec_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Identification_NUM_PhysicalVerification) */
 
@@ -6408,7 +6600,11 @@ void zx_ac_Identification_DEL_PhysicalVerification(struct zx_ac_Identification_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Identification_NUM_WrittenConsent) */
 
@@ -6538,7 +6734,11 @@ void zx_ac_Identification_DEL_WrittenConsent(struct zx_ac_Identification_s* x, i
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Identification_NUM_Extension) */
 
@@ -6668,6 +6868,8 @@ void zx_ac_Identification_DEL_Extension(struct zx_ac_Identification_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 /* FUNC(zx_ac_Identification_GET_nym) */
 struct zx_str* zx_ac_Identification_GET_nym(struct zx_ac_Identification_s* x) { return x->nym; }
 /* FUNC(zx_ac_Identification_PUT_nym) */
@@ -6678,6 +6880,8 @@ void zx_ac_Identification_PUT_nym(struct zx_ac_Identification_s* x, struct zx_st
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_KeyActivation_NUM_ActivationPin) */
 
@@ -6807,7 +7011,11 @@ void zx_ac_KeyActivation_DEL_ActivationPin(struct zx_ac_KeyActivation_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_KeyActivation_NUM_Extension) */
 
@@ -6937,6 +7145,8 @@ void zx_ac_KeyActivation_DEL_Extension(struct zx_ac_KeyActivation_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 
 
 
@@ -6960,20 +7170,22 @@ void zx_ac_KeyStorage_PUT_medium(struct zx_ac_KeyStorage_s* x, struct zx_str* y)
 
 
 
-/* FUNC(zx_ac_Length_GET_max) */
-struct zx_str* zx_ac_Length_GET_max(struct zx_ac_Length_s* x) { return x->max; }
-/* FUNC(zx_ac_Length_PUT_max) */
-void zx_ac_Length_PUT_max(struct zx_ac_Length_s* x, struct zx_str* y) { x->max = y; }
 /* FUNC(zx_ac_Length_GET_min) */
 struct zx_str* zx_ac_Length_GET_min(struct zx_ac_Length_s* x) { return x->min; }
 /* FUNC(zx_ac_Length_PUT_min) */
 void zx_ac_Length_PUT_min(struct zx_ac_Length_s* x, struct zx_str* y) { x->min = y; }
+/* FUNC(zx_ac_Length_GET_max) */
+struct zx_str* zx_ac_Length_GET_max(struct zx_ac_Length_s* x) { return x->max; }
+/* FUNC(zx_ac_Length_PUT_max) */
+void zx_ac_Length_PUT_max(struct zx_ac_Length_s* x, struct zx_str* y) { x->max = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_MobileNetworkEndToEndEncryption_NUM_Extension) */
 
@@ -7103,12 +7315,16 @@ void zx_ac_MobileNetworkEndToEndEncryption_DEL_Extension(struct zx_ac_MobileNetw
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_MobileNetworkNoEncryption_NUM_Extension) */
 
@@ -7238,12 +7454,16 @@ void zx_ac_MobileNetworkNoEncryption_DEL_Extension(struct zx_ac_MobileNetworkNoE
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_MobileNetworkRadioEncryption_NUM_Extension) */
 
@@ -7373,12 +7593,16 @@ void zx_ac_MobileNetworkRadioEncryption_DEL_Extension(struct zx_ac_MobileNetwork
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_OperationalProtection_NUM_SecurityAudit) */
 
@@ -7508,7 +7732,11 @@ void zx_ac_OperationalProtection_DEL_SecurityAudit(struct zx_ac_OperationalProte
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_OperationalProtection_NUM_DeactivationCallCenter) */
 
@@ -7638,7 +7866,11 @@ void zx_ac_OperationalProtection_DEL_DeactivationCallCenter(struct zx_ac_Operati
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_OperationalProtection_NUM_Extension) */
 
@@ -7768,12 +8000,16 @@ void zx_ac_OperationalProtection_DEL_Extension(struct zx_ac_OperationalProtectio
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Password_NUM_Length) */
 
@@ -7903,7 +8139,11 @@ void zx_ac_Password_DEL_Length(struct zx_ac_Password_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Password_NUM_Alphabet) */
 
@@ -8033,7 +8273,11 @@ void zx_ac_Password_DEL_Alphabet(struct zx_ac_Password_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Password_NUM_Generation) */
 
@@ -8163,7 +8407,11 @@ void zx_ac_Password_DEL_Generation(struct zx_ac_Password_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Password_NUM_Extension) */
 
@@ -8293,6 +8541,8 @@ void zx_ac_Password_DEL_Extension(struct zx_ac_Password_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
+
 
 
 
@@ -8308,6 +8558,8 @@ void zx_ac_PhysicalVerification_PUT_credentialLevel(struct zx_ac_PhysicalVerific
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PreviousSession_NUM_Extension) */
 
@@ -8437,12 +8689,16 @@ void zx_ac_PreviousSession_DEL_Extension(struct zx_ac_PreviousSession_s* x, int 
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrincipalAuthenticationMechanism_NUM_Password) */
 
@@ -8572,7 +8828,11 @@ void zx_ac_PrincipalAuthenticationMechanism_DEL_Password(struct zx_ac_PrincipalA
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrincipalAuthenticationMechanism_NUM_Token) */
 
@@ -8702,7 +8962,11 @@ void zx_ac_PrincipalAuthenticationMechanism_DEL_Token(struct zx_ac_PrincipalAuth
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrincipalAuthenticationMechanism_NUM_Smartcard) */
 
@@ -8832,7 +9096,11 @@ void zx_ac_PrincipalAuthenticationMechanism_DEL_Smartcard(struct zx_ac_Principal
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrincipalAuthenticationMechanism_NUM_ActivationPin) */
 
@@ -8962,7 +9230,11 @@ void zx_ac_PrincipalAuthenticationMechanism_DEL_ActivationPin(struct zx_ac_Princ
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrincipalAuthenticationMechanism_NUM_Extension) */
 
@@ -9092,12 +9364,16 @@ void zx_ac_PrincipalAuthenticationMechanism_DEL_Extension(struct zx_ac_Principal
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrivateKeyProtection_NUM_KeyActivation) */
 
@@ -9227,7 +9503,11 @@ void zx_ac_PrivateKeyProtection_DEL_KeyActivation(struct zx_ac_PrivateKeyProtect
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrivateKeyProtection_NUM_KeyStorage) */
 
@@ -9357,7 +9637,11 @@ void zx_ac_PrivateKeyProtection_DEL_KeyStorage(struct zx_ac_PrivateKeyProtection
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrivateKeyProtection_NUM_KeySharing) */
 
@@ -9487,7 +9771,11 @@ void zx_ac_PrivateKeyProtection_DEL_KeySharing(struct zx_ac_PrivateKeyProtection
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_PrivateKeyProtection_NUM_Extension) */
 
@@ -9617,12 +9905,16 @@ void zx_ac_PrivateKeyProtection_DEL_Extension(struct zx_ac_PrivateKeyProtection_
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ResumeSession_NUM_Extension) */
 
@@ -9752,12 +10044,16 @@ void zx_ac_ResumeSession_DEL_Extension(struct zx_ac_ResumeSession_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SSL_NUM_Extension) */
 
@@ -9887,12 +10183,16 @@ void zx_ac_SSL_DEL_Extension(struct zx_ac_SSL_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SecretKeyProtection_NUM_KeyActivation) */
 
@@ -10022,7 +10322,11 @@ void zx_ac_SecretKeyProtection_DEL_KeyActivation(struct zx_ac_SecretKeyProtectio
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SecretKeyProtection_NUM_KeyStorage) */
 
@@ -10152,7 +10456,11 @@ void zx_ac_SecretKeyProtection_DEL_KeyStorage(struct zx_ac_SecretKeyProtection_s
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SecretKeyProtection_NUM_Extension) */
 
@@ -10282,12 +10590,16 @@ void zx_ac_SecretKeyProtection_DEL_Extension(struct zx_ac_SecretKeyProtection_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SecurityAudit_NUM_SwitchAudit) */
 
@@ -10417,7 +10729,11 @@ void zx_ac_SecurityAudit_DEL_SwitchAudit(struct zx_ac_SecurityAudit_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SecurityAudit_NUM_Extension) */
 
@@ -10547,12 +10863,16 @@ void zx_ac_SecurityAudit_DEL_Extension(struct zx_ac_SecurityAudit_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SharedSecretChallengeResponse_NUM_Extension) */
 
@@ -10682,12 +11002,16 @@ void zx_ac_SharedSecretChallengeResponse_DEL_Extension(struct zx_ac_SharedSecret
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SharedSecretDynamicPlaintext_NUM_Extension) */
 
@@ -10817,12 +11141,16 @@ void zx_ac_SharedSecretDynamicPlaintext_DEL_Extension(struct zx_ac_SharedSecretD
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Smartcard_NUM_Extension) */
 
@@ -10952,12 +11280,16 @@ void zx_ac_Smartcard_DEL_Extension(struct zx_ac_Smartcard_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_SwitchAudit_NUM_Extension) */
 
@@ -11087,12 +11419,16 @@ void zx_ac_SwitchAudit_DEL_Extension(struct zx_ac_SwitchAudit_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_TechnicalProtection_NUM_PrivateKeyProtection) */
 
@@ -11222,7 +11558,11 @@ void zx_ac_TechnicalProtection_DEL_PrivateKeyProtection(struct zx_ac_TechnicalPr
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_TechnicalProtection_NUM_SecretKeyProtection) */
 
@@ -11352,7 +11692,11 @@ void zx_ac_TechnicalProtection_DEL_SecretKeyProtection(struct zx_ac_TechnicalPro
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_TechnicalProtection_NUM_Extension) */
 
@@ -11482,15 +11826,13 @@ void zx_ac_TechnicalProtection_DEL_Extension(struct zx_ac_TechnicalProtection_s*
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
-/* FUNC(zx_ac_TimeSyncToken_GET_DeviceInHand) */
-struct zx_str* zx_ac_TimeSyncToken_GET_DeviceInHand(struct zx_ac_TimeSyncToken_s* x) { return x->DeviceInHand; }
-/* FUNC(zx_ac_TimeSyncToken_PUT_DeviceInHand) */
-void zx_ac_TimeSyncToken_PUT_DeviceInHand(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y) { x->DeviceInHand = y; }
+
 /* FUNC(zx_ac_TimeSyncToken_GET_DeviceType) */
 struct zx_str* zx_ac_TimeSyncToken_GET_DeviceType(struct zx_ac_TimeSyncToken_s* x) { return x->DeviceType; }
 /* FUNC(zx_ac_TimeSyncToken_PUT_DeviceType) */
@@ -11499,12 +11841,18 @@ void zx_ac_TimeSyncToken_PUT_DeviceType(struct zx_ac_TimeSyncToken_s* x, struct 
 struct zx_str* zx_ac_TimeSyncToken_GET_SeedLength(struct zx_ac_TimeSyncToken_s* x) { return x->SeedLength; }
 /* FUNC(zx_ac_TimeSyncToken_PUT_SeedLength) */
 void zx_ac_TimeSyncToken_PUT_SeedLength(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y) { x->SeedLength = y; }
+/* FUNC(zx_ac_TimeSyncToken_GET_DeviceInHand) */
+struct zx_str* zx_ac_TimeSyncToken_GET_DeviceInHand(struct zx_ac_TimeSyncToken_s* x) { return x->DeviceInHand; }
+/* FUNC(zx_ac_TimeSyncToken_PUT_DeviceInHand) */
+void zx_ac_TimeSyncToken_PUT_DeviceInHand(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y) { x->DeviceInHand = y; }
 
 
 
 
 
 
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Token_NUM_TimeSyncToken) */
 
@@ -11634,7 +11982,11 @@ void zx_ac_Token_DEL_TimeSyncToken(struct zx_ac_Token_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_Token_NUM_Extension) */
 
@@ -11764,12 +12116,16 @@ void zx_ac_Token_DEL_Extension(struct zx_ac_Token_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_WTLS_NUM_Extension) */
 
@@ -11899,12 +12255,16 @@ void zx_ac_WTLS_DEL_Extension(struct zx_ac_WTLS_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_WrittenConsent_NUM_Extension) */
 
@@ -12034,12 +12394,16 @@ void zx_ac_WrittenConsent_DEL_Extension(struct zx_ac_WrittenConsent_s* x, int n)
   y->gg.g.n = y->gg.g.n->n;
 }
 
+#endif
 
 
 
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
 
 /* FUNC(zx_ac_ZeroKnowledge_NUM_Extension) */
 
@@ -12168,6 +12532,8 @@ void zx_ac_ZeroKnowledge_DEL_Extension(struct zx_ac_ZeroKnowledge_s* x, int n)
   }
   y->gg.g.n = y->gg.g.n->n;
 }
+
+#endif
 
 
 
