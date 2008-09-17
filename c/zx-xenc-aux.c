@@ -701,10 +701,10 @@ void zx_FREE_xenc_EncryptedData(struct zx_ctx* c, struct zx_xenc_EncryptedData_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Id, free_strs);
-  zx_free_attr(c, x->Type, free_strs);
-  zx_free_attr(c, x->MimeType, free_strs);
   zx_free_attr(c, x->Encoding, free_strs);
+  zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->MimeType, free_strs);
+  zx_free_attr(c, x->Type, free_strs);
 
   {
       struct zx_xenc_EncryptionMethod_s* e;
@@ -772,10 +772,10 @@ void zx_DUP_STRS_xenc_EncryptedData(struct zx_ctx* c, struct zx_xenc_EncryptedDa
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Id);
-  zx_dup_attr(c, x->Type);
-  zx_dup_attr(c, x->MimeType);
   zx_dup_attr(c, x->Encoding);
+  zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->MimeType);
+  zx_dup_attr(c, x->Type);
 
   {
       struct zx_xenc_EncryptionMethod_s* e;
@@ -811,10 +811,10 @@ struct zx_xenc_EncryptedData_s* zx_DEEP_CLONE_xenc_EncryptedData(struct zx_ctx* 
   x = (struct zx_xenc_EncryptedData_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xenc_EncryptedData_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Id = zx_clone_attr(c, x->Id);
-  x->Type = zx_clone_attr(c, x->Type);
-  x->MimeType = zx_clone_attr(c, x->MimeType);
   x->Encoding = zx_clone_attr(c, x->Encoding);
+  x->Id = zx_clone_attr(c, x->Id);
+  x->MimeType = zx_clone_attr(c, x->MimeType);
+  x->Type = zx_clone_attr(c, x->Type);
 
   {
       struct zx_xenc_EncryptionMethod_s* e;
@@ -970,11 +970,11 @@ void zx_FREE_xenc_EncryptedKey(struct zx_ctx* c, struct zx_xenc_EncryptedKey_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Id, free_strs);
-  zx_free_attr(c, x->Type, free_strs);
-  zx_free_attr(c, x->MimeType, free_strs);
   zx_free_attr(c, x->Encoding, free_strs);
+  zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->MimeType, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
+  zx_free_attr(c, x->Type, free_strs);
 
   {
       struct zx_xenc_EncryptionMethod_s* e;
@@ -1051,11 +1051,11 @@ void zx_DUP_STRS_xenc_EncryptedKey(struct zx_ctx* c, struct zx_xenc_EncryptedKey
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Id);
-  zx_dup_attr(c, x->Type);
-  zx_dup_attr(c, x->MimeType);
   zx_dup_attr(c, x->Encoding);
+  zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->MimeType);
   zx_dup_attr(c, x->Recipient);
+  zx_dup_attr(c, x->Type);
 
   {
       struct zx_xenc_EncryptionMethod_s* e;
@@ -1097,11 +1097,11 @@ struct zx_xenc_EncryptedKey_s* zx_DEEP_CLONE_xenc_EncryptedKey(struct zx_ctx* c,
   x = (struct zx_xenc_EncryptedKey_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xenc_EncryptedKey_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Id = zx_clone_attr(c, x->Id);
-  x->Type = zx_clone_attr(c, x->Type);
-  x->MimeType = zx_clone_attr(c, x->MimeType);
   x->Encoding = zx_clone_attr(c, x->Encoding);
+  x->Id = zx_clone_attr(c, x->Id);
+  x->MimeType = zx_clone_attr(c, x->MimeType);
   x->Recipient = zx_clone_attr(c, x->Recipient);
+  x->Type = zx_clone_attr(c, x->Type);
 
   {
       struct zx_xenc_EncryptionMethod_s* e;
@@ -1576,8 +1576,8 @@ void zx_FREE_xenc_EncryptionProperty(struct zx_ctx* c, struct zx_xenc_Encryption
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Target, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->Target, free_strs);
 
 
 
@@ -1613,8 +1613,8 @@ void zx_DUP_STRS_xenc_EncryptionProperty(struct zx_ctx* c, struct zx_xenc_Encryp
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Target);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->Target);
 
 
 }
@@ -1630,8 +1630,8 @@ struct zx_xenc_EncryptionProperty_s* zx_DEEP_CLONE_xenc_EncryptionProperty(struc
   x = (struct zx_xenc_EncryptionProperty_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xenc_EncryptionProperty_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Target = zx_clone_attr(c, x->Target);
   x->Id = zx_clone_attr(c, x->Id);
+  x->Target = zx_clone_attr(c, x->Target);
 
 
   return x;
@@ -1871,6 +1871,14 @@ void zx_FREE_xenc_OriginatorKeyInfo(struct zx_ctx* c, struct zx_xenc_OriginatorK
       }
   }
   zx_free_simple_elems(c, x->MgmtData, free_strs);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      struct zx_xenc_EncryptedKey_s* en;
+      for (e = x->EncryptedKey; e; e = en) {
+	  en = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n;
+	  zx_FREE_xenc_EncryptedKey(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -1934,6 +1942,11 @@ void zx_DUP_STRS_xenc_OriginatorKeyInfo(struct zx_ctx* c, struct zx_xenc_Origina
 	  zx_DUP_STRS_ds_SPKIData(c, e);
   }
   zx_dup_strs_simple_elems(c, x->MgmtData);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n)
+	  zx_DUP_STRS_xenc_EncryptedKey(c, e);
+  }
 
 }
 
@@ -2017,6 +2030,19 @@ struct zx_xenc_OriginatorKeyInfo_s* zx_DEEP_CLONE_xenc_OriginatorKeyInfo(struct 
       }
   }
   x->MgmtData = zx_deep_clone_simple_elems(c,x->MgmtData, dup_strs);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      struct zx_xenc_EncryptedKey_s* en;
+      struct zx_xenc_EncryptedKey_s* enn;
+      for (enn = 0, e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xenc_EncryptedKey(c, e, dup_strs);
+	  if (!enn)
+	      x->EncryptedKey = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -2085,6 +2111,14 @@ int zx_WALK_SO_xenc_OriginatorKeyInfo(struct zx_ctx* c, struct zx_xenc_Originato
   ret = zx_walk_so_simple_elems(c, x->MgmtData, ctx, callback);
   if (ret)
     return ret;
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xenc_EncryptedKey(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
 
   
   return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);
@@ -2177,6 +2211,14 @@ void zx_FREE_xenc_RecipientKeyInfo(struct zx_ctx* c, struct zx_xenc_RecipientKey
       }
   }
   zx_free_simple_elems(c, x->MgmtData, free_strs);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      struct zx_xenc_EncryptedKey_s* en;
+      for (e = x->EncryptedKey; e; e = en) {
+	  en = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n;
+	  zx_FREE_xenc_EncryptedKey(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -2240,6 +2282,11 @@ void zx_DUP_STRS_xenc_RecipientKeyInfo(struct zx_ctx* c, struct zx_xenc_Recipien
 	  zx_DUP_STRS_ds_SPKIData(c, e);
   }
   zx_dup_strs_simple_elems(c, x->MgmtData);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n)
+	  zx_DUP_STRS_xenc_EncryptedKey(c, e);
+  }
 
 }
 
@@ -2323,6 +2370,19 @@ struct zx_xenc_RecipientKeyInfo_s* zx_DEEP_CLONE_xenc_RecipientKeyInfo(struct zx
       }
   }
   x->MgmtData = zx_deep_clone_simple_elems(c,x->MgmtData, dup_strs);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      struct zx_xenc_EncryptedKey_s* en;
+      struct zx_xenc_EncryptedKey_s* enn;
+      for (enn = 0, e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xenc_EncryptedKey(c, e, dup_strs);
+	  if (!enn)
+	      x->EncryptedKey = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -2391,6 +2451,14 @@ int zx_WALK_SO_xenc_RecipientKeyInfo(struct zx_ctx* c, struct zx_xenc_RecipientK
   ret = zx_walk_so_simple_elems(c, x->MgmtData, ctx, callback);
   if (ret)
     return ret;
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xenc_EncryptedKey(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
 
   
   return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);

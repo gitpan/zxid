@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxid.c,v 1.32 2007/03/06 07:39:13 sampo Exp $
+ * $Id: zxid.c,v 1.37 2008-04-17 00:52:48 sampo Exp $
  *
  * 15.4.2006, started work over Easter holiday --Sampo
  * 22.4.2006, added more options over the weekend --Sampo
@@ -55,6 +55,7 @@ Usage: zxid [options]   (when used as CGI, no options can be supplied)\n\
   -import URL      Import metadata of others from URL, usually their Entity ID\n\
                    or Provider ID, aka well known location. The imported metadata\n\
                    is written to CoT cache directory.\n\
+  -fileimport FILE Import metadata of others from file.\n\
   -C CONFPATH      Path to (optional) config file, default /var/zxid/zxid.conf\n\
   -O OPT=VAL       Override default or config file option. Only after -C, if any.\n\
   -t SECONDS       Timeout. Default: 0=no timeout.\n\
@@ -132,7 +133,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++debug;
+	++zx_debug;
 	continue;
       case 'p':  if ((*argv)[0][3]) break;
 	++debugpoll;
@@ -171,7 +172,24 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
 	break;
       }
       break;
-
+#if 0
+    case 'f':
+      switch ((*argv)[0][2]) {
+      case 'i':
+	if (!strcmp((*argv)[0],"-fileimport")) {
+	  struct zxid_entity* ent;
+	  ++(*argv); --(*argc);
+	  if (!(*argc)) break;
+	  cf->ctx->ns_tab = zx_ns_tab;
+	  ent = zxid_get_meta(cf, (*argv)[0]);
+	  if (ent)
+	    zxid_write_ent_to_cache(cf, ent);
+	  exit(0);
+	}
+	break;
+      }
+      break;
+#endif
     case 'k':
       switch ((*argv)[0][2]) {
       case '\0':
@@ -330,10 +348,10 @@ int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
     cgi->msg = "SP Initiated logout (SOAP). Session terminated.";
     return 0;  /* Falls thru to login screen. */
   case 't':
-    zxid_sp_nireg_redir(cf, cgi, ses, 0);
+    zxid_sp_mni_redir(cf, cgi, ses, 0);
     return 1;  /* Redirect already happened. Do not show login screen. */
   case 'u':
-    zxid_sp_nireg_soap(cf, cgi, ses, 0);
+    zxid_sp_mni_soap(cf, cgi, ses, 0);
     cgi->msg = "SP Initiated defederation (SOAP).";
     break;     /* Defederation does not have to mean SLO */
   case 'P':
@@ -401,8 +419,9 @@ int main(int argc, char** argv, char** env)
   if (got != 2)
     exit(2);
   fprintf(stderr, "=================== Running ===================\n");
-  ++debug;
+  ++zx_debug;
 #endif
+  cf->nosig_fatal = 0;  // *** For SimpleSign the signature is checked at other level
 
   opt(&argc, &argv, &env, cf, &cgi);
 
@@ -550,9 +569,13 @@ int main(int argc, char** argv, char** env)
     for (; idp; idp = idp->n) {
       if (!idp->ed->IDPSSODescriptor)
 	continue;
+      printf("<input type=submit name=\"l0%.*s\" value=\" Login to %.*s (SAML20:any) \">\n",
+	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
       printf("<input type=submit name=\"l1%.*s\" value=\" Login to %.*s (SAML20:Artifact) \">\n",
 	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
       printf("<input type=submit name=\"l2%.*s\" value=\" Login to %.*s (SAML20:POST) \">\n",
+	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
+      printf("<input type=submit name=\"l5%.*s\" value=\" Login to %.*s (SAML20:SimpleSign) \">\n",
 	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
     }
   }
@@ -579,7 +602,7 @@ int main(int argc, char** argv, char** env)
   printf("Consent: <select name=fy><option value=\"\">(empty)<option value=\"urn:liberty:consent:obtained\">obtained<option value=\"urn:liberty:consent:obtained:prior\">obtained:prior<option value=\"urn:liberty:consent:obtained:current:implicit\">obtained:current:implicit<option value=\"urn:liberty:consent:obtained:current:explicit\">obtained:current:explicit<option value=\"urn:liberty:consent:unavailable\">unavailable<option value=\"urn:liberty:consent:inapplicable\">inapplicable</select><br>\n");
   printf("Authn Req Context: <select name=fa><option value=\"\">(none)<option value=pw>Password<option value=pwp>Password with Protected Transport<option value=clicert>TLS Client Certificate</select><br>\n");
   printf("Matching Rule: <select name=fm><option value=exact>Exact<option value=minimum>Min<option value=maximum>Max<option value=better>Better<option value=\"\">(none)</select><br>\n");
-  /*printf("RelayState: <input name=fr value=\"rs123\"><br>\n");*/
+  printf("RelayState: <input name=fr value=\"rs123\"><br>\n");
 
   printf("</form><hr>");
   printf("<a href=\"http://zxid.org/\">zxid.org</a>, %s", zxid_version_str());

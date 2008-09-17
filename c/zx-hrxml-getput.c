@@ -718,6 +718,10 @@ void zx_hrxml_AffirmativeActionPlanJobGroupId_DEL_IdValue(struct zx_hrxml_Affirm
 
 #endif
 
+/* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_GET_idOwner) */
+struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_idOwner) */
+void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_GET_validFrom) */
 struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_validFrom(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_validFrom) */
@@ -726,10 +730,6 @@ void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_validFrom(struct zx_hrxml_Affi
 struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_validTo(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_validTo) */
 void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_validTo(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_GET_idOwner) */
-struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_idOwner) */
-void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -5767,6 +5767,10 @@ void zx_hrxml_BKZId_DEL_IdValue(struct zx_hrxml_BKZId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_BKZId_GET_idOwner) */
+struct zx_str* zx_hrxml_BKZId_GET_idOwner(struct zx_hrxml_BKZId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_BKZId_PUT_idOwner) */
+void zx_hrxml_BKZId_PUT_idOwner(struct zx_hrxml_BKZId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_BKZId_GET_validFrom) */
 struct zx_str* zx_hrxml_BKZId_GET_validFrom(struct zx_hrxml_BKZId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_BKZId_PUT_validFrom) */
@@ -5775,10 +5779,6 @@ void zx_hrxml_BKZId_PUT_validFrom(struct zx_hrxml_BKZId_s* x, struct zx_str* y) 
 struct zx_str* zx_hrxml_BKZId_GET_validTo(struct zx_hrxml_BKZId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_BKZId_PUT_validTo) */
 void zx_hrxml_BKZId_PUT_validTo(struct zx_hrxml_BKZId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_BKZId_GET_idOwner) */
-struct zx_str* zx_hrxml_BKZId_GET_idOwner(struct zx_hrxml_BKZId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_BKZId_PUT_idOwner) */
-void zx_hrxml_BKZId_PUT_idOwner(struct zx_hrxml_BKZId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -6052,14 +6052,14 @@ void zx_hrxml_BasePay_DEL_BasePayAmountMax(struct zx_hrxml_BasePay_s* x, int n)
 
 #endif
 
-/* FUNC(zx_hrxml_BasePay_GET_currencyCode) */
-struct zx_str* zx_hrxml_BasePay_GET_currencyCode(struct zx_hrxml_BasePay_s* x) { return x->currencyCode; }
-/* FUNC(zx_hrxml_BasePay_PUT_currencyCode) */
-void zx_hrxml_BasePay_PUT_currencyCode(struct zx_hrxml_BasePay_s* x, struct zx_str* y) { x->currencyCode = y; }
 /* FUNC(zx_hrxml_BasePay_GET_baseInterval) */
 struct zx_str* zx_hrxml_BasePay_GET_baseInterval(struct zx_hrxml_BasePay_s* x) { return x->baseInterval; }
 /* FUNC(zx_hrxml_BasePay_PUT_baseInterval) */
 void zx_hrxml_BasePay_PUT_baseInterval(struct zx_hrxml_BasePay_s* x, struct zx_str* y) { x->baseInterval = y; }
+/* FUNC(zx_hrxml_BasePay_GET_currencyCode) */
+struct zx_str* zx_hrxml_BasePay_GET_currencyCode(struct zx_hrxml_BasePay_s* x) { return x->currencyCode; }
+/* FUNC(zx_hrxml_BasePay_PUT_currencyCode) */
+void zx_hrxml_BasePay_PUT_currencyCode(struct zx_hrxml_BasePay_s* x, struct zx_str* y) { x->currencyCode = y; }
 
 
 
@@ -16602,14 +16602,14 @@ void zx_hrxml_Competency_DEL_UserArea(struct zx_hrxml_Competency_s* x, int n)
 
 #endif
 
-/* FUNC(zx_hrxml_Competency_GET_name) */
-struct zx_str* zx_hrxml_Competency_GET_name(struct zx_hrxml_Competency_s* x) { return x->name; }
-/* FUNC(zx_hrxml_Competency_PUT_name) */
-void zx_hrxml_Competency_PUT_name(struct zx_hrxml_Competency_s* x, struct zx_str* y) { x->name = y; }
 /* FUNC(zx_hrxml_Competency_GET_description) */
 struct zx_str* zx_hrxml_Competency_GET_description(struct zx_hrxml_Competency_s* x) { return x->description; }
 /* FUNC(zx_hrxml_Competency_PUT_description) */
 void zx_hrxml_Competency_PUT_description(struct zx_hrxml_Competency_s* x, struct zx_str* y) { x->description = y; }
+/* FUNC(zx_hrxml_Competency_GET_name) */
+struct zx_str* zx_hrxml_Competency_GET_name(struct zx_hrxml_Competency_s* x) { return x->name; }
+/* FUNC(zx_hrxml_Competency_PUT_name) */
+void zx_hrxml_Competency_PUT_name(struct zx_hrxml_Competency_s* x, struct zx_str* y) { x->name = y; }
 /* FUNC(zx_hrxml_Competency_GET_required) */
 struct zx_str* zx_hrxml_Competency_GET_required(struct zx_hrxml_Competency_s* x) { return x->required; }
 /* FUNC(zx_hrxml_Competency_PUT_required) */
@@ -17159,30 +17159,30 @@ void zx_hrxml_CompetencyEvidence_DEL_SupportingInformation(struct zx_hrxml_Compe
 struct zx_str* zx_hrxml_CompetencyEvidence_GET_dateOfIncident(struct zx_hrxml_CompetencyEvidence_s* x) { return x->dateOfIncident; }
 /* FUNC(zx_hrxml_CompetencyEvidence_PUT_dateOfIncident) */
 void zx_hrxml_CompetencyEvidence_PUT_dateOfIncident(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->dateOfIncident = y; }
-/* FUNC(zx_hrxml_CompetencyEvidence_GET_name) */
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_name(struct zx_hrxml_CompetencyEvidence_s* x) { return x->name; }
-/* FUNC(zx_hrxml_CompetencyEvidence_PUT_name) */
-void zx_hrxml_CompetencyEvidence_PUT_name(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->name = y; }
-/* FUNC(zx_hrxml_CompetencyEvidence_GET_typeDescription) */
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x) { return x->typeDescription; }
-/* FUNC(zx_hrxml_CompetencyEvidence_PUT_typeDescription) */
-void zx_hrxml_CompetencyEvidence_PUT_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->typeDescription = y; }
 /* FUNC(zx_hrxml_CompetencyEvidence_GET_expirationDate) */
 struct zx_str* zx_hrxml_CompetencyEvidence_GET_expirationDate(struct zx_hrxml_CompetencyEvidence_s* x) { return x->expirationDate; }
 /* FUNC(zx_hrxml_CompetencyEvidence_PUT_expirationDate) */
 void zx_hrxml_CompetencyEvidence_PUT_expirationDate(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->expirationDate = y; }
-/* FUNC(zx_hrxml_CompetencyEvidence_GET_typeId) */
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeId(struct zx_hrxml_CompetencyEvidence_s* x) { return x->typeId; }
-/* FUNC(zx_hrxml_CompetencyEvidence_PUT_typeId) */
-void zx_hrxml_CompetencyEvidence_PUT_typeId(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->typeId = y; }
-/* FUNC(zx_hrxml_CompetencyEvidence_GET_required) */
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_required(struct zx_hrxml_CompetencyEvidence_s* x) { return x->required; }
-/* FUNC(zx_hrxml_CompetencyEvidence_PUT_required) */
-void zx_hrxml_CompetencyEvidence_PUT_required(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->required = y; }
 /* FUNC(zx_hrxml_CompetencyEvidence_GET_lastUsed) */
 struct zx_str* zx_hrxml_CompetencyEvidence_GET_lastUsed(struct zx_hrxml_CompetencyEvidence_s* x) { return x->lastUsed; }
 /* FUNC(zx_hrxml_CompetencyEvidence_PUT_lastUsed) */
 void zx_hrxml_CompetencyEvidence_PUT_lastUsed(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->lastUsed = y; }
+/* FUNC(zx_hrxml_CompetencyEvidence_GET_name) */
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_name(struct zx_hrxml_CompetencyEvidence_s* x) { return x->name; }
+/* FUNC(zx_hrxml_CompetencyEvidence_PUT_name) */
+void zx_hrxml_CompetencyEvidence_PUT_name(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->name = y; }
+/* FUNC(zx_hrxml_CompetencyEvidence_GET_required) */
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_required(struct zx_hrxml_CompetencyEvidence_s* x) { return x->required; }
+/* FUNC(zx_hrxml_CompetencyEvidence_PUT_required) */
+void zx_hrxml_CompetencyEvidence_PUT_required(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->required = y; }
+/* FUNC(zx_hrxml_CompetencyEvidence_GET_typeDescription) */
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x) { return x->typeDescription; }
+/* FUNC(zx_hrxml_CompetencyEvidence_PUT_typeDescription) */
+void zx_hrxml_CompetencyEvidence_PUT_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->typeDescription = y; }
+/* FUNC(zx_hrxml_CompetencyEvidence_GET_typeId) */
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeId(struct zx_hrxml_CompetencyEvidence_s* x) { return x->typeId; }
+/* FUNC(zx_hrxml_CompetencyEvidence_PUT_typeId) */
+void zx_hrxml_CompetencyEvidence_PUT_typeId(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y) { x->typeId = y; }
 
 
 
@@ -17322,6 +17322,10 @@ void zx_hrxml_CompetencyId_DEL_IdValue(struct zx_hrxml_CompetencyId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_CompetencyId_GET_idOwner) */
+struct zx_str* zx_hrxml_CompetencyId_GET_idOwner(struct zx_hrxml_CompetencyId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_CompetencyId_PUT_idOwner) */
+void zx_hrxml_CompetencyId_PUT_idOwner(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_CompetencyId_GET_validFrom) */
 struct zx_str* zx_hrxml_CompetencyId_GET_validFrom(struct zx_hrxml_CompetencyId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_CompetencyId_PUT_validFrom) */
@@ -17330,10 +17334,6 @@ void zx_hrxml_CompetencyId_PUT_validFrom(struct zx_hrxml_CompetencyId_s* x, stru
 struct zx_str* zx_hrxml_CompetencyId_GET_validTo(struct zx_hrxml_CompetencyId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_CompetencyId_PUT_validTo) */
 void zx_hrxml_CompetencyId_PUT_validTo(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_CompetencyId_GET_idOwner) */
-struct zx_str* zx_hrxml_CompetencyId_GET_idOwner(struct zx_hrxml_CompetencyId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_CompetencyId_PUT_idOwner) */
-void zx_hrxml_CompetencyId_PUT_idOwner(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -20587,6 +20587,10 @@ void zx_hrxml_ContactId_DEL_IdValue(struct zx_hrxml_ContactId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_ContactId_GET_idOwner) */
+struct zx_str* zx_hrxml_ContactId_GET_idOwner(struct zx_hrxml_ContactId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_ContactId_PUT_idOwner) */
+void zx_hrxml_ContactId_PUT_idOwner(struct zx_hrxml_ContactId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_ContactId_GET_validFrom) */
 struct zx_str* zx_hrxml_ContactId_GET_validFrom(struct zx_hrxml_ContactId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_ContactId_PUT_validFrom) */
@@ -20595,10 +20599,6 @@ void zx_hrxml_ContactId_PUT_validFrom(struct zx_hrxml_ContactId_s* x, struct zx_
 struct zx_str* zx_hrxml_ContactId_GET_validTo(struct zx_hrxml_ContactId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_ContactId_PUT_validTo) */
 void zx_hrxml_ContactId_PUT_validTo(struct zx_hrxml_ContactId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_ContactId_GET_idOwner) */
-struct zx_str* zx_hrxml_ContactId_GET_idOwner(struct zx_hrxml_ContactId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_ContactId_PUT_idOwner) */
-void zx_hrxml_ContactId_PUT_idOwner(struct zx_hrxml_ContactId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -24251,14 +24251,14 @@ void zx_hrxml_DatesOfAttendance_DEL_EndDate(struct zx_hrxml_DatesOfAttendance_s*
 
 #endif
 
-/* FUNC(zx_hrxml_DatesOfAttendance_GET_enrollmentStatus) */
-struct zx_str* zx_hrxml_DatesOfAttendance_GET_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x) { return x->enrollmentStatus; }
-/* FUNC(zx_hrxml_DatesOfAttendance_PUT_enrollmentStatus) */
-void zx_hrxml_DatesOfAttendance_PUT_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y) { x->enrollmentStatus = y; }
 /* FUNC(zx_hrxml_DatesOfAttendance_GET_currentlyEnrolled) */
 struct zx_str* zx_hrxml_DatesOfAttendance_GET_currentlyEnrolled(struct zx_hrxml_DatesOfAttendance_s* x) { return x->currentlyEnrolled; }
 /* FUNC(zx_hrxml_DatesOfAttendance_PUT_currentlyEnrolled) */
 void zx_hrxml_DatesOfAttendance_PUT_currentlyEnrolled(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y) { x->currentlyEnrolled = y; }
+/* FUNC(zx_hrxml_DatesOfAttendance_GET_enrollmentStatus) */
+struct zx_str* zx_hrxml_DatesOfAttendance_GET_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x) { return x->enrollmentStatus; }
+/* FUNC(zx_hrxml_DatesOfAttendance_PUT_enrollmentStatus) */
+void zx_hrxml_DatesOfAttendance_PUT_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y) { x->enrollmentStatus = y; }
 /* FUNC(zx_hrxml_DatesOfAttendance_GET_studentInGoodStanding) */
 struct zx_str* zx_hrxml_DatesOfAttendance_GET_studentInGoodStanding(struct zx_hrxml_DatesOfAttendance_s* x) { return x->studentInGoodStanding; }
 /* FUNC(zx_hrxml_DatesOfAttendance_PUT_studentInGoodStanding) */
@@ -34939,6 +34939,10 @@ void zx_hrxml_EnvironmentId_DEL_IdValue(struct zx_hrxml_EnvironmentId_s* x, int 
 
 #endif
 
+/* FUNC(zx_hrxml_EnvironmentId_GET_idOwner) */
+struct zx_str* zx_hrxml_EnvironmentId_GET_idOwner(struct zx_hrxml_EnvironmentId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_EnvironmentId_PUT_idOwner) */
+void zx_hrxml_EnvironmentId_PUT_idOwner(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_EnvironmentId_GET_validFrom) */
 struct zx_str* zx_hrxml_EnvironmentId_GET_validFrom(struct zx_hrxml_EnvironmentId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_EnvironmentId_PUT_validFrom) */
@@ -34947,15 +34951,15 @@ void zx_hrxml_EnvironmentId_PUT_validFrom(struct zx_hrxml_EnvironmentId_s* x, st
 struct zx_str* zx_hrxml_EnvironmentId_GET_validTo(struct zx_hrxml_EnvironmentId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_EnvironmentId_PUT_validTo) */
 void zx_hrxml_EnvironmentId_PUT_validTo(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_EnvironmentId_GET_idOwner) */
-struct zx_str* zx_hrxml_EnvironmentId_GET_idOwner(struct zx_hrxml_EnvironmentId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_EnvironmentId_PUT_idOwner) */
-void zx_hrxml_EnvironmentId_PUT_idOwner(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
 
 
+/* FUNC(zx_hrxml_EvidenceId_GET_description) */
+struct zx_str* zx_hrxml_EvidenceId_GET_description(struct zx_hrxml_EvidenceId_s* x) { return x->description; }
+/* FUNC(zx_hrxml_EvidenceId_PUT_description) */
+void zx_hrxml_EvidenceId_PUT_description(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y) { x->description = y; }
 /* FUNC(zx_hrxml_EvidenceId_GET_id) */
 struct zx_str* zx_hrxml_EvidenceId_GET_id(struct zx_hrxml_EvidenceId_s* x) { return x->id; }
 /* FUNC(zx_hrxml_EvidenceId_PUT_id) */
@@ -34964,10 +34968,6 @@ void zx_hrxml_EvidenceId_PUT_id(struct zx_hrxml_EvidenceId_s* x, struct zx_str* 
 struct zx_str* zx_hrxml_EvidenceId_GET_idOwner(struct zx_hrxml_EvidenceId_s* x) { return x->idOwner; }
 /* FUNC(zx_hrxml_EvidenceId_PUT_idOwner) */
 void zx_hrxml_EvidenceId_PUT_idOwner(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y) { x->idOwner = y; }
-/* FUNC(zx_hrxml_EvidenceId_GET_description) */
-struct zx_str* zx_hrxml_EvidenceId_GET_description(struct zx_hrxml_EvidenceId_s* x) { return x->description; }
-/* FUNC(zx_hrxml_EvidenceId_PUT_description) */
-void zx_hrxml_EvidenceId_PUT_description(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y) { x->description = y; }
 
 
 
@@ -35246,14 +35246,14 @@ void zx_hrxml_ExpatriateBenefits_DEL_ExpatriateBenefitList(struct zx_hrxml_Expat
 
 
 
-/* FUNC(zx_hrxml_FamilyName_GET_primary) */
-struct zx_str* zx_hrxml_FamilyName_GET_primary(struct zx_hrxml_FamilyName_s* x) { return x->primary; }
-/* FUNC(zx_hrxml_FamilyName_PUT_primary) */
-void zx_hrxml_FamilyName_PUT_primary(struct zx_hrxml_FamilyName_s* x, struct zx_str* y) { x->primary = y; }
 /* FUNC(zx_hrxml_FamilyName_GET_prefix) */
 struct zx_str* zx_hrxml_FamilyName_GET_prefix(struct zx_hrxml_FamilyName_s* x) { return x->prefix; }
 /* FUNC(zx_hrxml_FamilyName_PUT_prefix) */
 void zx_hrxml_FamilyName_PUT_prefix(struct zx_hrxml_FamilyName_s* x, struct zx_str* y) { x->prefix = y; }
+/* FUNC(zx_hrxml_FamilyName_GET_primary) */
+struct zx_str* zx_hrxml_FamilyName_GET_primary(struct zx_hrxml_FamilyName_s* x) { return x->primary; }
+/* FUNC(zx_hrxml_FamilyName_PUT_primary) */
+void zx_hrxml_FamilyName_PUT_primary(struct zx_hrxml_FamilyName_s* x, struct zx_str* y) { x->primary = y; }
 
 
 
@@ -36507,6 +36507,10 @@ void zx_hrxml_Id_DEL_IdValue(struct zx_hrxml_Id_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_Id_GET_idOwner) */
+struct zx_str* zx_hrxml_Id_GET_idOwner(struct zx_hrxml_Id_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_Id_PUT_idOwner) */
+void zx_hrxml_Id_PUT_idOwner(struct zx_hrxml_Id_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_Id_GET_validFrom) */
 struct zx_str* zx_hrxml_Id_GET_validFrom(struct zx_hrxml_Id_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_Id_PUT_validFrom) */
@@ -36515,10 +36519,6 @@ void zx_hrxml_Id_PUT_validFrom(struct zx_hrxml_Id_s* x, struct zx_str* y) { x->v
 struct zx_str* zx_hrxml_Id_GET_validTo(struct zx_hrxml_Id_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_Id_PUT_validTo) */
 void zx_hrxml_Id_PUT_validTo(struct zx_hrxml_Id_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_Id_GET_idOwner) */
-struct zx_str* zx_hrxml_Id_GET_idOwner(struct zx_hrxml_Id_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_Id_PUT_idOwner) */
-void zx_hrxml_Id_PUT_idOwner(struct zx_hrxml_Id_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -36533,14 +36533,14 @@ void zx_hrxml_IdValue_PUT_name(struct zx_hrxml_IdValue_s* x, struct zx_str* y) {
 
 
 
-/* FUNC(zx_hrxml_IndustryCode_GET_primaryIndicator) */
-struct zx_str* zx_hrxml_IndustryCode_GET_primaryIndicator(struct zx_hrxml_IndustryCode_s* x) { return x->primaryIndicator; }
-/* FUNC(zx_hrxml_IndustryCode_PUT_primaryIndicator) */
-void zx_hrxml_IndustryCode_PUT_primaryIndicator(struct zx_hrxml_IndustryCode_s* x, struct zx_str* y) { x->primaryIndicator = y; }
 /* FUNC(zx_hrxml_IndustryCode_GET_classificationName) */
 struct zx_str* zx_hrxml_IndustryCode_GET_classificationName(struct zx_hrxml_IndustryCode_s* x) { return x->classificationName; }
 /* FUNC(zx_hrxml_IndustryCode_PUT_classificationName) */
 void zx_hrxml_IndustryCode_PUT_classificationName(struct zx_hrxml_IndustryCode_s* x, struct zx_str* y) { x->classificationName = y; }
+/* FUNC(zx_hrxml_IndustryCode_GET_primaryIndicator) */
+struct zx_str* zx_hrxml_IndustryCode_GET_primaryIndicator(struct zx_hrxml_IndustryCode_s* x) { return x->primaryIndicator; }
+/* FUNC(zx_hrxml_IndustryCode_PUT_primaryIndicator) */
+void zx_hrxml_IndustryCode_PUT_primaryIndicator(struct zx_hrxml_IndustryCode_s* x, struct zx_str* y) { x->primaryIndicator = y; }
 
 
 
@@ -38899,6 +38899,10 @@ void zx_hrxml_LegalId_DEL_IdValue(struct zx_hrxml_LegalId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_LegalId_GET_idOwner) */
+struct zx_str* zx_hrxml_LegalId_GET_idOwner(struct zx_hrxml_LegalId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_LegalId_PUT_idOwner) */
+void zx_hrxml_LegalId_PUT_idOwner(struct zx_hrxml_LegalId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_LegalId_GET_validFrom) */
 struct zx_str* zx_hrxml_LegalId_GET_validFrom(struct zx_hrxml_LegalId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_LegalId_PUT_validFrom) */
@@ -38907,10 +38911,6 @@ void zx_hrxml_LegalId_PUT_validFrom(struct zx_hrxml_LegalId_s* x, struct zx_str*
 struct zx_str* zx_hrxml_LegalId_GET_validTo(struct zx_hrxml_LegalId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_LegalId_PUT_validTo) */
 void zx_hrxml_LegalId_PUT_validTo(struct zx_hrxml_LegalId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_LegalId_GET_idOwner) */
-struct zx_str* zx_hrxml_LegalId_GET_idOwner(struct zx_hrxml_LegalId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_LegalId_PUT_idOwner) */
-void zx_hrxml_LegalId_PUT_idOwner(struct zx_hrxml_LegalId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -41904,6 +41904,10 @@ void zx_hrxml_MatchedObjectId_DEL_IdValue(struct zx_hrxml_MatchedObjectId_s* x, 
 
 #endif
 
+/* FUNC(zx_hrxml_MatchedObjectId_GET_idOwner) */
+struct zx_str* zx_hrxml_MatchedObjectId_GET_idOwner(struct zx_hrxml_MatchedObjectId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_MatchedObjectId_PUT_idOwner) */
+void zx_hrxml_MatchedObjectId_PUT_idOwner(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_MatchedObjectId_GET_validFrom) */
 struct zx_str* zx_hrxml_MatchedObjectId_GET_validFrom(struct zx_hrxml_MatchedObjectId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_MatchedObjectId_PUT_validFrom) */
@@ -41912,10 +41916,6 @@ void zx_hrxml_MatchedObjectId_PUT_validFrom(struct zx_hrxml_MatchedObjectId_s* x
 struct zx_str* zx_hrxml_MatchedObjectId_GET_validTo(struct zx_hrxml_MatchedObjectId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_MatchedObjectId_PUT_validTo) */
 void zx_hrxml_MatchedObjectId_PUT_validTo(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_MatchedObjectId_GET_idOwner) */
-struct zx_str* zx_hrxml_MatchedObjectId_GET_idOwner(struct zx_hrxml_MatchedObjectId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_MatchedObjectId_PUT_idOwner) */
-void zx_hrxml_MatchedObjectId_PUT_idOwner(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -44513,22 +44513,22 @@ void zx_hrxml_NonXMLResume_DEL_RevisionDate(struct zx_hrxml_NonXMLResume_s* x, i
 
 
 
-/* FUNC(zx_hrxml_NumericValue_GET_minValue) */
-struct zx_str* zx_hrxml_NumericValue_GET_minValue(struct zx_hrxml_NumericValue_s* x) { return x->minValue; }
-/* FUNC(zx_hrxml_NumericValue_PUT_minValue) */
-void zx_hrxml_NumericValue_PUT_minValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->minValue = y; }
-/* FUNC(zx_hrxml_NumericValue_GET_maxValue) */
-struct zx_str* zx_hrxml_NumericValue_GET_maxValue(struct zx_hrxml_NumericValue_s* x) { return x->maxValue; }
-/* FUNC(zx_hrxml_NumericValue_PUT_maxValue) */
-void zx_hrxml_NumericValue_PUT_maxValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->maxValue = y; }
-/* FUNC(zx_hrxml_NumericValue_GET_interval) */
-struct zx_str* zx_hrxml_NumericValue_GET_interval(struct zx_hrxml_NumericValue_s* x) { return x->interval; }
-/* FUNC(zx_hrxml_NumericValue_PUT_interval) */
-void zx_hrxml_NumericValue_PUT_interval(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->interval = y; }
 /* FUNC(zx_hrxml_NumericValue_GET_description) */
 struct zx_str* zx_hrxml_NumericValue_GET_description(struct zx_hrxml_NumericValue_s* x) { return x->description; }
 /* FUNC(zx_hrxml_NumericValue_PUT_description) */
 void zx_hrxml_NumericValue_PUT_description(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->description = y; }
+/* FUNC(zx_hrxml_NumericValue_GET_interval) */
+struct zx_str* zx_hrxml_NumericValue_GET_interval(struct zx_hrxml_NumericValue_s* x) { return x->interval; }
+/* FUNC(zx_hrxml_NumericValue_PUT_interval) */
+void zx_hrxml_NumericValue_PUT_interval(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->interval = y; }
+/* FUNC(zx_hrxml_NumericValue_GET_maxValue) */
+struct zx_str* zx_hrxml_NumericValue_GET_maxValue(struct zx_hrxml_NumericValue_s* x) { return x->maxValue; }
+/* FUNC(zx_hrxml_NumericValue_PUT_maxValue) */
+void zx_hrxml_NumericValue_PUT_maxValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->maxValue = y; }
+/* FUNC(zx_hrxml_NumericValue_GET_minValue) */
+struct zx_str* zx_hrxml_NumericValue_GET_minValue(struct zx_hrxml_NumericValue_s* x) { return x->minValue; }
+/* FUNC(zx_hrxml_NumericValue_PUT_minValue) */
+void zx_hrxml_NumericValue_PUT_minValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y) { x->minValue = y; }
 
 
 
@@ -45634,6 +45634,10 @@ void zx_hrxml_OrganizationId_DEL_IdValue(struct zx_hrxml_OrganizationId_s* x, in
 
 #endif
 
+/* FUNC(zx_hrxml_OrganizationId_GET_idOwner) */
+struct zx_str* zx_hrxml_OrganizationId_GET_idOwner(struct zx_hrxml_OrganizationId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_OrganizationId_PUT_idOwner) */
+void zx_hrxml_OrganizationId_PUT_idOwner(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_OrganizationId_GET_validFrom) */
 struct zx_str* zx_hrxml_OrganizationId_GET_validFrom(struct zx_hrxml_OrganizationId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_OrganizationId_PUT_validFrom) */
@@ -45642,23 +45646,19 @@ void zx_hrxml_OrganizationId_PUT_validFrom(struct zx_hrxml_OrganizationId_s* x, 
 struct zx_str* zx_hrxml_OrganizationId_GET_validTo(struct zx_hrxml_OrganizationId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_OrganizationId_PUT_validTo) */
 void zx_hrxml_OrganizationId_PUT_validTo(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_OrganizationId_GET_idOwner) */
-struct zx_str* zx_hrxml_OrganizationId_GET_idOwner(struct zx_hrxml_OrganizationId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_OrganizationId_PUT_idOwner) */
-void zx_hrxml_OrganizationId_PUT_idOwner(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
 
 
-/* FUNC(zx_hrxml_OrganizationUnit_GET_organizationType) */
-struct zx_str* zx_hrxml_OrganizationUnit_GET_organizationType(struct zx_hrxml_OrganizationUnit_s* x) { return x->organizationType; }
-/* FUNC(zx_hrxml_OrganizationUnit_PUT_organizationType) */
-void zx_hrxml_OrganizationUnit_PUT_organizationType(struct zx_hrxml_OrganizationUnit_s* x, struct zx_str* y) { x->organizationType = y; }
 /* FUNC(zx_hrxml_OrganizationUnit_GET_attendanceStatus) */
 struct zx_str* zx_hrxml_OrganizationUnit_GET_attendanceStatus(struct zx_hrxml_OrganizationUnit_s* x) { return x->attendanceStatus; }
 /* FUNC(zx_hrxml_OrganizationUnit_PUT_attendanceStatus) */
 void zx_hrxml_OrganizationUnit_PUT_attendanceStatus(struct zx_hrxml_OrganizationUnit_s* x, struct zx_str* y) { x->attendanceStatus = y; }
+/* FUNC(zx_hrxml_OrganizationUnit_GET_organizationType) */
+struct zx_str* zx_hrxml_OrganizationUnit_GET_organizationType(struct zx_hrxml_OrganizationUnit_s* x) { return x->organizationType; }
+/* FUNC(zx_hrxml_OrganizationUnit_PUT_organizationType) */
+void zx_hrxml_OrganizationUnit_PUT_organizationType(struct zx_hrxml_OrganizationUnit_s* x, struct zx_str* y) { x->organizationType = y; }
 
 
 
@@ -47004,14 +47004,14 @@ void zx_hrxml_OrganizationalUnit_DEL_UserArea(struct zx_hrxml_OrganizationalUnit
 
 #endif
 
-/* FUNC(zx_hrxml_OrganizationalUnit_GET_typeOfGroup) */
-struct zx_str* zx_hrxml_OrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x) { return x->typeOfGroup; }
-/* FUNC(zx_hrxml_OrganizationalUnit_PUT_typeOfGroup) */
-void zx_hrxml_OrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_str* y) { x->typeOfGroup = y; }
 /* FUNC(zx_hrxml_OrganizationalUnit_GET_hierarchicalRole) */
 struct zx_str* zx_hrxml_OrganizationalUnit_GET_hierarchicalRole(struct zx_hrxml_OrganizationalUnit_s* x) { return x->hierarchicalRole; }
 /* FUNC(zx_hrxml_OrganizationalUnit_PUT_hierarchicalRole) */
 void zx_hrxml_OrganizationalUnit_PUT_hierarchicalRole(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_str* y) { x->hierarchicalRole = y; }
+/* FUNC(zx_hrxml_OrganizationalUnit_GET_typeOfGroup) */
+struct zx_str* zx_hrxml_OrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x) { return x->typeOfGroup; }
+/* FUNC(zx_hrxml_OrganizationalUnit_PUT_typeOfGroup) */
+void zx_hrxml_OrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_str* y) { x->typeOfGroup = y; }
 
 
 
@@ -47151,6 +47151,10 @@ void zx_hrxml_OrganizationalUnitId_DEL_IdValue(struct zx_hrxml_OrganizationalUni
 
 #endif
 
+/* FUNC(zx_hrxml_OrganizationalUnitId_GET_idOwner) */
+struct zx_str* zx_hrxml_OrganizationalUnitId_GET_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_OrganizationalUnitId_PUT_idOwner) */
+void zx_hrxml_OrganizationalUnitId_PUT_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_OrganizationalUnitId_GET_validFrom) */
 struct zx_str* zx_hrxml_OrganizationalUnitId_GET_validFrom(struct zx_hrxml_OrganizationalUnitId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_OrganizationalUnitId_PUT_validFrom) */
@@ -47159,10 +47163,6 @@ void zx_hrxml_OrganizationalUnitId_PUT_validFrom(struct zx_hrxml_OrganizationalU
 struct zx_str* zx_hrxml_OrganizationalUnitId_GET_validTo(struct zx_hrxml_OrganizationalUnitId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_OrganizationalUnitId_PUT_validTo) */
 void zx_hrxml_OrganizationalUnitId_PUT_validTo(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_OrganizationalUnitId_GET_idOwner) */
-struct zx_str* zx_hrxml_OrganizationalUnitId_GET_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_OrganizationalUnitId_PUT_idOwner) */
-void zx_hrxml_OrganizationalUnitId_PUT_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -53178,6 +53178,10 @@ void zx_hrxml_PersonId_DEL_IdValue(struct zx_hrxml_PersonId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_PersonId_GET_idOwner) */
+struct zx_str* zx_hrxml_PersonId_GET_idOwner(struct zx_hrxml_PersonId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_PersonId_PUT_idOwner) */
+void zx_hrxml_PersonId_PUT_idOwner(struct zx_hrxml_PersonId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_PersonId_GET_validFrom) */
 struct zx_str* zx_hrxml_PersonId_GET_validFrom(struct zx_hrxml_PersonId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_PersonId_PUT_validFrom) */
@@ -53186,10 +53190,6 @@ void zx_hrxml_PersonId_PUT_validFrom(struct zx_hrxml_PersonId_s* x, struct zx_st
 struct zx_str* zx_hrxml_PersonId_GET_validTo(struct zx_hrxml_PersonId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_PersonId_PUT_validTo) */
 void zx_hrxml_PersonId_PUT_validTo(struct zx_hrxml_PersonId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_PersonId_GET_idOwner) */
-struct zx_str* zx_hrxml_PersonId_GET_idOwner(struct zx_hrxml_PersonId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_PersonId_PUT_idOwner) */
-void zx_hrxml_PersonId_PUT_idOwner(struct zx_hrxml_PersonId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -53329,6 +53329,30 @@ void zx_hrxml_PersonLegalId_DEL_IdValue(struct zx_hrxml_PersonLegalId_s* x, int 
 
 #endif
 
+/* FUNC(zx_hrxml_PersonLegalId_GET_countryCode) */
+struct zx_str* zx_hrxml_PersonLegalId_GET_countryCode(struct zx_hrxml_PersonLegalId_s* x) { return x->countryCode; }
+/* FUNC(zx_hrxml_PersonLegalId_PUT_countryCode) */
+void zx_hrxml_PersonLegalId_PUT_countryCode(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->countryCode = y; }
+/* FUNC(zx_hrxml_PersonLegalId_GET_documentType) */
+struct zx_str* zx_hrxml_PersonLegalId_GET_documentType(struct zx_hrxml_PersonLegalId_s* x) { return x->documentType; }
+/* FUNC(zx_hrxml_PersonLegalId_PUT_documentType) */
+void zx_hrxml_PersonLegalId_PUT_documentType(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->documentType = y; }
+/* FUNC(zx_hrxml_PersonLegalId_GET_idOwner) */
+struct zx_str* zx_hrxml_PersonLegalId_GET_idOwner(struct zx_hrxml_PersonLegalId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_PersonLegalId_PUT_idOwner) */
+void zx_hrxml_PersonLegalId_PUT_idOwner(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->idOwner = y; }
+/* FUNC(zx_hrxml_PersonLegalId_GET_idSource) */
+struct zx_str* zx_hrxml_PersonLegalId_GET_idSource(struct zx_hrxml_PersonLegalId_s* x) { return x->idSource; }
+/* FUNC(zx_hrxml_PersonLegalId_PUT_idSource) */
+void zx_hrxml_PersonLegalId_PUT_idSource(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->idSource = y; }
+/* FUNC(zx_hrxml_PersonLegalId_GET_issuingRegion) */
+struct zx_str* zx_hrxml_PersonLegalId_GET_issuingRegion(struct zx_hrxml_PersonLegalId_s* x) { return x->issuingRegion; }
+/* FUNC(zx_hrxml_PersonLegalId_PUT_issuingRegion) */
+void zx_hrxml_PersonLegalId_PUT_issuingRegion(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->issuingRegion = y; }
+/* FUNC(zx_hrxml_PersonLegalId_GET_jurisdiction) */
+struct zx_str* zx_hrxml_PersonLegalId_GET_jurisdiction(struct zx_hrxml_PersonLegalId_s* x) { return x->jurisdiction; }
+/* FUNC(zx_hrxml_PersonLegalId_PUT_jurisdiction) */
+void zx_hrxml_PersonLegalId_PUT_jurisdiction(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->jurisdiction = y; }
 /* FUNC(zx_hrxml_PersonLegalId_GET_validFrom) */
 struct zx_str* zx_hrxml_PersonLegalId_GET_validFrom(struct zx_hrxml_PersonLegalId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_PersonLegalId_PUT_validFrom) */
@@ -53337,30 +53361,6 @@ void zx_hrxml_PersonLegalId_PUT_validFrom(struct zx_hrxml_PersonLegalId_s* x, st
 struct zx_str* zx_hrxml_PersonLegalId_GET_validTo(struct zx_hrxml_PersonLegalId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_PersonLegalId_PUT_validTo) */
 void zx_hrxml_PersonLegalId_PUT_validTo(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_PersonLegalId_GET_idOwner) */
-struct zx_str* zx_hrxml_PersonLegalId_GET_idOwner(struct zx_hrxml_PersonLegalId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_PersonLegalId_PUT_idOwner) */
-void zx_hrxml_PersonLegalId_PUT_idOwner(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->idOwner = y; }
-/* FUNC(zx_hrxml_PersonLegalId_GET_countryCode) */
-struct zx_str* zx_hrxml_PersonLegalId_GET_countryCode(struct zx_hrxml_PersonLegalId_s* x) { return x->countryCode; }
-/* FUNC(zx_hrxml_PersonLegalId_PUT_countryCode) */
-void zx_hrxml_PersonLegalId_PUT_countryCode(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->countryCode = y; }
-/* FUNC(zx_hrxml_PersonLegalId_GET_jurisdiction) */
-struct zx_str* zx_hrxml_PersonLegalId_GET_jurisdiction(struct zx_hrxml_PersonLegalId_s* x) { return x->jurisdiction; }
-/* FUNC(zx_hrxml_PersonLegalId_PUT_jurisdiction) */
-void zx_hrxml_PersonLegalId_PUT_jurisdiction(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->jurisdiction = y; }
-/* FUNC(zx_hrxml_PersonLegalId_GET_issuingRegion) */
-struct zx_str* zx_hrxml_PersonLegalId_GET_issuingRegion(struct zx_hrxml_PersonLegalId_s* x) { return x->issuingRegion; }
-/* FUNC(zx_hrxml_PersonLegalId_PUT_issuingRegion) */
-void zx_hrxml_PersonLegalId_PUT_issuingRegion(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->issuingRegion = y; }
-/* FUNC(zx_hrxml_PersonLegalId_GET_documentType) */
-struct zx_str* zx_hrxml_PersonLegalId_GET_documentType(struct zx_hrxml_PersonLegalId_s* x) { return x->documentType; }
-/* FUNC(zx_hrxml_PersonLegalId_PUT_documentType) */
-void zx_hrxml_PersonLegalId_PUT_documentType(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->documentType = y; }
-/* FUNC(zx_hrxml_PersonLegalId_GET_idSource) */
-struct zx_str* zx_hrxml_PersonLegalId_GET_idSource(struct zx_hrxml_PersonLegalId_s* x) { return x->idSource; }
-/* FUNC(zx_hrxml_PersonLegalId_PUT_idSource) */
-void zx_hrxml_PersonLegalId_PUT_idSource(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y) { x->idSource = y; }
 
 
 
@@ -59161,14 +59161,14 @@ void zx_hrxml_PositionHistory_DEL_UserArea(struct zx_hrxml_PositionHistory_s* x,
 
 #endif
 
-/* FUNC(zx_hrxml_PositionHistory_GET_positionType) */
-struct zx_str* zx_hrxml_PositionHistory_GET_positionType(struct zx_hrxml_PositionHistory_s* x) { return x->positionType; }
-/* FUNC(zx_hrxml_PositionHistory_PUT_positionType) */
-void zx_hrxml_PositionHistory_PUT_positionType(struct zx_hrxml_PositionHistory_s* x, struct zx_str* y) { x->positionType = y; }
 /* FUNC(zx_hrxml_PositionHistory_GET_currentEmployer) */
 struct zx_str* zx_hrxml_PositionHistory_GET_currentEmployer(struct zx_hrxml_PositionHistory_s* x) { return x->currentEmployer; }
 /* FUNC(zx_hrxml_PositionHistory_PUT_currentEmployer) */
 void zx_hrxml_PositionHistory_PUT_currentEmployer(struct zx_hrxml_PositionHistory_s* x, struct zx_str* y) { x->currentEmployer = y; }
+/* FUNC(zx_hrxml_PositionHistory_GET_positionType) */
+struct zx_str* zx_hrxml_PositionHistory_GET_positionType(struct zx_hrxml_PositionHistory_s* x) { return x->positionType; }
+/* FUNC(zx_hrxml_PositionHistory_PUT_positionType) */
+void zx_hrxml_PositionHistory_PUT_positionType(struct zx_hrxml_PositionHistory_s* x, struct zx_str* y) { x->positionType = y; }
 
 
 
@@ -67008,6 +67008,10 @@ void zx_hrxml_ProfileId_DEL_IdValue(struct zx_hrxml_ProfileId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_ProfileId_GET_idOwner) */
+struct zx_str* zx_hrxml_ProfileId_GET_idOwner(struct zx_hrxml_ProfileId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_ProfileId_PUT_idOwner) */
+void zx_hrxml_ProfileId_PUT_idOwner(struct zx_hrxml_ProfileId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_ProfileId_GET_validFrom) */
 struct zx_str* zx_hrxml_ProfileId_GET_validFrom(struct zx_hrxml_ProfileId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_ProfileId_PUT_validFrom) */
@@ -67016,10 +67020,6 @@ void zx_hrxml_ProfileId_PUT_validFrom(struct zx_hrxml_ProfileId_s* x, struct zx_
 struct zx_str* zx_hrxml_ProfileId_GET_validTo(struct zx_hrxml_ProfileId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_ProfileId_PUT_validTo) */
 void zx_hrxml_ProfileId_PUT_validTo(struct zx_hrxml_ProfileId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_ProfileId_GET_idOwner) */
-struct zx_str* zx_hrxml_ProfileId_GET_idOwner(struct zx_hrxml_ProfileId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_ProfileId_PUT_idOwner) */
-void zx_hrxml_ProfileId_PUT_idOwner(struct zx_hrxml_ProfileId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -67159,6 +67159,10 @@ void zx_hrxml_ProgramId_DEL_IdValue(struct zx_hrxml_ProgramId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_ProgramId_GET_idOwner) */
+struct zx_str* zx_hrxml_ProgramId_GET_idOwner(struct zx_hrxml_ProgramId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_ProgramId_PUT_idOwner) */
+void zx_hrxml_ProgramId_PUT_idOwner(struct zx_hrxml_ProgramId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_ProgramId_GET_validFrom) */
 struct zx_str* zx_hrxml_ProgramId_GET_validFrom(struct zx_hrxml_ProgramId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_ProgramId_PUT_validFrom) */
@@ -67167,10 +67171,6 @@ void zx_hrxml_ProgramId_PUT_validFrom(struct zx_hrxml_ProgramId_s* x, struct zx_
 struct zx_str* zx_hrxml_ProgramId_GET_validTo(struct zx_hrxml_ProgramId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_ProgramId_PUT_validTo) */
 void zx_hrxml_ProgramId_PUT_validTo(struct zx_hrxml_ProgramId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_ProgramId_GET_idOwner) */
-struct zx_str* zx_hrxml_ProgramId_GET_idOwner(struct zx_hrxml_ProgramId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_ProgramId_PUT_idOwner) */
-void zx_hrxml_ProgramId_PUT_idOwner(struct zx_hrxml_ProgramId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -75417,22 +75417,22 @@ void zx_hrxml_RelatedOrganizationalUnit_DEL_UserArea(struct zx_hrxml_RelatedOrga
 
 #endif
 
-/* FUNC(zx_hrxml_RelatedOrganizationalUnit_GET_typeOfGroup) */
-struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x) { return x->typeOfGroup; }
-/* FUNC(zx_hrxml_RelatedOrganizationalUnit_PUT_typeOfGroup) */
-void zx_hrxml_RelatedOrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y) { x->typeOfGroup = y; }
 /* FUNC(zx_hrxml_RelatedOrganizationalUnit_GET_hierarchicalRole) */
 struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_hierarchicalRole(struct zx_hrxml_RelatedOrganizationalUnit_s* x) { return x->hierarchicalRole; }
 /* FUNC(zx_hrxml_RelatedOrganizationalUnit_PUT_hierarchicalRole) */
 void zx_hrxml_RelatedOrganizationalUnit_PUT_hierarchicalRole(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y) { x->hierarchicalRole = y; }
-/* FUNC(zx_hrxml_RelatedOrganizationalUnit_GET_relationship) */
-struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x) { return x->relationship; }
-/* FUNC(zx_hrxml_RelatedOrganizationalUnit_PUT_relationship) */
-void zx_hrxml_RelatedOrganizationalUnit_PUT_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y) { x->relationship = y; }
 /* FUNC(zx_hrxml_RelatedOrganizationalUnit_GET_natureOfRelationship) */
 struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_natureOfRelationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x) { return x->natureOfRelationship; }
 /* FUNC(zx_hrxml_RelatedOrganizationalUnit_PUT_natureOfRelationship) */
 void zx_hrxml_RelatedOrganizationalUnit_PUT_natureOfRelationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y) { x->natureOfRelationship = y; }
+/* FUNC(zx_hrxml_RelatedOrganizationalUnit_GET_relationship) */
+struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x) { return x->relationship; }
+/* FUNC(zx_hrxml_RelatedOrganizationalUnit_PUT_relationship) */
+void zx_hrxml_RelatedOrganizationalUnit_PUT_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y) { x->relationship = y; }
+/* FUNC(zx_hrxml_RelatedOrganizationalUnit_GET_typeOfGroup) */
+struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x) { return x->typeOfGroup; }
+/* FUNC(zx_hrxml_RelatedOrganizationalUnit_PUT_typeOfGroup) */
+void zx_hrxml_RelatedOrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y) { x->typeOfGroup = y; }
 
 
 
@@ -77633,6 +77633,10 @@ void zx_hrxml_RoleId_DEL_IdValue(struct zx_hrxml_RoleId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_RoleId_GET_idOwner) */
+struct zx_str* zx_hrxml_RoleId_GET_idOwner(struct zx_hrxml_RoleId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_RoleId_PUT_idOwner) */
+void zx_hrxml_RoleId_PUT_idOwner(struct zx_hrxml_RoleId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_RoleId_GET_validFrom) */
 struct zx_str* zx_hrxml_RoleId_GET_validFrom(struct zx_hrxml_RoleId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_RoleId_PUT_validFrom) */
@@ -77641,10 +77645,6 @@ void zx_hrxml_RoleId_PUT_validFrom(struct zx_hrxml_RoleId_s* x, struct zx_str* y
 struct zx_str* zx_hrxml_RoleId_GET_validTo(struct zx_hrxml_RoleId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_RoleId_PUT_validTo) */
 void zx_hrxml_RoleId_PUT_validTo(struct zx_hrxml_RoleId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_RoleId_GET_idOwner) */
-struct zx_str* zx_hrxml_RoleId_GET_idOwner(struct zx_hrxml_RoleId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_RoleId_PUT_idOwner) */
-void zx_hrxml_RoleId_PUT_idOwner(struct zx_hrxml_RoleId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -79147,6 +79147,10 @@ void zx_hrxml_SchoolId_DEL_IdValue(struct zx_hrxml_SchoolId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_SchoolId_GET_idOwner) */
+struct zx_str* zx_hrxml_SchoolId_GET_idOwner(struct zx_hrxml_SchoolId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_SchoolId_PUT_idOwner) */
+void zx_hrxml_SchoolId_PUT_idOwner(struct zx_hrxml_SchoolId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_SchoolId_GET_validFrom) */
 struct zx_str* zx_hrxml_SchoolId_GET_validFrom(struct zx_hrxml_SchoolId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_SchoolId_PUT_validFrom) */
@@ -79155,10 +79159,6 @@ void zx_hrxml_SchoolId_PUT_validFrom(struct zx_hrxml_SchoolId_s* x, struct zx_st
 struct zx_str* zx_hrxml_SchoolId_GET_validTo(struct zx_hrxml_SchoolId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_SchoolId_PUT_validTo) */
 void zx_hrxml_SchoolId_PUT_validTo(struct zx_hrxml_SchoolId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_SchoolId_GET_idOwner) */
-struct zx_str* zx_hrxml_SchoolId_GET_idOwner(struct zx_hrxml_SchoolId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_SchoolId_PUT_idOwner) */
-void zx_hrxml_SchoolId_PUT_idOwner(struct zx_hrxml_SchoolId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -82135,6 +82135,10 @@ void zx_hrxml_SearchCriteriaId_DEL_IdValue(struct zx_hrxml_SearchCriteriaId_s* x
 
 #endif
 
+/* FUNC(zx_hrxml_SearchCriteriaId_GET_idOwner) */
+struct zx_str* zx_hrxml_SearchCriteriaId_GET_idOwner(struct zx_hrxml_SearchCriteriaId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_SearchCriteriaId_PUT_idOwner) */
+void zx_hrxml_SearchCriteriaId_PUT_idOwner(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_SearchCriteriaId_GET_validFrom) */
 struct zx_str* zx_hrxml_SearchCriteriaId_GET_validFrom(struct zx_hrxml_SearchCriteriaId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_SearchCriteriaId_PUT_validFrom) */
@@ -82143,10 +82147,6 @@ void zx_hrxml_SearchCriteriaId_PUT_validFrom(struct zx_hrxml_SearchCriteriaId_s*
 struct zx_str* zx_hrxml_SearchCriteriaId_GET_validTo(struct zx_hrxml_SearchCriteriaId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_SearchCriteriaId_PUT_validTo) */
 void zx_hrxml_SearchCriteriaId_PUT_validTo(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_SearchCriteriaId_GET_idOwner) */
-struct zx_str* zx_hrxml_SearchCriteriaId_GET_idOwner(struct zx_hrxml_SearchCriteriaId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_SearchCriteriaId_PUT_idOwner) */
-void zx_hrxml_SearchCriteriaId_PUT_idOwner(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -84047,6 +84047,10 @@ void zx_hrxml_SearchResultId_DEL_IdValue(struct zx_hrxml_SearchResultId_s* x, in
 
 #endif
 
+/* FUNC(zx_hrxml_SearchResultId_GET_idOwner) */
+struct zx_str* zx_hrxml_SearchResultId_GET_idOwner(struct zx_hrxml_SearchResultId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_SearchResultId_PUT_idOwner) */
+void zx_hrxml_SearchResultId_PUT_idOwner(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_SearchResultId_GET_validFrom) */
 struct zx_str* zx_hrxml_SearchResultId_GET_validFrom(struct zx_hrxml_SearchResultId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_SearchResultId_PUT_validFrom) */
@@ -84055,10 +84059,6 @@ void zx_hrxml_SearchResultId_PUT_validFrom(struct zx_hrxml_SearchResultId_s* x, 
 struct zx_str* zx_hrxml_SearchResultId_GET_validTo(struct zx_hrxml_SearchResultId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_SearchResultId_PUT_validTo) */
 void zx_hrxml_SearchResultId_PUT_validTo(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_SearchResultId_GET_idOwner) */
-struct zx_str* zx_hrxml_SearchResultId_GET_idOwner(struct zx_hrxml_SearchResultId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_SearchResultId_PUT_idOwner) */
-void zx_hrxml_SearchResultId_PUT_idOwner(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -86227,6 +86227,10 @@ void zx_hrxml_ServiceNumber_DEL_IdValue(struct zx_hrxml_ServiceNumber_s* x, int 
 
 #endif
 
+/* FUNC(zx_hrxml_ServiceNumber_GET_idOwner) */
+struct zx_str* zx_hrxml_ServiceNumber_GET_idOwner(struct zx_hrxml_ServiceNumber_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_ServiceNumber_PUT_idOwner) */
+void zx_hrxml_ServiceNumber_PUT_idOwner(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_ServiceNumber_GET_validFrom) */
 struct zx_str* zx_hrxml_ServiceNumber_GET_validFrom(struct zx_hrxml_ServiceNumber_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_ServiceNumber_PUT_validFrom) */
@@ -86235,10 +86239,6 @@ void zx_hrxml_ServiceNumber_PUT_validFrom(struct zx_hrxml_ServiceNumber_s* x, st
 struct zx_str* zx_hrxml_ServiceNumber_GET_validTo(struct zx_hrxml_ServiceNumber_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_ServiceNumber_PUT_validTo) */
 void zx_hrxml_ServiceNumber_PUT_validTo(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_ServiceNumber_GET_idOwner) */
-struct zx_str* zx_hrxml_ServiceNumber_GET_idOwner(struct zx_hrxml_ServiceNumber_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_ServiceNumber_PUT_idOwner) */
-void zx_hrxml_ServiceNumber_PUT_idOwner(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -91154,18 +91154,18 @@ void zx_hrxml_Stock_DEL_Exchange(struct zx_hrxml_Stock_s* x, int n)
 
 
 
-/* FUNC(zx_hrxml_StringValue_GET_minValue) */
-struct zx_str* zx_hrxml_StringValue_GET_minValue(struct zx_hrxml_StringValue_s* x) { return x->minValue; }
-/* FUNC(zx_hrxml_StringValue_PUT_minValue) */
-void zx_hrxml_StringValue_PUT_minValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y) { x->minValue = y; }
-/* FUNC(zx_hrxml_StringValue_GET_maxValue) */
-struct zx_str* zx_hrxml_StringValue_GET_maxValue(struct zx_hrxml_StringValue_s* x) { return x->maxValue; }
-/* FUNC(zx_hrxml_StringValue_PUT_maxValue) */
-void zx_hrxml_StringValue_PUT_maxValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y) { x->maxValue = y; }
 /* FUNC(zx_hrxml_StringValue_GET_description) */
 struct zx_str* zx_hrxml_StringValue_GET_description(struct zx_hrxml_StringValue_s* x) { return x->description; }
 /* FUNC(zx_hrxml_StringValue_PUT_description) */
 void zx_hrxml_StringValue_PUT_description(struct zx_hrxml_StringValue_s* x, struct zx_str* y) { x->description = y; }
+/* FUNC(zx_hrxml_StringValue_GET_maxValue) */
+struct zx_str* zx_hrxml_StringValue_GET_maxValue(struct zx_hrxml_StringValue_s* x) { return x->maxValue; }
+/* FUNC(zx_hrxml_StringValue_PUT_maxValue) */
+void zx_hrxml_StringValue_PUT_maxValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y) { x->maxValue = y; }
+/* FUNC(zx_hrxml_StringValue_GET_minValue) */
+struct zx_str* zx_hrxml_StringValue_GET_minValue(struct zx_hrxml_StringValue_s* x) { return x->minValue; }
+/* FUNC(zx_hrxml_StringValue_PUT_minValue) */
+void zx_hrxml_StringValue_PUT_minValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y) { x->minValue = y; }
 
 
 
@@ -94124,6 +94124,10 @@ void zx_hrxml_SupplierId_DEL_IdValue(struct zx_hrxml_SupplierId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_SupplierId_GET_idOwner) */
+struct zx_str* zx_hrxml_SupplierId_GET_idOwner(struct zx_hrxml_SupplierId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_SupplierId_PUT_idOwner) */
+void zx_hrxml_SupplierId_PUT_idOwner(struct zx_hrxml_SupplierId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_SupplierId_GET_validFrom) */
 struct zx_str* zx_hrxml_SupplierId_GET_validFrom(struct zx_hrxml_SupplierId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_SupplierId_PUT_validFrom) */
@@ -94132,10 +94136,6 @@ void zx_hrxml_SupplierId_PUT_validFrom(struct zx_hrxml_SupplierId_s* x, struct z
 struct zx_str* zx_hrxml_SupplierId_GET_validTo(struct zx_hrxml_SupplierId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_SupplierId_PUT_validTo) */
 void zx_hrxml_SupplierId_PUT_validTo(struct zx_hrxml_SupplierId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_SupplierId_GET_idOwner) */
-struct zx_str* zx_hrxml_SupplierId_GET_idOwner(struct zx_hrxml_SupplierId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_SupplierId_PUT_idOwner) */
-void zx_hrxml_SupplierId_PUT_idOwner(struct zx_hrxml_SupplierId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -94821,6 +94821,10 @@ void zx_hrxml_TaxId_DEL_IdValue(struct zx_hrxml_TaxId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_TaxId_GET_idOwner) */
+struct zx_str* zx_hrxml_TaxId_GET_idOwner(struct zx_hrxml_TaxId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_TaxId_PUT_idOwner) */
+void zx_hrxml_TaxId_PUT_idOwner(struct zx_hrxml_TaxId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_TaxId_GET_validFrom) */
 struct zx_str* zx_hrxml_TaxId_GET_validFrom(struct zx_hrxml_TaxId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_TaxId_PUT_validFrom) */
@@ -94829,15 +94833,15 @@ void zx_hrxml_TaxId_PUT_validFrom(struct zx_hrxml_TaxId_s* x, struct zx_str* y) 
 struct zx_str* zx_hrxml_TaxId_GET_validTo(struct zx_hrxml_TaxId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_TaxId_PUT_validTo) */
 void zx_hrxml_TaxId_PUT_validTo(struct zx_hrxml_TaxId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_TaxId_GET_idOwner) */
-struct zx_str* zx_hrxml_TaxId_GET_idOwner(struct zx_hrxml_TaxId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_TaxId_PUT_idOwner) */
-void zx_hrxml_TaxId_PUT_idOwner(struct zx_hrxml_TaxId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
 
 
+/* FUNC(zx_hrxml_TaxonomyId_GET_description) */
+struct zx_str* zx_hrxml_TaxonomyId_GET_description(struct zx_hrxml_TaxonomyId_s* x) { return x->description; }
+/* FUNC(zx_hrxml_TaxonomyId_PUT_description) */
+void zx_hrxml_TaxonomyId_PUT_description(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y) { x->description = y; }
 /* FUNC(zx_hrxml_TaxonomyId_GET_id) */
 struct zx_str* zx_hrxml_TaxonomyId_GET_id(struct zx_hrxml_TaxonomyId_s* x) { return x->id; }
 /* FUNC(zx_hrxml_TaxonomyId_PUT_id) */
@@ -94846,10 +94850,6 @@ void zx_hrxml_TaxonomyId_PUT_id(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* 
 struct zx_str* zx_hrxml_TaxonomyId_GET_idOwner(struct zx_hrxml_TaxonomyId_s* x) { return x->idOwner; }
 /* FUNC(zx_hrxml_TaxonomyId_PUT_idOwner) */
 void zx_hrxml_TaxonomyId_PUT_idOwner(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y) { x->idOwner = y; }
-/* FUNC(zx_hrxml_TaxonomyId_GET_description) */
-struct zx_str* zx_hrxml_TaxonomyId_GET_description(struct zx_hrxml_TaxonomyId_s* x) { return x->description; }
-/* FUNC(zx_hrxml_TaxonomyId_PUT_description) */
-void zx_hrxml_TaxonomyId_PUT_description(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y) { x->description = y; }
 
 
 
@@ -95983,6 +95983,10 @@ void zx_hrxml_UserId_DEL_IdValue(struct zx_hrxml_UserId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_UserId_GET_idOwner) */
+struct zx_str* zx_hrxml_UserId_GET_idOwner(struct zx_hrxml_UserId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_UserId_PUT_idOwner) */
+void zx_hrxml_UserId_PUT_idOwner(struct zx_hrxml_UserId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_UserId_GET_validFrom) */
 struct zx_str* zx_hrxml_UserId_GET_validFrom(struct zx_hrxml_UserId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_UserId_PUT_validFrom) */
@@ -95991,10 +95995,6 @@ void zx_hrxml_UserId_PUT_validFrom(struct zx_hrxml_UserId_s* x, struct zx_str* y
 struct zx_str* zx_hrxml_UserId_GET_validTo(struct zx_hrxml_UserId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_UserId_PUT_validTo) */
 void zx_hrxml_UserId_PUT_validTo(struct zx_hrxml_UserId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_UserId_GET_idOwner) */
-struct zx_str* zx_hrxml_UserId_GET_idOwner(struct zx_hrxml_UserId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_UserId_PUT_idOwner) */
-void zx_hrxml_UserId_PUT_idOwner(struct zx_hrxml_UserId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 
@@ -98457,22 +98457,22 @@ void zx_hrxml_VisaStatus_PUT_validTo(struct zx_hrxml_VisaStatus_s* x, struct zx_
 
 
 
-/* FUNC(zx_hrxml_Weight_GET_minValue) */
-struct zx_str* zx_hrxml_Weight_GET_minValue(struct zx_hrxml_Weight_s* x) { return x->minValue; }
-/* FUNC(zx_hrxml_Weight_PUT_minValue) */
-void zx_hrxml_Weight_PUT_minValue(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->minValue = y; }
-/* FUNC(zx_hrxml_Weight_GET_maxValue) */
-struct zx_str* zx_hrxml_Weight_GET_maxValue(struct zx_hrxml_Weight_s* x) { return x->maxValue; }
-/* FUNC(zx_hrxml_Weight_PUT_maxValue) */
-void zx_hrxml_Weight_PUT_maxValue(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->maxValue = y; }
-/* FUNC(zx_hrxml_Weight_GET_interval) */
-struct zx_str* zx_hrxml_Weight_GET_interval(struct zx_hrxml_Weight_s* x) { return x->interval; }
-/* FUNC(zx_hrxml_Weight_PUT_interval) */
-void zx_hrxml_Weight_PUT_interval(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->interval = y; }
 /* FUNC(zx_hrxml_Weight_GET_description) */
 struct zx_str* zx_hrxml_Weight_GET_description(struct zx_hrxml_Weight_s* x) { return x->description; }
 /* FUNC(zx_hrxml_Weight_PUT_description) */
 void zx_hrxml_Weight_PUT_description(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->description = y; }
+/* FUNC(zx_hrxml_Weight_GET_interval) */
+struct zx_str* zx_hrxml_Weight_GET_interval(struct zx_hrxml_Weight_s* x) { return x->interval; }
+/* FUNC(zx_hrxml_Weight_PUT_interval) */
+void zx_hrxml_Weight_PUT_interval(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->interval = y; }
+/* FUNC(zx_hrxml_Weight_GET_maxValue) */
+struct zx_str* zx_hrxml_Weight_GET_maxValue(struct zx_hrxml_Weight_s* x) { return x->maxValue; }
+/* FUNC(zx_hrxml_Weight_PUT_maxValue) */
+void zx_hrxml_Weight_PUT_maxValue(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->maxValue = y; }
+/* FUNC(zx_hrxml_Weight_GET_minValue) */
+struct zx_str* zx_hrxml_Weight_GET_minValue(struct zx_hrxml_Weight_s* x) { return x->minValue; }
+/* FUNC(zx_hrxml_Weight_PUT_minValue) */
+void zx_hrxml_Weight_PUT_minValue(struct zx_hrxml_Weight_s* x, struct zx_str* y) { x->minValue = y; }
 
 
 
@@ -100498,6 +100498,10 @@ void zx_hrxml_WorkSiteId_DEL_IdValue(struct zx_hrxml_WorkSiteId_s* x, int n)
 
 #endif
 
+/* FUNC(zx_hrxml_WorkSiteId_GET_idOwner) */
+struct zx_str* zx_hrxml_WorkSiteId_GET_idOwner(struct zx_hrxml_WorkSiteId_s* x) { return x->idOwner; }
+/* FUNC(zx_hrxml_WorkSiteId_PUT_idOwner) */
+void zx_hrxml_WorkSiteId_PUT_idOwner(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y) { x->idOwner = y; }
 /* FUNC(zx_hrxml_WorkSiteId_GET_validFrom) */
 struct zx_str* zx_hrxml_WorkSiteId_GET_validFrom(struct zx_hrxml_WorkSiteId_s* x) { return x->validFrom; }
 /* FUNC(zx_hrxml_WorkSiteId_PUT_validFrom) */
@@ -100506,10 +100510,6 @@ void zx_hrxml_WorkSiteId_PUT_validFrom(struct zx_hrxml_WorkSiteId_s* x, struct z
 struct zx_str* zx_hrxml_WorkSiteId_GET_validTo(struct zx_hrxml_WorkSiteId_s* x) { return x->validTo; }
 /* FUNC(zx_hrxml_WorkSiteId_PUT_validTo) */
 void zx_hrxml_WorkSiteId_PUT_validTo(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y) { x->validTo = y; }
-/* FUNC(zx_hrxml_WorkSiteId_GET_idOwner) */
-struct zx_str* zx_hrxml_WorkSiteId_GET_idOwner(struct zx_hrxml_WorkSiteId_s* x) { return x->idOwner; }
-/* FUNC(zx_hrxml_WorkSiteId_PUT_idOwner) */
-void zx_hrxml_WorkSiteId_PUT_idOwner(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y) { x->idOwner = y; }
 
 
 

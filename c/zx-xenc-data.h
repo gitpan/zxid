@@ -266,17 +266,17 @@ struct zx_xenc_EncryptedData_s {
   struct zx_ds_KeyInfo_s* KeyInfo;	/* {0,1} nada */
   struct zx_xenc_CipherData_s* CipherData;	/* {1,1} nada */
   struct zx_xenc_EncryptionProperties_s* EncryptionProperties;	/* {0,1} nada */
-  struct zx_str* Id;	/* {0,1} attribute xs:ID */
-  struct zx_str* Type;	/* {0,1} attribute wst:BinarySecretTypeEnum */
-  struct zx_str* MimeType;	/* {0,1} attribute xs:string */
   struct zx_str* Encoding;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* MimeType;	/* {0,1} attribute xs:string */
+  struct zx_str* Type;	/* {0,1} attribute wst:BinarySecretTypeEnum */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xenc_EncryptedData_GET_Id(struct zx_xenc_EncryptedData_s* x);
-struct zx_str* zx_xenc_EncryptedData_GET_Type(struct zx_xenc_EncryptedData_s* x);
-struct zx_str* zx_xenc_EncryptedData_GET_MimeType(struct zx_xenc_EncryptedData_s* x);
 struct zx_str* zx_xenc_EncryptedData_GET_Encoding(struct zx_xenc_EncryptedData_s* x);
+struct zx_str* zx_xenc_EncryptedData_GET_Id(struct zx_xenc_EncryptedData_s* x);
+struct zx_str* zx_xenc_EncryptedData_GET_MimeType(struct zx_xenc_EncryptedData_s* x);
+struct zx_str* zx_xenc_EncryptedData_GET_Type(struct zx_xenc_EncryptedData_s* x);
 
 struct zx_xenc_EncryptionMethod_s* zx_xenc_EncryptedData_GET_EncryptionMethod(struct zx_xenc_EncryptedData_s* x, int n);
 struct zx_ds_KeyInfo_s* zx_xenc_EncryptedData_GET_KeyInfo(struct zx_xenc_EncryptedData_s* x, int n);
@@ -298,10 +298,10 @@ void zx_xenc_EncryptedData_PUSH_KeyInfo(struct zx_xenc_EncryptedData_s* x, struc
 void zx_xenc_EncryptedData_PUSH_CipherData(struct zx_xenc_EncryptedData_s* x, struct zx_xenc_CipherData_s* y);
 void zx_xenc_EncryptedData_PUSH_EncryptionProperties(struct zx_xenc_EncryptedData_s* x, struct zx_xenc_EncryptionProperties_s* y);
 
-void zx_xenc_EncryptedData_PUT_Id(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
-void zx_xenc_EncryptedData_PUT_Type(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
-void zx_xenc_EncryptedData_PUT_MimeType(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
 void zx_xenc_EncryptedData_PUT_Encoding(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
+void zx_xenc_EncryptedData_PUT_Id(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
+void zx_xenc_EncryptedData_PUT_MimeType(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
+void zx_xenc_EncryptedData_PUT_Type(struct zx_xenc_EncryptedData_s* x, struct zx_str* y);
 
 void zx_xenc_EncryptedData_PUT_EncryptionMethod(struct zx_xenc_EncryptedData_s* x, int n, struct zx_xenc_EncryptionMethod_s* y);
 void zx_xenc_EncryptedData_PUT_KeyInfo(struct zx_xenc_EncryptedData_s* x, int n, struct zx_ds_KeyInfo_s* y);
@@ -325,7 +325,7 @@ void zx_xenc_EncryptedData_REV_EncryptionProperties(struct zx_xenc_EncryptedData
 
 #endif
 /* -------------------------- xenc_EncryptedKey -------------------------- */
-/* refby( zx_gl_EncryptedResourceID_s zx_is12_EncryptedResourceID_s zx_di12_EncryptedResourceID_s zx_ff12_EncryptedNameIdentifier_s zx_sa_EncryptedID_s zx_sa_EncryptedAttribute_s zx_sp_NewEncryptedID_s zx_cb_EncryptedResourceID_s zx_sa_EncryptedAssertion_s ) */
+/* refby( zx_ds_KeyInfo_s zx_gl_EncryptedResourceID_s zx_is12_EncryptedResourceID_s zx_di12_EncryptedResourceID_s zx_ff12_EncryptedNameIdentifier_s zx_xenc_OriginatorKeyInfo_s zx_sa_EncryptedID_s zx_sa_EncryptedAttribute_s zx_xenc_RecipientKeyInfo_s zx_sp_NewEncryptedID_s zx_cb_EncryptedResourceID_s zx_sa_EncryptedAssertion_s ) */
 #ifndef zx_xenc_EncryptedKey_EXT
 #define zx_xenc_EncryptedKey_EXT
 #endif
@@ -355,19 +355,19 @@ struct zx_xenc_EncryptedKey_s {
   struct zx_xenc_EncryptionProperties_s* EncryptionProperties;	/* {0,1} nada */
   struct zx_xenc_ReferenceList_s* ReferenceList;	/* {0,1} nada */
   struct zx_elem_s* CarriedKeyName;	/* {0,1} xs:string */
-  struct zx_str* Id;	/* {0,1} attribute xs:ID */
-  struct zx_str* Type;	/* {0,1} attribute wst:BinarySecretTypeEnum */
-  struct zx_str* MimeType;	/* {0,1} attribute xs:string */
   struct zx_str* Encoding;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* MimeType;	/* {0,1} attribute xs:string */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Type;	/* {0,1} attribute wst:BinarySecretTypeEnum */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xenc_EncryptedKey_GET_Id(struct zx_xenc_EncryptedKey_s* x);
-struct zx_str* zx_xenc_EncryptedKey_GET_Type(struct zx_xenc_EncryptedKey_s* x);
-struct zx_str* zx_xenc_EncryptedKey_GET_MimeType(struct zx_xenc_EncryptedKey_s* x);
 struct zx_str* zx_xenc_EncryptedKey_GET_Encoding(struct zx_xenc_EncryptedKey_s* x);
+struct zx_str* zx_xenc_EncryptedKey_GET_Id(struct zx_xenc_EncryptedKey_s* x);
+struct zx_str* zx_xenc_EncryptedKey_GET_MimeType(struct zx_xenc_EncryptedKey_s* x);
 struct zx_str* zx_xenc_EncryptedKey_GET_Recipient(struct zx_xenc_EncryptedKey_s* x);
+struct zx_str* zx_xenc_EncryptedKey_GET_Type(struct zx_xenc_EncryptedKey_s* x);
 
 struct zx_xenc_EncryptionMethod_s* zx_xenc_EncryptedKey_GET_EncryptionMethod(struct zx_xenc_EncryptedKey_s* x, int n);
 struct zx_ds_KeyInfo_s* zx_xenc_EncryptedKey_GET_KeyInfo(struct zx_xenc_EncryptedKey_s* x, int n);
@@ -397,11 +397,11 @@ void zx_xenc_EncryptedKey_PUSH_EncryptionProperties(struct zx_xenc_EncryptedKey_
 void zx_xenc_EncryptedKey_PUSH_ReferenceList(struct zx_xenc_EncryptedKey_s* x, struct zx_xenc_ReferenceList_s* y);
 void zx_xenc_EncryptedKey_PUSH_CarriedKeyName(struct zx_xenc_EncryptedKey_s* x, struct zx_elem_s* y);
 
-void zx_xenc_EncryptedKey_PUT_Id(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
-void zx_xenc_EncryptedKey_PUT_Type(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
-void zx_xenc_EncryptedKey_PUT_MimeType(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
 void zx_xenc_EncryptedKey_PUT_Encoding(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
+void zx_xenc_EncryptedKey_PUT_Id(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
+void zx_xenc_EncryptedKey_PUT_MimeType(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
 void zx_xenc_EncryptedKey_PUT_Recipient(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
+void zx_xenc_EncryptedKey_PUT_Type(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y);
 
 void zx_xenc_EncryptedKey_PUT_EncryptionMethod(struct zx_xenc_EncryptedKey_s* x, int n, struct zx_xenc_EncryptionMethod_s* y);
 void zx_xenc_EncryptedKey_PUT_KeyInfo(struct zx_xenc_EncryptedKey_s* x, int n, struct zx_ds_KeyInfo_s* y);
@@ -568,20 +568,20 @@ struct zx_str* zx_EASY_ENC_WO_xenc_EncryptionProperty(struct zx_ctx* c, struct z
 struct zx_xenc_EncryptionProperty_s {
   ZX_ELEM_EXT
   zx_xenc_EncryptionProperty_EXT
-  struct zx_str* Target;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* Target;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xenc_EncryptionProperty_GET_Target(struct zx_xenc_EncryptionProperty_s* x);
 struct zx_str* zx_xenc_EncryptionProperty_GET_Id(struct zx_xenc_EncryptionProperty_s* x);
+struct zx_str* zx_xenc_EncryptionProperty_GET_Target(struct zx_xenc_EncryptionProperty_s* x);
 
 
 
 
 
-void zx_xenc_EncryptionProperty_PUT_Target(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y);
 void zx_xenc_EncryptionProperty_PUT_Id(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y);
+void zx_xenc_EncryptionProperty_PUT_Target(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y);
 
 
 
@@ -662,6 +662,7 @@ struct zx_xenc_OriginatorKeyInfo_s {
   struct zx_ds_PGPData_s* PGPData;	/* {0,-1} nada */
   struct zx_ds_SPKIData_s* SPKIData;	/* {0,-1} nada */
   struct zx_elem_s* MgmtData;	/* {0,-1} xs:string */
+  struct zx_xenc_EncryptedKey_s* EncryptedKey;	/* {0,-1} nada */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
 };
 
@@ -675,6 +676,7 @@ struct zx_ds_X509Data_s* zx_xenc_OriginatorKeyInfo_GET_X509Data(struct zx_xenc_O
 struct zx_ds_PGPData_s* zx_xenc_OriginatorKeyInfo_GET_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 struct zx_ds_SPKIData_s* zx_xenc_OriginatorKeyInfo_GET_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 struct zx_elem_s* zx_xenc_OriginatorKeyInfo_GET_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
+struct zx_xenc_EncryptedKey_s* zx_xenc_OriginatorKeyInfo_GET_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 
 int zx_xenc_OriginatorKeyInfo_NUM_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x);
 int zx_xenc_OriginatorKeyInfo_NUM_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* x);
@@ -683,6 +685,7 @@ int zx_xenc_OriginatorKeyInfo_NUM_X509Data(struct zx_xenc_OriginatorKeyInfo_s* x
 int zx_xenc_OriginatorKeyInfo_NUM_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x);
 int zx_xenc_OriginatorKeyInfo_NUM_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x);
 int zx_xenc_OriginatorKeyInfo_NUM_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x);
+int zx_xenc_OriginatorKeyInfo_NUM_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x);
 
 struct zx_elem_s* zx_xenc_OriginatorKeyInfo_POP_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x);
 struct zx_ds_KeyValue_s* zx_xenc_OriginatorKeyInfo_POP_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* x);
@@ -691,6 +694,7 @@ struct zx_ds_X509Data_s* zx_xenc_OriginatorKeyInfo_POP_X509Data(struct zx_xenc_O
 struct zx_ds_PGPData_s* zx_xenc_OriginatorKeyInfo_POP_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x);
 struct zx_ds_SPKIData_s* zx_xenc_OriginatorKeyInfo_POP_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x);
 struct zx_elem_s* zx_xenc_OriginatorKeyInfo_POP_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x);
+struct zx_xenc_EncryptedKey_s* zx_xenc_OriginatorKeyInfo_POP_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x);
 
 void zx_xenc_OriginatorKeyInfo_PUSH_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_elem_s* y);
 void zx_xenc_OriginatorKeyInfo_PUSH_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_ds_KeyValue_s* y);
@@ -699,6 +703,7 @@ void zx_xenc_OriginatorKeyInfo_PUSH_X509Data(struct zx_xenc_OriginatorKeyInfo_s*
 void zx_xenc_OriginatorKeyInfo_PUSH_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_ds_PGPData_s* y);
 void zx_xenc_OriginatorKeyInfo_PUSH_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_ds_SPKIData_s* y);
 void zx_xenc_OriginatorKeyInfo_PUSH_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_elem_s* y);
+void zx_xenc_OriginatorKeyInfo_PUSH_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_xenc_EncryptedKey_s* y);
 
 void zx_xenc_OriginatorKeyInfo_PUT_Id(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_str* y);
 
@@ -709,6 +714,7 @@ void zx_xenc_OriginatorKeyInfo_PUT_X509Data(struct zx_xenc_OriginatorKeyInfo_s* 
 void zx_xenc_OriginatorKeyInfo_PUT_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_ds_PGPData_s* y);
 void zx_xenc_OriginatorKeyInfo_PUT_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_ds_SPKIData_s* y);
 void zx_xenc_OriginatorKeyInfo_PUT_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_elem_s* y);
+void zx_xenc_OriginatorKeyInfo_PUT_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* y);
 
 void zx_xenc_OriginatorKeyInfo_ADD_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_elem_s* z);
 void zx_xenc_OriginatorKeyInfo_ADD_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_ds_KeyValue_s* z);
@@ -717,6 +723,7 @@ void zx_xenc_OriginatorKeyInfo_ADD_X509Data(struct zx_xenc_OriginatorKeyInfo_s* 
 void zx_xenc_OriginatorKeyInfo_ADD_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_ds_PGPData_s* z);
 void zx_xenc_OriginatorKeyInfo_ADD_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_ds_SPKIData_s* z);
 void zx_xenc_OriginatorKeyInfo_ADD_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_elem_s* z);
+void zx_xenc_OriginatorKeyInfo_ADD_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z);
 
 void zx_xenc_OriginatorKeyInfo_DEL_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 void zx_xenc_OriginatorKeyInfo_DEL_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
@@ -725,6 +732,7 @@ void zx_xenc_OriginatorKeyInfo_DEL_X509Data(struct zx_xenc_OriginatorKeyInfo_s* 
 void zx_xenc_OriginatorKeyInfo_DEL_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 void zx_xenc_OriginatorKeyInfo_DEL_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 void zx_xenc_OriginatorKeyInfo_DEL_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
+void zx_xenc_OriginatorKeyInfo_DEL_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n);
 
 void zx_xenc_OriginatorKeyInfo_REV_KeyName(struct zx_xenc_OriginatorKeyInfo_s* x);
 void zx_xenc_OriginatorKeyInfo_REV_KeyValue(struct zx_xenc_OriginatorKeyInfo_s* x);
@@ -733,6 +741,7 @@ void zx_xenc_OriginatorKeyInfo_REV_X509Data(struct zx_xenc_OriginatorKeyInfo_s* 
 void zx_xenc_OriginatorKeyInfo_REV_PGPData(struct zx_xenc_OriginatorKeyInfo_s* x);
 void zx_xenc_OriginatorKeyInfo_REV_SPKIData(struct zx_xenc_OriginatorKeyInfo_s* x);
 void zx_xenc_OriginatorKeyInfo_REV_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* x);
+void zx_xenc_OriginatorKeyInfo_REV_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x);
 
 #endif
 /* -------------------------- xenc_RecipientKeyInfo -------------------------- */
@@ -767,6 +776,7 @@ struct zx_xenc_RecipientKeyInfo_s {
   struct zx_ds_PGPData_s* PGPData;	/* {0,-1} nada */
   struct zx_ds_SPKIData_s* SPKIData;	/* {0,-1} nada */
   struct zx_elem_s* MgmtData;	/* {0,-1} xs:string */
+  struct zx_xenc_EncryptedKey_s* EncryptedKey;	/* {0,-1} nada */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
 };
 
@@ -780,6 +790,7 @@ struct zx_ds_X509Data_s* zx_xenc_RecipientKeyInfo_GET_X509Data(struct zx_xenc_Re
 struct zx_ds_PGPData_s* zx_xenc_RecipientKeyInfo_GET_PGPData(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 struct zx_ds_SPKIData_s* zx_xenc_RecipientKeyInfo_GET_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 struct zx_elem_s* zx_xenc_RecipientKeyInfo_GET_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x, int n);
+struct zx_xenc_EncryptedKey_s* zx_xenc_RecipientKeyInfo_GET_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 
 int zx_xenc_RecipientKeyInfo_NUM_KeyName(struct zx_xenc_RecipientKeyInfo_s* x);
 int zx_xenc_RecipientKeyInfo_NUM_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x);
@@ -788,6 +799,7 @@ int zx_xenc_RecipientKeyInfo_NUM_X509Data(struct zx_xenc_RecipientKeyInfo_s* x);
 int zx_xenc_RecipientKeyInfo_NUM_PGPData(struct zx_xenc_RecipientKeyInfo_s* x);
 int zx_xenc_RecipientKeyInfo_NUM_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x);
 int zx_xenc_RecipientKeyInfo_NUM_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x);
+int zx_xenc_RecipientKeyInfo_NUM_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x);
 
 struct zx_elem_s* zx_xenc_RecipientKeyInfo_POP_KeyName(struct zx_xenc_RecipientKeyInfo_s* x);
 struct zx_ds_KeyValue_s* zx_xenc_RecipientKeyInfo_POP_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x);
@@ -796,6 +808,7 @@ struct zx_ds_X509Data_s* zx_xenc_RecipientKeyInfo_POP_X509Data(struct zx_xenc_Re
 struct zx_ds_PGPData_s* zx_xenc_RecipientKeyInfo_POP_PGPData(struct zx_xenc_RecipientKeyInfo_s* x);
 struct zx_ds_SPKIData_s* zx_xenc_RecipientKeyInfo_POP_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x);
 struct zx_elem_s* zx_xenc_RecipientKeyInfo_POP_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x);
+struct zx_xenc_EncryptedKey_s* zx_xenc_RecipientKeyInfo_POP_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x);
 
 void zx_xenc_RecipientKeyInfo_PUSH_KeyName(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_elem_s* y);
 void zx_xenc_RecipientKeyInfo_PUSH_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_ds_KeyValue_s* y);
@@ -804,6 +817,7 @@ void zx_xenc_RecipientKeyInfo_PUSH_X509Data(struct zx_xenc_RecipientKeyInfo_s* x
 void zx_xenc_RecipientKeyInfo_PUSH_PGPData(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_ds_PGPData_s* y);
 void zx_xenc_RecipientKeyInfo_PUSH_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_ds_SPKIData_s* y);
 void zx_xenc_RecipientKeyInfo_PUSH_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_elem_s* y);
+void zx_xenc_RecipientKeyInfo_PUSH_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_xenc_EncryptedKey_s* y);
 
 void zx_xenc_RecipientKeyInfo_PUT_Id(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_str* y);
 
@@ -814,6 +828,7 @@ void zx_xenc_RecipientKeyInfo_PUT_X509Data(struct zx_xenc_RecipientKeyInfo_s* x,
 void zx_xenc_RecipientKeyInfo_PUT_PGPData(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_ds_PGPData_s* y);
 void zx_xenc_RecipientKeyInfo_PUT_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_ds_SPKIData_s* y);
 void zx_xenc_RecipientKeyInfo_PUT_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_elem_s* y);
+void zx_xenc_RecipientKeyInfo_PUT_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* y);
 
 void zx_xenc_RecipientKeyInfo_ADD_KeyName(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_elem_s* z);
 void zx_xenc_RecipientKeyInfo_ADD_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_ds_KeyValue_s* z);
@@ -822,6 +837,7 @@ void zx_xenc_RecipientKeyInfo_ADD_X509Data(struct zx_xenc_RecipientKeyInfo_s* x,
 void zx_xenc_RecipientKeyInfo_ADD_PGPData(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_ds_PGPData_s* z);
 void zx_xenc_RecipientKeyInfo_ADD_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_ds_SPKIData_s* z);
 void zx_xenc_RecipientKeyInfo_ADD_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_elem_s* z);
+void zx_xenc_RecipientKeyInfo_ADD_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z);
 
 void zx_xenc_RecipientKeyInfo_DEL_KeyName(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 void zx_xenc_RecipientKeyInfo_DEL_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x, int n);
@@ -830,6 +846,7 @@ void zx_xenc_RecipientKeyInfo_DEL_X509Data(struct zx_xenc_RecipientKeyInfo_s* x,
 void zx_xenc_RecipientKeyInfo_DEL_PGPData(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 void zx_xenc_RecipientKeyInfo_DEL_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 void zx_xenc_RecipientKeyInfo_DEL_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x, int n);
+void zx_xenc_RecipientKeyInfo_DEL_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n);
 
 void zx_xenc_RecipientKeyInfo_REV_KeyName(struct zx_xenc_RecipientKeyInfo_s* x);
 void zx_xenc_RecipientKeyInfo_REV_KeyValue(struct zx_xenc_RecipientKeyInfo_s* x);
@@ -838,6 +855,7 @@ void zx_xenc_RecipientKeyInfo_REV_X509Data(struct zx_xenc_RecipientKeyInfo_s* x)
 void zx_xenc_RecipientKeyInfo_REV_PGPData(struct zx_xenc_RecipientKeyInfo_s* x);
 void zx_xenc_RecipientKeyInfo_REV_SPKIData(struct zx_xenc_RecipientKeyInfo_s* x);
 void zx_xenc_RecipientKeyInfo_REV_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x);
+void zx_xenc_RecipientKeyInfo_REV_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x);
 
 #endif
 /* -------------------------- xenc_ReferenceList -------------------------- */

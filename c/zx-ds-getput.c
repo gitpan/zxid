@@ -1928,6 +1928,140 @@ void zx_ds_KeyInfo_DEL_MgmtData(struct zx_ds_KeyInfo_s* x, int n)
 
 #endif
 
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_ds_KeyInfo_NUM_EncryptedKey) */
+
+int zx_ds_KeyInfo_NUM_EncryptedKey(struct zx_ds_KeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->EncryptedKey; y; ++n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_ds_KeyInfo_GET_EncryptedKey) */
+
+struct zx_xenc_EncryptedKey_s* zx_ds_KeyInfo_GET_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return 0;
+  for (y = x->EncryptedKey; n>=0 && y; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_ds_KeyInfo_POP_EncryptedKey) */
+
+struct zx_xenc_EncryptedKey_s* zx_ds_KeyInfo_POP_EncryptedKey(struct zx_ds_KeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return 0;
+  y = x->EncryptedKey;
+  if (y)
+    x->EncryptedKey = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_ds_KeyInfo_PUSH_EncryptedKey) */
+
+void zx_ds_KeyInfo_PUSH_EncryptedKey(struct zx_ds_KeyInfo_s* x, struct zx_xenc_EncryptedKey_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->EncryptedKey->gg.g;
+  x->EncryptedKey = z;
+}
+
+/* FUNC(zx_ds_KeyInfo_REV_EncryptedKey) */
+
+void zx_ds_KeyInfo_REV_EncryptedKey(struct zx_ds_KeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* nxt;
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return;
+  y = x->EncryptedKey;
+  if (!y) return;
+  x->EncryptedKey = 0;
+  while (y) {
+    nxt = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n;
+    y->gg.g.n = &x->EncryptedKey->gg.g;
+    x->EncryptedKey = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_ds_KeyInfo_PUT_EncryptedKey) */
+
+void zx_ds_KeyInfo_PUT_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x || !z) return;
+  y = x->EncryptedKey;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->EncryptedKey = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_ds_KeyInfo_ADD_EncryptedKey) */
+
+void zx_ds_KeyInfo_ADD_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->EncryptedKey->gg.g;
+    x->EncryptedKey = z;
+    return;
+  case -1:
+    y = x->EncryptedKey;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedKey; n > 1 && y; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_ds_KeyInfo_DEL_EncryptedKey) */
+
+void zx_ds_KeyInfo_DEL_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->EncryptedKey = (struct zx_xenc_EncryptedKey_s*)x->EncryptedKey->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xenc_EncryptedKey_s*)x->EncryptedKey;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedKey; n > 1 && y->gg.g.n; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
 /* FUNC(zx_ds_KeyInfo_GET_Id) */
 struct zx_str* zx_ds_KeyInfo_GET_Id(struct zx_ds_KeyInfo_s* x) { return x->Id; }
 /* FUNC(zx_ds_KeyInfo_PUT_Id) */
@@ -2353,6 +2487,10 @@ void zx_ds_Manifest_PUT_Id(struct zx_ds_Manifest_s* x, struct zx_str* y) { x->Id
 
 
 
+/* FUNC(zx_ds_Object_GET_Encoding) */
+struct zx_str* zx_ds_Object_GET_Encoding(struct zx_ds_Object_s* x) { return x->Encoding; }
+/* FUNC(zx_ds_Object_PUT_Encoding) */
+void zx_ds_Object_PUT_Encoding(struct zx_ds_Object_s* x, struct zx_str* y) { x->Encoding = y; }
 /* FUNC(zx_ds_Object_GET_Id) */
 struct zx_str* zx_ds_Object_GET_Id(struct zx_ds_Object_s* x) { return x->Id; }
 /* FUNC(zx_ds_Object_PUT_Id) */
@@ -2361,10 +2499,6 @@ void zx_ds_Object_PUT_Id(struct zx_ds_Object_s* x, struct zx_str* y) { x->Id = y
 struct zx_str* zx_ds_Object_GET_MimeType(struct zx_ds_Object_s* x) { return x->MimeType; }
 /* FUNC(zx_ds_Object_PUT_MimeType) */
 void zx_ds_Object_PUT_MimeType(struct zx_ds_Object_s* x, struct zx_str* y) { x->MimeType = y; }
-/* FUNC(zx_ds_Object_GET_Encoding) */
-struct zx_str* zx_ds_Object_GET_Encoding(struct zx_ds_Object_s* x) { return x->Encoding; }
-/* FUNC(zx_ds_Object_PUT_Encoding) */
-void zx_ds_Object_PUT_Encoding(struct zx_ds_Object_s* x, struct zx_str* y) { x->Encoding = y; }
 
 
 
@@ -3322,14 +3456,14 @@ void zx_ds_Reference_DEL_DigestValue(struct zx_ds_Reference_s* x, int n)
 struct zx_str* zx_ds_Reference_GET_Id(struct zx_ds_Reference_s* x) { return x->Id; }
 /* FUNC(zx_ds_Reference_PUT_Id) */
 void zx_ds_Reference_PUT_Id(struct zx_ds_Reference_s* x, struct zx_str* y) { x->Id = y; }
-/* FUNC(zx_ds_Reference_GET_URI) */
-struct zx_str* zx_ds_Reference_GET_URI(struct zx_ds_Reference_s* x) { return x->URI; }
-/* FUNC(zx_ds_Reference_PUT_URI) */
-void zx_ds_Reference_PUT_URI(struct zx_ds_Reference_s* x, struct zx_str* y) { x->URI = y; }
 /* FUNC(zx_ds_Reference_GET_Type) */
 struct zx_str* zx_ds_Reference_GET_Type(struct zx_ds_Reference_s* x) { return x->Type; }
 /* FUNC(zx_ds_Reference_PUT_Type) */
 void zx_ds_Reference_PUT_Type(struct zx_ds_Reference_s* x, struct zx_str* y) { x->Type = y; }
+/* FUNC(zx_ds_Reference_GET_URI) */
+struct zx_str* zx_ds_Reference_GET_URI(struct zx_ds_Reference_s* x) { return x->URI; }
+/* FUNC(zx_ds_Reference_PUT_URI) */
+void zx_ds_Reference_PUT_URI(struct zx_ds_Reference_s* x, struct zx_str* y) { x->URI = y; }
 
 
 
@@ -3469,14 +3603,14 @@ void zx_ds_RetrievalMethod_DEL_Transforms(struct zx_ds_RetrievalMethod_s* x, int
 
 #endif
 
-/* FUNC(zx_ds_RetrievalMethod_GET_URI) */
-struct zx_str* zx_ds_RetrievalMethod_GET_URI(struct zx_ds_RetrievalMethod_s* x) { return x->URI; }
-/* FUNC(zx_ds_RetrievalMethod_PUT_URI) */
-void zx_ds_RetrievalMethod_PUT_URI(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y) { x->URI = y; }
 /* FUNC(zx_ds_RetrievalMethod_GET_Type) */
 struct zx_str* zx_ds_RetrievalMethod_GET_Type(struct zx_ds_RetrievalMethod_s* x) { return x->Type; }
 /* FUNC(zx_ds_RetrievalMethod_PUT_Type) */
 void zx_ds_RetrievalMethod_PUT_Type(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y) { x->Type = y; }
+/* FUNC(zx_ds_RetrievalMethod_GET_URI) */
+struct zx_str* zx_ds_RetrievalMethod_GET_URI(struct zx_ds_RetrievalMethod_s* x) { return x->URI; }
+/* FUNC(zx_ds_RetrievalMethod_PUT_URI) */
+void zx_ds_RetrievalMethod_PUT_URI(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y) { x->URI = y; }
 
 
 
@@ -4452,14 +4586,14 @@ void zx_ds_SignatureProperties_PUT_Id(struct zx_ds_SignatureProperties_s* x, str
 
 
 
-/* FUNC(zx_ds_SignatureProperty_GET_Target) */
-struct zx_str* zx_ds_SignatureProperty_GET_Target(struct zx_ds_SignatureProperty_s* x) { return x->Target; }
-/* FUNC(zx_ds_SignatureProperty_PUT_Target) */
-void zx_ds_SignatureProperty_PUT_Target(struct zx_ds_SignatureProperty_s* x, struct zx_str* y) { x->Target = y; }
 /* FUNC(zx_ds_SignatureProperty_GET_Id) */
 struct zx_str* zx_ds_SignatureProperty_GET_Id(struct zx_ds_SignatureProperty_s* x) { return x->Id; }
 /* FUNC(zx_ds_SignatureProperty_PUT_Id) */
 void zx_ds_SignatureProperty_PUT_Id(struct zx_ds_SignatureProperty_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_ds_SignatureProperty_GET_Target) */
+struct zx_str* zx_ds_SignatureProperty_GET_Target(struct zx_ds_SignatureProperty_s* x) { return x->Target; }
+/* FUNC(zx_ds_SignatureProperty_PUT_Target) */
+void zx_ds_SignatureProperty_PUT_Target(struct zx_ds_SignatureProperty_s* x, struct zx_str* y) { x->Target = y; }
 
 
 

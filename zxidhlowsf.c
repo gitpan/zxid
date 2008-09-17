@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhlowsf.c,v 1.14 2007-06-21 23:32:32 sampo Exp $
+ * $Id: zxidhlowsf.c,v 1.15 2008-04-14 04:23:58 sampo Exp $
  *
  * 25.1.2007, created --Sampo
  *
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
   struct zxid_conf* cf;
   struct zxid_ses sess;
   struct zxid_ses* ses;
-  struct zx_root_s* r;
+  //struct zx_root_s* r;
   struct zx_e_Envelope_s* env;
   struct zx_a_EndpointReference_s* epr;
   char* p;
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
   char* nid;
   char* res;
   char* qs;
-  char* hrxml_resp = 0;
+  //char* hrxml_resp = 0;
 
   qs = getenv("QUERY_STRING");
   qs = strdup(qs);

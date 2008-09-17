@@ -2063,18 +2063,18 @@ void zx_sec12_SessionContext_DEL_RequestAuthnContext(struct zx_sec12_SessionCont
 
 #endif
 
-/* FUNC(zx_sec12_SessionContext_GET_SessionIndex) */
-struct zx_str* zx_sec12_SessionContext_GET_SessionIndex(struct zx_sec12_SessionContext_s* x) { return x->SessionIndex; }
-/* FUNC(zx_sec12_SessionContext_PUT_SessionIndex) */
-void zx_sec12_SessionContext_PUT_SessionIndex(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->SessionIndex = y; }
-/* FUNC(zx_sec12_SessionContext_GET_AuthenticationInstant) */
-struct zx_str* zx_sec12_SessionContext_GET_AuthenticationInstant(struct zx_sec12_SessionContext_s* x) { return x->AuthenticationInstant; }
-/* FUNC(zx_sec12_SessionContext_PUT_AuthenticationInstant) */
-void zx_sec12_SessionContext_PUT_AuthenticationInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AuthenticationInstant = y; }
 /* FUNC(zx_sec12_SessionContext_GET_AssertionIssueInstant) */
 struct zx_str* zx_sec12_SessionContext_GET_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x) { return x->AssertionIssueInstant; }
 /* FUNC(zx_sec12_SessionContext_PUT_AssertionIssueInstant) */
 void zx_sec12_SessionContext_PUT_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AssertionIssueInstant = y; }
+/* FUNC(zx_sec12_SessionContext_GET_AuthenticationInstant) */
+struct zx_str* zx_sec12_SessionContext_GET_AuthenticationInstant(struct zx_sec12_SessionContext_s* x) { return x->AuthenticationInstant; }
+/* FUNC(zx_sec12_SessionContext_PUT_AuthenticationInstant) */
+void zx_sec12_SessionContext_PUT_AuthenticationInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->AuthenticationInstant = y; }
+/* FUNC(zx_sec12_SessionContext_GET_SessionIndex) */
+struct zx_str* zx_sec12_SessionContext_GET_SessionIndex(struct zx_sec12_SessionContext_s* x) { return x->SessionIndex; }
+/* FUNC(zx_sec12_SessionContext_PUT_SessionIndex) */
+void zx_sec12_SessionContext_PUT_SessionIndex(struct zx_sec12_SessionContext_s* x, struct zx_str* y) { x->SessionIndex = y; }
 
 
 

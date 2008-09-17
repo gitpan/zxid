@@ -584,18 +584,18 @@ void zx_as_SASLRequest_DEL_Extensions(struct zx_as_SASLRequest_s* x, int n)
 
 #endif
 
-/* FUNC(zx_as_SASLRequest_GET_mechanism) */
-struct zx_str* zx_as_SASLRequest_GET_mechanism(struct zx_as_SASLRequest_s* x) { return x->mechanism; }
-/* FUNC(zx_as_SASLRequest_PUT_mechanism) */
-void zx_as_SASLRequest_PUT_mechanism(struct zx_as_SASLRequest_s* x, struct zx_str* y) { x->mechanism = y; }
-/* FUNC(zx_as_SASLRequest_GET_authzID) */
-struct zx_str* zx_as_SASLRequest_GET_authzID(struct zx_as_SASLRequest_s* x) { return x->authzID; }
-/* FUNC(zx_as_SASLRequest_PUT_authzID) */
-void zx_as_SASLRequest_PUT_authzID(struct zx_as_SASLRequest_s* x, struct zx_str* y) { x->authzID = y; }
 /* FUNC(zx_as_SASLRequest_GET_advisoryAuthnID) */
 struct zx_str* zx_as_SASLRequest_GET_advisoryAuthnID(struct zx_as_SASLRequest_s* x) { return x->advisoryAuthnID; }
 /* FUNC(zx_as_SASLRequest_PUT_advisoryAuthnID) */
 void zx_as_SASLRequest_PUT_advisoryAuthnID(struct zx_as_SASLRequest_s* x, struct zx_str* y) { x->advisoryAuthnID = y; }
+/* FUNC(zx_as_SASLRequest_GET_authzID) */
+struct zx_str* zx_as_SASLRequest_GET_authzID(struct zx_as_SASLRequest_s* x) { return x->authzID; }
+/* FUNC(zx_as_SASLRequest_PUT_authzID) */
+void zx_as_SASLRequest_PUT_authzID(struct zx_as_SASLRequest_s* x, struct zx_str* y) { x->authzID = y; }
+/* FUNC(zx_as_SASLRequest_GET_mechanism) */
+struct zx_str* zx_as_SASLRequest_GET_mechanism(struct zx_as_SASLRequest_s* x) { return x->mechanism; }
+/* FUNC(zx_as_SASLRequest_PUT_mechanism) */
+void zx_as_SASLRequest_PUT_mechanism(struct zx_as_SASLRequest_s* x, struct zx_str* y) { x->mechanism = y; }
 
 
 

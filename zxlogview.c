@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxlogview.c,v 1.7 2007/02/25 08:08:46 sampo Exp $
+ * $Id: zxlogview.c,v 1.9 2008-04-14 04:23:58 sampo Exp $
  *
  * 19.11.2006, started --Sampo
  *
@@ -67,9 +67,9 @@ Usage: zxlogview [options] logsign-nopw-cert.pem logenc-nopw-cert.pem <loglines\
 
 char* instance = "zxlogview";  /* how this server is identified in logs */
 int verbose = 1;
-int debug = 0;
+extern int zx_debug;
 int leak_free = 0;
-int assert_nonfatal = 0;
+//int assert_nonfatal = 0;
 
 X509* log_verify_cert;
 RSA*  log_decrypt_pkey;
@@ -99,7 +99,7 @@ void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++debug;
+	++zx_debug;
 	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
@@ -207,8 +207,6 @@ void opt(int* argc, char*** argv, char*** env)
 void test_mode(int* argc, char*** argv, char*** env)
 {
   int gotall;
-  X509* log_enc_cert;
-  RSA*  log_sign_pkey;
   struct zxid_conf* cf = zxid_new_conf(0);
 
   ++(*argv); --(*argc);
@@ -302,7 +300,7 @@ void zxlog_zsig_verify_print(struct zxid_conf* cf, int len, char* buf, char* se,
 /* Called by: */
 int main(int argc, char** argv, char** env)
 {
-  int len, seslen, siglen, ver;
+  int len, seslen, ver;
   char* p;
   char* pp;
   char se[4];
@@ -402,6 +400,6 @@ int main(int argc, char** argv, char** env)
   return 0;
 }
 
-char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately provoking a core dump.\nSorry for the inconvenience.\n";
+//char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately provoking a core dump.\nSorry for the inconvenience.\n";
 
 /* EOF  --  zxlogview.c */

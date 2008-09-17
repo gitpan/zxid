@@ -187,8 +187,8 @@ void zx_FREE_wst_BinaryExchange(struct zx_ctx* c, struct zx_wst_BinaryExchange_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ValueType, free_strs);
   zx_free_attr(c, x->EncodingType, free_strs);
+  zx_free_attr(c, x->ValueType, free_strs);
 
 
 
@@ -224,8 +224,8 @@ void zx_DUP_STRS_wst_BinaryExchange(struct zx_ctx* c, struct zx_wst_BinaryExchan
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ValueType);
   zx_dup_attr(c, x->EncodingType);
+  zx_dup_attr(c, x->ValueType);
 
 
 }
@@ -241,8 +241,8 @@ struct zx_wst_BinaryExchange_s* zx_DEEP_CLONE_wst_BinaryExchange(struct zx_ctx* 
   x = (struct zx_wst_BinaryExchange_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wst_BinaryExchange_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ValueType = zx_clone_attr(c, x->ValueType);
   x->EncodingType = zx_clone_attr(c, x->EncodingType);
+  x->ValueType = zx_clone_attr(c, x->ValueType);
 
 
   return x;
@@ -1201,10 +1201,12 @@ void zx_FREE_wst_Issuer(struct zx_ctx* c, struct zx_wst_Issuer_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->notOnOrAfter, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
-  zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
   {
       struct zx_a_Address_s* e;
@@ -1264,10 +1266,12 @@ void zx_DUP_STRS_wst_Issuer(struct zx_ctx* c, struct zx_wst_Issuer_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->notOnOrAfter);
-  zx_dup_attr(c, x->mustUnderstand);
-  zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
   {
       struct zx_a_Address_s* e;
@@ -1298,10 +1302,12 @@ struct zx_wst_Issuer_s* zx_DEEP_CLONE_wst_Issuer(struct zx_ctx* c, struct zx_wst
   x = (struct zx_wst_Issuer_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wst_Issuer_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->id = zx_clone_attr(c, x->id);
   x->notOnOrAfter = zx_clone_attr(c, x->notOnOrAfter);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
-  x->actor = zx_clone_attr(c, x->actor);
   x->Id = zx_clone_attr(c, x->Id);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
   {
       struct zx_a_Address_s* e;

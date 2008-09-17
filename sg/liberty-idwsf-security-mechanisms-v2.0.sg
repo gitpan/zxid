@@ -1,7 +1,7 @@
 # zxid/sg/liberty-idwsf-security-mechanisms-v2.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
 # 10.2.2007, added sa:Assertion as potential security token type --Sampo
-# $Id: liberty-idwsf-security-mechanisms-v2.0.sg,v 1.4 2007/02/24 07:50:46 sampo Exp $
+# $Id: liberty-idwsf-security-mechanisms-v2.0.sg,v 1.5 2007-09-28 19:57:43 sampo Exp $
 
 target(sec, urn:liberty:security:2006-08)
 ns(sa,     urn:oasis:names:tc:SAML:2.0:assertion)
@@ -32,6 +32,7 @@ TransitedProviderPath	 -> %sec:TransitedProviderPathType
 Token     -> %sec:TokenType
 %TokenType:
   sa:Assertion?
+  sa:EncryptedAssertion?
   sa11:Assertion?
   ff12:Assertion?
   any*  processContents(lax)

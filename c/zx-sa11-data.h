@@ -170,19 +170,19 @@ struct zx_sa11_Assertion_s {
   struct zx_xasa_XACMLAuthzDecisionStatement_s* XACMLAuthzDecisionStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLPolicyStatement_s* XACMLPolicyStatement;	/* {0,-1} nada */
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
+  struct zx_str* AssertionID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Issuer;	/* {1,1} attribute xs:string */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* AssertionID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Issuer;	/* {1,1} attribute xs:string */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sa11_Assertion_GET_AssertionID(struct zx_sa11_Assertion_s* x);
+struct zx_str* zx_sa11_Assertion_GET_IssueInstant(struct zx_sa11_Assertion_s* x);
+struct zx_str* zx_sa11_Assertion_GET_Issuer(struct zx_sa11_Assertion_s* x);
 struct zx_str* zx_sa11_Assertion_GET_MajorVersion(struct zx_sa11_Assertion_s* x);
 struct zx_str* zx_sa11_Assertion_GET_MinorVersion(struct zx_sa11_Assertion_s* x);
-struct zx_str* zx_sa11_Assertion_GET_AssertionID(struct zx_sa11_Assertion_s* x);
-struct zx_str* zx_sa11_Assertion_GET_Issuer(struct zx_sa11_Assertion_s* x);
-struct zx_str* zx_sa11_Assertion_GET_IssueInstant(struct zx_sa11_Assertion_s* x);
 
 struct zx_sa11_Conditions_s* zx_sa11_Assertion_GET_Conditions(struct zx_sa11_Assertion_s* x, int n);
 struct zx_sa11_Advice_s* zx_sa11_Assertion_GET_Advice(struct zx_sa11_Assertion_s* x, int n);
@@ -228,11 +228,11 @@ void zx_sa11_Assertion_PUSH_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion
 void zx_sa11_Assertion_PUSH_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, struct zx_xasa_XACMLPolicyStatement_s* y);
 void zx_sa11_Assertion_PUSH_Signature(struct zx_sa11_Assertion_s* x, struct zx_ds_Signature_s* y);
 
+void zx_sa11_Assertion_PUT_AssertionID(struct zx_sa11_Assertion_s* x, struct zx_str* y);
+void zx_sa11_Assertion_PUT_IssueInstant(struct zx_sa11_Assertion_s* x, struct zx_str* y);
+void zx_sa11_Assertion_PUT_Issuer(struct zx_sa11_Assertion_s* x, struct zx_str* y);
 void zx_sa11_Assertion_PUT_MajorVersion(struct zx_sa11_Assertion_s* x, struct zx_str* y);
 void zx_sa11_Assertion_PUT_MinorVersion(struct zx_sa11_Assertion_s* x, struct zx_str* y);
-void zx_sa11_Assertion_PUT_AssertionID(struct zx_sa11_Assertion_s* x, struct zx_str* y);
-void zx_sa11_Assertion_PUT_Issuer(struct zx_sa11_Assertion_s* x, struct zx_str* y);
-void zx_sa11_Assertion_PUT_IssueInstant(struct zx_sa11_Assertion_s* x, struct zx_str* y);
 
 void zx_sa11_Assertion_PUT_Conditions(struct zx_sa11_Assertion_s* x, int n, struct zx_sa11_Conditions_s* y);
 void zx_sa11_Assertion_PUT_Advice(struct zx_sa11_Assertion_s* x, int n, struct zx_sa11_Advice_s* y);
@@ -568,13 +568,13 @@ struct zx_sa11_AuthenticationStatement_s {
   struct zx_sa11_Subject_s* Subject;	/* {1,1} nada */
   struct zx_sa11_SubjectLocality_s* SubjectLocality;	/* {0,1} nada */
   struct zx_sa11_AuthorityBinding_s* AuthorityBinding;	/* {0,-1} nada */
-  struct zx_str* AuthenticationMethod;	/* {1,1} attribute xs:anyURI */
   struct zx_str* AuthenticationInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* AuthenticationMethod;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sa11_AuthenticationStatement_GET_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x);
 struct zx_str* zx_sa11_AuthenticationStatement_GET_AuthenticationInstant(struct zx_sa11_AuthenticationStatement_s* x);
+struct zx_str* zx_sa11_AuthenticationStatement_GET_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x);
 
 struct zx_sa11_Subject_s* zx_sa11_AuthenticationStatement_GET_Subject(struct zx_sa11_AuthenticationStatement_s* x, int n);
 struct zx_sa11_SubjectLocality_s* zx_sa11_AuthenticationStatement_GET_SubjectLocality(struct zx_sa11_AuthenticationStatement_s* x, int n);
@@ -592,8 +592,8 @@ void zx_sa11_AuthenticationStatement_PUSH_Subject(struct zx_sa11_AuthenticationS
 void zx_sa11_AuthenticationStatement_PUSH_SubjectLocality(struct zx_sa11_AuthenticationStatement_s* x, struct zx_sa11_SubjectLocality_s* y);
 void zx_sa11_AuthenticationStatement_PUSH_AuthorityBinding(struct zx_sa11_AuthenticationStatement_s* x, struct zx_sa11_AuthorityBinding_s* y);
 
-void zx_sa11_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x, struct zx_str* y);
 void zx_sa11_AuthenticationStatement_PUT_AuthenticationInstant(struct zx_sa11_AuthenticationStatement_s* x, struct zx_str* y);
+void zx_sa11_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x, struct zx_str* y);
 
 void zx_sa11_AuthenticationStatement_PUT_Subject(struct zx_sa11_AuthenticationStatement_s* x, int n, struct zx_sa11_Subject_s* y);
 void zx_sa11_AuthenticationStatement_PUT_SubjectLocality(struct zx_sa11_AuthenticationStatement_s* x, int n, struct zx_sa11_SubjectLocality_s* y);
@@ -638,22 +638,22 @@ struct zx_sa11_AuthorityBinding_s {
   ZX_ELEM_EXT
   zx_sa11_AuthorityBinding_EXT
   struct zx_str* AuthorityKind;	/* {1,1} attribute xs:QName */
-  struct zx_str* Location;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Binding;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* Location;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_sa11_AuthorityBinding_GET_AuthorityKind(struct zx_sa11_AuthorityBinding_s* x);
-struct zx_str* zx_sa11_AuthorityBinding_GET_Location(struct zx_sa11_AuthorityBinding_s* x);
 struct zx_str* zx_sa11_AuthorityBinding_GET_Binding(struct zx_sa11_AuthorityBinding_s* x);
+struct zx_str* zx_sa11_AuthorityBinding_GET_Location(struct zx_sa11_AuthorityBinding_s* x);
 
 
 
 
 
 void zx_sa11_AuthorityBinding_PUT_AuthorityKind(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y);
-void zx_sa11_AuthorityBinding_PUT_Location(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y);
 void zx_sa11_AuthorityBinding_PUT_Binding(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y);
+void zx_sa11_AuthorityBinding_PUT_Location(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y);
 
 
 
@@ -688,13 +688,13 @@ struct zx_sa11_AuthorizationDecisionStatement_s {
   struct zx_sa11_Subject_s* Subject;	/* {1,1} nada */
   struct zx_sa11_Action_s* Action;	/* {1,-1} nada */
   struct zx_sa11_Evidence_s* Evidence;	/* {0,1} nada */
-  struct zx_str* Resource;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Decision;	/* {1,1} attribute sa11:DecisionType */
+  struct zx_str* Resource;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sa11_AuthorizationDecisionStatement_GET_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x);
 struct zx_str* zx_sa11_AuthorizationDecisionStatement_GET_Decision(struct zx_sa11_AuthorizationDecisionStatement_s* x);
+struct zx_str* zx_sa11_AuthorizationDecisionStatement_GET_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x);
 
 struct zx_sa11_Subject_s* zx_sa11_AuthorizationDecisionStatement_GET_Subject(struct zx_sa11_AuthorizationDecisionStatement_s* x, int n);
 struct zx_sa11_Action_s* zx_sa11_AuthorizationDecisionStatement_GET_Action(struct zx_sa11_AuthorizationDecisionStatement_s* x, int n);
@@ -712,8 +712,8 @@ void zx_sa11_AuthorizationDecisionStatement_PUSH_Subject(struct zx_sa11_Authoriz
 void zx_sa11_AuthorizationDecisionStatement_PUSH_Action(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_sa11_Action_s* y);
 void zx_sa11_AuthorizationDecisionStatement_PUSH_Evidence(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_sa11_Evidence_s* y);
 
-void zx_sa11_AuthorizationDecisionStatement_PUT_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_str* y);
 void zx_sa11_AuthorizationDecisionStatement_PUT_Decision(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_str* y);
+void zx_sa11_AuthorizationDecisionStatement_PUT_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_str* y);
 
 void zx_sa11_AuthorizationDecisionStatement_PUT_Subject(struct zx_sa11_AuthorizationDecisionStatement_s* x, int n, struct zx_sa11_Subject_s* y);
 void zx_sa11_AuthorizationDecisionStatement_PUT_Action(struct zx_sa11_AuthorizationDecisionStatement_s* x, int n, struct zx_sa11_Action_s* y);
@@ -925,20 +925,20 @@ struct zx_str* zx_EASY_ENC_WO_sa11_NameIdentifier(struct zx_ctx* c, struct zx_sa
 struct zx_sa11_NameIdentifier_s {
   ZX_ELEM_EXT
   zx_sa11_NameIdentifier_EXT
-  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sa11_NameIdentifier_GET_NameQualifier(struct zx_sa11_NameIdentifier_s* x);
 struct zx_str* zx_sa11_NameIdentifier_GET_Format(struct zx_sa11_NameIdentifier_s* x);
+struct zx_str* zx_sa11_NameIdentifier_GET_NameQualifier(struct zx_sa11_NameIdentifier_s* x);
 
 
 
 
 
-void zx_sa11_NameIdentifier_PUT_NameQualifier(struct zx_sa11_NameIdentifier_s* x, struct zx_str* y);
 void zx_sa11_NameIdentifier_PUT_Format(struct zx_sa11_NameIdentifier_s* x, struct zx_str* y);
+void zx_sa11_NameIdentifier_PUT_NameQualifier(struct zx_sa11_NameIdentifier_s* x, struct zx_str* y);
 
 
 
@@ -1093,20 +1093,20 @@ struct zx_str* zx_EASY_ENC_WO_sa11_SubjectLocality(struct zx_ctx* c, struct zx_s
 struct zx_sa11_SubjectLocality_s {
   ZX_ELEM_EXT
   zx_sa11_SubjectLocality_EXT
-  struct zx_str* IPAddress;	/* {0,1} attribute xs:string */
   struct zx_str* DNSAddress;	/* {0,1} attribute xs:string */
+  struct zx_str* IPAddress;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sa11_SubjectLocality_GET_IPAddress(struct zx_sa11_SubjectLocality_s* x);
 struct zx_str* zx_sa11_SubjectLocality_GET_DNSAddress(struct zx_sa11_SubjectLocality_s* x);
+struct zx_str* zx_sa11_SubjectLocality_GET_IPAddress(struct zx_sa11_SubjectLocality_s* x);
 
 
 
 
 
-void zx_sa11_SubjectLocality_PUT_IPAddress(struct zx_sa11_SubjectLocality_s* x, struct zx_str* y);
 void zx_sa11_SubjectLocality_PUT_DNSAddress(struct zx_sa11_SubjectLocality_s* x, struct zx_str* y);
+void zx_sa11_SubjectLocality_PUT_IPAddress(struct zx_sa11_SubjectLocality_s* x, struct zx_str* y);
 
 
 

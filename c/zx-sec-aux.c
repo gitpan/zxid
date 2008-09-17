@@ -73,6 +73,14 @@ void zx_FREE_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x, int free_strs
       }
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      struct zx_sa_EncryptedAssertion_s* en;
+      for (e = x->EncryptedAssertion; e; e = en) {
+	  en = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n;
+	  zx_FREE_sa_EncryptedAssertion(c, e, free_strs);
+      }
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       struct zx_sa11_Assertion_s* en;
       for (e = x->sa11_Assertion; e; e = en) {
@@ -132,6 +140,11 @@ void zx_DUP_STRS_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x)
 	  zx_DUP_STRS_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  zx_DUP_STRS_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  zx_DUP_STRS_sa11_Assertion(c, e);
@@ -167,6 +180,19 @@ struct zx_sec_Token_s* zx_DEEP_CLONE_sec_Token(struct zx_ctx* c, struct zx_sec_T
 	  en = zx_DEEP_CLONE_sa_Assertion(c, e, dup_strs);
 	  if (!enn)
 	      x->Assertion = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      struct zx_sa_EncryptedAssertion_s* en;
+      struct zx_sa_EncryptedAssertion_s* enn;
+      for (enn = 0, e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_sa_EncryptedAssertion(c, e, dup_strs);
+	  if (!enn)
+	      x->EncryptedAssertion = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -224,6 +250,14 @@ int zx_WALK_SO_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x, void* ctx, 
       struct zx_sa_Assertion_s* e;
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_sa_Assertion(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_sa_EncryptedAssertion(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }
@@ -292,9 +326,9 @@ void zx_FREE_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->issueTo, free_strs);
   zx_free_attr(c, x->type, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->wantDSEPR, free_strs);
 
 
@@ -331,9 +365,9 @@ void zx_DUP_STRS_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->issueTo);
   zx_dup_attr(c, x->type);
+  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->wantDSEPR);
 
 
@@ -350,9 +384,9 @@ struct zx_sec_TokenPolicy_s* zx_DEEP_CLONE_sec_TokenPolicy(struct zx_ctx* c, str
   x = (struct zx_sec_TokenPolicy_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sec_TokenPolicy_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->issueTo = zx_clone_attr(c, x->issueTo);
   x->type = zx_clone_attr(c, x->type);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->wantDSEPR = zx_clone_attr(c, x->wantDSEPR);
 
 
@@ -425,8 +459,8 @@ void zx_FREE_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProv
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->timeStamp, free_strs);
   zx_free_attr(c, x->confirmationURI, free_strs);
+  zx_free_attr(c, x->timeStamp, free_strs);
 
 
 
@@ -462,8 +496,8 @@ void zx_DUP_STRS_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_Transited
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->timeStamp);
   zx_dup_attr(c, x->confirmationURI);
+  zx_dup_attr(c, x->timeStamp);
 
 
 }
@@ -479,8 +513,8 @@ struct zx_sec_TransitedProvider_s* zx_DEEP_CLONE_sec_TransitedProvider(struct zx
   x = (struct zx_sec_TransitedProvider_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sec_TransitedProvider_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->timeStamp = zx_clone_attr(c, x->timeStamp);
   x->confirmationURI = zx_clone_attr(c, x->confirmationURI);
+  x->timeStamp = zx_clone_attr(c, x->timeStamp);
 
 
   return x;

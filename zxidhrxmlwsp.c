@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhrxmlwsp.c,v 1.4 2007-08-10 19:19:10 sampo Exp $
+ * $Id: zxidhrxmlwsp.c,v 1.10 2008-05-08 02:02:40 sampo Exp $
  *
  * 19.6.2007, created --Sampo
  *
@@ -59,6 +59,8 @@ int write_all_fd(int fd, char* p, int pending);
 /* Called by: */
 int main(int argc, char** argv)
 {
+  struct zx_ctx ctx;
+  struct zxid_conf cfs;
   struct zxid_conf* cf;
   struct zxid_ses sess;
   struct zxid_ses* ses;
@@ -75,6 +77,15 @@ int main(int argc, char** argv)
   char* qs;
   char* qs2;
   
+#if 1
+  /* Helps debugging CGI scripts if you see stderr. */
+  close(2);
+  if (open("tmp/zxid2.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
+    exit(2);
+  fprintf(stderr, "=================== Running ===================\n");
+  zx_debug = 1;
+#endif
+
   qs = getenv("CONTENT_LENGTH");
   if (qs)
     sscanf(qs, "%d", &cl);
@@ -85,29 +96,32 @@ int main(int argc, char** argv)
     qs2 = buf;
   } else {
     qs2 = getenv("QUERY_STRING");
+    if (!qs2)
+      qs2 = "";
     cl = strlen(qs2);
   }
   qs = strdup(qs2);
-
   D("qs(%s)", qs);
-
-#if 1
-  /* Helps debugging CGI scripts if you see stderr. */
-  close(2);
-  if (open("tmp/zxid2.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
-    exit(2);
-  fprintf(stderr, "=================== Running ===================\n");
-  debug = 1;
-#endif
 
   if (argc > 1) {
     fprintf(stderr, "This is a CGI script (written in C). No arguments are accepted.\n%s", help);
     exit(1);
   }
 
-  if (!memcmp(qs+cl-4, "?o=B", 4)) {
+#if 1
+  zx_reset_ctx(&ctx);
+  memset(&cfs, 0, sizeof(struct zxid_conf));
+  cfs.ctx = &ctx;
+  cf = &cfs;
+  zxid_conf_to_cf_len(cf, -1, CONF);
+#else
+  cf = zxid_new_conf_to_cf(CONF);
+#endif
+
+  //if (!memcmp(qs+cl-4, "?o=B", 4)) {
+  if (!memcmp(qs, "o=B", 3)) {
     D("Metadata qs(%s)", qs);
-    cf = zxid_new_conf_to_cf(CONF);
+    //cf = zxid_new_conf_to_cf(CONF);
     
     res = zxid_simple_cf(cf, cl, qs, 0, 0x1fff);
     switch (res[0]) {
@@ -119,7 +133,6 @@ int main(int argc, char** argv)
     exit(1);
   }
     
-  cf = zxid_new_conf_to_cf(CONF);
   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, qs2, qs2+cl);
   r = zx_DEC_root(cf->ctx, 0, 1);
   
@@ -148,7 +161,7 @@ int main(int argc, char** argv)
       ERR("No Candidate found buf(%.*s)", got, buf);
       env = ZXID_RESP_ENV(cf, "idhrxml:CreateResponse", "Fail", "NewData does not contain Candidate element.");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
-      printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+      printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
     
@@ -157,13 +170,13 @@ int main(int argc, char** argv)
 
     fd = open_fd_from_path(O_CREAT|O_WRONLY|O_TRUNC, 0666, "create", "%shrxml/cv.xml", cf->path);
     write_all_fd(fd, ss->s, ss->len);
-    close(fd);
+    close_file(fd, __FUNCTION__);
     
     env = ZXID_RESP_ENV(cf, "idhrxml:CreateResponse", "OK", "Fine");
     D("HERE(%p)", env);
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
     D("HERE(%p)", ss);
-    printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+    printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     D("ss(%.*s)", ss->len, ss->s);
     return 0;
   }
@@ -189,7 +202,7 @@ int main(int argc, char** argv)
       ERR("Reading hrxml/cv.xml resulted in error or the file was empty. ret=%d", got);
       env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "Fail", "Empty or no data");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
-      printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+      printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
     
@@ -199,7 +212,7 @@ int main(int argc, char** argv)
       ERR("No hrxml:Candidate tag found in cv.xml(%s)", buf);
       env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "Fail", "No Candidate in data");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
-      printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+      printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
 
@@ -207,7 +220,7 @@ int main(int argc, char** argv)
     env->Body->idhrxml_QueryResponse->Data = zx_NEW_idhrxml_Data(cf->ctx);
     env->Body->idhrxml_QueryResponse->Data->Candidate = r->Candidate;
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
-    printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+    printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     return 0;
   }  
 
@@ -234,7 +247,7 @@ int main(int argc, char** argv)
       ERR("No Candidate found buf(%.*s)", got, buf);
       env = ZXID_RESP_ENV(cf, "idhrxml:ModifyResponse", "Fail", "NewData does not contain Candidate element.");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
-      printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+      printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
     
@@ -243,12 +256,12 @@ int main(int argc, char** argv)
 
     fd = open_fd_from_path(O_CREAT|O_WRONLY|O_TRUNC, 0666, "modify", "%shrxml/cv.xml", cf->path);
     write_all_fd(fd, ss->s, ss->len);
-    close(fd);
+    close_file(fd, __FUNCTION__);
 
     env = ZXID_RESP_ENV(cf, "idhrxml:ModifyResponse", "OK", "Fine");
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
     D("ss(%.*s)", ss->len, ss->s);
-    printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+    printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     return 0;
   }  
 
@@ -272,7 +285,7 @@ int main(int argc, char** argv)
     env = ZXID_RESP_ENV(cf, "idhrxml:DeleteResponse", "OK", "Fine");
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
     D("ss(%.*s)", ss->len, ss->s);
-    printf("CONTENT-TYPE: text/xml\r\n\r\n%.*s", ss->len, ss->s);
+    printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     return 0;
   }  
 

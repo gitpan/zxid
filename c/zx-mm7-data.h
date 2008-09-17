@@ -412,23 +412,23 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Conten
 struct zx_mm7_Content_s {
   ZX_ELEM_EXT
   zx_mm7_Content_EXT
-  struct zx_str* type;	/* {1,1} attribute hrxml:ExtendedAssociationTypeType */
-  struct zx_str* href;	/* {1,1} attribute xs:anyURI */
   struct zx_str* allowAdaptations;	/* {0,1} attribute xs:boolean */
+  struct zx_str* href;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* type;	/* {1,1} attribute hrxml:ExtendedAssociationTypeType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_mm7_Content_GET_type(struct zx_mm7_Content_s* x);
-struct zx_str* zx_mm7_Content_GET_href(struct zx_mm7_Content_s* x);
 struct zx_str* zx_mm7_Content_GET_allowAdaptations(struct zx_mm7_Content_s* x);
+struct zx_str* zx_mm7_Content_GET_href(struct zx_mm7_Content_s* x);
+struct zx_str* zx_mm7_Content_GET_type(struct zx_mm7_Content_s* x);
 
 
 
 
 
-void zx_mm7_Content_PUT_type(struct zx_mm7_Content_s* x, struct zx_str* y);
-void zx_mm7_Content_PUT_href(struct zx_mm7_Content_s* x, struct zx_str* y);
 void zx_mm7_Content_PUT_allowAdaptations(struct zx_mm7_Content_s* x, struct zx_str* y);
+void zx_mm7_Content_PUT_href(struct zx_mm7_Content_s* x, struct zx_str* y);
+void zx_mm7_Content_PUT_type(struct zx_mm7_Content_s* x, struct zx_str* y);
 
 
 
@@ -1294,22 +1294,22 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_
 struct zx_mm7_Number_s {
   ZX_ELEM_EXT
   zx_mm7_Number_EXT
-  struct zx_str* displayOnly;	/* {0,1} attribute xs:boolean */
   struct zx_str* addressCoding;	/* {0,1} attribute mm7:addressCodingType */
+  struct zx_str* displayOnly;	/* {0,1} attribute xs:boolean */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_mm7_Number_GET_displayOnly(struct zx_mm7_Number_s* x);
 struct zx_str* zx_mm7_Number_GET_addressCoding(struct zx_mm7_Number_s* x);
+struct zx_str* zx_mm7_Number_GET_displayOnly(struct zx_mm7_Number_s* x);
 struct zx_str* zx_mm7_Number_GET_id(struct zx_mm7_Number_s* x);
 
 
 
 
 
-void zx_mm7_Number_PUT_displayOnly(struct zx_mm7_Number_s* x, struct zx_str* y);
 void zx_mm7_Number_PUT_addressCoding(struct zx_mm7_Number_s* x, struct zx_str* y);
+void zx_mm7_Number_PUT_displayOnly(struct zx_mm7_Number_s* x, struct zx_str* y);
 void zx_mm7_Number_PUT_id(struct zx_mm7_Number_s* x, struct zx_str* y);
 
 
@@ -1672,22 +1672,22 @@ struct zx_str* zx_EASY_ENC_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7
 struct zx_mm7_RFC2822Address_s {
   ZX_ELEM_EXT
   zx_mm7_RFC2822Address_EXT
-  struct zx_str* displayOnly;	/* {0,1} attribute xs:boolean */
   struct zx_str* addressCoding;	/* {0,1} attribute mm7:addressCodingType */
+  struct zx_str* displayOnly;	/* {0,1} attribute xs:boolean */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_mm7_RFC2822Address_GET_displayOnly(struct zx_mm7_RFC2822Address_s* x);
 struct zx_str* zx_mm7_RFC2822Address_GET_addressCoding(struct zx_mm7_RFC2822Address_s* x);
+struct zx_str* zx_mm7_RFC2822Address_GET_displayOnly(struct zx_mm7_RFC2822Address_s* x);
 struct zx_str* zx_mm7_RFC2822Address_GET_id(struct zx_mm7_RFC2822Address_s* x);
 
 
 
 
 
-void zx_mm7_RFC2822Address_PUT_displayOnly(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y);
 void zx_mm7_RFC2822Address_PUT_addressCoding(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y);
+void zx_mm7_RFC2822Address_PUT_displayOnly(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y);
 void zx_mm7_RFC2822Address_PUT_id(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y);
 
 
@@ -2698,22 +2698,22 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_Shor
 struct zx_mm7_ShortCode_s {
   ZX_ELEM_EXT
   zx_mm7_ShortCode_EXT
-  struct zx_str* displayOnly;	/* {0,1} attribute xs:boolean */
   struct zx_str* addressCoding;	/* {0,1} attribute mm7:addressCodingType */
+  struct zx_str* displayOnly;	/* {0,1} attribute xs:boolean */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_mm7_ShortCode_GET_displayOnly(struct zx_mm7_ShortCode_s* x);
 struct zx_str* zx_mm7_ShortCode_GET_addressCoding(struct zx_mm7_ShortCode_s* x);
+struct zx_str* zx_mm7_ShortCode_GET_displayOnly(struct zx_mm7_ShortCode_s* x);
 struct zx_str* zx_mm7_ShortCode_GET_id(struct zx_mm7_ShortCode_s* x);
 
 
 
 
 
-void zx_mm7_ShortCode_PUT_displayOnly(struct zx_mm7_ShortCode_s* x, struct zx_str* y);
 void zx_mm7_ShortCode_PUT_addressCoding(struct zx_mm7_ShortCode_s* x, struct zx_str* y);
+void zx_mm7_ShortCode_PUT_displayOnly(struct zx_mm7_ShortCode_s* x, struct zx_str* y);
 void zx_mm7_ShortCode_PUT_id(struct zx_mm7_ShortCode_s* x, struct zx_str* y);
 
 
@@ -3337,23 +3337,23 @@ struct zx_str* zx_EASY_ENC_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_
 struct zx_mm7_TransactionID_s {
   ZX_ELEM_EXT
   zx_mm7_TransactionID_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* encodingStyle;	/* {0,1} attribute xs:anyURI */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* encodingStyle;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_mm7_TransactionID_GET_mustUnderstand(struct zx_mm7_TransactionID_s* x);
-struct zx_str* zx_mm7_TransactionID_GET_encodingStyle(struct zx_mm7_TransactionID_s* x);
 struct zx_str* zx_mm7_TransactionID_GET_actor(struct zx_mm7_TransactionID_s* x);
+struct zx_str* zx_mm7_TransactionID_GET_encodingStyle(struct zx_mm7_TransactionID_s* x);
+struct zx_str* zx_mm7_TransactionID_GET_mustUnderstand(struct zx_mm7_TransactionID_s* x);
 
 
 
 
 
-void zx_mm7_TransactionID_PUT_mustUnderstand(struct zx_mm7_TransactionID_s* x, struct zx_str* y);
-void zx_mm7_TransactionID_PUT_encodingStyle(struct zx_mm7_TransactionID_s* x, struct zx_str* y);
 void zx_mm7_TransactionID_PUT_actor(struct zx_mm7_TransactionID_s* x, struct zx_str* y);
+void zx_mm7_TransactionID_PUT_encodingStyle(struct zx_mm7_TransactionID_s* x, struct zx_str* y);
+void zx_mm7_TransactionID_PUT_mustUnderstand(struct zx_mm7_TransactionID_s* x, struct zx_str* y);
 
 
 
@@ -3385,20 +3385,20 @@ struct zx_str* zx_EASY_ENC_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7
 struct zx_mm7_UACapabilities_s {
   ZX_ELEM_EXT
   zx_mm7_UACapabilities_EXT
-  struct zx_str* UAProf;	/* {0,1} attribute xs:string */
   struct zx_str* TimeStamp;	/* {0,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* UAProf;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_mm7_UACapabilities_GET_UAProf(struct zx_mm7_UACapabilities_s* x);
 struct zx_str* zx_mm7_UACapabilities_GET_TimeStamp(struct zx_mm7_UACapabilities_s* x);
+struct zx_str* zx_mm7_UACapabilities_GET_UAProf(struct zx_mm7_UACapabilities_s* x);
 
 
 
 
 
-void zx_mm7_UACapabilities_PUT_UAProf(struct zx_mm7_UACapabilities_s* x, struct zx_str* y);
 void zx_mm7_UACapabilities_PUT_TimeStamp(struct zx_mm7_UACapabilities_s* x, struct zx_str* y);
+void zx_mm7_UACapabilities_PUT_UAProf(struct zx_mm7_UACapabilities_s* x, struct zx_str* y);
 
 
 

@@ -236,6 +236,7 @@ struct zx_ds_KeyInfo_s {
   struct zx_ds_PGPData_s* PGPData;	/* {0,-1} nada */
   struct zx_ds_SPKIData_s* SPKIData;	/* {0,-1} nada */
   struct zx_elem_s* MgmtData;	/* {0,-1} xs:string */
+  struct zx_xenc_EncryptedKey_s* EncryptedKey;	/* {0,-1} nada */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
 };
 
@@ -249,6 +250,7 @@ struct zx_ds_X509Data_s* zx_ds_KeyInfo_GET_X509Data(struct zx_ds_KeyInfo_s* x, i
 struct zx_ds_PGPData_s* zx_ds_KeyInfo_GET_PGPData(struct zx_ds_KeyInfo_s* x, int n);
 struct zx_ds_SPKIData_s* zx_ds_KeyInfo_GET_SPKIData(struct zx_ds_KeyInfo_s* x, int n);
 struct zx_elem_s* zx_ds_KeyInfo_GET_MgmtData(struct zx_ds_KeyInfo_s* x, int n);
+struct zx_xenc_EncryptedKey_s* zx_ds_KeyInfo_GET_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n);
 
 int zx_ds_KeyInfo_NUM_KeyName(struct zx_ds_KeyInfo_s* x);
 int zx_ds_KeyInfo_NUM_KeyValue(struct zx_ds_KeyInfo_s* x);
@@ -257,6 +259,7 @@ int zx_ds_KeyInfo_NUM_X509Data(struct zx_ds_KeyInfo_s* x);
 int zx_ds_KeyInfo_NUM_PGPData(struct zx_ds_KeyInfo_s* x);
 int zx_ds_KeyInfo_NUM_SPKIData(struct zx_ds_KeyInfo_s* x);
 int zx_ds_KeyInfo_NUM_MgmtData(struct zx_ds_KeyInfo_s* x);
+int zx_ds_KeyInfo_NUM_EncryptedKey(struct zx_ds_KeyInfo_s* x);
 
 struct zx_elem_s* zx_ds_KeyInfo_POP_KeyName(struct zx_ds_KeyInfo_s* x);
 struct zx_ds_KeyValue_s* zx_ds_KeyInfo_POP_KeyValue(struct zx_ds_KeyInfo_s* x);
@@ -265,6 +268,7 @@ struct zx_ds_X509Data_s* zx_ds_KeyInfo_POP_X509Data(struct zx_ds_KeyInfo_s* x);
 struct zx_ds_PGPData_s* zx_ds_KeyInfo_POP_PGPData(struct zx_ds_KeyInfo_s* x);
 struct zx_ds_SPKIData_s* zx_ds_KeyInfo_POP_SPKIData(struct zx_ds_KeyInfo_s* x);
 struct zx_elem_s* zx_ds_KeyInfo_POP_MgmtData(struct zx_ds_KeyInfo_s* x);
+struct zx_xenc_EncryptedKey_s* zx_ds_KeyInfo_POP_EncryptedKey(struct zx_ds_KeyInfo_s* x);
 
 void zx_ds_KeyInfo_PUSH_KeyName(struct zx_ds_KeyInfo_s* x, struct zx_elem_s* y);
 void zx_ds_KeyInfo_PUSH_KeyValue(struct zx_ds_KeyInfo_s* x, struct zx_ds_KeyValue_s* y);
@@ -273,6 +277,7 @@ void zx_ds_KeyInfo_PUSH_X509Data(struct zx_ds_KeyInfo_s* x, struct zx_ds_X509Dat
 void zx_ds_KeyInfo_PUSH_PGPData(struct zx_ds_KeyInfo_s* x, struct zx_ds_PGPData_s* y);
 void zx_ds_KeyInfo_PUSH_SPKIData(struct zx_ds_KeyInfo_s* x, struct zx_ds_SPKIData_s* y);
 void zx_ds_KeyInfo_PUSH_MgmtData(struct zx_ds_KeyInfo_s* x, struct zx_elem_s* y);
+void zx_ds_KeyInfo_PUSH_EncryptedKey(struct zx_ds_KeyInfo_s* x, struct zx_xenc_EncryptedKey_s* y);
 
 void zx_ds_KeyInfo_PUT_Id(struct zx_ds_KeyInfo_s* x, struct zx_str* y);
 
@@ -283,6 +288,7 @@ void zx_ds_KeyInfo_PUT_X509Data(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_X
 void zx_ds_KeyInfo_PUT_PGPData(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_PGPData_s* y);
 void zx_ds_KeyInfo_PUT_SPKIData(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_SPKIData_s* y);
 void zx_ds_KeyInfo_PUT_MgmtData(struct zx_ds_KeyInfo_s* x, int n, struct zx_elem_s* y);
+void zx_ds_KeyInfo_PUT_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* y);
 
 void zx_ds_KeyInfo_ADD_KeyName(struct zx_ds_KeyInfo_s* x, int n, struct zx_elem_s* z);
 void zx_ds_KeyInfo_ADD_KeyValue(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_KeyValue_s* z);
@@ -291,6 +297,7 @@ void zx_ds_KeyInfo_ADD_X509Data(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_X
 void zx_ds_KeyInfo_ADD_PGPData(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_PGPData_s* z);
 void zx_ds_KeyInfo_ADD_SPKIData(struct zx_ds_KeyInfo_s* x, int n, struct zx_ds_SPKIData_s* z);
 void zx_ds_KeyInfo_ADD_MgmtData(struct zx_ds_KeyInfo_s* x, int n, struct zx_elem_s* z);
+void zx_ds_KeyInfo_ADD_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z);
 
 void zx_ds_KeyInfo_DEL_KeyName(struct zx_ds_KeyInfo_s* x, int n);
 void zx_ds_KeyInfo_DEL_KeyValue(struct zx_ds_KeyInfo_s* x, int n);
@@ -299,6 +306,7 @@ void zx_ds_KeyInfo_DEL_X509Data(struct zx_ds_KeyInfo_s* x, int n);
 void zx_ds_KeyInfo_DEL_PGPData(struct zx_ds_KeyInfo_s* x, int n);
 void zx_ds_KeyInfo_DEL_SPKIData(struct zx_ds_KeyInfo_s* x, int n);
 void zx_ds_KeyInfo_DEL_MgmtData(struct zx_ds_KeyInfo_s* x, int n);
+void zx_ds_KeyInfo_DEL_EncryptedKey(struct zx_ds_KeyInfo_s* x, int n);
 
 void zx_ds_KeyInfo_REV_KeyName(struct zx_ds_KeyInfo_s* x);
 void zx_ds_KeyInfo_REV_KeyValue(struct zx_ds_KeyInfo_s* x);
@@ -307,6 +315,7 @@ void zx_ds_KeyInfo_REV_X509Data(struct zx_ds_KeyInfo_s* x);
 void zx_ds_KeyInfo_REV_PGPData(struct zx_ds_KeyInfo_s* x);
 void zx_ds_KeyInfo_REV_SPKIData(struct zx_ds_KeyInfo_s* x);
 void zx_ds_KeyInfo_REV_MgmtData(struct zx_ds_KeyInfo_s* x);
+void zx_ds_KeyInfo_REV_EncryptedKey(struct zx_ds_KeyInfo_s* x);
 
 #endif
 /* -------------------------- ds_KeyValue -------------------------- */
@@ -442,23 +451,23 @@ struct zx_str* zx_EASY_ENC_WO_ds_Object(struct zx_ctx* c, struct zx_ds_Object_s*
 struct zx_ds_Object_s {
   ZX_ELEM_EXT
   zx_ds_Object_EXT
+  struct zx_str* Encoding;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
   struct zx_str* MimeType;	/* {0,1} attribute xs:string */
-  struct zx_str* Encoding;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_ds_Object_GET_Encoding(struct zx_ds_Object_s* x);
 struct zx_str* zx_ds_Object_GET_Id(struct zx_ds_Object_s* x);
 struct zx_str* zx_ds_Object_GET_MimeType(struct zx_ds_Object_s* x);
-struct zx_str* zx_ds_Object_GET_Encoding(struct zx_ds_Object_s* x);
 
 
 
 
 
+void zx_ds_Object_PUT_Encoding(struct zx_ds_Object_s* x, struct zx_str* y);
 void zx_ds_Object_PUT_Id(struct zx_ds_Object_s* x, struct zx_str* y);
 void zx_ds_Object_PUT_MimeType(struct zx_ds_Object_s* x, struct zx_str* y);
-void zx_ds_Object_PUT_Encoding(struct zx_ds_Object_s* x, struct zx_str* y);
 
 
 
@@ -608,14 +617,14 @@ struct zx_ds_Reference_s {
   struct zx_ds_DigestMethod_s* DigestMethod;	/* {1,1} nada */
   struct zx_elem_s* DigestValue;	/* {1,1} xs:base64Binary */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
-  struct zx_str* URI;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Type;	/* {0,1} attribute wst:BinarySecretTypeEnum */
+  struct zx_str* URI;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_ds_Reference_GET_Id(struct zx_ds_Reference_s* x);
-struct zx_str* zx_ds_Reference_GET_URI(struct zx_ds_Reference_s* x);
 struct zx_str* zx_ds_Reference_GET_Type(struct zx_ds_Reference_s* x);
+struct zx_str* zx_ds_Reference_GET_URI(struct zx_ds_Reference_s* x);
 
 struct zx_ds_Transforms_s* zx_ds_Reference_GET_Transforms(struct zx_ds_Reference_s* x, int n);
 struct zx_ds_DigestMethod_s* zx_ds_Reference_GET_DigestMethod(struct zx_ds_Reference_s* x, int n);
@@ -634,8 +643,8 @@ void zx_ds_Reference_PUSH_DigestMethod(struct zx_ds_Reference_s* x, struct zx_ds
 void zx_ds_Reference_PUSH_DigestValue(struct zx_ds_Reference_s* x, struct zx_elem_s* y);
 
 void zx_ds_Reference_PUT_Id(struct zx_ds_Reference_s* x, struct zx_str* y);
-void zx_ds_Reference_PUT_URI(struct zx_ds_Reference_s* x, struct zx_str* y);
 void zx_ds_Reference_PUT_Type(struct zx_ds_Reference_s* x, struct zx_str* y);
+void zx_ds_Reference_PUT_URI(struct zx_ds_Reference_s* x, struct zx_str* y);
 
 void zx_ds_Reference_PUT_Transforms(struct zx_ds_Reference_s* x, int n, struct zx_ds_Transforms_s* y);
 void zx_ds_Reference_PUT_DigestMethod(struct zx_ds_Reference_s* x, int n, struct zx_ds_DigestMethod_s* y);
@@ -680,13 +689,13 @@ struct zx_ds_RetrievalMethod_s {
   ZX_ELEM_EXT
   zx_ds_RetrievalMethod_EXT
   struct zx_ds_Transforms_s* Transforms;	/* {0,1}  */
-  struct zx_str* URI;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Type;	/* {0,1} attribute wst:BinarySecretTypeEnum */
+  struct zx_str* URI;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ds_RetrievalMethod_GET_URI(struct zx_ds_RetrievalMethod_s* x);
 struct zx_str* zx_ds_RetrievalMethod_GET_Type(struct zx_ds_RetrievalMethod_s* x);
+struct zx_str* zx_ds_RetrievalMethod_GET_URI(struct zx_ds_RetrievalMethod_s* x);
 
 struct zx_ds_Transforms_s* zx_ds_RetrievalMethod_GET_Transforms(struct zx_ds_RetrievalMethod_s* x, int n);
 
@@ -696,8 +705,8 @@ struct zx_ds_Transforms_s* zx_ds_RetrievalMethod_POP_Transforms(struct zx_ds_Ret
 
 void zx_ds_RetrievalMethod_PUSH_Transforms(struct zx_ds_RetrievalMethod_s* x, struct zx_ds_Transforms_s* y);
 
-void zx_ds_RetrievalMethod_PUT_URI(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y);
 void zx_ds_RetrievalMethod_PUT_Type(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y);
+void zx_ds_RetrievalMethod_PUT_URI(struct zx_ds_RetrievalMethod_s* x, struct zx_str* y);
 
 void zx_ds_RetrievalMethod_PUT_Transforms(struct zx_ds_RetrievalMethod_s* x, int n, struct zx_ds_Transforms_s* y);
 
@@ -961,20 +970,20 @@ struct zx_str* zx_EASY_ENC_WO_ds_SignatureProperty(struct zx_ctx* c, struct zx_d
 struct zx_ds_SignatureProperty_s {
   ZX_ELEM_EXT
   zx_ds_SignatureProperty_EXT
-  struct zx_str* Target;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* Target;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ds_SignatureProperty_GET_Target(struct zx_ds_SignatureProperty_s* x);
 struct zx_str* zx_ds_SignatureProperty_GET_Id(struct zx_ds_SignatureProperty_s* x);
+struct zx_str* zx_ds_SignatureProperty_GET_Target(struct zx_ds_SignatureProperty_s* x);
 
 
 
 
 
-void zx_ds_SignatureProperty_PUT_Target(struct zx_ds_SignatureProperty_s* x, struct zx_str* y);
 void zx_ds_SignatureProperty_PUT_Id(struct zx_ds_SignatureProperty_s* x, struct zx_str* y);
+void zx_ds_SignatureProperty_PUT_Target(struct zx_ds_SignatureProperty_s* x, struct zx_str* y);
 
 
 

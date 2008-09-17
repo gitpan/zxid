@@ -47,23 +47,23 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_xac_Request_s* Request;	/* {1,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* InputContextOnly;	/* {0,1} attribute xs:boolean */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* ReturnContext;	/* {0,1} attribute xs:boolean */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_ID(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
-struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_Version(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
-struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_IssueInstant(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
-struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_Destination(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
 struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_Consent(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
+struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_Destination(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
+struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_ID(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
 struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_InputContextOnly(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
+struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_IssueInstant(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
 struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_ReturnContext(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
+struct zx_str* zx_xasp_XACMLAuthzDecisionQuery_GET_Version(struct zx_xasp_XACMLAuthzDecisionQuery_s* x);
 
 struct zx_sa_Issuer_s* zx_xasp_XACMLAuthzDecisionQuery_GET_Issuer(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, int n);
 struct zx_ds_Signature_s* zx_xasp_XACMLAuthzDecisionQuery_GET_Signature(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, int n);
@@ -85,13 +85,13 @@ void zx_xasp_XACMLAuthzDecisionQuery_PUSH_Signature(struct zx_xasp_XACMLAuthzDec
 void zx_xasp_XACMLAuthzDecisionQuery_PUSH_Extensions(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_sp_Extensions_s* y);
 void zx_xasp_XACMLAuthzDecisionQuery_PUSH_Request(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_xac_Request_s* y);
 
-void zx_xasp_XACMLAuthzDecisionQuery_PUT_ID(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
-void zx_xasp_XACMLAuthzDecisionQuery_PUT_Version(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
-void zx_xasp_XACMLAuthzDecisionQuery_PUT_IssueInstant(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
-void zx_xasp_XACMLAuthzDecisionQuery_PUT_Destination(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
 void zx_xasp_XACMLAuthzDecisionQuery_PUT_Consent(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLAuthzDecisionQuery_PUT_Destination(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLAuthzDecisionQuery_PUT_ID(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
 void zx_xasp_XACMLAuthzDecisionQuery_PUT_InputContextOnly(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLAuthzDecisionQuery_PUT_IssueInstant(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
 void zx_xasp_XACMLAuthzDecisionQuery_PUT_ReturnContext(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLAuthzDecisionQuery_PUT_Version(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, struct zx_str* y);
 
 void zx_xasp_XACMLAuthzDecisionQuery_PUT_Issuer(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_xasp_XACMLAuthzDecisionQuery_PUT_Signature(struct zx_xasp_XACMLAuthzDecisionQuery_s* x, int n, struct zx_ds_Signature_s* y);
@@ -146,19 +146,19 @@ struct zx_xasp_XACMLPolicyQuery_s {
   struct zx_xa_Target_s* Target;	/* {0,1} nada */
   struct zx_xa_PolicySetIdReference_s* PolicySetIdReference;	/* {0,1} nada */
   struct zx_xa_PolicyIdReference_s* PolicyIdReference;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xasp_XACMLPolicyQuery_GET_ID(struct zx_xasp_XACMLPolicyQuery_s* x);
-struct zx_str* zx_xasp_XACMLPolicyQuery_GET_Version(struct zx_xasp_XACMLPolicyQuery_s* x);
-struct zx_str* zx_xasp_XACMLPolicyQuery_GET_IssueInstant(struct zx_xasp_XACMLPolicyQuery_s* x);
-struct zx_str* zx_xasp_XACMLPolicyQuery_GET_Destination(struct zx_xasp_XACMLPolicyQuery_s* x);
 struct zx_str* zx_xasp_XACMLPolicyQuery_GET_Consent(struct zx_xasp_XACMLPolicyQuery_s* x);
+struct zx_str* zx_xasp_XACMLPolicyQuery_GET_Destination(struct zx_xasp_XACMLPolicyQuery_s* x);
+struct zx_str* zx_xasp_XACMLPolicyQuery_GET_ID(struct zx_xasp_XACMLPolicyQuery_s* x);
+struct zx_str* zx_xasp_XACMLPolicyQuery_GET_IssueInstant(struct zx_xasp_XACMLPolicyQuery_s* x);
+struct zx_str* zx_xasp_XACMLPolicyQuery_GET_Version(struct zx_xasp_XACMLPolicyQuery_s* x);
 
 struct zx_sa_Issuer_s* zx_xasp_XACMLPolicyQuery_GET_Issuer(struct zx_xasp_XACMLPolicyQuery_s* x, int n);
 struct zx_ds_Signature_s* zx_xasp_XACMLPolicyQuery_GET_Signature(struct zx_xasp_XACMLPolicyQuery_s* x, int n);
@@ -192,11 +192,11 @@ void zx_xasp_XACMLPolicyQuery_PUSH_Target(struct zx_xasp_XACMLPolicyQuery_s* x, 
 void zx_xasp_XACMLPolicyQuery_PUSH_PolicySetIdReference(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_xa_PolicySetIdReference_s* y);
 void zx_xasp_XACMLPolicyQuery_PUSH_PolicyIdReference(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_xa_PolicyIdReference_s* y);
 
-void zx_xasp_XACMLPolicyQuery_PUT_ID(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
-void zx_xasp_XACMLPolicyQuery_PUT_Version(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
-void zx_xasp_XACMLPolicyQuery_PUT_IssueInstant(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
-void zx_xasp_XACMLPolicyQuery_PUT_Destination(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
 void zx_xasp_XACMLPolicyQuery_PUT_Consent(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLPolicyQuery_PUT_Destination(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLPolicyQuery_PUT_ID(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLPolicyQuery_PUT_IssueInstant(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
+void zx_xasp_XACMLPolicyQuery_PUT_Version(struct zx_xasp_XACMLPolicyQuery_s* x, struct zx_str* y);
 
 void zx_xasp_XACMLPolicyQuery_PUT_Issuer(struct zx_xasp_XACMLPolicyQuery_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_xasp_XACMLPolicyQuery_PUT_Signature(struct zx_xasp_XACMLPolicyQuery_s* x, int n, struct zx_ds_Signature_s* y);

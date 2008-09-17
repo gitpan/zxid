@@ -172,14 +172,14 @@ void zx_lu_Status_DEL_Status(struct zx_lu_Status_s* x, int n)
 struct zx_str* zx_lu_Status_GET_code(struct zx_lu_Status_s* x) { return x->code; }
 /* FUNC(zx_lu_Status_PUT_code) */
 void zx_lu_Status_PUT_code(struct zx_lu_Status_s* x, struct zx_str* y) { x->code = y; }
-/* FUNC(zx_lu_Status_GET_ref) */
-struct zx_str* zx_lu_Status_GET_ref(struct zx_lu_Status_s* x) { return x->ref; }
-/* FUNC(zx_lu_Status_PUT_ref) */
-void zx_lu_Status_PUT_ref(struct zx_lu_Status_s* x, struct zx_str* y) { x->ref = y; }
 /* FUNC(zx_lu_Status_GET_comment) */
 struct zx_str* zx_lu_Status_GET_comment(struct zx_lu_Status_s* x) { return x->comment; }
 /* FUNC(zx_lu_Status_PUT_comment) */
 void zx_lu_Status_PUT_comment(struct zx_lu_Status_s* x, struct zx_str* y) { x->comment = y; }
+/* FUNC(zx_lu_Status_GET_ref) */
+struct zx_str* zx_lu_Status_GET_ref(struct zx_lu_Status_s* x) { return x->ref; }
+/* FUNC(zx_lu_Status_PUT_ref) */
+void zx_lu_Status_PUT_ref(struct zx_lu_Status_s* x, struct zx_str* y) { x->ref = y; }
 
 
 

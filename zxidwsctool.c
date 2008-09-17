@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidwsctool.c,v 1.6 2007-06-19 15:17:03 sampo Exp $
+ * $Id: zxidwsctool.c,v 1.8 2008-04-14 04:23:58 sampo Exp $
  *
  * 25.1.2007, created --Sampo
  *
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
   struct zxid_ses sess;
   struct zxid_conf* cf;
   struct zxid_ses* ses;
-  struct zx_root_s* r;
+  //struct zx_root_s* r;
   struct zx_e_Envelope_s* env;
   struct zx_a_EndpointReference_s* epr;
   int simple = 0;
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
   while (argc) {
     if (argv[0][0] != '-') break;
     switch (argv[0][1]) {
-    case 'd': ++debug; break;
+    case 'd': ++zx_debug; break;
     case 's': ++simple; break;
     default:  fprintf(stderr, "Unknown option(%s)\n%s", argv[0], help); exit(1);
     }

@@ -1,10 +1,10 @@
 /* errmac.h  -  Utility, debugging, and error checking macros
  *
  * Copyright (c) 1998,2001,2006 Sampo Kellomaki <sampo@iki.fi>, All Rights Reserved.
- * Copyright (c) 2001-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2001-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * This is free software and comes with NO WARRANTY. For licensing
  * see file COPYING in the distribution directory.
- * $Id: errmac.h,v 1.10 2007/02/01 06:35:32 sampo Exp $
+ * $Id: errmac.h,v 1.16 2008-03-23 19:34:09 sampo Exp $
  *
  * 10.1.2003, added option to make ASSERT nonfatal --Sampo
  * 4.6.2003,  added STRERROR() macro --Sampo
@@ -14,6 +14,8 @@
  * 15.1.2004, added STRNULLCHK() --Sampo
  * 24.2.2006, made some definitions conditional --Sampo
  * 15.4.2006, new adaptation over Easter holiday --Sampo
+ * 3.10.2007, added FLOCK() and FUNLOCK() --Sampo
+ * 22.3.2008, renamed debug to zx_debug to avoid conflicts in any .so module usage --Sampo
  */
 
 #ifndef _macro_h
@@ -142,6 +144,8 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define STR_TERM '\0'
  
 #define TOUPPER(x) (IN_RANGE(x, 'a', 'z') ? ((x) - ('a' - 'A')) : (x))
+
+#define BOOL_STR_TEST(x) ((x) && (x) != '0')
  
      /* Copy memory and null terminate string. strncpy strings and
         guarantee null termination (strncpy does not). */
@@ -171,6 +175,18 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define HEX_DIGIT(x) (((x)<10) ? ((x) + '0') : ((x) - 10 + 'A'))
  
 #define CONV_DIGIT(x) ((x) - '0')
+
+/* Original Base64  Len  (x+2) / 3
+ * ""       ""        0  2     0(2)
+ * 1        WX==      4  3     1(0)
+ * 12       WXY=      4  4     1(1)
+ * 123      WXYZ      4  5     1(2)
+ * 1234     WXYZwx==  8  6     2(0)
+ * 12345    WXYZwxy=  8  7     2(1)
+ * 123456   WXYZwxyz  8  8     2(2)
+ */
+#define SIMPLE_BASE64_LEN(x) (((x)+2) / 3 * 4)  /* exact encoded length given binary length */
+#define SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(x) ((x+3)/4*3)
 
 /* Perform URL conversion in place
  *   q = qq = buffer_where_data_is; URL_DECODE(q,qq,buf+sizeof(buf));
@@ -349,39 +365,49 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define LOCK(l,lk) if (pthread_mutex_lock(&(l))) NEVERNEVER("DEADLOCK(%s)", (lk))
 #define UNLOCK(l,lk) if (pthread_mutex_unlock(&(l))) NEVERNEVER("UNLOCK-TWICE(%s)", (lk))
 
-/* Using command line to report some stats */
+/* =============== file system flocking =============== */
 
-void dserr_init_cmdline(int argc, char* argv[], char* envp[], CU8* prefix);
-void dserr_cmdline(const char* f, ...);
-
-#if 0
-#define CMDLINE(f,...) cmdline(f, __VA_ARGS__)
+#ifndef USE_LOCK
+#define FLOCKEX(fd) lockf((fd), F_LOCK, 0)
+#define FUNLOCK(fd) lockf((fd), F_ULOCK, 0)
 #else
-#define CMDLINE(...)
+/* If you have neither flock() nor lockf(), then -DUSE-LOCK=dummy_no_flock
+ * but beware that this means NO file locking will be done, possibly
+ * leading to corrupt audit logs, or other files. You need to judge
+ * the probability of this happening as well as the cost of clean-up. */
+#define dummy_no_flock(x)  /* no file locking where locking should be */
+#define FLOCKEX(fd) USE_LOCK((fd), LOCK_EX)
+#define FUNLOCK(fd) USE_LOCK((fd), LOCK_UN)
 #endif
 
 /* =============== Debugging macro system =============== */
 
 #ifndef ERRMAC_INSTANCE
-#define ERRMAC_INSTANCE "zxid"
+#define ERRMAC_INSTANCE "\tzx"
+/*#define ERRMAC_INSTANCE "zxid"*/
 /*extern char* instance;*/
 #endif
 
-extern int debug;
-#define D(format,...) (debug && (fprintf(stderr, "t%x %9s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))
+extern int zx_debug;  /* Defined in zxidlib.c */
+#define D(format,...) (void)(zx_debug && (fprintf(stderr, "t %9s:%-3d %-16s %s d " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))
+/*#define D(format,...) (void)(zx_debug && (fprintf(stderr, "t%x %9s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))*/
 #define DD(format,...)  /* Documentative */
 
 int hexdmp(char* msg, char* p, int len, int max);
 int hexdump(char* msg, char* p, char* lim, int max);
-#define HEXDUMP(msg, p, lim, max) (debug > 1 && hexdump((msg), (p), (lim), (max)))
+
+#define HEXDUMP(msg, p, lim, max) (zx_debug > 1 && hexdump((msg), (p), (lim), (max)))
 #define DHEXDUMP(msg, p, lim, max) /* Disabled hex dump */
 
-#define ERR(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
+#define ERR(format,...) (fprintf(stderr, "t %9s:%-3d %-16s %s E " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
+/*#define ERR(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))*/
 #define INFO(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s I " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
 
 #define DUMP_CORE() ASSERT(0)
 #define NEVER(explanation,val) D(explanation,(val))
 #define NEVERNEVER(explanation,val) MB D(explanation,(val)); DUMP_CORE(); ME
+
+#define CMDLINE(x)
 
 #ifdef DEBUG
 #define DEFINE_MUTEX_INFO(name)
@@ -394,13 +420,11 @@ int hexdump(char* msg, char* p, char* lim, int max);
 #  define CLOSE_LOG()
 #  define FLUSH() fflush(stdout)
 # else
-#  define LOG debug_log,
+#  define LOG zx_debug_log,
 #  define LOG_FILE HOME "foo.log"
-#  define OPEN_LOG() MB TR { if ((debug_log = fopen(LOG_FILE, "a")) == NULL) \
-                          trace = 0; } ME
-#  define CLOSE_LOG() MB TR if (debug_log) { \
-                          fclose(debug_log); debug_log=NULL; trace = 0; } ME
-#  define FLUSH() MB if (debug_log) fflush(debug_log); ME
+#  define OPEN_LOG() MB TR { if ((zx_debug_log = fopen(LOG_FILE, "a")) == NULL) trace = 0; } ME
+#  define CLOSE_LOG() MB TR if (zx_debug_log) { fclose(zx_debug_log); debug_log=0; trace = 0; } ME
+#  define FLUSH() MB if (zx_debug_log) fflush(zx_debug_log); ME
 # endif
  
 #define TR  if (trace)
@@ -426,8 +450,8 @@ int hexdump(char* msg, char* p, char* lim, int max);
 
    /* N.B. these macros assume existence of global variable debug_log, unless STDOUT_DEBUG
     *      is defined. */
-#  define LOG debug_log,
-#  define FLUSH() fflush(debug_log)
+#  define LOG zx_debug_log,
+#  define FLUSH() fflush(zx_debug_log)
 # endif
 #define PR fprintf
 #define PRMEM(f,buf,len) MB char b[256]; memcpy(b, (buf), MIN(254, (len))); \
@@ -492,7 +516,7 @@ extern char* assert_msg;
 #endif /* DEBUG */
 
 /* -------------------------------------------------------- */
-/* Asseting and sanity checks */
+/* Asserting and sanity checks */
  
 #define ASSERT(c)      CHK(!(c), 1)
 #define CHK_NULL(n)    ASSERT((int)(n))

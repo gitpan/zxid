@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_RSA {
+public class SWIGTYPE_p_timeval {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_RSA(long cPtr, boolean futureUse) {
+  protected SWIGTYPE_p_timeval(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_RSA() {
+  protected SWIGTYPE_p_timeval() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_RSA obj) {
+  protected static long getCPtr(SWIGTYPE_p_timeval obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

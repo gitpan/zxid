@@ -189,15 +189,15 @@ struct zx_sa_Assertion_s {
   struct zx_sa_AttributeStatement_s* AttributeStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLAuthzDecisionStatement_s* XACMLAuthzDecisionStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLPolicyStatement_s* XACMLPolicyStatement;	/* {0,-1} nada */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sa_Assertion_GET_Version(struct zx_sa_Assertion_s* x);
 struct zx_str* zx_sa_Assertion_GET_ID(struct zx_sa_Assertion_s* x);
 struct zx_str* zx_sa_Assertion_GET_IssueInstant(struct zx_sa_Assertion_s* x);
+struct zx_str* zx_sa_Assertion_GET_Version(struct zx_sa_Assertion_s* x);
 
 struct zx_sa_Issuer_s* zx_sa_Assertion_GET_Issuer(struct zx_sa_Assertion_s* x, int n);
 struct zx_ds_Signature_s* zx_sa_Assertion_GET_Signature(struct zx_sa_Assertion_s* x, int n);
@@ -247,9 +247,9 @@ void zx_sa_Assertion_PUSH_AttributeStatement(struct zx_sa_Assertion_s* x, struct
 void zx_sa_Assertion_PUSH_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, struct zx_xasa_XACMLAuthzDecisionStatement_s* y);
 void zx_sa_Assertion_PUSH_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, struct zx_xasa_XACMLPolicyStatement_s* y);
 
-void zx_sa_Assertion_PUT_Version(struct zx_sa_Assertion_s* x, struct zx_str* y);
 void zx_sa_Assertion_PUT_ID(struct zx_sa_Assertion_s* x, struct zx_str* y);
 void zx_sa_Assertion_PUT_IssueInstant(struct zx_sa_Assertion_s* x, struct zx_str* y);
+void zx_sa_Assertion_PUT_Version(struct zx_sa_Assertion_s* x, struct zx_str* y);
 
 void zx_sa_Assertion_PUT_Issuer(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sa_Assertion_PUT_Signature(struct zx_sa_Assertion_s* x, int n, struct zx_ds_Signature_s* y);
@@ -326,15 +326,15 @@ struct zx_sa_Attribute_s {
   ZX_ELEM_EXT
   zx_sa_Attribute_EXT
   struct zx_sa_AttributeValue_s* AttributeValue;	/* {0,-1} nada */
+  struct zx_str* FriendlyName;	/* {0,1} attribute xs:string */
   struct zx_str* Name;	/* {1,1} attribute xs:anyURI */
   struct zx_str* NameFormat;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* FriendlyName;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sa_Attribute_GET_FriendlyName(struct zx_sa_Attribute_s* x);
 struct zx_str* zx_sa_Attribute_GET_Name(struct zx_sa_Attribute_s* x);
 struct zx_str* zx_sa_Attribute_GET_NameFormat(struct zx_sa_Attribute_s* x);
-struct zx_str* zx_sa_Attribute_GET_FriendlyName(struct zx_sa_Attribute_s* x);
 
 struct zx_sa_AttributeValue_s* zx_sa_Attribute_GET_AttributeValue(struct zx_sa_Attribute_s* x, int n);
 
@@ -344,9 +344,9 @@ struct zx_sa_AttributeValue_s* zx_sa_Attribute_POP_AttributeValue(struct zx_sa_A
 
 void zx_sa_Attribute_PUSH_AttributeValue(struct zx_sa_Attribute_s* x, struct zx_sa_AttributeValue_s* y);
 
+void zx_sa_Attribute_PUT_FriendlyName(struct zx_sa_Attribute_s* x, struct zx_str* y);
 void zx_sa_Attribute_PUT_Name(struct zx_sa_Attribute_s* x, struct zx_str* y);
 void zx_sa_Attribute_PUT_NameFormat(struct zx_sa_Attribute_s* x, struct zx_str* y);
-void zx_sa_Attribute_PUT_FriendlyName(struct zx_sa_Attribute_s* x, struct zx_str* y);
 
 void zx_sa_Attribute_PUT_AttributeValue(struct zx_sa_Attribute_s* x, int n, struct zx_sa_AttributeValue_s* y);
 
@@ -687,13 +687,13 @@ struct zx_sa_AuthzDecisionStatement_s {
   zx_sa_AuthzDecisionStatement_EXT
   struct zx_sa_Action_s* Action;	/* {1,-1} nada */
   struct zx_sa_Evidence_s* Evidence;	/* {0,1} nada */
-  struct zx_str* Resource;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Decision;	/* {1,1} attribute sa11:DecisionType */
+  struct zx_str* Resource;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sa_AuthzDecisionStatement_GET_Resource(struct zx_sa_AuthzDecisionStatement_s* x);
 struct zx_str* zx_sa_AuthzDecisionStatement_GET_Decision(struct zx_sa_AuthzDecisionStatement_s* x);
+struct zx_str* zx_sa_AuthzDecisionStatement_GET_Resource(struct zx_sa_AuthzDecisionStatement_s* x);
 
 struct zx_sa_Action_s* zx_sa_AuthzDecisionStatement_GET_Action(struct zx_sa_AuthzDecisionStatement_s* x, int n);
 struct zx_sa_Evidence_s* zx_sa_AuthzDecisionStatement_GET_Evidence(struct zx_sa_AuthzDecisionStatement_s* x, int n);
@@ -707,8 +707,8 @@ struct zx_sa_Evidence_s* zx_sa_AuthzDecisionStatement_POP_Evidence(struct zx_sa_
 void zx_sa_AuthzDecisionStatement_PUSH_Action(struct zx_sa_AuthzDecisionStatement_s* x, struct zx_sa_Action_s* y);
 void zx_sa_AuthzDecisionStatement_PUSH_Evidence(struct zx_sa_AuthzDecisionStatement_s* x, struct zx_sa_Evidence_s* y);
 
-void zx_sa_AuthzDecisionStatement_PUT_Resource(struct zx_sa_AuthzDecisionStatement_s* x, struct zx_str* y);
 void zx_sa_AuthzDecisionStatement_PUT_Decision(struct zx_sa_AuthzDecisionStatement_s* x, struct zx_str* y);
+void zx_sa_AuthzDecisionStatement_PUT_Resource(struct zx_sa_AuthzDecisionStatement_s* x, struct zx_str* y);
 
 void zx_sa_AuthzDecisionStatement_PUT_Action(struct zx_sa_AuthzDecisionStatement_s* x, int n, struct zx_sa_Action_s* y);
 void zx_sa_AuthzDecisionStatement_PUT_Evidence(struct zx_sa_AuthzDecisionStatement_s* x, int n, struct zx_sa_Evidence_s* y);
@@ -797,6 +797,7 @@ struct zx_sa_Conditions_s {
   struct zx_sa_AudienceRestriction_s* AudienceRestriction;	/* {0,-1}  */
   struct zx_sa_OneTimeUse_s* OneTimeUse;	/* {0,-1} nada */
   struct zx_sa_ProxyRestriction_s* ProxyRestriction;	/* {0,-1} nada */
+  struct zx_idp_SubjectRestriction_s* SubjectRestriction;	/* {0,-1}  */
   struct zx_str* NotBefore;	/* {0,1} attribute xs:dateTime */
   struct zx_str* NotOnOrAfter;	/* {0,1} attribute xs:dateTime */
 };
@@ -809,21 +810,25 @@ struct zx_elem_s* zx_sa_Conditions_GET_Condition(struct zx_sa_Conditions_s* x, i
 struct zx_sa_AudienceRestriction_s* zx_sa_Conditions_GET_AudienceRestriction(struct zx_sa_Conditions_s* x, int n);
 struct zx_sa_OneTimeUse_s* zx_sa_Conditions_GET_OneTimeUse(struct zx_sa_Conditions_s* x, int n);
 struct zx_sa_ProxyRestriction_s* zx_sa_Conditions_GET_ProxyRestriction(struct zx_sa_Conditions_s* x, int n);
+struct zx_idp_SubjectRestriction_s* zx_sa_Conditions_GET_SubjectRestriction(struct zx_sa_Conditions_s* x, int n);
 
 int zx_sa_Conditions_NUM_Condition(struct zx_sa_Conditions_s* x);
 int zx_sa_Conditions_NUM_AudienceRestriction(struct zx_sa_Conditions_s* x);
 int zx_sa_Conditions_NUM_OneTimeUse(struct zx_sa_Conditions_s* x);
 int zx_sa_Conditions_NUM_ProxyRestriction(struct zx_sa_Conditions_s* x);
+int zx_sa_Conditions_NUM_SubjectRestriction(struct zx_sa_Conditions_s* x);
 
 struct zx_elem_s* zx_sa_Conditions_POP_Condition(struct zx_sa_Conditions_s* x);
 struct zx_sa_AudienceRestriction_s* zx_sa_Conditions_POP_AudienceRestriction(struct zx_sa_Conditions_s* x);
 struct zx_sa_OneTimeUse_s* zx_sa_Conditions_POP_OneTimeUse(struct zx_sa_Conditions_s* x);
 struct zx_sa_ProxyRestriction_s* zx_sa_Conditions_POP_ProxyRestriction(struct zx_sa_Conditions_s* x);
+struct zx_idp_SubjectRestriction_s* zx_sa_Conditions_POP_SubjectRestriction(struct zx_sa_Conditions_s* x);
 
 void zx_sa_Conditions_PUSH_Condition(struct zx_sa_Conditions_s* x, struct zx_elem_s* y);
 void zx_sa_Conditions_PUSH_AudienceRestriction(struct zx_sa_Conditions_s* x, struct zx_sa_AudienceRestriction_s* y);
 void zx_sa_Conditions_PUSH_OneTimeUse(struct zx_sa_Conditions_s* x, struct zx_sa_OneTimeUse_s* y);
 void zx_sa_Conditions_PUSH_ProxyRestriction(struct zx_sa_Conditions_s* x, struct zx_sa_ProxyRestriction_s* y);
+void zx_sa_Conditions_PUSH_SubjectRestriction(struct zx_sa_Conditions_s* x, struct zx_idp_SubjectRestriction_s* y);
 
 void zx_sa_Conditions_PUT_NotBefore(struct zx_sa_Conditions_s* x, struct zx_str* y);
 void zx_sa_Conditions_PUT_NotOnOrAfter(struct zx_sa_Conditions_s* x, struct zx_str* y);
@@ -832,25 +837,29 @@ void zx_sa_Conditions_PUT_Condition(struct zx_sa_Conditions_s* x, int n, struct 
 void zx_sa_Conditions_PUT_AudienceRestriction(struct zx_sa_Conditions_s* x, int n, struct zx_sa_AudienceRestriction_s* y);
 void zx_sa_Conditions_PUT_OneTimeUse(struct zx_sa_Conditions_s* x, int n, struct zx_sa_OneTimeUse_s* y);
 void zx_sa_Conditions_PUT_ProxyRestriction(struct zx_sa_Conditions_s* x, int n, struct zx_sa_ProxyRestriction_s* y);
+void zx_sa_Conditions_PUT_SubjectRestriction(struct zx_sa_Conditions_s* x, int n, struct zx_idp_SubjectRestriction_s* y);
 
 void zx_sa_Conditions_ADD_Condition(struct zx_sa_Conditions_s* x, int n, struct zx_elem_s* z);
 void zx_sa_Conditions_ADD_AudienceRestriction(struct zx_sa_Conditions_s* x, int n, struct zx_sa_AudienceRestriction_s* z);
 void zx_sa_Conditions_ADD_OneTimeUse(struct zx_sa_Conditions_s* x, int n, struct zx_sa_OneTimeUse_s* z);
 void zx_sa_Conditions_ADD_ProxyRestriction(struct zx_sa_Conditions_s* x, int n, struct zx_sa_ProxyRestriction_s* z);
+void zx_sa_Conditions_ADD_SubjectRestriction(struct zx_sa_Conditions_s* x, int n, struct zx_idp_SubjectRestriction_s* z);
 
 void zx_sa_Conditions_DEL_Condition(struct zx_sa_Conditions_s* x, int n);
 void zx_sa_Conditions_DEL_AudienceRestriction(struct zx_sa_Conditions_s* x, int n);
 void zx_sa_Conditions_DEL_OneTimeUse(struct zx_sa_Conditions_s* x, int n);
 void zx_sa_Conditions_DEL_ProxyRestriction(struct zx_sa_Conditions_s* x, int n);
+void zx_sa_Conditions_DEL_SubjectRestriction(struct zx_sa_Conditions_s* x, int n);
 
 void zx_sa_Conditions_REV_Condition(struct zx_sa_Conditions_s* x);
 void zx_sa_Conditions_REV_AudienceRestriction(struct zx_sa_Conditions_s* x);
 void zx_sa_Conditions_REV_OneTimeUse(struct zx_sa_Conditions_s* x);
 void zx_sa_Conditions_REV_ProxyRestriction(struct zx_sa_Conditions_s* x);
+void zx_sa_Conditions_REV_SubjectRestriction(struct zx_sa_Conditions_s* x);
 
 #endif
 /* -------------------------- sa_EncryptedAssertion -------------------------- */
-/* refby( zx_sa_Evidence_s zx_sa_Advice_s zx_sp_Response_s ) */
+/* refby( zx_sa_Evidence_s zx_sec_Token_s zx_sa_Advice_s zx_sp_Response_s ) */
 #ifndef zx_sa_EncryptedAssertion_EXT
 #define zx_sa_EncryptedAssertion_EXT
 #endif
@@ -1120,25 +1129,25 @@ struct zx_str* zx_EASY_ENC_WO_sa_Issuer(struct zx_ctx* c, struct zx_sa_Issuer_s*
 struct zx_sa_Issuer_s {
   ZX_ELEM_EXT
   zx_sa_Issuer_EXT
+  struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
   struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* SPNameQualifier;	/* {0,1} attribute xs:string */
-  struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
   struct zx_str* SPProvidedID;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sa_Issuer_GET_Format(struct zx_sa_Issuer_s* x);
 struct zx_str* zx_sa_Issuer_GET_NameQualifier(struct zx_sa_Issuer_s* x);
 struct zx_str* zx_sa_Issuer_GET_SPNameQualifier(struct zx_sa_Issuer_s* x);
-struct zx_str* zx_sa_Issuer_GET_Format(struct zx_sa_Issuer_s* x);
 struct zx_str* zx_sa_Issuer_GET_SPProvidedID(struct zx_sa_Issuer_s* x);
 
 
 
 
 
+void zx_sa_Issuer_PUT_Format(struct zx_sa_Issuer_s* x, struct zx_str* y);
 void zx_sa_Issuer_PUT_NameQualifier(struct zx_sa_Issuer_s* x, struct zx_str* y);
 void zx_sa_Issuer_PUT_SPNameQualifier(struct zx_sa_Issuer_s* x, struct zx_str* y);
-void zx_sa_Issuer_PUT_Format(struct zx_sa_Issuer_s* x, struct zx_str* y);
 void zx_sa_Issuer_PUT_SPProvidedID(struct zx_sa_Issuer_s* x, struct zx_str* y);
 
 
@@ -1171,25 +1180,25 @@ struct zx_str* zx_EASY_ENC_WO_sa_NameID(struct zx_ctx* c, struct zx_sa_NameID_s*
 struct zx_sa_NameID_s {
   ZX_ELEM_EXT
   zx_sa_NameID_EXT
+  struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
   struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* SPNameQualifier;	/* {0,1} attribute xs:string */
-  struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
   struct zx_str* SPProvidedID;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sa_NameID_GET_Format(struct zx_sa_NameID_s* x);
 struct zx_str* zx_sa_NameID_GET_NameQualifier(struct zx_sa_NameID_s* x);
 struct zx_str* zx_sa_NameID_GET_SPNameQualifier(struct zx_sa_NameID_s* x);
-struct zx_str* zx_sa_NameID_GET_Format(struct zx_sa_NameID_s* x);
 struct zx_str* zx_sa_NameID_GET_SPProvidedID(struct zx_sa_NameID_s* x);
 
 
 
 
 
+void zx_sa_NameID_PUT_Format(struct zx_sa_NameID_s* x, struct zx_str* y);
 void zx_sa_NameID_PUT_NameQualifier(struct zx_sa_NameID_s* x, struct zx_str* y);
 void zx_sa_NameID_PUT_SPNameQualifier(struct zx_sa_NameID_s* x, struct zx_str* y);
-void zx_sa_NameID_PUT_Format(struct zx_sa_NameID_s* x, struct zx_str* y);
 void zx_sa_NameID_PUT_SPProvidedID(struct zx_sa_NameID_s* x, struct zx_str* y);
 
 
@@ -1466,19 +1475,21 @@ struct zx_sa_SubjectConfirmationData_s {
   ZX_ELEM_EXT
   zx_sa_SubjectConfirmationData_EXT
   struct zx_ds_KeyInfo_s* KeyInfo;	/* {1,-1} nada */
+  struct zx_str* Address;	/* {0,1} attribute xs:string */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
   struct zx_str* NotBefore;	/* {0,1} attribute xs:dateTime */
   struct zx_str* NotOnOrAfter;	/* {0,1} attribute xs:dateTime */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
-  struct zx_str* Address;	/* {0,1} attribute xs:string */
+  struct zx_str* type;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sa_SubjectConfirmationData_GET_Address(struct zx_sa_SubjectConfirmationData_s* x);
+struct zx_str* zx_sa_SubjectConfirmationData_GET_InResponseTo(struct zx_sa_SubjectConfirmationData_s* x);
 struct zx_str* zx_sa_SubjectConfirmationData_GET_NotBefore(struct zx_sa_SubjectConfirmationData_s* x);
 struct zx_str* zx_sa_SubjectConfirmationData_GET_NotOnOrAfter(struct zx_sa_SubjectConfirmationData_s* x);
 struct zx_str* zx_sa_SubjectConfirmationData_GET_Recipient(struct zx_sa_SubjectConfirmationData_s* x);
-struct zx_str* zx_sa_SubjectConfirmationData_GET_InResponseTo(struct zx_sa_SubjectConfirmationData_s* x);
-struct zx_str* zx_sa_SubjectConfirmationData_GET_Address(struct zx_sa_SubjectConfirmationData_s* x);
+struct zx_str* zx_sa_SubjectConfirmationData_GET_type(struct zx_sa_SubjectConfirmationData_s* x);
 
 struct zx_ds_KeyInfo_s* zx_sa_SubjectConfirmationData_GET_KeyInfo(struct zx_sa_SubjectConfirmationData_s* x, int n);
 
@@ -1488,11 +1499,12 @@ struct zx_ds_KeyInfo_s* zx_sa_SubjectConfirmationData_POP_KeyInfo(struct zx_sa_S
 
 void zx_sa_SubjectConfirmationData_PUSH_KeyInfo(struct zx_sa_SubjectConfirmationData_s* x, struct zx_ds_KeyInfo_s* y);
 
+void zx_sa_SubjectConfirmationData_PUT_Address(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
+void zx_sa_SubjectConfirmationData_PUT_InResponseTo(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
 void zx_sa_SubjectConfirmationData_PUT_NotBefore(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
 void zx_sa_SubjectConfirmationData_PUT_NotOnOrAfter(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
 void zx_sa_SubjectConfirmationData_PUT_Recipient(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
-void zx_sa_SubjectConfirmationData_PUT_InResponseTo(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
-void zx_sa_SubjectConfirmationData_PUT_Address(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
+void zx_sa_SubjectConfirmationData_PUT_type(struct zx_sa_SubjectConfirmationData_s* x, struct zx_str* y);
 
 void zx_sa_SubjectConfirmationData_PUT_KeyInfo(struct zx_sa_SubjectConfirmationData_s* x, int n, struct zx_ds_KeyInfo_s* y);
 

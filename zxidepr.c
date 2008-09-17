@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidepr.c,v 1.9 2007-06-21 23:32:32 sampo Exp $
+ * $Id: zxidepr.c,v 1.12 2008-05-30 17:39:11 lbernardo Exp $
  *
  * 5.2.2007, created --Sampo
  *
@@ -22,9 +22,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #include "errmac.h"
 #include "zxid.h"
+#include "platform.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-ns.h"
@@ -61,7 +63,7 @@ int zxid_epr_path(struct zxid_conf* cf, struct zxid_ses* ses,
 
 int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr)
 {
-  int fd;
+  fdtype fd;
   struct zx_str* ss;
   char path[ZXID_MAX_BUF];
   if (!epr)
@@ -74,15 +76,15 @@ int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_Endpo
   ss = zx_EASY_ENC_WO_a_EndpointReference(cf->ctx, epr);
   zxid_epr_path(cf, ses, path, sizeof(path),
 		epr->Metadata->ServiceType->content, ss);
-  fd = open(path, O_CREAT | O_WRONLY | O_TRUNC, 0666);
-  if (fd == -1) {
+  //fd = open(path, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxid_cache_epr", "%s" ZXID_COT_DIR "%s", path, "");
+  if (fd == BADFD) {
     perror("open for write epr");
     ERR("EPR path(%s) creation failed", path);
   } else if (write_all_fd(fd, ss->s, ss->len) == -1) {
     perror("Trouble writing EPR");
-    close(fd);
-  } else
-    close(fd);
+  }
+  close_file(fd, __FUNCTION__);
   zx_str_free(cf->ctx, ss);
   return 1;
 }
@@ -94,12 +96,12 @@ int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_Endpo
  * Typical name /var/zxid/ses/SESID/SVCTYPE,SHA1 */
 
 /* Called by:  zxid_sp_sso_finalize */
-int zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
+void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   struct zx_sa_AttributeStatement_s* as;
   struct zx_sa_Attribute_s* at;
   struct zx_sa_AttributeValue_s* av;
-  int fd, wsf11 = 0, wsf20 = 0;
+  int wsf11 = 0, wsf20 = 0;
   
   zxid_get_ses_sso_a7n(cf, ses);
   if (ses->a7n)
@@ -126,7 +128,7 @@ int zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 	      ERR("EPR path(%s) creation failed", path);
 	    } else if (write_all_fd(fd, ss->s, ss->len) == -1) {
 	      perror("Trouble writing EPR");
-	      close(fd);
+	      close__file(fd, __FUNCTION__);
 	    }
 	    zx_str_free(cf->ctx, ss);
 #endif
@@ -199,7 +201,7 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
     }
     if (len != r->EndpointReference->Metadata->ServiceType->content->len
 	|| memcmp(svc, r->EndpointReference->Metadata->ServiceType->content->s, len)) {
-      D("Internal svctype(.*s) does not match desired(%s)", r->EndpointReference->Metadata->ServiceType->content->len, r->EndpointReference->Metadata->ServiceType->content->s, svc);
+      D("Internal svctype(%.*s) does not match desired(%s)", r->EndpointReference->Metadata->ServiceType->content->len, r->EndpointReference->Metadata->ServiceType->content->s, svc);
       continue;
     }
     if (--n)

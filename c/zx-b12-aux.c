@@ -60,11 +60,11 @@ void zx_FREE_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->uri, free_strs);
-  zx_free_attr(c, x->timestamp, free_strs);
   zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
+  zx_free_attr(c, x->timestamp, free_strs);
+  zx_free_attr(c, x->uri, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -100,11 +100,11 @@ void zx_DUP_STRS_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->uri);
-  zx_dup_attr(c, x->timestamp);
   zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->mustUnderstand);
+  zx_dup_attr(c, x->timestamp);
+  zx_dup_attr(c, x->uri);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -120,11 +120,11 @@ struct zx_b12_Consent_s* zx_DEEP_CLONE_b12_Consent(struct zx_ctx* c, struct zx_b
   x = (struct zx_b12_Consent_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_b12_Consent_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->uri = zx_clone_attr(c, x->uri);
-  x->timestamp = zx_clone_attr(c, x->timestamp);
   x->id = zx_clone_attr(c, x->id);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
+  x->timestamp = zx_clone_attr(c, x->timestamp);
+  x->uri = zx_clone_attr(c, x->uri);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -196,12 +196,12 @@ void zx_FREE_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->messageID, free_strs);
   zx_free_attr(c, x->refToMessageID, free_strs);
   zx_free_attr(c, x->timestamp, free_strs);
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -237,12 +237,12 @@ void zx_DUP_STRS_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->messageID);
   zx_dup_attr(c, x->refToMessageID);
   zx_dup_attr(c, x->timestamp);
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -258,12 +258,12 @@ struct zx_b12_Correlation_s* zx_DEEP_CLONE_b12_Correlation(struct zx_ctx* c, str
   x = (struct zx_b12_Correlation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_b12_Correlation_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->id = zx_clone_attr(c, x->id);
   x->messageID = zx_clone_attr(c, x->messageID);
   x->refToMessageID = zx_clone_attr(c, x->refToMessageID);
   x->timestamp = zx_clone_attr(c, x->timestamp);
-  x->id = zx_clone_attr(c, x->id);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -336,8 +336,8 @@ void zx_FREE_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingCon
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -374,8 +374,8 @@ void zx_DUP_STRS_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_Processin
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -392,8 +392,8 @@ struct zx_b12_ProcessingContext_s* zx_DEEP_CLONE_b12_ProcessingContext(struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->id = zx_clone_attr(c, x->id);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -465,11 +465,11 @@ void zx_FREE_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->providerID, free_strs);
   zx_free_attr(c, x->affiliationID, free_strs);
   zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
+  zx_free_attr(c, x->providerID, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -505,11 +505,11 @@ void zx_DUP_STRS_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->providerID);
   zx_dup_attr(c, x->affiliationID);
   zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->mustUnderstand);
+  zx_dup_attr(c, x->providerID);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -525,11 +525,11 @@ struct zx_b12_Provider_s* zx_DEEP_CLONE_b12_Provider(struct zx_ctx* c, struct zx
   x = (struct zx_b12_Provider_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_b12_Provider_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->providerID = zx_clone_attr(c, x->providerID);
   x->affiliationID = zx_clone_attr(c, x->affiliationID);
   x->id = zx_clone_attr(c, x->id);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
+  x->providerID = zx_clone_attr(c, x->providerID);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -603,8 +603,8 @@ void zx_FREE_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s
 
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->ref, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -642,8 +642,8 @@ void zx_DUP_STRS_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirecti
 
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->ref);
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -661,8 +661,8 @@ struct zx_b12_UsageDirective_s* zx_DEEP_CLONE_b12_UsageDirective(struct zx_ctx* 
 
   x->id = zx_clone_attr(c, x->id);
   x->ref = zx_clone_attr(c, x->ref);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;

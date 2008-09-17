@@ -60,13 +60,13 @@ void zx_FREE_xasp_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xasp_XACML
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->Version, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
-  zx_free_attr(c, x->Destination, free_strs);
   zx_free_attr(c, x->Consent, free_strs);
+  zx_free_attr(c, x->Destination, free_strs);
+  zx_free_attr(c, x->ID, free_strs);
   zx_free_attr(c, x->InputContextOnly, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->ReturnContext, free_strs);
+  zx_free_attr(c, x->Version, free_strs);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -134,13 +134,13 @@ void zx_DUP_STRS_xasp_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xasp_X
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->Version);
-  zx_dup_attr(c, x->IssueInstant);
-  zx_dup_attr(c, x->Destination);
   zx_dup_attr(c, x->Consent);
+  zx_dup_attr(c, x->Destination);
+  zx_dup_attr(c, x->ID);
   zx_dup_attr(c, x->InputContextOnly);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->ReturnContext);
+  zx_dup_attr(c, x->Version);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -176,13 +176,13 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_DEEP_CLONE_xasp_XACMLAuthzDecisionQ
   x = (struct zx_xasp_XACMLAuthzDecisionQuery_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xasp_XACMLAuthzDecisionQuery_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ID = zx_clone_attr(c, x->ID);
-  x->Version = zx_clone_attr(c, x->Version);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
-  x->Destination = zx_clone_attr(c, x->Destination);
   x->Consent = zx_clone_attr(c, x->Consent);
+  x->Destination = zx_clone_attr(c, x->Destination);
+  x->ID = zx_clone_attr(c, x->ID);
   x->InputContextOnly = zx_clone_attr(c, x->InputContextOnly);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->ReturnContext = zx_clone_attr(c, x->ReturnContext);
+  x->Version = zx_clone_attr(c, x->Version);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -338,11 +338,11 @@ void zx_FREE_xasp_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xasp_XACMLPolicyQ
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->Version, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
-  zx_free_attr(c, x->Destination, free_strs);
   zx_free_attr(c, x->Consent, free_strs);
+  zx_free_attr(c, x->Destination, free_strs);
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->Version, free_strs);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -434,11 +434,11 @@ void zx_DUP_STRS_xasp_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xasp_XACMLPol
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->Version);
-  zx_dup_attr(c, x->IssueInstant);
-  zx_dup_attr(c, x->Destination);
   zx_dup_attr(c, x->Consent);
+  zx_dup_attr(c, x->Destination);
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->Version);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -489,11 +489,11 @@ struct zx_xasp_XACMLPolicyQuery_s* zx_DEEP_CLONE_xasp_XACMLPolicyQuery(struct zx
   x = (struct zx_xasp_XACMLPolicyQuery_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xasp_XACMLPolicyQuery_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ID = zx_clone_attr(c, x->ID);
-  x->Version = zx_clone_attr(c, x->Version);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
-  x->Destination = zx_clone_attr(c, x->Destination);
   x->Consent = zx_clone_attr(c, x->Consent);
+  x->Destination = zx_clone_attr(c, x->Destination);
+  x->ID = zx_clone_attr(c, x->ID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->Version = zx_clone_attr(c, x->Version);
 
   {
       struct zx_sa_Issuer_s* e;

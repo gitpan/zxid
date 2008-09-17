@@ -460,9 +460,9 @@ void zx_FREE_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->mechanism, free_strs);
-  zx_free_attr(c, x->authzID, free_strs);
   zx_free_attr(c, x->advisoryAuthnID, free_strs);
+  zx_free_attr(c, x->authzID, free_strs);
+  zx_free_attr(c, x->mechanism, free_strs);
 
   zx_free_simple_elems(c, x->Data, free_strs);
   {
@@ -515,9 +515,9 @@ void zx_DUP_STRS_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->mechanism);
-  zx_dup_attr(c, x->authzID);
   zx_dup_attr(c, x->advisoryAuthnID);
+  zx_dup_attr(c, x->authzID);
+  zx_dup_attr(c, x->mechanism);
 
   zx_dup_strs_simple_elems(c, x->Data);
   {
@@ -544,9 +544,9 @@ struct zx_as_SASLRequest_s* zx_DEEP_CLONE_as_SASLRequest(struct zx_ctx* c, struc
   x = (struct zx_as_SASLRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_as_SASLRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->mechanism = zx_clone_attr(c, x->mechanism);
-  x->authzID = zx_clone_attr(c, x->authzID);
   x->advisoryAuthnID = zx_clone_attr(c, x->advisoryAuthnID);
+  x->authzID = zx_clone_attr(c, x->authzID);
+  x->mechanism = zx_clone_attr(c, x->mechanism);
 
   x->Data = zx_deep_clone_simple_elems(c,x->Data, dup_strs);
   {

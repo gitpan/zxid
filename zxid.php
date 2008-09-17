@@ -1,16 +1,17 @@
 <?
 # zxid/zxid.php  -  Implement SAML SP role in PHP using zxid extension
 #
-# Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+# Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
-# $Id: zxid.php,v 1.7 2007/03/06 07:39:14 sampo Exp $
+# $Id: zxid.php,v 1.8 2008-05-26 15:28:44 sampo Exp $
 # 31.8.2006, created --Sampo
 # 15.9.2006, enhanced to actually support SSO --Sampo
 # 5.3.2007, double checked and fixed to work against 0.16 --Sampo
+# 25.5.2008, fixed to work against 0.27, fixed port number to 5443 --Sampo
 
 dl("php_zxid.so");
 
@@ -19,8 +20,8 @@ $path = zxid_conf_path_get($cf);   # *** Weird: without "get" the cf->path is sc
 #$path_len = zxid_conf_path_len_get($cf);
 #error_log("path($path) len($len)", 0);
 
-$url = "https://sp1.zxidsp.org:8443/zxid.php";
-$cdc_url = "https://sp1.zxidcommon.org:8443/zxid.php";  # zxid_my_cdc_url()
+$url = "https://sp1.zxidsp.org:5443/zxid.php";
+$cdc_url = "https://sp1.zxidcommon.org:5443/zxid.php";  # zxid_my_cdc_url()
 zxid_url_set($cf, $url);
 zxid_set_opt($cf, 1 ,1);  # Turn on libzxid level debugging
 $cgi = zxid_new_cgi($cf, $_SERVER['QUERY_STRING']);

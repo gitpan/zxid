@@ -7,19 +7,20 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
+ ** Id: enc-templ.c,v 1.27 2007-10-05 22:24:28 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
+ ** 30.9.2007, improvements to WO encoding --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -54,6 +55,18 @@
 #define EL_NS     demomed
 #define EL_TAG    DeleteObjectRequest
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_DeleteObjectRequest) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -63,9 +76,12 @@
 int zx_LEN_SO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_DeleteObjectRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:DeleteObjectRequest")-1 + 1 + sizeof("</demomed:DeleteObjectRequest>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -78,8 +94,9 @@ int zx_LEN_SO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_De
     len += zx_LEN_SO_simple_elem(c,se, sizeof("demomed:ObjectID")-1, zx_ns_tab+zx_xmlns_ix_demomed);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectRequest", len);
   return len;
 }
 
@@ -93,13 +110,14 @@ int zx_LEN_SO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_De
 int zx_LEN_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_DeleteObjectRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeleteObjectRequest")-1 + 1 + 2 + sizeof("DeleteObjectRequest")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -114,6 +132,7 @@ int zx_LEN_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_De
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectRequest", len);
   return len;
 }
 
@@ -126,10 +145,14 @@ int zx_LEN_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_De
 /* Called by: */
 char* zx_ENC_SO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_DeleteObjectRequest_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:DeleteObjectRequest");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -149,6 +172,7 @@ char* zx_ENC_SO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectRequest", p-enc_base);
   return p;
 }
 
@@ -162,6 +186,7 @@ char* zx_ENC_SO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_
 char* zx_ENC_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_DeleteObjectRequest_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -176,6 +201,8 @@ char* zx_ENC_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -197,6 +224,7 @@ char* zx_ENC_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, struct zx_demomed_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectRequest", p-enc_base);
   return p;
 }
 
@@ -251,6 +279,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, stru
 #define EL_NS     demomed
 #define EL_TAG    DeleteObjectResponse
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_DeleteObjectResponse) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -260,9 +300,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_DeleteObjectRequest(struct zx_ctx* c, stru
 int zx_LEN_SO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_DeleteObjectResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:DeleteObjectResponse")-1 + 1 + sizeof("</demomed:DeleteObjectResponse>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -280,8 +323,9 @@ int zx_LEN_SO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_D
     len += zx_LEN_SO_simple_elem(c,se, sizeof("demomed:Count")-1, zx_ns_tab+zx_xmlns_ix_demomed);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectResponse", len);
   return len;
 }
 
@@ -295,13 +339,14 @@ int zx_LEN_SO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_D
 int zx_LEN_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_DeleteObjectResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeleteObjectResponse")-1 + 1 + 2 + sizeof("DeleteObjectResponse")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -321,6 +366,7 @@ int zx_LEN_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_D
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectResponse", len);
   return len;
 }
 
@@ -333,10 +379,14 @@ int zx_LEN_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_D
 /* Called by: */
 char* zx_ENC_SO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_DeleteObjectResponse_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:DeleteObjectResponse");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -361,6 +411,7 @@ char* zx_ENC_SO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectResponse", p-enc_base);
   return p;
 }
 
@@ -374,6 +425,7 @@ char* zx_ENC_SO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed
 char* zx_ENC_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed_DeleteObjectResponse_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -388,6 +440,8 @@ char* zx_ENC_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -409,6 +463,7 @@ char* zx_ENC_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, struct zx_demomed
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:DeleteObjectResponse", p-enc_base);
   return p;
 }
 
@@ -463,6 +518,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, str
 #define EL_NS     demomed
 #define EL_TAG    GetObjectListRequest
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_GetObjectListRequest) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -472,9 +539,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_DeleteObjectResponse(struct zx_ctx* c, str
 int zx_LEN_SO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_GetObjectListRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:GetObjectListRequest")-1 + 1 + sizeof("</demomed:GetObjectListRequest>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -490,8 +560,9 @@ int zx_LEN_SO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_G
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListRequest", len);
   return len;
 }
 
@@ -505,13 +576,14 @@ int zx_LEN_SO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_G
 int zx_LEN_WO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_GetObjectListRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("GetObjectListRequest")-1 + 1 + 2 + sizeof("GetObjectListRequest")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -529,6 +601,7 @@ int zx_LEN_WO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_G
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListRequest", len);
   return len;
 }
 
@@ -541,10 +614,14 @@ int zx_LEN_WO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_G
 /* Called by: */
 char* zx_ENC_SO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_GetObjectListRequest_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:GetObjectListRequest");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -567,6 +644,7 @@ char* zx_ENC_SO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListRequest", p-enc_base);
   return p;
 }
 
@@ -580,6 +658,7 @@ char* zx_ENC_SO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed
 char* zx_ENC_WO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed_GetObjectListRequest_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -594,6 +673,8 @@ char* zx_ENC_WO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -615,6 +696,7 @@ char* zx_ENC_WO_demomed_GetObjectListRequest(struct zx_ctx* c, struct zx_demomed
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListRequest", p-enc_base);
   return p;
 }
 
@@ -669,6 +751,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectListRequest(struct zx_ctx* c, str
 #define EL_NS     demomed
 #define EL_TAG    GetObjectListResponse
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_GetObjectListResponse) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -678,9 +772,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectListRequest(struct zx_ctx* c, str
 int zx_LEN_SO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_GetObjectListResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:GetObjectListResponse")-1 + 1 + sizeof("</demomed:GetObjectListResponse>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -701,8 +798,9 @@ int zx_LEN_SO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListResponse", len);
   return len;
 }
 
@@ -716,13 +814,14 @@ int zx_LEN_SO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_
 int zx_LEN_WO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_GetObjectListResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("GetObjectListResponse")-1 + 1 + 2 + sizeof("GetObjectListResponse")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -745,6 +844,7 @@ int zx_LEN_WO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListResponse", len);
   return len;
 }
 
@@ -757,10 +857,14 @@ int zx_LEN_WO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_
 /* Called by: */
 char* zx_ENC_SO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_GetObjectListResponse_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:GetObjectListResponse");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -788,6 +892,7 @@ char* zx_ENC_SO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demome
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListResponse", p-enc_base);
   return p;
 }
 
@@ -801,6 +906,7 @@ char* zx_ENC_SO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demome
 char* zx_ENC_WO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demomed_GetObjectListResponse_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -815,6 +921,8 @@ char* zx_ENC_WO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demome
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -836,6 +944,7 @@ char* zx_ENC_WO_demomed_GetObjectListResponse(struct zx_ctx* c, struct zx_demome
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectListResponse", p-enc_base);
   return p;
 }
 
@@ -890,6 +999,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectListResponse(struct zx_ctx* c, st
 #define EL_NS     demomed
 #define EL_TAG    GetObjectRequest
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_GetObjectRequest) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -899,9 +1020,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectListResponse(struct zx_ctx* c, st
 int zx_LEN_SO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetObjectRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:GetObjectRequest")-1 + 1 + sizeof("</demomed:GetObjectRequest>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -914,8 +1038,9 @@ int zx_LEN_SO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetOb
     len += zx_LEN_SO_simple_elem(c,se, sizeof("demomed:ObjectID")-1, zx_ns_tab+zx_xmlns_ix_demomed);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectRequest", len);
   return len;
 }
 
@@ -929,13 +1054,14 @@ int zx_LEN_SO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetOb
 int zx_LEN_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetObjectRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("GetObjectRequest")-1 + 1 + 2 + sizeof("GetObjectRequest")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -950,6 +1076,7 @@ int zx_LEN_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetOb
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectRequest", len);
   return len;
 }
 
@@ -962,10 +1089,14 @@ int zx_LEN_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetOb
 /* Called by: */
 char* zx_ENC_SO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetObjectRequest_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:GetObjectRequest");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -985,6 +1116,7 @@ char* zx_ENC_SO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_Get
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectRequest", p-enc_base);
   return p;
 }
 
@@ -998,6 +1130,7 @@ char* zx_ENC_SO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_Get
 char* zx_ENC_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_GetObjectRequest_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1012,6 +1145,8 @@ char* zx_ENC_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_Get
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1033,6 +1168,7 @@ char* zx_ENC_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct zx_demomed_Get
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectRequest", p-enc_base);
   return p;
 }
 
@@ -1087,6 +1223,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct 
 #define EL_NS     demomed
 #define EL_TAG    GetObjectResponse
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_GetObjectResponse) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1096,9 +1244,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectRequest(struct zx_ctx* c, struct 
 int zx_LEN_SO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetObjectResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:GetObjectResponse")-1 + 1 + sizeof("</demomed:GetObjectResponse>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -1119,8 +1270,9 @@ int zx_LEN_SO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetO
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectResponse", len);
   return len;
 }
 
@@ -1134,13 +1286,14 @@ int zx_LEN_SO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetO
 int zx_LEN_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetObjectResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("GetObjectResponse")-1 + 1 + 2 + sizeof("GetObjectResponse")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -1163,6 +1316,7 @@ int zx_LEN_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetO
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:GetObjectResponse", len);
   return len;
 }
 
@@ -1175,10 +1329,14 @@ int zx_LEN_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetO
 /* Called by: */
 char* zx_ENC_SO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetObjectResponse_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:GetObjectResponse");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -1206,6 +1364,7 @@ char* zx_ENC_SO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_Ge
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectResponse", p-enc_base);
   return p;
 }
 
@@ -1219,6 +1378,7 @@ char* zx_ENC_SO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_Ge
 char* zx_ENC_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_GetObjectResponse_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1233,6 +1393,8 @@ char* zx_ENC_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_Ge
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1254,6 +1416,7 @@ char* zx_ENC_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct zx_demomed_Ge
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:GetObjectResponse", p-enc_base);
   return p;
 }
 
@@ -1308,6 +1471,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct
 #define EL_NS     demomed
 #define EL_TAG    Object
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_Object) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1317,9 +1492,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_GetObjectResponse(struct zx_ctx* c, struct
 int zx_LEN_SO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:Object")-1 + 1 + sizeof("</demomed:Object>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
   len += zx_attr_so_len(x->reqID, sizeof("reqID")-1);
@@ -1341,8 +1519,9 @@ int zx_LEN_SO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:Object", len);
   return len;
 }
 
@@ -1356,13 +1535,14 @@ int zx_LEN_SO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x )
 int zx_LEN_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Object")-1 + 1 + 2 + sizeof("Object")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->reqID, sizeof("reqID")-1);
@@ -1386,6 +1566,7 @@ int zx_LEN_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:Object", len);
   return len;
 }
 
@@ -1398,10 +1579,14 @@ int zx_LEN_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x )
 /* Called by: */
 char* zx_ENC_SO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:Object");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
   p = zx_attr_so_enc(p, x->reqID, " reqID=\"", sizeof(" reqID=\"")-1);
@@ -1430,6 +1615,7 @@ char* zx_ENC_SO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:Object", p-enc_base);
   return p;
 }
 
@@ -1443,6 +1629,7 @@ char* zx_ENC_SO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x, 
 char* zx_ENC_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1457,6 +1644,8 @@ char* zx_ENC_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1479,6 +1668,7 @@ char* zx_ENC_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed_Object_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:Object", p-enc_base);
   return p;
 }
 
@@ -1533,6 +1723,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed
 #define EL_NS     demomed
 #define EL_TAG    ObjectData
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_ObjectData) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1542,9 +1744,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_Object(struct zx_ctx* c, struct zx_demomed
 int zx_LEN_SO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:ObjectData")-1 + 1 + sizeof("</demomed:ObjectData>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
   len += zx_attr_so_len(x->objectID, sizeof("objectID")-1);
@@ -1556,8 +1761,9 @@ int zx_LEN_SO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectData", len);
   return len;
 }
 
@@ -1571,13 +1777,14 @@ int zx_LEN_SO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_
 int zx_LEN_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ObjectData")-1 + 1 + 2 + sizeof("ObjectData")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->objectID, sizeof("objectID")-1);
@@ -1591,6 +1798,7 @@ int zx_LEN_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectData", len);
   return len;
 }
 
@@ -1603,10 +1811,14 @@ int zx_LEN_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_
 /* Called by: */
 char* zx_ENC_SO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:ObjectData");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
   p = zx_attr_so_enc(p, x->objectID, " objectID=\"", sizeof(" objectID=\"")-1);
@@ -1625,6 +1837,7 @@ char* zx_ENC_SO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectDat
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectData", p-enc_base);
   return p;
 }
 
@@ -1638,6 +1851,7 @@ char* zx_ENC_SO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectDat
 char* zx_ENC_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectData_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1652,6 +1866,8 @@ char* zx_ENC_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectDat
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1674,6 +1890,7 @@ char* zx_ENC_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_demomed_ObjectDat
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectData", p-enc_base);
   return p;
 }
 
@@ -1728,6 +1945,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_dem
 #define EL_NS     demomed
 #define EL_TAG    ObjectInfo
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_ObjectInfo) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1737,9 +1966,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectData(struct zx_ctx* c, struct zx_dem
 int zx_LEN_SO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:ObjectInfo")-1 + 1 + sizeof("</demomed:ObjectInfo>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
   len += zx_attr_so_len(x->objectID, sizeof("objectID")-1);
@@ -1761,8 +1993,9 @@ int zx_LEN_SO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_
     len += zx_LEN_SO_simple_elem(c,se, sizeof("demomed:Comment")-1, zx_ns_tab+zx_xmlns_ix_demomed);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectInfo", len);
   return len;
 }
 
@@ -1776,13 +2009,14 @@ int zx_LEN_SO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_
 int zx_LEN_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ObjectInfo")-1 + 1 + 2 + sizeof("ObjectInfo")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->objectID, sizeof("objectID")-1);
@@ -1806,6 +2040,7 @@ int zx_LEN_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectInfo", len);
   return len;
 }
 
@@ -1818,10 +2053,14 @@ int zx_LEN_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_
 /* Called by: */
 char* zx_ENC_SO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:ObjectInfo");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
   p = zx_attr_so_enc(p, x->objectID, " objectID=\"", sizeof(" objectID=\"")-1);
@@ -1850,6 +2089,7 @@ char* zx_ENC_SO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInf
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectInfo", p-enc_base);
   return p;
 }
 
@@ -1863,6 +2103,7 @@ char* zx_ENC_SO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInf
 char* zx_ENC_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInfo_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1877,6 +2118,8 @@ char* zx_ENC_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInf
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1899,6 +2142,7 @@ char* zx_ENC_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_demomed_ObjectInf
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectInfo", p-enc_base);
   return p;
 }
 
@@ -1953,6 +2197,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_dem
 #define EL_NS     demomed
 #define EL_TAG    ObjectSearchParm
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_ObjectSearchParm) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1962,9 +2218,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectInfo(struct zx_ctx* c, struct zx_dem
 int zx_LEN_SO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_ObjectSearchParm_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:ObjectSearchParm")-1 + 1 + sizeof("</demomed:ObjectSearchParm>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -1983,8 +2242,9 @@ int zx_LEN_SO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Objec
     len += zx_LEN_SO_simple_elem(c,se, sizeof("demomed:objectID")-1, zx_ns_tab+zx_xmlns_ix_demomed);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectSearchParm", len);
   return len;
 }
 
@@ -1998,13 +2258,14 @@ int zx_LEN_SO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Objec
 int zx_LEN_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_ObjectSearchParm_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ObjectSearchParm")-1 + 1 + 2 + sizeof("ObjectSearchParm")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2025,6 +2286,7 @@ int zx_LEN_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Objec
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectSearchParm", len);
   return len;
 }
 
@@ -2037,10 +2299,14 @@ int zx_LEN_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Objec
 /* Called by: */
 char* zx_ENC_SO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_ObjectSearchParm_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:ObjectSearchParm");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -2066,6 +2332,7 @@ char* zx_ENC_SO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Obj
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectSearchParm", p-enc_base);
   return p;
 }
 
@@ -2079,6 +2346,7 @@ char* zx_ENC_SO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Obj
 char* zx_ENC_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_ObjectSearchParm_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2093,6 +2361,8 @@ char* zx_ENC_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Obj
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2114,6 +2384,7 @@ char* zx_ENC_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct zx_demomed_Obj
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectSearchParm", p-enc_base);
   return p;
 }
 
@@ -2168,6 +2439,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct 
 #define EL_NS     demomed
 #define EL_TAG    ObjectStoreInfo
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_ObjectStoreInfo) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2177,13 +2460,16 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectSearchParm(struct zx_ctx* c, struct 
 int zx_LEN_SO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_ObjectStoreInfo_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:ObjectStoreInfo")-1 + 1 + sizeof("</demomed:ObjectStoreInfo>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
-  len += zx_attr_so_len(x->storeRef, sizeof("storeRef")-1);
   len += zx_attr_so_len(x->objectID, sizeof("objectID")-1);
+  len += zx_attr_so_len(x->storeRef, sizeof("storeRef")-1);
 
 #else
   /* root node has no begin tag */
@@ -2192,8 +2478,9 @@ int zx_LEN_SO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Object
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectStoreInfo", len);
   return len;
 }
 
@@ -2207,17 +2494,18 @@ int zx_LEN_SO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Object
 int zx_LEN_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_ObjectStoreInfo_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ObjectStoreInfo")-1 + 1 + 2 + sizeof("ObjectStoreInfo")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->storeRef, sizeof("storeRef")-1);
   len += zx_attr_wo_len(x->objectID, sizeof("objectID")-1);
+  len += zx_attr_wo_len(x->storeRef, sizeof("storeRef")-1);
 
 #else
   /* root node has no begin tag */
@@ -2228,6 +2516,7 @@ int zx_LEN_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Object
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:ObjectStoreInfo", len);
   return len;
 }
 
@@ -2240,14 +2529,18 @@ int zx_LEN_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Object
 /* Called by: */
 char* zx_ENC_SO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_ObjectStoreInfo_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:ObjectStoreInfo");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->storeRef, " storeRef=\"", sizeof(" storeRef=\"")-1);
   p = zx_attr_so_enc(p, x->objectID, " objectID=\"", sizeof(" objectID=\"")-1);
+  p = zx_attr_so_enc(p, x->storeRef, " storeRef=\"", sizeof(" storeRef=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -2263,6 +2556,7 @@ char* zx_ENC_SO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Obje
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectStoreInfo", p-enc_base);
   return p;
 }
 
@@ -2276,6 +2570,7 @@ char* zx_ENC_SO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Obje
 char* zx_ENC_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_ObjectStoreInfo_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2290,11 +2585,13 @@ char* zx_ENC_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Obje
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->storeRef, "storeRef=\"", sizeof("storeRef=\"")-1);
   p = zx_attr_wo_enc(p, x->objectID, "objectID=\"", sizeof("objectID=\"")-1);
+  p = zx_attr_wo_enc(p, x->storeRef, "storeRef=\"", sizeof("storeRef=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -2313,6 +2610,7 @@ char* zx_ENC_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Obje
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:ObjectStoreInfo", p-enc_base);
   return p;
 }
 
@@ -2367,6 +2665,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct z
 #define EL_NS     demomed
 #define EL_TAG    StoreObjectRequest
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_StoreObjectRequest) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2376,9 +2686,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct z
 int zx_LEN_SO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_StoreObjectRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:StoreObjectRequest")-1 + 1 + sizeof("</demomed:StoreObjectRequest>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -2394,8 +2707,9 @@ int zx_LEN_SO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_Sto
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectRequest", len);
   return len;
 }
 
@@ -2409,13 +2723,14 @@ int zx_LEN_SO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_Sto
 int zx_LEN_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_StoreObjectRequest_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("StoreObjectRequest")-1 + 1 + 2 + sizeof("StoreObjectRequest")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2433,6 +2748,7 @@ int zx_LEN_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_Sto
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectRequest", len);
   return len;
 }
 
@@ -2445,10 +2761,14 @@ int zx_LEN_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_Sto
 /* Called by: */
 char* zx_ENC_SO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_StoreObjectRequest_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:StoreObjectRequest");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -2471,6 +2791,7 @@ char* zx_ENC_SO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_S
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectRequest", p-enc_base);
   return p;
 }
 
@@ -2484,6 +2805,7 @@ char* zx_ENC_SO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_S
 char* zx_ENC_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_StoreObjectRequest_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2498,6 +2820,8 @@ char* zx_ENC_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_S
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2519,6 +2843,7 @@ char* zx_ENC_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struct zx_demomed_S
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectRequest", p-enc_base);
   return p;
 }
 
@@ -2573,6 +2898,18 @@ struct zx_str* zx_EASY_ENC_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struc
 #define EL_NS     demomed
 #define EL_TAG    StoreObjectResponse
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_demomed_StoreObjectResponse) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2582,9 +2919,12 @@ struct zx_str* zx_EASY_ENC_WO_demomed_StoreObjectRequest(struct zx_ctx* c, struc
 int zx_LEN_SO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_StoreObjectResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<demomed:StoreObjectResponse")-1 + 1 + sizeof("</demomed:StoreObjectResponse>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -2605,8 +2945,9 @@ int zx_LEN_SO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_St
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectResponse", len);
   return len;
 }
 
@@ -2620,13 +2961,14 @@ int zx_LEN_SO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_St
 int zx_LEN_WO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_StoreObjectResponse_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("StoreObjectResponse")-1 + 1 + 2 + sizeof("StoreObjectResponse")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2649,6 +2991,7 @@ int zx_LEN_WO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_St
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectResponse", len);
   return len;
 }
 
@@ -2661,10 +3004,14 @@ int zx_LEN_WO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_St
 /* Called by: */
 char* zx_ENC_SO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_StoreObjectResponse_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<demomed:StoreObjectResponse");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_demomed, &pop_seen);
 
 
@@ -2692,6 +3039,7 @@ char* zx_ENC_SO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectResponse", p-enc_base);
   return p;
 }
 
@@ -2705,6 +3053,7 @@ char* zx_ENC_SO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_
 char* zx_ENC_WO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_StoreObjectResponse_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2719,6 +3068,8 @@ char* zx_ENC_WO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2740,6 +3091,7 @@ char* zx_ENC_WO_demomed_StoreObjectResponse(struct zx_ctx* c, struct zx_demomed_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "demomed:StoreObjectResponse", p-enc_base);
   return p;
 }
 

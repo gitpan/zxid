@@ -277,23 +277,23 @@ struct zx_str* zx_EASY_ENC_WO_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabe
 struct zx_ac_Alphabet_s {
   ZX_ELEM_EXT
   zx_ac_Alphabet_EXT
-  struct zx_str* requiredChars;	/* {1,1} attribute xs:string */
-  struct zx_str* excludedChars;	/* {0,1} attribute xs:string */
   struct zx_str* case_is_c_keyword;	/* {0,1} attribute xs:string */
+  struct zx_str* excludedChars;	/* {0,1} attribute xs:string */
+  struct zx_str* requiredChars;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ac_Alphabet_GET_requiredChars(struct zx_ac_Alphabet_s* x);
-struct zx_str* zx_ac_Alphabet_GET_excludedChars(struct zx_ac_Alphabet_s* x);
 struct zx_str* zx_ac_Alphabet_GET_case_is_c_keyword(struct zx_ac_Alphabet_s* x);
+struct zx_str* zx_ac_Alphabet_GET_excludedChars(struct zx_ac_Alphabet_s* x);
+struct zx_str* zx_ac_Alphabet_GET_requiredChars(struct zx_ac_Alphabet_s* x);
 
 
 
 
 
-void zx_ac_Alphabet_PUT_requiredChars(struct zx_ac_Alphabet_s* x, struct zx_str* y);
-void zx_ac_Alphabet_PUT_excludedChars(struct zx_ac_Alphabet_s* x, struct zx_str* y);
 void zx_ac_Alphabet_PUT_case_is_c_keyword(struct zx_ac_Alphabet_s* x, struct zx_str* y);
+void zx_ac_Alphabet_PUT_excludedChars(struct zx_ac_Alphabet_s* x, struct zx_str* y);
+void zx_ac_Alphabet_PUT_requiredChars(struct zx_ac_Alphabet_s* x, struct zx_str* y);
 
 
 
@@ -422,7 +422,7 @@ struct zx_ac_AuthenticatingAuthority_s {
   ZX_ELEM_EXT
   zx_ac_AuthenticatingAuthority_EXT
   struct zx_ac_GoverningAgreements_s* GoverningAgreements;	/* {1,1}  */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
@@ -479,7 +479,7 @@ struct zx_ac_AuthenticationContextStatement_s {
   struct zx_ac_GoverningAgreements_s* GoverningAgreements;	/* {0,1}  */
   struct zx_ac_AuthenticatingAuthority_s* AuthenticatingAuthority;	/* {0,-1} nada */
   struct zx_ac_Extension_s* Extension;	/* {0,-1}  */
-  struct zx_str* ID;	/* {0,1} attribute xs:ID */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
@@ -1522,20 +1522,20 @@ struct zx_str* zx_EASY_ENC_WO_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s*
 struct zx_ac_Length_s {
   ZX_ELEM_EXT
   zx_ac_Length_EXT
-  struct zx_str* min;	/* {1,1} attribute xs:integer */
   struct zx_str* max;	/* {0,1} attribute xs:integer */
+  struct zx_str* min;	/* {1,1} attribute xs:integer */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ac_Length_GET_min(struct zx_ac_Length_s* x);
 struct zx_str* zx_ac_Length_GET_max(struct zx_ac_Length_s* x);
+struct zx_str* zx_ac_Length_GET_min(struct zx_ac_Length_s* x);
 
 
 
 
 
-void zx_ac_Length_PUT_min(struct zx_ac_Length_s* x, struct zx_str* y);
 void zx_ac_Length_PUT_max(struct zx_ac_Length_s* x, struct zx_str* y);
+void zx_ac_Length_PUT_min(struct zx_ac_Length_s* x, struct zx_str* y);
 
 
 
@@ -2578,23 +2578,23 @@ struct zx_str* zx_EASY_ENC_WO_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_Ti
 struct zx_ac_TimeSyncToken_s {
   ZX_ELEM_EXT
   zx_ac_TimeSyncToken_EXT
+  struct zx_str* DeviceInHand;	/* {1,1} attribute true */
   struct zx_str* DeviceType;	/* {1,1} attribute hardware */
   struct zx_str* SeedLength;	/* {1,1} attribute xs:integer */
-  struct zx_str* DeviceInHand;	/* {1,1} attribute true */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_ac_TimeSyncToken_GET_DeviceInHand(struct zx_ac_TimeSyncToken_s* x);
 struct zx_str* zx_ac_TimeSyncToken_GET_DeviceType(struct zx_ac_TimeSyncToken_s* x);
 struct zx_str* zx_ac_TimeSyncToken_GET_SeedLength(struct zx_ac_TimeSyncToken_s* x);
-struct zx_str* zx_ac_TimeSyncToken_GET_DeviceInHand(struct zx_ac_TimeSyncToken_s* x);
 
 
 
 
 
+void zx_ac_TimeSyncToken_PUT_DeviceInHand(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y);
 void zx_ac_TimeSyncToken_PUT_DeviceType(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y);
 void zx_ac_TimeSyncToken_PUT_SeedLength(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y);
-void zx_ac_TimeSyncToken_PUT_DeviceInHand(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y);
 
 
 

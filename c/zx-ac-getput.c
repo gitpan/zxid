@@ -1129,18 +1129,18 @@ void zx_ac_ActivationPin_DEL_Extension(struct zx_ac_ActivationPin_s* x, int n)
 
 
 
-/* FUNC(zx_ac_Alphabet_GET_requiredChars) */
-struct zx_str* zx_ac_Alphabet_GET_requiredChars(struct zx_ac_Alphabet_s* x) { return x->requiredChars; }
-/* FUNC(zx_ac_Alphabet_PUT_requiredChars) */
-void zx_ac_Alphabet_PUT_requiredChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->requiredChars = y; }
-/* FUNC(zx_ac_Alphabet_GET_excludedChars) */
-struct zx_str* zx_ac_Alphabet_GET_excludedChars(struct zx_ac_Alphabet_s* x) { return x->excludedChars; }
-/* FUNC(zx_ac_Alphabet_PUT_excludedChars) */
-void zx_ac_Alphabet_PUT_excludedChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->excludedChars = y; }
 /* FUNC(zx_ac_Alphabet_GET_case_is_c_keyword) */
 struct zx_str* zx_ac_Alphabet_GET_case_is_c_keyword(struct zx_ac_Alphabet_s* x) { return x->case_is_c_keyword; }
 /* FUNC(zx_ac_Alphabet_PUT_case_is_c_keyword) */
 void zx_ac_Alphabet_PUT_case_is_c_keyword(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->case_is_c_keyword = y; }
+/* FUNC(zx_ac_Alphabet_GET_excludedChars) */
+struct zx_str* zx_ac_Alphabet_GET_excludedChars(struct zx_ac_Alphabet_s* x) { return x->excludedChars; }
+/* FUNC(zx_ac_Alphabet_PUT_excludedChars) */
+void zx_ac_Alphabet_PUT_excludedChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->excludedChars = y; }
+/* FUNC(zx_ac_Alphabet_GET_requiredChars) */
+struct zx_str* zx_ac_Alphabet_GET_requiredChars(struct zx_ac_Alphabet_s* x) { return x->requiredChars; }
+/* FUNC(zx_ac_Alphabet_PUT_requiredChars) */
+void zx_ac_Alphabet_PUT_requiredChars(struct zx_ac_Alphabet_s* x, struct zx_str* y) { x->requiredChars = y; }
 
 
 
@@ -7170,14 +7170,14 @@ void zx_ac_KeyStorage_PUT_medium(struct zx_ac_KeyStorage_s* x, struct zx_str* y)
 
 
 
-/* FUNC(zx_ac_Length_GET_min) */
-struct zx_str* zx_ac_Length_GET_min(struct zx_ac_Length_s* x) { return x->min; }
-/* FUNC(zx_ac_Length_PUT_min) */
-void zx_ac_Length_PUT_min(struct zx_ac_Length_s* x, struct zx_str* y) { x->min = y; }
 /* FUNC(zx_ac_Length_GET_max) */
 struct zx_str* zx_ac_Length_GET_max(struct zx_ac_Length_s* x) { return x->max; }
 /* FUNC(zx_ac_Length_PUT_max) */
 void zx_ac_Length_PUT_max(struct zx_ac_Length_s* x, struct zx_str* y) { x->max = y; }
+/* FUNC(zx_ac_Length_GET_min) */
+struct zx_str* zx_ac_Length_GET_min(struct zx_ac_Length_s* x) { return x->min; }
+/* FUNC(zx_ac_Length_PUT_min) */
+void zx_ac_Length_PUT_min(struct zx_ac_Length_s* x, struct zx_str* y) { x->min = y; }
 
 
 
@@ -11833,6 +11833,10 @@ void zx_ac_TechnicalProtection_DEL_Extension(struct zx_ac_TechnicalProtection_s*
 
 
 
+/* FUNC(zx_ac_TimeSyncToken_GET_DeviceInHand) */
+struct zx_str* zx_ac_TimeSyncToken_GET_DeviceInHand(struct zx_ac_TimeSyncToken_s* x) { return x->DeviceInHand; }
+/* FUNC(zx_ac_TimeSyncToken_PUT_DeviceInHand) */
+void zx_ac_TimeSyncToken_PUT_DeviceInHand(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y) { x->DeviceInHand = y; }
 /* FUNC(zx_ac_TimeSyncToken_GET_DeviceType) */
 struct zx_str* zx_ac_TimeSyncToken_GET_DeviceType(struct zx_ac_TimeSyncToken_s* x) { return x->DeviceType; }
 /* FUNC(zx_ac_TimeSyncToken_PUT_DeviceType) */
@@ -11841,10 +11845,6 @@ void zx_ac_TimeSyncToken_PUT_DeviceType(struct zx_ac_TimeSyncToken_s* x, struct 
 struct zx_str* zx_ac_TimeSyncToken_GET_SeedLength(struct zx_ac_TimeSyncToken_s* x) { return x->SeedLength; }
 /* FUNC(zx_ac_TimeSyncToken_PUT_SeedLength) */
 void zx_ac_TimeSyncToken_PUT_SeedLength(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y) { x->SeedLength = y; }
-/* FUNC(zx_ac_TimeSyncToken_GET_DeviceInHand) */
-struct zx_str* zx_ac_TimeSyncToken_GET_DeviceInHand(struct zx_ac_TimeSyncToken_s* x) { return x->DeviceInHand; }
-/* FUNC(zx_ac_TimeSyncToken_PUT_DeviceInHand) */
-void zx_ac_TimeSyncToken_PUT_DeviceInHand(struct zx_ac_TimeSyncToken_s* x, struct zx_str* y) { x->DeviceInHand = y; }
 
 
 

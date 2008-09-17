@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: javazxid.i,v 1.8 2007/03/05 07:41:30 sampo Exp $
+ * $Id: javazxid.i,v 1.9 2008-05-26 15:28:44 sampo Exp $
  * 7.1.2007, created --Sampo
  *
  * See: http://java.sun.com/docs/books/jni/html/objtypes.html

@@ -1,11 +1,11 @@
 /* zxutil.c  -  Utility functions
- * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxutil.c,v 1.27 2007-06-21 23:32:32 sampo Exp $
+ * $Id: zxutil.c,v 1.36 2008-05-30 17:39:11 lbernardo Exp $
  *
  * 15.4.2006, created over Easter holiday --Sampo
  */
@@ -25,6 +25,19 @@
 
 #include "zx.h"
 #include "zxidconf.h"
+#include "platform.h"
+
+//#ifdef MINGW
+//#define fdtype HANDLE
+//#define BADFD (INVALID_HANDLE_VALUE)
+//#define closefile(x) (CloseHandle(x)?1:-1)
+//#define openfile_ro(path) CreateFile((path), GENERIC_READ, FILE_SHARE_READ, 0 /*security*/, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
+//#else
+//#define fdtype int
+//#define BADFD (-1)
+//#define closefile(x) close(x)
+//#define openfile_ro(path) open((path),O_RDONLY)
+//#endif
 
 #if !defined(USE_STDIO) && !defined(MINGW)
 /* *** Static initialization of struct flock is suspect since man fcntl() documentation
@@ -36,6 +49,8 @@ struct flock ds_rdlk = { F_RDLCK, SEEK_SET, 0, 0 };
 struct flock ds_wrlk = { F_WRLCK, SEEK_SET, 0, 0 };
 struct flock ds_unlk = { F_UNLCK, SEEK_SET, 0, 0 };
 #endif
+
+int close_file(fdtype fd, const char* logkey);
 
 /* Called by:  name_from_path, vopen_fd_from_path */
 int vname_from_path(char* buf, int buf_len, char* name_fmt, va_list ap)
@@ -66,28 +81,36 @@ int name_from_path(char* buf, int buf_len, char* name_fmt, ...)
 }
 
 /* Called by:  open_fd_from_path, read_all */
-int vopen_fd_from_path(int flags, int mode, char* logkey, char* name_fmt, va_list ap)
+fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, char* name_fmt, va_list ap)
 {
-  int fd;
+  fdtype fd;
   char buf[ZXID_MAX_BUF];
   if (!vname_from_path(buf, sizeof(buf), name_fmt, ap))
-    return -1;
+    return BADFD;
+#ifdef MINGW
+  if (flags == O_RDONLY) {
+    fd = openfile_ro(buf);
+  } else {
+    fd = CreateFile(buf, MINGW_RW_PERM, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+  }
+#else
   fd = open(buf, flags, mode);
-  if (fd == -1) {
+#endif
+  if (fd == BADFD) {
     if (logkey[0] != '-') {
       perror("open (vopen_fd_from_path)");
       ERR("File(%s) not found lk(%s). flags=0x%x", buf, logkey, flags);
     }
-    return -1;
+    return BADFD;
   }
   return fd;
 }
 
 /* Called by:  zxid_get_ent_from_file, zxid_get_meta, zxid_put_ses, zxid_write_ent_to_cache */
-int open_fd_from_path(int flags, int mode, char* logkey, char* name_fmt, ...)
+fdtype open_fd_from_path(int flags, int mode, char* logkey, char* name_fmt, ...)
 {
   va_list ap;
-  int fd;
+  fdtype fd;
   va_start(ap, name_fmt);
   fd = vopen_fd_from_path(flags, mode, logkey, name_fmt, ap);
   va_end(ap);
@@ -100,7 +123,7 @@ int open_fd_from_path(int flags, int mode, char* logkey, char* name_fmt, ...)
  * got_all reflects the total number of bytes received. */
 
 /* Called by:  main x3, opt x3, read_all, zxid_get_ent_from_file, zxid_simple_cf */
-int read_all_fd(int fd, char* p, int want, int* got_all)
+int read_all_fd(fdtype fd, char* p, int want, int* got_all)
 {
 #ifdef USE_STDIO
   int got;
@@ -108,7 +131,7 @@ int read_all_fd(int fd, char* p, int want, int* got_all)
   if (got_all) *got_all = got;
 #elif defined(MINGW)
   DWORD got;
-  if (!ReadFile((HANDLE)fd, p, want, &got, 0))
+  if (!ReadFile(fd, p, want, &got, 0))
     return -1;
   if (got_all) *got_all = got;
 #else  /* The Unix way */
@@ -128,39 +151,40 @@ int read_all_fd(int fd, char* p, int want, int* got_all)
 
 /* Returns actual total length. The buffer will always be nul terminated. */
 /* Called by:  opt x6, test_mode x2, zxid_conf_to_cf_len, zxid_find_epr, zxid_get_ses, zxid_get_ses_sso_a7n, zxid_read_cert, zxid_read_private_key, zxid_sha1_file */
-int read_all(int maxlen, char* buf, char* logkey, char* name_fmt, ...)
+int read_all(int maxlen, char* buf, const char* logkey, char* name_fmt, ...)
 {
   va_list ap;
-  int fd, gotall;
+  int gotall;
+  fdtype fd;
   va_start(ap, name_fmt);
   fd = vopen_fd_from_path(O_RDONLY, 0, logkey, name_fmt, ap);
   va_end(ap);
-  if (fd == -1) return 0;
+  if (fd == BADFD) return 0;
   if (read_all_fd(fd, buf, maxlen, &gotall) == -1) {
     perror("Trouble reading.");
     D("read error lk(%s)", logkey);
-    close(fd);
+    close_file(fd, logkey);
     buf[maxlen-1] = 0;
     return 0;
   }
-  close(fd);
+  close_file(fd, logkey);
   buf[MIN(gotall, maxlen-1)] = 0;  /* nul terminate */
   return gotall;
 }
 
 /* Called by:  main, write2_or_append_lock_c_path x4, zxid_curl_write_data, zxid_put_ses, zxid_send_sp_meta, zxid_snarf_eprs_from_ses x2, zxid_write_ent_to_cache */
-int write_all_fd(int fd, char* p, int pending)
+int write_all_fd(fdtype fd, char* p, int pending)
 {
 #ifdef MINGW
   DWORD wrote;
-  if (!fd || !pending || !p) return 0;  
-  if (!WriteFile((HANDLE)fd, p, pending, &wrote, 0))
+  if (fd == BADFD || !pending || !p) return 0;  
+  if (!WriteFile(fd, p, pending, &wrote, 0))
     return 0;
-  FlushFileBuffers((HANDLE)fd);
+  FlushFileBuffers(fd);
   D("write_all_fd(%x, `%.*s', %d) wrote=%d\n", fd, pending, p, pending, wrote);
 #else
   int wrote;
-  if ((fd < 0) || !pending || !p) return 0;
+  if ((fd == BADFD) || !pending || !p) return 0;
   while (pending) {
     wrote = write(fd, p, pending);
     if (wrote <= 0) return 0;
@@ -171,20 +195,49 @@ int write_all_fd(int fd, char* p, int pending)
   return 1;
 }
 
+int write_all_path_fmt(char* logkey, int len, char* buf, char* path_fmt, char* prepath, char* postpath, char* data_fmt, ...)
+{
+  va_list ap;
+  fdtype fd;
+#ifdef MINGW
+  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, logkey, path_fmt, prepath, postpath);
+#else
+  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, logkey, path_fmt, prepath, postpath);
+#endif
+  D("write_all_path_fmt(%s, %x)\n", logkey, fd);
+  if (fd == BADFD) return 0;
+  
+  va_start(ap, data_fmt);
+  len = vsnprintf(buf, len, data_fmt, ap);
+  va_end(ap);
+  if (len < 0) {
+    perror("vsnprintf");
+    D("%s, Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", logkey, len);
+    len = 0;
+  }
+  if (write_all_fd(fd, buf, len) == -1) {
+    perror("Trouble writing");
+    close_file(fd, logkey);
+    return 0;
+  }
+  close_file(fd, logkey);
+  return 1;
+}
+
 /* Called by:  zxlog_blob, zxlog_write_line x2 */
 int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, char* data2,
-				 CU8* which,  /* log key */
+				 const char* which,  /* log key */
 				 int seeky,   /* SEEK_END, O_APPEND == append */
 				 int flag)    /* SEEK_SET, O_TRUNC  == overwrite */
 {
-  int fd;
+  fdtype fd;
   if (!c_path)
     return 0;
 #ifdef MINGW
-  fd = CreateFile(c_path, MINGW_RW_PERM, 0 /* 0  means no sharing allowed */, 0 /* security */,
+  fd = CreateFile(c_path, MINGW_RW_PERM, /*0*/FILE_SHARE_READ | FILE_SHARE_WRITE /* 0  means no sharing allowed */, 0 /* security */,
 		  (flag == O_APPEND) ? OPEN_ALWAYS : CREATE_ALWAYS /* truncates, too? */,
 		  FILE_ATTRIBUTE_NORMAL, 0);
-  if (!fd) goto badopen;
+  if (fd == BADFD) goto badopen;
   if (flag == O_APPEND) {
     MS_LONG zero = 0;
     SetFilePointer(fd, 0, &zero, FILE_END);  /* seek to end */
@@ -193,29 +246,23 @@ int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, 
   if (len1 && data1) {
     if (!write_all_fd(fd, data1, len1)) {
       ERR("%s: Writing to file `%s' %d bytes failed: %d %s. Check permissions and disk space.", which, c_path, len1, errno, STRERROR(errno));
-      close(fd);
+      close_file(fd, which);
       return 0;
     }
   }
   if (len2 && data2) {
     if (!write_all_fd(fd, data2, len2)) {
       ERR("%s: Writing to file `%s' %d bytes failed: %d %s. Check permissions and disk space.", which, c_path, len2, errno, STRERROR(errno));
-      close(fd);
+      close_file(fd, which);
       return 0;
     }
   }
 #else
   fd = open(c_path, O_WRONLY | O_CREAT | flag, 0666);
-  if (fd == -1) goto badopen;
-  if (
-#ifdef USE_LOCK
-      flock(fd, LOCK_EX)
-#else
-      lockf(fd, F_LOCK, 0)
-#endif
-      == -1) {
+  if (fd == BADFD) goto badopen;
+  if (FLOCKEX(fd)  == -1) {
     ERR("%s: Locking exclusively file `%s' failed: %d %s. Check permissions and that the file system supports locking.", which, c_path, errno, STRERROR(errno));
-    close(fd);
+    close_file(fd, which);
     return 0;
   }
   
@@ -223,12 +270,8 @@ int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, 
   if (len1 && data1) {
     if (!write_all_fd(fd, data1, len1)) {
       ERR("%s: Writing to file(%s) %d bytes failed: %d %s. Check permissions and disk space.", which, c_path, len1, errno, STRERROR(errno));
-#ifdef USE_LOCK
-      flock(fd, LOCK_UN);
-#else
-      lockf(fd, F_ULOCK, 0);
-#endif
-      close(fd);
+      FUNLOCK(fd);
+      close_file(fd, which);
       return 0;
     }
   }
@@ -241,7 +284,7 @@ int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, 
 #else
       lockf(fd, F_ULOCK, 0);
 #endif
-      close(fd);
+      close_file(fd, which);
       return 0;
     }
   }
@@ -252,7 +295,7 @@ int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, 
   lockf(fd, F_ULOCK, 0);
 #endif
 #endif
-  if (close(fd) < 0) {
+  if (close_file(fd, which) < 0) {
     ERR("%s: closing file(%s) after write failed: %d %s. Check permissions and disk space. Could be NFS problem.", which, c_path, errno, STRERROR(errno));
     return 0;
   }
@@ -260,6 +303,16 @@ int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, 
 badopen:
   ERR("%s: Opening file(%s) for writing failed: %d %s. Check permissions.", which, c_path, errno, STRERROR(errno));
   return 0;
+}
+
+int close_file(fdtype fd, const char* logkey)
+{
+  int res = closefile(fd);
+  if (res) {
+    perror("close file");
+    D("%s: Errors on closing file, after write, could indicate write back cache problems, especially under NFS. Ignoring the error.", logkey);
+  }
+  return res;
 }
 
 /* Called by:  hexdmp, zxsig_data_rsa_sha1 x2, zxsig_verify_data_rsa_sha1 x3 */
@@ -324,7 +377,7 @@ char safe_basis_64[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 char* base64_fancy_raw(char* p, int len,  /* input and its length */
 		       char* r,           /* Output buffer. Will not be NUL terminated. */
 		       char* basis_64,    /* The 64 character alphabet to be used, see above. */
-		       int line_len,      /* Length of each line. 76 is cusomary. */
+		       int line_len,      /* Length of each line. 76 is customary. */
 		       int eol_len,       /* Length of End-of-Line string. */
 		       char* eol,         /* End-of-Line string, inserted every line_len. */
 		       char eq_pad)       /* Padding character, usually equals (=) */
@@ -405,10 +458,10 @@ unsigned char zx_std_index_64[256] = {
 /*! Raw version. Can use any decoding table, but also assumes r has been allocated
  * to correct length. Is able to perform the operation in place, i.e. p and r can
  * point to the same buffer. Both canonical and safe base64 are handled.
- * Returns pointer one past last output char written. */
+ * Returns pointer one past last output char written. Does not nul term. */
 
 /* Called by:  main x5, zxid_extract_cert, zxid_extract_private_key, zxid_process_keys, zxid_sp_deref_art, zxid_sp_dispatch, zxid_sp_dispatch_location, zxsig_validate x2 */
-char* unbase64_raw(char* p, char* lim, char* r, char* index_64)
+char* unbase64_raw(char* p, char* lim, char* r, unsigned char* index_64)
 {
   int i;
   unsigned char c[4];
@@ -481,7 +534,7 @@ char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, char* in, int* out_len)
   z.zalloc = zx_zlib_zalloc;
   z.zfree = zx_zlib_zfree;
   z.opaque = c;
-  z.next_in = in;
+  z.next_in = (unsigned char*)in;
   z.avail_in = in_len;
   ret = deflateInit2(&z, 9, Z_DEFLATED, -15, 9, Z_DEFAULT_STRATEGY);
   if (ret != Z_OK) {
@@ -491,7 +544,7 @@ char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, char* in, int* out_len)
   
   dlen = in_len + (in_len >> 8) + 12;  /* orig_size * 1.001 + 12 */
   out = ZX_ALLOC(c, dlen);
-  z.next_out = out;
+  z.next_out = (unsigned char*)out;
   z.avail_out = dlen;
   
   ret = deflate(&z, Z_FINISH);
@@ -517,12 +570,12 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, char* in, int* out_len)
   z.zalloc = zx_zlib_zalloc;
   z.zfree = zx_zlib_zfree;
   z.opaque = c;
-  z.next_in = in;
+  z.next_in = (unsigned char*)in;
   z.avail_in = in_len;
   
   dlen = in_len << 3;  /* guess inflated size: orig_size * 8 */
   out = ZX_ALLOC(c, dlen);
-  z.next_out = out;
+  z.next_out = (unsigned char*)out;
   z.avail_out = dlen;
   
   ret = inflateInit2(&z, -15);
@@ -549,12 +602,12 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, char* in, int* out_len)
       old_out = out;
       out = ZX_ALLOC(c, dlen);
       memcpy(out, old_out, ret);
-      z.next_out = out + ret;
+      z.next_out = (unsigned char*)out + ret;
       z.avail_out = dlen - ret;
       break;
     default:
       inflateEnd(&z);
-      ERR("zlib inflate failed with error code %d. Most probably the input data is empty, corrupt, or not in zlib or gzip format.", ret);
+      ERR("zlib inflate failed with error code %d. Most probably the input data is empty, corrupt, or not in RFC1951 (zlib) format.", ret);
       return 0;
     }
   }
@@ -585,7 +638,7 @@ int zx_url_encode_len(int in_len, char* in)
 }
 
 /* Called by:  zx_url_encode, zxid_saml2_redir_enc x2 */
-void zx_url_encode_raw(int in_len, char* in, char* out)
+char* zx_url_encode_raw(int in_len, char* in, char* out)
 {
   char* lim;
   for (lim = in+in_len; in < lim; ++in)
@@ -595,6 +648,7 @@ void zx_url_encode_raw(int in_len, char* in, char* out)
       *out++ = HEX_DIGIT(*in & 0x0f);
     } else
       *out++ = *in;
+  return out;
 }
 
 /* Called by: */

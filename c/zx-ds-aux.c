@@ -515,6 +515,14 @@ void zx_FREE_ds_KeyInfo(struct zx_ctx* c, struct zx_ds_KeyInfo_s* x, int free_st
       }
   }
   zx_free_simple_elems(c, x->MgmtData, free_strs);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      struct zx_xenc_EncryptedKey_s* en;
+      for (e = x->EncryptedKey; e; e = en) {
+	  en = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n;
+	  zx_FREE_xenc_EncryptedKey(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -578,6 +586,11 @@ void zx_DUP_STRS_ds_KeyInfo(struct zx_ctx* c, struct zx_ds_KeyInfo_s* x)
 	  zx_DUP_STRS_ds_SPKIData(c, e);
   }
   zx_dup_strs_simple_elems(c, x->MgmtData);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n)
+	  zx_DUP_STRS_xenc_EncryptedKey(c, e);
+  }
 
 }
 
@@ -661,6 +674,19 @@ struct zx_ds_KeyInfo_s* zx_DEEP_CLONE_ds_KeyInfo(struct zx_ctx* c, struct zx_ds_
       }
   }
   x->MgmtData = zx_deep_clone_simple_elems(c,x->MgmtData, dup_strs);
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      struct zx_xenc_EncryptedKey_s* en;
+      struct zx_xenc_EncryptedKey_s* enn;
+      for (enn = 0, e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xenc_EncryptedKey(c, e, dup_strs);
+	  if (!enn)
+	      x->EncryptedKey = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -729,6 +755,14 @@ int zx_WALK_SO_ds_KeyInfo(struct zx_ctx* c, struct zx_ds_KeyInfo_s* x, void* ctx
   ret = zx_walk_so_simple_elems(c, x->MgmtData, ctx, callback);
   if (ret)
     return ret;
+  {
+      struct zx_xenc_EncryptedKey_s* e;
+      for (e = x->EncryptedKey; e; e = (struct zx_xenc_EncryptedKey_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xenc_EncryptedKey(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
 
   
   return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);
@@ -1124,9 +1158,9 @@ void zx_FREE_ds_Object(struct zx_ctx* c, struct zx_ds_Object_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->Encoding, free_strs);
   zx_free_attr(c, x->Id, free_strs);
   zx_free_attr(c, x->MimeType, free_strs);
-  zx_free_attr(c, x->Encoding, free_strs);
 
 
 
@@ -1162,9 +1196,9 @@ void zx_DUP_STRS_ds_Object(struct zx_ctx* c, struct zx_ds_Object_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->Encoding);
   zx_dup_attr(c, x->Id);
   zx_dup_attr(c, x->MimeType);
-  zx_dup_attr(c, x->Encoding);
 
 
 }
@@ -1180,9 +1214,9 @@ struct zx_ds_Object_s* zx_DEEP_CLONE_ds_Object(struct zx_ctx* c, struct zx_ds_Ob
   x = (struct zx_ds_Object_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ds_Object_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->Encoding = zx_clone_attr(c, x->Encoding);
   x->Id = zx_clone_attr(c, x->Id);
   x->MimeType = zx_clone_attr(c, x->MimeType);
-  x->Encoding = zx_clone_attr(c, x->Encoding);
 
 
   return x;
@@ -1521,8 +1555,8 @@ void zx_FREE_ds_Reference(struct zx_ctx* c, struct zx_ds_Reference_s* x, int fre
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->Id, free_strs);
-  zx_free_attr(c, x->URI, free_strs);
   zx_free_attr(c, x->Type, free_strs);
+  zx_free_attr(c, x->URI, free_strs);
 
   {
       struct zx_ds_Transforms_s* e;
@@ -1576,8 +1610,8 @@ void zx_DUP_STRS_ds_Reference(struct zx_ctx* c, struct zx_ds_Reference_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->Id);
-  zx_dup_attr(c, x->URI);
   zx_dup_attr(c, x->Type);
+  zx_dup_attr(c, x->URI);
 
   {
       struct zx_ds_Transforms_s* e;
@@ -1605,8 +1639,8 @@ struct zx_ds_Reference_s* zx_DEEP_CLONE_ds_Reference(struct zx_ctx* c, struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->Id = zx_clone_attr(c, x->Id);
-  x->URI = zx_clone_attr(c, x->URI);
   x->Type = zx_clone_attr(c, x->Type);
+  x->URI = zx_clone_attr(c, x->URI);
 
   {
       struct zx_ds_Transforms_s* e;
@@ -1724,8 +1758,8 @@ void zx_FREE_ds_RetrievalMethod(struct zx_ctx* c, struct zx_ds_RetrievalMethod_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->URI, free_strs);
   zx_free_attr(c, x->Type, free_strs);
+  zx_free_attr(c, x->URI, free_strs);
 
   {
       struct zx_ds_Transforms_s* e;
@@ -1769,8 +1803,8 @@ void zx_DUP_STRS_ds_RetrievalMethod(struct zx_ctx* c, struct zx_ds_RetrievalMeth
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->URI);
   zx_dup_attr(c, x->Type);
+  zx_dup_attr(c, x->URI);
 
   {
       struct zx_ds_Transforms_s* e;
@@ -1791,8 +1825,8 @@ struct zx_ds_RetrievalMethod_s* zx_DEEP_CLONE_ds_RetrievalMethod(struct zx_ctx* 
   x = (struct zx_ds_RetrievalMethod_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ds_RetrievalMethod_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->URI = zx_clone_attr(c, x->URI);
   x->Type = zx_clone_attr(c, x->Type);
+  x->URI = zx_clone_attr(c, x->URI);
 
   {
       struct zx_ds_Transforms_s* e;
@@ -2560,8 +2594,8 @@ void zx_FREE_ds_SignatureProperty(struct zx_ctx* c, struct zx_ds_SignatureProper
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Target, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->Target, free_strs);
 
 
 
@@ -2597,8 +2631,8 @@ void zx_DUP_STRS_ds_SignatureProperty(struct zx_ctx* c, struct zx_ds_SignaturePr
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Target);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->Target);
 
 
 }
@@ -2614,8 +2648,8 @@ struct zx_ds_SignatureProperty_s* zx_DEEP_CLONE_ds_SignatureProperty(struct zx_c
   x = (struct zx_ds_SignatureProperty_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ds_SignatureProperty_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Target = zx_clone_attr(c, x->Target);
   x->Id = zx_clone_attr(c, x->Id);
+  x->Target = zx_clone_attr(c, x->Target);
 
 
   return x;

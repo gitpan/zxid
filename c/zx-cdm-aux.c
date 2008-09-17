@@ -662,10 +662,10 @@ void zx_FREE_cdm_BDAY(struct zx_ctx* c, struct zx_cdm_BDAY_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -702,10 +702,10 @@ void zx_DUP_STRS_cdm_BDAY(struct zx_ctx* c, struct zx_cdm_BDAY_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -722,10 +722,10 @@ struct zx_cdm_BDAY_s* zx_DEEP_CLONE_cdm_BDAY(struct zx_ctx* c, struct zx_cdm_BDA
   x = (struct zx_cdm_BDAY_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_BDAY_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -798,10 +798,10 @@ void zx_FREE_cdm_BINVAL(struct zx_ctx* c, struct zx_cdm_BINVAL_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -838,10 +838,10 @@ void zx_DUP_STRS_cdm_BINVAL(struct zx_ctx* c, struct zx_cdm_BINVAL_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -858,10 +858,10 @@ struct zx_cdm_BINVAL_s* zx_DEEP_CLONE_cdm_BINVAL(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_BINVAL_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_BINVAL_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -934,10 +934,10 @@ void zx_FREE_cdm_CALADRURI(struct zx_ctx* c, struct zx_cdm_CALADRURI_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
   zx_free_simple_elems(c, x->PREF, free_strs);
@@ -983,10 +983,10 @@ void zx_DUP_STRS_cdm_CALADRURI(struct zx_ctx* c, struct zx_cdm_CALADRURI_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
   zx_dup_strs_simple_elems(c, x->PREF);
@@ -1009,10 +1009,10 @@ struct zx_cdm_CALADRURI_s* zx_DEEP_CLONE_cdm_CALADRURI(struct zx_ctx* c, struct 
   x = (struct zx_cdm_CALADRURI_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_CALADRURI_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
   x->PREF = zx_deep_clone_simple_elems(c,x->PREF, dup_strs);
@@ -1110,10 +1110,10 @@ void zx_FREE_cdm_CALURI(struct zx_ctx* c, struct zx_cdm_CALURI_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
   zx_free_simple_elems(c, x->PREF, free_strs);
@@ -1159,10 +1159,10 @@ void zx_DUP_STRS_cdm_CALURI(struct zx_ctx* c, struct zx_cdm_CALURI_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
   zx_dup_strs_simple_elems(c, x->PREF);
@@ -1185,10 +1185,10 @@ struct zx_cdm_CALURI_s* zx_DEEP_CLONE_cdm_CALURI(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_CALURI_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_CALURI_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
   x->PREF = zx_deep_clone_simple_elems(c,x->PREF, dup_strs);
@@ -1286,10 +1286,10 @@ void zx_FREE_cdm_CAPURI(struct zx_ctx* c, struct zx_cdm_CAPURI_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
   zx_free_simple_elems(c, x->PREF, free_strs);
@@ -1335,10 +1335,10 @@ void zx_DUP_STRS_cdm_CAPURI(struct zx_ctx* c, struct zx_cdm_CAPURI_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
   zx_dup_strs_simple_elems(c, x->PREF);
@@ -1361,10 +1361,10 @@ struct zx_cdm_CAPURI_s* zx_DEEP_CLONE_cdm_CAPURI(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_CAPURI_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_CAPURI_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
   x->PREF = zx_deep_clone_simple_elems(c,x->PREF, dup_strs);
@@ -1623,10 +1623,10 @@ void zx_FREE_cdm_CLASS(struct zx_ctx* c, struct zx_cdm_CLASS_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
   zx_free_simple_elems(c, x->PUBLIC, free_strs);
@@ -1666,10 +1666,10 @@ void zx_DUP_STRS_cdm_CLASS(struct zx_ctx* c, struct zx_cdm_CLASS_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
   zx_dup_strs_simple_elems(c, x->PUBLIC);
@@ -1689,10 +1689,10 @@ struct zx_cdm_CLASS_s* zx_DEEP_CLONE_cdm_CLASS(struct zx_ctx* c, struct zx_cdm_C
   x = (struct zx_cdm_CLASS_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_CLASS_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
   x->PUBLIC = zx_deep_clone_simple_elems(c,x->PUBLIC, dup_strs);
@@ -1777,10 +1777,10 @@ void zx_FREE_cdm_CRED(struct zx_ctx* c, struct zx_cdm_CRED_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -1817,10 +1817,10 @@ void zx_DUP_STRS_cdm_CRED(struct zx_ctx* c, struct zx_cdm_CRED_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -1837,10 +1837,10 @@ struct zx_cdm_CRED_s* zx_DEEP_CLONE_cdm_CRED(struct zx_ctx* c, struct zx_cdm_CRE
   x = (struct zx_cdm_CRED_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_CRED_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -2476,10 +2476,10 @@ void zx_FREE_cdm_EXTVAL(struct zx_ctx* c, struct zx_cdm_EXTVAL_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -2516,10 +2516,10 @@ void zx_DUP_STRS_cdm_EXTVAL(struct zx_ctx* c, struct zx_cdm_EXTVAL_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -2536,10 +2536,10 @@ struct zx_cdm_EXTVAL_s* zx_DEEP_CLONE_cdm_EXTVAL(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_EXTVAL_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_EXTVAL_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -2736,10 +2736,10 @@ void zx_FREE_cdm_FBURL(struct zx_ctx* c, struct zx_cdm_FBURL_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
   zx_free_simple_elems(c, x->PREF, free_strs);
@@ -2785,10 +2785,10 @@ void zx_DUP_STRS_cdm_FBURL(struct zx_ctx* c, struct zx_cdm_FBURL_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
   zx_dup_strs_simple_elems(c, x->PREF);
@@ -2811,10 +2811,10 @@ struct zx_cdm_FBURL_s* zx_DEEP_CLONE_cdm_FBURL(struct zx_ctx* c, struct zx_cdm_F
   x = (struct zx_cdm_FBURL_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_FBURL_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
   x->PREF = zx_deep_clone_simple_elems(c,x->PREF, dup_strs);
@@ -3355,10 +3355,10 @@ void zx_FREE_cdm_JABBERID(struct zx_ctx* c, struct zx_cdm_JABBERID_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -3395,10 +3395,10 @@ void zx_DUP_STRS_cdm_JABBERID(struct zx_ctx* c, struct zx_cdm_JABBERID_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -3415,10 +3415,10 @@ struct zx_cdm_JABBERID_s* zx_DEEP_CLONE_cdm_JABBERID(struct zx_ctx* c, struct zx
   x = (struct zx_cdm_JABBERID_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_JABBERID_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -3680,10 +3680,10 @@ void zx_FREE_cdm_KEYWORD(struct zx_ctx* c, struct zx_cdm_KEYWORD_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -3720,10 +3720,10 @@ void zx_DUP_STRS_cdm_KEYWORD(struct zx_ctx* c, struct zx_cdm_KEYWORD_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -3740,10 +3740,10 @@ struct zx_cdm_KEYWORD_s* zx_DEEP_CLONE_cdm_KEYWORD(struct zx_ctx* c, struct zx_c
   x = (struct zx_cdm_KEYWORD_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_KEYWORD_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -4019,10 +4019,10 @@ void zx_FREE_cdm_LAT(struct zx_ctx* c, struct zx_cdm_LAT_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -4059,10 +4059,10 @@ void zx_DUP_STRS_cdm_LAT(struct zx_ctx* c, struct zx_cdm_LAT_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -4079,10 +4079,10 @@ struct zx_cdm_LAT_s* zx_DEEP_CLONE_cdm_LAT(struct zx_ctx* c, struct zx_cdm_LAT_s
   x = (struct zx_cdm_LAT_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_LAT_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -4279,10 +4279,10 @@ void zx_FREE_cdm_LISTMEMBER(struct zx_ctx* c, struct zx_cdm_LISTMEMBER_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -4319,10 +4319,10 @@ void zx_DUP_STRS_cdm_LISTMEMBER(struct zx_ctx* c, struct zx_cdm_LISTMEMBER_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -4339,10 +4339,10 @@ struct zx_cdm_LISTMEMBER_s* zx_DEEP_CLONE_cdm_LISTMEMBER(struct zx_ctx* c, struc
   x = (struct zx_cdm_LISTMEMBER_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_LISTMEMBER_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -4768,10 +4768,10 @@ void zx_FREE_cdm_LON(struct zx_ctx* c, struct zx_cdm_LON_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -4808,10 +4808,10 @@ void zx_DUP_STRS_cdm_LON(struct zx_ctx* c, struct zx_cdm_LON_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -4828,10 +4828,10 @@ struct zx_cdm_LON_s* zx_DEEP_CLONE_cdm_LON(struct zx_ctx* c, struct zx_cdm_LON_s
   x = (struct zx_cdm_LON_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_LON_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -4904,10 +4904,10 @@ void zx_FREE_cdm_MAILER(struct zx_ctx* c, struct zx_cdm_MAILER_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -4944,10 +4944,10 @@ void zx_DUP_STRS_cdm_MAILER(struct zx_ctx* c, struct zx_cdm_MAILER_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -4964,10 +4964,10 @@ struct zx_cdm_MAILER_s* zx_DEEP_CLONE_cdm_MAILER(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_MAILER_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_MAILER_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -5709,10 +5709,10 @@ void zx_FREE_cdm_NUMBER(struct zx_ctx* c, struct zx_cdm_NUMBER_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -5749,10 +5749,10 @@ void zx_DUP_STRS_cdm_NUMBER(struct zx_ctx* c, struct zx_cdm_NUMBER_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -5769,10 +5769,10 @@ struct zx_cdm_NUMBER_s* zx_DEEP_CLONE_cdm_NUMBER(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_NUMBER_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_NUMBER_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -7137,10 +7137,10 @@ void zx_FREE_cdm_PRODID(struct zx_ctx* c, struct zx_cdm_PRODID_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -7177,10 +7177,10 @@ void zx_DUP_STRS_cdm_PRODID(struct zx_ctx* c, struct zx_cdm_PRODID_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -7197,10 +7197,10 @@ struct zx_cdm_PRODID_s* zx_DEEP_CLONE_cdm_PRODID(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_PRODID_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_PRODID_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -7397,10 +7397,10 @@ void zx_FREE_cdm_REV(struct zx_ctx* c, struct zx_cdm_REV_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -7437,10 +7437,10 @@ void zx_DUP_STRS_cdm_REV(struct zx_ctx* c, struct zx_cdm_REV_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -7457,10 +7457,10 @@ struct zx_cdm_REV_s* zx_DEEP_CLONE_cdm_REV(struct zx_ctx* c, struct zx_cdm_REV_s
   x = (struct zx_cdm_REV_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_REV_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -8621,10 +8621,10 @@ void zx_FREE_cdm_TYPE(struct zx_ctx* c, struct zx_cdm_TYPE_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -8661,10 +8661,10 @@ void zx_DUP_STRS_cdm_TYPE(struct zx_ctx* c, struct zx_cdm_TYPE_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -8681,10 +8681,10 @@ struct zx_cdm_TYPE_s* zx_DEEP_CLONE_cdm_TYPE(struct zx_ctx* c, struct zx_cdm_TYP
   x = (struct zx_cdm_TYPE_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_TYPE_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -8757,10 +8757,10 @@ void zx_FREE_cdm_TZ(struct zx_ctx* c, struct zx_cdm_TZ_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -8797,10 +8797,10 @@ void zx_DUP_STRS_cdm_TZ(struct zx_ctx* c, struct zx_cdm_TZ_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -8817,10 +8817,10 @@ struct zx_cdm_TZ_s* zx_DEEP_CLONE_cdm_TZ(struct zx_ctx* c, struct zx_cdm_TZ_s* x
   x = (struct zx_cdm_TZ_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_TZ_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -8893,10 +8893,10 @@ void zx_FREE_cdm_UID(struct zx_ctx* c, struct zx_cdm_UID_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -8933,10 +8933,10 @@ void zx_DUP_STRS_cdm_UID(struct zx_ctx* c, struct zx_cdm_UID_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -8953,10 +8953,10 @@ struct zx_cdm_UID_s* zx_DEEP_CLONE_cdm_UID(struct zx_ctx* c, struct zx_cdm_UID_s
   x = (struct zx_cdm_UID_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_UID_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -9029,10 +9029,10 @@ void zx_FREE_cdm_URI(struct zx_ctx* c, struct zx_cdm_URI_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -9069,10 +9069,10 @@ void zx_DUP_STRS_cdm_URI(struct zx_ctx* c, struct zx_cdm_URI_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -9089,10 +9089,10 @@ struct zx_cdm_URI_s* zx_DEEP_CLONE_cdm_URI(struct zx_ctx* c, struct zx_cdm_URI_s
   x = (struct zx_cdm_URI_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_URI_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -9165,10 +9165,10 @@ void zx_FREE_cdm_URL(struct zx_ctx* c, struct zx_cdm_URL_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -9205,10 +9205,10 @@ void zx_DUP_STRS_cdm_URL(struct zx_ctx* c, struct zx_cdm_URL_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -9225,10 +9225,10 @@ struct zx_cdm_URL_s* zx_DEEP_CLONE_cdm_URL(struct zx_ctx* c, struct zx_cdm_URL_s
   x = (struct zx_cdm_URL_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_URL_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -9301,10 +9301,10 @@ void zx_FREE_cdm_USERID(struct zx_ctx* c, struct zx_cdm_USERID_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -9341,10 +9341,10 @@ void zx_DUP_STRS_cdm_USERID(struct zx_ctx* c, struct zx_cdm_USERID_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -9361,10 +9361,10 @@ struct zx_cdm_USERID_s* zx_DEEP_CLONE_cdm_USERID(struct zx_ctx* c, struct zx_cdm
   x = (struct zx_cdm_USERID_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_USERID_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 
@@ -9437,10 +9437,10 @@ void zx_FREE_cdm_VERSION(struct zx_ctx* c, struct zx_cdm_VERSION_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -9477,10 +9477,10 @@ void zx_DUP_STRS_cdm_VERSION(struct zx_ctx* c, struct zx_cdm_VERSION_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -9497,10 +9497,10 @@ struct zx_cdm_VERSION_s* zx_DEEP_CLONE_cdm_VERSION(struct zx_ctx* c, struct zx_c
   x = (struct zx_cdm_VERSION_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cdm_VERSION_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 

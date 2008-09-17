@@ -1,8 +1,51 @@
 # zxid/Changes
-# $Id: Changes,v 1.9 2007-08-10 19:19:10 sampo Exp $
+# $Id: Changes,v 1.20 2008-05-26 15:28:44 sampo Exp $
 # Change log, minor credits, and release history
 
-zxid-0.18:: 17.7.2007 PEND
+zxid-0.27:: 20.5.2008
+    - Added BSDmakefile hack, suggested by Slaven Rezic (slaven at rezic.de)
+    - Added NON_STANDARD_ENTITYID option
+    - Added precheck to quickly check main compliation and linking problems
+zxid-0.26:: 9.5.2008
+    - Fixed Auto-CoT bug due to form field name conflict
+    - Added missing .java files to Manifest
+zxid-0.25:: 17.4.2008
+    - Added support for SAML POST-SimpleSign binding
+    - Added preliminary draft support for Orange Personal APIs
+    - Added default-cot - ship metadata for some IdPs
+    - Updated documentation about joining OpenLiberty.org
+zxid-0.24:: 22.2.2008
+    - Added mod_auth_saml
+    - Many fixes from testing against commercial products
+zxid-0.23:: 12.10.2007
+    - Support MNI to change NameID
+    - Support EncryptedID on outbound traffic (MNI, SLO)
+zxid-0.22:: 10.10.2007
+    - Added log levels 1 and 2
+    - Added @Destination handling
+    - Ensured preservation of whitespace in XML parsing and exc-xml-canon
+    - Fixed alphabetization of attributes in exc-xml-canon
+    - Added signing ArtifactResolve, LogoutRequest, and ManageNameIDRequest over SOAP
+    - Improved handling of empty ns prefix for XML attributes
+    - Print source IP to logs
+zxid-0.21:: 8.10.2007
+    - Fixed missing Content-type header, reported by Damien Laniel <dlaniel@@entrouvert_com>
+    - Segregated prototypes that use va_list to zxidnoswig.h to avoid problem on Redhat
+    - Created cygwin target
+    - Changed the USE_LOCK handling to allow dummy on cygwin
+    - Fixed MGMT auto flag
+    - Fixed handling of InclusiveNamespaces/@PrefixList
+zxid-0.20:: 1.10.2007
+    - EncryptedAssertion, EncryptedAttribute, and EncryptedID support
+    - Fixed signing of redirect URLs
+    - Fixed indigestion over processing instructions and comments
+    - Fixed encoding of attribute namespaces
+    - Added xs and xsi namespaces
+    - Fixed lookup of attribute tokens without namespace (mismatching id symptom)
+zxid-0.19:: 11.8.2007
+    - fixed php support
+    - bug and documentation fixes
+zxid-0.18:: 17.7.2007
     - Added HR-XML WSC and WSP support
     - Much stabilization of ID-WSF code
 zxid-0.17:: 6.3.2007

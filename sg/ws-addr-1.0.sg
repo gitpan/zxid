@@ -1,7 +1,7 @@
 # zxid/sg/ws-addr-1.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
 # 6.2.2007, Added Discovery specifics to the Metadata --Sampo
-# $Id: ws-addr-1.0.sg,v 1.7 2007/02/24 07:50:46 sampo Exp $
+# $Id: ws-addr-1.0.sg,v 1.9 2007-09-30 05:10:03 sampo Exp $
 
 target(a, http://www.w3.org/2005/08/addressing)
 #t arget(a, http://schemas.xmlsoap.org/ws/2004/08/addressing)  # used by WS Federation?
@@ -9,11 +9,14 @@ import(di,  urn:liberty:disco:2006-08, liberty-idwsf-disco-svc-v2.0.xsd)
 import(e,   http://schemas.xmlsoap.org/soap/envelope/)
 import(wsu, http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd,wss-util-1.0.xsd)
 ns(sbf,     urn:liberty:sb)
+ns(b,       urn:liberty:sb:2006-08)
 
 &@hdrs:
   @wsu:Id?
   @e:mustUnderstand?
   @e:actor?
+  @id?	 -> %xs:anyURI
+  @ID?	 -> %xs:anyURI
   ;
 
 EndpointReference	 -> %a:EndpointReferenceType
@@ -30,6 +33,7 @@ EndpointReference	 -> %a:EndpointReferenceType
 ReferenceParameters	 -> %a:ReferenceParametersType
 %ReferenceParametersType:
   &@a:hdrs        # Added by Sampo
+  b:TargetIdentity*
   any*  processContents(lax)
   @any
   ;

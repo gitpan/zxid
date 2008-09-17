@@ -33,18 +33,18 @@
 struct zx_str* zx_sbf_Framework_GET_version(struct zx_sbf_Framework_s* x) { return x->version; }
 /* FUNC(zx_sbf_Framework_PUT_version) */
 void zx_sbf_Framework_PUT_version(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->version = y; }
-/* FUNC(zx_sbf_Framework_GET_mustUnderstand) */
-struct zx_str* zx_sbf_Framework_GET_mustUnderstand(struct zx_sbf_Framework_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_sbf_Framework_PUT_mustUnderstand) */
-void zx_sbf_Framework_PUT_mustUnderstand(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_sbf_Framework_GET_actor) */
-struct zx_str* zx_sbf_Framework_GET_actor(struct zx_sbf_Framework_s* x) { return x->actor; }
-/* FUNC(zx_sbf_Framework_PUT_actor) */
-void zx_sbf_Framework_PUT_actor(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_sbf_Framework_GET_Id) */
 struct zx_str* zx_sbf_Framework_GET_Id(struct zx_sbf_Framework_s* x) { return x->Id; }
 /* FUNC(zx_sbf_Framework_PUT_Id) */
 void zx_sbf_Framework_PUT_Id(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_sbf_Framework_GET_actor) */
+struct zx_str* zx_sbf_Framework_GET_actor(struct zx_sbf_Framework_s* x) { return x->actor; }
+/* FUNC(zx_sbf_Framework_PUT_actor) */
+void zx_sbf_Framework_PUT_actor(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_sbf_Framework_GET_mustUnderstand) */
+struct zx_str* zx_sbf_Framework_GET_mustUnderstand(struct zx_sbf_Framework_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_sbf_Framework_PUT_mustUnderstand) */
+void zx_sbf_Framework_PUT_mustUnderstand(struct zx_sbf_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

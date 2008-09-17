@@ -1068,9 +1068,9 @@ void zx_FREE_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x, int free_strs)
 
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->itemIDRef, free_strs);
+  zx_free_attr(c, x->nextOffset, free_strs);
   zx_free_attr(c, x->notSorted, free_strs);
   zx_free_attr(c, x->remaining, free_strs);
-  zx_free_attr(c, x->nextOffset, free_strs);
   zx_free_attr(c, x->setID, free_strs);
   zx_free_attr(c, x->changeFormat, free_strs);
 
@@ -1111,9 +1111,9 @@ void zx_DUP_STRS_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x)
 
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->itemIDRef);
+  zx_dup_attr(c, x->nextOffset);
   zx_dup_attr(c, x->notSorted);
   zx_dup_attr(c, x->remaining);
-  zx_dup_attr(c, x->nextOffset);
   zx_dup_attr(c, x->setID);
   zx_dup_attr(c, x->changeFormat);
 
@@ -1134,9 +1134,9 @@ struct zx_cb_Data_s* zx_DEEP_CLONE_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s
 
   x->id = zx_clone_attr(c, x->id);
   x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
+  x->nextOffset = zx_clone_attr(c, x->nextOffset);
   x->notSorted = zx_clone_attr(c, x->notSorted);
   x->remaining = zx_clone_attr(c, x->remaining);
-  x->nextOffset = zx_clone_attr(c, x->nextOffset);
   x->setID = zx_clone_attr(c, x->setID);
   x->changeFormat = zx_clone_attr(c, x->changeFormat);
 
@@ -3241,10 +3241,10 @@ void zx_FREE_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->endReason, free_strs);
+  zx_free_attr(c, x->expires, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->subscriptionID, free_strs);
-  zx_free_attr(c, x->expires, free_strs);
-  zx_free_attr(c, x->endReason, free_strs);
 
   {
       struct zx_cb_ItemData_s* e;
@@ -3288,10 +3288,10 @@ void zx_DUP_STRS_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->endReason);
+  zx_dup_attr(c, x->expires);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->subscriptionID);
-  zx_dup_attr(c, x->expires);
-  zx_dup_attr(c, x->endReason);
 
   {
       struct zx_cb_ItemData_s* e;
@@ -3312,10 +3312,10 @@ struct zx_cb_Notification_s* zx_DEEP_CLONE_cb_Notification(struct zx_ctx* c, str
   x = (struct zx_cb_Notification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cb_Notification_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->endReason = zx_clone_attr(c, x->endReason);
+  x->expires = zx_clone_attr(c, x->expires);
   x->id = zx_clone_attr(c, x->id);
   x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
-  x->expires = zx_clone_attr(c, x->expires);
-  x->endReason = zx_clone_attr(c, x->endReason);
 
   {
       struct zx_cb_ItemData_s* e;
@@ -4797,8 +4797,8 @@ void zx_FREE_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->subscriptionID, free_strs);
   zx_free_attr(c, x->ItemIDRef, free_strs);
+  zx_free_attr(c, x->subscriptionID, free_strs);
 
 
 
@@ -4834,8 +4834,8 @@ void zx_DUP_STRS_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->subscriptionID);
   zx_dup_attr(c, x->ItemIDRef);
+  zx_dup_attr(c, x->subscriptionID);
 
 
 }
@@ -4851,8 +4851,8 @@ struct zx_cb_RefItem_s* zx_DEEP_CLONE_cb_RefItem(struct zx_ctx* c, struct zx_cb_
   x = (struct zx_cb_RefItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cb_RefItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
   x->ItemIDRef = zx_clone_attr(c, x->ItemIDRef);
+  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
 
 
   return x;
@@ -5439,8 +5439,8 @@ void zx_FREE_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x, int free_strs
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->code, free_strs);
-  zx_free_attr(c, x->ref, free_strs);
   zx_free_attr(c, x->comment, free_strs);
+  zx_free_attr(c, x->ref, free_strs);
 
   {
       struct zx_cb_Status_s* e;
@@ -5485,8 +5485,8 @@ void zx_DUP_STRS_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->code);
-  zx_dup_attr(c, x->ref);
   zx_dup_attr(c, x->comment);
+  zx_dup_attr(c, x->ref);
 
   {
       struct zx_cb_Status_s* e;
@@ -5508,8 +5508,8 @@ struct zx_cb_Status_s* zx_DEEP_CLONE_cb_Status(struct zx_ctx* c, struct zx_cb_St
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->code = zx_clone_attr(c, x->code);
-  x->ref = zx_clone_attr(c, x->ref);
   x->comment = zx_clone_attr(c, x->comment);
+  x->ref = zx_clone_attr(c, x->ref);
 
   {
       struct zx_cb_Status_s* e;
@@ -5602,11 +5602,11 @@ void zx_FREE_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->starts, free_strs);
   zx_free_attr(c, x->expires, free_strs);
   zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->subscriptionID, free_strs);
   zx_free_attr(c, x->includeData, free_strs);
+  zx_free_attr(c, x->starts, free_strs);
+  zx_free_attr(c, x->subscriptionID, free_strs);
 
   {
       struct zx_cb_ItemSelection_s* e;
@@ -5684,11 +5684,11 @@ void zx_DUP_STRS_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->starts);
   zx_dup_attr(c, x->expires);
   zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->subscriptionID);
   zx_dup_attr(c, x->includeData);
+  zx_dup_attr(c, x->starts);
+  zx_dup_attr(c, x->subscriptionID);
 
   {
       struct zx_cb_ItemSelection_s* e;
@@ -5731,11 +5731,11 @@ struct zx_cb_Subscription_s* zx_DEEP_CLONE_cb_Subscription(struct zx_ctx* c, str
   x = (struct zx_cb_Subscription_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_cb_Subscription_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->starts = zx_clone_attr(c, x->starts);
   x->expires = zx_clone_attr(c, x->expires);
   x->id = zx_clone_attr(c, x->id);
-  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
   x->includeData = zx_clone_attr(c, x->includeData);
+  x->starts = zx_clone_attr(c, x->starts);
+  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
 
   {
       struct zx_cb_ItemSelection_s* e;
@@ -5921,10 +5921,10 @@ void zx_FREE_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x, int fre
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->success, free_strs);
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
 
 
@@ -5962,10 +5962,10 @@ void zx_DUP_STRS_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->success);
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
 
 
@@ -5983,10 +5983,10 @@ struct zx_cb_UsageType_s* zx_DEEP_CLONE_cb_UsageType(struct zx_ctx* c, struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->success = zx_clone_attr(c, x->success);
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
 
 

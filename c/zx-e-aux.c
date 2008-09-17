@@ -60,6 +60,7 @@ void zx_FREE_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_sp_ArtifactResolve_s* e;
@@ -1864,6 +1865,7 @@ void zx_DUP_STRS_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_sp_ArtifactResolve_s* e;
@@ -2985,6 +2987,7 @@ struct zx_e_Body_s* zx_DEEP_CLONE_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x
   x = (struct zx_e_Body_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_e_Body_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_sp_ArtifactResolve_s* e;
@@ -7701,6 +7704,7 @@ void zx_FREE_e_Envelope(struct zx_ctx* c, struct zx_e_Envelope_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_e_Header_s* e;
@@ -7752,6 +7756,7 @@ void zx_DUP_STRS_e_Envelope(struct zx_ctx* c, struct zx_e_Envelope_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_e_Header_s* e;
@@ -7777,6 +7782,7 @@ struct zx_e_Envelope_s* zx_DEEP_CLONE_e_Envelope(struct zx_ctx* c, struct zx_e_E
   x = (struct zx_e_Envelope_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_e_Envelope_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_e_Header_s* e;
@@ -8063,6 +8069,7 @@ void zx_FREE_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_paos_Request_s* e;
@@ -8362,6 +8369,7 @@ void zx_DUP_STRS_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_paos_Request_s* e;
@@ -8542,6 +8550,7 @@ struct zx_e_Header_s* zx_DEEP_CLONE_e_Header(struct zx_ctx* c, struct zx_e_Heade
   x = (struct zx_e_Header_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_e_Header_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_paos_Request_s* e;

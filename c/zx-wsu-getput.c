@@ -29,6 +29,14 @@
 #include "c/zx-data.h"
 #include "c/zx-wsu-data.h"
 
+/* FUNC(zx_wsu_Created_GET_ID) */
+struct zx_str* zx_wsu_Created_GET_ID(struct zx_wsu_Created_s* x) { return x->ID; }
+/* FUNC(zx_wsu_Created_PUT_ID) */
+void zx_wsu_Created_PUT_ID(struct zx_wsu_Created_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_wsu_Created_GET_id) */
+struct zx_str* zx_wsu_Created_GET_id(struct zx_wsu_Created_s* x) { return x->id; }
+/* FUNC(zx_wsu_Created_PUT_id) */
+void zx_wsu_Created_PUT_id(struct zx_wsu_Created_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_wsu_Created_GET_Id) */
 struct zx_str* zx_wsu_Created_GET_Id(struct zx_wsu_Created_s* x) { return x->Id; }
 /* FUNC(zx_wsu_Created_PUT_Id) */
@@ -38,6 +46,14 @@ void zx_wsu_Created_PUT_Id(struct zx_wsu_Created_s* x, struct zx_str* y) { x->Id
 
 
 
+/* FUNC(zx_wsu_Expires_GET_ID) */
+struct zx_str* zx_wsu_Expires_GET_ID(struct zx_wsu_Expires_s* x) { return x->ID; }
+/* FUNC(zx_wsu_Expires_PUT_ID) */
+void zx_wsu_Expires_PUT_ID(struct zx_wsu_Expires_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_wsu_Expires_GET_id) */
+struct zx_str* zx_wsu_Expires_GET_id(struct zx_wsu_Expires_s* x) { return x->id; }
+/* FUNC(zx_wsu_Expires_PUT_id) */
+void zx_wsu_Expires_PUT_id(struct zx_wsu_Expires_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_wsu_Expires_GET_Id) */
 struct zx_str* zx_wsu_Expires_GET_Id(struct zx_wsu_Expires_s* x) { return x->Id; }
 /* FUNC(zx_wsu_Expires_PUT_Id) */
@@ -315,6 +331,14 @@ void zx_wsu_Timestamp_DEL_Expires(struct zx_wsu_Timestamp_s* x, int n)
 
 #endif
 
+/* FUNC(zx_wsu_Timestamp_GET_ID) */
+struct zx_str* zx_wsu_Timestamp_GET_ID(struct zx_wsu_Timestamp_s* x) { return x->ID; }
+/* FUNC(zx_wsu_Timestamp_PUT_ID) */
+void zx_wsu_Timestamp_PUT_ID(struct zx_wsu_Timestamp_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_wsu_Timestamp_GET_id) */
+struct zx_str* zx_wsu_Timestamp_GET_id(struct zx_wsu_Timestamp_s* x) { return x->id; }
+/* FUNC(zx_wsu_Timestamp_PUT_id) */
+void zx_wsu_Timestamp_PUT_id(struct zx_wsu_Timestamp_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_wsu_Timestamp_GET_Id) */
 struct zx_str* zx_wsu_Timestamp_GET_Id(struct zx_wsu_Timestamp_s* x) { return x->Id; }
 /* FUNC(zx_wsu_Timestamp_PUT_Id) */

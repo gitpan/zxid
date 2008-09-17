@@ -42,6 +42,15 @@ public class zxid_entity {
     return (cPtr == 0) ? null : new zxid_entity(cPtr, false);
   }
 
+  public void setN_cdc(zxid_entity value) {
+    zxidjniJNI.zxid_entity_n_cdc_set(swigCPtr, zxid_entity.getCPtr(value));
+  }
+
+  public zxid_entity getN_cdc() {
+    long cPtr = zxidjniJNI.zxid_entity_n_cdc_get(swigCPtr);
+    return (cPtr == 0) ? null : new zxid_entity(cPtr, false);
+  }
+
   public void setEid_len(int value) {
     zxidjniJNI.zxid_entity_eid_len_set(swigCPtr, value);
   }

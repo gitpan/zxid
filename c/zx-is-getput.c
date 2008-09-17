@@ -2939,14 +2939,14 @@ void zx_is_Select_DEL_Item(struct zx_is_Select_s* x, int n)
 
 #endif
 
-/* FUNC(zx_is_Select_GET_name) */
-struct zx_str* zx_is_Select_GET_name(struct zx_is_Select_s* x) { return x->name; }
-/* FUNC(zx_is_Select_PUT_name) */
-void zx_is_Select_PUT_name(struct zx_is_Select_s* x, struct zx_str* y) { x->name = y; }
 /* FUNC(zx_is_Select_GET_multiple) */
 struct zx_str* zx_is_Select_GET_multiple(struct zx_is_Select_s* x) { return x->multiple; }
 /* FUNC(zx_is_Select_PUT_multiple) */
 void zx_is_Select_PUT_multiple(struct zx_is_Select_s* x, struct zx_str* y) { x->multiple = y; }
+/* FUNC(zx_is_Select_GET_name) */
+struct zx_str* zx_is_Select_GET_name(struct zx_is_Select_s* x) { return x->name; }
+/* FUNC(zx_is_Select_PUT_name) */
+void zx_is_Select_PUT_name(struct zx_is_Select_s* x, struct zx_str* y) { x->name = y; }
 
 
 
@@ -3488,22 +3488,22 @@ void zx_is_Text_DEL_Value(struct zx_is_Text_s* x, int n)
 
 #endif
 
-/* FUNC(zx_is_Text_GET_name) */
-struct zx_str* zx_is_Text_GET_name(struct zx_is_Text_s* x) { return x->name; }
-/* FUNC(zx_is_Text_PUT_name) */
-void zx_is_Text_PUT_name(struct zx_is_Text_s* x, struct zx_str* y) { x->name = y; }
-/* FUNC(zx_is_Text_GET_minChars) */
-struct zx_str* zx_is_Text_GET_minChars(struct zx_is_Text_s* x) { return x->minChars; }
-/* FUNC(zx_is_Text_PUT_minChars) */
-void zx_is_Text_PUT_minChars(struct zx_is_Text_s* x, struct zx_str* y) { x->minChars = y; }
-/* FUNC(zx_is_Text_GET_maxChars) */
-struct zx_str* zx_is_Text_GET_maxChars(struct zx_is_Text_s* x) { return x->maxChars; }
-/* FUNC(zx_is_Text_PUT_maxChars) */
-void zx_is_Text_PUT_maxChars(struct zx_is_Text_s* x, struct zx_str* y) { x->maxChars = y; }
 /* FUNC(zx_is_Text_GET_format) */
 struct zx_str* zx_is_Text_GET_format(struct zx_is_Text_s* x) { return x->format; }
 /* FUNC(zx_is_Text_PUT_format) */
 void zx_is_Text_PUT_format(struct zx_is_Text_s* x, struct zx_str* y) { x->format = y; }
+/* FUNC(zx_is_Text_GET_maxChars) */
+struct zx_str* zx_is_Text_GET_maxChars(struct zx_is_Text_s* x) { return x->maxChars; }
+/* FUNC(zx_is_Text_PUT_maxChars) */
+void zx_is_Text_PUT_maxChars(struct zx_is_Text_s* x, struct zx_str* y) { x->maxChars = y; }
+/* FUNC(zx_is_Text_GET_minChars) */
+struct zx_str* zx_is_Text_GET_minChars(struct zx_is_Text_s* x) { return x->minChars; }
+/* FUNC(zx_is_Text_PUT_minChars) */
+void zx_is_Text_PUT_minChars(struct zx_is_Text_s* x, struct zx_str* y) { x->minChars = y; }
+/* FUNC(zx_is_Text_GET_name) */
+struct zx_str* zx_is_Text_GET_name(struct zx_is_Text_s* x) { return x->name; }
+/* FUNC(zx_is_Text_PUT_name) */
+void zx_is_Text_PUT_name(struct zx_is_Text_s* x, struct zx_str* y) { x->name = y; }
 
 
 

@@ -323,15 +323,15 @@ struct zx_wsse_Security_s {
   struct zx_wsse_BinarySecurityToken_s* BinarySecurityToken;	/* {0,1} nada */
   struct zx_wsse_SecurityTokenReference_s* SecurityTokenReference;	/* {0,1} nada */
   struct zx_wsu_Timestamp_s* Timestamp;	/* {0,1} nada */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_wsse_Security_GET_mustUnderstand(struct zx_wsse_Security_s* x);
-struct zx_str* zx_wsse_Security_GET_actor(struct zx_wsse_Security_s* x);
 struct zx_str* zx_wsse_Security_GET_Id(struct zx_wsse_Security_s* x);
+struct zx_str* zx_wsse_Security_GET_actor(struct zx_wsse_Security_s* x);
+struct zx_str* zx_wsse_Security_GET_mustUnderstand(struct zx_wsse_Security_s* x);
 
 struct zx_ds_Signature_s* zx_wsse_Security_GET_Signature(struct zx_wsse_Security_s* x, int n);
 struct zx_sa_Assertion_s* zx_wsse_Security_GET_Assertion(struct zx_wsse_Security_s* x, int n);
@@ -365,9 +365,9 @@ void zx_wsse_Security_PUSH_BinarySecurityToken(struct zx_wsse_Security_s* x, str
 void zx_wsse_Security_PUSH_SecurityTokenReference(struct zx_wsse_Security_s* x, struct zx_wsse_SecurityTokenReference_s* y);
 void zx_wsse_Security_PUSH_Timestamp(struct zx_wsse_Security_s* x, struct zx_wsu_Timestamp_s* y);
 
-void zx_wsse_Security_PUT_mustUnderstand(struct zx_wsse_Security_s* x, struct zx_str* y);
-void zx_wsse_Security_PUT_actor(struct zx_wsse_Security_s* x, struct zx_str* y);
 void zx_wsse_Security_PUT_Id(struct zx_wsse_Security_s* x, struct zx_str* y);
+void zx_wsse_Security_PUT_actor(struct zx_wsse_Security_s* x, struct zx_str* y);
+void zx_wsse_Security_PUT_mustUnderstand(struct zx_wsse_Security_s* x, struct zx_str* y);
 
 void zx_wsse_Security_PUT_Signature(struct zx_wsse_Security_s* x, int n, struct zx_ds_Signature_s* y);
 void zx_wsse_Security_PUT_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_sa_Assertion_s* y);

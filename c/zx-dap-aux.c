@@ -321,8 +321,8 @@ void zx_FREE_dap_CreateItem(struct zx_ctx* c, struct zx_dap_CreateItem_s* x, int
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->objectType, free_strs);
   zx_free_attr(c, x->itemID, free_strs);
+  zx_free_attr(c, x->objectType, free_strs);
 
   {
       struct zx_dap_NewData_s* e;
@@ -367,8 +367,8 @@ void zx_DUP_STRS_dap_CreateItem(struct zx_ctx* c, struct zx_dap_CreateItem_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->objectType);
   zx_dup_attr(c, x->itemID);
+  zx_dup_attr(c, x->objectType);
 
   {
       struct zx_dap_NewData_s* e;
@@ -390,8 +390,8 @@ struct zx_dap_CreateItem_s* zx_DEEP_CLONE_dap_CreateItem(struct zx_ctx* c, struc
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->id = zx_clone_attr(c, x->id);
-  x->objectType = zx_clone_attr(c, x->objectType);
   x->itemID = zx_clone_attr(c, x->itemID);
+  x->objectType = zx_clone_attr(c, x->objectType);
 
   {
       struct zx_dap_NewData_s* e;
@@ -713,12 +713,12 @@ void zx_FREE_dap_Data(struct zx_ctx* c, struct zx_dap_Data_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->nextOffset, free_strs);
   zx_free_attr(c, x->notSorted, free_strs);
   zx_free_attr(c, x->remaining, free_strs);
-  zx_free_attr(c, x->nextOffset, free_strs);
   zx_free_attr(c, x->setID, free_strs);
-  zx_free_attr(c, x->itemIDRef, free_strs);
   zx_free_attr(c, x->changeFormat, free_strs);
+  zx_free_attr(c, x->itemIDRef, free_strs);
 
   {
       struct zx_dap_LDIF_s* e;
@@ -770,12 +770,12 @@ void zx_DUP_STRS_dap_Data(struct zx_ctx* c, struct zx_dap_Data_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->nextOffset);
   zx_dup_attr(c, x->notSorted);
   zx_dup_attr(c, x->remaining);
-  zx_dup_attr(c, x->nextOffset);
   zx_dup_attr(c, x->setID);
-  zx_dup_attr(c, x->itemIDRef);
   zx_dup_attr(c, x->changeFormat);
+  zx_dup_attr(c, x->itemIDRef);
 
   {
       struct zx_dap_LDIF_s* e;
@@ -801,12 +801,12 @@ struct zx_dap_Data_s* zx_DEEP_CLONE_dap_Data(struct zx_ctx* c, struct zx_dap_Dat
   x = (struct zx_dap_Data_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_Data_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->nextOffset = zx_clone_attr(c, x->nextOffset);
   x->notSorted = zx_clone_attr(c, x->notSorted);
   x->remaining = zx_clone_attr(c, x->remaining);
-  x->nextOffset = zx_clone_attr(c, x->nextOffset);
   x->setID = zx_clone_attr(c, x->setID);
-  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
   x->changeFormat = zx_clone_attr(c, x->changeFormat);
+  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
 
   {
       struct zx_dap_LDIF_s* e;
@@ -1112,11 +1112,11 @@ void zx_FREE_dap_DeleteItem(struct zx_ctx* c, struct zx_dap_DeleteItem_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->notChangedSince, free_strs);
   zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->notChangedSince, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
   zx_free_attr(c, x->objectType, free_strs);
   zx_free_attr(c, x->predefined, free_strs);
-  zx_free_attr(c, x->itemID, free_strs);
 
   {
       struct zx_dap_Select_s* e;
@@ -1160,11 +1160,11 @@ void zx_DUP_STRS_dap_DeleteItem(struct zx_ctx* c, struct zx_dap_DeleteItem_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->notChangedSince);
   zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->notChangedSince);
+  zx_dup_attr(c, x->itemID);
   zx_dup_attr(c, x->objectType);
   zx_dup_attr(c, x->predefined);
-  zx_dup_attr(c, x->itemID);
 
   {
       struct zx_dap_Select_s* e;
@@ -1185,11 +1185,11 @@ struct zx_dap_DeleteItem_s* zx_DEEP_CLONE_dap_DeleteItem(struct zx_ctx* c, struc
   x = (struct zx_dap_DeleteItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_DeleteItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->notChangedSince = zx_clone_attr(c, x->notChangedSince);
   x->id = zx_clone_attr(c, x->id);
+  x->notChangedSince = zx_clone_attr(c, x->notChangedSince);
+  x->itemID = zx_clone_attr(c, x->itemID);
   x->objectType = zx_clone_attr(c, x->objectType);
   x->predefined = zx_clone_attr(c, x->predefined);
-  x->itemID = zx_clone_attr(c, x->itemID);
 
   {
       struct zx_dap_Select_s* e;
@@ -1475,8 +1475,8 @@ void zx_FREE_dap_ItemData(struct zx_ctx* c, struct zx_dap_ItemData_s* x, int fre
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->notSorted, free_strs);
-  zx_free_attr(c, x->itemIDRef, free_strs);
   zx_free_attr(c, x->changeFormat, free_strs);
+  zx_free_attr(c, x->itemIDRef, free_strs);
 
   {
       struct zx_dap_LDIF_s* e;
@@ -1529,8 +1529,8 @@ void zx_DUP_STRS_dap_ItemData(struct zx_ctx* c, struct zx_dap_ItemData_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->notSorted);
-  zx_dup_attr(c, x->itemIDRef);
   zx_dup_attr(c, x->changeFormat);
+  zx_dup_attr(c, x->itemIDRef);
 
   {
       struct zx_dap_LDIF_s* e;
@@ -1557,8 +1557,8 @@ struct zx_dap_ItemData_s* zx_DEEP_CLONE_dap_ItemData(struct zx_ctx* c, struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->notSorted = zx_clone_attr(c, x->notSorted);
-  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
   x->changeFormat = zx_clone_attr(c, x->changeFormat);
+  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
 
   {
       struct zx_dap_LDIF_s* e;
@@ -1672,13 +1672,13 @@ void zx_FREE_dap_LDIF(struct zx_ctx* c, struct zx_dap_LDIF_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->modificationTime, free_strs);
+  zx_free_attr(c, x->lang, free_strs);
   zx_free_attr(c, x->ACC, free_strs);
   zx_free_attr(c, x->ACCTime, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->modificationTime, free_strs);
   zx_free_attr(c, x->modifier, free_strs);
   zx_free_attr(c, x->script, free_strs);
-  zx_free_attr(c, x->lang, free_strs);
 
 
 
@@ -1714,13 +1714,13 @@ void zx_DUP_STRS_dap_LDIF(struct zx_ctx* c, struct zx_dap_LDIF_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->modificationTime);
+  zx_dup_attr(c, x->lang);
   zx_dup_attr(c, x->ACC);
   zx_dup_attr(c, x->ACCTime);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->modificationTime);
   zx_dup_attr(c, x->modifier);
   zx_dup_attr(c, x->script);
-  zx_dup_attr(c, x->lang);
 
 
 }
@@ -1736,13 +1736,13 @@ struct zx_dap_LDIF_s* zx_DEEP_CLONE_dap_LDIF(struct zx_ctx* c, struct zx_dap_LDI
   x = (struct zx_dap_LDIF_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_LDIF_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->modificationTime = zx_clone_attr(c, x->modificationTime);
+  x->lang = zx_clone_attr(c, x->lang);
   x->ACC = zx_clone_attr(c, x->ACC);
   x->ACCTime = zx_clone_attr(c, x->ACCTime);
+  x->id = zx_clone_attr(c, x->id);
+  x->modificationTime = zx_clone_attr(c, x->modificationTime);
   x->modifier = zx_clone_attr(c, x->modifier);
   x->script = zx_clone_attr(c, x->script);
-  x->lang = zx_clone_attr(c, x->lang);
 
 
   return x;
@@ -2074,12 +2074,12 @@ void zx_FREE_dap_ModifyItem(struct zx_ctx* c, struct zx_dap_ModifyItem_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->notChangedSince, free_strs);
   zx_free_attr(c, x->overrideAllowed, free_strs);
-  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
   zx_free_attr(c, x->objectType, free_strs);
   zx_free_attr(c, x->predefined, free_strs);
-  zx_free_attr(c, x->itemID, free_strs);
 
   {
       struct zx_dap_Select_s* e;
@@ -2131,12 +2131,12 @@ void zx_DUP_STRS_dap_ModifyItem(struct zx_ctx* c, struct zx_dap_ModifyItem_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->notChangedSince);
   zx_dup_attr(c, x->overrideAllowed);
-  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->itemID);
   zx_dup_attr(c, x->objectType);
   zx_dup_attr(c, x->predefined);
-  zx_dup_attr(c, x->itemID);
 
   {
       struct zx_dap_Select_s* e;
@@ -2162,12 +2162,12 @@ struct zx_dap_ModifyItem_s* zx_DEEP_CLONE_dap_ModifyItem(struct zx_ctx* c, struc
   x = (struct zx_dap_ModifyItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_ModifyItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->id = zx_clone_attr(c, x->id);
   x->notChangedSince = zx_clone_attr(c, x->notChangedSince);
   x->overrideAllowed = zx_clone_attr(c, x->overrideAllowed);
-  x->id = zx_clone_attr(c, x->id);
+  x->itemID = zx_clone_attr(c, x->itemID);
   x->objectType = zx_clone_attr(c, x->objectType);
   x->predefined = zx_clone_attr(c, x->predefined);
-  x->itemID = zx_clone_attr(c, x->itemID);
 
   {
       struct zx_dap_Select_s* e;
@@ -2699,10 +2699,10 @@ void zx_FREE_dap_Notification(struct zx_ctx* c, struct zx_dap_Notification_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->endReason, free_strs);
+  zx_free_attr(c, x->expires, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->subscriptionID, free_strs);
-  zx_free_attr(c, x->expires, free_strs);
-  zx_free_attr(c, x->endReason, free_strs);
 
   {
       struct zx_lu_TestResult_s* e;
@@ -2754,10 +2754,10 @@ void zx_DUP_STRS_dap_Notification(struct zx_ctx* c, struct zx_dap_Notification_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->endReason);
+  zx_dup_attr(c, x->expires);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->subscriptionID);
-  zx_dup_attr(c, x->expires);
-  zx_dup_attr(c, x->endReason);
 
   {
       struct zx_lu_TestResult_s* e;
@@ -2783,10 +2783,10 @@ struct zx_dap_Notification_s* zx_DEEP_CLONE_dap_Notification(struct zx_ctx* c, s
   x = (struct zx_dap_Notification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_Notification_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->endReason = zx_clone_attr(c, x->endReason);
+  x->expires = zx_clone_attr(c, x->expires);
   x->id = zx_clone_attr(c, x->id);
   x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
-  x->expires = zx_clone_attr(c, x->expires);
-  x->endReason = zx_clone_attr(c, x->endReason);
 
   {
       struct zx_lu_TestResult_s* e;
@@ -3547,17 +3547,17 @@ void zx_FREE_dap_QueryItem(struct zx_ctx* c, struct zx_dap_QueryItem_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->contingency, free_strs);
-  zx_free_attr(c, x->includeCommonAttributes, free_strs);
   zx_free_attr(c, x->changedSince, free_strs);
+  zx_free_attr(c, x->contingency, free_strs);
   zx_free_attr(c, x->count, free_strs);
+  zx_free_attr(c, x->includeCommonAttributes, free_strs);
   zx_free_attr(c, x->offset, free_strs);
   zx_free_attr(c, x->setID, free_strs);
   zx_free_attr(c, x->setReq, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
+  zx_free_attr(c, x->itemIDRef, free_strs);
   zx_free_attr(c, x->objectType, free_strs);
   zx_free_attr(c, x->predefined, free_strs);
-  zx_free_attr(c, x->itemIDRef, free_strs);
-  zx_free_attr(c, x->itemID, free_strs);
 
   zx_free_simple_elems(c, x->ChangeFormat, free_strs);
   {
@@ -3603,17 +3603,17 @@ void zx_DUP_STRS_dap_QueryItem(struct zx_ctx* c, struct zx_dap_QueryItem_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->contingency);
-  zx_dup_attr(c, x->includeCommonAttributes);
   zx_dup_attr(c, x->changedSince);
+  zx_dup_attr(c, x->contingency);
   zx_dup_attr(c, x->count);
+  zx_dup_attr(c, x->includeCommonAttributes);
   zx_dup_attr(c, x->offset);
   zx_dup_attr(c, x->setID);
   zx_dup_attr(c, x->setReq);
+  zx_dup_attr(c, x->itemID);
+  zx_dup_attr(c, x->itemIDRef);
   zx_dup_attr(c, x->objectType);
   zx_dup_attr(c, x->predefined);
-  zx_dup_attr(c, x->itemIDRef);
-  zx_dup_attr(c, x->itemID);
 
   zx_dup_strs_simple_elems(c, x->ChangeFormat);
   {
@@ -3636,17 +3636,17 @@ struct zx_dap_QueryItem_s* zx_DEEP_CLONE_dap_QueryItem(struct zx_ctx* c, struct 
   x = (struct zx_dap_QueryItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_QueryItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->contingency = zx_clone_attr(c, x->contingency);
-  x->includeCommonAttributes = zx_clone_attr(c, x->includeCommonAttributes);
   x->changedSince = zx_clone_attr(c, x->changedSince);
+  x->contingency = zx_clone_attr(c, x->contingency);
   x->count = zx_clone_attr(c, x->count);
+  x->includeCommonAttributes = zx_clone_attr(c, x->includeCommonAttributes);
   x->offset = zx_clone_attr(c, x->offset);
   x->setID = zx_clone_attr(c, x->setID);
   x->setReq = zx_clone_attr(c, x->setReq);
+  x->itemID = zx_clone_attr(c, x->itemID);
+  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
   x->objectType = zx_clone_attr(c, x->objectType);
   x->predefined = zx_clone_attr(c, x->predefined);
-  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
-  x->itemID = zx_clone_attr(c, x->itemID);
 
   x->ChangeFormat = zx_deep_clone_simple_elems(c,x->ChangeFormat, dup_strs);
   {
@@ -4010,13 +4010,13 @@ void zx_FREE_dap_ResultQuery(struct zx_ctx* c, struct zx_dap_ResultQuery_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->changedSince, free_strs);
   zx_free_attr(c, x->contingency, free_strs);
   zx_free_attr(c, x->includeCommonAttributes, free_strs);
-  zx_free_attr(c, x->changedSince, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
+  zx_free_attr(c, x->itemIDRef, free_strs);
   zx_free_attr(c, x->objectType, free_strs);
   zx_free_attr(c, x->predefined, free_strs);
-  zx_free_attr(c, x->itemIDRef, free_strs);
-  zx_free_attr(c, x->itemID, free_strs);
 
   zx_free_simple_elems(c, x->ChangeFormat, free_strs);
   {
@@ -4062,13 +4062,13 @@ void zx_DUP_STRS_dap_ResultQuery(struct zx_ctx* c, struct zx_dap_ResultQuery_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->changedSince);
   zx_dup_attr(c, x->contingency);
   zx_dup_attr(c, x->includeCommonAttributes);
-  zx_dup_attr(c, x->changedSince);
+  zx_dup_attr(c, x->itemID);
+  zx_dup_attr(c, x->itemIDRef);
   zx_dup_attr(c, x->objectType);
   zx_dup_attr(c, x->predefined);
-  zx_dup_attr(c, x->itemIDRef);
-  zx_dup_attr(c, x->itemID);
 
   zx_dup_strs_simple_elems(c, x->ChangeFormat);
   {
@@ -4091,13 +4091,13 @@ struct zx_dap_ResultQuery_s* zx_DEEP_CLONE_dap_ResultQuery(struct zx_ctx* c, str
   x = (struct zx_dap_ResultQuery_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_ResultQuery_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->changedSince = zx_clone_attr(c, x->changedSince);
   x->contingency = zx_clone_attr(c, x->contingency);
   x->includeCommonAttributes = zx_clone_attr(c, x->includeCommonAttributes);
-  x->changedSince = zx_clone_attr(c, x->changedSince);
+  x->itemID = zx_clone_attr(c, x->itemID);
+  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
   x->objectType = zx_clone_attr(c, x->objectType);
   x->predefined = zx_clone_attr(c, x->predefined);
-  x->itemIDRef = zx_clone_attr(c, x->itemIDRef);
-  x->itemID = zx_clone_attr(c, x->itemID);
 
   x->ChangeFormat = zx_deep_clone_simple_elems(c,x->ChangeFormat, dup_strs);
   {
@@ -4198,12 +4198,12 @@ void zx_FREE_dap_Select(struct zx_ctx* c, struct zx_dap_Select_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->attributes, free_strs);
+  zx_free_attr(c, x->derefaliases, free_strs);
   zx_free_attr(c, x->scope, free_strs);
   zx_free_attr(c, x->sizelimit, free_strs);
   zx_free_attr(c, x->timelimit, free_strs);
-  zx_free_attr(c, x->attributes, free_strs);
   zx_free_attr(c, x->typesonly, free_strs);
-  zx_free_attr(c, x->derefaliases, free_strs);
 
   zx_free_simple_elems(c, x->dn, free_strs);
   zx_free_simple_elems(c, x->filter, free_strs);
@@ -4241,12 +4241,12 @@ void zx_DUP_STRS_dap_Select(struct zx_ctx* c, struct zx_dap_Select_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->attributes);
+  zx_dup_attr(c, x->derefaliases);
   zx_dup_attr(c, x->scope);
   zx_dup_attr(c, x->sizelimit);
   zx_dup_attr(c, x->timelimit);
-  zx_dup_attr(c, x->attributes);
   zx_dup_attr(c, x->typesonly);
-  zx_dup_attr(c, x->derefaliases);
 
   zx_dup_strs_simple_elems(c, x->dn);
   zx_dup_strs_simple_elems(c, x->filter);
@@ -4264,12 +4264,12 @@ struct zx_dap_Select_s* zx_DEEP_CLONE_dap_Select(struct zx_ctx* c, struct zx_dap
   x = (struct zx_dap_Select_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_Select_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->attributes = zx_clone_attr(c, x->attributes);
+  x->derefaliases = zx_clone_attr(c, x->derefaliases);
   x->scope = zx_clone_attr(c, x->scope);
   x->sizelimit = zx_clone_attr(c, x->sizelimit);
   x->timelimit = zx_clone_attr(c, x->timelimit);
-  x->attributes = zx_clone_attr(c, x->attributes);
   x->typesonly = zx_clone_attr(c, x->typesonly);
-  x->derefaliases = zx_clone_attr(c, x->derefaliases);
 
   x->dn = zx_deep_clone_simple_elems(c,x->dn, dup_strs);
   x->filter = zx_deep_clone_simple_elems(c,x->filter, dup_strs);
@@ -4349,13 +4349,13 @@ void zx_FREE_dap_Subscription(struct zx_ctx* c, struct zx_dap_Subscription_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->subscriptionID, free_strs);
-  zx_free_attr(c, x->notifyToRef, free_strs);
   zx_free_attr(c, x->adminNotifyToRef, free_strs);
-  zx_free_attr(c, x->starts, free_strs);
   zx_free_attr(c, x->expires, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->includeData, free_strs);
+  zx_free_attr(c, x->notifyToRef, free_strs);
+  zx_free_attr(c, x->starts, free_strs);
+  zx_free_attr(c, x->subscriptionID, free_strs);
 
   {
       struct zx_subs_RefItem_s* e;
@@ -4417,13 +4417,13 @@ void zx_DUP_STRS_dap_Subscription(struct zx_ctx* c, struct zx_dap_Subscription_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->subscriptionID);
-  zx_dup_attr(c, x->notifyToRef);
   zx_dup_attr(c, x->adminNotifyToRef);
-  zx_dup_attr(c, x->starts);
   zx_dup_attr(c, x->expires);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->includeData);
+  zx_dup_attr(c, x->notifyToRef);
+  zx_dup_attr(c, x->starts);
+  zx_dup_attr(c, x->subscriptionID);
 
   {
       struct zx_subs_RefItem_s* e;
@@ -4456,13 +4456,13 @@ struct zx_dap_Subscription_s* zx_DEEP_CLONE_dap_Subscription(struct zx_ctx* c, s
   x = (struct zx_dap_Subscription_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_Subscription_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
-  x->notifyToRef = zx_clone_attr(c, x->notifyToRef);
   x->adminNotifyToRef = zx_clone_attr(c, x->adminNotifyToRef);
-  x->starts = zx_clone_attr(c, x->starts);
   x->expires = zx_clone_attr(c, x->expires);
   x->id = zx_clone_attr(c, x->id);
   x->includeData = zx_clone_attr(c, x->includeData);
+  x->notifyToRef = zx_clone_attr(c, x->notifyToRef);
+  x->starts = zx_clone_attr(c, x->starts);
+  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
 
   {
       struct zx_subs_RefItem_s* e;
@@ -4606,9 +4606,9 @@ void zx_FREE_dap_TestItem(struct zx_ctx* c, struct zx_dap_TestItem_s* x, int fre
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
   zx_free_attr(c, x->objectType, free_strs);
   zx_free_attr(c, x->predefined, free_strs);
-  zx_free_attr(c, x->itemID, free_strs);
 
   {
       struct zx_dap_TestOp_s* e;
@@ -4653,9 +4653,9 @@ void zx_DUP_STRS_dap_TestItem(struct zx_ctx* c, struct zx_dap_TestItem_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->itemID);
   zx_dup_attr(c, x->objectType);
   zx_dup_attr(c, x->predefined);
-  zx_dup_attr(c, x->itemID);
 
   {
       struct zx_dap_TestOp_s* e;
@@ -4677,9 +4677,9 @@ struct zx_dap_TestItem_s* zx_DEEP_CLONE_dap_TestItem(struct zx_ctx* c, struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->id = zx_clone_attr(c, x->id);
+  x->itemID = zx_clone_attr(c, x->itemID);
   x->objectType = zx_clone_attr(c, x->objectType);
   x->predefined = zx_clone_attr(c, x->predefined);
-  x->itemID = zx_clone_attr(c, x->itemID);
 
   {
       struct zx_dap_TestOp_s* e;
@@ -4772,12 +4772,12 @@ void zx_FREE_dap_TestOp(struct zx_ctx* c, struct zx_dap_TestOp_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->attributes, free_strs);
+  zx_free_attr(c, x->derefaliases, free_strs);
   zx_free_attr(c, x->scope, free_strs);
   zx_free_attr(c, x->sizelimit, free_strs);
   zx_free_attr(c, x->timelimit, free_strs);
-  zx_free_attr(c, x->attributes, free_strs);
   zx_free_attr(c, x->typesonly, free_strs);
-  zx_free_attr(c, x->derefaliases, free_strs);
 
   zx_free_simple_elems(c, x->dn, free_strs);
   zx_free_simple_elems(c, x->filter, free_strs);
@@ -4815,12 +4815,12 @@ void zx_DUP_STRS_dap_TestOp(struct zx_ctx* c, struct zx_dap_TestOp_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->attributes);
+  zx_dup_attr(c, x->derefaliases);
   zx_dup_attr(c, x->scope);
   zx_dup_attr(c, x->sizelimit);
   zx_dup_attr(c, x->timelimit);
-  zx_dup_attr(c, x->attributes);
   zx_dup_attr(c, x->typesonly);
-  zx_dup_attr(c, x->derefaliases);
 
   zx_dup_strs_simple_elems(c, x->dn);
   zx_dup_strs_simple_elems(c, x->filter);
@@ -4838,12 +4838,12 @@ struct zx_dap_TestOp_s* zx_DEEP_CLONE_dap_TestOp(struct zx_ctx* c, struct zx_dap
   x = (struct zx_dap_TestOp_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_dap_TestOp_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->attributes = zx_clone_attr(c, x->attributes);
+  x->derefaliases = zx_clone_attr(c, x->derefaliases);
   x->scope = zx_clone_attr(c, x->scope);
   x->sizelimit = zx_clone_attr(c, x->sizelimit);
   x->timelimit = zx_clone_attr(c, x->timelimit);
-  x->attributes = zx_clone_attr(c, x->attributes);
   x->typesonly = zx_clone_attr(c, x->typesonly);
-  x->derefaliases = zx_clone_attr(c, x->derefaliases);
 
   x->dn = zx_deep_clone_simple_elems(c,x->dn, dup_strs);
   x->filter = zx_deep_clone_simple_elems(c,x->filter, dup_strs);

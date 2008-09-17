@@ -882,23 +882,19 @@ void zx_xa_Apply_PUT_FunctionId(struct zx_xa_Apply_s* x, struct zx_str* y) { x->
 
 
 
-/* FUNC(zx_xa_AttributeAssignment_GET_DataType) */
-struct zx_str* zx_xa_AttributeAssignment_GET_DataType(struct zx_xa_AttributeAssignment_s* x) { return x->DataType; }
-/* FUNC(zx_xa_AttributeAssignment_PUT_DataType) */
-void zx_xa_AttributeAssignment_PUT_DataType(struct zx_xa_AttributeAssignment_s* x, struct zx_str* y) { x->DataType = y; }
 /* FUNC(zx_xa_AttributeAssignment_GET_AttributeId) */
 struct zx_str* zx_xa_AttributeAssignment_GET_AttributeId(struct zx_xa_AttributeAssignment_s* x) { return x->AttributeId; }
 /* FUNC(zx_xa_AttributeAssignment_PUT_AttributeId) */
 void zx_xa_AttributeAssignment_PUT_AttributeId(struct zx_xa_AttributeAssignment_s* x, struct zx_str* y) { x->AttributeId = y; }
+/* FUNC(zx_xa_AttributeAssignment_GET_DataType) */
+struct zx_str* zx_xa_AttributeAssignment_GET_DataType(struct zx_xa_AttributeAssignment_s* x) { return x->DataType; }
+/* FUNC(zx_xa_AttributeAssignment_PUT_DataType) */
+void zx_xa_AttributeAssignment_PUT_DataType(struct zx_xa_AttributeAssignment_s* x, struct zx_str* y) { x->DataType = y; }
 
 
 
 
 
-/* FUNC(zx_xa_AttributeSelector_GET_RequestContextPath) */
-struct zx_str* zx_xa_AttributeSelector_GET_RequestContextPath(struct zx_xa_AttributeSelector_s* x) { return x->RequestContextPath; }
-/* FUNC(zx_xa_AttributeSelector_PUT_RequestContextPath) */
-void zx_xa_AttributeSelector_PUT_RequestContextPath(struct zx_xa_AttributeSelector_s* x, struct zx_str* y) { x->RequestContextPath = y; }
 /* FUNC(zx_xa_AttributeSelector_GET_DataType) */
 struct zx_str* zx_xa_AttributeSelector_GET_DataType(struct zx_xa_AttributeSelector_s* x) { return x->DataType; }
 /* FUNC(zx_xa_AttributeSelector_PUT_DataType) */
@@ -907,6 +903,10 @@ void zx_xa_AttributeSelector_PUT_DataType(struct zx_xa_AttributeSelector_s* x, s
 struct zx_str* zx_xa_AttributeSelector_GET_MustBePresent(struct zx_xa_AttributeSelector_s* x) { return x->MustBePresent; }
 /* FUNC(zx_xa_AttributeSelector_PUT_MustBePresent) */
 void zx_xa_AttributeSelector_PUT_MustBePresent(struct zx_xa_AttributeSelector_s* x, struct zx_str* y) { x->MustBePresent = y; }
+/* FUNC(zx_xa_AttributeSelector_GET_RequestContextPath) */
+struct zx_str* zx_xa_AttributeSelector_GET_RequestContextPath(struct zx_xa_AttributeSelector_s* x) { return x->RequestContextPath; }
+/* FUNC(zx_xa_AttributeSelector_PUT_RequestContextPath) */
+void zx_xa_AttributeSelector_PUT_RequestContextPath(struct zx_xa_AttributeSelector_s* x, struct zx_str* y) { x->RequestContextPath = y; }
 
 
 
@@ -2195,14 +2195,14 @@ void zx_xa_Obligation_DEL_AttributeAssignment(struct zx_xa_Obligation_s* x, int 
 
 #endif
 
-/* FUNC(zx_xa_Obligation_GET_ObligationId) */
-struct zx_str* zx_xa_Obligation_GET_ObligationId(struct zx_xa_Obligation_s* x) { return x->ObligationId; }
-/* FUNC(zx_xa_Obligation_PUT_ObligationId) */
-void zx_xa_Obligation_PUT_ObligationId(struct zx_xa_Obligation_s* x, struct zx_str* y) { x->ObligationId = y; }
 /* FUNC(zx_xa_Obligation_GET_FulfillOn) */
 struct zx_str* zx_xa_Obligation_GET_FulfillOn(struct zx_xa_Obligation_s* x) { return x->FulfillOn; }
 /* FUNC(zx_xa_Obligation_PUT_FulfillOn) */
 void zx_xa_Obligation_PUT_FulfillOn(struct zx_xa_Obligation_s* x, struct zx_str* y) { x->FulfillOn = y; }
+/* FUNC(zx_xa_Obligation_GET_ObligationId) */
+struct zx_str* zx_xa_Obligation_GET_ObligationId(struct zx_xa_Obligation_s* x) { return x->ObligationId; }
+/* FUNC(zx_xa_Obligation_PUT_ObligationId) */
+void zx_xa_Obligation_PUT_ObligationId(struct zx_xa_Obligation_s* x, struct zx_str* y) { x->ObligationId = y; }
 
 
 
@@ -3423,14 +3423,14 @@ void zx_xa_Policy_DEL_Obligations(struct zx_xa_Policy_s* x, int n)
 struct zx_str* zx_xa_Policy_GET_PolicyId(struct zx_xa_Policy_s* x) { return x->PolicyId; }
 /* FUNC(zx_xa_Policy_PUT_PolicyId) */
 void zx_xa_Policy_PUT_PolicyId(struct zx_xa_Policy_s* x, struct zx_str* y) { x->PolicyId = y; }
-/* FUNC(zx_xa_Policy_GET_Version) */
-struct zx_str* zx_xa_Policy_GET_Version(struct zx_xa_Policy_s* x) { return x->Version; }
-/* FUNC(zx_xa_Policy_PUT_Version) */
-void zx_xa_Policy_PUT_Version(struct zx_xa_Policy_s* x, struct zx_str* y) { x->Version = y; }
 /* FUNC(zx_xa_Policy_GET_RuleCombiningAlgId) */
 struct zx_str* zx_xa_Policy_GET_RuleCombiningAlgId(struct zx_xa_Policy_s* x) { return x->RuleCombiningAlgId; }
 /* FUNC(zx_xa_Policy_PUT_RuleCombiningAlgId) */
 void zx_xa_Policy_PUT_RuleCombiningAlgId(struct zx_xa_Policy_s* x, struct zx_str* y) { x->RuleCombiningAlgId = y; }
+/* FUNC(zx_xa_Policy_GET_Version) */
+struct zx_str* zx_xa_Policy_GET_Version(struct zx_xa_Policy_s* x) { return x->Version; }
+/* FUNC(zx_xa_Policy_PUT_Version) */
+void zx_xa_Policy_PUT_Version(struct zx_xa_Policy_s* x, struct zx_str* y) { x->Version = y; }
 
 
 
@@ -3718,10 +3718,6 @@ void zx_xa_PolicyDefaults_DEL_XPathVersion(struct zx_xa_PolicyDefaults_s* x, int
 
 
 
-/* FUNC(zx_xa_PolicyIdReference_GET_Version) */
-struct zx_str* zx_xa_PolicyIdReference_GET_Version(struct zx_xa_PolicyIdReference_s* x) { return x->Version; }
-/* FUNC(zx_xa_PolicyIdReference_PUT_Version) */
-void zx_xa_PolicyIdReference_PUT_Version(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y) { x->Version = y; }
 /* FUNC(zx_xa_PolicyIdReference_GET_EarliestVersion) */
 struct zx_str* zx_xa_PolicyIdReference_GET_EarliestVersion(struct zx_xa_PolicyIdReference_s* x) { return x->EarliestVersion; }
 /* FUNC(zx_xa_PolicyIdReference_PUT_EarliestVersion) */
@@ -3730,6 +3726,10 @@ void zx_xa_PolicyIdReference_PUT_EarliestVersion(struct zx_xa_PolicyIdReference_
 struct zx_str* zx_xa_PolicyIdReference_GET_LatestVersion(struct zx_xa_PolicyIdReference_s* x) { return x->LatestVersion; }
 /* FUNC(zx_xa_PolicyIdReference_PUT_LatestVersion) */
 void zx_xa_PolicyIdReference_PUT_LatestVersion(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y) { x->LatestVersion = y; }
+/* FUNC(zx_xa_PolicyIdReference_GET_Version) */
+struct zx_str* zx_xa_PolicyIdReference_GET_Version(struct zx_xa_PolicyIdReference_s* x) { return x->Version; }
+/* FUNC(zx_xa_PolicyIdReference_PUT_Version) */
+void zx_xa_PolicyIdReference_PUT_Version(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y) { x->Version = y; }
 
 
 
@@ -5209,6 +5209,10 @@ void zx_xa_PolicySet_DEL_Obligations(struct zx_xa_PolicySet_s* x, int n)
 
 #endif
 
+/* FUNC(zx_xa_PolicySet_GET_PolicyCombiningAlgId) */
+struct zx_str* zx_xa_PolicySet_GET_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x) { return x->PolicyCombiningAlgId; }
+/* FUNC(zx_xa_PolicySet_PUT_PolicyCombiningAlgId) */
+void zx_xa_PolicySet_PUT_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x, struct zx_str* y) { x->PolicyCombiningAlgId = y; }
 /* FUNC(zx_xa_PolicySet_GET_PolicySetId) */
 struct zx_str* zx_xa_PolicySet_GET_PolicySetId(struct zx_xa_PolicySet_s* x) { return x->PolicySetId; }
 /* FUNC(zx_xa_PolicySet_PUT_PolicySetId) */
@@ -5217,10 +5221,6 @@ void zx_xa_PolicySet_PUT_PolicySetId(struct zx_xa_PolicySet_s* x, struct zx_str*
 struct zx_str* zx_xa_PolicySet_GET_Version(struct zx_xa_PolicySet_s* x) { return x->Version; }
 /* FUNC(zx_xa_PolicySet_PUT_Version) */
 void zx_xa_PolicySet_PUT_Version(struct zx_xa_PolicySet_s* x, struct zx_str* y) { x->Version = y; }
-/* FUNC(zx_xa_PolicySet_GET_PolicyCombiningAlgId) */
-struct zx_str* zx_xa_PolicySet_GET_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x) { return x->PolicyCombiningAlgId; }
-/* FUNC(zx_xa_PolicySet_PUT_PolicyCombiningAlgId) */
-void zx_xa_PolicySet_PUT_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x, struct zx_str* y) { x->PolicyCombiningAlgId = y; }
 
 
 
@@ -5508,10 +5508,6 @@ void zx_xa_PolicySetDefaults_DEL_XPathVersion(struct zx_xa_PolicySetDefaults_s* 
 
 
 
-/* FUNC(zx_xa_PolicySetIdReference_GET_Version) */
-struct zx_str* zx_xa_PolicySetIdReference_GET_Version(struct zx_xa_PolicySetIdReference_s* x) { return x->Version; }
-/* FUNC(zx_xa_PolicySetIdReference_PUT_Version) */
-void zx_xa_PolicySetIdReference_PUT_Version(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y) { x->Version = y; }
 /* FUNC(zx_xa_PolicySetIdReference_GET_EarliestVersion) */
 struct zx_str* zx_xa_PolicySetIdReference_GET_EarliestVersion(struct zx_xa_PolicySetIdReference_s* x) { return x->EarliestVersion; }
 /* FUNC(zx_xa_PolicySetIdReference_PUT_EarliestVersion) */
@@ -5520,6 +5516,10 @@ void zx_xa_PolicySetIdReference_PUT_EarliestVersion(struct zx_xa_PolicySetIdRefe
 struct zx_str* zx_xa_PolicySetIdReference_GET_LatestVersion(struct zx_xa_PolicySetIdReference_s* x) { return x->LatestVersion; }
 /* FUNC(zx_xa_PolicySetIdReference_PUT_LatestVersion) */
 void zx_xa_PolicySetIdReference_PUT_LatestVersion(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y) { x->LatestVersion = y; }
+/* FUNC(zx_xa_PolicySetIdReference_GET_Version) */
+struct zx_str* zx_xa_PolicySetIdReference_GET_Version(struct zx_xa_PolicySetIdReference_s* x) { return x->Version; }
+/* FUNC(zx_xa_PolicySetIdReference_PUT_Version) */
+void zx_xa_PolicySetIdReference_PUT_Version(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y) { x->Version = y; }
 
 
 
@@ -6637,14 +6637,14 @@ void zx_xa_Rule_DEL_Condition(struct zx_xa_Rule_s* x, int n)
 
 #endif
 
-/* FUNC(zx_xa_Rule_GET_RuleId) */
-struct zx_str* zx_xa_Rule_GET_RuleId(struct zx_xa_Rule_s* x) { return x->RuleId; }
-/* FUNC(zx_xa_Rule_PUT_RuleId) */
-void zx_xa_Rule_PUT_RuleId(struct zx_xa_Rule_s* x, struct zx_str* y) { x->RuleId = y; }
 /* FUNC(zx_xa_Rule_GET_Effect) */
 struct zx_str* zx_xa_Rule_GET_Effect(struct zx_xa_Rule_s* x) { return x->Effect; }
 /* FUNC(zx_xa_Rule_PUT_Effect) */
 void zx_xa_Rule_PUT_Effect(struct zx_xa_Rule_s* x, struct zx_str* y) { x->Effect = y; }
+/* FUNC(zx_xa_Rule_GET_RuleId) */
+struct zx_str* zx_xa_Rule_GET_RuleId(struct zx_xa_Rule_s* x) { return x->RuleId; }
+/* FUNC(zx_xa_Rule_PUT_RuleId) */
+void zx_xa_Rule_PUT_RuleId(struct zx_xa_Rule_s* x, struct zx_str* y) { x->RuleId = y; }
 
 
 

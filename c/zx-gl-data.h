@@ -915,9 +915,9 @@ struct zx_gl_Data_s {
   zx_gl_Data_EXT
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* itemIDRef;	/* {0,1} attribute xs:string */
+  struct zx_str* nextOffset;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* notSorted;	/* {0,1} attribute Now */
   struct zx_str* remaining;	/* {0,1} attribute xs:integer */
-  struct zx_str* nextOffset;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* setID;	/* {0,1} attribute xs:string */
   struct zx_str* changeFormat;	/* {0,1} attribute ChangedElements */
 };
@@ -925,9 +925,9 @@ struct zx_gl_Data_s {
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_gl_Data_GET_id(struct zx_gl_Data_s* x);
 struct zx_str* zx_gl_Data_GET_itemIDRef(struct zx_gl_Data_s* x);
+struct zx_str* zx_gl_Data_GET_nextOffset(struct zx_gl_Data_s* x);
 struct zx_str* zx_gl_Data_GET_notSorted(struct zx_gl_Data_s* x);
 struct zx_str* zx_gl_Data_GET_remaining(struct zx_gl_Data_s* x);
-struct zx_str* zx_gl_Data_GET_nextOffset(struct zx_gl_Data_s* x);
 struct zx_str* zx_gl_Data_GET_setID(struct zx_gl_Data_s* x);
 struct zx_str* zx_gl_Data_GET_changeFormat(struct zx_gl_Data_s* x);
 
@@ -937,9 +937,9 @@ struct zx_str* zx_gl_Data_GET_changeFormat(struct zx_gl_Data_s* x);
 
 void zx_gl_Data_PUT_id(struct zx_gl_Data_s* x, struct zx_str* y);
 void zx_gl_Data_PUT_itemIDRef(struct zx_gl_Data_s* x, struct zx_str* y);
+void zx_gl_Data_PUT_nextOffset(struct zx_gl_Data_s* x, struct zx_str* y);
 void zx_gl_Data_PUT_notSorted(struct zx_gl_Data_s* x, struct zx_str* y);
 void zx_gl_Data_PUT_remaining(struct zx_gl_Data_s* x, struct zx_str* y);
-void zx_gl_Data_PUT_nextOffset(struct zx_gl_Data_s* x, struct zx_str* y);
 void zx_gl_Data_PUT_setID(struct zx_gl_Data_s* x, struct zx_str* y);
 void zx_gl_Data_PUT_changeFormat(struct zx_gl_Data_s* x, struct zx_str* y);
 
@@ -1633,20 +1633,20 @@ struct zx_str* zx_EASY_ENC_WO_gl_LL(struct zx_ctx* c, struct zx_gl_LL_s* x);
 struct zx_gl_LL_s {
   ZX_ELEM_EXT
   zx_gl_LL_EXT
-  struct zx_str* script;	/* {0,1} attribute xs:anyURI */
   struct zx_str* lang;	/* {1,1} attribute xs:string */
+  struct zx_str* script;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_gl_LL_GET_script(struct zx_gl_LL_s* x);
 struct zx_str* zx_gl_LL_GET_lang(struct zx_gl_LL_s* x);
+struct zx_str* zx_gl_LL_GET_script(struct zx_gl_LL_s* x);
 
 
 
 
 
-void zx_gl_LL_PUT_script(struct zx_gl_LL_s* x, struct zx_str* y);
 void zx_gl_LL_PUT_lang(struct zx_gl_LL_s* x, struct zx_str* y);
+void zx_gl_LL_PUT_script(struct zx_gl_LL_s* x, struct zx_str* y);
 
 
 
@@ -1678,20 +1678,20 @@ struct zx_str* zx_EASY_ENC_WO_gl_LPostalAddress(struct zx_ctx* c, struct zx_gl_L
 struct zx_gl_LPostalAddress_s {
   ZX_ELEM_EXT
   zx_gl_LPostalAddress_EXT
-  struct zx_str* script;	/* {0,1} attribute xs:anyURI */
   struct zx_str* lang;	/* {1,1} attribute xs:string */
+  struct zx_str* script;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_gl_LPostalAddress_GET_script(struct zx_gl_LPostalAddress_s* x);
 struct zx_str* zx_gl_LPostalAddress_GET_lang(struct zx_gl_LPostalAddress_s* x);
+struct zx_str* zx_gl_LPostalAddress_GET_script(struct zx_gl_LPostalAddress_s* x);
 
 
 
 
 
-void zx_gl_LPostalAddress_PUT_script(struct zx_gl_LPostalAddress_s* x, struct zx_str* y);
 void zx_gl_LPostalAddress_PUT_lang(struct zx_gl_LPostalAddress_s* x, struct zx_str* y);
+void zx_gl_LPostalAddress_PUT_script(struct zx_gl_LPostalAddress_s* x, struct zx_str* y);
 
 
 
@@ -1723,20 +1723,20 @@ struct zx_str* zx_EASY_ENC_WO_gl_LSt(struct zx_ctx* c, struct zx_gl_LSt_s* x);
 struct zx_gl_LSt_s {
   ZX_ELEM_EXT
   zx_gl_LSt_EXT
-  struct zx_str* script;	/* {0,1} attribute xs:anyURI */
   struct zx_str* lang;	/* {1,1} attribute xs:string */
+  struct zx_str* script;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_gl_LSt_GET_script(struct zx_gl_LSt_s* x);
 struct zx_str* zx_gl_LSt_GET_lang(struct zx_gl_LSt_s* x);
+struct zx_str* zx_gl_LSt_GET_script(struct zx_gl_LSt_s* x);
 
 
 
 
 
-void zx_gl_LSt_PUT_script(struct zx_gl_LSt_s* x, struct zx_str* y);
 void zx_gl_LSt_PUT_lang(struct zx_gl_LSt_s* x, struct zx_str* y);
+void zx_gl_LSt_PUT_script(struct zx_gl_LSt_s* x, struct zx_str* y);
 
 
 
@@ -2354,17 +2354,17 @@ struct zx_gl_Notification_s {
   ZX_ELEM_EXT
   zx_gl_Notification_EXT
   struct zx_gl_ItemData_s* ItemData;	/* {0,-1} nada */
+  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
-  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_gl_Notification_GET_endReason(struct zx_gl_Notification_s* x);
+struct zx_str* zx_gl_Notification_GET_expires(struct zx_gl_Notification_s* x);
 struct zx_str* zx_gl_Notification_GET_id(struct zx_gl_Notification_s* x);
 struct zx_str* zx_gl_Notification_GET_subscriptionID(struct zx_gl_Notification_s* x);
-struct zx_str* zx_gl_Notification_GET_expires(struct zx_gl_Notification_s* x);
-struct zx_str* zx_gl_Notification_GET_endReason(struct zx_gl_Notification_s* x);
 
 struct zx_gl_ItemData_s* zx_gl_Notification_GET_ItemData(struct zx_gl_Notification_s* x, int n);
 
@@ -2374,10 +2374,10 @@ struct zx_gl_ItemData_s* zx_gl_Notification_POP_ItemData(struct zx_gl_Notificati
 
 void zx_gl_Notification_PUSH_ItemData(struct zx_gl_Notification_s* x, struct zx_gl_ItemData_s* y);
 
+void zx_gl_Notification_PUT_endReason(struct zx_gl_Notification_s* x, struct zx_str* y);
+void zx_gl_Notification_PUT_expires(struct zx_gl_Notification_s* x, struct zx_str* y);
 void zx_gl_Notification_PUT_id(struct zx_gl_Notification_s* x, struct zx_str* y);
 void zx_gl_Notification_PUT_subscriptionID(struct zx_gl_Notification_s* x, struct zx_str* y);
-void zx_gl_Notification_PUT_expires(struct zx_gl_Notification_s* x, struct zx_str* y);
-void zx_gl_Notification_PUT_endReason(struct zx_gl_Notification_s* x, struct zx_str* y);
 
 void zx_gl_Notification_PUT_ItemData(struct zx_gl_Notification_s* x, int n, struct zx_gl_ItemData_s* y);
 
@@ -3058,20 +3058,20 @@ struct zx_str* zx_EASY_ENC_WO_gl_RefItem(struct zx_ctx* c, struct zx_gl_RefItem_
 struct zx_gl_RefItem_s {
   ZX_ELEM_EXT
   zx_gl_RefItem_EXT
-  struct zx_str* subscriptionID;	/* {0,1} attribute xs:string */
   struct zx_str* ItemIDRef;	/* {1,1} attribute xs:string */
+  struct zx_str* subscriptionID;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_gl_RefItem_GET_subscriptionID(struct zx_gl_RefItem_s* x);
 struct zx_str* zx_gl_RefItem_GET_ItemIDRef(struct zx_gl_RefItem_s* x);
+struct zx_str* zx_gl_RefItem_GET_subscriptionID(struct zx_gl_RefItem_s* x);
 
 
 
 
 
-void zx_gl_RefItem_PUT_subscriptionID(struct zx_gl_RefItem_s* x, struct zx_str* y);
 void zx_gl_RefItem_PUT_ItemIDRef(struct zx_gl_RefItem_s* x, struct zx_str* y);
+void zx_gl_RefItem_PUT_subscriptionID(struct zx_gl_RefItem_s* x, struct zx_str* y);
 
 
 
@@ -3147,14 +3147,14 @@ struct zx_gl_Status_s {
   zx_gl_Status_EXT
   struct zx_gl_Status_s* Status;	/* {0,-1} nada */
   struct zx_str* code;	/* {1,1} attribute xs:QName */
-  struct zx_str* ref;	/* {0,1} attribute xs:string */
   struct zx_str* comment;	/* {0,1} attribute xs:string */
+  struct zx_str* ref;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_gl_Status_GET_code(struct zx_gl_Status_s* x);
-struct zx_str* zx_gl_Status_GET_ref(struct zx_gl_Status_s* x);
 struct zx_str* zx_gl_Status_GET_comment(struct zx_gl_Status_s* x);
+struct zx_str* zx_gl_Status_GET_ref(struct zx_gl_Status_s* x);
 
 struct zx_gl_Status_s* zx_gl_Status_GET_Status(struct zx_gl_Status_s* x, int n);
 
@@ -3165,8 +3165,8 @@ struct zx_gl_Status_s* zx_gl_Status_POP_Status(struct zx_gl_Status_s* x);
 void zx_gl_Status_PUSH_Status(struct zx_gl_Status_s* x, struct zx_gl_Status_s* y);
 
 void zx_gl_Status_PUT_code(struct zx_gl_Status_s* x, struct zx_str* y);
-void zx_gl_Status_PUT_ref(struct zx_gl_Status_s* x, struct zx_str* y);
 void zx_gl_Status_PUT_comment(struct zx_gl_Status_s* x, struct zx_str* y);
+void zx_gl_Status_PUT_ref(struct zx_gl_Status_s* x, struct zx_str* y);
 
 void zx_gl_Status_PUT_Status(struct zx_gl_Status_s* x, int n, struct zx_gl_Status_s* y);
 
@@ -3209,19 +3209,19 @@ struct zx_gl_Subscription_s {
   struct zx_elem_s* Aggregation;	/* {0,1} gl:AggregationType */
   struct zx_gl_Trigger_s* Trigger;	/* {0,1}  */
   struct zx_gl_Extension_s* Extension;	/* {0,-1} nada */
-  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
   struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
   struct zx_str* includeData;	/* {0,1} attribute Yes */
+  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_gl_Subscription_GET_starts(struct zx_gl_Subscription_s* x);
 struct zx_str* zx_gl_Subscription_GET_expires(struct zx_gl_Subscription_s* x);
 struct zx_str* zx_gl_Subscription_GET_id(struct zx_gl_Subscription_s* x);
-struct zx_str* zx_gl_Subscription_GET_subscriptionID(struct zx_gl_Subscription_s* x);
 struct zx_str* zx_gl_Subscription_GET_includeData(struct zx_gl_Subscription_s* x);
+struct zx_str* zx_gl_Subscription_GET_starts(struct zx_gl_Subscription_s* x);
+struct zx_str* zx_gl_Subscription_GET_subscriptionID(struct zx_gl_Subscription_s* x);
 
 struct zx_gl_ItemSelection_s* zx_gl_Subscription_GET_ItemSelection(struct zx_gl_Subscription_s* x, int n);
 struct zx_gl_RefItem_s* zx_gl_Subscription_GET_RefItem(struct zx_gl_Subscription_s* x, int n);
@@ -3255,11 +3255,11 @@ void zx_gl_Subscription_PUSH_Aggregation(struct zx_gl_Subscription_s* x, struct 
 void zx_gl_Subscription_PUSH_Trigger(struct zx_gl_Subscription_s* x, struct zx_gl_Trigger_s* y);
 void zx_gl_Subscription_PUSH_Extension(struct zx_gl_Subscription_s* x, struct zx_gl_Extension_s* y);
 
-void zx_gl_Subscription_PUT_starts(struct zx_gl_Subscription_s* x, struct zx_str* y);
 void zx_gl_Subscription_PUT_expires(struct zx_gl_Subscription_s* x, struct zx_str* y);
 void zx_gl_Subscription_PUT_id(struct zx_gl_Subscription_s* x, struct zx_str* y);
-void zx_gl_Subscription_PUT_subscriptionID(struct zx_gl_Subscription_s* x, struct zx_str* y);
 void zx_gl_Subscription_PUT_includeData(struct zx_gl_Subscription_s* x, struct zx_str* y);
+void zx_gl_Subscription_PUT_starts(struct zx_gl_Subscription_s* x, struct zx_str* y);
+void zx_gl_Subscription_PUT_subscriptionID(struct zx_gl_Subscription_s* x, struct zx_str* y);
 
 void zx_gl_Subscription_PUT_ItemSelection(struct zx_gl_Subscription_s* x, int n, struct zx_gl_ItemSelection_s* y);
 void zx_gl_Subscription_PUT_RefItem(struct zx_gl_Subscription_s* x, int n, struct zx_gl_RefItem_s* y);

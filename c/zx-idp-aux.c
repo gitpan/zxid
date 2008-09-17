@@ -565,9 +565,9 @@ void zx_FREE_idp_CreatedStatusItem(struct zx_ctx* c, struct zx_idp_CreatedStatus
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->firstUsed, free_strs);
   zx_free_attr(c, x->ref, free_strs);
   zx_free_attr(c, x->used, free_strs);
-  zx_free_attr(c, x->firstUsed, free_strs);
 
 
 
@@ -603,9 +603,9 @@ void zx_DUP_STRS_idp_CreatedStatusItem(struct zx_ctx* c, struct zx_idp_CreatedSt
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->firstUsed);
   zx_dup_attr(c, x->ref);
   zx_dup_attr(c, x->used);
-  zx_dup_attr(c, x->firstUsed);
 
 
 }
@@ -621,9 +621,9 @@ struct zx_idp_CreatedStatusItem_s* zx_DEEP_CLONE_idp_CreatedStatusItem(struct zx
   x = (struct zx_idp_CreatedStatusItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_idp_CreatedStatusItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->firstUsed = zx_clone_attr(c, x->firstUsed);
   x->ref = zx_clone_attr(c, x->ref);
   x->used = zx_clone_attr(c, x->used);
-  x->firstUsed = zx_clone_attr(c, x->firstUsed);
 
 
   return x;
@@ -1197,8 +1197,8 @@ void zx_FREE_idp_GetAssertionResponseItem(struct zx_ctx* c, struct zx_idp_GetAss
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ref, free_strs);
   zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->ref, free_strs);
 
   {
       struct zx_idp_AssertionItem_s* e;
@@ -1242,8 +1242,8 @@ void zx_DUP_STRS_idp_GetAssertionResponseItem(struct zx_ctx* c, struct zx_idp_Ge
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ref);
   zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->ref);
 
   {
       struct zx_idp_AssertionItem_s* e;
@@ -1264,8 +1264,8 @@ struct zx_idp_GetAssertionResponseItem_s* zx_DEEP_CLONE_idp_GetAssertionResponse
   x = (struct zx_idp_GetAssertionResponseItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_idp_GetAssertionResponseItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ref = zx_clone_attr(c, x->ref);
   x->id = zx_clone_attr(c, x->id);
+  x->ref = zx_clone_attr(c, x->ref);
 
   {
       struct zx_idp_AssertionItem_s* e;
@@ -1866,8 +1866,8 @@ void zx_FREE_idp_ProviderInfo(struct zx_ctx* c, struct zx_idp_ProviderInfo_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->providerID, free_strs);
   zx_free_attr(c, x->name, free_strs);
+  zx_free_attr(c, x->providerID, free_strs);
 
 
 
@@ -1903,8 +1903,8 @@ void zx_DUP_STRS_idp_ProviderInfo(struct zx_ctx* c, struct zx_idp_ProviderInfo_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->providerID);
   zx_dup_attr(c, x->name);
+  zx_dup_attr(c, x->providerID);
 
 
 }
@@ -1920,8 +1920,8 @@ struct zx_idp_ProviderInfo_s* zx_DEEP_CLONE_idp_ProviderInfo(struct zx_ctx* c, s
   x = (struct zx_idp_ProviderInfo_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_idp_ProviderInfo_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->providerID = zx_clone_attr(c, x->providerID);
   x->name = zx_clone_attr(c, x->name);
+  x->providerID = zx_clone_attr(c, x->providerID);
 
 
   return x;

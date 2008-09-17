@@ -8,7 +8,7 @@
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
-# $Id: zxidhlo.php,v 1.8 2007/05/10 18:19:57 sampo Exp $
+# $Id: zxidhlocgi.php,v 1.1 2007-08-11 12:34:13 sampo Exp $
 # 16.1.2007, created --Sampo
 
 dl("php_zxid.so");  # These three lines can go to initialization: they only need to run once

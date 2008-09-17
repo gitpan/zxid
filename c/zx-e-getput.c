@@ -29777,6 +29777,10 @@ void zx_e_Body_DEL_idhrxml_NotifyResponse(struct zx_e_Body_s* x, int n)
 
 #endif
 
+/* FUNC(zx_e_Body_GET_id) */
+struct zx_str* zx_e_Body_GET_id(struct zx_e_Body_s* x) { return x->id; }
+/* FUNC(zx_e_Body_PUT_id) */
+void zx_e_Body_PUT_id(struct zx_e_Body_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -30050,6 +30054,10 @@ void zx_e_Envelope_DEL_Body(struct zx_e_Envelope_s* x, int n)
 
 #endif
 
+/* FUNC(zx_e_Envelope_GET_id) */
+struct zx_str* zx_e_Envelope_GET_id(struct zx_e_Envelope_s* x) { return x->id; }
+/* FUNC(zx_e_Envelope_PUT_id) */
+void zx_e_Envelope_PUT_id(struct zx_e_Envelope_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -35018,6 +35026,10 @@ void zx_e_Header_DEL_Security(struct zx_e_Header_s* x, int n)
 
 #endif
 
+/* FUNC(zx_e_Header_GET_id) */
+struct zx_str* zx_e_Header_GET_id(struct zx_e_Header_s* x) { return x->id; }
+/* FUNC(zx_e_Header_PUT_id) */
+void zx_e_Header_PUT_id(struct zx_e_Header_s* x, struct zx_str* y) { x->id = y; }
 
 
 

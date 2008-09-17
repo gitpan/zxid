@@ -578,10 +578,6 @@ void zx_m20_AffiliationDescriptor_DEL_Signature(struct zx_m20_AffiliationDescrip
 struct zx_str* zx_m20_AffiliationDescriptor_GET_affiliationOwnerID(struct zx_m20_AffiliationDescriptor_s* x) { return x->affiliationOwnerID; }
 /* FUNC(zx_m20_AffiliationDescriptor_PUT_affiliationOwnerID) */
 void zx_m20_AffiliationDescriptor_PUT_affiliationOwnerID(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->affiliationOwnerID = y; }
-/* FUNC(zx_m20_AffiliationDescriptor_GET_validUntil) */
-struct zx_str* zx_m20_AffiliationDescriptor_GET_validUntil(struct zx_m20_AffiliationDescriptor_s* x) { return x->validUntil; }
-/* FUNC(zx_m20_AffiliationDescriptor_PUT_validUntil) */
-void zx_m20_AffiliationDescriptor_PUT_validUntil(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 /* FUNC(zx_m20_AffiliationDescriptor_GET_cacheDuration) */
 struct zx_str* zx_m20_AffiliationDescriptor_GET_cacheDuration(struct zx_m20_AffiliationDescriptor_s* x) { return x->cacheDuration; }
 /* FUNC(zx_m20_AffiliationDescriptor_PUT_cacheDuration) */
@@ -590,6 +586,10 @@ void zx_m20_AffiliationDescriptor_PUT_cacheDuration(struct zx_m20_AffiliationDes
 struct zx_str* zx_m20_AffiliationDescriptor_GET_id(struct zx_m20_AffiliationDescriptor_s* x) { return x->id; }
 /* FUNC(zx_m20_AffiliationDescriptor_PUT_id) */
 void zx_m20_AffiliationDescriptor_PUT_id(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_m20_AffiliationDescriptor_GET_validUntil) */
+struct zx_str* zx_m20_AffiliationDescriptor_GET_validUntil(struct zx_m20_AffiliationDescriptor_s* x) { return x->validUntil; }
+/* FUNC(zx_m20_AffiliationDescriptor_PUT_validUntil) */
+void zx_m20_AffiliationDescriptor_PUT_validUntil(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 
 
 
@@ -1412,14 +1412,14 @@ void zx_m20_ContactPerson_DEL_Extension(struct zx_m20_ContactPerson_s* x, int n)
 
 #endif
 
-/* FUNC(zx_m20_ContactPerson_GET_libertyPrincipalIdentifier) */
-struct zx_str* zx_m20_ContactPerson_GET_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x) { return x->libertyPrincipalIdentifier; }
-/* FUNC(zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier) */
-void zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x, struct zx_str* y) { x->libertyPrincipalIdentifier = y; }
 /* FUNC(zx_m20_ContactPerson_GET_contactType) */
 struct zx_str* zx_m20_ContactPerson_GET_contactType(struct zx_m20_ContactPerson_s* x) { return x->contactType; }
 /* FUNC(zx_m20_ContactPerson_PUT_contactType) */
 void zx_m20_ContactPerson_PUT_contactType(struct zx_m20_ContactPerson_s* x, struct zx_str* y) { x->contactType = y; }
+/* FUNC(zx_m20_ContactPerson_GET_libertyPrincipalIdentifier) */
+struct zx_str* zx_m20_ContactPerson_GET_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x) { return x->libertyPrincipalIdentifier; }
+/* FUNC(zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier) */
+void zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x, struct zx_str* y) { x->libertyPrincipalIdentifier = y; }
 
 
 
@@ -2502,22 +2502,22 @@ void zx_m20_EntityDescriptor_DEL_Signature(struct zx_m20_EntityDescriptor_s* x, 
 
 #endif
 
-/* FUNC(zx_m20_EntityDescriptor_GET_providerID) */
-struct zx_str* zx_m20_EntityDescriptor_GET_providerID(struct zx_m20_EntityDescriptor_s* x) { return x->providerID; }
-/* FUNC(zx_m20_EntityDescriptor_PUT_providerID) */
-void zx_m20_EntityDescriptor_PUT_providerID(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->providerID = y; }
-/* FUNC(zx_m20_EntityDescriptor_GET_id) */
-struct zx_str* zx_m20_EntityDescriptor_GET_id(struct zx_m20_EntityDescriptor_s* x) { return x->id; }
-/* FUNC(zx_m20_EntityDescriptor_PUT_id) */
-void zx_m20_EntityDescriptor_PUT_id(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_m20_EntityDescriptor_GET_validUntil) */
-struct zx_str* zx_m20_EntityDescriptor_GET_validUntil(struct zx_m20_EntityDescriptor_s* x) { return x->validUntil; }
-/* FUNC(zx_m20_EntityDescriptor_PUT_validUntil) */
-void zx_m20_EntityDescriptor_PUT_validUntil(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 /* FUNC(zx_m20_EntityDescriptor_GET_cacheDuration) */
 struct zx_str* zx_m20_EntityDescriptor_GET_cacheDuration(struct zx_m20_EntityDescriptor_s* x) { return x->cacheDuration; }
 /* FUNC(zx_m20_EntityDescriptor_PUT_cacheDuration) */
 void zx_m20_EntityDescriptor_PUT_cacheDuration(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_m20_EntityDescriptor_GET_id) */
+struct zx_str* zx_m20_EntityDescriptor_GET_id(struct zx_m20_EntityDescriptor_s* x) { return x->id; }
+/* FUNC(zx_m20_EntityDescriptor_PUT_id) */
+void zx_m20_EntityDescriptor_PUT_id(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_m20_EntityDescriptor_GET_providerID) */
+struct zx_str* zx_m20_EntityDescriptor_GET_providerID(struct zx_m20_EntityDescriptor_s* x) { return x->providerID; }
+/* FUNC(zx_m20_EntityDescriptor_PUT_providerID) */
+void zx_m20_EntityDescriptor_PUT_providerID(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->providerID = y; }
+/* FUNC(zx_m20_EntityDescriptor_GET_validUntil) */
+struct zx_str* zx_m20_EntityDescriptor_GET_validUntil(struct zx_m20_EntityDescriptor_s* x) { return x->validUntil; }
+/* FUNC(zx_m20_EntityDescriptor_PUT_validUntil) */
+void zx_m20_EntityDescriptor_PUT_validUntil(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 
 
 
@@ -5342,22 +5342,22 @@ void zx_m20_IDPDescriptor_DEL_AuthnServiceURL(struct zx_m20_IDPDescriptor_s* x, 
 
 #endif
 
-/* FUNC(zx_m20_IDPDescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_m20_IDPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration) */
-void zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
-/* FUNC(zx_m20_IDPDescriptor_GET_id) */
-struct zx_str* zx_m20_IDPDescriptor_GET_id(struct zx_m20_IDPDescriptor_s* x) { return x->id; }
-/* FUNC(zx_m20_IDPDescriptor_PUT_id) */
-void zx_m20_IDPDescriptor_PUT_id(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_m20_IDPDescriptor_GET_validUntil) */
-struct zx_str* zx_m20_IDPDescriptor_GET_validUntil(struct zx_m20_IDPDescriptor_s* x) { return x->validUntil; }
-/* FUNC(zx_m20_IDPDescriptor_PUT_validUntil) */
-void zx_m20_IDPDescriptor_PUT_validUntil(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 /* FUNC(zx_m20_IDPDescriptor_GET_cacheDuration) */
 struct zx_str* zx_m20_IDPDescriptor_GET_cacheDuration(struct zx_m20_IDPDescriptor_s* x) { return x->cacheDuration; }
 /* FUNC(zx_m20_IDPDescriptor_PUT_cacheDuration) */
 void zx_m20_IDPDescriptor_PUT_cacheDuration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_m20_IDPDescriptor_GET_id) */
+struct zx_str* zx_m20_IDPDescriptor_GET_id(struct zx_m20_IDPDescriptor_s* x) { return x->id; }
+/* FUNC(zx_m20_IDPDescriptor_PUT_id) */
+void zx_m20_IDPDescriptor_PUT_id(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_m20_IDPDescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_m20_IDPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration) */
+void zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_m20_IDPDescriptor_GET_validUntil) */
+struct zx_str* zx_m20_IDPDescriptor_GET_validUntil(struct zx_m20_IDPDescriptor_s* x) { return x->validUntil; }
+/* FUNC(zx_m20_IDPDescriptor_PUT_validUntil) */
+void zx_m20_IDPDescriptor_PUT_validUntil(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 
 
 
@@ -9156,22 +9156,22 @@ void zx_m20_SPDescriptor_DEL_AuthnRequestsSigned(struct zx_m20_SPDescriptor_s* x
 
 #endif
 
-/* FUNC(zx_m20_SPDescriptor_GET_protocolSupportEnumeration) */
-struct zx_str* zx_m20_SPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x) { return x->protocolSupportEnumeration; }
-/* FUNC(zx_m20_SPDescriptor_PUT_protocolSupportEnumeration) */
-void zx_m20_SPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
-/* FUNC(zx_m20_SPDescriptor_GET_id) */
-struct zx_str* zx_m20_SPDescriptor_GET_id(struct zx_m20_SPDescriptor_s* x) { return x->id; }
-/* FUNC(zx_m20_SPDescriptor_PUT_id) */
-void zx_m20_SPDescriptor_PUT_id(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_m20_SPDescriptor_GET_validUntil) */
-struct zx_str* zx_m20_SPDescriptor_GET_validUntil(struct zx_m20_SPDescriptor_s* x) { return x->validUntil; }
-/* FUNC(zx_m20_SPDescriptor_PUT_validUntil) */
-void zx_m20_SPDescriptor_PUT_validUntil(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 /* FUNC(zx_m20_SPDescriptor_GET_cacheDuration) */
 struct zx_str* zx_m20_SPDescriptor_GET_cacheDuration(struct zx_m20_SPDescriptor_s* x) { return x->cacheDuration; }
 /* FUNC(zx_m20_SPDescriptor_PUT_cacheDuration) */
 void zx_m20_SPDescriptor_PUT_cacheDuration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->cacheDuration = y; }
+/* FUNC(zx_m20_SPDescriptor_GET_id) */
+struct zx_str* zx_m20_SPDescriptor_GET_id(struct zx_m20_SPDescriptor_s* x) { return x->id; }
+/* FUNC(zx_m20_SPDescriptor_PUT_id) */
+void zx_m20_SPDescriptor_PUT_id(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_m20_SPDescriptor_GET_protocolSupportEnumeration) */
+struct zx_str* zx_m20_SPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x) { return x->protocolSupportEnumeration; }
+/* FUNC(zx_m20_SPDescriptor_PUT_protocolSupportEnumeration) */
+void zx_m20_SPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->protocolSupportEnumeration = y; }
+/* FUNC(zx_m20_SPDescriptor_GET_validUntil) */
+struct zx_str* zx_m20_SPDescriptor_GET_validUntil(struct zx_m20_SPDescriptor_s* x) { return x->validUntil; }
+/* FUNC(zx_m20_SPDescriptor_PUT_validUntil) */
+void zx_m20_SPDescriptor_PUT_validUntil(struct zx_m20_SPDescriptor_s* x, struct zx_str* y) { x->validUntil = y; }
 
 
 

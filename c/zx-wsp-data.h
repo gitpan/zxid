@@ -379,23 +379,23 @@ struct zx_str* zx_EASY_ENC_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_ws
 struct zx_wsp_PolicyReference_s {
   ZX_ELEM_EXT
   zx_wsp_PolicyReference_EXT
-  struct zx_str* URI;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Digest;	/* {0,1} attribute xs:base64Binary */
   struct zx_str* DigestAlgorithm;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* URI;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_wsp_PolicyReference_GET_URI(struct zx_wsp_PolicyReference_s* x);
 struct zx_str* zx_wsp_PolicyReference_GET_Digest(struct zx_wsp_PolicyReference_s* x);
 struct zx_str* zx_wsp_PolicyReference_GET_DigestAlgorithm(struct zx_wsp_PolicyReference_s* x);
+struct zx_str* zx_wsp_PolicyReference_GET_URI(struct zx_wsp_PolicyReference_s* x);
 
 
 
 
 
-void zx_wsp_PolicyReference_PUT_URI(struct zx_wsp_PolicyReference_s* x, struct zx_str* y);
 void zx_wsp_PolicyReference_PUT_Digest(struct zx_wsp_PolicyReference_s* x, struct zx_str* y);
 void zx_wsp_PolicyReference_PUT_DigestAlgorithm(struct zx_wsp_PolicyReference_s* x, struct zx_str* y);
+void zx_wsp_PolicyReference_PUT_URI(struct zx_wsp_PolicyReference_s* x, struct zx_str* y);
 
 
 

@@ -431,47 +431,59 @@ void zx_b_ApplicationEPR_DEL_Metadata(struct zx_b_ApplicationEPR_s* x, int n)
 
 #endif
 
+/* FUNC(zx_b_ApplicationEPR_GET_ID) */
+struct zx_str* zx_b_ApplicationEPR_GET_ID(struct zx_b_ApplicationEPR_s* x) { return x->ID; }
+/* FUNC(zx_b_ApplicationEPR_PUT_ID) */
+void zx_b_ApplicationEPR_PUT_ID(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_b_ApplicationEPR_GET_id) */
+struct zx_str* zx_b_ApplicationEPR_GET_id(struct zx_b_ApplicationEPR_s* x) { return x->id; }
+/* FUNC(zx_b_ApplicationEPR_PUT_id) */
+void zx_b_ApplicationEPR_PUT_id(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_ApplicationEPR_GET_notOnOrAfter) */
 struct zx_str* zx_b_ApplicationEPR_GET_notOnOrAfter(struct zx_b_ApplicationEPR_s* x) { return x->notOnOrAfter; }
 /* FUNC(zx_b_ApplicationEPR_PUT_notOnOrAfter) */
 void zx_b_ApplicationEPR_PUT_notOnOrAfter(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->notOnOrAfter = y; }
-/* FUNC(zx_b_ApplicationEPR_GET_mustUnderstand) */
-struct zx_str* zx_b_ApplicationEPR_GET_mustUnderstand(struct zx_b_ApplicationEPR_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_ApplicationEPR_PUT_mustUnderstand) */
-void zx_b_ApplicationEPR_PUT_mustUnderstand(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_ApplicationEPR_GET_actor) */
-struct zx_str* zx_b_ApplicationEPR_GET_actor(struct zx_b_ApplicationEPR_s* x) { return x->actor; }
-/* FUNC(zx_b_ApplicationEPR_PUT_actor) */
-void zx_b_ApplicationEPR_PUT_actor(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_ApplicationEPR_GET_Id) */
 struct zx_str* zx_b_ApplicationEPR_GET_Id(struct zx_b_ApplicationEPR_s* x) { return x->Id; }
 /* FUNC(zx_b_ApplicationEPR_PUT_Id) */
 void zx_b_ApplicationEPR_PUT_Id(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_ApplicationEPR_GET_actor) */
+struct zx_str* zx_b_ApplicationEPR_GET_actor(struct zx_b_ApplicationEPR_s* x) { return x->actor; }
+/* FUNC(zx_b_ApplicationEPR_PUT_actor) */
+void zx_b_ApplicationEPR_PUT_actor(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_ApplicationEPR_GET_mustUnderstand) */
+struct zx_str* zx_b_ApplicationEPR_GET_mustUnderstand(struct zx_b_ApplicationEPR_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_ApplicationEPR_PUT_mustUnderstand) */
+void zx_b_ApplicationEPR_PUT_mustUnderstand(struct zx_b_ApplicationEPR_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
-/* FUNC(zx_b_Consent_GET_uri) */
-struct zx_str* zx_b_Consent_GET_uri(struct zx_b_Consent_s* x) { return x->uri; }
-/* FUNC(zx_b_Consent_PUT_uri) */
-void zx_b_Consent_PUT_uri(struct zx_b_Consent_s* x, struct zx_str* y) { x->uri = y; }
+/* FUNC(zx_b_Consent_GET_id) */
+struct zx_str* zx_b_Consent_GET_id(struct zx_b_Consent_s* x) { return x->id; }
+/* FUNC(zx_b_Consent_PUT_id) */
+void zx_b_Consent_PUT_id(struct zx_b_Consent_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_Consent_GET_timestamp) */
 struct zx_str* zx_b_Consent_GET_timestamp(struct zx_b_Consent_s* x) { return x->timestamp; }
 /* FUNC(zx_b_Consent_PUT_timestamp) */
 void zx_b_Consent_PUT_timestamp(struct zx_b_Consent_s* x, struct zx_str* y) { x->timestamp = y; }
-/* FUNC(zx_b_Consent_GET_mustUnderstand) */
-struct zx_str* zx_b_Consent_GET_mustUnderstand(struct zx_b_Consent_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_Consent_PUT_mustUnderstand) */
-void zx_b_Consent_PUT_mustUnderstand(struct zx_b_Consent_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_Consent_GET_actor) */
-struct zx_str* zx_b_Consent_GET_actor(struct zx_b_Consent_s* x) { return x->actor; }
-/* FUNC(zx_b_Consent_PUT_actor) */
-void zx_b_Consent_PUT_actor(struct zx_b_Consent_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_Consent_GET_uri) */
+struct zx_str* zx_b_Consent_GET_uri(struct zx_b_Consent_s* x) { return x->uri; }
+/* FUNC(zx_b_Consent_PUT_uri) */
+void zx_b_Consent_PUT_uri(struct zx_b_Consent_s* x, struct zx_str* y) { x->uri = y; }
 /* FUNC(zx_b_Consent_GET_Id) */
 struct zx_str* zx_b_Consent_GET_Id(struct zx_b_Consent_s* x) { return x->Id; }
 /* FUNC(zx_b_Consent_PUT_Id) */
 void zx_b_Consent_PUT_Id(struct zx_b_Consent_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_Consent_GET_actor) */
+struct zx_str* zx_b_Consent_GET_actor(struct zx_b_Consent_s* x) { return x->actor; }
+/* FUNC(zx_b_Consent_PUT_actor) */
+void zx_b_Consent_PUT_actor(struct zx_b_Consent_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_Consent_GET_mustUnderstand) */
+struct zx_str* zx_b_Consent_GET_mustUnderstand(struct zx_b_Consent_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_Consent_PUT_mustUnderstand) */
+void zx_b_Consent_PUT_mustUnderstand(struct zx_b_Consent_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -745,18 +757,22 @@ void zx_b_CredentialsContext_DEL_SecurityMechID(struct zx_b_CredentialsContext_s
 
 #endif
 
-/* FUNC(zx_b_CredentialsContext_GET_mustUnderstand) */
-struct zx_str* zx_b_CredentialsContext_GET_mustUnderstand(struct zx_b_CredentialsContext_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_CredentialsContext_PUT_mustUnderstand) */
-void zx_b_CredentialsContext_PUT_mustUnderstand(struct zx_b_CredentialsContext_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_CredentialsContext_GET_actor) */
-struct zx_str* zx_b_CredentialsContext_GET_actor(struct zx_b_CredentialsContext_s* x) { return x->actor; }
-/* FUNC(zx_b_CredentialsContext_PUT_actor) */
-void zx_b_CredentialsContext_PUT_actor(struct zx_b_CredentialsContext_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_CredentialsContext_GET_id) */
+struct zx_str* zx_b_CredentialsContext_GET_id(struct zx_b_CredentialsContext_s* x) { return x->id; }
+/* FUNC(zx_b_CredentialsContext_PUT_id) */
+void zx_b_CredentialsContext_PUT_id(struct zx_b_CredentialsContext_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_CredentialsContext_GET_Id) */
 struct zx_str* zx_b_CredentialsContext_GET_Id(struct zx_b_CredentialsContext_s* x) { return x->Id; }
 /* FUNC(zx_b_CredentialsContext_PUT_Id) */
 void zx_b_CredentialsContext_PUT_Id(struct zx_b_CredentialsContext_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_CredentialsContext_GET_actor) */
+struct zx_str* zx_b_CredentialsContext_GET_actor(struct zx_b_CredentialsContext_s* x) { return x->actor; }
+/* FUNC(zx_b_CredentialsContext_PUT_actor) */
+void zx_b_CredentialsContext_PUT_actor(struct zx_b_CredentialsContext_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_CredentialsContext_GET_mustUnderstand) */
+struct zx_str* zx_b_CredentialsContext_GET_mustUnderstand(struct zx_b_CredentialsContext_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_CredentialsContext_PUT_mustUnderstand) */
+void zx_b_CredentialsContext_PUT_mustUnderstand(struct zx_b_CredentialsContext_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -1164,6 +1180,14 @@ void zx_b_EndpointUpdate_DEL_Metadata(struct zx_b_EndpointUpdate_s* x, int n)
 
 #endif
 
+/* FUNC(zx_b_EndpointUpdate_GET_ID) */
+struct zx_str* zx_b_EndpointUpdate_GET_ID(struct zx_b_EndpointUpdate_s* x) { return x->ID; }
+/* FUNC(zx_b_EndpointUpdate_PUT_ID) */
+void zx_b_EndpointUpdate_PUT_ID(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_b_EndpointUpdate_GET_id) */
+struct zx_str* zx_b_EndpointUpdate_GET_id(struct zx_b_EndpointUpdate_s* x) { return x->id; }
+/* FUNC(zx_b_EndpointUpdate_PUT_id) */
+void zx_b_EndpointUpdate_PUT_id(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_EndpointUpdate_GET_notOnOrAfter) */
 struct zx_str* zx_b_EndpointUpdate_GET_notOnOrAfter(struct zx_b_EndpointUpdate_s* x) { return x->notOnOrAfter; }
 /* FUNC(zx_b_EndpointUpdate_PUT_notOnOrAfter) */
@@ -1172,39 +1196,43 @@ void zx_b_EndpointUpdate_PUT_notOnOrAfter(struct zx_b_EndpointUpdate_s* x, struc
 struct zx_str* zx_b_EndpointUpdate_GET_updateType(struct zx_b_EndpointUpdate_s* x) { return x->updateType; }
 /* FUNC(zx_b_EndpointUpdate_PUT_updateType) */
 void zx_b_EndpointUpdate_PUT_updateType(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->updateType = y; }
-/* FUNC(zx_b_EndpointUpdate_GET_mustUnderstand) */
-struct zx_str* zx_b_EndpointUpdate_GET_mustUnderstand(struct zx_b_EndpointUpdate_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_EndpointUpdate_PUT_mustUnderstand) */
-void zx_b_EndpointUpdate_PUT_mustUnderstand(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_EndpointUpdate_GET_actor) */
-struct zx_str* zx_b_EndpointUpdate_GET_actor(struct zx_b_EndpointUpdate_s* x) { return x->actor; }
-/* FUNC(zx_b_EndpointUpdate_PUT_actor) */
-void zx_b_EndpointUpdate_PUT_actor(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_EndpointUpdate_GET_Id) */
 struct zx_str* zx_b_EndpointUpdate_GET_Id(struct zx_b_EndpointUpdate_s* x) { return x->Id; }
 /* FUNC(zx_b_EndpointUpdate_PUT_Id) */
 void zx_b_EndpointUpdate_PUT_Id(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_EndpointUpdate_GET_actor) */
+struct zx_str* zx_b_EndpointUpdate_GET_actor(struct zx_b_EndpointUpdate_s* x) { return x->actor; }
+/* FUNC(zx_b_EndpointUpdate_PUT_actor) */
+void zx_b_EndpointUpdate_PUT_actor(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_EndpointUpdate_GET_mustUnderstand) */
+struct zx_str* zx_b_EndpointUpdate_GET_mustUnderstand(struct zx_b_EndpointUpdate_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_EndpointUpdate_PUT_mustUnderstand) */
+void zx_b_EndpointUpdate_PUT_mustUnderstand(struct zx_b_EndpointUpdate_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
+/* FUNC(zx_b_Framework_GET_id) */
+struct zx_str* zx_b_Framework_GET_id(struct zx_b_Framework_s* x) { return x->id; }
+/* FUNC(zx_b_Framework_PUT_id) */
+void zx_b_Framework_PUT_id(struct zx_b_Framework_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_Framework_GET_version) */
 struct zx_str* zx_b_Framework_GET_version(struct zx_b_Framework_s* x) { return x->version; }
 /* FUNC(zx_b_Framework_PUT_version) */
 void zx_b_Framework_PUT_version(struct zx_b_Framework_s* x, struct zx_str* y) { x->version = y; }
-/* FUNC(zx_b_Framework_GET_mustUnderstand) */
-struct zx_str* zx_b_Framework_GET_mustUnderstand(struct zx_b_Framework_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_Framework_PUT_mustUnderstand) */
-void zx_b_Framework_PUT_mustUnderstand(struct zx_b_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_Framework_GET_actor) */
-struct zx_str* zx_b_Framework_GET_actor(struct zx_b_Framework_s* x) { return x->actor; }
-/* FUNC(zx_b_Framework_PUT_actor) */
-void zx_b_Framework_PUT_actor(struct zx_b_Framework_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_Framework_GET_Id) */
 struct zx_str* zx_b_Framework_GET_Id(struct zx_b_Framework_s* x) { return x->Id; }
 /* FUNC(zx_b_Framework_PUT_Id) */
 void zx_b_Framework_PUT_Id(struct zx_b_Framework_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_Framework_GET_actor) */
+struct zx_str* zx_b_Framework_GET_actor(struct zx_b_Framework_s* x) { return x->actor; }
+/* FUNC(zx_b_Framework_PUT_actor) */
+void zx_b_Framework_PUT_actor(struct zx_b_Framework_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_Framework_GET_mustUnderstand) */
+struct zx_str* zx_b_Framework_GET_mustUnderstand(struct zx_b_Framework_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_Framework_PUT_mustUnderstand) */
+void zx_b_Framework_PUT_mustUnderstand(struct zx_b_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -1612,85 +1640,105 @@ void zx_b_InteractionService_DEL_Metadata(struct zx_b_InteractionService_s* x, i
 
 #endif
 
+/* FUNC(zx_b_InteractionService_GET_ID) */
+struct zx_str* zx_b_InteractionService_GET_ID(struct zx_b_InteractionService_s* x) { return x->ID; }
+/* FUNC(zx_b_InteractionService_PUT_ID) */
+void zx_b_InteractionService_PUT_ID(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_b_InteractionService_GET_id) */
+struct zx_str* zx_b_InteractionService_GET_id(struct zx_b_InteractionService_s* x) { return x->id; }
+/* FUNC(zx_b_InteractionService_PUT_id) */
+void zx_b_InteractionService_PUT_id(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_InteractionService_GET_notOnOrAfter) */
 struct zx_str* zx_b_InteractionService_GET_notOnOrAfter(struct zx_b_InteractionService_s* x) { return x->notOnOrAfter; }
 /* FUNC(zx_b_InteractionService_PUT_notOnOrAfter) */
 void zx_b_InteractionService_PUT_notOnOrAfter(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->notOnOrAfter = y; }
-/* FUNC(zx_b_InteractionService_GET_mustUnderstand) */
-struct zx_str* zx_b_InteractionService_GET_mustUnderstand(struct zx_b_InteractionService_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_InteractionService_PUT_mustUnderstand) */
-void zx_b_InteractionService_PUT_mustUnderstand(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_InteractionService_GET_actor) */
-struct zx_str* zx_b_InteractionService_GET_actor(struct zx_b_InteractionService_s* x) { return x->actor; }
-/* FUNC(zx_b_InteractionService_PUT_actor) */
-void zx_b_InteractionService_PUT_actor(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_InteractionService_GET_Id) */
 struct zx_str* zx_b_InteractionService_GET_Id(struct zx_b_InteractionService_s* x) { return x->Id; }
 /* FUNC(zx_b_InteractionService_PUT_Id) */
 void zx_b_InteractionService_PUT_Id(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_InteractionService_GET_actor) */
+struct zx_str* zx_b_InteractionService_GET_actor(struct zx_b_InteractionService_s* x) { return x->actor; }
+/* FUNC(zx_b_InteractionService_PUT_actor) */
+void zx_b_InteractionService_PUT_actor(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_InteractionService_GET_mustUnderstand) */
+struct zx_str* zx_b_InteractionService_GET_mustUnderstand(struct zx_b_InteractionService_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_InteractionService_PUT_mustUnderstand) */
+void zx_b_InteractionService_PUT_mustUnderstand(struct zx_b_InteractionService_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
-/* FUNC(zx_b_ProcessingContext_GET_mustUnderstand) */
-struct zx_str* zx_b_ProcessingContext_GET_mustUnderstand(struct zx_b_ProcessingContext_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_ProcessingContext_PUT_mustUnderstand) */
-void zx_b_ProcessingContext_PUT_mustUnderstand(struct zx_b_ProcessingContext_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_ProcessingContext_GET_actor) */
-struct zx_str* zx_b_ProcessingContext_GET_actor(struct zx_b_ProcessingContext_s* x) { return x->actor; }
-/* FUNC(zx_b_ProcessingContext_PUT_actor) */
-void zx_b_ProcessingContext_PUT_actor(struct zx_b_ProcessingContext_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_ProcessingContext_GET_id) */
+struct zx_str* zx_b_ProcessingContext_GET_id(struct zx_b_ProcessingContext_s* x) { return x->id; }
+/* FUNC(zx_b_ProcessingContext_PUT_id) */
+void zx_b_ProcessingContext_PUT_id(struct zx_b_ProcessingContext_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_ProcessingContext_GET_Id) */
 struct zx_str* zx_b_ProcessingContext_GET_Id(struct zx_b_ProcessingContext_s* x) { return x->Id; }
 /* FUNC(zx_b_ProcessingContext_PUT_Id) */
 void zx_b_ProcessingContext_PUT_Id(struct zx_b_ProcessingContext_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_ProcessingContext_GET_actor) */
+struct zx_str* zx_b_ProcessingContext_GET_actor(struct zx_b_ProcessingContext_s* x) { return x->actor; }
+/* FUNC(zx_b_ProcessingContext_PUT_actor) */
+void zx_b_ProcessingContext_PUT_actor(struct zx_b_ProcessingContext_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_ProcessingContext_GET_mustUnderstand) */
+struct zx_str* zx_b_ProcessingContext_GET_mustUnderstand(struct zx_b_ProcessingContext_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_ProcessingContext_PUT_mustUnderstand) */
+void zx_b_ProcessingContext_PUT_mustUnderstand(struct zx_b_ProcessingContext_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
+/* FUNC(zx_b_RedirectRequest_GET_id) */
+struct zx_str* zx_b_RedirectRequest_GET_id(struct zx_b_RedirectRequest_s* x) { return x->id; }
+/* FUNC(zx_b_RedirectRequest_PUT_id) */
+void zx_b_RedirectRequest_PUT_id(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_RedirectRequest_GET_redirectURL) */
 struct zx_str* zx_b_RedirectRequest_GET_redirectURL(struct zx_b_RedirectRequest_s* x) { return x->redirectURL; }
 /* FUNC(zx_b_RedirectRequest_PUT_redirectURL) */
 void zx_b_RedirectRequest_PUT_redirectURL(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->redirectURL = y; }
-/* FUNC(zx_b_RedirectRequest_GET_mustUnderstand) */
-struct zx_str* zx_b_RedirectRequest_GET_mustUnderstand(struct zx_b_RedirectRequest_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_RedirectRequest_PUT_mustUnderstand) */
-void zx_b_RedirectRequest_PUT_mustUnderstand(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_RedirectRequest_GET_actor) */
-struct zx_str* zx_b_RedirectRequest_GET_actor(struct zx_b_RedirectRequest_s* x) { return x->actor; }
-/* FUNC(zx_b_RedirectRequest_PUT_actor) */
-void zx_b_RedirectRequest_PUT_actor(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_RedirectRequest_GET_Id) */
 struct zx_str* zx_b_RedirectRequest_GET_Id(struct zx_b_RedirectRequest_s* x) { return x->Id; }
 /* FUNC(zx_b_RedirectRequest_PUT_Id) */
 void zx_b_RedirectRequest_PUT_Id(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_RedirectRequest_GET_actor) */
+struct zx_str* zx_b_RedirectRequest_GET_actor(struct zx_b_RedirectRequest_s* x) { return x->actor; }
+/* FUNC(zx_b_RedirectRequest_PUT_actor) */
+void zx_b_RedirectRequest_PUT_actor(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_RedirectRequest_GET_mustUnderstand) */
+struct zx_str* zx_b_RedirectRequest_GET_mustUnderstand(struct zx_b_RedirectRequest_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_RedirectRequest_PUT_mustUnderstand) */
+void zx_b_RedirectRequest_PUT_mustUnderstand(struct zx_b_RedirectRequest_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
-/* FUNC(zx_b_Sender_GET_providerID) */
-struct zx_str* zx_b_Sender_GET_providerID(struct zx_b_Sender_s* x) { return x->providerID; }
-/* FUNC(zx_b_Sender_PUT_providerID) */
-void zx_b_Sender_PUT_providerID(struct zx_b_Sender_s* x, struct zx_str* y) { x->providerID = y; }
 /* FUNC(zx_b_Sender_GET_affiliationID) */
 struct zx_str* zx_b_Sender_GET_affiliationID(struct zx_b_Sender_s* x) { return x->affiliationID; }
 /* FUNC(zx_b_Sender_PUT_affiliationID) */
 void zx_b_Sender_PUT_affiliationID(struct zx_b_Sender_s* x, struct zx_str* y) { x->affiliationID = y; }
-/* FUNC(zx_b_Sender_GET_mustUnderstand) */
-struct zx_str* zx_b_Sender_GET_mustUnderstand(struct zx_b_Sender_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_Sender_PUT_mustUnderstand) */
-void zx_b_Sender_PUT_mustUnderstand(struct zx_b_Sender_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_Sender_GET_actor) */
-struct zx_str* zx_b_Sender_GET_actor(struct zx_b_Sender_s* x) { return x->actor; }
-/* FUNC(zx_b_Sender_PUT_actor) */
-void zx_b_Sender_PUT_actor(struct zx_b_Sender_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_Sender_GET_id) */
+struct zx_str* zx_b_Sender_GET_id(struct zx_b_Sender_s* x) { return x->id; }
+/* FUNC(zx_b_Sender_PUT_id) */
+void zx_b_Sender_PUT_id(struct zx_b_Sender_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_b_Sender_GET_providerID) */
+struct zx_str* zx_b_Sender_GET_providerID(struct zx_b_Sender_s* x) { return x->providerID; }
+/* FUNC(zx_b_Sender_PUT_providerID) */
+void zx_b_Sender_PUT_providerID(struct zx_b_Sender_s* x, struct zx_str* y) { x->providerID = y; }
 /* FUNC(zx_b_Sender_GET_Id) */
 struct zx_str* zx_b_Sender_GET_Id(struct zx_b_Sender_s* x) { return x->Id; }
 /* FUNC(zx_b_Sender_PUT_Id) */
 void zx_b_Sender_PUT_Id(struct zx_b_Sender_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_Sender_GET_actor) */
+struct zx_str* zx_b_Sender_GET_actor(struct zx_b_Sender_s* x) { return x->actor; }
+/* FUNC(zx_b_Sender_PUT_actor) */
+void zx_b_Sender_PUT_actor(struct zx_b_Sender_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_Sender_GET_mustUnderstand) */
+struct zx_str* zx_b_Sender_GET_mustUnderstand(struct zx_b_Sender_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_Sender_PUT_mustUnderstand) */
+void zx_b_Sender_PUT_mustUnderstand(struct zx_b_Sender_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -2098,60 +2146,72 @@ void zx_b_TargetIdentity_DEL_ff12_Assertion(struct zx_b_TargetIdentity_s* x, int
 
 #endif
 
-/* FUNC(zx_b_TargetIdentity_GET_mustUnderstand) */
-struct zx_str* zx_b_TargetIdentity_GET_mustUnderstand(struct zx_b_TargetIdentity_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_TargetIdentity_PUT_mustUnderstand) */
-void zx_b_TargetIdentity_PUT_mustUnderstand(struct zx_b_TargetIdentity_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_TargetIdentity_GET_actor) */
-struct zx_str* zx_b_TargetIdentity_GET_actor(struct zx_b_TargetIdentity_s* x) { return x->actor; }
-/* FUNC(zx_b_TargetIdentity_PUT_actor) */
-void zx_b_TargetIdentity_PUT_actor(struct zx_b_TargetIdentity_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_TargetIdentity_GET_id) */
+struct zx_str* zx_b_TargetIdentity_GET_id(struct zx_b_TargetIdentity_s* x) { return x->id; }
+/* FUNC(zx_b_TargetIdentity_PUT_id) */
+void zx_b_TargetIdentity_PUT_id(struct zx_b_TargetIdentity_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_TargetIdentity_GET_Id) */
 struct zx_str* zx_b_TargetIdentity_GET_Id(struct zx_b_TargetIdentity_s* x) { return x->Id; }
 /* FUNC(zx_b_TargetIdentity_PUT_Id) */
 void zx_b_TargetIdentity_PUT_Id(struct zx_b_TargetIdentity_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_TargetIdentity_GET_actor) */
+struct zx_str* zx_b_TargetIdentity_GET_actor(struct zx_b_TargetIdentity_s* x) { return x->actor; }
+/* FUNC(zx_b_TargetIdentity_PUT_actor) */
+void zx_b_TargetIdentity_PUT_actor(struct zx_b_TargetIdentity_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_TargetIdentity_GET_mustUnderstand) */
+struct zx_str* zx_b_TargetIdentity_GET_mustUnderstand(struct zx_b_TargetIdentity_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_TargetIdentity_PUT_mustUnderstand) */
+void zx_b_TargetIdentity_PUT_mustUnderstand(struct zx_b_TargetIdentity_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
+/* FUNC(zx_b_Timeout_GET_id) */
+struct zx_str* zx_b_Timeout_GET_id(struct zx_b_Timeout_s* x) { return x->id; }
+/* FUNC(zx_b_Timeout_PUT_id) */
+void zx_b_Timeout_PUT_id(struct zx_b_Timeout_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_Timeout_GET_maxProcessingTime) */
 struct zx_str* zx_b_Timeout_GET_maxProcessingTime(struct zx_b_Timeout_s* x) { return x->maxProcessingTime; }
 /* FUNC(zx_b_Timeout_PUT_maxProcessingTime) */
 void zx_b_Timeout_PUT_maxProcessingTime(struct zx_b_Timeout_s* x, struct zx_str* y) { x->maxProcessingTime = y; }
-/* FUNC(zx_b_Timeout_GET_mustUnderstand) */
-struct zx_str* zx_b_Timeout_GET_mustUnderstand(struct zx_b_Timeout_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_Timeout_PUT_mustUnderstand) */
-void zx_b_Timeout_PUT_mustUnderstand(struct zx_b_Timeout_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_Timeout_GET_actor) */
-struct zx_str* zx_b_Timeout_GET_actor(struct zx_b_Timeout_s* x) { return x->actor; }
-/* FUNC(zx_b_Timeout_PUT_actor) */
-void zx_b_Timeout_PUT_actor(struct zx_b_Timeout_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_Timeout_GET_Id) */
 struct zx_str* zx_b_Timeout_GET_Id(struct zx_b_Timeout_s* x) { return x->Id; }
 /* FUNC(zx_b_Timeout_PUT_Id) */
 void zx_b_Timeout_PUT_Id(struct zx_b_Timeout_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_Timeout_GET_actor) */
+struct zx_str* zx_b_Timeout_GET_actor(struct zx_b_Timeout_s* x) { return x->actor; }
+/* FUNC(zx_b_Timeout_PUT_actor) */
+void zx_b_Timeout_PUT_actor(struct zx_b_Timeout_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_Timeout_GET_mustUnderstand) */
+struct zx_str* zx_b_Timeout_GET_mustUnderstand(struct zx_b_Timeout_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_Timeout_PUT_mustUnderstand) */
+void zx_b_Timeout_PUT_mustUnderstand(struct zx_b_Timeout_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
+/* FUNC(zx_b_UsageDirective_GET_id) */
+struct zx_str* zx_b_UsageDirective_GET_id(struct zx_b_UsageDirective_s* x) { return x->id; }
+/* FUNC(zx_b_UsageDirective_PUT_id) */
+void zx_b_UsageDirective_PUT_id(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_UsageDirective_GET_ref) */
 struct zx_str* zx_b_UsageDirective_GET_ref(struct zx_b_UsageDirective_s* x) { return x->ref; }
 /* FUNC(zx_b_UsageDirective_PUT_ref) */
 void zx_b_UsageDirective_PUT_ref(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->ref = y; }
-/* FUNC(zx_b_UsageDirective_GET_mustUnderstand) */
-struct zx_str* zx_b_UsageDirective_GET_mustUnderstand(struct zx_b_UsageDirective_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_UsageDirective_PUT_mustUnderstand) */
-void zx_b_UsageDirective_PUT_mustUnderstand(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_UsageDirective_GET_actor) */
-struct zx_str* zx_b_UsageDirective_GET_actor(struct zx_b_UsageDirective_s* x) { return x->actor; }
-/* FUNC(zx_b_UsageDirective_PUT_actor) */
-void zx_b_UsageDirective_PUT_actor(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_b_UsageDirective_GET_Id) */
 struct zx_str* zx_b_UsageDirective_GET_Id(struct zx_b_UsageDirective_s* x) { return x->Id; }
 /* FUNC(zx_b_UsageDirective_PUT_Id) */
 void zx_b_UsageDirective_PUT_Id(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_UsageDirective_GET_actor) */
+struct zx_str* zx_b_UsageDirective_GET_actor(struct zx_b_UsageDirective_s* x) { return x->actor; }
+/* FUNC(zx_b_UsageDirective_PUT_actor) */
+void zx_b_UsageDirective_PUT_actor(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_UsageDirective_GET_mustUnderstand) */
+struct zx_str* zx_b_UsageDirective_GET_mustUnderstand(struct zx_b_UsageDirective_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_UsageDirective_PUT_mustUnderstand) */
+void zx_b_UsageDirective_PUT_mustUnderstand(struct zx_b_UsageDirective_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -2291,6 +2351,10 @@ void zx_b_UserInteraction_DEL_InteractionService(struct zx_b_UserInteraction_s* 
 
 #endif
 
+/* FUNC(zx_b_UserInteraction_GET_id) */
+struct zx_str* zx_b_UserInteraction_GET_id(struct zx_b_UserInteraction_s* x) { return x->id; }
+/* FUNC(zx_b_UserInteraction_PUT_id) */
+void zx_b_UserInteraction_PUT_id(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_b_UserInteraction_GET_interact) */
 struct zx_str* zx_b_UserInteraction_GET_interact(struct zx_b_UserInteraction_s* x) { return x->interact; }
 /* FUNC(zx_b_UserInteraction_PUT_interact) */
@@ -2299,26 +2363,26 @@ void zx_b_UserInteraction_PUT_interact(struct zx_b_UserInteraction_s* x, struct 
 struct zx_str* zx_b_UserInteraction_GET_language(struct zx_b_UserInteraction_s* x) { return x->language; }
 /* FUNC(zx_b_UserInteraction_PUT_language) */
 void zx_b_UserInteraction_PUT_language(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->language = y; }
-/* FUNC(zx_b_UserInteraction_GET_redirect) */
-struct zx_str* zx_b_UserInteraction_GET_redirect(struct zx_b_UserInteraction_s* x) { return x->redirect; }
-/* FUNC(zx_b_UserInteraction_PUT_redirect) */
-void zx_b_UserInteraction_PUT_redirect(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->redirect = y; }
 /* FUNC(zx_b_UserInteraction_GET_maxInteractTime) */
 struct zx_str* zx_b_UserInteraction_GET_maxInteractTime(struct zx_b_UserInteraction_s* x) { return x->maxInteractTime; }
 /* FUNC(zx_b_UserInteraction_PUT_maxInteractTime) */
 void zx_b_UserInteraction_PUT_maxInteractTime(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->maxInteractTime = y; }
-/* FUNC(zx_b_UserInteraction_GET_mustUnderstand) */
-struct zx_str* zx_b_UserInteraction_GET_mustUnderstand(struct zx_b_UserInteraction_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_b_UserInteraction_PUT_mustUnderstand) */
-void zx_b_UserInteraction_PUT_mustUnderstand(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_b_UserInteraction_GET_actor) */
-struct zx_str* zx_b_UserInteraction_GET_actor(struct zx_b_UserInteraction_s* x) { return x->actor; }
-/* FUNC(zx_b_UserInteraction_PUT_actor) */
-void zx_b_UserInteraction_PUT_actor(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_UserInteraction_GET_redirect) */
+struct zx_str* zx_b_UserInteraction_GET_redirect(struct zx_b_UserInteraction_s* x) { return x->redirect; }
+/* FUNC(zx_b_UserInteraction_PUT_redirect) */
+void zx_b_UserInteraction_PUT_redirect(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->redirect = y; }
 /* FUNC(zx_b_UserInteraction_GET_Id) */
 struct zx_str* zx_b_UserInteraction_GET_Id(struct zx_b_UserInteraction_s* x) { return x->Id; }
 /* FUNC(zx_b_UserInteraction_PUT_Id) */
 void zx_b_UserInteraction_PUT_Id(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_b_UserInteraction_GET_actor) */
+struct zx_str* zx_b_UserInteraction_GET_actor(struct zx_b_UserInteraction_s* x) { return x->actor; }
+/* FUNC(zx_b_UserInteraction_PUT_actor) */
+void zx_b_UserInteraction_PUT_actor(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_b_UserInteraction_GET_mustUnderstand) */
+struct zx_str* zx_b_UserInteraction_GET_mustUnderstand(struct zx_b_UserInteraction_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_b_UserInteraction_PUT_mustUnderstand) */
+void zx_b_UserInteraction_PUT_mustUnderstand(struct zx_b_UserInteraction_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

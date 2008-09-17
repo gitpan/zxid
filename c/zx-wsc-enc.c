@@ -7,19 +7,20 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
+ ** Id: enc-templ.c,v 1.27 2007-10-05 22:24:28 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
+ ** 30.9.2007, improvements to WO encoding --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -54,6 +55,18 @@
 #define EL_NS     wsc
 #define EL_TAG    DerivedKeyToken
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsc_DerivedKeyToken) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -63,11 +76,15 @@
 int zx_LEN_SO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsc:DerivedKeyToken")-1 + 1 + sizeof("</wsc:DerivedKeyToken>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsc, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
+  if (x->Id)
+    len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   len += zx_attr_so_len(x->Algorithm, sizeof("Algorithm")-1);
   len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
@@ -99,8 +116,9 @@ int zx_LEN_SO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToke
     len += zx_LEN_SO_simple_elem(c,se, sizeof("wsc:Nonce")-1, zx_ns_tab+zx_xmlns_ix_wsc);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsc:DerivedKeyToken", len);
   return len;
 }
 
@@ -114,15 +132,17 @@ int zx_LEN_SO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToke
 int zx_LEN_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DerivedKeyToken")-1 + 1 + 2 + sizeof("DerivedKeyToken")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (x->Id)
+    len += zx_len_xmlns_if_not_seen(c, x->Id->g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->Algorithm, sizeof("Algorithm")-1);
   len += zx_attr_wo_len(x->Id, sizeof("Id")-1);
@@ -156,6 +176,7 @@ int zx_LEN_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToke
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsc:DerivedKeyToken", len);
   return len;
 }
 
@@ -168,12 +189,17 @@ int zx_LEN_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToke
 /* Called by: */
 char* zx_ENC_SO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToken_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsc:DerivedKeyToken");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsc, &pop_seen);
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
+  if (x->Id)
+    p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   p = zx_attr_so_enc(p, x->Algorithm, " Algorithm=\"", sizeof(" Algorithm=\"")-1);
   p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
@@ -212,6 +238,7 @@ char* zx_ENC_SO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyTo
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsc:DerivedKeyToken", p-enc_base);
   return p;
 }
 
@@ -225,6 +252,7 @@ char* zx_ENC_SO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyTo
 char* zx_ENC_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyToken_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -239,8 +267,11 @@ char* zx_ENC_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyTo
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (x->Id)
+    zx_add_xmlns_if_not_seen(c, x->Id->g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
   p = zx_attr_wo_enc(p, x->Algorithm, "Algorithm=\"", sizeof("Algorithm=\"")-1);
@@ -263,6 +294,7 @@ char* zx_ENC_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_wsc_DerivedKeyTo
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsc:DerivedKeyToken", p-enc_base);
   return p;
 }
 
@@ -317,6 +349,18 @@ struct zx_str* zx_EASY_ENC_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_ws
 #define EL_NS     wsc
 #define EL_TAG    Properties
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsc_Properties) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -326,9 +370,12 @@ struct zx_str* zx_EASY_ENC_WO_wsc_DerivedKeyToken(struct zx_ctx* c, struct zx_ws
 int zx_LEN_SO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsc:Properties")-1 + 1 + sizeof("</wsc:Properties>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsc, &pop_seen);
 
 
@@ -339,8 +386,9 @@ int zx_LEN_SO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsc:Properties", len);
   return len;
 }
 
@@ -354,13 +402,14 @@ int zx_LEN_SO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x )
 int zx_LEN_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Properties")-1 + 1 + 2 + sizeof("Properties")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -373,6 +422,7 @@ int zx_LEN_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsc:Properties", len);
   return len;
 }
 
@@ -385,10 +435,14 @@ int zx_LEN_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x )
 /* Called by: */
 char* zx_ENC_SO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsc:Properties");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsc, &pop_seen);
 
 
@@ -406,6 +460,7 @@ char* zx_ENC_SO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsc:Properties", p-enc_base);
   return p;
 }
 
@@ -419,6 +474,7 @@ char* zx_ENC_SO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x, 
 char* zx_ENC_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -433,6 +489,8 @@ char* zx_ENC_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -454,6 +512,7 @@ char* zx_ENC_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Properties_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsc:Properties", p-enc_base);
   return p;
 }
 
@@ -508,6 +567,18 @@ struct zx_str* zx_EASY_ENC_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Pro
 #define EL_NS     wsc
 #define EL_TAG    SecurityContextToken
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsc_SecurityContextToken) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -517,11 +588,15 @@ struct zx_str* zx_EASY_ENC_WO_wsc_Properties(struct zx_ctx* c, struct zx_wsc_Pro
 int zx_LEN_SO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityContextToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsc:SecurityContextToken")-1 + 1 + sizeof("</wsc:SecurityContextToken>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsc, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
+  if (x->Id)
+    len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
 
@@ -532,8 +607,9 @@ int zx_LEN_SO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityC
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsc:SecurityContextToken", len);
   return len;
 }
 
@@ -547,15 +623,17 @@ int zx_LEN_SO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityC
 int zx_LEN_WO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityContextToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("SecurityContextToken")-1 + 1 + 2 + sizeof("SecurityContextToken")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (x->Id)
+    len += zx_len_xmlns_if_not_seen(c, x->Id->g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->Id, sizeof("Id")-1);
 
@@ -568,6 +646,7 @@ int zx_LEN_WO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityC
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsc:SecurityContextToken", len);
   return len;
 }
 
@@ -580,12 +659,17 @@ int zx_LEN_WO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityC
 /* Called by: */
 char* zx_ENC_SO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityContextToken_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsc:SecurityContextToken");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsc, &pop_seen);
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
+  if (x->Id)
+    p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
 
@@ -603,6 +687,7 @@ char* zx_ENC_SO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_Securit
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsc:SecurityContextToken", p-enc_base);
   return p;
 }
 
@@ -616,6 +701,7 @@ char* zx_ENC_SO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_Securit
 char* zx_ENC_WO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_SecurityContextToken_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -630,8 +716,11 @@ char* zx_ENC_WO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_Securit
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (x->Id)
+    zx_add_xmlns_if_not_seen(c, x->Id->g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
   p = zx_attr_wo_enc(p, x->Id, "Id=\"", sizeof("Id=\"")-1);
@@ -653,6 +742,7 @@ char* zx_ENC_WO_wsc_SecurityContextToken(struct zx_ctx* c, struct zx_wsc_Securit
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsc:SecurityContextToken", p-enc_base);
   return p;
 }
 

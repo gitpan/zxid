@@ -43,29 +43,29 @@ struct zx_str* zx_EASY_ENC_WO_paos_Request(struct zx_ctx* c, struct zx_paos_Requ
 struct zx_paos_Request_s {
   ZX_ELEM_EXT
   zx_paos_Request_EXT
+  struct zx_str* messageID;	/* {0,1} attribute xs:string */
   struct zx_str* responseConsumerURL;	/* {1,1} attribute xs:anyURI */
   struct zx_str* service;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* messageID;	/* {0,1} attribute xs:string */
-  struct zx_str* mustUnderstand;	/* {1,1} attribute xs:boolean */
   struct zx_str* actor;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_paos_Request_GET_messageID(struct zx_paos_Request_s* x);
 struct zx_str* zx_paos_Request_GET_responseConsumerURL(struct zx_paos_Request_s* x);
 struct zx_str* zx_paos_Request_GET_service(struct zx_paos_Request_s* x);
-struct zx_str* zx_paos_Request_GET_messageID(struct zx_paos_Request_s* x);
-struct zx_str* zx_paos_Request_GET_mustUnderstand(struct zx_paos_Request_s* x);
 struct zx_str* zx_paos_Request_GET_actor(struct zx_paos_Request_s* x);
+struct zx_str* zx_paos_Request_GET_mustUnderstand(struct zx_paos_Request_s* x);
 
 
 
 
 
+void zx_paos_Request_PUT_messageID(struct zx_paos_Request_s* x, struct zx_str* y);
 void zx_paos_Request_PUT_responseConsumerURL(struct zx_paos_Request_s* x, struct zx_str* y);
 void zx_paos_Request_PUT_service(struct zx_paos_Request_s* x, struct zx_str* y);
-void zx_paos_Request_PUT_messageID(struct zx_paos_Request_s* x, struct zx_str* y);
-void zx_paos_Request_PUT_mustUnderstand(struct zx_paos_Request_s* x, struct zx_str* y);
 void zx_paos_Request_PUT_actor(struct zx_paos_Request_s* x, struct zx_str* y);
+void zx_paos_Request_PUT_mustUnderstand(struct zx_paos_Request_s* x, struct zx_str* y);
 
 
 
@@ -98,22 +98,22 @@ struct zx_paos_Response_s {
   ZX_ELEM_EXT
   zx_paos_Response_EXT
   struct zx_str* refToMessageID;	/* {0,1} attribute xs:string */
-  struct zx_str* mustUnderstand;	/* {1,1} attribute xs:boolean */
   struct zx_str* actor;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_paos_Response_GET_refToMessageID(struct zx_paos_Response_s* x);
-struct zx_str* zx_paos_Response_GET_mustUnderstand(struct zx_paos_Response_s* x);
 struct zx_str* zx_paos_Response_GET_actor(struct zx_paos_Response_s* x);
+struct zx_str* zx_paos_Response_GET_mustUnderstand(struct zx_paos_Response_s* x);
 
 
 
 
 
 void zx_paos_Response_PUT_refToMessageID(struct zx_paos_Response_s* x, struct zx_str* y);
-void zx_paos_Response_PUT_mustUnderstand(struct zx_paos_Response_s* x, struct zx_str* y);
 void zx_paos_Response_PUT_actor(struct zx_paos_Response_s* x, struct zx_str* y);
+void zx_paos_Response_PUT_mustUnderstand(struct zx_paos_Response_s* x, struct zx_str* y);
 
 
 

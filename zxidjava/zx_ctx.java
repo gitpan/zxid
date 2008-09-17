@@ -66,6 +66,15 @@ public class zx_ctx {
     return (cPtr == 0) ? null : new zx_ns_s(cPtr, false);
   }
 
+  public void setUnknown_ns(zx_ns_s value) {
+    zxidjniJNI.zx_ctx_unknown_ns_set(swigCPtr, zx_ns_s.getCPtr(value));
+  }
+
+  public zx_ns_s getUnknown_ns() {
+    long cPtr = zxidjniJNI.zx_ctx_unknown_ns_get(swigCPtr);
+    return (cPtr == 0) ? null : new zx_ns_s(cPtr, false);
+  }
+
   public void setGuard_seen_n(zx_ns_s value) {
     zxidjniJNI.zx_ctx_guard_seen_n_set(swigCPtr, zx_ns_s.getCPtr(value));
   }
@@ -91,6 +100,51 @@ public class zx_ctx {
   public SWIGTYPE_p_void getExclude_sig() {
     long cPtr = zxidjniJNI.zx_ctx_exclude_sig_get(swigCPtr);
     return (cPtr == 0) ? null : new SWIGTYPE_p_void(cPtr, false);
+  }
+
+  public void setInc_ns_len(zx_ns_s value) {
+    zxidjniJNI.zx_ctx_inc_ns_len_set(swigCPtr, zx_ns_s.getCPtr(value));
+  }
+
+  public zx_ns_s getInc_ns_len() {
+    long cPtr = zxidjniJNI.zx_ctx_inc_ns_len_get(swigCPtr);
+    return (cPtr == 0) ? null : new zx_ns_s(cPtr, false);
+  }
+
+  public void setInc_ns(zx_ns_s value) {
+    zxidjniJNI.zx_ctx_inc_ns_set(swigCPtr, zx_ns_s.getCPtr(value));
+  }
+
+  public zx_ns_s getInc_ns() {
+    long cPtr = zxidjniJNI.zx_ctx_inc_ns_get(swigCPtr);
+    return (cPtr == 0) ? null : new zx_ns_s(cPtr, false);
+  }
+
+  public void setMalloc_func(SWIGTYPE_p_f_size_t__p_void value) {
+    zxidjniJNI.zx_ctx_malloc_func_set(swigCPtr, SWIGTYPE_p_f_size_t__p_void.getCPtr(value));
+  }
+
+  public SWIGTYPE_p_f_size_t__p_void getMalloc_func() {
+    long cPtr = zxidjniJNI.zx_ctx_malloc_func_get(swigCPtr);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_f_size_t__p_void(cPtr, false);
+  }
+
+  public void setRealloc_func(SWIGTYPE_p_f_p_void_size_t__p_void value) {
+    zxidjniJNI.zx_ctx_realloc_func_set(swigCPtr, SWIGTYPE_p_f_p_void_size_t__p_void.getCPtr(value));
+  }
+
+  public SWIGTYPE_p_f_p_void_size_t__p_void getRealloc_func() {
+    long cPtr = zxidjniJNI.zx_ctx_realloc_func_get(swigCPtr);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_f_p_void_size_t__p_void(cPtr, false);
+  }
+
+  public void setFree_func(SWIGTYPE_p_f_p_void__void value) {
+    zxidjniJNI.zx_ctx_free_func_set(swigCPtr, SWIGTYPE_p_f_p_void__void.getCPtr(value));
+  }
+
+  public SWIGTYPE_p_f_p_void__void getFree_func() {
+    long cPtr = zxidjniJNI.zx_ctx_free_func_get(swigCPtr);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_f_p_void__void(cPtr, false);
   }
 
   public zx_ctx() {

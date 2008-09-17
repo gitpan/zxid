@@ -43,23 +43,29 @@ struct zx_str* zx_EASY_ENC_WO_a_Action(struct zx_ctx* c, struct zx_a_Action_s* x
 struct zx_a_Action_s {
   ZX_ELEM_EXT
   zx_a_Action_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_Action_GET_mustUnderstand(struct zx_a_Action_s* x);
-struct zx_str* zx_a_Action_GET_actor(struct zx_a_Action_s* x);
+struct zx_str* zx_a_Action_GET_ID(struct zx_a_Action_s* x);
+struct zx_str* zx_a_Action_GET_id(struct zx_a_Action_s* x);
 struct zx_str* zx_a_Action_GET_Id(struct zx_a_Action_s* x);
+struct zx_str* zx_a_Action_GET_actor(struct zx_a_Action_s* x);
+struct zx_str* zx_a_Action_GET_mustUnderstand(struct zx_a_Action_s* x);
 
 
 
 
 
-void zx_a_Action_PUT_mustUnderstand(struct zx_a_Action_s* x, struct zx_str* y);
-void zx_a_Action_PUT_actor(struct zx_a_Action_s* x, struct zx_str* y);
+void zx_a_Action_PUT_ID(struct zx_a_Action_s* x, struct zx_str* y);
+void zx_a_Action_PUT_id(struct zx_a_Action_s* x, struct zx_str* y);
 void zx_a_Action_PUT_Id(struct zx_a_Action_s* x, struct zx_str* y);
+void zx_a_Action_PUT_actor(struct zx_a_Action_s* x, struct zx_str* y);
+void zx_a_Action_PUT_mustUnderstand(struct zx_a_Action_s* x, struct zx_str* y);
 
 
 
@@ -91,23 +97,29 @@ struct zx_str* zx_EASY_ENC_WO_a_Address(struct zx_ctx* c, struct zx_a_Address_s*
 struct zx_a_Address_s {
   ZX_ELEM_EXT
   zx_a_Address_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_Address_GET_mustUnderstand(struct zx_a_Address_s* x);
-struct zx_str* zx_a_Address_GET_actor(struct zx_a_Address_s* x);
+struct zx_str* zx_a_Address_GET_ID(struct zx_a_Address_s* x);
+struct zx_str* zx_a_Address_GET_id(struct zx_a_Address_s* x);
 struct zx_str* zx_a_Address_GET_Id(struct zx_a_Address_s* x);
+struct zx_str* zx_a_Address_GET_actor(struct zx_a_Address_s* x);
+struct zx_str* zx_a_Address_GET_mustUnderstand(struct zx_a_Address_s* x);
 
 
 
 
 
-void zx_a_Address_PUT_mustUnderstand(struct zx_a_Address_s* x, struct zx_str* y);
-void zx_a_Address_PUT_actor(struct zx_a_Address_s* x, struct zx_str* y);
+void zx_a_Address_PUT_ID(struct zx_a_Address_s* x, struct zx_str* y);
+void zx_a_Address_PUT_id(struct zx_a_Address_s* x, struct zx_str* y);
 void zx_a_Address_PUT_Id(struct zx_a_Address_s* x, struct zx_str* y);
+void zx_a_Address_PUT_actor(struct zx_a_Address_s* x, struct zx_str* y);
+void zx_a_Address_PUT_mustUnderstand(struct zx_a_Address_s* x, struct zx_str* y);
 
 
 
@@ -142,17 +154,21 @@ struct zx_a_EndpointReference_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_a_EndpointReference_GET_ID(struct zx_a_EndpointReference_s* x);
+struct zx_str* zx_a_EndpointReference_GET_id(struct zx_a_EndpointReference_s* x);
 struct zx_str* zx_a_EndpointReference_GET_notOnOrAfter(struct zx_a_EndpointReference_s* x);
-struct zx_str* zx_a_EndpointReference_GET_mustUnderstand(struct zx_a_EndpointReference_s* x);
-struct zx_str* zx_a_EndpointReference_GET_actor(struct zx_a_EndpointReference_s* x);
 struct zx_str* zx_a_EndpointReference_GET_Id(struct zx_a_EndpointReference_s* x);
+struct zx_str* zx_a_EndpointReference_GET_actor(struct zx_a_EndpointReference_s* x);
+struct zx_str* zx_a_EndpointReference_GET_mustUnderstand(struct zx_a_EndpointReference_s* x);
 
 struct zx_a_Address_s* zx_a_EndpointReference_GET_Address(struct zx_a_EndpointReference_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_a_EndpointReference_GET_ReferenceParameters(struct zx_a_EndpointReference_s* x, int n);
@@ -170,10 +186,12 @@ void zx_a_EndpointReference_PUSH_Address(struct zx_a_EndpointReference_s* x, str
 void zx_a_EndpointReference_PUSH_ReferenceParameters(struct zx_a_EndpointReference_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_a_EndpointReference_PUSH_Metadata(struct zx_a_EndpointReference_s* x, struct zx_a_Metadata_s* y);
 
+void zx_a_EndpointReference_PUT_ID(struct zx_a_EndpointReference_s* x, struct zx_str* y);
+void zx_a_EndpointReference_PUT_id(struct zx_a_EndpointReference_s* x, struct zx_str* y);
 void zx_a_EndpointReference_PUT_notOnOrAfter(struct zx_a_EndpointReference_s* x, struct zx_str* y);
-void zx_a_EndpointReference_PUT_mustUnderstand(struct zx_a_EndpointReference_s* x, struct zx_str* y);
-void zx_a_EndpointReference_PUT_actor(struct zx_a_EndpointReference_s* x, struct zx_str* y);
 void zx_a_EndpointReference_PUT_Id(struct zx_a_EndpointReference_s* x, struct zx_str* y);
+void zx_a_EndpointReference_PUT_actor(struct zx_a_EndpointReference_s* x, struct zx_str* y);
+void zx_a_EndpointReference_PUT_mustUnderstand(struct zx_a_EndpointReference_s* x, struct zx_str* y);
 
 void zx_a_EndpointReference_PUT_Address(struct zx_a_EndpointReference_s* x, int n, struct zx_a_Address_s* y);
 void zx_a_EndpointReference_PUT_ReferenceParameters(struct zx_a_EndpointReference_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -220,17 +238,21 @@ struct zx_a_FaultTo_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_a_FaultTo_GET_ID(struct zx_a_FaultTo_s* x);
+struct zx_str* zx_a_FaultTo_GET_id(struct zx_a_FaultTo_s* x);
 struct zx_str* zx_a_FaultTo_GET_notOnOrAfter(struct zx_a_FaultTo_s* x);
-struct zx_str* zx_a_FaultTo_GET_mustUnderstand(struct zx_a_FaultTo_s* x);
-struct zx_str* zx_a_FaultTo_GET_actor(struct zx_a_FaultTo_s* x);
 struct zx_str* zx_a_FaultTo_GET_Id(struct zx_a_FaultTo_s* x);
+struct zx_str* zx_a_FaultTo_GET_actor(struct zx_a_FaultTo_s* x);
+struct zx_str* zx_a_FaultTo_GET_mustUnderstand(struct zx_a_FaultTo_s* x);
 
 struct zx_a_Address_s* zx_a_FaultTo_GET_Address(struct zx_a_FaultTo_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_a_FaultTo_GET_ReferenceParameters(struct zx_a_FaultTo_s* x, int n);
@@ -248,10 +270,12 @@ void zx_a_FaultTo_PUSH_Address(struct zx_a_FaultTo_s* x, struct zx_a_Address_s* 
 void zx_a_FaultTo_PUSH_ReferenceParameters(struct zx_a_FaultTo_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_a_FaultTo_PUSH_Metadata(struct zx_a_FaultTo_s* x, struct zx_a_Metadata_s* y);
 
+void zx_a_FaultTo_PUT_ID(struct zx_a_FaultTo_s* x, struct zx_str* y);
+void zx_a_FaultTo_PUT_id(struct zx_a_FaultTo_s* x, struct zx_str* y);
 void zx_a_FaultTo_PUT_notOnOrAfter(struct zx_a_FaultTo_s* x, struct zx_str* y);
-void zx_a_FaultTo_PUT_mustUnderstand(struct zx_a_FaultTo_s* x, struct zx_str* y);
-void zx_a_FaultTo_PUT_actor(struct zx_a_FaultTo_s* x, struct zx_str* y);
 void zx_a_FaultTo_PUT_Id(struct zx_a_FaultTo_s* x, struct zx_str* y);
+void zx_a_FaultTo_PUT_actor(struct zx_a_FaultTo_s* x, struct zx_str* y);
+void zx_a_FaultTo_PUT_mustUnderstand(struct zx_a_FaultTo_s* x, struct zx_str* y);
 
 void zx_a_FaultTo_PUT_Address(struct zx_a_FaultTo_s* x, int n, struct zx_a_Address_s* y);
 void zx_a_FaultTo_PUT_ReferenceParameters(struct zx_a_FaultTo_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -298,17 +322,21 @@ struct zx_a_From_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_a_From_GET_ID(struct zx_a_From_s* x);
+struct zx_str* zx_a_From_GET_id(struct zx_a_From_s* x);
 struct zx_str* zx_a_From_GET_notOnOrAfter(struct zx_a_From_s* x);
-struct zx_str* zx_a_From_GET_mustUnderstand(struct zx_a_From_s* x);
-struct zx_str* zx_a_From_GET_actor(struct zx_a_From_s* x);
 struct zx_str* zx_a_From_GET_Id(struct zx_a_From_s* x);
+struct zx_str* zx_a_From_GET_actor(struct zx_a_From_s* x);
+struct zx_str* zx_a_From_GET_mustUnderstand(struct zx_a_From_s* x);
 
 struct zx_a_Address_s* zx_a_From_GET_Address(struct zx_a_From_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_a_From_GET_ReferenceParameters(struct zx_a_From_s* x, int n);
@@ -326,10 +354,12 @@ void zx_a_From_PUSH_Address(struct zx_a_From_s* x, struct zx_a_Address_s* y);
 void zx_a_From_PUSH_ReferenceParameters(struct zx_a_From_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_a_From_PUSH_Metadata(struct zx_a_From_s* x, struct zx_a_Metadata_s* y);
 
+void zx_a_From_PUT_ID(struct zx_a_From_s* x, struct zx_str* y);
+void zx_a_From_PUT_id(struct zx_a_From_s* x, struct zx_str* y);
 void zx_a_From_PUT_notOnOrAfter(struct zx_a_From_s* x, struct zx_str* y);
-void zx_a_From_PUT_mustUnderstand(struct zx_a_From_s* x, struct zx_str* y);
-void zx_a_From_PUT_actor(struct zx_a_From_s* x, struct zx_str* y);
 void zx_a_From_PUT_Id(struct zx_a_From_s* x, struct zx_str* y);
+void zx_a_From_PUT_actor(struct zx_a_From_s* x, struct zx_str* y);
+void zx_a_From_PUT_mustUnderstand(struct zx_a_From_s* x, struct zx_str* y);
 
 void zx_a_From_PUT_Address(struct zx_a_From_s* x, int n, struct zx_a_Address_s* y);
 void zx_a_From_PUT_ReferenceParameters(struct zx_a_From_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -373,23 +403,29 @@ struct zx_str* zx_EASY_ENC_WO_a_MessageID(struct zx_ctx* c, struct zx_a_MessageI
 struct zx_a_MessageID_s {
   ZX_ELEM_EXT
   zx_a_MessageID_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_MessageID_GET_mustUnderstand(struct zx_a_MessageID_s* x);
-struct zx_str* zx_a_MessageID_GET_actor(struct zx_a_MessageID_s* x);
+struct zx_str* zx_a_MessageID_GET_ID(struct zx_a_MessageID_s* x);
+struct zx_str* zx_a_MessageID_GET_id(struct zx_a_MessageID_s* x);
 struct zx_str* zx_a_MessageID_GET_Id(struct zx_a_MessageID_s* x);
+struct zx_str* zx_a_MessageID_GET_actor(struct zx_a_MessageID_s* x);
+struct zx_str* zx_a_MessageID_GET_mustUnderstand(struct zx_a_MessageID_s* x);
 
 
 
 
 
-void zx_a_MessageID_PUT_mustUnderstand(struct zx_a_MessageID_s* x, struct zx_str* y);
-void zx_a_MessageID_PUT_actor(struct zx_a_MessageID_s* x, struct zx_str* y);
+void zx_a_MessageID_PUT_ID(struct zx_a_MessageID_s* x, struct zx_str* y);
+void zx_a_MessageID_PUT_id(struct zx_a_MessageID_s* x, struct zx_str* y);
 void zx_a_MessageID_PUT_Id(struct zx_a_MessageID_s* x, struct zx_str* y);
+void zx_a_MessageID_PUT_actor(struct zx_a_MessageID_s* x, struct zx_str* y);
+void zx_a_MessageID_PUT_mustUnderstand(struct zx_a_MessageID_s* x, struct zx_str* y);
 
 
 
@@ -507,15 +543,19 @@ struct zx_a_ProblemAction_s {
   zx_a_ProblemAction_EXT
   struct zx_a_Action_s* Action;	/* {0,1} nada */
   struct zx_elem_s* SoapAction;	/* {0,1} xs:anyURI */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_ProblemAction_GET_mustUnderstand(struct zx_a_ProblemAction_s* x);
-struct zx_str* zx_a_ProblemAction_GET_actor(struct zx_a_ProblemAction_s* x);
+struct zx_str* zx_a_ProblemAction_GET_ID(struct zx_a_ProblemAction_s* x);
+struct zx_str* zx_a_ProblemAction_GET_id(struct zx_a_ProblemAction_s* x);
 struct zx_str* zx_a_ProblemAction_GET_Id(struct zx_a_ProblemAction_s* x);
+struct zx_str* zx_a_ProblemAction_GET_actor(struct zx_a_ProblemAction_s* x);
+struct zx_str* zx_a_ProblemAction_GET_mustUnderstand(struct zx_a_ProblemAction_s* x);
 
 struct zx_a_Action_s* zx_a_ProblemAction_GET_Action(struct zx_a_ProblemAction_s* x, int n);
 struct zx_elem_s* zx_a_ProblemAction_GET_SoapAction(struct zx_a_ProblemAction_s* x, int n);
@@ -529,9 +569,11 @@ struct zx_elem_s* zx_a_ProblemAction_POP_SoapAction(struct zx_a_ProblemAction_s*
 void zx_a_ProblemAction_PUSH_Action(struct zx_a_ProblemAction_s* x, struct zx_a_Action_s* y);
 void zx_a_ProblemAction_PUSH_SoapAction(struct zx_a_ProblemAction_s* x, struct zx_elem_s* y);
 
-void zx_a_ProblemAction_PUT_mustUnderstand(struct zx_a_ProblemAction_s* x, struct zx_str* y);
-void zx_a_ProblemAction_PUT_actor(struct zx_a_ProblemAction_s* x, struct zx_str* y);
+void zx_a_ProblemAction_PUT_ID(struct zx_a_ProblemAction_s* x, struct zx_str* y);
+void zx_a_ProblemAction_PUT_id(struct zx_a_ProblemAction_s* x, struct zx_str* y);
 void zx_a_ProblemAction_PUT_Id(struct zx_a_ProblemAction_s* x, struct zx_str* y);
+void zx_a_ProblemAction_PUT_actor(struct zx_a_ProblemAction_s* x, struct zx_str* y);
+void zx_a_ProblemAction_PUT_mustUnderstand(struct zx_a_ProblemAction_s* x, struct zx_str* y);
 
 void zx_a_ProblemAction_PUT_Action(struct zx_a_ProblemAction_s* x, int n, struct zx_a_Action_s* y);
 void zx_a_ProblemAction_PUT_SoapAction(struct zx_a_ProblemAction_s* x, int n, struct zx_elem_s* y);
@@ -571,23 +613,29 @@ struct zx_str* zx_EASY_ENC_WO_a_ProblemHeader(struct zx_ctx* c, struct zx_a_Prob
 struct zx_a_ProblemHeader_s {
   ZX_ELEM_EXT
   zx_a_ProblemHeader_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_ProblemHeader_GET_mustUnderstand(struct zx_a_ProblemHeader_s* x);
-struct zx_str* zx_a_ProblemHeader_GET_actor(struct zx_a_ProblemHeader_s* x);
+struct zx_str* zx_a_ProblemHeader_GET_ID(struct zx_a_ProblemHeader_s* x);
+struct zx_str* zx_a_ProblemHeader_GET_id(struct zx_a_ProblemHeader_s* x);
 struct zx_str* zx_a_ProblemHeader_GET_Id(struct zx_a_ProblemHeader_s* x);
+struct zx_str* zx_a_ProblemHeader_GET_actor(struct zx_a_ProblemHeader_s* x);
+struct zx_str* zx_a_ProblemHeader_GET_mustUnderstand(struct zx_a_ProblemHeader_s* x);
 
 
 
 
 
-void zx_a_ProblemHeader_PUT_mustUnderstand(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
-void zx_a_ProblemHeader_PUT_actor(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
+void zx_a_ProblemHeader_PUT_ID(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
+void zx_a_ProblemHeader_PUT_id(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
 void zx_a_ProblemHeader_PUT_Id(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
+void zx_a_ProblemHeader_PUT_actor(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
+void zx_a_ProblemHeader_PUT_mustUnderstand(struct zx_a_ProblemHeader_s* x, struct zx_str* y);
 
 
 
@@ -619,23 +667,29 @@ struct zx_str* zx_EASY_ENC_WO_a_ProblemHeaderQName(struct zx_ctx* c, struct zx_a
 struct zx_a_ProblemHeaderQName_s {
   ZX_ELEM_EXT
   zx_a_ProblemHeaderQName_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_ProblemHeaderQName_GET_mustUnderstand(struct zx_a_ProblemHeaderQName_s* x);
-struct zx_str* zx_a_ProblemHeaderQName_GET_actor(struct zx_a_ProblemHeaderQName_s* x);
+struct zx_str* zx_a_ProblemHeaderQName_GET_ID(struct zx_a_ProblemHeaderQName_s* x);
+struct zx_str* zx_a_ProblemHeaderQName_GET_id(struct zx_a_ProblemHeaderQName_s* x);
 struct zx_str* zx_a_ProblemHeaderQName_GET_Id(struct zx_a_ProblemHeaderQName_s* x);
+struct zx_str* zx_a_ProblemHeaderQName_GET_actor(struct zx_a_ProblemHeaderQName_s* x);
+struct zx_str* zx_a_ProblemHeaderQName_GET_mustUnderstand(struct zx_a_ProblemHeaderQName_s* x);
 
 
 
 
 
-void zx_a_ProblemHeaderQName_PUT_mustUnderstand(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
-void zx_a_ProblemHeaderQName_PUT_actor(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
+void zx_a_ProblemHeaderQName_PUT_ID(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
+void zx_a_ProblemHeaderQName_PUT_id(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
 void zx_a_ProblemHeaderQName_PUT_Id(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
+void zx_a_ProblemHeaderQName_PUT_actor(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
+void zx_a_ProblemHeaderQName_PUT_mustUnderstand(struct zx_a_ProblemHeaderQName_s* x, struct zx_str* y);
 
 
 
@@ -667,23 +721,29 @@ struct zx_str* zx_EASY_ENC_WO_a_ProblemURI(struct zx_ctx* c, struct zx_a_Problem
 struct zx_a_ProblemURI_s {
   ZX_ELEM_EXT
   zx_a_ProblemURI_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_ProblemURI_GET_mustUnderstand(struct zx_a_ProblemURI_s* x);
-struct zx_str* zx_a_ProblemURI_GET_actor(struct zx_a_ProblemURI_s* x);
+struct zx_str* zx_a_ProblemURI_GET_ID(struct zx_a_ProblemURI_s* x);
+struct zx_str* zx_a_ProblemURI_GET_id(struct zx_a_ProblemURI_s* x);
 struct zx_str* zx_a_ProblemURI_GET_Id(struct zx_a_ProblemURI_s* x);
+struct zx_str* zx_a_ProblemURI_GET_actor(struct zx_a_ProblemURI_s* x);
+struct zx_str* zx_a_ProblemURI_GET_mustUnderstand(struct zx_a_ProblemURI_s* x);
 
 
 
 
 
-void zx_a_ProblemURI_PUT_mustUnderstand(struct zx_a_ProblemURI_s* x, struct zx_str* y);
-void zx_a_ProblemURI_PUT_actor(struct zx_a_ProblemURI_s* x, struct zx_str* y);
+void zx_a_ProblemURI_PUT_ID(struct zx_a_ProblemURI_s* x, struct zx_str* y);
+void zx_a_ProblemURI_PUT_id(struct zx_a_ProblemURI_s* x, struct zx_str* y);
 void zx_a_ProblemURI_PUT_Id(struct zx_a_ProblemURI_s* x, struct zx_str* y);
+void zx_a_ProblemURI_PUT_actor(struct zx_a_ProblemURI_s* x, struct zx_str* y);
+void zx_a_ProblemURI_PUT_mustUnderstand(struct zx_a_ProblemURI_s* x, struct zx_str* y);
 
 
 
@@ -715,27 +775,42 @@ struct zx_str* zx_EASY_ENC_WO_a_ReferenceParameters(struct zx_ctx* c, struct zx_
 struct zx_a_ReferenceParameters_s {
   ZX_ELEM_EXT
   zx_a_ReferenceParameters_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_b_TargetIdentity_s* TargetIdentity;	/* {0,-1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_ReferenceParameters_GET_mustUnderstand(struct zx_a_ReferenceParameters_s* x);
-struct zx_str* zx_a_ReferenceParameters_GET_actor(struct zx_a_ReferenceParameters_s* x);
+struct zx_str* zx_a_ReferenceParameters_GET_ID(struct zx_a_ReferenceParameters_s* x);
+struct zx_str* zx_a_ReferenceParameters_GET_id(struct zx_a_ReferenceParameters_s* x);
 struct zx_str* zx_a_ReferenceParameters_GET_Id(struct zx_a_ReferenceParameters_s* x);
+struct zx_str* zx_a_ReferenceParameters_GET_actor(struct zx_a_ReferenceParameters_s* x);
+struct zx_str* zx_a_ReferenceParameters_GET_mustUnderstand(struct zx_a_ReferenceParameters_s* x);
 
+struct zx_b_TargetIdentity_s* zx_a_ReferenceParameters_GET_TargetIdentity(struct zx_a_ReferenceParameters_s* x, int n);
 
+int zx_a_ReferenceParameters_NUM_TargetIdentity(struct zx_a_ReferenceParameters_s* x);
 
+struct zx_b_TargetIdentity_s* zx_a_ReferenceParameters_POP_TargetIdentity(struct zx_a_ReferenceParameters_s* x);
 
+void zx_a_ReferenceParameters_PUSH_TargetIdentity(struct zx_a_ReferenceParameters_s* x, struct zx_b_TargetIdentity_s* y);
 
-void zx_a_ReferenceParameters_PUT_mustUnderstand(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
-void zx_a_ReferenceParameters_PUT_actor(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
+void zx_a_ReferenceParameters_PUT_ID(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
+void zx_a_ReferenceParameters_PUT_id(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
 void zx_a_ReferenceParameters_PUT_Id(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
+void zx_a_ReferenceParameters_PUT_actor(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
+void zx_a_ReferenceParameters_PUT_mustUnderstand(struct zx_a_ReferenceParameters_s* x, struct zx_str* y);
 
+void zx_a_ReferenceParameters_PUT_TargetIdentity(struct zx_a_ReferenceParameters_s* x, int n, struct zx_b_TargetIdentity_s* y);
 
+void zx_a_ReferenceParameters_ADD_TargetIdentity(struct zx_a_ReferenceParameters_s* x, int n, struct zx_b_TargetIdentity_s* z);
 
+void zx_a_ReferenceParameters_DEL_TargetIdentity(struct zx_a_ReferenceParameters_s* x, int n);
 
+void zx_a_ReferenceParameters_REV_TargetIdentity(struct zx_a_ReferenceParameters_s* x);
 
 #endif
 /* -------------------------- a_RelatesTo -------------------------- */
@@ -763,26 +838,32 @@ struct zx_str* zx_EASY_ENC_WO_a_RelatesTo(struct zx_ctx* c, struct zx_a_RelatesT
 struct zx_a_RelatesTo_s {
   ZX_ELEM_EXT
   zx_a_RelatesTo_EXT
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
   struct zx_str* RelationshipType;	/* {0,1} attribute a:RelationshipTypeOpenEnum */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_a_RelatesTo_GET_ID(struct zx_a_RelatesTo_s* x);
 struct zx_str* zx_a_RelatesTo_GET_RelationshipType(struct zx_a_RelatesTo_s* x);
-struct zx_str* zx_a_RelatesTo_GET_mustUnderstand(struct zx_a_RelatesTo_s* x);
-struct zx_str* zx_a_RelatesTo_GET_actor(struct zx_a_RelatesTo_s* x);
+struct zx_str* zx_a_RelatesTo_GET_id(struct zx_a_RelatesTo_s* x);
 struct zx_str* zx_a_RelatesTo_GET_Id(struct zx_a_RelatesTo_s* x);
+struct zx_str* zx_a_RelatesTo_GET_actor(struct zx_a_RelatesTo_s* x);
+struct zx_str* zx_a_RelatesTo_GET_mustUnderstand(struct zx_a_RelatesTo_s* x);
 
 
 
 
 
+void zx_a_RelatesTo_PUT_ID(struct zx_a_RelatesTo_s* x, struct zx_str* y);
 void zx_a_RelatesTo_PUT_RelationshipType(struct zx_a_RelatesTo_s* x, struct zx_str* y);
-void zx_a_RelatesTo_PUT_mustUnderstand(struct zx_a_RelatesTo_s* x, struct zx_str* y);
-void zx_a_RelatesTo_PUT_actor(struct zx_a_RelatesTo_s* x, struct zx_str* y);
+void zx_a_RelatesTo_PUT_id(struct zx_a_RelatesTo_s* x, struct zx_str* y);
 void zx_a_RelatesTo_PUT_Id(struct zx_a_RelatesTo_s* x, struct zx_str* y);
+void zx_a_RelatesTo_PUT_actor(struct zx_a_RelatesTo_s* x, struct zx_str* y);
+void zx_a_RelatesTo_PUT_mustUnderstand(struct zx_a_RelatesTo_s* x, struct zx_str* y);
 
 
 
@@ -817,17 +898,21 @@ struct zx_a_ReplyTo_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_a_ReplyTo_GET_ID(struct zx_a_ReplyTo_s* x);
+struct zx_str* zx_a_ReplyTo_GET_id(struct zx_a_ReplyTo_s* x);
 struct zx_str* zx_a_ReplyTo_GET_notOnOrAfter(struct zx_a_ReplyTo_s* x);
-struct zx_str* zx_a_ReplyTo_GET_mustUnderstand(struct zx_a_ReplyTo_s* x);
-struct zx_str* zx_a_ReplyTo_GET_actor(struct zx_a_ReplyTo_s* x);
 struct zx_str* zx_a_ReplyTo_GET_Id(struct zx_a_ReplyTo_s* x);
+struct zx_str* zx_a_ReplyTo_GET_actor(struct zx_a_ReplyTo_s* x);
+struct zx_str* zx_a_ReplyTo_GET_mustUnderstand(struct zx_a_ReplyTo_s* x);
 
 struct zx_a_Address_s* zx_a_ReplyTo_GET_Address(struct zx_a_ReplyTo_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_a_ReplyTo_GET_ReferenceParameters(struct zx_a_ReplyTo_s* x, int n);
@@ -845,10 +930,12 @@ void zx_a_ReplyTo_PUSH_Address(struct zx_a_ReplyTo_s* x, struct zx_a_Address_s* 
 void zx_a_ReplyTo_PUSH_ReferenceParameters(struct zx_a_ReplyTo_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_a_ReplyTo_PUSH_Metadata(struct zx_a_ReplyTo_s* x, struct zx_a_Metadata_s* y);
 
+void zx_a_ReplyTo_PUT_ID(struct zx_a_ReplyTo_s* x, struct zx_str* y);
+void zx_a_ReplyTo_PUT_id(struct zx_a_ReplyTo_s* x, struct zx_str* y);
 void zx_a_ReplyTo_PUT_notOnOrAfter(struct zx_a_ReplyTo_s* x, struct zx_str* y);
-void zx_a_ReplyTo_PUT_mustUnderstand(struct zx_a_ReplyTo_s* x, struct zx_str* y);
-void zx_a_ReplyTo_PUT_actor(struct zx_a_ReplyTo_s* x, struct zx_str* y);
 void zx_a_ReplyTo_PUT_Id(struct zx_a_ReplyTo_s* x, struct zx_str* y);
+void zx_a_ReplyTo_PUT_actor(struct zx_a_ReplyTo_s* x, struct zx_str* y);
+void zx_a_ReplyTo_PUT_mustUnderstand(struct zx_a_ReplyTo_s* x, struct zx_str* y);
 
 void zx_a_ReplyTo_PUT_Address(struct zx_a_ReplyTo_s* x, int n, struct zx_a_Address_s* y);
 void zx_a_ReplyTo_PUT_ReferenceParameters(struct zx_a_ReplyTo_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -892,23 +979,29 @@ struct zx_str* zx_EASY_ENC_WO_a_RetryAfter(struct zx_ctx* c, struct zx_a_RetryAf
 struct zx_a_RetryAfter_s {
   ZX_ELEM_EXT
   zx_a_RetryAfter_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_RetryAfter_GET_mustUnderstand(struct zx_a_RetryAfter_s* x);
-struct zx_str* zx_a_RetryAfter_GET_actor(struct zx_a_RetryAfter_s* x);
+struct zx_str* zx_a_RetryAfter_GET_ID(struct zx_a_RetryAfter_s* x);
+struct zx_str* zx_a_RetryAfter_GET_id(struct zx_a_RetryAfter_s* x);
 struct zx_str* zx_a_RetryAfter_GET_Id(struct zx_a_RetryAfter_s* x);
+struct zx_str* zx_a_RetryAfter_GET_actor(struct zx_a_RetryAfter_s* x);
+struct zx_str* zx_a_RetryAfter_GET_mustUnderstand(struct zx_a_RetryAfter_s* x);
 
 
 
 
 
-void zx_a_RetryAfter_PUT_mustUnderstand(struct zx_a_RetryAfter_s* x, struct zx_str* y);
-void zx_a_RetryAfter_PUT_actor(struct zx_a_RetryAfter_s* x, struct zx_str* y);
+void zx_a_RetryAfter_PUT_ID(struct zx_a_RetryAfter_s* x, struct zx_str* y);
+void zx_a_RetryAfter_PUT_id(struct zx_a_RetryAfter_s* x, struct zx_str* y);
 void zx_a_RetryAfter_PUT_Id(struct zx_a_RetryAfter_s* x, struct zx_str* y);
+void zx_a_RetryAfter_PUT_actor(struct zx_a_RetryAfter_s* x, struct zx_str* y);
+void zx_a_RetryAfter_PUT_mustUnderstand(struct zx_a_RetryAfter_s* x, struct zx_str* y);
 
 
 
@@ -940,23 +1033,29 @@ struct zx_str* zx_EASY_ENC_WO_a_To(struct zx_ctx* c, struct zx_a_To_s* x);
 struct zx_a_To_s {
   ZX_ELEM_EXT
   zx_a_To_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_a_To_GET_mustUnderstand(struct zx_a_To_s* x);
-struct zx_str* zx_a_To_GET_actor(struct zx_a_To_s* x);
+struct zx_str* zx_a_To_GET_ID(struct zx_a_To_s* x);
+struct zx_str* zx_a_To_GET_id(struct zx_a_To_s* x);
 struct zx_str* zx_a_To_GET_Id(struct zx_a_To_s* x);
+struct zx_str* zx_a_To_GET_actor(struct zx_a_To_s* x);
+struct zx_str* zx_a_To_GET_mustUnderstand(struct zx_a_To_s* x);
 
 
 
 
 
-void zx_a_To_PUT_mustUnderstand(struct zx_a_To_s* x, struct zx_str* y);
-void zx_a_To_PUT_actor(struct zx_a_To_s* x, struct zx_str* y);
+void zx_a_To_PUT_ID(struct zx_a_To_s* x, struct zx_str* y);
+void zx_a_To_PUT_id(struct zx_a_To_s* x, struct zx_str* y);
 void zx_a_To_PUT_Id(struct zx_a_To_s* x, struct zx_str* y);
+void zx_a_To_PUT_actor(struct zx_a_To_s* x, struct zx_str* y);
+void zx_a_To_PUT_mustUnderstand(struct zx_a_To_s* x, struct zx_str* y);
 
 
 

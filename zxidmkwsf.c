@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmkwsf.c,v 1.7 2007/05/10 18:19:57 sampo Exp $
+ * $Id: zxidmkwsf.c,v 1.8 2007-09-30 05:10:03 sampo Exp $
  *
  * 12.1.2007, created --Sampo
  */
@@ -47,7 +47,6 @@ struct zx_di_RequestedService_s* zxid_mk_di_req_svc(struct zxid_conf* cf, int re
 struct zx_di_Query_s* zxid_mk_di_query(struct zxid_conf* cf, char* svc_type)
 {
   struct zx_di_Query_s* q = zx_NEW_di_Query(cf->ctx);
-  struct zx_di_RequestedService_s* rq;
   q->RequestedService = zxid_mk_di_req_svc(cf, 1, svc_type);
   return q;
 }

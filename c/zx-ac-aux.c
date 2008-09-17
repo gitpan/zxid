@@ -794,9 +794,9 @@ void zx_FREE_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->requiredChars, free_strs);
-  zx_free_attr(c, x->excludedChars, free_strs);
   zx_free_attr(c, x->case_is_c_keyword, free_strs);
+  zx_free_attr(c, x->excludedChars, free_strs);
+  zx_free_attr(c, x->requiredChars, free_strs);
 
 
 
@@ -832,9 +832,9 @@ void zx_DUP_STRS_ac_Alphabet(struct zx_ctx* c, struct zx_ac_Alphabet_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->requiredChars);
-  zx_dup_attr(c, x->excludedChars);
   zx_dup_attr(c, x->case_is_c_keyword);
+  zx_dup_attr(c, x->excludedChars);
+  zx_dup_attr(c, x->requiredChars);
 
 
 }
@@ -850,9 +850,9 @@ struct zx_ac_Alphabet_s* zx_DEEP_CLONE_ac_Alphabet(struct zx_ctx* c, struct zx_a
   x = (struct zx_ac_Alphabet_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Alphabet_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->requiredChars = zx_clone_attr(c, x->requiredChars);
-  x->excludedChars = zx_clone_attr(c, x->excludedChars);
   x->case_is_c_keyword = zx_clone_attr(c, x->case_is_c_keyword);
+  x->excludedChars = zx_clone_attr(c, x->excludedChars);
+  x->requiredChars = zx_clone_attr(c, x->requiredChars);
 
 
   return x;
@@ -4861,8 +4861,8 @@ void zx_FREE_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->min, free_strs);
   zx_free_attr(c, x->max, free_strs);
+  zx_free_attr(c, x->min, free_strs);
 
 
 
@@ -4898,8 +4898,8 @@ void zx_DUP_STRS_ac_Length(struct zx_ctx* c, struct zx_ac_Length_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->min);
   zx_dup_attr(c, x->max);
+  zx_dup_attr(c, x->min);
 
 
 }
@@ -4915,8 +4915,8 @@ struct zx_ac_Length_s* zx_DEEP_CLONE_ac_Length(struct zx_ctx* c, struct zx_ac_Le
   x = (struct zx_ac_Length_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_Length_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->min = zx_clone_attr(c, x->min);
   x->max = zx_clone_attr(c, x->max);
+  x->min = zx_clone_attr(c, x->min);
 
 
   return x;
@@ -8325,9 +8325,9 @@ void zx_FREE_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->DeviceInHand, free_strs);
   zx_free_attr(c, x->DeviceType, free_strs);
   zx_free_attr(c, x->SeedLength, free_strs);
-  zx_free_attr(c, x->DeviceInHand, free_strs);
 
 
 
@@ -8363,9 +8363,9 @@ void zx_DUP_STRS_ac_TimeSyncToken(struct zx_ctx* c, struct zx_ac_TimeSyncToken_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->DeviceInHand);
   zx_dup_attr(c, x->DeviceType);
   zx_dup_attr(c, x->SeedLength);
-  zx_dup_attr(c, x->DeviceInHand);
 
 
 }
@@ -8381,9 +8381,9 @@ struct zx_ac_TimeSyncToken_s* zx_DEEP_CLONE_ac_TimeSyncToken(struct zx_ctx* c, s
   x = (struct zx_ac_TimeSyncToken_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ac_TimeSyncToken_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->DeviceInHand = zx_clone_attr(c, x->DeviceInHand);
   x->DeviceType = zx_clone_attr(c, x->DeviceType);
   x->SeedLength = zx_clone_attr(c, x->SeedLength);
-  x->DeviceInHand = zx_clone_attr(c, x->DeviceInHand);
 
 
   return x;

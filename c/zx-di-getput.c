@@ -574,18 +574,18 @@ void zx_di_EndpointContext_DEL_Action(struct zx_di_EndpointContext_s* x, int n)
 struct zx_str* zx_di_Framework_GET_version(struct zx_di_Framework_s* x) { return x->version; }
 /* FUNC(zx_di_Framework_PUT_version) */
 void zx_di_Framework_PUT_version(struct zx_di_Framework_s* x, struct zx_str* y) { x->version = y; }
-/* FUNC(zx_di_Framework_GET_mustUnderstand) */
-struct zx_str* zx_di_Framework_GET_mustUnderstand(struct zx_di_Framework_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_di_Framework_PUT_mustUnderstand) */
-void zx_di_Framework_PUT_mustUnderstand(struct zx_di_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_di_Framework_GET_actor) */
-struct zx_str* zx_di_Framework_GET_actor(struct zx_di_Framework_s* x) { return x->actor; }
-/* FUNC(zx_di_Framework_PUT_actor) */
-void zx_di_Framework_PUT_actor(struct zx_di_Framework_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_di_Framework_GET_Id) */
 struct zx_str* zx_di_Framework_GET_Id(struct zx_di_Framework_s* x) { return x->Id; }
 /* FUNC(zx_di_Framework_PUT_Id) */
 void zx_di_Framework_PUT_Id(struct zx_di_Framework_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_di_Framework_GET_actor) */
+struct zx_str* zx_di_Framework_GET_actor(struct zx_di_Framework_s* x) { return x->actor; }
+/* FUNC(zx_di_Framework_PUT_actor) */
+void zx_di_Framework_PUT_actor(struct zx_di_Framework_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_di_Framework_GET_mustUnderstand) */
+struct zx_str* zx_di_Framework_GET_mustUnderstand(struct zx_di_Framework_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_di_Framework_PUT_mustUnderstand) */
+void zx_di_Framework_PUT_mustUnderstand(struct zx_di_Framework_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

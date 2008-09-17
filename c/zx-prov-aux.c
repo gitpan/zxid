@@ -60,10 +60,12 @@ void zx_FREE_prov_CallbackEPR(struct zx_ctx* c, struct zx_prov_CallbackEPR_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->notOnOrAfter, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
-  zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
   {
       struct zx_a_Address_s* e;
@@ -123,10 +125,12 @@ void zx_DUP_STRS_prov_CallbackEPR(struct zx_ctx* c, struct zx_prov_CallbackEPR_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->notOnOrAfter);
-  zx_dup_attr(c, x->mustUnderstand);
-  zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
   {
       struct zx_a_Address_s* e;
@@ -157,10 +161,12 @@ struct zx_prov_CallbackEPR_s* zx_DEEP_CLONE_prov_CallbackEPR(struct zx_ctx* c, s
   x = (struct zx_prov_CallbackEPR_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_prov_CallbackEPR_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->id = zx_clone_attr(c, x->id);
   x->notOnOrAfter = zx_clone_attr(c, x->notOnOrAfter);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
-  x->actor = zx_clone_attr(c, x->actor);
   x->Id = zx_clone_attr(c, x->Id);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
   {
       struct zx_a_Address_s* e;
@@ -456,8 +462,8 @@ void zx_FREE_prov_PMActivateItem(struct zx_ctx* c, struct zx_prov_PMActivateItem
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->itemID, free_strs);
   zx_free_attr(c, x->at, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
 
   {
       struct zx_prov_PMID_s* e;
@@ -501,8 +507,8 @@ void zx_DUP_STRS_prov_PMActivateItem(struct zx_ctx* c, struct zx_prov_PMActivate
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->itemID);
   zx_dup_attr(c, x->at);
+  zx_dup_attr(c, x->itemID);
 
   {
       struct zx_prov_PMID_s* e;
@@ -523,8 +529,8 @@ struct zx_prov_PMActivateItem_s* zx_DEEP_CLONE_prov_PMActivateItem(struct zx_ctx
   x = (struct zx_prov_PMActivateItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_prov_PMActivateItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->itemID = zx_clone_attr(c, x->itemID);
   x->at = zx_clone_attr(c, x->at);
+  x->itemID = zx_clone_attr(c, x->itemID);
 
   {
       struct zx_prov_PMID_s* e;
@@ -933,8 +939,8 @@ void zx_FREE_prov_PMDeactivateItem(struct zx_ctx* c, struct zx_prov_PMDeactivate
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->itemID, free_strs);
   zx_free_attr(c, x->at, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
 
   {
       struct zx_prov_PMID_s* e;
@@ -978,8 +984,8 @@ void zx_DUP_STRS_prov_PMDeactivateItem(struct zx_ctx* c, struct zx_prov_PMDeacti
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->itemID);
   zx_dup_attr(c, x->at);
+  zx_dup_attr(c, x->itemID);
 
   {
       struct zx_prov_PMID_s* e;
@@ -1000,8 +1006,8 @@ struct zx_prov_PMDeactivateItem_s* zx_DEEP_CLONE_prov_PMDeactivateItem(struct zx
   x = (struct zx_prov_PMDeactivateItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_prov_PMDeactivateItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->itemID = zx_clone_attr(c, x->itemID);
   x->at = zx_clone_attr(c, x->at);
+  x->itemID = zx_clone_attr(c, x->itemID);
 
   {
       struct zx_prov_PMID_s* e;
@@ -6464,9 +6470,9 @@ void zx_FREE_prov_PMUpdateItem(struct zx_ctx* c, struct zx_prov_PMUpdateItem_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->type, free_strs);
-  zx_free_attr(c, x->itemID, free_strs);
   zx_free_attr(c, x->at, free_strs);
+  zx_free_attr(c, x->itemID, free_strs);
+  zx_free_attr(c, x->type, free_strs);
 
   {
       struct zx_prov_PMDescriptor_s* e;
@@ -6510,9 +6516,9 @@ void zx_DUP_STRS_prov_PMUpdateItem(struct zx_ctx* c, struct zx_prov_PMUpdateItem
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->type);
-  zx_dup_attr(c, x->itemID);
   zx_dup_attr(c, x->at);
+  zx_dup_attr(c, x->itemID);
+  zx_dup_attr(c, x->type);
 
   {
       struct zx_prov_PMDescriptor_s* e;
@@ -6533,9 +6539,9 @@ struct zx_prov_PMUpdateItem_s* zx_DEEP_CLONE_prov_PMUpdateItem(struct zx_ctx* c,
   x = (struct zx_prov_PMUpdateItem_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_prov_PMUpdateItem_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->type = zx_clone_attr(c, x->type);
-  x->itemID = zx_clone_attr(c, x->itemID);
   x->at = zx_clone_attr(c, x->at);
+  x->itemID = zx_clone_attr(c, x->itemID);
+  x->type = zx_clone_attr(c, x->type);
 
   {
       struct zx_prov_PMDescriptor_s* e;
@@ -7331,10 +7337,12 @@ void zx_FREE_prov_ProvisioningServiceEPR(struct zx_ctx* c, struct zx_prov_Provis
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->notOnOrAfter, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
-  zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
   {
       struct zx_a_Address_s* e;
@@ -7394,10 +7402,12 @@ void zx_DUP_STRS_prov_ProvisioningServiceEPR(struct zx_ctx* c, struct zx_prov_Pr
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->notOnOrAfter);
-  zx_dup_attr(c, x->mustUnderstand);
-  zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
   {
       struct zx_a_Address_s* e;
@@ -7428,10 +7438,12 @@ struct zx_prov_ProvisioningServiceEPR_s* zx_DEEP_CLONE_prov_ProvisioningServiceE
   x = (struct zx_prov_ProvisioningServiceEPR_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_prov_ProvisioningServiceEPR_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->id = zx_clone_attr(c, x->id);
   x->notOnOrAfter = zx_clone_attr(c, x->notOnOrAfter);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
-  x->actor = zx_clone_attr(c, x->actor);
   x->Id = zx_clone_attr(c, x->Id);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
   {
       struct zx_a_Address_s* e;

@@ -859,8 +859,8 @@ void zx_FREE_xa_AttributeAssignment(struct zx_ctx* c, struct zx_xa_AttributeAssi
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->DataType, free_strs);
   zx_free_attr(c, x->AttributeId, free_strs);
+  zx_free_attr(c, x->DataType, free_strs);
 
 
 
@@ -896,8 +896,8 @@ void zx_DUP_STRS_xa_AttributeAssignment(struct zx_ctx* c, struct zx_xa_Attribute
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->DataType);
   zx_dup_attr(c, x->AttributeId);
+  zx_dup_attr(c, x->DataType);
 
 
 }
@@ -913,8 +913,8 @@ struct zx_xa_AttributeAssignment_s* zx_DEEP_CLONE_xa_AttributeAssignment(struct 
   x = (struct zx_xa_AttributeAssignment_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_AttributeAssignment_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->DataType = zx_clone_attr(c, x->DataType);
   x->AttributeId = zx_clone_attr(c, x->AttributeId);
+  x->DataType = zx_clone_attr(c, x->DataType);
 
 
   return x;
@@ -986,9 +986,9 @@ void zx_FREE_xa_AttributeSelector(struct zx_ctx* c, struct zx_xa_AttributeSelect
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestContextPath, free_strs);
   zx_free_attr(c, x->DataType, free_strs);
   zx_free_attr(c, x->MustBePresent, free_strs);
+  zx_free_attr(c, x->RequestContextPath, free_strs);
 
 
 
@@ -1024,9 +1024,9 @@ void zx_DUP_STRS_xa_AttributeSelector(struct zx_ctx* c, struct zx_xa_AttributeSe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestContextPath);
   zx_dup_attr(c, x->DataType);
   zx_dup_attr(c, x->MustBePresent);
+  zx_dup_attr(c, x->RequestContextPath);
 
 
 }
@@ -1042,9 +1042,9 @@ struct zx_xa_AttributeSelector_s* zx_DEEP_CLONE_xa_AttributeSelector(struct zx_c
   x = (struct zx_xa_AttributeSelector_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_AttributeSelector_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestContextPath = zx_clone_attr(c, x->RequestContextPath);
   x->DataType = zx_clone_attr(c, x->DataType);
   x->MustBePresent = zx_clone_attr(c, x->MustBePresent);
+  x->RequestContextPath = zx_clone_attr(c, x->RequestContextPath);
 
 
   return x;
@@ -2473,8 +2473,8 @@ void zx_FREE_xa_Obligation(struct zx_ctx* c, struct zx_xa_Obligation_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ObligationId, free_strs);
   zx_free_attr(c, x->FulfillOn, free_strs);
+  zx_free_attr(c, x->ObligationId, free_strs);
 
   {
       struct zx_xa_AttributeAssignment_s* e;
@@ -2518,8 +2518,8 @@ void zx_DUP_STRS_xa_Obligation(struct zx_ctx* c, struct zx_xa_Obligation_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ObligationId);
   zx_dup_attr(c, x->FulfillOn);
+  zx_dup_attr(c, x->ObligationId);
 
   {
       struct zx_xa_AttributeAssignment_s* e;
@@ -2540,8 +2540,8 @@ struct zx_xa_Obligation_s* zx_DEEP_CLONE_xa_Obligation(struct zx_ctx* c, struct 
   x = (struct zx_xa_Obligation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_Obligation_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ObligationId = zx_clone_attr(c, x->ObligationId);
   x->FulfillOn = zx_clone_attr(c, x->FulfillOn);
+  x->ObligationId = zx_clone_attr(c, x->ObligationId);
 
   {
       struct zx_xa_AttributeAssignment_s* e;
@@ -2790,8 +2790,8 @@ void zx_FREE_xa_Policy(struct zx_ctx* c, struct zx_xa_Policy_s* x, int free_strs
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->PolicyId, free_strs);
-  zx_free_attr(c, x->Version, free_strs);
   zx_free_attr(c, x->RuleCombiningAlgId, free_strs);
+  zx_free_attr(c, x->Version, free_strs);
 
   zx_free_simple_elems(c, x->Description, free_strs);
   {
@@ -2885,8 +2885,8 @@ void zx_DUP_STRS_xa_Policy(struct zx_ctx* c, struct zx_xa_Policy_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->PolicyId);
-  zx_dup_attr(c, x->Version);
   zx_dup_attr(c, x->RuleCombiningAlgId);
+  zx_dup_attr(c, x->Version);
 
   zx_dup_strs_simple_elems(c, x->Description);
   {
@@ -2939,8 +2939,8 @@ struct zx_xa_Policy_s* zx_DEEP_CLONE_xa_Policy(struct zx_ctx* c, struct zx_xa_Po
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->PolicyId = zx_clone_attr(c, x->PolicyId);
-  x->Version = zx_clone_attr(c, x->Version);
   x->RuleCombiningAlgId = zx_clone_attr(c, x->RuleCombiningAlgId);
+  x->Version = zx_clone_attr(c, x->Version);
 
   x->Description = zx_deep_clone_simple_elems(c,x->Description, dup_strs);
   {
@@ -3448,9 +3448,9 @@ void zx_FREE_xa_PolicyIdReference(struct zx_ctx* c, struct zx_xa_PolicyIdReferen
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Version, free_strs);
   zx_free_attr(c, x->EarliestVersion, free_strs);
   zx_free_attr(c, x->LatestVersion, free_strs);
+  zx_free_attr(c, x->Version, free_strs);
 
 
 
@@ -3486,9 +3486,9 @@ void zx_DUP_STRS_xa_PolicyIdReference(struct zx_ctx* c, struct zx_xa_PolicyIdRef
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Version);
   zx_dup_attr(c, x->EarliestVersion);
   zx_dup_attr(c, x->LatestVersion);
+  zx_dup_attr(c, x->Version);
 
 
 }
@@ -3504,9 +3504,9 @@ struct zx_xa_PolicyIdReference_s* zx_DEEP_CLONE_xa_PolicyIdReference(struct zx_c
   x = (struct zx_xa_PolicyIdReference_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_PolicyIdReference_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Version = zx_clone_attr(c, x->Version);
   x->EarliestVersion = zx_clone_attr(c, x->EarliestVersion);
   x->LatestVersion = zx_clone_attr(c, x->LatestVersion);
+  x->Version = zx_clone_attr(c, x->Version);
 
 
   return x;
@@ -3578,9 +3578,9 @@ void zx_FREE_xa_PolicySet(struct zx_ctx* c, struct zx_xa_PolicySet_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->PolicyCombiningAlgId, free_strs);
   zx_free_attr(c, x->PolicySetId, free_strs);
   zx_free_attr(c, x->Version, free_strs);
-  zx_free_attr(c, x->PolicyCombiningAlgId, free_strs);
 
   zx_free_simple_elems(c, x->Description, free_strs);
   {
@@ -3697,9 +3697,9 @@ void zx_DUP_STRS_xa_PolicySet(struct zx_ctx* c, struct zx_xa_PolicySet_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->PolicyCombiningAlgId);
   zx_dup_attr(c, x->PolicySetId);
   zx_dup_attr(c, x->Version);
-  zx_dup_attr(c, x->PolicyCombiningAlgId);
 
   zx_dup_strs_simple_elems(c, x->Description);
   {
@@ -3766,9 +3766,9 @@ struct zx_xa_PolicySet_s* zx_DEEP_CLONE_xa_PolicySet(struct zx_ctx* c, struct zx
   x = (struct zx_xa_PolicySet_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_PolicySet_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->PolicyCombiningAlgId = zx_clone_attr(c, x->PolicyCombiningAlgId);
   x->PolicySetId = zx_clone_attr(c, x->PolicySetId);
   x->Version = zx_clone_attr(c, x->Version);
-  x->PolicyCombiningAlgId = zx_clone_attr(c, x->PolicyCombiningAlgId);
 
   x->Description = zx_deep_clone_simple_elems(c,x->Description, dup_strs);
   {
@@ -4339,9 +4339,9 @@ void zx_FREE_xa_PolicySetIdReference(struct zx_ctx* c, struct zx_xa_PolicySetIdR
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Version, free_strs);
   zx_free_attr(c, x->EarliestVersion, free_strs);
   zx_free_attr(c, x->LatestVersion, free_strs);
+  zx_free_attr(c, x->Version, free_strs);
 
 
 
@@ -4377,9 +4377,9 @@ void zx_DUP_STRS_xa_PolicySetIdReference(struct zx_ctx* c, struct zx_xa_PolicySe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Version);
   zx_dup_attr(c, x->EarliestVersion);
   zx_dup_attr(c, x->LatestVersion);
+  zx_dup_attr(c, x->Version);
 
 
 }
@@ -4395,9 +4395,9 @@ struct zx_xa_PolicySetIdReference_s* zx_DEEP_CLONE_xa_PolicySetIdReference(struc
   x = (struct zx_xa_PolicySetIdReference_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_PolicySetIdReference_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Version = zx_clone_attr(c, x->Version);
   x->EarliestVersion = zx_clone_attr(c, x->EarliestVersion);
   x->LatestVersion = zx_clone_attr(c, x->LatestVersion);
+  x->Version = zx_clone_attr(c, x->Version);
 
 
   return x;
@@ -5138,8 +5138,8 @@ void zx_FREE_xa_Rule(struct zx_ctx* c, struct zx_xa_Rule_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RuleId, free_strs);
   zx_free_attr(c, x->Effect, free_strs);
+  zx_free_attr(c, x->RuleId, free_strs);
 
   zx_free_simple_elems(c, x->Description, free_strs);
   {
@@ -5192,8 +5192,8 @@ void zx_DUP_STRS_xa_Rule(struct zx_ctx* c, struct zx_xa_Rule_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RuleId);
   zx_dup_attr(c, x->Effect);
+  zx_dup_attr(c, x->RuleId);
 
   zx_dup_strs_simple_elems(c, x->Description);
   {
@@ -5220,8 +5220,8 @@ struct zx_xa_Rule_s* zx_DEEP_CLONE_xa_Rule(struct zx_ctx* c, struct zx_xa_Rule_s
   x = (struct zx_xa_Rule_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_xa_Rule_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RuleId = zx_clone_attr(c, x->RuleId);
   x->Effect = zx_clone_attr(c, x->Effect);
+  x->RuleId = zx_clone_attr(c, x->RuleId);
 
   x->Description = zx_deep_clone_simple_elems(c,x->Description, dup_strs);
   {

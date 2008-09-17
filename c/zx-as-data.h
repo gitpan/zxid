@@ -175,15 +175,15 @@ struct zx_as_SASLRequest_s {
   struct zx_elem_s* Data;	/* {0,1} xs:base64Binary */
   struct zx_sp_RequestedAuthnContext_s* RequestedAuthnContext;	/* {0,1} nada */
   struct zx_as_Extensions_s* Extensions;	/* {0,1}  */
-  struct zx_str* mechanism;	/* {1,1} attribute xs:string */
-  struct zx_str* authzID;	/* {0,1} attribute xs:string */
   struct zx_str* advisoryAuthnID;	/* {0,1} attribute xs:string */
+  struct zx_str* authzID;	/* {0,1} attribute xs:string */
+  struct zx_str* mechanism;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_as_SASLRequest_GET_mechanism(struct zx_as_SASLRequest_s* x);
-struct zx_str* zx_as_SASLRequest_GET_authzID(struct zx_as_SASLRequest_s* x);
 struct zx_str* zx_as_SASLRequest_GET_advisoryAuthnID(struct zx_as_SASLRequest_s* x);
+struct zx_str* zx_as_SASLRequest_GET_authzID(struct zx_as_SASLRequest_s* x);
+struct zx_str* zx_as_SASLRequest_GET_mechanism(struct zx_as_SASLRequest_s* x);
 
 struct zx_elem_s* zx_as_SASLRequest_GET_Data(struct zx_as_SASLRequest_s* x, int n);
 struct zx_sp_RequestedAuthnContext_s* zx_as_SASLRequest_GET_RequestedAuthnContext(struct zx_as_SASLRequest_s* x, int n);
@@ -201,9 +201,9 @@ void zx_as_SASLRequest_PUSH_Data(struct zx_as_SASLRequest_s* x, struct zx_elem_s
 void zx_as_SASLRequest_PUSH_RequestedAuthnContext(struct zx_as_SASLRequest_s* x, struct zx_sp_RequestedAuthnContext_s* y);
 void zx_as_SASLRequest_PUSH_Extensions(struct zx_as_SASLRequest_s* x, struct zx_as_Extensions_s* y);
 
-void zx_as_SASLRequest_PUT_mechanism(struct zx_as_SASLRequest_s* x, struct zx_str* y);
-void zx_as_SASLRequest_PUT_authzID(struct zx_as_SASLRequest_s* x, struct zx_str* y);
 void zx_as_SASLRequest_PUT_advisoryAuthnID(struct zx_as_SASLRequest_s* x, struct zx_str* y);
+void zx_as_SASLRequest_PUT_authzID(struct zx_as_SASLRequest_s* x, struct zx_str* y);
+void zx_as_SASLRequest_PUT_mechanism(struct zx_as_SASLRequest_s* x, struct zx_str* y);
 
 void zx_as_SASLRequest_PUT_Data(struct zx_as_SASLRequest_s* x, int n, struct zx_elem_s* y);
 void zx_as_SASLRequest_PUT_RequestedAuthnContext(struct zx_as_SASLRequest_s* x, int n, struct zx_sp_RequestedAuthnContext_s* y);

@@ -1,19 +1,20 @@
 <?
 # zxid/zxidhlo.php  -  Hello World SAML SP role in PHP using zxid extension
 #
-# Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+# Copyright (c) 2007-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
-# $Id: zxidhlo.php,v 1.8 2007/05/10 18:19:57 sampo Exp $
+# $Id: zxidhlo.php,v 1.9 2008-05-26 15:28:44 sampo Exp $
 # 16.1.2007, created --Sampo
+# 25.5.2008, fixed to work against 0.27, fixed port number to 5443 --Sampo
 
 dl("php_zxid.so");  # These three lines can go to initialization: they only need to run once
 # CONFIG: You must have created /var/zxid directory hierarchy. See `make dir'
 # CONFIG: You must edit the URL to match your domain name and port
-$conf = "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:8443/zxidhlo.php";
+$conf = "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:5443/zxidhlo.php";
 $cf = zxid_new_conf_to_cf($conf);
 ?>
 <?
@@ -23,9 +24,9 @@ $cf = zxid_new_conf_to_cf($conf);
 $qs = $_SERVER['REQUEST_METHOD'] == 'GET'
       ? $_SERVER['QUERY_STRING']
       : file_get_contents('php://input');
-#error_log("zxidphp: qs($qs)");
+error_log("zxidphp: qs($qs)");
 $res = zxid_simple_cf($cf, -1, $qs, null, 0x1814);
-#error_log("zxidphp: res($res) conf($conf)");
+error_log("zxidphp: res($res) conf($conf)");
 
 switch (substr($res, 0, 1)) {
 case 'L': header($res); exit;  # Redirect (Location header)
@@ -37,7 +38,7 @@ case 'e':
 <body bgcolor="#330033" text="#ffaaff" link="#ffddff"
  vlink="#aa44aa" alink="#ffffff"><font face=sans>
 <h1>Please Login Using IdP</h1>
-<?=zxid_idp_select_cf($cf, null, 0x1800)?>
+<?=zxid_idp_select_cf($cf, null, 0x1900)?>
 <hr>zxidhlo.php, <a href="http://zxid.org/">zxid.org</a>
 <?
 exit;
@@ -56,5 +57,5 @@ foreach (split("\n", $res) as $line) {
 <body bgcolor="#330033" text="#ffaaff" link="#ffddff"
  vlink="#aa44aa" alink="#ffffff"><font face=sans>
 <h1>Protected content, logged in as <?=$attr['cn']?>, session(<?=$attr['sesid']?>)</h1>
-<?=zxid_fed_mgmt_cf($cf, null, -1, $attr['sesid'], 0x1800)?>
+<?=zxid_fed_mgmt_cf($cf, null, -1, $attr['sesid'], 0x1900)?>
 <hr>zxidhlo.php, <a href="http://zxid.org/">zxid.org</a>

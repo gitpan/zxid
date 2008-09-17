@@ -101,13 +101,13 @@ struct zx_pmm_PMActivateItem_s {
   ZX_ELEM_EXT
   zx_pmm_PMActivateItem_EXT
   struct zx_prov_PMID_s* PMID;	/* {1,1} nada */
-  struct zx_str* itemID;	/* {1,1} attribute xs:string */
   struct zx_str* at;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* itemID;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_pmm_PMActivateItem_GET_itemID(struct zx_pmm_PMActivateItem_s* x);
 struct zx_str* zx_pmm_PMActivateItem_GET_at(struct zx_pmm_PMActivateItem_s* x);
+struct zx_str* zx_pmm_PMActivateItem_GET_itemID(struct zx_pmm_PMActivateItem_s* x);
 
 struct zx_prov_PMID_s* zx_pmm_PMActivateItem_GET_PMID(struct zx_pmm_PMActivateItem_s* x, int n);
 
@@ -117,8 +117,8 @@ struct zx_prov_PMID_s* zx_pmm_PMActivateItem_POP_PMID(struct zx_pmm_PMActivateIt
 
 void zx_pmm_PMActivateItem_PUSH_PMID(struct zx_pmm_PMActivateItem_s* x, struct zx_prov_PMID_s* y);
 
-void zx_pmm_PMActivateItem_PUT_itemID(struct zx_pmm_PMActivateItem_s* x, struct zx_str* y);
 void zx_pmm_PMActivateItem_PUT_at(struct zx_pmm_PMActivateItem_s* x, struct zx_str* y);
+void zx_pmm_PMActivateItem_PUT_itemID(struct zx_pmm_PMActivateItem_s* x, struct zx_str* y);
 
 void zx_pmm_PMActivateItem_PUT_PMID(struct zx_pmm_PMActivateItem_s* x, int n, struct zx_prov_PMID_s* y);
 
@@ -260,13 +260,13 @@ struct zx_pmm_PMDeactivateItem_s {
   ZX_ELEM_EXT
   zx_pmm_PMDeactivateItem_EXT
   struct zx_prov_PMID_s* PMID;	/* {1,1} nada */
-  struct zx_str* itemID;	/* {1,1} attribute xs:string */
   struct zx_str* at;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* itemID;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_pmm_PMDeactivateItem_GET_itemID(struct zx_pmm_PMDeactivateItem_s* x);
 struct zx_str* zx_pmm_PMDeactivateItem_GET_at(struct zx_pmm_PMDeactivateItem_s* x);
+struct zx_str* zx_pmm_PMDeactivateItem_GET_itemID(struct zx_pmm_PMDeactivateItem_s* x);
 
 struct zx_prov_PMID_s* zx_pmm_PMDeactivateItem_GET_PMID(struct zx_pmm_PMDeactivateItem_s* x, int n);
 
@@ -276,8 +276,8 @@ struct zx_prov_PMID_s* zx_pmm_PMDeactivateItem_POP_PMID(struct zx_pmm_PMDeactiva
 
 void zx_pmm_PMDeactivateItem_PUSH_PMID(struct zx_pmm_PMDeactivateItem_s* x, struct zx_prov_PMID_s* y);
 
-void zx_pmm_PMDeactivateItem_PUT_itemID(struct zx_pmm_PMDeactivateItem_s* x, struct zx_str* y);
 void zx_pmm_PMDeactivateItem_PUT_at(struct zx_pmm_PMDeactivateItem_s* x, struct zx_str* y);
+void zx_pmm_PMDeactivateItem_PUT_itemID(struct zx_pmm_PMDeactivateItem_s* x, struct zx_str* y);
 
 void zx_pmm_PMDeactivateItem_PUT_PMID(struct zx_pmm_PMDeactivateItem_s* x, int n, struct zx_prov_PMID_s* y);
 
@@ -767,15 +767,15 @@ struct zx_pmm_PMUpdateItem_s {
   ZX_ELEM_EXT
   zx_pmm_PMUpdateItem_EXT
   struct zx_prov_PMDescriptor_s* PMDescriptor;	/* {1,1} nada */
-  struct zx_str* type;	/* {1,1} attribute hrxml:ExtendedAssociationTypeType */
-  struct zx_str* itemID;	/* {1,1} attribute xs:string */
   struct zx_str* at;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* itemID;	/* {1,1} attribute xs:string */
+  struct zx_str* type;	/* {1,1} attribute hrxml:ExtendedAssociationTypeType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_pmm_PMUpdateItem_GET_type(struct zx_pmm_PMUpdateItem_s* x);
-struct zx_str* zx_pmm_PMUpdateItem_GET_itemID(struct zx_pmm_PMUpdateItem_s* x);
 struct zx_str* zx_pmm_PMUpdateItem_GET_at(struct zx_pmm_PMUpdateItem_s* x);
+struct zx_str* zx_pmm_PMUpdateItem_GET_itemID(struct zx_pmm_PMUpdateItem_s* x);
+struct zx_str* zx_pmm_PMUpdateItem_GET_type(struct zx_pmm_PMUpdateItem_s* x);
 
 struct zx_prov_PMDescriptor_s* zx_pmm_PMUpdateItem_GET_PMDescriptor(struct zx_pmm_PMUpdateItem_s* x, int n);
 
@@ -785,9 +785,9 @@ struct zx_prov_PMDescriptor_s* zx_pmm_PMUpdateItem_POP_PMDescriptor(struct zx_pm
 
 void zx_pmm_PMUpdateItem_PUSH_PMDescriptor(struct zx_pmm_PMUpdateItem_s* x, struct zx_prov_PMDescriptor_s* y);
 
-void zx_pmm_PMUpdateItem_PUT_type(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y);
-void zx_pmm_PMUpdateItem_PUT_itemID(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y);
 void zx_pmm_PMUpdateItem_PUT_at(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y);
+void zx_pmm_PMUpdateItem_PUT_itemID(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y);
+void zx_pmm_PMUpdateItem_PUT_type(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y);
 
 void zx_pmm_PMUpdateItem_PUT_PMDescriptor(struct zx_pmm_PMUpdateItem_s* x, int n, struct zx_prov_PMDescriptor_s* y);
 

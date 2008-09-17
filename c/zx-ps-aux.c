@@ -252,8 +252,8 @@ void zx_FREE_ps_AddCollectionResponse(struct zx_ctx* c, struct zx_ps_AddCollecti
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -305,8 +305,8 @@ void zx_DUP_STRS_ps_AddCollectionResponse(struct zx_ctx* c, struct zx_ps_AddColl
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -332,8 +332,8 @@ struct zx_ps_AddCollectionResponse_s* zx_DEEP_CLONE_ps_AddCollectionResponse(str
   x = (struct zx_ps_AddCollectionResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_AddCollectionResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -713,8 +713,8 @@ void zx_FREE_ps_AddEntityResponse(struct zx_ctx* c, struct zx_ps_AddEntityRespon
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -768,8 +768,8 @@ void zx_DUP_STRS_ps_AddEntityResponse(struct zx_ctx* c, struct zx_ps_AddEntityRe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -797,8 +797,8 @@ struct zx_ps_AddEntityResponse_s* zx_DEEP_CLONE_ps_AddEntityResponse(struct zx_c
   x = (struct zx_ps_AddEntityResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_AddEntityResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -1214,8 +1214,8 @@ void zx_FREE_ps_AddKnownEntityResponse(struct zx_ctx* c, struct zx_ps_AddKnownEn
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -1269,8 +1269,8 @@ void zx_DUP_STRS_ps_AddKnownEntityResponse(struct zx_ctx* c, struct zx_ps_AddKno
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -1298,8 +1298,8 @@ struct zx_ps_AddKnownEntityResponse_s* zx_DEEP_CLONE_ps_AddKnownEntityResponse(s
   x = (struct zx_ps_AddKnownEntityResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_AddKnownEntityResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -1591,8 +1591,8 @@ void zx_FREE_ps_AddToCollectionResponse(struct zx_ctx* c, struct zx_ps_AddToColl
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -1636,8 +1636,8 @@ void zx_DUP_STRS_ps_AddToCollectionResponse(struct zx_ctx* c, struct zx_ps_AddTo
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -1658,8 +1658,8 @@ struct zx_ps_AddToCollectionResponse_s* zx_DEEP_CLONE_ps_AddToCollectionResponse
   x = (struct zx_ps_AddToCollectionResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_AddToCollectionResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -1873,8 +1873,8 @@ void zx_FREE_ps_DisplayName(struct zx_ctx* c, struct zx_ps_DisplayName_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Locale, free_strs);
   zx_free_attr(c, x->IsDefault, free_strs);
+  zx_free_attr(c, x->Locale, free_strs);
 
 
 
@@ -1910,8 +1910,8 @@ void zx_DUP_STRS_ps_DisplayName(struct zx_ctx* c, struct zx_ps_DisplayName_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Locale);
   zx_dup_attr(c, x->IsDefault);
+  zx_dup_attr(c, x->Locale);
 
 
 }
@@ -1927,8 +1927,8 @@ struct zx_ps_DisplayName_s* zx_DEEP_CLONE_ps_DisplayName(struct zx_ctx* c, struc
   x = (struct zx_ps_DisplayName_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_DisplayName_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Locale = zx_clone_attr(c, x->Locale);
   x->IsDefault = zx_clone_attr(c, x->IsDefault);
+  x->Locale = zx_clone_attr(c, x->Locale);
 
 
   return x;
@@ -2164,8 +2164,8 @@ void zx_FREE_ps_GetObjectInfoResponse(struct zx_ctx* c, struct zx_ps_GetObjectIn
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -2217,8 +2217,8 @@ void zx_DUP_STRS_ps_GetObjectInfoResponse(struct zx_ctx* c, struct zx_ps_GetObje
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -2244,8 +2244,8 @@ struct zx_ps_GetObjectInfoResponse_s* zx_DEEP_CLONE_ps_GetObjectInfoResponse(str
   x = (struct zx_ps_GetObjectInfoResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_GetObjectInfoResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -2514,10 +2514,10 @@ void zx_FREE_ps_ListMembersRequest(struct zx_ctx* c, struct zx_ps_ListMembersReq
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->Structured, free_strs);
   zx_free_attr(c, x->Count, free_strs);
   zx_free_attr(c, x->Offset, free_strs);
+  zx_free_attr(c, x->Structured, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   zx_free_simple_elems(c, x->TargetObjectID, free_strs);
   {
@@ -2562,10 +2562,10 @@ void zx_DUP_STRS_ps_ListMembersRequest(struct zx_ctx* c, struct zx_ps_ListMember
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->Structured);
   zx_dup_attr(c, x->Count);
   zx_dup_attr(c, x->Offset);
+  zx_dup_attr(c, x->Structured);
+  zx_dup_attr(c, x->id);
 
   zx_dup_strs_simple_elems(c, x->TargetObjectID);
   {
@@ -2587,10 +2587,10 @@ struct zx_ps_ListMembersRequest_s* zx_DEEP_CLONE_ps_ListMembersRequest(struct zx
   x = (struct zx_ps_ListMembersRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_ListMembersRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
-  x->Structured = zx_clone_attr(c, x->Structured);
   x->Count = zx_clone_attr(c, x->Count);
   x->Offset = zx_clone_attr(c, x->Offset);
+  x->Structured = zx_clone_attr(c, x->Structured);
+  x->id = zx_clone_attr(c, x->id);
 
   x->TargetObjectID = zx_deep_clone_simple_elems(c,x->TargetObjectID, dup_strs);
   {
@@ -2687,8 +2687,8 @@ void zx_FREE_ps_ListMembersResponse(struct zx_ctx* c, struct zx_ps_ListMembersRe
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -2740,8 +2740,8 @@ void zx_DUP_STRS_ps_ListMembersResponse(struct zx_ctx* c, struct zx_ps_ListMembe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -2767,8 +2767,8 @@ struct zx_ps_ListMembersResponse_s* zx_DEEP_CLONE_ps_ListMembersResponse(struct 
   x = (struct zx_ps_ListMembersResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_ListMembersResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -2882,10 +2882,10 @@ void zx_FREE_ps_Notification(struct zx_ctx* c, struct zx_ps_Notification_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->endReason, free_strs);
+  zx_free_attr(c, x->expires, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->subscriptionID, free_strs);
-  zx_free_attr(c, x->expires, free_strs);
-  zx_free_attr(c, x->endReason, free_strs);
 
   {
       struct zx_lu_TestResult_s* e;
@@ -2937,10 +2937,10 @@ void zx_DUP_STRS_ps_Notification(struct zx_ctx* c, struct zx_ps_Notification_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->endReason);
+  zx_dup_attr(c, x->expires);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->subscriptionID);
-  zx_dup_attr(c, x->expires);
-  zx_dup_attr(c, x->endReason);
 
   {
       struct zx_lu_TestResult_s* e;
@@ -2966,10 +2966,10 @@ struct zx_ps_Notification_s* zx_DEEP_CLONE_ps_Notification(struct zx_ctx* c, str
   x = (struct zx_ps_Notification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_Notification_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->endReason = zx_clone_attr(c, x->endReason);
+  x->expires = zx_clone_attr(c, x->expires);
   x->id = zx_clone_attr(c, x->id);
   x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
-  x->expires = zx_clone_attr(c, x->expires);
-  x->endReason = zx_clone_attr(c, x->endReason);
 
   {
       struct zx_lu_TestResult_s* e;
@@ -3436,9 +3436,9 @@ void zx_FREE_ps_Object(struct zx_ctx* c, struct zx_ps_Object_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->NodeType, free_strs);
   zx_free_attr(c, x->CreatedDateTime, free_strs);
   zx_free_attr(c, x->ModifiedDateTime, free_strs);
+  zx_free_attr(c, x->NodeType, free_strs);
 
   zx_free_simple_elems(c, x->ObjectID, free_strs);
   {
@@ -3500,9 +3500,9 @@ void zx_DUP_STRS_ps_Object(struct zx_ctx* c, struct zx_ps_Object_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->NodeType);
   zx_dup_attr(c, x->CreatedDateTime);
   zx_dup_attr(c, x->ModifiedDateTime);
+  zx_dup_attr(c, x->NodeType);
 
   zx_dup_strs_simple_elems(c, x->ObjectID);
   {
@@ -3535,9 +3535,9 @@ struct zx_ps_Object_s* zx_DEEP_CLONE_ps_Object(struct zx_ctx* c, struct zx_ps_Ob
   x = (struct zx_ps_Object_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_Object_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->NodeType = zx_clone_attr(c, x->NodeType);
   x->CreatedDateTime = zx_clone_attr(c, x->CreatedDateTime);
   x->ModifiedDateTime = zx_clone_attr(c, x->ModifiedDateTime);
+  x->NodeType = zx_clone_attr(c, x->NodeType);
 
   x->ObjectID = zx_deep_clone_simple_elems(c,x->ObjectID, dup_strs);
   {
@@ -3680,9 +3680,9 @@ void zx_FREE_ps_QueryObjectsRequest(struct zx_ctx* c, struct zx_ps_QueryObjectsR
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->Count, free_strs);
   zx_free_attr(c, x->Offset, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   zx_free_simple_elems(c, x->Filter, free_strs);
   {
@@ -3727,9 +3727,9 @@ void zx_DUP_STRS_ps_QueryObjectsRequest(struct zx_ctx* c, struct zx_ps_QueryObje
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->Count);
   zx_dup_attr(c, x->Offset);
+  zx_dup_attr(c, x->id);
 
   zx_dup_strs_simple_elems(c, x->Filter);
   {
@@ -3751,9 +3751,9 @@ struct zx_ps_QueryObjectsRequest_s* zx_DEEP_CLONE_ps_QueryObjectsRequest(struct 
   x = (struct zx_ps_QueryObjectsRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_QueryObjectsRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->Count = zx_clone_attr(c, x->Count);
   x->Offset = zx_clone_attr(c, x->Offset);
+  x->id = zx_clone_attr(c, x->id);
 
   x->Filter = zx_deep_clone_simple_elems(c,x->Filter, dup_strs);
   {
@@ -3850,8 +3850,8 @@ void zx_FREE_ps_QueryObjectsResponse(struct zx_ctx* c, struct zx_ps_QueryObjects
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -3903,8 +3903,8 @@ void zx_DUP_STRS_ps_QueryObjectsResponse(struct zx_ctx* c, struct zx_ps_QueryObj
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -3930,8 +3930,8 @@ struct zx_ps_QueryObjectsResponse_s* zx_DEEP_CLONE_ps_QueryObjectsResponse(struc
   x = (struct zx_ps_QueryObjectsResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_QueryObjectsResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -4175,8 +4175,8 @@ void zx_FREE_ps_RemoveCollectionResponse(struct zx_ctx* c, struct zx_ps_RemoveCo
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -4220,8 +4220,8 @@ void zx_DUP_STRS_ps_RemoveCollectionResponse(struct zx_ctx* c, struct zx_ps_Remo
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -4242,8 +4242,8 @@ struct zx_ps_RemoveCollectionResponse_s* zx_DEEP_CLONE_ps_RemoveCollectionRespon
   x = (struct zx_ps_RemoveCollectionResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_RemoveCollectionResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -4466,8 +4466,8 @@ void zx_FREE_ps_RemoveEntityResponse(struct zx_ctx* c, struct zx_ps_RemoveEntity
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -4511,8 +4511,8 @@ void zx_DUP_STRS_ps_RemoveEntityResponse(struct zx_ctx* c, struct zx_ps_RemoveEn
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -4533,8 +4533,8 @@ struct zx_ps_RemoveEntityResponse_s* zx_DEEP_CLONE_ps_RemoveEntityResponse(struc
   x = (struct zx_ps_RemoveEntityResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_RemoveEntityResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -4797,8 +4797,8 @@ void zx_FREE_ps_RemoveFromCollectionResponse(struct zx_ctx* c, struct zx_ps_Remo
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -4842,8 +4842,8 @@ void zx_DUP_STRS_ps_RemoveFromCollectionResponse(struct zx_ctx* c, struct zx_ps_
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -4864,8 +4864,8 @@ struct zx_ps_RemoveFromCollectionResponse_s* zx_DEEP_CLONE_ps_RemoveFromCollecti
   x = (struct zx_ps_RemoveFromCollectionResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_RemoveFromCollectionResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -5116,8 +5116,8 @@ void zx_FREE_ps_ResolveIdentifierResponse(struct zx_ctx* c, struct zx_ps_Resolve
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -5169,8 +5169,8 @@ void zx_DUP_STRS_ps_ResolveIdentifierResponse(struct zx_ctx* c, struct zx_ps_Res
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -5196,8 +5196,8 @@ struct zx_ps_ResolveIdentifierResponse_s* zx_DEEP_CLONE_ps_ResolveIdentifierResp
   x = (struct zx_ps_ResolveIdentifierResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_ResolveIdentifierResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -5859,8 +5859,8 @@ void zx_FREE_ps_SetObjectInfoResponse(struct zx_ctx* c, struct zx_ps_SetObjectIn
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -5904,8 +5904,8 @@ void zx_DUP_STRS_ps_SetObjectInfoResponse(struct zx_ctx* c, struct zx_ps_SetObje
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -5926,8 +5926,8 @@ struct zx_ps_SetObjectInfoResponse_s* zx_DEEP_CLONE_ps_SetObjectInfoResponse(str
   x = (struct zx_ps_SetObjectInfoResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_SetObjectInfoResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -6020,13 +6020,13 @@ void zx_FREE_ps_Subscription(struct zx_ctx* c, struct zx_ps_Subscription_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->subscriptionID, free_strs);
-  zx_free_attr(c, x->notifyToRef, free_strs);
   zx_free_attr(c, x->adminNotifyToRef, free_strs);
-  zx_free_attr(c, x->starts, free_strs);
   zx_free_attr(c, x->expires, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->includeData, free_strs);
+  zx_free_attr(c, x->notifyToRef, free_strs);
+  zx_free_attr(c, x->starts, free_strs);
+  zx_free_attr(c, x->subscriptionID, free_strs);
 
   {
       struct zx_subs_RefItem_s* e;
@@ -6078,13 +6078,13 @@ void zx_DUP_STRS_ps_Subscription(struct zx_ctx* c, struct zx_ps_Subscription_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->subscriptionID);
-  zx_dup_attr(c, x->notifyToRef);
   zx_dup_attr(c, x->adminNotifyToRef);
-  zx_dup_attr(c, x->starts);
   zx_dup_attr(c, x->expires);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->includeData);
+  zx_dup_attr(c, x->notifyToRef);
+  zx_dup_attr(c, x->starts);
+  zx_dup_attr(c, x->subscriptionID);
 
   {
       struct zx_subs_RefItem_s* e;
@@ -6110,13 +6110,13 @@ struct zx_ps_Subscription_s* zx_DEEP_CLONE_ps_Subscription(struct zx_ctx* c, str
   x = (struct zx_ps_Subscription_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_Subscription_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
-  x->notifyToRef = zx_clone_attr(c, x->notifyToRef);
   x->adminNotifyToRef = zx_clone_attr(c, x->adminNotifyToRef);
-  x->starts = zx_clone_attr(c, x->starts);
   x->expires = zx_clone_attr(c, x->expires);
   x->id = zx_clone_attr(c, x->id);
   x->includeData = zx_clone_attr(c, x->includeData);
+  x->notifyToRef = zx_clone_attr(c, x->notifyToRef);
+  x->starts = zx_clone_attr(c, x->starts);
+  x->subscriptionID = zx_clone_attr(c, x->subscriptionID);
 
   {
       struct zx_subs_RefItem_s* e;
@@ -6552,8 +6552,8 @@ void zx_FREE_ps_TestMembershipResponse(struct zx_ctx* c, struct zx_ps_TestMember
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->id, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -6598,8 +6598,8 @@ void zx_DUP_STRS_ps_TestMembershipResponse(struct zx_ctx* c, struct zx_ps_TestMe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;
@@ -6621,8 +6621,8 @@ struct zx_ps_TestMembershipResponse_s* zx_DEEP_CLONE_ps_TestMembershipResponse(s
   x = (struct zx_ps_TestMembershipResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ps_TestMembershipResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->id = zx_clone_attr(c, x->id);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->id = zx_clone_attr(c, x->id);
 
   {
       struct zx_lu_Status_s* e;

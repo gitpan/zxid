@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxencdectest.c,v 1.2 2007/02/23 05:00:29 sampo Exp $
+ * $Id: zxencdectest.c,v 1.6 2008-03-23 19:34:09 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  * 9.2.2007, improved to make basis of a test suite tool --Sampo
@@ -30,6 +30,7 @@
 
 #include "zx.h"
 #include "zxid.h"
+#include "c/zxidvers.h"
 #include "c/zx-data.h"
 #include "c/zx-const.h"
 #include "c/zx-ns.h"
@@ -38,8 +39,7 @@ int read_all_fd(int fd, char* p, int want, int* got_all);
 int write_all_fd(int fd, char* p, int pending);
 
 CU8* help =
-"zxencdectest  -  ZX encoding and decoding tester - R" REL "\n\
-SAML 2.0 is a standard for federated idenity and Single Sign-On.\n\
+"zxencdectest  -  ZX encoding and decoding tester - R" ZXID_REL "\n\
 Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
@@ -47,6 +47,7 @@ See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well researched bug reports to the author. Home: zxid.org\n\
 \n\
 Usage: zxencdectest [options] <foo.xml >reencoded-foo.xml\n\
+  -r  N            Run test number N. 1 = IBM cert dec, 2 = IBM cert enc dec\n\
   -n  N            Number of iterations to benchmark (default 1).\n\
   -t  SECONDS      Timeout. Default: 0=no timeout.\n\
   -c  CIPHER       Enable crypto on DTS interface using specified cipher. Use '?' for list.\n\
@@ -66,7 +67,64 @@ Usage: zxencdectest [options] <foo.xml >reencoded-foo.xml\n\
 
 #define DIE(reason) MB fprintf(stderr, "%s\n", reason); exit(2); ME
 
-char* instance = "zxid";  /* how this server is identified in logs */
+void test_ibm_cert_problem()
+{
+  int got_all, len_so;
+  struct zxid_conf* cf;
+  struct zx_root_s* r;
+  struct zx_sp_LogoutRequest_s* req;
+  char buf[256*1024];
+
+  len_so = read_all_fd(0, buf, sizeof(buf)-1, &got_all);
+  if (got_all <= 0) DIE("Missing data");
+  buf[got_all] = 0;
+
+  /* IBM padding debug */
+  cf = zxid_new_conf("/var/zxid/");
+  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got_all);
+  r = zx_DEC_root(cf->ctx, 0, 1000);
+  if (!r)
+    DIE("Decode failure");
+
+#if 1
+  cf->enc_pkey = zxid_read_private_key(cf, "sym-idp-enc.pem");
+#else
+  cf->enc_pkey = zxid_read_private_key(cf, "ibm-idp-enc.pem");
+#endif
+  
+  req = r->Envelope->Body->LogoutRequest;
+  req->NameID = zxid_decrypt_nameid(cf, req->NameID, req->EncryptedID);
+  printf("r1 nid(%.*s)\n", req->NameID->gg.content->len, req->NameID->gg.content->s);
+}
+
+void test_ibm_cert_problem_enc_dec()
+{
+  struct zxid_conf* cf;
+  struct zx_sp_LogoutRequest_s* req;
+  struct zx_sa_NameID_s* nameid;
+  struct zxid_entity* idp_meta;
+
+  cf = zxid_new_conf("/var/zxid/");
+
+  nameid = zx_NEW_sa_NameID(cf->ctx);
+  nameid->Format = zx_ref_str(cf->ctx, "persistent");
+  nameid->NameQualifier = zx_ref_str(cf->ctx, "ibmidp");
+  /*nameid->SPNameQualifier = zx_ref_str(cf->ctx, spqual);*/
+  nameid->gg.content = zx_ref_str(cf->ctx, "a-persistent-nid");
+
+#if 0
+  cf->enc_pkey = zxid_read_private_key(cf, "sym-idp-enc.pem");
+#else
+  cf->enc_pkey = zxid_read_private_key(cf, "ibm-idp-enc.pem");
+  idp_meta = zxid_get_ent_from_file(cf, "N9zsU-AwbI1O-U3mvjLmOALtbtU"); /* IBMIdP */
+#endif
+  
+  req = zxid_mk_logout(cf, nameid, 0, idp_meta);  
+  req->NameID = zxid_decrypt_nameid(cf, req->NameID, req->EncryptedID);
+  printf("r2 nid(%.*s) should be(a-persistent-nid)\n", req->NameID->gg.content->len, req->NameID->gg.content->s);
+}
+
+char* instance = "zxencdectest";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 extern int debug;
@@ -114,7 +172,7 @@ void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++debug;
+	++zx_debug;
 	continue;
       case 'p':  if ((*argv)[0][3]) break;
 	++debugpoll;
@@ -155,6 +213,15 @@ void opt(int* argc, char*** argv, char*** env)
       
     case 'r':
       switch ((*argv)[0][2]) {
+      case '\0':
+	++(*argv); --(*argc);
+	if (!(*argc)) break;
+	switch (atoi((*argv)[0])) {
+	case 1: test_ibm_cert_problem(); break;
+	case 2: test_ibm_cert_problem_enc_dec(); break;
+	}
+	exit(0);
+
       case 'f':
 	/*AFR_TS(LEAK, 0, "memory leaks enabled");*/
 #if 1
@@ -263,32 +330,31 @@ int main(int argc, char** argv, char** env)
 {
   struct zx_ctx ctx;
   struct zx_root_s* r;
-  struct zxsig_ref refs;
-  struct zxid_entity* ent;
-  struct zxid_conf* cf;
-  int got_all, len_so, len_wo, res;
-  char buf[32*1024];
-  char out[32*1024];
+  int got_all, len_so, len_wo;
+  char buf[256*1024];
+  char out[256*1024];
   char* p;
-  char wo_out[32*1024];
+  char wo_out[256*1024];
   char* wo_p;
   opt(&argc, &argv, &env);
   
   len_so = read_all_fd(0, buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
-  
+
   D("Decoding %d chars, n_iter(%d)\n", got_all, n_iter);
   
-  for (;n_iter; --n_iter) {
+  for (; n_iter; --n_iter) {
     memset(&ctx, 0, sizeof(ctx));
     zx_prepare_dec_ctx(&ctx, zx_ns_tab, buf, buf + got_all);
     r = zx_DEC_root(&ctx, 0, 1000);
-    if (!r) DIE("Decode failure");
+    if (!r)
+      DIE("Decode failure");
 
     len_so = zx_LEN_SO_root(&ctx, r);
     D("Enc so len %d chars", len_so);
 
+    ctx.base = out;
     p = zx_ENC_SO_root(&ctx, r, out);
     if (!p)
       DIE("encoding error");
@@ -296,24 +362,24 @@ int main(int argc, char** argv, char** env)
     len_wo = zx_LEN_WO_root(&ctx, r);
     D("Enc wo len %d chars", len_wo);
 
+    ctx.base = wo_out;
     wo_p = zx_ENC_WO_root(&ctx, r, wo_out);
     if (!wo_p)
       DIE("encoding error");
 
     zx_FREE_root(&ctx, r, 0);
   }
-  printf("Re-encoded result SO:\n%.*s\n", len_so, out);
+  printf("\nRe-encoded result SO:\n%.*s\n\n", len_so, out);
   if (p - out != len_so)
-    D("encode length mismatch %d vs. %d (len)", p - out, len_so);
+    D("so encode length mismatch %d vs. %d (len)", p - out, len_so);
 
-  printf("Re-encoded result WO:\n%.*s\n", len_wo, wo_out);
+  printf("Re-encoded result WO:\n%.*s\n\n", len_wo, wo_out);
   if (wo_p - wo_out != len_wo)
-    D("encode length mismatch %d vs %d (len)", wo_p - wo_out, len_wo);
+    D("wo encode length mismatch %d vs %d (len)", wo_p - wo_out, len_wo);
 
   if (memcmp(out, wo_out, MIN(len_so, len_wo)))
     printf("SO and WO differ.\n");
-  
   return 0;
 }
 
-/* EOF  --  zxbench.c */
+/* EOF  --  zxencdectest.c */

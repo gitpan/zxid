@@ -1,22 +1,25 @@
 # zxid/sg/saml-schema-metadata-2.0.sh .sg
 # Slightly edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: saml-schema-metadata-2.0.sg,v 1.2 2006/10/15 12:21:23 sampo Exp $
+# $Id: saml-schema-metadata-2.0.sg,v 1.3 2007-10-09 16:56:13 sampo Exp $
 
 target(md,urn:oasis:names:tc:SAML:2.0:metadata)
 import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)
 import(xenc,http://www.w3.org/2001/04/xmlenc#,http://www.w3.org/TR/2002/REC-xmlenc-core-20021210/xenc-schema.xsd)
 import(sa,urn:oasis:names:tc:SAML:2.0:assertion,saml-schema-assertion-2.0.xsd)
 # import(xml,http://www.w3.org/XML/1998/namespace,http://www.w3.org/2001/xml.xsd)
-ns(xs,http://www.w3.org/2001/XMLSchema)
+ns(xs,  http://www.w3.org/2001/XMLSchema)
+ns(xml, http://www.w3.org/XML/1998/namespace)
 
 %entityIDType:	 base(xs:anyURI) ;
 
 %localizedNameType:	 base(xs:string)
-  @lang -> %xs:string  #@xml:lang   ***
+  @xml:lang? -> %xs:string  #@xml:lang vs. @lang   ***
+  #@lang? -> %xs:string
   ;
 
 %localizedURIType:	 base(xs:anyURI)
-  @lang -> %xs:string  #@xml:lang   ***
+  @xml:lang? -> %xs:string  #@xml:lang vs. @lang   ***
+  #@lang? -> %xs:string
   ;
 
 Extensions	 -> %md:ExtensionsType

@@ -1,5 +1,5 @@
 # zxid/Manifest
-# $Id: Manifest,v 1.25 2007-08-10 19:19:10 sampo Exp $
+# $Id: Manifest,v 1.43 2008-09-17 02:39:21 sampo Exp $
 # Packing list for distribution and explanation of files
 
 Manifest         - This file. Describes contents of the distribution.
@@ -20,35 +20,41 @@ call-anal.pl     - Call graph analysis tool (see make callgraph)
 
 # Handwritten code
 
-Makefile         - Used to build ZXID
+Makefile         - Used to build ZXID (needs GNU make)
+BSDmakefile      - Trigger gmake on BSD systems
 errmac.h         - Error reporting and utility macros
+platform.h       - Platform support kludges
 saml2.h          - SAML related constants
 wsf.h            - Liberty ID-WSF related constants
 zx.h             - General data structures and prototypes used by generated code
 zxid.h           - Specific data structures and prototypes for handwritten code
 zxidconf.h       - Configuration parameters and default configuration of ZXID
+zxidnoswig.h     -  Prototypes that give indigestion to SWIG
 zxwsc.h          - Specific data structures and prototypes for Web Services Client
 aux-templ.c      - Code generation template for auxiliary functions
 dec-templ.c      - Code generation template for decoders
 enc-templ.c      - Code generation template for encoders
 ds-templ.c       - Code generation template for DS script API
 getput-templ.c   - Code generation template for accessor functions
-zxbench.c        - A benchmarking tool
-zxencdectest.c   - An XML encoding and decoding testing tool
 zxlog.c          - Logging routines with encryption and signing
 zxlogview.c      - Log viewing tool with decryption and sig verification
 zxsig.c          - XML DSIG support
+zxcrypto.c       - Cryptographical functions
 zxlib.c          - Functions used to capture commonalities in generated code
+zxns.c           - Namespace manipulation functions for generated code
 zxutil.c         - Common library functions used by zx system
 zxidcgi.c        - SP specific CGI parsing (see zxid.h)
 zxidconf.c       - Configuration file and option parsing (see zxid.h)
 zxidses.c        - SP session creation, parsing, and destruction (see zxid.h)
+zxiduser.c       - Local user account management (see zxid.h)
 zxidecp.c        - Enhanced Client Proxy check and functionality (see zxid.h)
 zxidcdc.c        - Common Domain Cookie check (see zxid.h)
 zxidloc.c        - Service Locator: compute from metadata and input the end point to use
 zxidlib.c        - Common library functions for SSO (see zxid.h)
 zxidmeta.c       - Metadata generation, parsing, and cache
+zxidcurl.c       - Glue to libcurl
 zxidmk.c         - Handwritten constructors for SSO
+zxidmni.c        - NameID Management
 zxidslo.c        - Single Logout and other management functions
 zxidsso.c        - Single Sign-On functions
 zxida7n.c        - Functions for querying assertions
@@ -56,6 +62,10 @@ zxidepr.c        - End Point Reference (EPR) and bootstrap handling
 zxidwsc.c        - Handwritten ID-WSF Web Services Client engine
 zxidmkwsf.c      - Handwritten constructors for WSF
 zxidhlowsf.c     - Demonstration of calling ID-WSF services (DS and DAP)
+zxidxmltool.c    - Testing tool for parsing XML
+zxbench.c        - A benchmarking tool
+zxencdectest.c   - An XML encoding and decoding testing tool
+zxidssofinalizetest.c  - Test zxid_sso_finalize()
 
 # Full API demos
 
@@ -80,10 +90,20 @@ zxidhlo.java     - Hello World SSO using Java JNI
 servlet/WEB-INF/web.xml  - Hello World servlet definition
 zxidhrxmlwsc.c   - Example of ID-SIS HR-XML Web Services Client
 zxidhrxmlwsp.c   - Example of ID-SIS HR-XML Web Services Provider
+zxidsp.c         - A slightly more configurable use of simple API
+
+# Default Circle of Trust partner IdP's metadata
+
+default-cot/OKCy5mMaXMJUnKQ1wVJCcT00AA8  - auth-int.orange.fr
+default-cot/ZLIYSwzbSQdzIWHISwoWtdrx6JI  - auth.orange.fr
+default-cot/_CBGcFVVbIEmt5oh3jUx4GEfHLM  - idp.symdemo.com
 
 # Module generation facilities
 
 phpzxid.i        - SWIG input file for php_zxid.so PHP extension
+pyzxid.i         - SWIG input file for py_zxid.so Python extension
+rubyzxid.i       - SWIG input file for ruby_zxid.so Ruby extension
+csharpzxid.i     - SWIG input file for csharp_zxid.so C# extension
 javazxid.i       - SWIG input file for libzxidjni.so Java JNI extension
 wsc.i            - SWIG input file for Net::WSF::WSC perl module
 wsfraw.i         - SWIG input file for Net::WSF::Raw perl module
@@ -125,6 +145,8 @@ sg/xenc-schema.sg
 sg/xmldsig-core.sg
 sg/ec.sg             - IncludedNamespaces from Exclusive Canonicalization
 sg/xml.sg
+sg/xsi.sg
+sg/xs.sg
 sg/id-dap.sg         - ID Directory Access Protocol
 sg/lib-id-sis-cb-proto.sg  - Contact Book Protocol
 sg/lib-id-sis-cb-cdm.sg    - Contact Book Conceptual Data Model
@@ -154,10 +176,10 @@ c/zxidvers.h  - Generated file: version string
 c/zx-attrs.c  - Generated: Mapping of a string to attribute token
 c/zx-aux.c    - Generated from aux-templ.c and various .sg files
 c/zx-const.h  - Generated: Token value constants
-c/zx-data.h   - Generated: Data structures reflecting schemata (.sg files)
-c/zx-dec.c    - Generated from dec-templ.c and various .sg files
+c/zx-data.h   - Generated: Data structures reflecting schemata (.sg files). Root object.
+c/zx-dec.c    - Generated from dec-templ.c and various .sg files. The root decoder.
 c/zx-elems.c  - Generated: Mapping of a string to element token
-c/zx-enc.c    - Generated from enc-templ.c and various .sg files
+c/zx-enc.c    - Generated from enc-templ.c and various .sg files. The root encoder.
 c/zx-getput.c - Generated from getput-templ.c and various .sg files
 c/zx-ns.c     - Generated: initializations of namespace tables
 c/zx-ns.h     - Generated: namespace constant and macro definitions
@@ -194,6 +216,9 @@ c/zx-wsse-data.h;  c/zx-wsse-aux.c;  c/zx-wsse-dec.c;  c/zx-wsse-enc.c;  c/zx-ws
 c/zx-wsu-data.h;   c/zx-wsu-aux.c;   c/zx-wsu-dec.c;   c/zx-wsu-enc.c;   c/zx-wsu-getput.c
 c/zx-xenc-data.h;  c/zx-xenc-aux.c;  c/zx-xenc-dec.c;  c/zx-xenc-enc.c;  c/zx-xenc-getput.c
 c/zx-exca-data.h;  c/zx-exca-aux.c;  c/zx-exca-dec.c;  c/zx-exca-enc.c;  c/zx-exca-getput.c
+c/zx-xsi-data.h;   c/zx-xsi-aux.c;   c/zx-xsi-dec.c;   c/zx-xsi-enc.c;   c/zx-xsi-getput.c
+c/zx-xs-data.h;    c/zx-xs-aux.c;    c/zx-xs-dec.c;    c/zx-xs-enc.c;    c/zx-xs-getput.c
+c/zx-xml-data.h;   c/zx-xml-aux.c;   c/zx-xml-dec.c;   c/zx-xml-enc.c;   c/zx-xml-getput.c
 
 c/zx-dap-data.h;   c/zx-dap-aux.c;   c/zx-dap-dec.c;   c/zx-dap-enc.c;   c/zx-dap-getput.c
 c/zx-ps-data.h;    c/zx-ps-aux.c;    c/zx-ps-dec.c;    c/zx-ps-enc.c;    c/zx-ps-getput.c
@@ -240,6 +265,13 @@ t/x509.xml             - Example of ID-WSF SOAP call using x509 sec mech
 t/bin-bearer.xml       - Example of ID-WSF SOAP call using bearer token (binary) sec mech
 t/saml-bearer.xml      - Example of ID-WSF SOAP call using bearer token (SAML2) sec mech
 
+# Apache authentication module
+
+mod_auth_saml.c        - Apache auth module to SAML protect web pages
+protected/content.txt  - Test content for mod_auth_saml
+protected/saml         - Test content for mod_auth_saml
+protected/orange.cgi   - Demonstration of using Orange Personal APIs
+
 # Net::SAML module (zxid.i)
 
 Net/README.zxid-perl
@@ -252,28 +284,126 @@ Net/test.pl            - Unit tests
 # php_zxid.so PHP extension (phpzxid.i)
 
 php/README.zxid-php
-php/php_zxid.h        - Generated
-php/zxid.php          - Generated
-php/zxid_wrap.c       - Generated
+php/php_zxid.h         - Generated
+php/zxid.php           - Generated
+php/zxid_wrap.c        - Generated
+
+# py_zxid.so Python extension (pyzxid.i)
+
+py/README.zxid-py
+py/zxid.py             - Generated
+py/zxid_wrap.c         - Generated
+
+# ruby_zxid.so Ruby extension (rubyzxid.i)
+
+ruby/README.zxid-ruby
+#ruby/zxid.ruby         - Generated
+ruby/zxid_wrap.c       - Generated
+
+# csharp_zxid.so C# extension (csharpzxid.i)
+
+csharp/README.zxid-csharp
+csharp/zxid.cs         - Generated
+csharp/zxid_wrap.c     - Generated
+
+csharp/SWIGTYPE_p_X509.cs
+csharp/SWIGTYPE_p_f_p_void__void.cs
+csharp/SWIGTYPE_p_f_p_void_size_t__p_void.cs
+csharp/SWIGTYPE_p_f_size_t__p_void.cs
+csharp/SWIGTYPE_p_int.cs
+csharp/SWIGTYPE_p_p_char.cs
+csharp/SWIGTYPE_p_p_void.cs
+csharp/SWIGTYPE_p_p_zx_ns_s.cs
+csharp/SWIGTYPE_p_p_zx_xenc_EncryptedKey_s.cs
+csharp/SWIGTYPE_p_time_t.cs
+csharp/SWIGTYPE_p_timeval.cs
+csharp/SWIGTYPE_p_unsigned_char.cs
+csharp/SWIGTYPE_p_void.cs
+csharp/SWIGTYPE_p_zx_a_Address_s.cs
+csharp/SWIGTYPE_p_zx_a_EndpointReference_s.cs
+csharp/SWIGTYPE_p_zx_any_attr_s.cs
+csharp/SWIGTYPE_p_zx_any_elem_s.cs
+csharp/SWIGTYPE_p_zx_ctx.cs
+csharp/SWIGTYPE_p_zx_dap_QueryItem_s.cs
+csharp/SWIGTYPE_p_zx_dap_Query_s.cs
+csharp/SWIGTYPE_p_zx_dap_ResultQuery_s.cs
+csharp/SWIGTYPE_p_zx_dap_Select_s.cs
+csharp/SWIGTYPE_p_zx_dap_Subscription_s.cs
+csharp/SWIGTYPE_p_zx_dap_TestItem_s.cs
+csharp/SWIGTYPE_p_zx_dap_TestOp_s.cs
+csharp/SWIGTYPE_p_zx_di_Query_s.cs
+csharp/SWIGTYPE_p_zx_ds_KeyInfo_s.cs
+csharp/SWIGTYPE_p_zx_ds_Reference_s.cs
+csharp/SWIGTYPE_p_zx_ds_Signature_s.cs
+csharp/SWIGTYPE_p_zx_e_Body_s.cs
+csharp/SWIGTYPE_p_zx_e_Envelope_s.cs
+csharp/SWIGTYPE_p_zx_e_Header_s.cs
+csharp/SWIGTYPE_p_zx_elem_s.cs
+csharp/SWIGTYPE_p_zx_ff12_Assertion_s.cs
+csharp/SWIGTYPE_p_zx_md_AssertionConsumerService_s.cs
+csharp/SWIGTYPE_p_zx_md_EntityDescriptor_s.cs
+csharp/SWIGTYPE_p_zx_md_KeyDescriptor_s.cs
+csharp/SWIGTYPE_p_zx_md_ManageNameIDService_s.cs
+csharp/SWIGTYPE_p_zx_md_SPSSODescriptor_s.cs
+csharp/SWIGTYPE_p_zx_md_SingleLogoutService_s.cs
+csharp/SWIGTYPE_p_zx_node_s.cs
+csharp/SWIGTYPE_p_zx_ns_s.cs
+csharp/SWIGTYPE_p_zx_root_s.cs
+csharp/SWIGTYPE_p_zx_sa11_Assertion_s.cs
+csharp/SWIGTYPE_p_zx_sa_Assertion_s.cs
+csharp/SWIGTYPE_p_zx_sa_Attribute_s.cs
+csharp/SWIGTYPE_p_zx_sa_EncryptedID_s.cs
+csharp/SWIGTYPE_p_zx_sa_Issuer_s.cs
+csharp/SWIGTYPE_p_zx_sa_NameID_s.cs
+csharp/SWIGTYPE_p_zx_sp_ArtifactResolve_s.cs
+csharp/SWIGTYPE_p_zx_sp_AuthnRequest_s.cs
+csharp/SWIGTYPE_p_zx_sp_LogoutRequest_s.cs
+csharp/SWIGTYPE_p_zx_sp_LogoutResponse_s.cs
+csharp/SWIGTYPE_p_zx_sp_ManageNameIDRequest_s.cs
+csharp/SWIGTYPE_p_zx_sp_ManageNameIDResponse_s.cs
+csharp/SWIGTYPE_p_zx_sp_NewEncryptedID_s.cs
+csharp/SWIGTYPE_p_zx_sp_Status_s.cs
+csharp/SWIGTYPE_p_zx_str.cs
+csharp/SWIGTYPE_p_zx_tok.cs
+csharp/SWIGTYPE_p_zx_xenc_EncryptedData_s.cs
+csharp/SWIGTYPE_p_zx_xenc_EncryptedKey_s.cs
+csharp/SWIGTYPE_p_zxid_cgi.cs
+csharp/SWIGTYPE_p_zxid_conf.cs
+csharp/SWIGTYPE_p_zxid_curl_ctx.cs
+csharp/SWIGTYPE_p_zxid_entity.cs
+csharp/SWIGTYPE_p_zxid_ses.cs
+csharp/SWIGTYPE_p_zxsig_ref.cs
+csharp/zxidPINVOKE.cs
 
 # libzxidjni.so Java JNI extension (javazxid.i)
 
 zxidjava/README.zxid-java
 zxidjava/zxid_wrap.c
 
-zxidjava/SWIGTYPE_p_RSA.java
 zxidjava/SWIGTYPE_p_X509.java
-zxidjava/SWIGTYPE_p_f_p_struct_zx_node_s_p_void__int.java
+zxidjava/SWIGTYPE_p_f_p_void__void.java
+zxidjava/SWIGTYPE_p_f_p_void_size_t__p_void.java
+zxidjava/SWIGTYPE_p_f_size_t__p_void.java
 zxidjava/SWIGTYPE_p_int.java
 zxidjava/SWIGTYPE_p_p_char.java
+zxidjava/SWIGTYPE_p_p_void.java
 zxidjava/SWIGTYPE_p_p_zx_ns_s.java
+zxidjava/SWIGTYPE_p_p_zx_xenc_EncryptedKey_s.java
 zxidjava/SWIGTYPE_p_time_t.java
+zxidjava/SWIGTYPE_p_timeval.java
 zxidjava/SWIGTYPE_p_unsigned_char.java
-zxidjava/SWIGTYPE_p_va_list.java
 zxidjava/SWIGTYPE_p_void.java
 zxidjava/SWIGTYPE_p_zx_a_Address_s.java
 zxidjava/SWIGTYPE_p_zx_a_EndpointReference_s.java
+zxidjava/SWIGTYPE_p_zx_dap_QueryItem_s.java
+zxidjava/SWIGTYPE_p_zx_dap_Query_s.java
+zxidjava/SWIGTYPE_p_zx_dap_ResultQuery_s.java
+zxidjava/SWIGTYPE_p_zx_dap_Select_s.java
+zxidjava/SWIGTYPE_p_zx_dap_Subscription_s.java
+zxidjava/SWIGTYPE_p_zx_dap_TestItem_s.java
+zxidjava/SWIGTYPE_p_zx_dap_TestOp_s.java
 zxidjava/SWIGTYPE_p_zx_di_Query_s.java
+zxidjava/SWIGTYPE_p_zx_ds_KeyInfo_s.java
 zxidjava/SWIGTYPE_p_zx_ds_Reference_s.java
 zxidjava/SWIGTYPE_p_zx_ds_Signature_s.java
 zxidjava/SWIGTYPE_p_zx_e_Body_s.java
@@ -290,6 +420,7 @@ zxidjava/SWIGTYPE_p_zx_root_s.java
 zxidjava/SWIGTYPE_p_zx_sa11_Assertion_s.java
 zxidjava/SWIGTYPE_p_zx_sa_Assertion_s.java
 zxidjava/SWIGTYPE_p_zx_sa_Attribute_s.java
+zxidjava/SWIGTYPE_p_zx_sa_EncryptedID_s.java
 zxidjava/SWIGTYPE_p_zx_sa_Issuer_s.java
 zxidjava/SWIGTYPE_p_zx_sa_NameID_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ArtifactResolve_s.java
@@ -298,7 +429,10 @@ zxidjava/SWIGTYPE_p_zx_sp_LogoutRequest_s.java
 zxidjava/SWIGTYPE_p_zx_sp_LogoutResponse_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ManageNameIDRequest_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ManageNameIDResponse_s.java
+zxidjava/SWIGTYPE_p_zx_sp_NewEncryptedID_s.java
 zxidjava/SWIGTYPE_p_zx_sp_Status_s.java
+zxidjava/SWIGTYPE_p_zx_xenc_EncryptedData_s.java
+zxidjava/SWIGTYPE_p_zx_xenc_EncryptedKey_s.java
 zxidjava/zx_any_attr_s.java
 zxidjava/zx_any_elem_s.java
 zxidjava/zx_ctx.java
@@ -316,5 +450,12 @@ zxidjava/zxidjni.java
 zxidjava/zxidjniConstants.java
 zxidjava/zxidjniJNI.java
 zxidjava/zxsig_ref.java
+
+# Precheck
+
+precheck/chk-zlib.c
+precheck/chk-openssl.c
+precheck/chk-curl.c
+precheck/chk-apache.c
 
 #EOF

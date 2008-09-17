@@ -712,14 +712,14 @@ void zx_idhrxml_CreateItem_DEL_NewData(struct zx_idhrxml_CreateItem_s* x, int n)
 struct zx_str* zx_idhrxml_CreateItem_GET_id(struct zx_idhrxml_CreateItem_s* x) { return x->id; }
 /* FUNC(zx_idhrxml_CreateItem_PUT_id) */
 void zx_idhrxml_CreateItem_PUT_id(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_idhrxml_CreateItem_GET_objectType) */
-struct zx_str* zx_idhrxml_CreateItem_GET_objectType(struct zx_idhrxml_CreateItem_s* x) { return x->objectType; }
-/* FUNC(zx_idhrxml_CreateItem_PUT_objectType) */
-void zx_idhrxml_CreateItem_PUT_objectType(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y) { x->objectType = y; }
 /* FUNC(zx_idhrxml_CreateItem_GET_itemID) */
 struct zx_str* zx_idhrxml_CreateItem_GET_itemID(struct zx_idhrxml_CreateItem_s* x) { return x->itemID; }
 /* FUNC(zx_idhrxml_CreateItem_PUT_itemID) */
 void zx_idhrxml_CreateItem_PUT_itemID(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_idhrxml_CreateItem_GET_objectType) */
+struct zx_str* zx_idhrxml_CreateItem_GET_objectType(struct zx_idhrxml_CreateItem_s* x) { return x->objectType; }
+/* FUNC(zx_idhrxml_CreateItem_PUT_objectType) */
+void zx_idhrxml_CreateItem_PUT_objectType(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y) { x->objectType = y; }
 
 
 
@@ -1408,6 +1408,10 @@ void zx_idhrxml_Data_DEL_Subscription(struct zx_idhrxml_Data_s* x, int n)
 
 #endif
 
+/* FUNC(zx_idhrxml_Data_GET_nextOffset) */
+struct zx_str* zx_idhrxml_Data_GET_nextOffset(struct zx_idhrxml_Data_s* x) { return x->nextOffset; }
+/* FUNC(zx_idhrxml_Data_PUT_nextOffset) */
+void zx_idhrxml_Data_PUT_nextOffset(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->nextOffset = y; }
 /* FUNC(zx_idhrxml_Data_GET_notSorted) */
 struct zx_str* zx_idhrxml_Data_GET_notSorted(struct zx_idhrxml_Data_s* x) { return x->notSorted; }
 /* FUNC(zx_idhrxml_Data_PUT_notSorted) */
@@ -1416,22 +1420,18 @@ void zx_idhrxml_Data_PUT_notSorted(struct zx_idhrxml_Data_s* x, struct zx_str* y
 struct zx_str* zx_idhrxml_Data_GET_remaining(struct zx_idhrxml_Data_s* x) { return x->remaining; }
 /* FUNC(zx_idhrxml_Data_PUT_remaining) */
 void zx_idhrxml_Data_PUT_remaining(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->remaining = y; }
-/* FUNC(zx_idhrxml_Data_GET_nextOffset) */
-struct zx_str* zx_idhrxml_Data_GET_nextOffset(struct zx_idhrxml_Data_s* x) { return x->nextOffset; }
-/* FUNC(zx_idhrxml_Data_PUT_nextOffset) */
-void zx_idhrxml_Data_PUT_nextOffset(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->nextOffset = y; }
 /* FUNC(zx_idhrxml_Data_GET_setID) */
 struct zx_str* zx_idhrxml_Data_GET_setID(struct zx_idhrxml_Data_s* x) { return x->setID; }
 /* FUNC(zx_idhrxml_Data_PUT_setID) */
 void zx_idhrxml_Data_PUT_setID(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->setID = y; }
-/* FUNC(zx_idhrxml_Data_GET_itemIDRef) */
-struct zx_str* zx_idhrxml_Data_GET_itemIDRef(struct zx_idhrxml_Data_s* x) { return x->itemIDRef; }
-/* FUNC(zx_idhrxml_Data_PUT_itemIDRef) */
-void zx_idhrxml_Data_PUT_itemIDRef(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_idhrxml_Data_GET_changeFormat) */
 struct zx_str* zx_idhrxml_Data_GET_changeFormat(struct zx_idhrxml_Data_s* x) { return x->changeFormat; }
 /* FUNC(zx_idhrxml_Data_PUT_changeFormat) */
 void zx_idhrxml_Data_PUT_changeFormat(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->changeFormat = y; }
+/* FUNC(zx_idhrxml_Data_GET_itemIDRef) */
+struct zx_str* zx_idhrxml_Data_GET_itemIDRef(struct zx_idhrxml_Data_s* x) { return x->itemIDRef; }
+/* FUNC(zx_idhrxml_Data_PUT_itemIDRef) */
+void zx_idhrxml_Data_PUT_itemIDRef(struct zx_idhrxml_Data_s* x, struct zx_str* y) { x->itemIDRef = y; }
 
 
 
@@ -1848,14 +1848,18 @@ void zx_idhrxml_DeleteItem_DEL_Select(struct zx_idhrxml_DeleteItem_s* x, int n)
 
 #endif
 
-/* FUNC(zx_idhrxml_DeleteItem_GET_notChangedSince) */
-struct zx_str* zx_idhrxml_DeleteItem_GET_notChangedSince(struct zx_idhrxml_DeleteItem_s* x) { return x->notChangedSince; }
-/* FUNC(zx_idhrxml_DeleteItem_PUT_notChangedSince) */
-void zx_idhrxml_DeleteItem_PUT_notChangedSince(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y) { x->notChangedSince = y; }
 /* FUNC(zx_idhrxml_DeleteItem_GET_id) */
 struct zx_str* zx_idhrxml_DeleteItem_GET_id(struct zx_idhrxml_DeleteItem_s* x) { return x->id; }
 /* FUNC(zx_idhrxml_DeleteItem_PUT_id) */
 void zx_idhrxml_DeleteItem_PUT_id(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_idhrxml_DeleteItem_GET_notChangedSince) */
+struct zx_str* zx_idhrxml_DeleteItem_GET_notChangedSince(struct zx_idhrxml_DeleteItem_s* x) { return x->notChangedSince; }
+/* FUNC(zx_idhrxml_DeleteItem_PUT_notChangedSince) */
+void zx_idhrxml_DeleteItem_PUT_notChangedSince(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y) { x->notChangedSince = y; }
+/* FUNC(zx_idhrxml_DeleteItem_GET_itemID) */
+struct zx_str* zx_idhrxml_DeleteItem_GET_itemID(struct zx_idhrxml_DeleteItem_s* x) { return x->itemID; }
+/* FUNC(zx_idhrxml_DeleteItem_PUT_itemID) */
+void zx_idhrxml_DeleteItem_PUT_itemID(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_idhrxml_DeleteItem_GET_objectType) */
 struct zx_str* zx_idhrxml_DeleteItem_GET_objectType(struct zx_idhrxml_DeleteItem_s* x) { return x->objectType; }
 /* FUNC(zx_idhrxml_DeleteItem_PUT_objectType) */
@@ -1864,10 +1868,6 @@ void zx_idhrxml_DeleteItem_PUT_objectType(struct zx_idhrxml_DeleteItem_s* x, str
 struct zx_str* zx_idhrxml_DeleteItem_GET_predefined(struct zx_idhrxml_DeleteItem_s* x) { return x->predefined; }
 /* FUNC(zx_idhrxml_DeleteItem_PUT_predefined) */
 void zx_idhrxml_DeleteItem_PUT_predefined(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_idhrxml_DeleteItem_GET_itemID) */
-struct zx_str* zx_idhrxml_DeleteItem_GET_itemID(struct zx_idhrxml_DeleteItem_s* x) { return x->itemID; }
-/* FUNC(zx_idhrxml_DeleteItem_PUT_itemID) */
-void zx_idhrxml_DeleteItem_PUT_itemID(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -2422,14 +2422,14 @@ void zx_idhrxml_ItemData_DEL_Subscription(struct zx_idhrxml_ItemData_s* x, int n
 struct zx_str* zx_idhrxml_ItemData_GET_notSorted(struct zx_idhrxml_ItemData_s* x) { return x->notSorted; }
 /* FUNC(zx_idhrxml_ItemData_PUT_notSorted) */
 void zx_idhrxml_ItemData_PUT_notSorted(struct zx_idhrxml_ItemData_s* x, struct zx_str* y) { x->notSorted = y; }
-/* FUNC(zx_idhrxml_ItemData_GET_itemIDRef) */
-struct zx_str* zx_idhrxml_ItemData_GET_itemIDRef(struct zx_idhrxml_ItemData_s* x) { return x->itemIDRef; }
-/* FUNC(zx_idhrxml_ItemData_PUT_itemIDRef) */
-void zx_idhrxml_ItemData_PUT_itemIDRef(struct zx_idhrxml_ItemData_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_idhrxml_ItemData_GET_changeFormat) */
 struct zx_str* zx_idhrxml_ItemData_GET_changeFormat(struct zx_idhrxml_ItemData_s* x) { return x->changeFormat; }
 /* FUNC(zx_idhrxml_ItemData_PUT_changeFormat) */
 void zx_idhrxml_ItemData_PUT_changeFormat(struct zx_idhrxml_ItemData_s* x, struct zx_str* y) { x->changeFormat = y; }
+/* FUNC(zx_idhrxml_ItemData_GET_itemIDRef) */
+struct zx_str* zx_idhrxml_ItemData_GET_itemIDRef(struct zx_idhrxml_ItemData_s* x) { return x->itemIDRef; }
+/* FUNC(zx_idhrxml_ItemData_PUT_itemIDRef) */
+void zx_idhrxml_ItemData_PUT_itemIDRef(struct zx_idhrxml_ItemData_s* x, struct zx_str* y) { x->itemIDRef = y; }
 
 
 
@@ -3248,6 +3248,10 @@ void zx_idhrxml_ModifyItem_DEL_NewData(struct zx_idhrxml_ModifyItem_s* x, int n)
 
 #endif
 
+/* FUNC(zx_idhrxml_ModifyItem_GET_id) */
+struct zx_str* zx_idhrxml_ModifyItem_GET_id(struct zx_idhrxml_ModifyItem_s* x) { return x->id; }
+/* FUNC(zx_idhrxml_ModifyItem_PUT_id) */
+void zx_idhrxml_ModifyItem_PUT_id(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_idhrxml_ModifyItem_GET_notChangedSince) */
 struct zx_str* zx_idhrxml_ModifyItem_GET_notChangedSince(struct zx_idhrxml_ModifyItem_s* x) { return x->notChangedSince; }
 /* FUNC(zx_idhrxml_ModifyItem_PUT_notChangedSince) */
@@ -3256,10 +3260,10 @@ void zx_idhrxml_ModifyItem_PUT_notChangedSince(struct zx_idhrxml_ModifyItem_s* x
 struct zx_str* zx_idhrxml_ModifyItem_GET_overrideAllowed(struct zx_idhrxml_ModifyItem_s* x) { return x->overrideAllowed; }
 /* FUNC(zx_idhrxml_ModifyItem_PUT_overrideAllowed) */
 void zx_idhrxml_ModifyItem_PUT_overrideAllowed(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y) { x->overrideAllowed = y; }
-/* FUNC(zx_idhrxml_ModifyItem_GET_id) */
-struct zx_str* zx_idhrxml_ModifyItem_GET_id(struct zx_idhrxml_ModifyItem_s* x) { return x->id; }
-/* FUNC(zx_idhrxml_ModifyItem_PUT_id) */
-void zx_idhrxml_ModifyItem_PUT_id(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_idhrxml_ModifyItem_GET_itemID) */
+struct zx_str* zx_idhrxml_ModifyItem_GET_itemID(struct zx_idhrxml_ModifyItem_s* x) { return x->itemID; }
+/* FUNC(zx_idhrxml_ModifyItem_PUT_itemID) */
+void zx_idhrxml_ModifyItem_PUT_itemID(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_idhrxml_ModifyItem_GET_objectType) */
 struct zx_str* zx_idhrxml_ModifyItem_GET_objectType(struct zx_idhrxml_ModifyItem_s* x) { return x->objectType; }
 /* FUNC(zx_idhrxml_ModifyItem_PUT_objectType) */
@@ -3268,10 +3272,6 @@ void zx_idhrxml_ModifyItem_PUT_objectType(struct zx_idhrxml_ModifyItem_s* x, str
 struct zx_str* zx_idhrxml_ModifyItem_GET_predefined(struct zx_idhrxml_ModifyItem_s* x) { return x->predefined; }
 /* FUNC(zx_idhrxml_ModifyItem_PUT_predefined) */
 void zx_idhrxml_ModifyItem_PUT_predefined(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_idhrxml_ModifyItem_GET_itemID) */
-struct zx_str* zx_idhrxml_ModifyItem_GET_itemID(struct zx_idhrxml_ModifyItem_s* x) { return x->itemID; }
-/* FUNC(zx_idhrxml_ModifyItem_PUT_itemID) */
-void zx_idhrxml_ModifyItem_PUT_itemID(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -4233,6 +4233,14 @@ void zx_idhrxml_Notification_DEL_ItemData(struct zx_idhrxml_Notification_s* x, i
 
 #endif
 
+/* FUNC(zx_idhrxml_Notification_GET_endReason) */
+struct zx_str* zx_idhrxml_Notification_GET_endReason(struct zx_idhrxml_Notification_s* x) { return x->endReason; }
+/* FUNC(zx_idhrxml_Notification_PUT_endReason) */
+void zx_idhrxml_Notification_PUT_endReason(struct zx_idhrxml_Notification_s* x, struct zx_str* y) { x->endReason = y; }
+/* FUNC(zx_idhrxml_Notification_GET_expires) */
+struct zx_str* zx_idhrxml_Notification_GET_expires(struct zx_idhrxml_Notification_s* x) { return x->expires; }
+/* FUNC(zx_idhrxml_Notification_PUT_expires) */
+void zx_idhrxml_Notification_PUT_expires(struct zx_idhrxml_Notification_s* x, struct zx_str* y) { x->expires = y; }
 /* FUNC(zx_idhrxml_Notification_GET_id) */
 struct zx_str* zx_idhrxml_Notification_GET_id(struct zx_idhrxml_Notification_s* x) { return x->id; }
 /* FUNC(zx_idhrxml_Notification_PUT_id) */
@@ -4241,14 +4249,6 @@ void zx_idhrxml_Notification_PUT_id(struct zx_idhrxml_Notification_s* x, struct 
 struct zx_str* zx_idhrxml_Notification_GET_subscriptionID(struct zx_idhrxml_Notification_s* x) { return x->subscriptionID; }
 /* FUNC(zx_idhrxml_Notification_PUT_subscriptionID) */
 void zx_idhrxml_Notification_PUT_subscriptionID(struct zx_idhrxml_Notification_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_idhrxml_Notification_GET_expires) */
-struct zx_str* zx_idhrxml_Notification_GET_expires(struct zx_idhrxml_Notification_s* x) { return x->expires; }
-/* FUNC(zx_idhrxml_Notification_PUT_expires) */
-void zx_idhrxml_Notification_PUT_expires(struct zx_idhrxml_Notification_s* x, struct zx_str* y) { x->expires = y; }
-/* FUNC(zx_idhrxml_Notification_GET_endReason) */
-struct zx_str* zx_idhrxml_Notification_GET_endReason(struct zx_idhrxml_Notification_s* x) { return x->endReason; }
-/* FUNC(zx_idhrxml_Notification_PUT_endReason) */
-void zx_idhrxml_Notification_PUT_endReason(struct zx_idhrxml_Notification_s* x, struct zx_str* y) { x->endReason = y; }
 
 
 
@@ -5759,22 +5759,22 @@ void zx_idhrxml_QueryItem_DEL_Sort(struct zx_idhrxml_QueryItem_s* x, int n)
 
 #endif
 
-/* FUNC(zx_idhrxml_QueryItem_GET_contingency) */
-struct zx_str* zx_idhrxml_QueryItem_GET_contingency(struct zx_idhrxml_QueryItem_s* x) { return x->contingency; }
-/* FUNC(zx_idhrxml_QueryItem_PUT_contingency) */
-void zx_idhrxml_QueryItem_PUT_contingency(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->contingency = y; }
-/* FUNC(zx_idhrxml_QueryItem_GET_includeCommonAttributes) */
-struct zx_str* zx_idhrxml_QueryItem_GET_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x) { return x->includeCommonAttributes; }
-/* FUNC(zx_idhrxml_QueryItem_PUT_includeCommonAttributes) */
-void zx_idhrxml_QueryItem_PUT_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->includeCommonAttributes = y; }
 /* FUNC(zx_idhrxml_QueryItem_GET_changedSince) */
 struct zx_str* zx_idhrxml_QueryItem_GET_changedSince(struct zx_idhrxml_QueryItem_s* x) { return x->changedSince; }
 /* FUNC(zx_idhrxml_QueryItem_PUT_changedSince) */
 void zx_idhrxml_QueryItem_PUT_changedSince(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->changedSince = y; }
+/* FUNC(zx_idhrxml_QueryItem_GET_contingency) */
+struct zx_str* zx_idhrxml_QueryItem_GET_contingency(struct zx_idhrxml_QueryItem_s* x) { return x->contingency; }
+/* FUNC(zx_idhrxml_QueryItem_PUT_contingency) */
+void zx_idhrxml_QueryItem_PUT_contingency(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->contingency = y; }
 /* FUNC(zx_idhrxml_QueryItem_GET_count) */
 struct zx_str* zx_idhrxml_QueryItem_GET_count(struct zx_idhrxml_QueryItem_s* x) { return x->count; }
 /* FUNC(zx_idhrxml_QueryItem_PUT_count) */
 void zx_idhrxml_QueryItem_PUT_count(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->count = y; }
+/* FUNC(zx_idhrxml_QueryItem_GET_includeCommonAttributes) */
+struct zx_str* zx_idhrxml_QueryItem_GET_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x) { return x->includeCommonAttributes; }
+/* FUNC(zx_idhrxml_QueryItem_PUT_includeCommonAttributes) */
+void zx_idhrxml_QueryItem_PUT_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->includeCommonAttributes = y; }
 /* FUNC(zx_idhrxml_QueryItem_GET_offset) */
 struct zx_str* zx_idhrxml_QueryItem_GET_offset(struct zx_idhrxml_QueryItem_s* x) { return x->offset; }
 /* FUNC(zx_idhrxml_QueryItem_PUT_offset) */
@@ -5787,6 +5787,14 @@ void zx_idhrxml_QueryItem_PUT_setID(struct zx_idhrxml_QueryItem_s* x, struct zx_
 struct zx_str* zx_idhrxml_QueryItem_GET_setReq(struct zx_idhrxml_QueryItem_s* x) { return x->setReq; }
 /* FUNC(zx_idhrxml_QueryItem_PUT_setReq) */
 void zx_idhrxml_QueryItem_PUT_setReq(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->setReq = y; }
+/* FUNC(zx_idhrxml_QueryItem_GET_itemID) */
+struct zx_str* zx_idhrxml_QueryItem_GET_itemID(struct zx_idhrxml_QueryItem_s* x) { return x->itemID; }
+/* FUNC(zx_idhrxml_QueryItem_PUT_itemID) */
+void zx_idhrxml_QueryItem_PUT_itemID(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_idhrxml_QueryItem_GET_itemIDRef) */
+struct zx_str* zx_idhrxml_QueryItem_GET_itemIDRef(struct zx_idhrxml_QueryItem_s* x) { return x->itemIDRef; }
+/* FUNC(zx_idhrxml_QueryItem_PUT_itemIDRef) */
+void zx_idhrxml_QueryItem_PUT_itemIDRef(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_idhrxml_QueryItem_GET_objectType) */
 struct zx_str* zx_idhrxml_QueryItem_GET_objectType(struct zx_idhrxml_QueryItem_s* x) { return x->objectType; }
 /* FUNC(zx_idhrxml_QueryItem_PUT_objectType) */
@@ -5795,14 +5803,6 @@ void zx_idhrxml_QueryItem_PUT_objectType(struct zx_idhrxml_QueryItem_s* x, struc
 struct zx_str* zx_idhrxml_QueryItem_GET_predefined(struct zx_idhrxml_QueryItem_s* x) { return x->predefined; }
 /* FUNC(zx_idhrxml_QueryItem_PUT_predefined) */
 void zx_idhrxml_QueryItem_PUT_predefined(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_idhrxml_QueryItem_GET_itemIDRef) */
-struct zx_str* zx_idhrxml_QueryItem_GET_itemIDRef(struct zx_idhrxml_QueryItem_s* x) { return x->itemIDRef; }
-/* FUNC(zx_idhrxml_QueryItem_PUT_itemIDRef) */
-void zx_idhrxml_QueryItem_PUT_itemIDRef(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->itemIDRef = y; }
-/* FUNC(zx_idhrxml_QueryItem_GET_itemID) */
-struct zx_str* zx_idhrxml_QueryItem_GET_itemID(struct zx_idhrxml_QueryItem_s* x) { return x->itemID; }
-/* FUNC(zx_idhrxml_QueryItem_PUT_itemID) */
-void zx_idhrxml_QueryItem_PUT_itemID(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -6759,6 +6759,10 @@ void zx_idhrxml_ResultQuery_DEL_Sort(struct zx_idhrxml_ResultQuery_s* x, int n)
 
 #endif
 
+/* FUNC(zx_idhrxml_ResultQuery_GET_changedSince) */
+struct zx_str* zx_idhrxml_ResultQuery_GET_changedSince(struct zx_idhrxml_ResultQuery_s* x) { return x->changedSince; }
+/* FUNC(zx_idhrxml_ResultQuery_PUT_changedSince) */
+void zx_idhrxml_ResultQuery_PUT_changedSince(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->changedSince = y; }
 /* FUNC(zx_idhrxml_ResultQuery_GET_contingency) */
 struct zx_str* zx_idhrxml_ResultQuery_GET_contingency(struct zx_idhrxml_ResultQuery_s* x) { return x->contingency; }
 /* FUNC(zx_idhrxml_ResultQuery_PUT_contingency) */
@@ -6767,10 +6771,14 @@ void zx_idhrxml_ResultQuery_PUT_contingency(struct zx_idhrxml_ResultQuery_s* x, 
 struct zx_str* zx_idhrxml_ResultQuery_GET_includeCommonAttributes(struct zx_idhrxml_ResultQuery_s* x) { return x->includeCommonAttributes; }
 /* FUNC(zx_idhrxml_ResultQuery_PUT_includeCommonAttributes) */
 void zx_idhrxml_ResultQuery_PUT_includeCommonAttributes(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->includeCommonAttributes = y; }
-/* FUNC(zx_idhrxml_ResultQuery_GET_changedSince) */
-struct zx_str* zx_idhrxml_ResultQuery_GET_changedSince(struct zx_idhrxml_ResultQuery_s* x) { return x->changedSince; }
-/* FUNC(zx_idhrxml_ResultQuery_PUT_changedSince) */
-void zx_idhrxml_ResultQuery_PUT_changedSince(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->changedSince = y; }
+/* FUNC(zx_idhrxml_ResultQuery_GET_itemID) */
+struct zx_str* zx_idhrxml_ResultQuery_GET_itemID(struct zx_idhrxml_ResultQuery_s* x) { return x->itemID; }
+/* FUNC(zx_idhrxml_ResultQuery_PUT_itemID) */
+void zx_idhrxml_ResultQuery_PUT_itemID(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_idhrxml_ResultQuery_GET_itemIDRef) */
+struct zx_str* zx_idhrxml_ResultQuery_GET_itemIDRef(struct zx_idhrxml_ResultQuery_s* x) { return x->itemIDRef; }
+/* FUNC(zx_idhrxml_ResultQuery_PUT_itemIDRef) */
+void zx_idhrxml_ResultQuery_PUT_itemIDRef(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_idhrxml_ResultQuery_GET_objectType) */
 struct zx_str* zx_idhrxml_ResultQuery_GET_objectType(struct zx_idhrxml_ResultQuery_s* x) { return x->objectType; }
 /* FUNC(zx_idhrxml_ResultQuery_PUT_objectType) */
@@ -6779,14 +6787,6 @@ void zx_idhrxml_ResultQuery_PUT_objectType(struct zx_idhrxml_ResultQuery_s* x, s
 struct zx_str* zx_idhrxml_ResultQuery_GET_predefined(struct zx_idhrxml_ResultQuery_s* x) { return x->predefined; }
 /* FUNC(zx_idhrxml_ResultQuery_PUT_predefined) */
 void zx_idhrxml_ResultQuery_PUT_predefined(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_idhrxml_ResultQuery_GET_itemIDRef) */
-struct zx_str* zx_idhrxml_ResultQuery_GET_itemIDRef(struct zx_idhrxml_ResultQuery_s* x) { return x->itemIDRef; }
-/* FUNC(zx_idhrxml_ResultQuery_PUT_itemIDRef) */
-void zx_idhrxml_ResultQuery_PUT_itemIDRef(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->itemIDRef = y; }
-/* FUNC(zx_idhrxml_ResultQuery_GET_itemID) */
-struct zx_str* zx_idhrxml_ResultQuery_GET_itemID(struct zx_idhrxml_ResultQuery_s* x) { return x->itemID; }
-/* FUNC(zx_idhrxml_ResultQuery_PUT_itemID) */
-void zx_idhrxml_ResultQuery_PUT_itemID(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -7462,22 +7462,10 @@ void zx_idhrxml_Subscription_DEL_Trigger(struct zx_idhrxml_Subscription_s* x, in
 
 #endif
 
-/* FUNC(zx_idhrxml_Subscription_GET_subscriptionID) */
-struct zx_str* zx_idhrxml_Subscription_GET_subscriptionID(struct zx_idhrxml_Subscription_s* x) { return x->subscriptionID; }
-/* FUNC(zx_idhrxml_Subscription_PUT_subscriptionID) */
-void zx_idhrxml_Subscription_PUT_subscriptionID(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_idhrxml_Subscription_GET_notifyToRef) */
-struct zx_str* zx_idhrxml_Subscription_GET_notifyToRef(struct zx_idhrxml_Subscription_s* x) { return x->notifyToRef; }
-/* FUNC(zx_idhrxml_Subscription_PUT_notifyToRef) */
-void zx_idhrxml_Subscription_PUT_notifyToRef(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->notifyToRef = y; }
 /* FUNC(zx_idhrxml_Subscription_GET_adminNotifyToRef) */
 struct zx_str* zx_idhrxml_Subscription_GET_adminNotifyToRef(struct zx_idhrxml_Subscription_s* x) { return x->adminNotifyToRef; }
 /* FUNC(zx_idhrxml_Subscription_PUT_adminNotifyToRef) */
 void zx_idhrxml_Subscription_PUT_adminNotifyToRef(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->adminNotifyToRef = y; }
-/* FUNC(zx_idhrxml_Subscription_GET_starts) */
-struct zx_str* zx_idhrxml_Subscription_GET_starts(struct zx_idhrxml_Subscription_s* x) { return x->starts; }
-/* FUNC(zx_idhrxml_Subscription_PUT_starts) */
-void zx_idhrxml_Subscription_PUT_starts(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->starts = y; }
 /* FUNC(zx_idhrxml_Subscription_GET_expires) */
 struct zx_str* zx_idhrxml_Subscription_GET_expires(struct zx_idhrxml_Subscription_s* x) { return x->expires; }
 /* FUNC(zx_idhrxml_Subscription_PUT_expires) */
@@ -7490,6 +7478,18 @@ void zx_idhrxml_Subscription_PUT_id(struct zx_idhrxml_Subscription_s* x, struct 
 struct zx_str* zx_idhrxml_Subscription_GET_includeData(struct zx_idhrxml_Subscription_s* x) { return x->includeData; }
 /* FUNC(zx_idhrxml_Subscription_PUT_includeData) */
 void zx_idhrxml_Subscription_PUT_includeData(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->includeData = y; }
+/* FUNC(zx_idhrxml_Subscription_GET_notifyToRef) */
+struct zx_str* zx_idhrxml_Subscription_GET_notifyToRef(struct zx_idhrxml_Subscription_s* x) { return x->notifyToRef; }
+/* FUNC(zx_idhrxml_Subscription_PUT_notifyToRef) */
+void zx_idhrxml_Subscription_PUT_notifyToRef(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->notifyToRef = y; }
+/* FUNC(zx_idhrxml_Subscription_GET_starts) */
+struct zx_str* zx_idhrxml_Subscription_GET_starts(struct zx_idhrxml_Subscription_s* x) { return x->starts; }
+/* FUNC(zx_idhrxml_Subscription_PUT_starts) */
+void zx_idhrxml_Subscription_PUT_starts(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->starts = y; }
+/* FUNC(zx_idhrxml_Subscription_GET_subscriptionID) */
+struct zx_str* zx_idhrxml_Subscription_GET_subscriptionID(struct zx_idhrxml_Subscription_s* x) { return x->subscriptionID; }
+/* FUNC(zx_idhrxml_Subscription_PUT_subscriptionID) */
+void zx_idhrxml_Subscription_PUT_subscriptionID(struct zx_idhrxml_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
 
 
 
@@ -7633,6 +7633,10 @@ void zx_idhrxml_TestItem_DEL_TestOp(struct zx_idhrxml_TestItem_s* x, int n)
 struct zx_str* zx_idhrxml_TestItem_GET_id(struct zx_idhrxml_TestItem_s* x) { return x->id; }
 /* FUNC(zx_idhrxml_TestItem_PUT_id) */
 void zx_idhrxml_TestItem_PUT_id(struct zx_idhrxml_TestItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_idhrxml_TestItem_GET_itemID) */
+struct zx_str* zx_idhrxml_TestItem_GET_itemID(struct zx_idhrxml_TestItem_s* x) { return x->itemID; }
+/* FUNC(zx_idhrxml_TestItem_PUT_itemID) */
+void zx_idhrxml_TestItem_PUT_itemID(struct zx_idhrxml_TestItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_idhrxml_TestItem_GET_objectType) */
 struct zx_str* zx_idhrxml_TestItem_GET_objectType(struct zx_idhrxml_TestItem_s* x) { return x->objectType; }
 /* FUNC(zx_idhrxml_TestItem_PUT_objectType) */
@@ -7641,10 +7645,6 @@ void zx_idhrxml_TestItem_PUT_objectType(struct zx_idhrxml_TestItem_s* x, struct 
 struct zx_str* zx_idhrxml_TestItem_GET_predefined(struct zx_idhrxml_TestItem_s* x) { return x->predefined; }
 /* FUNC(zx_idhrxml_TestItem_PUT_predefined) */
 void zx_idhrxml_TestItem_PUT_predefined(struct zx_idhrxml_TestItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_idhrxml_TestItem_GET_itemID) */
-struct zx_str* zx_idhrxml_TestItem_GET_itemID(struct zx_idhrxml_TestItem_s* x) { return x->itemID; }
-/* FUNC(zx_idhrxml_TestItem_PUT_itemID) */
-void zx_idhrxml_TestItem_PUT_itemID(struct zx_idhrxml_TestItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 

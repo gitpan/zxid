@@ -2771,14 +2771,14 @@ void zx_demomed_ObjectSearchParm_DEL_objectID(struct zx_demomed_ObjectSearchParm
 
 
 
-/* FUNC(zx_demomed_ObjectStoreInfo_GET_storeRef) */
-struct zx_str* zx_demomed_ObjectStoreInfo_GET_storeRef(struct zx_demomed_ObjectStoreInfo_s* x) { return x->storeRef; }
-/* FUNC(zx_demomed_ObjectStoreInfo_PUT_storeRef) */
-void zx_demomed_ObjectStoreInfo_PUT_storeRef(struct zx_demomed_ObjectStoreInfo_s* x, struct zx_str* y) { x->storeRef = y; }
 /* FUNC(zx_demomed_ObjectStoreInfo_GET_objectID) */
 struct zx_str* zx_demomed_ObjectStoreInfo_GET_objectID(struct zx_demomed_ObjectStoreInfo_s* x) { return x->objectID; }
 /* FUNC(zx_demomed_ObjectStoreInfo_PUT_objectID) */
 void zx_demomed_ObjectStoreInfo_PUT_objectID(struct zx_demomed_ObjectStoreInfo_s* x, struct zx_str* y) { x->objectID = y; }
+/* FUNC(zx_demomed_ObjectStoreInfo_GET_storeRef) */
+struct zx_str* zx_demomed_ObjectStoreInfo_GET_storeRef(struct zx_demomed_ObjectStoreInfo_s* x) { return x->storeRef; }
+/* FUNC(zx_demomed_ObjectStoreInfo_PUT_storeRef) */
+void zx_demomed_ObjectStoreInfo_PUT_storeRef(struct zx_demomed_ObjectStoreInfo_s* x, struct zx_str* y) { x->storeRef = y; }
 
 
 

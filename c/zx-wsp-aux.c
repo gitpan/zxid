@@ -1181,9 +1181,9 @@ void zx_FREE_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->URI, free_strs);
   zx_free_attr(c, x->Digest, free_strs);
   zx_free_attr(c, x->DigestAlgorithm, free_strs);
+  zx_free_attr(c, x->URI, free_strs);
 
 
 
@@ -1219,9 +1219,9 @@ void zx_DUP_STRS_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyRefer
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->URI);
   zx_dup_attr(c, x->Digest);
   zx_dup_attr(c, x->DigestAlgorithm);
+  zx_dup_attr(c, x->URI);
 
 
 }
@@ -1237,9 +1237,9 @@ struct zx_wsp_PolicyReference_s* zx_DEEP_CLONE_wsp_PolicyReference(struct zx_ctx
   x = (struct zx_wsp_PolicyReference_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wsp_PolicyReference_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->URI = zx_clone_attr(c, x->URI);
   x->Digest = zx_clone_attr(c, x->Digest);
   x->DigestAlgorithm = zx_clone_attr(c, x->DigestAlgorithm);
+  x->URI = zx_clone_attr(c, x->URI);
 
 
   return x;

@@ -277,28 +277,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_BDAY(struct zx_ctx* c, struct zx_cdm_BDAY_s* x
 struct zx_cdm_BDAY_s {
   ZX_ELEM_EXT
   zx_cdm_BDAY_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_BDAY_GET_id(struct zx_cdm_BDAY_s* x);
-struct zx_str* zx_cdm_BDAY_GET_modificationTime(struct zx_cdm_BDAY_s* x);
 struct zx_str* zx_cdm_BDAY_GET_ACC(struct zx_cdm_BDAY_s* x);
 struct zx_str* zx_cdm_BDAY_GET_ACCTime(struct zx_cdm_BDAY_s* x);
+struct zx_str* zx_cdm_BDAY_GET_id(struct zx_cdm_BDAY_s* x);
+struct zx_str* zx_cdm_BDAY_GET_modificationTime(struct zx_cdm_BDAY_s* x);
 struct zx_str* zx_cdm_BDAY_GET_modifier(struct zx_cdm_BDAY_s* x);
 
 
 
 
 
-void zx_cdm_BDAY_PUT_id(struct zx_cdm_BDAY_s* x, struct zx_str* y);
-void zx_cdm_BDAY_PUT_modificationTime(struct zx_cdm_BDAY_s* x, struct zx_str* y);
 void zx_cdm_BDAY_PUT_ACC(struct zx_cdm_BDAY_s* x, struct zx_str* y);
 void zx_cdm_BDAY_PUT_ACCTime(struct zx_cdm_BDAY_s* x, struct zx_str* y);
+void zx_cdm_BDAY_PUT_id(struct zx_cdm_BDAY_s* x, struct zx_str* y);
+void zx_cdm_BDAY_PUT_modificationTime(struct zx_cdm_BDAY_s* x, struct zx_str* y);
 void zx_cdm_BDAY_PUT_modifier(struct zx_cdm_BDAY_s* x, struct zx_str* y);
 
 
@@ -331,28 +331,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_BINVAL(struct zx_ctx* c, struct zx_cdm_BINVAL_
 struct zx_cdm_BINVAL_s {
   ZX_ELEM_EXT
   zx_cdm_BINVAL_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_BINVAL_GET_id(struct zx_cdm_BINVAL_s* x);
-struct zx_str* zx_cdm_BINVAL_GET_modificationTime(struct zx_cdm_BINVAL_s* x);
 struct zx_str* zx_cdm_BINVAL_GET_ACC(struct zx_cdm_BINVAL_s* x);
 struct zx_str* zx_cdm_BINVAL_GET_ACCTime(struct zx_cdm_BINVAL_s* x);
+struct zx_str* zx_cdm_BINVAL_GET_id(struct zx_cdm_BINVAL_s* x);
+struct zx_str* zx_cdm_BINVAL_GET_modificationTime(struct zx_cdm_BINVAL_s* x);
 struct zx_str* zx_cdm_BINVAL_GET_modifier(struct zx_cdm_BINVAL_s* x);
 
 
 
 
 
-void zx_cdm_BINVAL_PUT_id(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
-void zx_cdm_BINVAL_PUT_modificationTime(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
 void zx_cdm_BINVAL_PUT_ACC(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
 void zx_cdm_BINVAL_PUT_ACCTime(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
+void zx_cdm_BINVAL_PUT_id(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
+void zx_cdm_BINVAL_PUT_modificationTime(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
 void zx_cdm_BINVAL_PUT_modifier(struct zx_cdm_BINVAL_s* x, struct zx_str* y);
 
 
@@ -387,18 +387,18 @@ struct zx_cdm_CALADRURI_s {
   zx_cdm_CALADRURI_EXT
   struct zx_elem_s* PREF;	/* {0,1} xs:string */
   struct zx_cdm_URI_s* URI;	/* {1,1}  */
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_CALADRURI_GET_id(struct zx_cdm_CALADRURI_s* x);
-struct zx_str* zx_cdm_CALADRURI_GET_modificationTime(struct zx_cdm_CALADRURI_s* x);
 struct zx_str* zx_cdm_CALADRURI_GET_ACC(struct zx_cdm_CALADRURI_s* x);
 struct zx_str* zx_cdm_CALADRURI_GET_ACCTime(struct zx_cdm_CALADRURI_s* x);
+struct zx_str* zx_cdm_CALADRURI_GET_id(struct zx_cdm_CALADRURI_s* x);
+struct zx_str* zx_cdm_CALADRURI_GET_modificationTime(struct zx_cdm_CALADRURI_s* x);
 struct zx_str* zx_cdm_CALADRURI_GET_modifier(struct zx_cdm_CALADRURI_s* x);
 
 struct zx_elem_s* zx_cdm_CALADRURI_GET_PREF(struct zx_cdm_CALADRURI_s* x, int n);
@@ -413,10 +413,10 @@ struct zx_cdm_URI_s* zx_cdm_CALADRURI_POP_URI(struct zx_cdm_CALADRURI_s* x);
 void zx_cdm_CALADRURI_PUSH_PREF(struct zx_cdm_CALADRURI_s* x, struct zx_elem_s* y);
 void zx_cdm_CALADRURI_PUSH_URI(struct zx_cdm_CALADRURI_s* x, struct zx_cdm_URI_s* y);
 
-void zx_cdm_CALADRURI_PUT_id(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
-void zx_cdm_CALADRURI_PUT_modificationTime(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
 void zx_cdm_CALADRURI_PUT_ACC(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
 void zx_cdm_CALADRURI_PUT_ACCTime(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
+void zx_cdm_CALADRURI_PUT_id(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
+void zx_cdm_CALADRURI_PUT_modificationTime(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
 void zx_cdm_CALADRURI_PUT_modifier(struct zx_cdm_CALADRURI_s* x, struct zx_str* y);
 
 void zx_cdm_CALADRURI_PUT_PREF(struct zx_cdm_CALADRURI_s* x, int n, struct zx_elem_s* y);
@@ -459,18 +459,18 @@ struct zx_cdm_CALURI_s {
   zx_cdm_CALURI_EXT
   struct zx_elem_s* PREF;	/* {0,1} xs:string */
   struct zx_cdm_URI_s* URI;	/* {1,1}  */
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_CALURI_GET_id(struct zx_cdm_CALURI_s* x);
-struct zx_str* zx_cdm_CALURI_GET_modificationTime(struct zx_cdm_CALURI_s* x);
 struct zx_str* zx_cdm_CALURI_GET_ACC(struct zx_cdm_CALURI_s* x);
 struct zx_str* zx_cdm_CALURI_GET_ACCTime(struct zx_cdm_CALURI_s* x);
+struct zx_str* zx_cdm_CALURI_GET_id(struct zx_cdm_CALURI_s* x);
+struct zx_str* zx_cdm_CALURI_GET_modificationTime(struct zx_cdm_CALURI_s* x);
 struct zx_str* zx_cdm_CALURI_GET_modifier(struct zx_cdm_CALURI_s* x);
 
 struct zx_elem_s* zx_cdm_CALURI_GET_PREF(struct zx_cdm_CALURI_s* x, int n);
@@ -485,10 +485,10 @@ struct zx_cdm_URI_s* zx_cdm_CALURI_POP_URI(struct zx_cdm_CALURI_s* x);
 void zx_cdm_CALURI_PUSH_PREF(struct zx_cdm_CALURI_s* x, struct zx_elem_s* y);
 void zx_cdm_CALURI_PUSH_URI(struct zx_cdm_CALURI_s* x, struct zx_cdm_URI_s* y);
 
-void zx_cdm_CALURI_PUT_id(struct zx_cdm_CALURI_s* x, struct zx_str* y);
-void zx_cdm_CALURI_PUT_modificationTime(struct zx_cdm_CALURI_s* x, struct zx_str* y);
 void zx_cdm_CALURI_PUT_ACC(struct zx_cdm_CALURI_s* x, struct zx_str* y);
 void zx_cdm_CALURI_PUT_ACCTime(struct zx_cdm_CALURI_s* x, struct zx_str* y);
+void zx_cdm_CALURI_PUT_id(struct zx_cdm_CALURI_s* x, struct zx_str* y);
+void zx_cdm_CALURI_PUT_modificationTime(struct zx_cdm_CALURI_s* x, struct zx_str* y);
 void zx_cdm_CALURI_PUT_modifier(struct zx_cdm_CALURI_s* x, struct zx_str* y);
 
 void zx_cdm_CALURI_PUT_PREF(struct zx_cdm_CALURI_s* x, int n, struct zx_elem_s* y);
@@ -531,18 +531,18 @@ struct zx_cdm_CAPURI_s {
   zx_cdm_CAPURI_EXT
   struct zx_elem_s* PREF;	/* {0,1} xs:string */
   struct zx_cdm_URI_s* URI;	/* {1,1}  */
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_CAPURI_GET_id(struct zx_cdm_CAPURI_s* x);
-struct zx_str* zx_cdm_CAPURI_GET_modificationTime(struct zx_cdm_CAPURI_s* x);
 struct zx_str* zx_cdm_CAPURI_GET_ACC(struct zx_cdm_CAPURI_s* x);
 struct zx_str* zx_cdm_CAPURI_GET_ACCTime(struct zx_cdm_CAPURI_s* x);
+struct zx_str* zx_cdm_CAPURI_GET_id(struct zx_cdm_CAPURI_s* x);
+struct zx_str* zx_cdm_CAPURI_GET_modificationTime(struct zx_cdm_CAPURI_s* x);
 struct zx_str* zx_cdm_CAPURI_GET_modifier(struct zx_cdm_CAPURI_s* x);
 
 struct zx_elem_s* zx_cdm_CAPURI_GET_PREF(struct zx_cdm_CAPURI_s* x, int n);
@@ -557,10 +557,10 @@ struct zx_cdm_URI_s* zx_cdm_CAPURI_POP_URI(struct zx_cdm_CAPURI_s* x);
 void zx_cdm_CAPURI_PUSH_PREF(struct zx_cdm_CAPURI_s* x, struct zx_elem_s* y);
 void zx_cdm_CAPURI_PUSH_URI(struct zx_cdm_CAPURI_s* x, struct zx_cdm_URI_s* y);
 
-void zx_cdm_CAPURI_PUT_id(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
-void zx_cdm_CAPURI_PUT_modificationTime(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
 void zx_cdm_CAPURI_PUT_ACC(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
 void zx_cdm_CAPURI_PUT_ACCTime(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
+void zx_cdm_CAPURI_PUT_id(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
+void zx_cdm_CAPURI_PUT_modificationTime(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
 void zx_cdm_CAPURI_PUT_modifier(struct zx_cdm_CAPURI_s* x, struct zx_str* y);
 
 void zx_cdm_CAPURI_PUT_PREF(struct zx_cdm_CAPURI_s* x, int n, struct zx_elem_s* y);
@@ -658,18 +658,18 @@ struct zx_cdm_CLASS_s {
   struct zx_elem_s* PUBLIC;	/* {0,1} xs:string */
   struct zx_elem_s* PRIVATE;	/* {0,1} xs:string */
   struct zx_elem_s* CONFIDENTIAL;	/* {0,1} xs:string */
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_CLASS_GET_id(struct zx_cdm_CLASS_s* x);
-struct zx_str* zx_cdm_CLASS_GET_modificationTime(struct zx_cdm_CLASS_s* x);
 struct zx_str* zx_cdm_CLASS_GET_ACC(struct zx_cdm_CLASS_s* x);
 struct zx_str* zx_cdm_CLASS_GET_ACCTime(struct zx_cdm_CLASS_s* x);
+struct zx_str* zx_cdm_CLASS_GET_id(struct zx_cdm_CLASS_s* x);
+struct zx_str* zx_cdm_CLASS_GET_modificationTime(struct zx_cdm_CLASS_s* x);
 struct zx_str* zx_cdm_CLASS_GET_modifier(struct zx_cdm_CLASS_s* x);
 
 struct zx_elem_s* zx_cdm_CLASS_GET_PUBLIC(struct zx_cdm_CLASS_s* x, int n);
@@ -688,10 +688,10 @@ void zx_cdm_CLASS_PUSH_PUBLIC(struct zx_cdm_CLASS_s* x, struct zx_elem_s* y);
 void zx_cdm_CLASS_PUSH_PRIVATE(struct zx_cdm_CLASS_s* x, struct zx_elem_s* y);
 void zx_cdm_CLASS_PUSH_CONFIDENTIAL(struct zx_cdm_CLASS_s* x, struct zx_elem_s* y);
 
-void zx_cdm_CLASS_PUT_id(struct zx_cdm_CLASS_s* x, struct zx_str* y);
-void zx_cdm_CLASS_PUT_modificationTime(struct zx_cdm_CLASS_s* x, struct zx_str* y);
 void zx_cdm_CLASS_PUT_ACC(struct zx_cdm_CLASS_s* x, struct zx_str* y);
 void zx_cdm_CLASS_PUT_ACCTime(struct zx_cdm_CLASS_s* x, struct zx_str* y);
+void zx_cdm_CLASS_PUT_id(struct zx_cdm_CLASS_s* x, struct zx_str* y);
+void zx_cdm_CLASS_PUT_modificationTime(struct zx_cdm_CLASS_s* x, struct zx_str* y);
 void zx_cdm_CLASS_PUT_modifier(struct zx_cdm_CLASS_s* x, struct zx_str* y);
 
 void zx_cdm_CLASS_PUT_PUBLIC(struct zx_cdm_CLASS_s* x, int n, struct zx_elem_s* y);
@@ -736,28 +736,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_CRED(struct zx_ctx* c, struct zx_cdm_CRED_s* x
 struct zx_cdm_CRED_s {
   ZX_ELEM_EXT
   zx_cdm_CRED_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_CRED_GET_id(struct zx_cdm_CRED_s* x);
-struct zx_str* zx_cdm_CRED_GET_modificationTime(struct zx_cdm_CRED_s* x);
 struct zx_str* zx_cdm_CRED_GET_ACC(struct zx_cdm_CRED_s* x);
 struct zx_str* zx_cdm_CRED_GET_ACCTime(struct zx_cdm_CRED_s* x);
+struct zx_str* zx_cdm_CRED_GET_id(struct zx_cdm_CRED_s* x);
+struct zx_str* zx_cdm_CRED_GET_modificationTime(struct zx_cdm_CRED_s* x);
 struct zx_str* zx_cdm_CRED_GET_modifier(struct zx_cdm_CRED_s* x);
 
 
 
 
 
-void zx_cdm_CRED_PUT_id(struct zx_cdm_CRED_s* x, struct zx_str* y);
-void zx_cdm_CRED_PUT_modificationTime(struct zx_cdm_CRED_s* x, struct zx_str* y);
 void zx_cdm_CRED_PUT_ACC(struct zx_cdm_CRED_s* x, struct zx_str* y);
 void zx_cdm_CRED_PUT_ACCTime(struct zx_cdm_CRED_s* x, struct zx_str* y);
+void zx_cdm_CRED_PUT_id(struct zx_cdm_CRED_s* x, struct zx_str* y);
+void zx_cdm_CRED_PUT_modificationTime(struct zx_cdm_CRED_s* x, struct zx_str* y);
 void zx_cdm_CRED_PUT_modifier(struct zx_cdm_CRED_s* x, struct zx_str* y);
 
 
@@ -1015,28 +1015,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_EXTVAL(struct zx_ctx* c, struct zx_cdm_EXTVAL_
 struct zx_cdm_EXTVAL_s {
   ZX_ELEM_EXT
   zx_cdm_EXTVAL_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_EXTVAL_GET_id(struct zx_cdm_EXTVAL_s* x);
-struct zx_str* zx_cdm_EXTVAL_GET_modificationTime(struct zx_cdm_EXTVAL_s* x);
 struct zx_str* zx_cdm_EXTVAL_GET_ACC(struct zx_cdm_EXTVAL_s* x);
 struct zx_str* zx_cdm_EXTVAL_GET_ACCTime(struct zx_cdm_EXTVAL_s* x);
+struct zx_str* zx_cdm_EXTVAL_GET_id(struct zx_cdm_EXTVAL_s* x);
+struct zx_str* zx_cdm_EXTVAL_GET_modificationTime(struct zx_cdm_EXTVAL_s* x);
 struct zx_str* zx_cdm_EXTVAL_GET_modifier(struct zx_cdm_EXTVAL_s* x);
 
 
 
 
 
-void zx_cdm_EXTVAL_PUT_id(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
-void zx_cdm_EXTVAL_PUT_modificationTime(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
 void zx_cdm_EXTVAL_PUT_ACC(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
 void zx_cdm_EXTVAL_PUT_ACCTime(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
+void zx_cdm_EXTVAL_PUT_id(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
+void zx_cdm_EXTVAL_PUT_modificationTime(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
 void zx_cdm_EXTVAL_PUT_modifier(struct zx_cdm_EXTVAL_s* x, struct zx_str* y);
 
 
@@ -1113,18 +1113,18 @@ struct zx_cdm_FBURL_s {
   zx_cdm_FBURL_EXT
   struct zx_elem_s* PREF;	/* {0,1} xs:string */
   struct zx_cdm_URI_s* URI;	/* {1,1}  */
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_FBURL_GET_id(struct zx_cdm_FBURL_s* x);
-struct zx_str* zx_cdm_FBURL_GET_modificationTime(struct zx_cdm_FBURL_s* x);
 struct zx_str* zx_cdm_FBURL_GET_ACC(struct zx_cdm_FBURL_s* x);
 struct zx_str* zx_cdm_FBURL_GET_ACCTime(struct zx_cdm_FBURL_s* x);
+struct zx_str* zx_cdm_FBURL_GET_id(struct zx_cdm_FBURL_s* x);
+struct zx_str* zx_cdm_FBURL_GET_modificationTime(struct zx_cdm_FBURL_s* x);
 struct zx_str* zx_cdm_FBURL_GET_modifier(struct zx_cdm_FBURL_s* x);
 
 struct zx_elem_s* zx_cdm_FBURL_GET_PREF(struct zx_cdm_FBURL_s* x, int n);
@@ -1139,10 +1139,10 @@ struct zx_cdm_URI_s* zx_cdm_FBURL_POP_URI(struct zx_cdm_FBURL_s* x);
 void zx_cdm_FBURL_PUSH_PREF(struct zx_cdm_FBURL_s* x, struct zx_elem_s* y);
 void zx_cdm_FBURL_PUSH_URI(struct zx_cdm_FBURL_s* x, struct zx_cdm_URI_s* y);
 
-void zx_cdm_FBURL_PUT_id(struct zx_cdm_FBURL_s* x, struct zx_str* y);
-void zx_cdm_FBURL_PUT_modificationTime(struct zx_cdm_FBURL_s* x, struct zx_str* y);
 void zx_cdm_FBURL_PUT_ACC(struct zx_cdm_FBURL_s* x, struct zx_str* y);
 void zx_cdm_FBURL_PUT_ACCTime(struct zx_cdm_FBURL_s* x, struct zx_str* y);
+void zx_cdm_FBURL_PUT_id(struct zx_cdm_FBURL_s* x, struct zx_str* y);
+void zx_cdm_FBURL_PUT_modificationTime(struct zx_cdm_FBURL_s* x, struct zx_str* y);
 void zx_cdm_FBURL_PUT_modifier(struct zx_cdm_FBURL_s* x, struct zx_str* y);
 
 void zx_cdm_FBURL_PUT_PREF(struct zx_cdm_FBURL_s* x, int n, struct zx_elem_s* y);
@@ -1330,28 +1330,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_JABBERID(struct zx_ctx* c, struct zx_cdm_JABBE
 struct zx_cdm_JABBERID_s {
   ZX_ELEM_EXT
   zx_cdm_JABBERID_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_JABBERID_GET_id(struct zx_cdm_JABBERID_s* x);
-struct zx_str* zx_cdm_JABBERID_GET_modificationTime(struct zx_cdm_JABBERID_s* x);
 struct zx_str* zx_cdm_JABBERID_GET_ACC(struct zx_cdm_JABBERID_s* x);
 struct zx_str* zx_cdm_JABBERID_GET_ACCTime(struct zx_cdm_JABBERID_s* x);
+struct zx_str* zx_cdm_JABBERID_GET_id(struct zx_cdm_JABBERID_s* x);
+struct zx_str* zx_cdm_JABBERID_GET_modificationTime(struct zx_cdm_JABBERID_s* x);
 struct zx_str* zx_cdm_JABBERID_GET_modifier(struct zx_cdm_JABBERID_s* x);
 
 
 
 
 
-void zx_cdm_JABBERID_PUT_id(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
-void zx_cdm_JABBERID_PUT_modificationTime(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
 void zx_cdm_JABBERID_PUT_ACC(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
 void zx_cdm_JABBERID_PUT_ACCTime(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
+void zx_cdm_JABBERID_PUT_id(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
+void zx_cdm_JABBERID_PUT_modificationTime(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
 void zx_cdm_JABBERID_PUT_modifier(struct zx_cdm_JABBERID_s* x, struct zx_str* y);
 
 
@@ -1441,28 +1441,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_KEYWORD(struct zx_ctx* c, struct zx_cdm_KEYWOR
 struct zx_cdm_KEYWORD_s {
   ZX_ELEM_EXT
   zx_cdm_KEYWORD_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_KEYWORD_GET_id(struct zx_cdm_KEYWORD_s* x);
-struct zx_str* zx_cdm_KEYWORD_GET_modificationTime(struct zx_cdm_KEYWORD_s* x);
 struct zx_str* zx_cdm_KEYWORD_GET_ACC(struct zx_cdm_KEYWORD_s* x);
 struct zx_str* zx_cdm_KEYWORD_GET_ACCTime(struct zx_cdm_KEYWORD_s* x);
+struct zx_str* zx_cdm_KEYWORD_GET_id(struct zx_cdm_KEYWORD_s* x);
+struct zx_str* zx_cdm_KEYWORD_GET_modificationTime(struct zx_cdm_KEYWORD_s* x);
 struct zx_str* zx_cdm_KEYWORD_GET_modifier(struct zx_cdm_KEYWORD_s* x);
 
 
 
 
 
-void zx_cdm_KEYWORD_PUT_id(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
-void zx_cdm_KEYWORD_PUT_modificationTime(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
 void zx_cdm_KEYWORD_PUT_ACC(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
 void zx_cdm_KEYWORD_PUT_ACCTime(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
+void zx_cdm_KEYWORD_PUT_id(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
+void zx_cdm_KEYWORD_PUT_modificationTime(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
 void zx_cdm_KEYWORD_PUT_modifier(struct zx_cdm_KEYWORD_s* x, struct zx_str* y);
 
 
@@ -1612,28 +1612,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_LAT(struct zx_ctx* c, struct zx_cdm_LAT_s* x);
 struct zx_cdm_LAT_s {
   ZX_ELEM_EXT
   zx_cdm_LAT_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_LAT_GET_id(struct zx_cdm_LAT_s* x);
-struct zx_str* zx_cdm_LAT_GET_modificationTime(struct zx_cdm_LAT_s* x);
 struct zx_str* zx_cdm_LAT_GET_ACC(struct zx_cdm_LAT_s* x);
 struct zx_str* zx_cdm_LAT_GET_ACCTime(struct zx_cdm_LAT_s* x);
+struct zx_str* zx_cdm_LAT_GET_id(struct zx_cdm_LAT_s* x);
+struct zx_str* zx_cdm_LAT_GET_modificationTime(struct zx_cdm_LAT_s* x);
 struct zx_str* zx_cdm_LAT_GET_modifier(struct zx_cdm_LAT_s* x);
 
 
 
 
 
-void zx_cdm_LAT_PUT_id(struct zx_cdm_LAT_s* x, struct zx_str* y);
-void zx_cdm_LAT_PUT_modificationTime(struct zx_cdm_LAT_s* x, struct zx_str* y);
 void zx_cdm_LAT_PUT_ACC(struct zx_cdm_LAT_s* x, struct zx_str* y);
 void zx_cdm_LAT_PUT_ACCTime(struct zx_cdm_LAT_s* x, struct zx_str* y);
+void zx_cdm_LAT_PUT_id(struct zx_cdm_LAT_s* x, struct zx_str* y);
+void zx_cdm_LAT_PUT_modificationTime(struct zx_cdm_LAT_s* x, struct zx_str* y);
 void zx_cdm_LAT_PUT_modifier(struct zx_cdm_LAT_s* x, struct zx_str* y);
 
 
@@ -1708,28 +1708,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_LISTMEMBER(struct zx_ctx* c, struct zx_cdm_LIS
 struct zx_cdm_LISTMEMBER_s {
   ZX_ELEM_EXT
   zx_cdm_LISTMEMBER_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_LISTMEMBER_GET_id(struct zx_cdm_LISTMEMBER_s* x);
-struct zx_str* zx_cdm_LISTMEMBER_GET_modificationTime(struct zx_cdm_LISTMEMBER_s* x);
 struct zx_str* zx_cdm_LISTMEMBER_GET_ACC(struct zx_cdm_LISTMEMBER_s* x);
 struct zx_str* zx_cdm_LISTMEMBER_GET_ACCTime(struct zx_cdm_LISTMEMBER_s* x);
+struct zx_str* zx_cdm_LISTMEMBER_GET_id(struct zx_cdm_LISTMEMBER_s* x);
+struct zx_str* zx_cdm_LISTMEMBER_GET_modificationTime(struct zx_cdm_LISTMEMBER_s* x);
 struct zx_str* zx_cdm_LISTMEMBER_GET_modifier(struct zx_cdm_LISTMEMBER_s* x);
 
 
 
 
 
-void zx_cdm_LISTMEMBER_PUT_id(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
-void zx_cdm_LISTMEMBER_PUT_modificationTime(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
 void zx_cdm_LISTMEMBER_PUT_ACC(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
 void zx_cdm_LISTMEMBER_PUT_ACCTime(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
+void zx_cdm_LISTMEMBER_PUT_id(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
+void zx_cdm_LISTMEMBER_PUT_modificationTime(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
 void zx_cdm_LISTMEMBER_PUT_modifier(struct zx_cdm_LISTMEMBER_s* x, struct zx_str* y);
 
 
@@ -1876,28 +1876,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_LON(struct zx_ctx* c, struct zx_cdm_LON_s* x);
 struct zx_cdm_LON_s {
   ZX_ELEM_EXT
   zx_cdm_LON_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_LON_GET_id(struct zx_cdm_LON_s* x);
-struct zx_str* zx_cdm_LON_GET_modificationTime(struct zx_cdm_LON_s* x);
 struct zx_str* zx_cdm_LON_GET_ACC(struct zx_cdm_LON_s* x);
 struct zx_str* zx_cdm_LON_GET_ACCTime(struct zx_cdm_LON_s* x);
+struct zx_str* zx_cdm_LON_GET_id(struct zx_cdm_LON_s* x);
+struct zx_str* zx_cdm_LON_GET_modificationTime(struct zx_cdm_LON_s* x);
 struct zx_str* zx_cdm_LON_GET_modifier(struct zx_cdm_LON_s* x);
 
 
 
 
 
-void zx_cdm_LON_PUT_id(struct zx_cdm_LON_s* x, struct zx_str* y);
-void zx_cdm_LON_PUT_modificationTime(struct zx_cdm_LON_s* x, struct zx_str* y);
 void zx_cdm_LON_PUT_ACC(struct zx_cdm_LON_s* x, struct zx_str* y);
 void zx_cdm_LON_PUT_ACCTime(struct zx_cdm_LON_s* x, struct zx_str* y);
+void zx_cdm_LON_PUT_id(struct zx_cdm_LON_s* x, struct zx_str* y);
+void zx_cdm_LON_PUT_modificationTime(struct zx_cdm_LON_s* x, struct zx_str* y);
 void zx_cdm_LON_PUT_modifier(struct zx_cdm_LON_s* x, struct zx_str* y);
 
 
@@ -1930,28 +1930,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_MAILER(struct zx_ctx* c, struct zx_cdm_MAILER_
 struct zx_cdm_MAILER_s {
   ZX_ELEM_EXT
   zx_cdm_MAILER_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_MAILER_GET_id(struct zx_cdm_MAILER_s* x);
-struct zx_str* zx_cdm_MAILER_GET_modificationTime(struct zx_cdm_MAILER_s* x);
 struct zx_str* zx_cdm_MAILER_GET_ACC(struct zx_cdm_MAILER_s* x);
 struct zx_str* zx_cdm_MAILER_GET_ACCTime(struct zx_cdm_MAILER_s* x);
+struct zx_str* zx_cdm_MAILER_GET_id(struct zx_cdm_MAILER_s* x);
+struct zx_str* zx_cdm_MAILER_GET_modificationTime(struct zx_cdm_MAILER_s* x);
 struct zx_str* zx_cdm_MAILER_GET_modifier(struct zx_cdm_MAILER_s* x);
 
 
 
 
 
-void zx_cdm_MAILER_PUT_id(struct zx_cdm_MAILER_s* x, struct zx_str* y);
-void zx_cdm_MAILER_PUT_modificationTime(struct zx_cdm_MAILER_s* x, struct zx_str* y);
 void zx_cdm_MAILER_PUT_ACC(struct zx_cdm_MAILER_s* x, struct zx_str* y);
 void zx_cdm_MAILER_PUT_ACCTime(struct zx_cdm_MAILER_s* x, struct zx_str* y);
+void zx_cdm_MAILER_PUT_id(struct zx_cdm_MAILER_s* x, struct zx_str* y);
+void zx_cdm_MAILER_PUT_modificationTime(struct zx_cdm_MAILER_s* x, struct zx_str* y);
 void zx_cdm_MAILER_PUT_modifier(struct zx_cdm_MAILER_s* x, struct zx_str* y);
 
 
@@ -2200,28 +2200,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_NUMBER(struct zx_ctx* c, struct zx_cdm_NUMBER_
 struct zx_cdm_NUMBER_s {
   ZX_ELEM_EXT
   zx_cdm_NUMBER_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_NUMBER_GET_id(struct zx_cdm_NUMBER_s* x);
-struct zx_str* zx_cdm_NUMBER_GET_modificationTime(struct zx_cdm_NUMBER_s* x);
 struct zx_str* zx_cdm_NUMBER_GET_ACC(struct zx_cdm_NUMBER_s* x);
 struct zx_str* zx_cdm_NUMBER_GET_ACCTime(struct zx_cdm_NUMBER_s* x);
+struct zx_str* zx_cdm_NUMBER_GET_id(struct zx_cdm_NUMBER_s* x);
+struct zx_str* zx_cdm_NUMBER_GET_modificationTime(struct zx_cdm_NUMBER_s* x);
 struct zx_str* zx_cdm_NUMBER_GET_modifier(struct zx_cdm_NUMBER_s* x);
 
 
 
 
 
-void zx_cdm_NUMBER_PUT_id(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
-void zx_cdm_NUMBER_PUT_modificationTime(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
 void zx_cdm_NUMBER_PUT_ACC(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
 void zx_cdm_NUMBER_PUT_ACCTime(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
+void zx_cdm_NUMBER_PUT_id(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
+void zx_cdm_NUMBER_PUT_modificationTime(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
 void zx_cdm_NUMBER_PUT_modifier(struct zx_cdm_NUMBER_s* x, struct zx_str* y);
 
 
@@ -2683,28 +2683,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_PRODID(struct zx_ctx* c, struct zx_cdm_PRODID_
 struct zx_cdm_PRODID_s {
   ZX_ELEM_EXT
   zx_cdm_PRODID_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_PRODID_GET_id(struct zx_cdm_PRODID_s* x);
-struct zx_str* zx_cdm_PRODID_GET_modificationTime(struct zx_cdm_PRODID_s* x);
 struct zx_str* zx_cdm_PRODID_GET_ACC(struct zx_cdm_PRODID_s* x);
 struct zx_str* zx_cdm_PRODID_GET_ACCTime(struct zx_cdm_PRODID_s* x);
+struct zx_str* zx_cdm_PRODID_GET_id(struct zx_cdm_PRODID_s* x);
+struct zx_str* zx_cdm_PRODID_GET_modificationTime(struct zx_cdm_PRODID_s* x);
 struct zx_str* zx_cdm_PRODID_GET_modifier(struct zx_cdm_PRODID_s* x);
 
 
 
 
 
-void zx_cdm_PRODID_PUT_id(struct zx_cdm_PRODID_s* x, struct zx_str* y);
-void zx_cdm_PRODID_PUT_modificationTime(struct zx_cdm_PRODID_s* x, struct zx_str* y);
 void zx_cdm_PRODID_PUT_ACC(struct zx_cdm_PRODID_s* x, struct zx_str* y);
 void zx_cdm_PRODID_PUT_ACCTime(struct zx_cdm_PRODID_s* x, struct zx_str* y);
+void zx_cdm_PRODID_PUT_id(struct zx_cdm_PRODID_s* x, struct zx_str* y);
+void zx_cdm_PRODID_PUT_modificationTime(struct zx_cdm_PRODID_s* x, struct zx_str* y);
 void zx_cdm_PRODID_PUT_modifier(struct zx_cdm_PRODID_s* x, struct zx_str* y);
 
 
@@ -2779,28 +2779,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_REV(struct zx_ctx* c, struct zx_cdm_REV_s* x);
 struct zx_cdm_REV_s {
   ZX_ELEM_EXT
   zx_cdm_REV_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_REV_GET_id(struct zx_cdm_REV_s* x);
-struct zx_str* zx_cdm_REV_GET_modificationTime(struct zx_cdm_REV_s* x);
 struct zx_str* zx_cdm_REV_GET_ACC(struct zx_cdm_REV_s* x);
 struct zx_str* zx_cdm_REV_GET_ACCTime(struct zx_cdm_REV_s* x);
+struct zx_str* zx_cdm_REV_GET_id(struct zx_cdm_REV_s* x);
+struct zx_str* zx_cdm_REV_GET_modificationTime(struct zx_cdm_REV_s* x);
 struct zx_str* zx_cdm_REV_GET_modifier(struct zx_cdm_REV_s* x);
 
 
 
 
 
-void zx_cdm_REV_PUT_id(struct zx_cdm_REV_s* x, struct zx_str* y);
-void zx_cdm_REV_PUT_modificationTime(struct zx_cdm_REV_s* x, struct zx_str* y);
 void zx_cdm_REV_PUT_ACC(struct zx_cdm_REV_s* x, struct zx_str* y);
 void zx_cdm_REV_PUT_ACCTime(struct zx_cdm_REV_s* x, struct zx_str* y);
+void zx_cdm_REV_PUT_id(struct zx_cdm_REV_s* x, struct zx_str* y);
+void zx_cdm_REV_PUT_modificationTime(struct zx_cdm_REV_s* x, struct zx_str* y);
 void zx_cdm_REV_PUT_modifier(struct zx_cdm_REV_s* x, struct zx_str* y);
 
 
@@ -3286,28 +3286,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_TYPE(struct zx_ctx* c, struct zx_cdm_TYPE_s* x
 struct zx_cdm_TYPE_s {
   ZX_ELEM_EXT
   zx_cdm_TYPE_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_TYPE_GET_id(struct zx_cdm_TYPE_s* x);
-struct zx_str* zx_cdm_TYPE_GET_modificationTime(struct zx_cdm_TYPE_s* x);
 struct zx_str* zx_cdm_TYPE_GET_ACC(struct zx_cdm_TYPE_s* x);
 struct zx_str* zx_cdm_TYPE_GET_ACCTime(struct zx_cdm_TYPE_s* x);
+struct zx_str* zx_cdm_TYPE_GET_id(struct zx_cdm_TYPE_s* x);
+struct zx_str* zx_cdm_TYPE_GET_modificationTime(struct zx_cdm_TYPE_s* x);
 struct zx_str* zx_cdm_TYPE_GET_modifier(struct zx_cdm_TYPE_s* x);
 
 
 
 
 
-void zx_cdm_TYPE_PUT_id(struct zx_cdm_TYPE_s* x, struct zx_str* y);
-void zx_cdm_TYPE_PUT_modificationTime(struct zx_cdm_TYPE_s* x, struct zx_str* y);
 void zx_cdm_TYPE_PUT_ACC(struct zx_cdm_TYPE_s* x, struct zx_str* y);
 void zx_cdm_TYPE_PUT_ACCTime(struct zx_cdm_TYPE_s* x, struct zx_str* y);
+void zx_cdm_TYPE_PUT_id(struct zx_cdm_TYPE_s* x, struct zx_str* y);
+void zx_cdm_TYPE_PUT_modificationTime(struct zx_cdm_TYPE_s* x, struct zx_str* y);
 void zx_cdm_TYPE_PUT_modifier(struct zx_cdm_TYPE_s* x, struct zx_str* y);
 
 
@@ -3340,28 +3340,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_TZ(struct zx_ctx* c, struct zx_cdm_TZ_s* x);
 struct zx_cdm_TZ_s {
   ZX_ELEM_EXT
   zx_cdm_TZ_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_TZ_GET_id(struct zx_cdm_TZ_s* x);
-struct zx_str* zx_cdm_TZ_GET_modificationTime(struct zx_cdm_TZ_s* x);
 struct zx_str* zx_cdm_TZ_GET_ACC(struct zx_cdm_TZ_s* x);
 struct zx_str* zx_cdm_TZ_GET_ACCTime(struct zx_cdm_TZ_s* x);
+struct zx_str* zx_cdm_TZ_GET_id(struct zx_cdm_TZ_s* x);
+struct zx_str* zx_cdm_TZ_GET_modificationTime(struct zx_cdm_TZ_s* x);
 struct zx_str* zx_cdm_TZ_GET_modifier(struct zx_cdm_TZ_s* x);
 
 
 
 
 
-void zx_cdm_TZ_PUT_id(struct zx_cdm_TZ_s* x, struct zx_str* y);
-void zx_cdm_TZ_PUT_modificationTime(struct zx_cdm_TZ_s* x, struct zx_str* y);
 void zx_cdm_TZ_PUT_ACC(struct zx_cdm_TZ_s* x, struct zx_str* y);
 void zx_cdm_TZ_PUT_ACCTime(struct zx_cdm_TZ_s* x, struct zx_str* y);
+void zx_cdm_TZ_PUT_id(struct zx_cdm_TZ_s* x, struct zx_str* y);
+void zx_cdm_TZ_PUT_modificationTime(struct zx_cdm_TZ_s* x, struct zx_str* y);
 void zx_cdm_TZ_PUT_modifier(struct zx_cdm_TZ_s* x, struct zx_str* y);
 
 
@@ -3394,28 +3394,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_UID(struct zx_ctx* c, struct zx_cdm_UID_s* x);
 struct zx_cdm_UID_s {
   ZX_ELEM_EXT
   zx_cdm_UID_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_UID_GET_id(struct zx_cdm_UID_s* x);
-struct zx_str* zx_cdm_UID_GET_modificationTime(struct zx_cdm_UID_s* x);
 struct zx_str* zx_cdm_UID_GET_ACC(struct zx_cdm_UID_s* x);
 struct zx_str* zx_cdm_UID_GET_ACCTime(struct zx_cdm_UID_s* x);
+struct zx_str* zx_cdm_UID_GET_id(struct zx_cdm_UID_s* x);
+struct zx_str* zx_cdm_UID_GET_modificationTime(struct zx_cdm_UID_s* x);
 struct zx_str* zx_cdm_UID_GET_modifier(struct zx_cdm_UID_s* x);
 
 
 
 
 
-void zx_cdm_UID_PUT_id(struct zx_cdm_UID_s* x, struct zx_str* y);
-void zx_cdm_UID_PUT_modificationTime(struct zx_cdm_UID_s* x, struct zx_str* y);
 void zx_cdm_UID_PUT_ACC(struct zx_cdm_UID_s* x, struct zx_str* y);
 void zx_cdm_UID_PUT_ACCTime(struct zx_cdm_UID_s* x, struct zx_str* y);
+void zx_cdm_UID_PUT_id(struct zx_cdm_UID_s* x, struct zx_str* y);
+void zx_cdm_UID_PUT_modificationTime(struct zx_cdm_UID_s* x, struct zx_str* y);
 void zx_cdm_UID_PUT_modifier(struct zx_cdm_UID_s* x, struct zx_str* y);
 
 
@@ -3448,28 +3448,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_URI(struct zx_ctx* c, struct zx_cdm_URI_s* x);
 struct zx_cdm_URI_s {
   ZX_ELEM_EXT
   zx_cdm_URI_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_URI_GET_id(struct zx_cdm_URI_s* x);
-struct zx_str* zx_cdm_URI_GET_modificationTime(struct zx_cdm_URI_s* x);
 struct zx_str* zx_cdm_URI_GET_ACC(struct zx_cdm_URI_s* x);
 struct zx_str* zx_cdm_URI_GET_ACCTime(struct zx_cdm_URI_s* x);
+struct zx_str* zx_cdm_URI_GET_id(struct zx_cdm_URI_s* x);
+struct zx_str* zx_cdm_URI_GET_modificationTime(struct zx_cdm_URI_s* x);
 struct zx_str* zx_cdm_URI_GET_modifier(struct zx_cdm_URI_s* x);
 
 
 
 
 
-void zx_cdm_URI_PUT_id(struct zx_cdm_URI_s* x, struct zx_str* y);
-void zx_cdm_URI_PUT_modificationTime(struct zx_cdm_URI_s* x, struct zx_str* y);
 void zx_cdm_URI_PUT_ACC(struct zx_cdm_URI_s* x, struct zx_str* y);
 void zx_cdm_URI_PUT_ACCTime(struct zx_cdm_URI_s* x, struct zx_str* y);
+void zx_cdm_URI_PUT_id(struct zx_cdm_URI_s* x, struct zx_str* y);
+void zx_cdm_URI_PUT_modificationTime(struct zx_cdm_URI_s* x, struct zx_str* y);
 void zx_cdm_URI_PUT_modifier(struct zx_cdm_URI_s* x, struct zx_str* y);
 
 
@@ -3502,28 +3502,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_URL(struct zx_ctx* c, struct zx_cdm_URL_s* x);
 struct zx_cdm_URL_s {
   ZX_ELEM_EXT
   zx_cdm_URL_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_URL_GET_id(struct zx_cdm_URL_s* x);
-struct zx_str* zx_cdm_URL_GET_modificationTime(struct zx_cdm_URL_s* x);
 struct zx_str* zx_cdm_URL_GET_ACC(struct zx_cdm_URL_s* x);
 struct zx_str* zx_cdm_URL_GET_ACCTime(struct zx_cdm_URL_s* x);
+struct zx_str* zx_cdm_URL_GET_id(struct zx_cdm_URL_s* x);
+struct zx_str* zx_cdm_URL_GET_modificationTime(struct zx_cdm_URL_s* x);
 struct zx_str* zx_cdm_URL_GET_modifier(struct zx_cdm_URL_s* x);
 
 
 
 
 
-void zx_cdm_URL_PUT_id(struct zx_cdm_URL_s* x, struct zx_str* y);
-void zx_cdm_URL_PUT_modificationTime(struct zx_cdm_URL_s* x, struct zx_str* y);
 void zx_cdm_URL_PUT_ACC(struct zx_cdm_URL_s* x, struct zx_str* y);
 void zx_cdm_URL_PUT_ACCTime(struct zx_cdm_URL_s* x, struct zx_str* y);
+void zx_cdm_URL_PUT_id(struct zx_cdm_URL_s* x, struct zx_str* y);
+void zx_cdm_URL_PUT_modificationTime(struct zx_cdm_URL_s* x, struct zx_str* y);
 void zx_cdm_URL_PUT_modifier(struct zx_cdm_URL_s* x, struct zx_str* y);
 
 
@@ -3556,28 +3556,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_USERID(struct zx_ctx* c, struct zx_cdm_USERID_
 struct zx_cdm_USERID_s {
   ZX_ELEM_EXT
   zx_cdm_USERID_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_USERID_GET_id(struct zx_cdm_USERID_s* x);
-struct zx_str* zx_cdm_USERID_GET_modificationTime(struct zx_cdm_USERID_s* x);
 struct zx_str* zx_cdm_USERID_GET_ACC(struct zx_cdm_USERID_s* x);
 struct zx_str* zx_cdm_USERID_GET_ACCTime(struct zx_cdm_USERID_s* x);
+struct zx_str* zx_cdm_USERID_GET_id(struct zx_cdm_USERID_s* x);
+struct zx_str* zx_cdm_USERID_GET_modificationTime(struct zx_cdm_USERID_s* x);
 struct zx_str* zx_cdm_USERID_GET_modifier(struct zx_cdm_USERID_s* x);
 
 
 
 
 
-void zx_cdm_USERID_PUT_id(struct zx_cdm_USERID_s* x, struct zx_str* y);
-void zx_cdm_USERID_PUT_modificationTime(struct zx_cdm_USERID_s* x, struct zx_str* y);
 void zx_cdm_USERID_PUT_ACC(struct zx_cdm_USERID_s* x, struct zx_str* y);
 void zx_cdm_USERID_PUT_ACCTime(struct zx_cdm_USERID_s* x, struct zx_str* y);
+void zx_cdm_USERID_PUT_id(struct zx_cdm_USERID_s* x, struct zx_str* y);
+void zx_cdm_USERID_PUT_modificationTime(struct zx_cdm_USERID_s* x, struct zx_str* y);
 void zx_cdm_USERID_PUT_modifier(struct zx_cdm_USERID_s* x, struct zx_str* y);
 
 
@@ -3610,28 +3610,28 @@ struct zx_str* zx_EASY_ENC_WO_cdm_VERSION(struct zx_ctx* c, struct zx_cdm_VERSIO
 struct zx_cdm_VERSION_s {
   ZX_ELEM_EXT
   zx_cdm_VERSION_EXT
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cdm_VERSION_GET_id(struct zx_cdm_VERSION_s* x);
-struct zx_str* zx_cdm_VERSION_GET_modificationTime(struct zx_cdm_VERSION_s* x);
 struct zx_str* zx_cdm_VERSION_GET_ACC(struct zx_cdm_VERSION_s* x);
 struct zx_str* zx_cdm_VERSION_GET_ACCTime(struct zx_cdm_VERSION_s* x);
+struct zx_str* zx_cdm_VERSION_GET_id(struct zx_cdm_VERSION_s* x);
+struct zx_str* zx_cdm_VERSION_GET_modificationTime(struct zx_cdm_VERSION_s* x);
 struct zx_str* zx_cdm_VERSION_GET_modifier(struct zx_cdm_VERSION_s* x);
 
 
 
 
 
-void zx_cdm_VERSION_PUT_id(struct zx_cdm_VERSION_s* x, struct zx_str* y);
-void zx_cdm_VERSION_PUT_modificationTime(struct zx_cdm_VERSION_s* x, struct zx_str* y);
 void zx_cdm_VERSION_PUT_ACC(struct zx_cdm_VERSION_s* x, struct zx_str* y);
 void zx_cdm_VERSION_PUT_ACCTime(struct zx_cdm_VERSION_s* x, struct zx_str* y);
+void zx_cdm_VERSION_PUT_id(struct zx_cdm_VERSION_s* x, struct zx_str* y);
+void zx_cdm_VERSION_PUT_modificationTime(struct zx_cdm_VERSION_s* x, struct zx_str* y);
 void zx_cdm_VERSION_PUT_modifier(struct zx_cdm_VERSION_s* x, struct zx_str* y);
 
 

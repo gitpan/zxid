@@ -46,17 +46,21 @@ struct zx_shps_CallbackEPR_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_shps_CallbackEPR_GET_ID(struct zx_shps_CallbackEPR_s* x);
+struct zx_str* zx_shps_CallbackEPR_GET_id(struct zx_shps_CallbackEPR_s* x);
 struct zx_str* zx_shps_CallbackEPR_GET_notOnOrAfter(struct zx_shps_CallbackEPR_s* x);
-struct zx_str* zx_shps_CallbackEPR_GET_mustUnderstand(struct zx_shps_CallbackEPR_s* x);
-struct zx_str* zx_shps_CallbackEPR_GET_actor(struct zx_shps_CallbackEPR_s* x);
 struct zx_str* zx_shps_CallbackEPR_GET_Id(struct zx_shps_CallbackEPR_s* x);
+struct zx_str* zx_shps_CallbackEPR_GET_actor(struct zx_shps_CallbackEPR_s* x);
+struct zx_str* zx_shps_CallbackEPR_GET_mustUnderstand(struct zx_shps_CallbackEPR_s* x);
 
 struct zx_a_Address_s* zx_shps_CallbackEPR_GET_Address(struct zx_shps_CallbackEPR_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_shps_CallbackEPR_GET_ReferenceParameters(struct zx_shps_CallbackEPR_s* x, int n);
@@ -74,10 +78,12 @@ void zx_shps_CallbackEPR_PUSH_Address(struct zx_shps_CallbackEPR_s* x, struct zx
 void zx_shps_CallbackEPR_PUSH_ReferenceParameters(struct zx_shps_CallbackEPR_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_shps_CallbackEPR_PUSH_Metadata(struct zx_shps_CallbackEPR_s* x, struct zx_a_Metadata_s* y);
 
+void zx_shps_CallbackEPR_PUT_ID(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
+void zx_shps_CallbackEPR_PUT_id(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
 void zx_shps_CallbackEPR_PUT_notOnOrAfter(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
-void zx_shps_CallbackEPR_PUT_mustUnderstand(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
-void zx_shps_CallbackEPR_PUT_actor(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
 void zx_shps_CallbackEPR_PUT_Id(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
+void zx_shps_CallbackEPR_PUT_actor(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
+void zx_shps_CallbackEPR_PUT_mustUnderstand(struct zx_shps_CallbackEPR_s* x, struct zx_str* y);
 
 void zx_shps_CallbackEPR_PUT_Address(struct zx_shps_CallbackEPR_s* x, int n, struct zx_a_Address_s* y);
 void zx_shps_CallbackEPR_PUT_ReferenceParameters(struct zx_shps_CallbackEPR_s* x, int n, struct zx_a_ReferenceParameters_s* y);

@@ -1049,18 +1049,18 @@ void zx_wsse_Security_DEL_Timestamp(struct zx_wsse_Security_s* x, int n)
 
 #endif
 
-/* FUNC(zx_wsse_Security_GET_mustUnderstand) */
-struct zx_str* zx_wsse_Security_GET_mustUnderstand(struct zx_wsse_Security_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_wsse_Security_PUT_mustUnderstand) */
-void zx_wsse_Security_PUT_mustUnderstand(struct zx_wsse_Security_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_wsse_Security_GET_actor) */
-struct zx_str* zx_wsse_Security_GET_actor(struct zx_wsse_Security_s* x) { return x->actor; }
-/* FUNC(zx_wsse_Security_PUT_actor) */
-void zx_wsse_Security_PUT_actor(struct zx_wsse_Security_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_wsse_Security_GET_Id) */
 struct zx_str* zx_wsse_Security_GET_Id(struct zx_wsse_Security_s* x) { return x->Id; }
 /* FUNC(zx_wsse_Security_PUT_Id) */
 void zx_wsse_Security_PUT_Id(struct zx_wsse_Security_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_wsse_Security_GET_actor) */
+struct zx_str* zx_wsse_Security_GET_actor(struct zx_wsse_Security_s* x) { return x->actor; }
+/* FUNC(zx_wsse_Security_PUT_actor) */
+void zx_wsse_Security_PUT_actor(struct zx_wsse_Security_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_wsse_Security_GET_mustUnderstand) */
+struct zx_str* zx_wsse_Security_GET_mustUnderstand(struct zx_wsse_Security_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_wsse_Security_PUT_mustUnderstand) */
+void zx_wsse_Security_PUT_mustUnderstand(struct zx_wsse_Security_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

@@ -871,9 +871,9 @@ void zx_FREE_sec12_SessionContext(struct zx_ctx* c, struct zx_sec12_SessionConte
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->SessionIndex, free_strs);
-  zx_free_attr(c, x->AuthenticationInstant, free_strs);
   zx_free_attr(c, x->AssertionIssueInstant, free_strs);
+  zx_free_attr(c, x->AuthenticationInstant, free_strs);
+  zx_free_attr(c, x->SessionIndex, free_strs);
 
   {
       struct zx_sec12_SessionSubject_s* e;
@@ -926,9 +926,9 @@ void zx_DUP_STRS_sec12_SessionContext(struct zx_ctx* c, struct zx_sec12_SessionC
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->SessionIndex);
-  zx_dup_attr(c, x->AuthenticationInstant);
   zx_dup_attr(c, x->AssertionIssueInstant);
+  zx_dup_attr(c, x->AuthenticationInstant);
+  zx_dup_attr(c, x->SessionIndex);
 
   {
       struct zx_sec12_SessionSubject_s* e;
@@ -955,9 +955,9 @@ struct zx_sec12_SessionContext_s* zx_DEEP_CLONE_sec12_SessionContext(struct zx_c
   x = (struct zx_sec12_SessionContext_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sec12_SessionContext_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->SessionIndex = zx_clone_attr(c, x->SessionIndex);
-  x->AuthenticationInstant = zx_clone_attr(c, x->AuthenticationInstant);
   x->AssertionIssueInstant = zx_clone_attr(c, x->AssertionIssueInstant);
+  x->AuthenticationInstant = zx_clone_attr(c, x->AuthenticationInstant);
+  x->SessionIndex = zx_clone_attr(c, x->SessionIndex);
 
   {
       struct zx_sec12_SessionSubject_s* e;

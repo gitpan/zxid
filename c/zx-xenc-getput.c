@@ -1401,22 +1401,22 @@ void zx_xenc_EncryptedData_DEL_EncryptionProperties(struct zx_xenc_EncryptedData
 
 #endif
 
-/* FUNC(zx_xenc_EncryptedData_GET_Id) */
-struct zx_str* zx_xenc_EncryptedData_GET_Id(struct zx_xenc_EncryptedData_s* x) { return x->Id; }
-/* FUNC(zx_xenc_EncryptedData_PUT_Id) */
-void zx_xenc_EncryptedData_PUT_Id(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Id = y; }
-/* FUNC(zx_xenc_EncryptedData_GET_Type) */
-struct zx_str* zx_xenc_EncryptedData_GET_Type(struct zx_xenc_EncryptedData_s* x) { return x->Type; }
-/* FUNC(zx_xenc_EncryptedData_PUT_Type) */
-void zx_xenc_EncryptedData_PUT_Type(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Type = y; }
-/* FUNC(zx_xenc_EncryptedData_GET_MimeType) */
-struct zx_str* zx_xenc_EncryptedData_GET_MimeType(struct zx_xenc_EncryptedData_s* x) { return x->MimeType; }
-/* FUNC(zx_xenc_EncryptedData_PUT_MimeType) */
-void zx_xenc_EncryptedData_PUT_MimeType(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->MimeType = y; }
 /* FUNC(zx_xenc_EncryptedData_GET_Encoding) */
 struct zx_str* zx_xenc_EncryptedData_GET_Encoding(struct zx_xenc_EncryptedData_s* x) { return x->Encoding; }
 /* FUNC(zx_xenc_EncryptedData_PUT_Encoding) */
 void zx_xenc_EncryptedData_PUT_Encoding(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Encoding = y; }
+/* FUNC(zx_xenc_EncryptedData_GET_Id) */
+struct zx_str* zx_xenc_EncryptedData_GET_Id(struct zx_xenc_EncryptedData_s* x) { return x->Id; }
+/* FUNC(zx_xenc_EncryptedData_PUT_Id) */
+void zx_xenc_EncryptedData_PUT_Id(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_xenc_EncryptedData_GET_MimeType) */
+struct zx_str* zx_xenc_EncryptedData_GET_MimeType(struct zx_xenc_EncryptedData_s* x) { return x->MimeType; }
+/* FUNC(zx_xenc_EncryptedData_PUT_MimeType) */
+void zx_xenc_EncryptedData_PUT_MimeType(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->MimeType = y; }
+/* FUNC(zx_xenc_EncryptedData_GET_Type) */
+struct zx_str* zx_xenc_EncryptedData_GET_Type(struct zx_xenc_EncryptedData_s* x) { return x->Type; }
+/* FUNC(zx_xenc_EncryptedData_PUT_Type) */
+void zx_xenc_EncryptedData_PUT_Type(struct zx_xenc_EncryptedData_s* x, struct zx_str* y) { x->Type = y; }
 
 
 
@@ -2226,26 +2226,26 @@ void zx_xenc_EncryptedKey_DEL_CarriedKeyName(struct zx_xenc_EncryptedKey_s* x, i
 
 #endif
 
-/* FUNC(zx_xenc_EncryptedKey_GET_Id) */
-struct zx_str* zx_xenc_EncryptedKey_GET_Id(struct zx_xenc_EncryptedKey_s* x) { return x->Id; }
-/* FUNC(zx_xenc_EncryptedKey_PUT_Id) */
-void zx_xenc_EncryptedKey_PUT_Id(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Id = y; }
-/* FUNC(zx_xenc_EncryptedKey_GET_Type) */
-struct zx_str* zx_xenc_EncryptedKey_GET_Type(struct zx_xenc_EncryptedKey_s* x) { return x->Type; }
-/* FUNC(zx_xenc_EncryptedKey_PUT_Type) */
-void zx_xenc_EncryptedKey_PUT_Type(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Type = y; }
-/* FUNC(zx_xenc_EncryptedKey_GET_MimeType) */
-struct zx_str* zx_xenc_EncryptedKey_GET_MimeType(struct zx_xenc_EncryptedKey_s* x) { return x->MimeType; }
-/* FUNC(zx_xenc_EncryptedKey_PUT_MimeType) */
-void zx_xenc_EncryptedKey_PUT_MimeType(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->MimeType = y; }
 /* FUNC(zx_xenc_EncryptedKey_GET_Encoding) */
 struct zx_str* zx_xenc_EncryptedKey_GET_Encoding(struct zx_xenc_EncryptedKey_s* x) { return x->Encoding; }
 /* FUNC(zx_xenc_EncryptedKey_PUT_Encoding) */
 void zx_xenc_EncryptedKey_PUT_Encoding(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Encoding = y; }
+/* FUNC(zx_xenc_EncryptedKey_GET_Id) */
+struct zx_str* zx_xenc_EncryptedKey_GET_Id(struct zx_xenc_EncryptedKey_s* x) { return x->Id; }
+/* FUNC(zx_xenc_EncryptedKey_PUT_Id) */
+void zx_xenc_EncryptedKey_PUT_Id(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_xenc_EncryptedKey_GET_MimeType) */
+struct zx_str* zx_xenc_EncryptedKey_GET_MimeType(struct zx_xenc_EncryptedKey_s* x) { return x->MimeType; }
+/* FUNC(zx_xenc_EncryptedKey_PUT_MimeType) */
+void zx_xenc_EncryptedKey_PUT_MimeType(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->MimeType = y; }
 /* FUNC(zx_xenc_EncryptedKey_GET_Recipient) */
 struct zx_str* zx_xenc_EncryptedKey_GET_Recipient(struct zx_xenc_EncryptedKey_s* x) { return x->Recipient; }
 /* FUNC(zx_xenc_EncryptedKey_PUT_Recipient) */
 void zx_xenc_EncryptedKey_PUT_Recipient(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Recipient = y; }
+/* FUNC(zx_xenc_EncryptedKey_GET_Type) */
+struct zx_str* zx_xenc_EncryptedKey_GET_Type(struct zx_xenc_EncryptedKey_s* x) { return x->Type; }
+/* FUNC(zx_xenc_EncryptedKey_PUT_Type) */
+void zx_xenc_EncryptedKey_PUT_Type(struct zx_xenc_EncryptedKey_s* x, struct zx_str* y) { x->Type = y; }
 
 
 
@@ -2671,14 +2671,14 @@ void zx_xenc_EncryptionProperties_PUT_Id(struct zx_xenc_EncryptionProperties_s* 
 
 
 
-/* FUNC(zx_xenc_EncryptionProperty_GET_Target) */
-struct zx_str* zx_xenc_EncryptionProperty_GET_Target(struct zx_xenc_EncryptionProperty_s* x) { return x->Target; }
-/* FUNC(zx_xenc_EncryptionProperty_PUT_Target) */
-void zx_xenc_EncryptionProperty_PUT_Target(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y) { x->Target = y; }
 /* FUNC(zx_xenc_EncryptionProperty_GET_Id) */
 struct zx_str* zx_xenc_EncryptionProperty_GET_Id(struct zx_xenc_EncryptionProperty_s* x) { return x->Id; }
 /* FUNC(zx_xenc_EncryptionProperty_PUT_Id) */
 void zx_xenc_EncryptionProperty_PUT_Id(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_xenc_EncryptionProperty_GET_Target) */
+struct zx_str* zx_xenc_EncryptionProperty_GET_Target(struct zx_xenc_EncryptionProperty_s* x) { return x->Target; }
+/* FUNC(zx_xenc_EncryptionProperty_PUT_Target) */
+void zx_xenc_EncryptionProperty_PUT_Target(struct zx_xenc_EncryptionProperty_s* x, struct zx_str* y) { x->Target = y; }
 
 
 
@@ -3631,6 +3631,140 @@ void zx_xenc_OriginatorKeyInfo_DEL_MgmtData(struct zx_xenc_OriginatorKeyInfo_s* 
 
 #endif
 
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_NUM_EncryptedKey) */
+
+int zx_xenc_OriginatorKeyInfo_NUM_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->EncryptedKey; y; ++n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_GET_EncryptedKey) */
+
+struct zx_xenc_EncryptedKey_s* zx_xenc_OriginatorKeyInfo_GET_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return 0;
+  for (y = x->EncryptedKey; n>=0 && y; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_POP_EncryptedKey) */
+
+struct zx_xenc_EncryptedKey_s* zx_xenc_OriginatorKeyInfo_POP_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return 0;
+  y = x->EncryptedKey;
+  if (y)
+    x->EncryptedKey = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_PUSH_EncryptedKey) */
+
+void zx_xenc_OriginatorKeyInfo_PUSH_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, struct zx_xenc_EncryptedKey_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->EncryptedKey->gg.g;
+  x->EncryptedKey = z;
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_REV_EncryptedKey) */
+
+void zx_xenc_OriginatorKeyInfo_REV_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* nxt;
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return;
+  y = x->EncryptedKey;
+  if (!y) return;
+  x->EncryptedKey = 0;
+  while (y) {
+    nxt = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n;
+    y->gg.g.n = &x->EncryptedKey->gg.g;
+    x->EncryptedKey = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_PUT_EncryptedKey) */
+
+void zx_xenc_OriginatorKeyInfo_PUT_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x || !z) return;
+  y = x->EncryptedKey;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->EncryptedKey = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_ADD_EncryptedKey) */
+
+void zx_xenc_OriginatorKeyInfo_ADD_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->EncryptedKey->gg.g;
+    x->EncryptedKey = z;
+    return;
+  case -1:
+    y = x->EncryptedKey;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedKey; n > 1 && y; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_xenc_OriginatorKeyInfo_DEL_EncryptedKey) */
+
+void zx_xenc_OriginatorKeyInfo_DEL_EncryptedKey(struct zx_xenc_OriginatorKeyInfo_s* x, int n)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->EncryptedKey = (struct zx_xenc_EncryptedKey_s*)x->EncryptedKey->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xenc_EncryptedKey_s*)x->EncryptedKey;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedKey; n > 1 && y->gg.g.n; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
 /* FUNC(zx_xenc_OriginatorKeyInfo_GET_Id) */
 struct zx_str* zx_xenc_OriginatorKeyInfo_GET_Id(struct zx_xenc_OriginatorKeyInfo_s* x) { return x->Id; }
 /* FUNC(zx_xenc_OriginatorKeyInfo_PUT_Id) */
@@ -4574,6 +4708,140 @@ void zx_xenc_RecipientKeyInfo_DEL_MgmtData(struct zx_xenc_RecipientKeyInfo_s* x,
     if (!y->g.n) return;
   }
   y->g.n = y->g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_xenc_RecipientKeyInfo_NUM_EncryptedKey) */
+
+int zx_xenc_RecipientKeyInfo_NUM_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->EncryptedKey; y; ++n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_GET_EncryptedKey) */
+
+struct zx_xenc_EncryptedKey_s* zx_xenc_RecipientKeyInfo_GET_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return 0;
+  for (y = x->EncryptedKey; n>=0 && y; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_POP_EncryptedKey) */
+
+struct zx_xenc_EncryptedKey_s* zx_xenc_RecipientKeyInfo_POP_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return 0;
+  y = x->EncryptedKey;
+  if (y)
+    x->EncryptedKey = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_PUSH_EncryptedKey) */
+
+void zx_xenc_RecipientKeyInfo_PUSH_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, struct zx_xenc_EncryptedKey_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->EncryptedKey->gg.g;
+  x->EncryptedKey = z;
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_REV_EncryptedKey) */
+
+void zx_xenc_RecipientKeyInfo_REV_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x)
+{
+  struct zx_xenc_EncryptedKey_s* nxt;
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return;
+  y = x->EncryptedKey;
+  if (!y) return;
+  x->EncryptedKey = 0;
+  while (y) {
+    nxt = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n;
+    y->gg.g.n = &x->EncryptedKey->gg.g;
+    x->EncryptedKey = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_PUT_EncryptedKey) */
+
+void zx_xenc_RecipientKeyInfo_PUT_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x || !z) return;
+  y = x->EncryptedKey;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->EncryptedKey = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_ADD_EncryptedKey) */
+
+void zx_xenc_RecipientKeyInfo_ADD_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n, struct zx_xenc_EncryptedKey_s* z)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->EncryptedKey->gg.g;
+    x->EncryptedKey = z;
+    return;
+  case -1:
+    y = x->EncryptedKey;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedKey; n > 1 && y; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_xenc_RecipientKeyInfo_DEL_EncryptedKey) */
+
+void zx_xenc_RecipientKeyInfo_DEL_EncryptedKey(struct zx_xenc_RecipientKeyInfo_s* x, int n)
+{
+  struct zx_xenc_EncryptedKey_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->EncryptedKey = (struct zx_xenc_EncryptedKey_s*)x->EncryptedKey->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xenc_EncryptedKey_s*)x->EncryptedKey;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedKey; n > 1 && y->gg.g.n; --n, y = (struct zx_xenc_EncryptedKey_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
 }
 
 #endif

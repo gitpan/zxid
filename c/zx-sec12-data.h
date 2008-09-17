@@ -313,15 +313,15 @@ struct zx_sec12_SessionContext_s {
   struct zx_sec12_SessionSubject_s* SessionSubject;	/* {1,1}  */
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_ff12_RequestAuthnContext_s* RequestAuthnContext;	/* {0,1} nada */
-  struct zx_str* SessionIndex;	/* {0,1} attribute xs:string */
-  struct zx_str* AuthenticationInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* AssertionIssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* AuthenticationInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* SessionIndex;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sec12_SessionContext_GET_SessionIndex(struct zx_sec12_SessionContext_s* x);
-struct zx_str* zx_sec12_SessionContext_GET_AuthenticationInstant(struct zx_sec12_SessionContext_s* x);
 struct zx_str* zx_sec12_SessionContext_GET_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x);
+struct zx_str* zx_sec12_SessionContext_GET_AuthenticationInstant(struct zx_sec12_SessionContext_s* x);
+struct zx_str* zx_sec12_SessionContext_GET_SessionIndex(struct zx_sec12_SessionContext_s* x);
 
 struct zx_sec12_SessionSubject_s* zx_sec12_SessionContext_GET_SessionSubject(struct zx_sec12_SessionContext_s* x, int n);
 struct zx_elem_s* zx_sec12_SessionContext_GET_ProviderID(struct zx_sec12_SessionContext_s* x, int n);
@@ -339,9 +339,9 @@ void zx_sec12_SessionContext_PUSH_SessionSubject(struct zx_sec12_SessionContext_
 void zx_sec12_SessionContext_PUSH_ProviderID(struct zx_sec12_SessionContext_s* x, struct zx_elem_s* y);
 void zx_sec12_SessionContext_PUSH_RequestAuthnContext(struct zx_sec12_SessionContext_s* x, struct zx_ff12_RequestAuthnContext_s* y);
 
-void zx_sec12_SessionContext_PUT_SessionIndex(struct zx_sec12_SessionContext_s* x, struct zx_str* y);
-void zx_sec12_SessionContext_PUT_AuthenticationInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y);
 void zx_sec12_SessionContext_PUT_AssertionIssueInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y);
+void zx_sec12_SessionContext_PUT_AuthenticationInstant(struct zx_sec12_SessionContext_s* x, struct zx_str* y);
+void zx_sec12_SessionContext_PUT_SessionIndex(struct zx_sec12_SessionContext_s* x, struct zx_str* y);
 
 void zx_sec12_SessionContext_PUT_SessionSubject(struct zx_sec12_SessionContext_s* x, int n, struct zx_sec12_SessionSubject_s* y);
 void zx_sec12_SessionContext_PUT_ProviderID(struct zx_sec12_SessionContext_s* x, int n, struct zx_elem_s* y);

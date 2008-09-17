@@ -2072,10 +2072,6 @@ void zx_wsp_PolicyAttachment_DEL_PolicyReference(struct zx_wsp_PolicyAttachment_
 
 
 
-/* FUNC(zx_wsp_PolicyReference_GET_URI) */
-struct zx_str* zx_wsp_PolicyReference_GET_URI(struct zx_wsp_PolicyReference_s* x) { return x->URI; }
-/* FUNC(zx_wsp_PolicyReference_PUT_URI) */
-void zx_wsp_PolicyReference_PUT_URI(struct zx_wsp_PolicyReference_s* x, struct zx_str* y) { x->URI = y; }
 /* FUNC(zx_wsp_PolicyReference_GET_Digest) */
 struct zx_str* zx_wsp_PolicyReference_GET_Digest(struct zx_wsp_PolicyReference_s* x) { return x->Digest; }
 /* FUNC(zx_wsp_PolicyReference_PUT_Digest) */
@@ -2084,6 +2080,10 @@ void zx_wsp_PolicyReference_PUT_Digest(struct zx_wsp_PolicyReference_s* x, struc
 struct zx_str* zx_wsp_PolicyReference_GET_DigestAlgorithm(struct zx_wsp_PolicyReference_s* x) { return x->DigestAlgorithm; }
 /* FUNC(zx_wsp_PolicyReference_PUT_DigestAlgorithm) */
 void zx_wsp_PolicyReference_PUT_DigestAlgorithm(struct zx_wsp_PolicyReference_s* x, struct zx_str* y) { x->DigestAlgorithm = y; }
+/* FUNC(zx_wsp_PolicyReference_GET_URI) */
+struct zx_str* zx_wsp_PolicyReference_GET_URI(struct zx_wsp_PolicyReference_s* x) { return x->URI; }
+/* FUNC(zx_wsp_PolicyReference_PUT_URI) */
+void zx_wsp_PolicyReference_PUT_URI(struct zx_wsp_PolicyReference_s* x, struct zx_str* y) { x->URI = y; }
 
 
 

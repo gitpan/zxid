@@ -185,9 +185,9 @@ void zx_FREE_m20_AffiliationDescriptor(struct zx_ctx* c, struct zx_m20_Affiliati
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->affiliationOwnerID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
   zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   zx_free_simple_elems(c, x->AffiliateMember, free_strs);
   {
@@ -249,9 +249,9 @@ void zx_DUP_STRS_m20_AffiliationDescriptor(struct zx_ctx* c, struct zx_m20_Affil
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->affiliationOwnerID);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
   zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->validUntil);
 
   zx_dup_strs_simple_elems(c, x->AffiliateMember);
   {
@@ -284,9 +284,9 @@ struct zx_m20_AffiliationDescriptor_s* zx_DEEP_CLONE_m20_AffiliationDescriptor(s
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->affiliationOwnerID = zx_clone_attr(c, x->affiliationOwnerID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
   x->id = zx_clone_attr(c, x->id);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   x->AffiliateMember = zx_deep_clone_simple_elems(c,x->AffiliateMember, dup_strs);
   {
@@ -552,8 +552,8 @@ void zx_FREE_m20_ContactPerson(struct zx_ctx* c, struct zx_m20_ContactPerson_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->libertyPrincipalIdentifier, free_strs);
   zx_free_attr(c, x->contactType, free_strs);
+  zx_free_attr(c, x->libertyPrincipalIdentifier, free_strs);
 
   zx_free_simple_elems(c, x->Company, free_strs);
   zx_free_simple_elems(c, x->GivenName, free_strs);
@@ -602,8 +602,8 @@ void zx_DUP_STRS_m20_ContactPerson(struct zx_ctx* c, struct zx_m20_ContactPerson
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->libertyPrincipalIdentifier);
   zx_dup_attr(c, x->contactType);
+  zx_dup_attr(c, x->libertyPrincipalIdentifier);
 
   zx_dup_strs_simple_elems(c, x->Company);
   zx_dup_strs_simple_elems(c, x->GivenName);
@@ -629,8 +629,8 @@ struct zx_m20_ContactPerson_s* zx_DEEP_CLONE_m20_ContactPerson(struct zx_ctx* c,
   x = (struct zx_m20_ContactPerson_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_m20_ContactPerson_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->libertyPrincipalIdentifier = zx_clone_attr(c, x->libertyPrincipalIdentifier);
   x->contactType = zx_clone_attr(c, x->contactType);
+  x->libertyPrincipalIdentifier = zx_clone_attr(c, x->libertyPrincipalIdentifier);
 
   x->Company = zx_deep_clone_simple_elems(c,x->Company, dup_strs);
   x->GivenName = zx_deep_clone_simple_elems(c,x->GivenName, dup_strs);
@@ -898,10 +898,10 @@ void zx_FREE_m20_EntityDescriptor(struct zx_ctx* c, struct zx_m20_EntityDescript
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->providerID, free_strs);
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->providerID, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_m20_IDPDescriptor_s* e;
@@ -993,10 +993,10 @@ void zx_DUP_STRS_m20_EntityDescriptor(struct zx_ctx* c, struct zx_m20_EntityDesc
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->providerID);
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->providerID);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_m20_IDPDescriptor_s* e;
@@ -1047,10 +1047,10 @@ struct zx_m20_EntityDescriptor_s* zx_DEEP_CLONE_m20_EntityDescriptor(struct zx_c
   x = (struct zx_m20_EntityDescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_m20_EntityDescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->providerID = zx_clone_attr(c, x->providerID);
-  x->id = zx_clone_attr(c, x->id);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->id = zx_clone_attr(c, x->id);
+  x->providerID = zx_clone_attr(c, x->providerID);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_m20_IDPDescriptor_s* e;
@@ -1390,10 +1390,10 @@ void zx_FREE_m20_IDPDescriptor(struct zx_ctx* c, struct zx_m20_IDPDescriptor_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_m20_KeyDescriptor_s* e;
@@ -1492,10 +1492,10 @@ void zx_DUP_STRS_m20_IDPDescriptor(struct zx_ctx* c, struct zx_m20_IDPDescriptor
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->protocolSupportEnumeration);
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_m20_KeyDescriptor_s* e;
@@ -1556,10 +1556,10 @@ struct zx_m20_IDPDescriptor_s* zx_DEEP_CLONE_m20_IDPDescriptor(struct zx_ctx* c,
   x = (struct zx_m20_IDPDescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_m20_IDPDescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
-  x->id = zx_clone_attr(c, x->id);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->id = zx_clone_attr(c, x->id);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_m20_KeyDescriptor_s* e;
@@ -2650,10 +2650,10 @@ void zx_FREE_m20_SPDescriptor(struct zx_ctx* c, struct zx_m20_SPDescriptor_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
-  zx_free_attr(c, x->id, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_m20_KeyDescriptor_s* e;
@@ -2758,10 +2758,10 @@ void zx_DUP_STRS_m20_SPDescriptor(struct zx_ctx* c, struct zx_m20_SPDescriptor_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->protocolSupportEnumeration);
-  zx_dup_attr(c, x->id);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_m20_KeyDescriptor_s* e;
@@ -2825,10 +2825,10 @@ struct zx_m20_SPDescriptor_s* zx_DEEP_CLONE_m20_SPDescriptor(struct zx_ctx* c, s
   x = (struct zx_m20_SPDescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_m20_SPDescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
-  x->id = zx_clone_attr(c, x->id);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->id = zx_clone_attr(c, x->id);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_m20_KeyDescriptor_s* e;

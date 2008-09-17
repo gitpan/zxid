@@ -1,8 +1,8 @@
 # zxid/sg/saml-schema-protocol-2.0.sg
-# $Id: saml-schema-protocol-2.0.sg,v 1.4 2007/03/04 08:21:32 sampo Exp $
+# $Id: saml-schema-protocol-2.0.sg,v 1.5 2008-02-23 03:59:31 sampo Exp $
 #
-# N.B. This file is not a direct conversion. Instead it has been manually edited to
-# make it simpler and to facilitate code generation.
+# N.B. This file is not a direct conversion. Instead it has been manually
+# edited to make it simpler and to facilitate code generation.
 
 target(sp,urn:oasis:names:tc:SAML:2.0:protocol)
 import(sa,urn:oasis:names:tc:SAML:2.0:assertion,saml-schema-assertion-2.0.xsd)

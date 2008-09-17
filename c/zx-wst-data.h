@@ -91,20 +91,20 @@ struct zx_str* zx_EASY_ENC_WO_wst_BinaryExchange(struct zx_ctx* c, struct zx_wst
 struct zx_wst_BinaryExchange_s {
   ZX_ELEM_EXT
   zx_wst_BinaryExchange_EXT
-  struct zx_str* ValueType;	/* {1,1} attribute xs:anyURI */
   struct zx_str* EncodingType;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* ValueType;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_wst_BinaryExchange_GET_ValueType(struct zx_wst_BinaryExchange_s* x);
 struct zx_str* zx_wst_BinaryExchange_GET_EncodingType(struct zx_wst_BinaryExchange_s* x);
+struct zx_str* zx_wst_BinaryExchange_GET_ValueType(struct zx_wst_BinaryExchange_s* x);
 
 
 
 
 
-void zx_wst_BinaryExchange_PUT_ValueType(struct zx_wst_BinaryExchange_s* x, struct zx_str* y);
 void zx_wst_BinaryExchange_PUT_EncodingType(struct zx_wst_BinaryExchange_s* x, struct zx_str* y);
+void zx_wst_BinaryExchange_PUT_ValueType(struct zx_wst_BinaryExchange_s* x, struct zx_str* y);
 
 
 
@@ -427,17 +427,21 @@ struct zx_wst_Issuer_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_wst_Issuer_GET_ID(struct zx_wst_Issuer_s* x);
+struct zx_str* zx_wst_Issuer_GET_id(struct zx_wst_Issuer_s* x);
 struct zx_str* zx_wst_Issuer_GET_notOnOrAfter(struct zx_wst_Issuer_s* x);
-struct zx_str* zx_wst_Issuer_GET_mustUnderstand(struct zx_wst_Issuer_s* x);
-struct zx_str* zx_wst_Issuer_GET_actor(struct zx_wst_Issuer_s* x);
 struct zx_str* zx_wst_Issuer_GET_Id(struct zx_wst_Issuer_s* x);
+struct zx_str* zx_wst_Issuer_GET_actor(struct zx_wst_Issuer_s* x);
+struct zx_str* zx_wst_Issuer_GET_mustUnderstand(struct zx_wst_Issuer_s* x);
 
 struct zx_a_Address_s* zx_wst_Issuer_GET_Address(struct zx_wst_Issuer_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_wst_Issuer_GET_ReferenceParameters(struct zx_wst_Issuer_s* x, int n);
@@ -455,10 +459,12 @@ void zx_wst_Issuer_PUSH_Address(struct zx_wst_Issuer_s* x, struct zx_a_Address_s
 void zx_wst_Issuer_PUSH_ReferenceParameters(struct zx_wst_Issuer_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_wst_Issuer_PUSH_Metadata(struct zx_wst_Issuer_s* x, struct zx_a_Metadata_s* y);
 
+void zx_wst_Issuer_PUT_ID(struct zx_wst_Issuer_s* x, struct zx_str* y);
+void zx_wst_Issuer_PUT_id(struct zx_wst_Issuer_s* x, struct zx_str* y);
 void zx_wst_Issuer_PUT_notOnOrAfter(struct zx_wst_Issuer_s* x, struct zx_str* y);
-void zx_wst_Issuer_PUT_mustUnderstand(struct zx_wst_Issuer_s* x, struct zx_str* y);
-void zx_wst_Issuer_PUT_actor(struct zx_wst_Issuer_s* x, struct zx_str* y);
 void zx_wst_Issuer_PUT_Id(struct zx_wst_Issuer_s* x, struct zx_str* y);
+void zx_wst_Issuer_PUT_actor(struct zx_wst_Issuer_s* x, struct zx_str* y);
+void zx_wst_Issuer_PUT_mustUnderstand(struct zx_wst_Issuer_s* x, struct zx_str* y);
 
 void zx_wst_Issuer_PUT_Address(struct zx_wst_Issuer_s* x, int n, struct zx_a_Address_s* y);
 void zx_wst_Issuer_PUT_ReferenceParameters(struct zx_wst_Issuer_s* x, int n, struct zx_a_ReferenceParameters_s* y);

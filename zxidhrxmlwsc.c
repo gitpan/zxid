@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhrxmlwsc.c,v 1.3 2007-06-21 23:32:32 sampo Exp $
+ * $Id: zxidhrxmlwsc.c,v 1.8 2008-05-08 02:02:40 sampo Exp $
  *
  * 19.6.2007, created --Sampo
  *
@@ -91,7 +91,6 @@ int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
       if (!strcmp(n, "hrxmlselect")) {	cgi->select = v;	break;      }
       if (!strcmp(n, "hrxmldata")) {	cgi->data = v;	break;      }
       /* fall thru */
-    unknown:
     default:  break; //D("Unknown CGI field(%s) val(%s)", n, v);
     }
   }
@@ -112,6 +111,8 @@ int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
 /* Called by: */
 int main(int argc, char** argv)
 {
+  struct zx_ctx ctx;
+  struct zxid_conf cfs;
   struct hrxml_cgi cgi;
   struct zxid_conf* cf;
   struct zxid_ses sess;
@@ -140,6 +141,8 @@ int main(int argc, char** argv)
     qs2 = buf;
   } else {
     qs2 = getenv("QUERY_STRING");
+    if (!qs2)
+      qs2 = "";
     cl = strlen(qs2);
   }
   qs = strdup(qs2);
@@ -149,15 +152,24 @@ int main(int argc, char** argv)
   if (open("tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
     exit(2);
   fprintf(stderr, "=================== Running ===================\n");
-  debug = 1;
+  zx_debug = 1;
 #endif
 
   if (argc > 1) {
     fprintf(stderr, "This is a CGI script (written in C). No arguments are accepted.\n%s", help);
     exit(1);
   }
+
+#if 1
+  zx_reset_ctx(&ctx);
+  memset(&cfs, 0, sizeof(struct zxid_conf));
+  cfs.ctx = &ctx;
+  cf = &cfs;
+  zxid_conf_to_cf_len(cf, -1, CONF);
+#else
   cf = zxid_new_conf_to_cf(CONF);
-  
+#endif
+
   res = zxid_simple_cf(cf, cl, qs2, 0, 0x1fff);
   switch (res[0]) {
   default:
@@ -182,14 +194,14 @@ int main(int argc, char** argv)
       *p = 0;  /* nul termination */
   }
 
-  D("HERE qs(%s)", qs);
+  DD("HERE qs(%s)", qs);
   memset(&cgi, 0, sizeof(cgi));
   hrxml_parse_cgi(&cgi, qs);  
   
   ses = &sess;
   zxid_get_ses(cf, ses, sid);
 
-  D("HERE cgi.op=%d qs(%s)", cgi.op, qs);
+  DD("HERE cgi.op=%d qs(%s)", cgi.op, qs);
   
   switch (cgi.op) {
 

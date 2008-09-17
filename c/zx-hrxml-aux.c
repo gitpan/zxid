@@ -534,9 +534,9 @@ void zx_FREE_hrxml_AffirmativeActionPlanJobGroupId(struct zx_ctx* c, struct zx_h
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -580,9 +580,9 @@ void zx_DUP_STRS_hrxml_AffirmativeActionPlanJobGroupId(struct zx_ctx* c, struct 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -603,9 +603,9 @@ struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* zx_DEEP_CLONE_hrxml_Affirmati
   x = (struct zx_hrxml_AffirmativeActionPlanJobGroupId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -2562,9 +2562,9 @@ void zx_FREE_hrxml_BKZId(struct zx_ctx* c, struct zx_hrxml_BKZId_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -2608,9 +2608,9 @@ void zx_DUP_STRS_hrxml_BKZId(struct zx_ctx* c, struct zx_hrxml_BKZId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -2631,9 +2631,9 @@ struct zx_hrxml_BKZId_s* zx_DEEP_CLONE_hrxml_BKZId(struct zx_ctx* c, struct zx_h
   x = (struct zx_hrxml_BKZId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_BKZId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -2726,8 +2726,8 @@ void zx_FREE_hrxml_BasePay(struct zx_ctx* c, struct zx_hrxml_BasePay_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->currencyCode, free_strs);
   zx_free_attr(c, x->baseInterval, free_strs);
+  zx_free_attr(c, x->currencyCode, free_strs);
 
   zx_free_simple_elems(c, x->BasePayAmountMin, free_strs);
   zx_free_simple_elems(c, x->BasePayAmountMax, free_strs);
@@ -2765,8 +2765,8 @@ void zx_DUP_STRS_hrxml_BasePay(struct zx_ctx* c, struct zx_hrxml_BasePay_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->currencyCode);
   zx_dup_attr(c, x->baseInterval);
+  zx_dup_attr(c, x->currencyCode);
 
   zx_dup_strs_simple_elems(c, x->BasePayAmountMin);
   zx_dup_strs_simple_elems(c, x->BasePayAmountMax);
@@ -2784,8 +2784,8 @@ struct zx_hrxml_BasePay_s* zx_DEEP_CLONE_hrxml_BasePay(struct zx_ctx* c, struct 
   x = (struct zx_hrxml_BasePay_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_BasePay_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->currencyCode = zx_clone_attr(c, x->currencyCode);
   x->baseInterval = zx_clone_attr(c, x->baseInterval);
+  x->currencyCode = zx_clone_attr(c, x->currencyCode);
 
   x->BasePayAmountMin = zx_deep_clone_simple_elems(c,x->BasePayAmountMin, dup_strs);
   x->BasePayAmountMax = zx_deep_clone_simple_elems(c,x->BasePayAmountMax, dup_strs);
@@ -6033,8 +6033,8 @@ void zx_FREE_hrxml_Competency(struct zx_ctx* c, struct zx_hrxml_Competency_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->name, free_strs);
   zx_free_attr(c, x->description, free_strs);
+  zx_free_attr(c, x->name, free_strs);
   zx_free_attr(c, x->required, free_strs);
 
   {
@@ -6119,8 +6119,8 @@ void zx_DUP_STRS_hrxml_Competency(struct zx_ctx* c, struct zx_hrxml_Competency_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->name);
   zx_dup_attr(c, x->description);
+  zx_dup_attr(c, x->name);
   zx_dup_attr(c, x->required);
 
   {
@@ -6167,8 +6167,8 @@ struct zx_hrxml_Competency_s* zx_DEEP_CLONE_hrxml_Competency(struct zx_ctx* c, s
   x = (struct zx_hrxml_Competency_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_Competency_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->name = zx_clone_attr(c, x->name);
   x->description = zx_clone_attr(c, x->description);
+  x->name = zx_clone_attr(c, x->name);
   x->required = zx_clone_attr(c, x->required);
 
   {
@@ -6368,12 +6368,12 @@ void zx_FREE_hrxml_CompetencyEvidence(struct zx_ctx* c, struct zx_hrxml_Competen
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->dateOfIncident, free_strs);
-  zx_free_attr(c, x->name, free_strs);
-  zx_free_attr(c, x->typeDescription, free_strs);
   zx_free_attr(c, x->expirationDate, free_strs);
-  zx_free_attr(c, x->typeId, free_strs);
-  zx_free_attr(c, x->required, free_strs);
   zx_free_attr(c, x->lastUsed, free_strs);
+  zx_free_attr(c, x->name, free_strs);
+  zx_free_attr(c, x->required, free_strs);
+  zx_free_attr(c, x->typeDescription, free_strs);
+  zx_free_attr(c, x->typeId, free_strs);
 
   {
       struct zx_hrxml_EvidenceId_s* e;
@@ -6435,12 +6435,12 @@ void zx_DUP_STRS_hrxml_CompetencyEvidence(struct zx_ctx* c, struct zx_hrxml_Comp
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->dateOfIncident);
-  zx_dup_attr(c, x->name);
-  zx_dup_attr(c, x->typeDescription);
   zx_dup_attr(c, x->expirationDate);
-  zx_dup_attr(c, x->typeId);
-  zx_dup_attr(c, x->required);
   zx_dup_attr(c, x->lastUsed);
+  zx_dup_attr(c, x->name);
+  zx_dup_attr(c, x->required);
+  zx_dup_attr(c, x->typeDescription);
+  zx_dup_attr(c, x->typeId);
 
   {
       struct zx_hrxml_EvidenceId_s* e;
@@ -6473,12 +6473,12 @@ struct zx_hrxml_CompetencyEvidence_s* zx_DEEP_CLONE_hrxml_CompetencyEvidence(str
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->dateOfIncident = zx_clone_attr(c, x->dateOfIncident);
-  x->name = zx_clone_attr(c, x->name);
-  x->typeDescription = zx_clone_attr(c, x->typeDescription);
   x->expirationDate = zx_clone_attr(c, x->expirationDate);
-  x->typeId = zx_clone_attr(c, x->typeId);
-  x->required = zx_clone_attr(c, x->required);
   x->lastUsed = zx_clone_attr(c, x->lastUsed);
+  x->name = zx_clone_attr(c, x->name);
+  x->required = zx_clone_attr(c, x->required);
+  x->typeDescription = zx_clone_attr(c, x->typeDescription);
+  x->typeId = zx_clone_attr(c, x->typeId);
 
   {
       struct zx_hrxml_EvidenceId_s* e;
@@ -6617,9 +6617,9 @@ void zx_FREE_hrxml_CompetencyId(struct zx_ctx* c, struct zx_hrxml_CompetencyId_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -6663,9 +6663,9 @@ void zx_DUP_STRS_hrxml_CompetencyId(struct zx_ctx* c, struct zx_hrxml_Competency
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -6686,9 +6686,9 @@ struct zx_hrxml_CompetencyId_s* zx_DEEP_CLONE_hrxml_CompetencyId(struct zx_ctx* 
   x = (struct zx_hrxml_CompetencyId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_CompetencyId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -7636,9 +7636,9 @@ void zx_FREE_hrxml_ContactId(struct zx_ctx* c, struct zx_hrxml_ContactId_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -7682,9 +7682,9 @@ void zx_DUP_STRS_hrxml_ContactId(struct zx_ctx* c, struct zx_hrxml_ContactId_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -7705,9 +7705,9 @@ struct zx_hrxml_ContactId_s* zx_DEEP_CLONE_hrxml_ContactId(struct zx_ctx* c, str
   x = (struct zx_hrxml_ContactId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_ContactId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -8950,8 +8950,8 @@ void zx_FREE_hrxml_DatesOfAttendance(struct zx_ctx* c, struct zx_hrxml_DatesOfAt
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->enrollmentStatus, free_strs);
   zx_free_attr(c, x->currentlyEnrolled, free_strs);
+  zx_free_attr(c, x->enrollmentStatus, free_strs);
   zx_free_attr(c, x->studentInGoodStanding, free_strs);
 
   {
@@ -9004,8 +9004,8 @@ void zx_DUP_STRS_hrxml_DatesOfAttendance(struct zx_ctx* c, struct zx_hrxml_Dates
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->enrollmentStatus);
   zx_dup_attr(c, x->currentlyEnrolled);
+  zx_dup_attr(c, x->enrollmentStatus);
   zx_dup_attr(c, x->studentInGoodStanding);
 
   {
@@ -9032,8 +9032,8 @@ struct zx_hrxml_DatesOfAttendance_s* zx_DEEP_CLONE_hrxml_DatesOfAttendance(struc
   x = (struct zx_hrxml_DatesOfAttendance_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_DatesOfAttendance_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->enrollmentStatus = zx_clone_attr(c, x->enrollmentStatus);
   x->currentlyEnrolled = zx_clone_attr(c, x->currentlyEnrolled);
+  x->enrollmentStatus = zx_clone_attr(c, x->enrollmentStatus);
   x->studentInGoodStanding = zx_clone_attr(c, x->studentInGoodStanding);
 
   {
@@ -13892,9 +13892,9 @@ void zx_FREE_hrxml_EnvironmentId(struct zx_ctx* c, struct zx_hrxml_EnvironmentId
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -13938,9 +13938,9 @@ void zx_DUP_STRS_hrxml_EnvironmentId(struct zx_ctx* c, struct zx_hrxml_Environme
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -13961,9 +13961,9 @@ struct zx_hrxml_EnvironmentId_s* zx_DEEP_CLONE_hrxml_EnvironmentId(struct zx_ctx
   x = (struct zx_hrxml_EnvironmentId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_EnvironmentId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -14056,9 +14056,9 @@ void zx_FREE_hrxml_EvidenceId(struct zx_ctx* c, struct zx_hrxml_EvidenceId_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->description, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->idOwner, free_strs);
-  zx_free_attr(c, x->description, free_strs);
 
 
 
@@ -14094,9 +14094,9 @@ void zx_DUP_STRS_hrxml_EvidenceId(struct zx_ctx* c, struct zx_hrxml_EvidenceId_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->description);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->idOwner);
-  zx_dup_attr(c, x->description);
 
 
 }
@@ -14112,9 +14112,9 @@ struct zx_hrxml_EvidenceId_s* zx_DEEP_CLONE_hrxml_EvidenceId(struct zx_ctx* c, s
   x = (struct zx_hrxml_EvidenceId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_EvidenceId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->description = zx_clone_attr(c, x->description);
   x->id = zx_clone_attr(c, x->id);
   x->idOwner = zx_clone_attr(c, x->idOwner);
-  x->description = zx_clone_attr(c, x->description);
 
 
   return x;
@@ -14319,8 +14319,8 @@ void zx_FREE_hrxml_FamilyName(struct zx_ctx* c, struct zx_hrxml_FamilyName_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->primary, free_strs);
   zx_free_attr(c, x->prefix, free_strs);
+  zx_free_attr(c, x->primary, free_strs);
 
 
 
@@ -14356,8 +14356,8 @@ void zx_DUP_STRS_hrxml_FamilyName(struct zx_ctx* c, struct zx_hrxml_FamilyName_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->primary);
   zx_dup_attr(c, x->prefix);
+  zx_dup_attr(c, x->primary);
 
 
 }
@@ -14373,8 +14373,8 @@ struct zx_hrxml_FamilyName_s* zx_DEEP_CLONE_hrxml_FamilyName(struct zx_ctx* c, s
   x = (struct zx_hrxml_FamilyName_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_FamilyName_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->primary = zx_clone_attr(c, x->primary);
   x->prefix = zx_clone_attr(c, x->prefix);
+  x->primary = zx_clone_attr(c, x->primary);
 
 
   return x;
@@ -15285,9 +15285,9 @@ void zx_FREE_hrxml_Id(struct zx_ctx* c, struct zx_hrxml_Id_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -15331,9 +15331,9 @@ void zx_DUP_STRS_hrxml_Id(struct zx_ctx* c, struct zx_hrxml_Id_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -15354,9 +15354,9 @@ struct zx_hrxml_Id_s* zx_DEEP_CLONE_hrxml_Id(struct zx_ctx* c, struct zx_hrxml_I
   x = (struct zx_hrxml_Id_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_Id_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -15573,8 +15573,8 @@ void zx_FREE_hrxml_IndustryCode(struct zx_ctx* c, struct zx_hrxml_IndustryCode_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->primaryIndicator, free_strs);
   zx_free_attr(c, x->classificationName, free_strs);
+  zx_free_attr(c, x->primaryIndicator, free_strs);
 
 
 
@@ -15610,8 +15610,8 @@ void zx_DUP_STRS_hrxml_IndustryCode(struct zx_ctx* c, struct zx_hrxml_IndustryCo
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->primaryIndicator);
   zx_dup_attr(c, x->classificationName);
+  zx_dup_attr(c, x->primaryIndicator);
 
 
 }
@@ -15627,8 +15627,8 @@ struct zx_hrxml_IndustryCode_s* zx_DEEP_CLONE_hrxml_IndustryCode(struct zx_ctx* 
   x = (struct zx_hrxml_IndustryCode_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_IndustryCode_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->primaryIndicator = zx_clone_attr(c, x->primaryIndicator);
   x->classificationName = zx_clone_attr(c, x->classificationName);
+  x->primaryIndicator = zx_clone_attr(c, x->primaryIndicator);
 
 
   return x;
@@ -17254,9 +17254,9 @@ void zx_FREE_hrxml_LegalId(struct zx_ctx* c, struct zx_hrxml_LegalId_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -17300,9 +17300,9 @@ void zx_DUP_STRS_hrxml_LegalId(struct zx_ctx* c, struct zx_hrxml_LegalId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -17323,9 +17323,9 @@ struct zx_hrxml_LegalId_s* zx_DEEP_CLONE_hrxml_LegalId(struct zx_ctx* c, struct 
   x = (struct zx_hrxml_LegalId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_LegalId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -18876,9 +18876,9 @@ void zx_FREE_hrxml_MatchedObjectId(struct zx_ctx* c, struct zx_hrxml_MatchedObje
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -18922,9 +18922,9 @@ void zx_DUP_STRS_hrxml_MatchedObjectId(struct zx_ctx* c, struct zx_hrxml_Matched
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -18945,9 +18945,9 @@ struct zx_hrxml_MatchedObjectId_s* zx_DEEP_CLONE_hrxml_MatchedObjectId(struct zx
   x = (struct zx_hrxml_MatchedObjectId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_MatchedObjectId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -20004,10 +20004,10 @@ void zx_FREE_hrxml_NumericValue(struct zx_ctx* c, struct zx_hrxml_NumericValue_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->minValue, free_strs);
-  zx_free_attr(c, x->maxValue, free_strs);
-  zx_free_attr(c, x->interval, free_strs);
   zx_free_attr(c, x->description, free_strs);
+  zx_free_attr(c, x->interval, free_strs);
+  zx_free_attr(c, x->maxValue, free_strs);
+  zx_free_attr(c, x->minValue, free_strs);
 
 
 
@@ -20043,10 +20043,10 @@ void zx_DUP_STRS_hrxml_NumericValue(struct zx_ctx* c, struct zx_hrxml_NumericVal
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->minValue);
-  zx_dup_attr(c, x->maxValue);
-  zx_dup_attr(c, x->interval);
   zx_dup_attr(c, x->description);
+  zx_dup_attr(c, x->interval);
+  zx_dup_attr(c, x->maxValue);
+  zx_dup_attr(c, x->minValue);
 
 
 }
@@ -20062,10 +20062,10 @@ struct zx_hrxml_NumericValue_s* zx_DEEP_CLONE_hrxml_NumericValue(struct zx_ctx* 
   x = (struct zx_hrxml_NumericValue_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_NumericValue_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->minValue = zx_clone_attr(c, x->minValue);
-  x->maxValue = zx_clone_attr(c, x->maxValue);
-  x->interval = zx_clone_attr(c, x->interval);
   x->description = zx_clone_attr(c, x->description);
+  x->interval = zx_clone_attr(c, x->interval);
+  x->maxValue = zx_clone_attr(c, x->maxValue);
+  x->minValue = zx_clone_attr(c, x->minValue);
 
 
   return x;
@@ -20781,9 +20781,9 @@ void zx_FREE_hrxml_OrganizationId(struct zx_ctx* c, struct zx_hrxml_Organization
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -20827,9 +20827,9 @@ void zx_DUP_STRS_hrxml_OrganizationId(struct zx_ctx* c, struct zx_hrxml_Organiza
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -20850,9 +20850,9 @@ struct zx_hrxml_OrganizationId_s* zx_DEEP_CLONE_hrxml_OrganizationId(struct zx_c
   x = (struct zx_hrxml_OrganizationId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_OrganizationId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -20945,8 +20945,8 @@ void zx_FREE_hrxml_OrganizationUnit(struct zx_ctx* c, struct zx_hrxml_Organizati
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->organizationType, free_strs);
   zx_free_attr(c, x->attendanceStatus, free_strs);
+  zx_free_attr(c, x->organizationType, free_strs);
 
 
 
@@ -20982,8 +20982,8 @@ void zx_DUP_STRS_hrxml_OrganizationUnit(struct zx_ctx* c, struct zx_hrxml_Organi
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->organizationType);
   zx_dup_attr(c, x->attendanceStatus);
+  zx_dup_attr(c, x->organizationType);
 
 
 }
@@ -20999,8 +20999,8 @@ struct zx_hrxml_OrganizationUnit_s* zx_DEEP_CLONE_hrxml_OrganizationUnit(struct 
   x = (struct zx_hrxml_OrganizationUnit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_OrganizationUnit_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->organizationType = zx_clone_attr(c, x->organizationType);
   x->attendanceStatus = zx_clone_attr(c, x->attendanceStatus);
+  x->organizationType = zx_clone_attr(c, x->organizationType);
 
 
   return x;
@@ -21072,8 +21072,8 @@ void zx_FREE_hrxml_OrganizationalUnit(struct zx_ctx* c, struct zx_hrxml_Organiza
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->typeOfGroup, free_strs);
   zx_free_attr(c, x->hierarchicalRole, free_strs);
+  zx_free_attr(c, x->typeOfGroup, free_strs);
 
   zx_free_simple_elems(c, x->OrganizationalUnitName, free_strs);
   {
@@ -21182,8 +21182,8 @@ void zx_DUP_STRS_hrxml_OrganizationalUnit(struct zx_ctx* c, struct zx_hrxml_Orga
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->typeOfGroup);
   zx_dup_attr(c, x->hierarchicalRole);
+  zx_dup_attr(c, x->typeOfGroup);
 
   zx_dup_strs_simple_elems(c, x->OrganizationalUnitName);
   {
@@ -21245,8 +21245,8 @@ struct zx_hrxml_OrganizationalUnit_s* zx_DEEP_CLONE_hrxml_OrganizationalUnit(str
   x = (struct zx_hrxml_OrganizationalUnit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_OrganizationalUnit_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->typeOfGroup = zx_clone_attr(c, x->typeOfGroup);
   x->hierarchicalRole = zx_clone_attr(c, x->hierarchicalRole);
+  x->typeOfGroup = zx_clone_attr(c, x->typeOfGroup);
 
   x->OrganizationalUnitName = zx_deep_clone_simple_elems(c,x->OrganizationalUnitName, dup_strs);
   {
@@ -21511,9 +21511,9 @@ void zx_FREE_hrxml_OrganizationalUnitId(struct zx_ctx* c, struct zx_hrxml_Organi
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -21557,9 +21557,9 @@ void zx_DUP_STRS_hrxml_OrganizationalUnitId(struct zx_ctx* c, struct zx_hrxml_Or
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -21580,9 +21580,9 @@ struct zx_hrxml_OrganizationalUnitId_s* zx_DEEP_CLONE_hrxml_OrganizationalUnitId
   x = (struct zx_hrxml_OrganizationalUnitId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_OrganizationalUnitId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -24136,9 +24136,9 @@ void zx_FREE_hrxml_PersonId(struct zx_ctx* c, struct zx_hrxml_PersonId_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -24182,9 +24182,9 @@ void zx_DUP_STRS_hrxml_PersonId(struct zx_ctx* c, struct zx_hrxml_PersonId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -24205,9 +24205,9 @@ struct zx_hrxml_PersonId_s* zx_DEEP_CLONE_hrxml_PersonId(struct zx_ctx* c, struc
   x = (struct zx_hrxml_PersonId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_PersonId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -24300,14 +24300,14 @@ void zx_FREE_hrxml_PersonLegalId(struct zx_ctx* c, struct zx_hrxml_PersonLegalId
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->countryCode, free_strs);
+  zx_free_attr(c, x->documentType, free_strs);
+  zx_free_attr(c, x->idOwner, free_strs);
+  zx_free_attr(c, x->idSource, free_strs);
+  zx_free_attr(c, x->issuingRegion, free_strs);
+  zx_free_attr(c, x->jurisdiction, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
-  zx_free_attr(c, x->countryCode, free_strs);
-  zx_free_attr(c, x->jurisdiction, free_strs);
-  zx_free_attr(c, x->issuingRegion, free_strs);
-  zx_free_attr(c, x->documentType, free_strs);
-  zx_free_attr(c, x->idSource, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -24351,14 +24351,14 @@ void zx_DUP_STRS_hrxml_PersonLegalId(struct zx_ctx* c, struct zx_hrxml_PersonLeg
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->countryCode);
+  zx_dup_attr(c, x->documentType);
+  zx_dup_attr(c, x->idOwner);
+  zx_dup_attr(c, x->idSource);
+  zx_dup_attr(c, x->issuingRegion);
+  zx_dup_attr(c, x->jurisdiction);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
-  zx_dup_attr(c, x->countryCode);
-  zx_dup_attr(c, x->jurisdiction);
-  zx_dup_attr(c, x->issuingRegion);
-  zx_dup_attr(c, x->documentType);
-  zx_dup_attr(c, x->idSource);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -24379,14 +24379,14 @@ struct zx_hrxml_PersonLegalId_s* zx_DEEP_CLONE_hrxml_PersonLegalId(struct zx_ctx
   x = (struct zx_hrxml_PersonLegalId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_PersonLegalId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->countryCode = zx_clone_attr(c, x->countryCode);
+  x->documentType = zx_clone_attr(c, x->documentType);
+  x->idOwner = zx_clone_attr(c, x->idOwner);
+  x->idSource = zx_clone_attr(c, x->idSource);
+  x->issuingRegion = zx_clone_attr(c, x->issuingRegion);
+  x->jurisdiction = zx_clone_attr(c, x->jurisdiction);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
-  x->countryCode = zx_clone_attr(c, x->countryCode);
-  x->jurisdiction = zx_clone_attr(c, x->jurisdiction);
-  x->issuingRegion = zx_clone_attr(c, x->issuingRegion);
-  x->documentType = zx_clone_attr(c, x->documentType);
-  x->idSource = zx_clone_attr(c, x->idSource);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -25818,8 +25818,8 @@ void zx_FREE_hrxml_PositionHistory(struct zx_ctx* c, struct zx_hrxml_PositionHis
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->positionType, free_strs);
   zx_free_attr(c, x->currentEmployer, free_strs);
+  zx_free_attr(c, x->positionType, free_strs);
 
   zx_free_simple_elems(c, x->Title, free_strs);
   {
@@ -25954,8 +25954,8 @@ void zx_DUP_STRS_hrxml_PositionHistory(struct zx_ctx* c, struct zx_hrxml_Positio
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->positionType);
   zx_dup_attr(c, x->currentEmployer);
+  zx_dup_attr(c, x->positionType);
 
   zx_dup_strs_simple_elems(c, x->Title);
   {
@@ -26034,8 +26034,8 @@ struct zx_hrxml_PositionHistory_s* zx_DEEP_CLONE_hrxml_PositionHistory(struct zx
   x = (struct zx_hrxml_PositionHistory_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_PositionHistory_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->positionType = zx_clone_attr(c, x->positionType);
   x->currentEmployer = zx_clone_attr(c, x->currentEmployer);
+  x->positionType = zx_clone_attr(c, x->positionType);
 
   x->Title = zx_deep_clone_simple_elems(c,x->Title, dup_strs);
   {
@@ -29024,9 +29024,9 @@ void zx_FREE_hrxml_ProfileId(struct zx_ctx* c, struct zx_hrxml_ProfileId_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -29070,9 +29070,9 @@ void zx_DUP_STRS_hrxml_ProfileId(struct zx_ctx* c, struct zx_hrxml_ProfileId_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -29093,9 +29093,9 @@ struct zx_hrxml_ProfileId_s* zx_DEEP_CLONE_hrxml_ProfileId(struct zx_ctx* c, str
   x = (struct zx_hrxml_ProfileId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_ProfileId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -29188,9 +29188,9 @@ void zx_FREE_hrxml_ProgramId(struct zx_ctx* c, struct zx_hrxml_ProgramId_s* x, i
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -29234,9 +29234,9 @@ void zx_DUP_STRS_hrxml_ProgramId(struct zx_ctx* c, struct zx_hrxml_ProgramId_s* 
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -29257,9 +29257,9 @@ struct zx_hrxml_ProgramId_s* zx_DEEP_CLONE_hrxml_ProgramId(struct zx_ctx* c, str
   x = (struct zx_hrxml_ProgramId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_ProgramId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -31866,10 +31866,10 @@ void zx_FREE_hrxml_RelatedOrganizationalUnit(struct zx_ctx* c, struct zx_hrxml_R
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->typeOfGroup, free_strs);
   zx_free_attr(c, x->hierarchicalRole, free_strs);
-  zx_free_attr(c, x->relationship, free_strs);
   zx_free_attr(c, x->natureOfRelationship, free_strs);
+  zx_free_attr(c, x->relationship, free_strs);
+  zx_free_attr(c, x->typeOfGroup, free_strs);
 
   zx_free_simple_elems(c, x->OrganizationalUnitName, free_strs);
   {
@@ -31978,10 +31978,10 @@ void zx_DUP_STRS_hrxml_RelatedOrganizationalUnit(struct zx_ctx* c, struct zx_hrx
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->typeOfGroup);
   zx_dup_attr(c, x->hierarchicalRole);
-  zx_dup_attr(c, x->relationship);
   zx_dup_attr(c, x->natureOfRelationship);
+  zx_dup_attr(c, x->relationship);
+  zx_dup_attr(c, x->typeOfGroup);
 
   zx_dup_strs_simple_elems(c, x->OrganizationalUnitName);
   {
@@ -32043,10 +32043,10 @@ struct zx_hrxml_RelatedOrganizationalUnit_s* zx_DEEP_CLONE_hrxml_RelatedOrganiza
   x = (struct zx_hrxml_RelatedOrganizationalUnit_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_RelatedOrganizationalUnit_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->typeOfGroup = zx_clone_attr(c, x->typeOfGroup);
   x->hierarchicalRole = zx_clone_attr(c, x->hierarchicalRole);
-  x->relationship = zx_clone_attr(c, x->relationship);
   x->natureOfRelationship = zx_clone_attr(c, x->natureOfRelationship);
+  x->relationship = zx_clone_attr(c, x->relationship);
+  x->typeOfGroup = zx_clone_attr(c, x->typeOfGroup);
 
   x->OrganizationalUnitName = zx_deep_clone_simple_elems(c,x->OrganizationalUnitName, dup_strs);
   {
@@ -33596,9 +33596,9 @@ void zx_FREE_hrxml_RoleId(struct zx_ctx* c, struct zx_hrxml_RoleId_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -33642,9 +33642,9 @@ void zx_DUP_STRS_hrxml_RoleId(struct zx_ctx* c, struct zx_hrxml_RoleId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -33665,9 +33665,9 @@ struct zx_hrxml_RoleId_s* zx_DEEP_CLONE_hrxml_RoleId(struct zx_ctx* c, struct zx
   x = (struct zx_hrxml_RoleId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_RoleId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -34385,9 +34385,9 @@ void zx_FREE_hrxml_SchoolId(struct zx_ctx* c, struct zx_hrxml_SchoolId_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -34431,9 +34431,9 @@ void zx_DUP_STRS_hrxml_SchoolId(struct zx_ctx* c, struct zx_hrxml_SchoolId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -34454,9 +34454,9 @@ struct zx_hrxml_SchoolId_s* zx_DEEP_CLONE_hrxml_SchoolId(struct zx_ctx* c, struc
   x = (struct zx_hrxml_SchoolId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_SchoolId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -35408,9 +35408,9 @@ void zx_FREE_hrxml_SearchCriteriaId(struct zx_ctx* c, struct zx_hrxml_SearchCrit
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -35454,9 +35454,9 @@ void zx_DUP_STRS_hrxml_SearchCriteriaId(struct zx_ctx* c, struct zx_hrxml_Search
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -35477,9 +35477,9 @@ struct zx_hrxml_SearchCriteriaId_s* zx_DEEP_CLONE_hrxml_SearchCriteriaId(struct 
   x = (struct zx_hrxml_SearchCriteriaId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_SearchCriteriaId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -36212,9 +36212,9 @@ void zx_FREE_hrxml_SearchResultId(struct zx_ctx* c, struct zx_hrxml_SearchResult
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -36258,9 +36258,9 @@ void zx_DUP_STRS_hrxml_SearchResultId(struct zx_ctx* c, struct zx_hrxml_SearchRe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -36281,9 +36281,9 @@ struct zx_hrxml_SearchResultId_s* zx_DEEP_CLONE_hrxml_SearchResultId(struct zx_c
   x = (struct zx_hrxml_SearchResultId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_SearchResultId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -37056,9 +37056,9 @@ void zx_FREE_hrxml_ServiceNumber(struct zx_ctx* c, struct zx_hrxml_ServiceNumber
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -37102,9 +37102,9 @@ void zx_DUP_STRS_hrxml_ServiceNumber(struct zx_ctx* c, struct zx_hrxml_ServiceNu
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -37125,9 +37125,9 @@ struct zx_hrxml_ServiceNumber_s* zx_DEEP_CLONE_hrxml_ServiceNumber(struct zx_ctx
   x = (struct zx_hrxml_ServiceNumber_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_ServiceNumber_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -38981,9 +38981,9 @@ void zx_FREE_hrxml_StringValue(struct zx_ctx* c, struct zx_hrxml_StringValue_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->minValue, free_strs);
-  zx_free_attr(c, x->maxValue, free_strs);
   zx_free_attr(c, x->description, free_strs);
+  zx_free_attr(c, x->maxValue, free_strs);
+  zx_free_attr(c, x->minValue, free_strs);
 
 
 
@@ -39019,9 +39019,9 @@ void zx_DUP_STRS_hrxml_StringValue(struct zx_ctx* c, struct zx_hrxml_StringValue
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->minValue);
-  zx_dup_attr(c, x->maxValue);
   zx_dup_attr(c, x->description);
+  zx_dup_attr(c, x->maxValue);
+  zx_dup_attr(c, x->minValue);
 
 
 }
@@ -39037,9 +39037,9 @@ struct zx_hrxml_StringValue_s* zx_DEEP_CLONE_hrxml_StringValue(struct zx_ctx* c,
   x = (struct zx_hrxml_StringValue_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_StringValue_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->minValue = zx_clone_attr(c, x->minValue);
-  x->maxValue = zx_clone_attr(c, x->maxValue);
   x->description = zx_clone_attr(c, x->description);
+  x->maxValue = zx_clone_attr(c, x->maxValue);
+  x->minValue = zx_clone_attr(c, x->minValue);
 
 
   return x;
@@ -39834,9 +39834,9 @@ void zx_FREE_hrxml_SupplierId(struct zx_ctx* c, struct zx_hrxml_SupplierId_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -39880,9 +39880,9 @@ void zx_DUP_STRS_hrxml_SupplierId(struct zx_ctx* c, struct zx_hrxml_SupplierId_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -39903,9 +39903,9 @@ struct zx_hrxml_SupplierId_s* zx_DEEP_CLONE_hrxml_SupplierId(struct zx_ctx* c, s
   x = (struct zx_hrxml_SupplierId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_SupplierId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -40320,9 +40320,9 @@ void zx_FREE_hrxml_TaxId(struct zx_ctx* c, struct zx_hrxml_TaxId_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -40366,9 +40366,9 @@ void zx_DUP_STRS_hrxml_TaxId(struct zx_ctx* c, struct zx_hrxml_TaxId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -40389,9 +40389,9 @@ struct zx_hrxml_TaxId_s* zx_DEEP_CLONE_hrxml_TaxId(struct zx_ctx* c, struct zx_h
   x = (struct zx_hrxml_TaxId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_TaxId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -40484,9 +40484,9 @@ void zx_FREE_hrxml_TaxonomyId(struct zx_ctx* c, struct zx_hrxml_TaxonomyId_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->description, free_strs);
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->idOwner, free_strs);
-  zx_free_attr(c, x->description, free_strs);
 
 
 
@@ -40522,9 +40522,9 @@ void zx_DUP_STRS_hrxml_TaxonomyId(struct zx_ctx* c, struct zx_hrxml_TaxonomyId_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->description);
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->idOwner);
-  zx_dup_attr(c, x->description);
 
 
 }
@@ -40540,9 +40540,9 @@ struct zx_hrxml_TaxonomyId_s* zx_DEEP_CLONE_hrxml_TaxonomyId(struct zx_ctx* c, s
   x = (struct zx_hrxml_TaxonomyId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_TaxonomyId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->description = zx_clone_attr(c, x->description);
   x->id = zx_clone_attr(c, x->id);
   x->idOwner = zx_clone_attr(c, x->idOwner);
-  x->description = zx_clone_attr(c, x->description);
 
 
   return x;
@@ -41664,9 +41664,9 @@ void zx_FREE_hrxml_UserId(struct zx_ctx* c, struct zx_hrxml_UserId_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -41710,9 +41710,9 @@ void zx_DUP_STRS_hrxml_UserId(struct zx_ctx* c, struct zx_hrxml_UserId_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -41733,9 +41733,9 @@ struct zx_hrxml_UserId_s* zx_DEEP_CLONE_hrxml_UserId(struct zx_ctx* c, struct zx
   x = (struct zx_hrxml_UserId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_UserId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -42584,10 +42584,10 @@ void zx_FREE_hrxml_Weight(struct zx_ctx* c, struct zx_hrxml_Weight_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->minValue, free_strs);
-  zx_free_attr(c, x->maxValue, free_strs);
-  zx_free_attr(c, x->interval, free_strs);
   zx_free_attr(c, x->description, free_strs);
+  zx_free_attr(c, x->interval, free_strs);
+  zx_free_attr(c, x->maxValue, free_strs);
+  zx_free_attr(c, x->minValue, free_strs);
 
 
 
@@ -42623,10 +42623,10 @@ void zx_DUP_STRS_hrxml_Weight(struct zx_ctx* c, struct zx_hrxml_Weight_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->minValue);
-  zx_dup_attr(c, x->maxValue);
-  zx_dup_attr(c, x->interval);
   zx_dup_attr(c, x->description);
+  zx_dup_attr(c, x->interval);
+  zx_dup_attr(c, x->maxValue);
+  zx_dup_attr(c, x->minValue);
 
 
 }
@@ -42642,10 +42642,10 @@ struct zx_hrxml_Weight_s* zx_DEEP_CLONE_hrxml_Weight(struct zx_ctx* c, struct zx
   x = (struct zx_hrxml_Weight_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_Weight_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->minValue = zx_clone_attr(c, x->minValue);
-  x->maxValue = zx_clone_attr(c, x->maxValue);
-  x->interval = zx_clone_attr(c, x->interval);
   x->description = zx_clone_attr(c, x->description);
+  x->interval = zx_clone_attr(c, x->interval);
+  x->maxValue = zx_clone_attr(c, x->maxValue);
+  x->minValue = zx_clone_attr(c, x->minValue);
 
 
   return x;
@@ -43379,9 +43379,9 @@ void zx_FREE_hrxml_WorkSiteId(struct zx_ctx* c, struct zx_hrxml_WorkSiteId_s* x,
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->idOwner, free_strs);
   zx_free_attr(c, x->validFrom, free_strs);
   zx_free_attr(c, x->validTo, free_strs);
-  zx_free_attr(c, x->idOwner, free_strs);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -43425,9 +43425,9 @@ void zx_DUP_STRS_hrxml_WorkSiteId(struct zx_ctx* c, struct zx_hrxml_WorkSiteId_s
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->idOwner);
   zx_dup_attr(c, x->validFrom);
   zx_dup_attr(c, x->validTo);
-  zx_dup_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;
@@ -43448,9 +43448,9 @@ struct zx_hrxml_WorkSiteId_s* zx_DEEP_CLONE_hrxml_WorkSiteId(struct zx_ctx* c, s
   x = (struct zx_hrxml_WorkSiteId_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_hrxml_WorkSiteId_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->idOwner = zx_clone_attr(c, x->idOwner);
   x->validFrom = zx_clone_attr(c, x->validFrom);
   x->validTo = zx_clone_attr(c, x->validTo);
-  x->idOwner = zx_clone_attr(c, x->idOwner);
 
   {
       struct zx_hrxml_IdValue_s* e;

@@ -105,13 +105,13 @@ struct zx_ps_AddCollectionResponse_s {
   zx_ps_AddCollectionResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
   struct zx_ps_Object_s* Object;	/* {0,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_AddCollectionResponse_GET_id(struct zx_ps_AddCollectionResponse_s* x);
 struct zx_str* zx_ps_AddCollectionResponse_GET_TimeStamp(struct zx_ps_AddCollectionResponse_s* x);
+struct zx_str* zx_ps_AddCollectionResponse_GET_id(struct zx_ps_AddCollectionResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_AddCollectionResponse_GET_Status(struct zx_ps_AddCollectionResponse_s* x, int n);
 struct zx_ps_Object_s* zx_ps_AddCollectionResponse_GET_Object(struct zx_ps_AddCollectionResponse_s* x, int n);
@@ -125,8 +125,8 @@ struct zx_ps_Object_s* zx_ps_AddCollectionResponse_POP_Object(struct zx_ps_AddCo
 void zx_ps_AddCollectionResponse_PUSH_Status(struct zx_ps_AddCollectionResponse_s* x, struct zx_lu_Status_s* y);
 void zx_ps_AddCollectionResponse_PUSH_Object(struct zx_ps_AddCollectionResponse_s* x, struct zx_ps_Object_s* y);
 
-void zx_ps_AddCollectionResponse_PUT_id(struct zx_ps_AddCollectionResponse_s* x, struct zx_str* y);
 void zx_ps_AddCollectionResponse_PUT_TimeStamp(struct zx_ps_AddCollectionResponse_s* x, struct zx_str* y);
+void zx_ps_AddCollectionResponse_PUT_id(struct zx_ps_AddCollectionResponse_s* x, struct zx_str* y);
 
 void zx_ps_AddCollectionResponse_PUT_Status(struct zx_ps_AddCollectionResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_AddCollectionResponse_PUT_Object(struct zx_ps_AddCollectionResponse_s* x, int n, struct zx_ps_Object_s* y);
@@ -257,13 +257,13 @@ struct zx_ps_AddEntityResponse_s {
   struct zx_ps_Object_s* Object;	/* {0,1} nada */
   struct zx_elem_s* SPtoPSRedirectURL;	/* {0,1} xs:anyURI */
   struct zx_elem_s* QueryString;	/* {0,1} xs:string */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_AddEntityResponse_GET_id(struct zx_ps_AddEntityResponse_s* x);
 struct zx_str* zx_ps_AddEntityResponse_GET_TimeStamp(struct zx_ps_AddEntityResponse_s* x);
+struct zx_str* zx_ps_AddEntityResponse_GET_id(struct zx_ps_AddEntityResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_AddEntityResponse_GET_Status(struct zx_ps_AddEntityResponse_s* x, int n);
 struct zx_ps_Object_s* zx_ps_AddEntityResponse_GET_Object(struct zx_ps_AddEntityResponse_s* x, int n);
@@ -285,8 +285,8 @@ void zx_ps_AddEntityResponse_PUSH_Object(struct zx_ps_AddEntityResponse_s* x, st
 void zx_ps_AddEntityResponse_PUSH_SPtoPSRedirectURL(struct zx_ps_AddEntityResponse_s* x, struct zx_elem_s* y);
 void zx_ps_AddEntityResponse_PUSH_QueryString(struct zx_ps_AddEntityResponse_s* x, struct zx_elem_s* y);
 
-void zx_ps_AddEntityResponse_PUT_id(struct zx_ps_AddEntityResponse_s* x, struct zx_str* y);
 void zx_ps_AddEntityResponse_PUT_TimeStamp(struct zx_ps_AddEntityResponse_s* x, struct zx_str* y);
+void zx_ps_AddEntityResponse_PUT_id(struct zx_ps_AddEntityResponse_s* x, struct zx_str* y);
 
 void zx_ps_AddEntityResponse_PUT_Status(struct zx_ps_AddEntityResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_AddEntityResponse_PUT_Object(struct zx_ps_AddEntityResponse_s* x, int n, struct zx_ps_Object_s* y);
@@ -425,13 +425,13 @@ struct zx_ps_AddKnownEntityResponse_s {
   struct zx_ps_Object_s* Object;	/* {0,1} nada */
   struct zx_elem_s* SPtoPSRedirectURL;	/* {0,1} xs:anyURI */
   struct zx_elem_s* QueryString;	/* {0,1} xs:string */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_AddKnownEntityResponse_GET_id(struct zx_ps_AddKnownEntityResponse_s* x);
 struct zx_str* zx_ps_AddKnownEntityResponse_GET_TimeStamp(struct zx_ps_AddKnownEntityResponse_s* x);
+struct zx_str* zx_ps_AddKnownEntityResponse_GET_id(struct zx_ps_AddKnownEntityResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_AddKnownEntityResponse_GET_Status(struct zx_ps_AddKnownEntityResponse_s* x, int n);
 struct zx_ps_Object_s* zx_ps_AddKnownEntityResponse_GET_Object(struct zx_ps_AddKnownEntityResponse_s* x, int n);
@@ -453,8 +453,8 @@ void zx_ps_AddKnownEntityResponse_PUSH_Object(struct zx_ps_AddKnownEntityRespons
 void zx_ps_AddKnownEntityResponse_PUSH_SPtoPSRedirectURL(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_elem_s* y);
 void zx_ps_AddKnownEntityResponse_PUSH_QueryString(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_elem_s* y);
 
-void zx_ps_AddKnownEntityResponse_PUT_id(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_str* y);
 void zx_ps_AddKnownEntityResponse_PUT_TimeStamp(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_str* y);
+void zx_ps_AddKnownEntityResponse_PUT_id(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_str* y);
 
 void zx_ps_AddKnownEntityResponse_PUT_Status(struct zx_ps_AddKnownEntityResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_AddKnownEntityResponse_PUT_Object(struct zx_ps_AddKnownEntityResponse_s* x, int n, struct zx_ps_Object_s* y);
@@ -572,13 +572,13 @@ struct zx_ps_AddToCollectionResponse_s {
   ZX_ELEM_EXT
   zx_ps_AddToCollectionResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_AddToCollectionResponse_GET_id(struct zx_ps_AddToCollectionResponse_s* x);
 struct zx_str* zx_ps_AddToCollectionResponse_GET_TimeStamp(struct zx_ps_AddToCollectionResponse_s* x);
+struct zx_str* zx_ps_AddToCollectionResponse_GET_id(struct zx_ps_AddToCollectionResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_AddToCollectionResponse_GET_Status(struct zx_ps_AddToCollectionResponse_s* x, int n);
 
@@ -588,8 +588,8 @@ struct zx_lu_Status_s* zx_ps_AddToCollectionResponse_POP_Status(struct zx_ps_Add
 
 void zx_ps_AddToCollectionResponse_PUSH_Status(struct zx_ps_AddToCollectionResponse_s* x, struct zx_lu_Status_s* y);
 
-void zx_ps_AddToCollectionResponse_PUT_id(struct zx_ps_AddToCollectionResponse_s* x, struct zx_str* y);
 void zx_ps_AddToCollectionResponse_PUT_TimeStamp(struct zx_ps_AddToCollectionResponse_s* x, struct zx_str* y);
+void zx_ps_AddToCollectionResponse_PUT_id(struct zx_ps_AddToCollectionResponse_s* x, struct zx_str* y);
 
 void zx_ps_AddToCollectionResponse_PUT_Status(struct zx_ps_AddToCollectionResponse_s* x, int n, struct zx_lu_Status_s* y);
 
@@ -664,20 +664,20 @@ struct zx_str* zx_EASY_ENC_WO_ps_DisplayName(struct zx_ctx* c, struct zx_ps_Disp
 struct zx_ps_DisplayName_s {
   ZX_ELEM_EXT
   zx_ps_DisplayName_EXT
-  struct zx_str* Locale;	/* {1,1} attribute xs:language */
   struct zx_str* IsDefault;	/* {0,1} attribute xs:boolean */
+  struct zx_str* Locale;	/* {1,1} attribute xs:language */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_DisplayName_GET_Locale(struct zx_ps_DisplayName_s* x);
 struct zx_str* zx_ps_DisplayName_GET_IsDefault(struct zx_ps_DisplayName_s* x);
+struct zx_str* zx_ps_DisplayName_GET_Locale(struct zx_ps_DisplayName_s* x);
 
 
 
 
 
-void zx_ps_DisplayName_PUT_Locale(struct zx_ps_DisplayName_s* x, struct zx_str* y);
 void zx_ps_DisplayName_PUT_IsDefault(struct zx_ps_DisplayName_s* x, struct zx_str* y);
+void zx_ps_DisplayName_PUT_Locale(struct zx_ps_DisplayName_s* x, struct zx_str* y);
 
 
 
@@ -771,13 +771,13 @@ struct zx_ps_GetObjectInfoResponse_s {
   zx_ps_GetObjectInfoResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
   struct zx_ps_Object_s* Object;	/* {0,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_GetObjectInfoResponse_GET_id(struct zx_ps_GetObjectInfoResponse_s* x);
 struct zx_str* zx_ps_GetObjectInfoResponse_GET_TimeStamp(struct zx_ps_GetObjectInfoResponse_s* x);
+struct zx_str* zx_ps_GetObjectInfoResponse_GET_id(struct zx_ps_GetObjectInfoResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_GetObjectInfoResponse_GET_Status(struct zx_ps_GetObjectInfoResponse_s* x, int n);
 struct zx_ps_Object_s* zx_ps_GetObjectInfoResponse_GET_Object(struct zx_ps_GetObjectInfoResponse_s* x, int n);
@@ -791,8 +791,8 @@ struct zx_ps_Object_s* zx_ps_GetObjectInfoResponse_POP_Object(struct zx_ps_GetOb
 void zx_ps_GetObjectInfoResponse_PUSH_Status(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_lu_Status_s* y);
 void zx_ps_GetObjectInfoResponse_PUSH_Object(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_ps_Object_s* y);
 
-void zx_ps_GetObjectInfoResponse_PUT_id(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_str* y);
 void zx_ps_GetObjectInfoResponse_PUT_TimeStamp(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_str* y);
+void zx_ps_GetObjectInfoResponse_PUT_id(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_str* y);
 
 void zx_ps_GetObjectInfoResponse_PUT_Status(struct zx_ps_GetObjectInfoResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_GetObjectInfoResponse_PUT_Object(struct zx_ps_GetObjectInfoResponse_s* x, int n, struct zx_ps_Object_s* y);
@@ -882,17 +882,17 @@ struct zx_ps_ListMembersRequest_s {
   zx_ps_ListMembersRequest_EXT
   struct zx_elem_s* TargetObjectID;	/* {0,1} xs:anyURI */
   struct zx_ps_Subscription_s* Subscription;	/* {0,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
-  struct zx_str* Structured;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Count;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* Offset;	/* {0,1} attribute xs:nonNegativeInteger */
+  struct zx_str* Structured;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_ListMembersRequest_GET_id(struct zx_ps_ListMembersRequest_s* x);
-struct zx_str* zx_ps_ListMembersRequest_GET_Structured(struct zx_ps_ListMembersRequest_s* x);
 struct zx_str* zx_ps_ListMembersRequest_GET_Count(struct zx_ps_ListMembersRequest_s* x);
 struct zx_str* zx_ps_ListMembersRequest_GET_Offset(struct zx_ps_ListMembersRequest_s* x);
+struct zx_str* zx_ps_ListMembersRequest_GET_Structured(struct zx_ps_ListMembersRequest_s* x);
+struct zx_str* zx_ps_ListMembersRequest_GET_id(struct zx_ps_ListMembersRequest_s* x);
 
 struct zx_elem_s* zx_ps_ListMembersRequest_GET_TargetObjectID(struct zx_ps_ListMembersRequest_s* x, int n);
 struct zx_ps_Subscription_s* zx_ps_ListMembersRequest_GET_Subscription(struct zx_ps_ListMembersRequest_s* x, int n);
@@ -906,10 +906,10 @@ struct zx_ps_Subscription_s* zx_ps_ListMembersRequest_POP_Subscription(struct zx
 void zx_ps_ListMembersRequest_PUSH_TargetObjectID(struct zx_ps_ListMembersRequest_s* x, struct zx_elem_s* y);
 void zx_ps_ListMembersRequest_PUSH_Subscription(struct zx_ps_ListMembersRequest_s* x, struct zx_ps_Subscription_s* y);
 
-void zx_ps_ListMembersRequest_PUT_id(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y);
-void zx_ps_ListMembersRequest_PUT_Structured(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y);
 void zx_ps_ListMembersRequest_PUT_Count(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y);
 void zx_ps_ListMembersRequest_PUT_Offset(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y);
+void zx_ps_ListMembersRequest_PUT_Structured(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y);
+void zx_ps_ListMembersRequest_PUT_id(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y);
 
 void zx_ps_ListMembersRequest_PUT_TargetObjectID(struct zx_ps_ListMembersRequest_s* x, int n, struct zx_elem_s* y);
 void zx_ps_ListMembersRequest_PUT_Subscription(struct zx_ps_ListMembersRequest_s* x, int n, struct zx_ps_Subscription_s* y);
@@ -951,13 +951,13 @@ struct zx_ps_ListMembersResponse_s {
   zx_ps_ListMembersResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
   struct zx_ps_Object_s* Object;	/* {0,-1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_ListMembersResponse_GET_id(struct zx_ps_ListMembersResponse_s* x);
 struct zx_str* zx_ps_ListMembersResponse_GET_TimeStamp(struct zx_ps_ListMembersResponse_s* x);
+struct zx_str* zx_ps_ListMembersResponse_GET_id(struct zx_ps_ListMembersResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_ListMembersResponse_GET_Status(struct zx_ps_ListMembersResponse_s* x, int n);
 struct zx_ps_Object_s* zx_ps_ListMembersResponse_GET_Object(struct zx_ps_ListMembersResponse_s* x, int n);
@@ -971,8 +971,8 @@ struct zx_ps_Object_s* zx_ps_ListMembersResponse_POP_Object(struct zx_ps_ListMem
 void zx_ps_ListMembersResponse_PUSH_Status(struct zx_ps_ListMembersResponse_s* x, struct zx_lu_Status_s* y);
 void zx_ps_ListMembersResponse_PUSH_Object(struct zx_ps_ListMembersResponse_s* x, struct zx_ps_Object_s* y);
 
-void zx_ps_ListMembersResponse_PUT_id(struct zx_ps_ListMembersResponse_s* x, struct zx_str* y);
 void zx_ps_ListMembersResponse_PUT_TimeStamp(struct zx_ps_ListMembersResponse_s* x, struct zx_str* y);
+void zx_ps_ListMembersResponse_PUT_id(struct zx_ps_ListMembersResponse_s* x, struct zx_str* y);
 
 void zx_ps_ListMembersResponse_PUT_Status(struct zx_ps_ListMembersResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_ListMembersResponse_PUT_Object(struct zx_ps_ListMembersResponse_s* x, int n, struct zx_ps_Object_s* y);
@@ -1014,17 +1014,17 @@ struct zx_ps_Notification_s {
   zx_ps_Notification_EXT
   struct zx_lu_TestResult_s* TestResult;	/* {0,-1} nada */
   struct zx_ps_ItemData_s* ItemData;	/* {0,-1}  */
+  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
-  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_ps_Notification_GET_endReason(struct zx_ps_Notification_s* x);
+struct zx_str* zx_ps_Notification_GET_expires(struct zx_ps_Notification_s* x);
 struct zx_str* zx_ps_Notification_GET_id(struct zx_ps_Notification_s* x);
 struct zx_str* zx_ps_Notification_GET_subscriptionID(struct zx_ps_Notification_s* x);
-struct zx_str* zx_ps_Notification_GET_expires(struct zx_ps_Notification_s* x);
-struct zx_str* zx_ps_Notification_GET_endReason(struct zx_ps_Notification_s* x);
 
 struct zx_lu_TestResult_s* zx_ps_Notification_GET_TestResult(struct zx_ps_Notification_s* x, int n);
 struct zx_ps_ItemData_s* zx_ps_Notification_GET_ItemData(struct zx_ps_Notification_s* x, int n);
@@ -1038,10 +1038,10 @@ struct zx_ps_ItemData_s* zx_ps_Notification_POP_ItemData(struct zx_ps_Notificati
 void zx_ps_Notification_PUSH_TestResult(struct zx_ps_Notification_s* x, struct zx_lu_TestResult_s* y);
 void zx_ps_Notification_PUSH_ItemData(struct zx_ps_Notification_s* x, struct zx_ps_ItemData_s* y);
 
+void zx_ps_Notification_PUT_endReason(struct zx_ps_Notification_s* x, struct zx_str* y);
+void zx_ps_Notification_PUT_expires(struct zx_ps_Notification_s* x, struct zx_str* y);
 void zx_ps_Notification_PUT_id(struct zx_ps_Notification_s* x, struct zx_str* y);
 void zx_ps_Notification_PUT_subscriptionID(struct zx_ps_Notification_s* x, struct zx_str* y);
-void zx_ps_Notification_PUT_expires(struct zx_ps_Notification_s* x, struct zx_str* y);
-void zx_ps_Notification_PUT_endReason(struct zx_ps_Notification_s* x, struct zx_str* y);
 
 void zx_ps_Notification_PUT_TestResult(struct zx_ps_Notification_s* x, int n, struct zx_lu_TestResult_s* y);
 void zx_ps_Notification_PUT_ItemData(struct zx_ps_Notification_s* x, int n, struct zx_ps_ItemData_s* y);
@@ -1200,15 +1200,15 @@ struct zx_ps_Object_s {
   struct zx_ps_Tag_s* Tag;	/* {0,1}  */
   struct zx_ps_Object_s* Object;	/* {0,-1} nada */
   struct zx_elem_s* ObjectRef;	/* {0,-1} xs:anyURI */
-  struct zx_str* NodeType;	/* {1,1} attribute xs:anyURI */
   struct zx_str* CreatedDateTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ModifiedDateTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* NodeType;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_Object_GET_NodeType(struct zx_ps_Object_s* x);
 struct zx_str* zx_ps_Object_GET_CreatedDateTime(struct zx_ps_Object_s* x);
 struct zx_str* zx_ps_Object_GET_ModifiedDateTime(struct zx_ps_Object_s* x);
+struct zx_str* zx_ps_Object_GET_NodeType(struct zx_ps_Object_s* x);
 
 struct zx_elem_s* zx_ps_Object_GET_ObjectID(struct zx_ps_Object_s* x, int n);
 struct zx_ps_DisplayName_s* zx_ps_Object_GET_DisplayName(struct zx_ps_Object_s* x, int n);
@@ -1234,9 +1234,9 @@ void zx_ps_Object_PUSH_Tag(struct zx_ps_Object_s* x, struct zx_ps_Tag_s* y);
 void zx_ps_Object_PUSH_Object(struct zx_ps_Object_s* x, struct zx_ps_Object_s* y);
 void zx_ps_Object_PUSH_ObjectRef(struct zx_ps_Object_s* x, struct zx_elem_s* y);
 
-void zx_ps_Object_PUT_NodeType(struct zx_ps_Object_s* x, struct zx_str* y);
 void zx_ps_Object_PUT_CreatedDateTime(struct zx_ps_Object_s* x, struct zx_str* y);
 void zx_ps_Object_PUT_ModifiedDateTime(struct zx_ps_Object_s* x, struct zx_str* y);
+void zx_ps_Object_PUT_NodeType(struct zx_ps_Object_s* x, struct zx_str* y);
 
 void zx_ps_Object_PUT_ObjectID(struct zx_ps_Object_s* x, int n, struct zx_elem_s* y);
 void zx_ps_Object_PUT_DisplayName(struct zx_ps_Object_s* x, int n, struct zx_ps_DisplayName_s* y);
@@ -1290,15 +1290,15 @@ struct zx_ps_QueryObjectsRequest_s {
   zx_ps_QueryObjectsRequest_EXT
   struct zx_elem_s* Filter;	/* {1,1} xs:string */
   struct zx_ps_Subscription_s* Subscription;	/* {0,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* Count;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* Offset;	/* {0,1} attribute xs:nonNegativeInteger */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_QueryObjectsRequest_GET_id(struct zx_ps_QueryObjectsRequest_s* x);
 struct zx_str* zx_ps_QueryObjectsRequest_GET_Count(struct zx_ps_QueryObjectsRequest_s* x);
 struct zx_str* zx_ps_QueryObjectsRequest_GET_Offset(struct zx_ps_QueryObjectsRequest_s* x);
+struct zx_str* zx_ps_QueryObjectsRequest_GET_id(struct zx_ps_QueryObjectsRequest_s* x);
 
 struct zx_elem_s* zx_ps_QueryObjectsRequest_GET_Filter(struct zx_ps_QueryObjectsRequest_s* x, int n);
 struct zx_ps_Subscription_s* zx_ps_QueryObjectsRequest_GET_Subscription(struct zx_ps_QueryObjectsRequest_s* x, int n);
@@ -1312,9 +1312,9 @@ struct zx_ps_Subscription_s* zx_ps_QueryObjectsRequest_POP_Subscription(struct z
 void zx_ps_QueryObjectsRequest_PUSH_Filter(struct zx_ps_QueryObjectsRequest_s* x, struct zx_elem_s* y);
 void zx_ps_QueryObjectsRequest_PUSH_Subscription(struct zx_ps_QueryObjectsRequest_s* x, struct zx_ps_Subscription_s* y);
 
-void zx_ps_QueryObjectsRequest_PUT_id(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y);
 void zx_ps_QueryObjectsRequest_PUT_Count(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y);
 void zx_ps_QueryObjectsRequest_PUT_Offset(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y);
+void zx_ps_QueryObjectsRequest_PUT_id(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y);
 
 void zx_ps_QueryObjectsRequest_PUT_Filter(struct zx_ps_QueryObjectsRequest_s* x, int n, struct zx_elem_s* y);
 void zx_ps_QueryObjectsRequest_PUT_Subscription(struct zx_ps_QueryObjectsRequest_s* x, int n, struct zx_ps_Subscription_s* y);
@@ -1356,13 +1356,13 @@ struct zx_ps_QueryObjectsResponse_s {
   zx_ps_QueryObjectsResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
   struct zx_ps_Object_s* Object;	/* {0,-1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_QueryObjectsResponse_GET_id(struct zx_ps_QueryObjectsResponse_s* x);
 struct zx_str* zx_ps_QueryObjectsResponse_GET_TimeStamp(struct zx_ps_QueryObjectsResponse_s* x);
+struct zx_str* zx_ps_QueryObjectsResponse_GET_id(struct zx_ps_QueryObjectsResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_QueryObjectsResponse_GET_Status(struct zx_ps_QueryObjectsResponse_s* x, int n);
 struct zx_ps_Object_s* zx_ps_QueryObjectsResponse_GET_Object(struct zx_ps_QueryObjectsResponse_s* x, int n);
@@ -1376,8 +1376,8 @@ struct zx_ps_Object_s* zx_ps_QueryObjectsResponse_POP_Object(struct zx_ps_QueryO
 void zx_ps_QueryObjectsResponse_PUSH_Status(struct zx_ps_QueryObjectsResponse_s* x, struct zx_lu_Status_s* y);
 void zx_ps_QueryObjectsResponse_PUSH_Object(struct zx_ps_QueryObjectsResponse_s* x, struct zx_ps_Object_s* y);
 
-void zx_ps_QueryObjectsResponse_PUT_id(struct zx_ps_QueryObjectsResponse_s* x, struct zx_str* y);
 void zx_ps_QueryObjectsResponse_PUT_TimeStamp(struct zx_ps_QueryObjectsResponse_s* x, struct zx_str* y);
+void zx_ps_QueryObjectsResponse_PUT_id(struct zx_ps_QueryObjectsResponse_s* x, struct zx_str* y);
 
 void zx_ps_QueryObjectsResponse_PUT_Status(struct zx_ps_QueryObjectsResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_QueryObjectsResponse_PUT_Object(struct zx_ps_QueryObjectsResponse_s* x, int n, struct zx_ps_Object_s* y);
@@ -1469,13 +1469,13 @@ struct zx_ps_RemoveCollectionResponse_s {
   ZX_ELEM_EXT
   zx_ps_RemoveCollectionResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_RemoveCollectionResponse_GET_id(struct zx_ps_RemoveCollectionResponse_s* x);
 struct zx_str* zx_ps_RemoveCollectionResponse_GET_TimeStamp(struct zx_ps_RemoveCollectionResponse_s* x);
+struct zx_str* zx_ps_RemoveCollectionResponse_GET_id(struct zx_ps_RemoveCollectionResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_RemoveCollectionResponse_GET_Status(struct zx_ps_RemoveCollectionResponse_s* x, int n);
 
@@ -1485,8 +1485,8 @@ struct zx_lu_Status_s* zx_ps_RemoveCollectionResponse_POP_Status(struct zx_ps_Re
 
 void zx_ps_RemoveCollectionResponse_PUSH_Status(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_lu_Status_s* y);
 
-void zx_ps_RemoveCollectionResponse_PUT_id(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_str* y);
 void zx_ps_RemoveCollectionResponse_PUT_TimeStamp(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_str* y);
+void zx_ps_RemoveCollectionResponse_PUT_id(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_str* y);
 
 void zx_ps_RemoveCollectionResponse_PUT_Status(struct zx_ps_RemoveCollectionResponse_s* x, int n, struct zx_lu_Status_s* y);
 
@@ -1574,13 +1574,13 @@ struct zx_ps_RemoveEntityResponse_s {
   ZX_ELEM_EXT
   zx_ps_RemoveEntityResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_RemoveEntityResponse_GET_id(struct zx_ps_RemoveEntityResponse_s* x);
 struct zx_str* zx_ps_RemoveEntityResponse_GET_TimeStamp(struct zx_ps_RemoveEntityResponse_s* x);
+struct zx_str* zx_ps_RemoveEntityResponse_GET_id(struct zx_ps_RemoveEntityResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_RemoveEntityResponse_GET_Status(struct zx_ps_RemoveEntityResponse_s* x, int n);
 
@@ -1590,8 +1590,8 @@ struct zx_lu_Status_s* zx_ps_RemoveEntityResponse_POP_Status(struct zx_ps_Remove
 
 void zx_ps_RemoveEntityResponse_PUSH_Status(struct zx_ps_RemoveEntityResponse_s* x, struct zx_lu_Status_s* y);
 
-void zx_ps_RemoveEntityResponse_PUT_id(struct zx_ps_RemoveEntityResponse_s* x, struct zx_str* y);
 void zx_ps_RemoveEntityResponse_PUT_TimeStamp(struct zx_ps_RemoveEntityResponse_s* x, struct zx_str* y);
+void zx_ps_RemoveEntityResponse_PUT_id(struct zx_ps_RemoveEntityResponse_s* x, struct zx_str* y);
 
 void zx_ps_RemoveEntityResponse_PUT_Status(struct zx_ps_RemoveEntityResponse_s* x, int n, struct zx_lu_Status_s* y);
 
@@ -1697,13 +1697,13 @@ struct zx_ps_RemoveFromCollectionResponse_s {
   ZX_ELEM_EXT
   zx_ps_RemoveFromCollectionResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_RemoveFromCollectionResponse_GET_id(struct zx_ps_RemoveFromCollectionResponse_s* x);
 struct zx_str* zx_ps_RemoveFromCollectionResponse_GET_TimeStamp(struct zx_ps_RemoveFromCollectionResponse_s* x);
+struct zx_str* zx_ps_RemoveFromCollectionResponse_GET_id(struct zx_ps_RemoveFromCollectionResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_RemoveFromCollectionResponse_GET_Status(struct zx_ps_RemoveFromCollectionResponse_s* x, int n);
 
@@ -1713,8 +1713,8 @@ struct zx_lu_Status_s* zx_ps_RemoveFromCollectionResponse_POP_Status(struct zx_p
 
 void zx_ps_RemoveFromCollectionResponse_PUSH_Status(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_lu_Status_s* y);
 
-void zx_ps_RemoveFromCollectionResponse_PUT_id(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_str* y);
 void zx_ps_RemoveFromCollectionResponse_PUT_TimeStamp(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_str* y);
+void zx_ps_RemoveFromCollectionResponse_PUT_id(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_str* y);
 
 void zx_ps_RemoveFromCollectionResponse_PUT_Status(struct zx_ps_RemoveFromCollectionResponse_s* x, int n, struct zx_lu_Status_s* y);
 
@@ -1803,13 +1803,13 @@ struct zx_ps_ResolveIdentifierResponse_s {
   zx_ps_ResolveIdentifierResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
   struct zx_ps_ResolveOutput_s* ResolveOutput;	/* {1,-1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_ResolveIdentifierResponse_GET_id(struct zx_ps_ResolveIdentifierResponse_s* x);
 struct zx_str* zx_ps_ResolveIdentifierResponse_GET_TimeStamp(struct zx_ps_ResolveIdentifierResponse_s* x);
+struct zx_str* zx_ps_ResolveIdentifierResponse_GET_id(struct zx_ps_ResolveIdentifierResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_ResolveIdentifierResponse_GET_Status(struct zx_ps_ResolveIdentifierResponse_s* x, int n);
 struct zx_ps_ResolveOutput_s* zx_ps_ResolveIdentifierResponse_GET_ResolveOutput(struct zx_ps_ResolveIdentifierResponse_s* x, int n);
@@ -1823,8 +1823,8 @@ struct zx_ps_ResolveOutput_s* zx_ps_ResolveIdentifierResponse_POP_ResolveOutput(
 void zx_ps_ResolveIdentifierResponse_PUSH_Status(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_lu_Status_s* y);
 void zx_ps_ResolveIdentifierResponse_PUSH_ResolveOutput(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_ps_ResolveOutput_s* y);
 
-void zx_ps_ResolveIdentifierResponse_PUT_id(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_str* y);
 void zx_ps_ResolveIdentifierResponse_PUT_TimeStamp(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_str* y);
+void zx_ps_ResolveIdentifierResponse_PUT_id(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_str* y);
 
 void zx_ps_ResolveIdentifierResponse_PUT_Status(struct zx_ps_ResolveIdentifierResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_ResolveIdentifierResponse_PUT_ResolveOutput(struct zx_ps_ResolveIdentifierResponse_s* x, int n, struct zx_ps_ResolveOutput_s* y);
@@ -2045,13 +2045,13 @@ struct zx_ps_SetObjectInfoResponse_s {
   ZX_ELEM_EXT
   zx_ps_SetObjectInfoResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_SetObjectInfoResponse_GET_id(struct zx_ps_SetObjectInfoResponse_s* x);
 struct zx_str* zx_ps_SetObjectInfoResponse_GET_TimeStamp(struct zx_ps_SetObjectInfoResponse_s* x);
+struct zx_str* zx_ps_SetObjectInfoResponse_GET_id(struct zx_ps_SetObjectInfoResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_SetObjectInfoResponse_GET_Status(struct zx_ps_SetObjectInfoResponse_s* x, int n);
 
@@ -2061,8 +2061,8 @@ struct zx_lu_Status_s* zx_ps_SetObjectInfoResponse_POP_Status(struct zx_ps_SetOb
 
 void zx_ps_SetObjectInfoResponse_PUSH_Status(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_lu_Status_s* y);
 
-void zx_ps_SetObjectInfoResponse_PUT_id(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_str* y);
 void zx_ps_SetObjectInfoResponse_PUT_TimeStamp(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_str* y);
+void zx_ps_SetObjectInfoResponse_PUT_id(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_str* y);
 
 void zx_ps_SetObjectInfoResponse_PUT_Status(struct zx_ps_SetObjectInfoResponse_s* x, int n, struct zx_lu_Status_s* y);
 
@@ -2100,23 +2100,23 @@ struct zx_ps_Subscription_s {
   zx_ps_Subscription_EXT
   struct zx_subs_RefItem_s* RefItem;	/* {0,-1} nada */
   struct zx_lu_Extension_s* Extension;	/* {0,-1}  */
-  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
-  struct zx_str* notifyToRef;	/* {1,1} attribute xs:anyURI */
   struct zx_str* adminNotifyToRef;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
   struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* includeData;	/* {0,1} attribute Yes */
+  struct zx_str* notifyToRef;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_Subscription_GET_subscriptionID(struct zx_ps_Subscription_s* x);
-struct zx_str* zx_ps_Subscription_GET_notifyToRef(struct zx_ps_Subscription_s* x);
 struct zx_str* zx_ps_Subscription_GET_adminNotifyToRef(struct zx_ps_Subscription_s* x);
-struct zx_str* zx_ps_Subscription_GET_starts(struct zx_ps_Subscription_s* x);
 struct zx_str* zx_ps_Subscription_GET_expires(struct zx_ps_Subscription_s* x);
 struct zx_str* zx_ps_Subscription_GET_id(struct zx_ps_Subscription_s* x);
 struct zx_str* zx_ps_Subscription_GET_includeData(struct zx_ps_Subscription_s* x);
+struct zx_str* zx_ps_Subscription_GET_notifyToRef(struct zx_ps_Subscription_s* x);
+struct zx_str* zx_ps_Subscription_GET_starts(struct zx_ps_Subscription_s* x);
+struct zx_str* zx_ps_Subscription_GET_subscriptionID(struct zx_ps_Subscription_s* x);
 
 struct zx_subs_RefItem_s* zx_ps_Subscription_GET_RefItem(struct zx_ps_Subscription_s* x, int n);
 struct zx_lu_Extension_s* zx_ps_Subscription_GET_Extension(struct zx_ps_Subscription_s* x, int n);
@@ -2130,13 +2130,13 @@ struct zx_lu_Extension_s* zx_ps_Subscription_POP_Extension(struct zx_ps_Subscrip
 void zx_ps_Subscription_PUSH_RefItem(struct zx_ps_Subscription_s* x, struct zx_subs_RefItem_s* y);
 void zx_ps_Subscription_PUSH_Extension(struct zx_ps_Subscription_s* x, struct zx_lu_Extension_s* y);
 
-void zx_ps_Subscription_PUT_subscriptionID(struct zx_ps_Subscription_s* x, struct zx_str* y);
-void zx_ps_Subscription_PUT_notifyToRef(struct zx_ps_Subscription_s* x, struct zx_str* y);
 void zx_ps_Subscription_PUT_adminNotifyToRef(struct zx_ps_Subscription_s* x, struct zx_str* y);
-void zx_ps_Subscription_PUT_starts(struct zx_ps_Subscription_s* x, struct zx_str* y);
 void zx_ps_Subscription_PUT_expires(struct zx_ps_Subscription_s* x, struct zx_str* y);
 void zx_ps_Subscription_PUT_id(struct zx_ps_Subscription_s* x, struct zx_str* y);
 void zx_ps_Subscription_PUT_includeData(struct zx_ps_Subscription_s* x, struct zx_str* y);
+void zx_ps_Subscription_PUT_notifyToRef(struct zx_ps_Subscription_s* x, struct zx_str* y);
+void zx_ps_Subscription_PUT_starts(struct zx_ps_Subscription_s* x, struct zx_str* y);
+void zx_ps_Subscription_PUT_subscriptionID(struct zx_ps_Subscription_s* x, struct zx_str* y);
 
 void zx_ps_Subscription_PUT_RefItem(struct zx_ps_Subscription_s* x, int n, struct zx_subs_RefItem_s* y);
 void zx_ps_Subscription_PUT_Extension(struct zx_ps_Subscription_s* x, int n, struct zx_lu_Extension_s* y);
@@ -2289,13 +2289,13 @@ struct zx_ps_TestMembershipResponse_s {
   zx_ps_TestMembershipResponse_EXT
   struct zx_lu_Status_s* Status;	/* {1,1} nada */
   struct zx_elem_s* Result;	/* {0,1} xs:boolean */
-  struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* TimeStamp;	/* {1,1} attribute mm7:relativeOrAbsoluteDateType */
+  struct zx_str* id;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ps_TestMembershipResponse_GET_id(struct zx_ps_TestMembershipResponse_s* x);
 struct zx_str* zx_ps_TestMembershipResponse_GET_TimeStamp(struct zx_ps_TestMembershipResponse_s* x);
+struct zx_str* zx_ps_TestMembershipResponse_GET_id(struct zx_ps_TestMembershipResponse_s* x);
 
 struct zx_lu_Status_s* zx_ps_TestMembershipResponse_GET_Status(struct zx_ps_TestMembershipResponse_s* x, int n);
 struct zx_elem_s* zx_ps_TestMembershipResponse_GET_Result(struct zx_ps_TestMembershipResponse_s* x, int n);
@@ -2309,8 +2309,8 @@ struct zx_elem_s* zx_ps_TestMembershipResponse_POP_Result(struct zx_ps_TestMembe
 void zx_ps_TestMembershipResponse_PUSH_Status(struct zx_ps_TestMembershipResponse_s* x, struct zx_lu_Status_s* y);
 void zx_ps_TestMembershipResponse_PUSH_Result(struct zx_ps_TestMembershipResponse_s* x, struct zx_elem_s* y);
 
-void zx_ps_TestMembershipResponse_PUT_id(struct zx_ps_TestMembershipResponse_s* x, struct zx_str* y);
 void zx_ps_TestMembershipResponse_PUT_TimeStamp(struct zx_ps_TestMembershipResponse_s* x, struct zx_str* y);
+void zx_ps_TestMembershipResponse_PUT_id(struct zx_ps_TestMembershipResponse_s* x, struct zx_str* y);
 
 void zx_ps_TestMembershipResponse_PUT_Status(struct zx_ps_TestMembershipResponse_s* x, int n, struct zx_lu_Status_s* y);
 void zx_ps_TestMembershipResponse_PUT_Result(struct zx_ps_TestMembershipResponse_s* x, int n, struct zx_elem_s* y);

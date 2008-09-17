@@ -3179,8 +3179,8 @@ void zx_FREE_di12_Status(struct zx_ctx* c, struct zx_di12_Status_s* x, int free_
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->code, free_strs);
-  zx_free_attr(c, x->ref, free_strs);
   zx_free_attr(c, x->comment, free_strs);
+  zx_free_attr(c, x->ref, free_strs);
 
   {
       struct zx_di12_Status_s* e;
@@ -3225,8 +3225,8 @@ void zx_DUP_STRS_di12_Status(struct zx_ctx* c, struct zx_di12_Status_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->code);
-  zx_dup_attr(c, x->ref);
   zx_dup_attr(c, x->comment);
+  zx_dup_attr(c, x->ref);
 
   {
       struct zx_di12_Status_s* e;
@@ -3248,8 +3248,8 @@ struct zx_di12_Status_s* zx_DEEP_CLONE_di12_Status(struct zx_ctx* c, struct zx_d
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->code = zx_clone_attr(c, x->code);
-  x->ref = zx_clone_attr(c, x->ref);
   x->comment = zx_clone_attr(c, x->comment);
+  x->ref = zx_clone_attr(c, x->ref);
 
   {
       struct zx_di12_Status_s* e;

@@ -13,7 +13,7 @@
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: dec-templ.c,v 1.23 2007-06-21 23:32:32 sampo Exp $
+ ** Id: dec-templ.c,v 1.29 2007-10-11 04:54:25 sampo Exp $
  **
  ** 28.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 8.8.2006,  reworked namespace handling --Sampo
@@ -89,18 +89,16 @@ struct zx_ac_ActivationLimit_s* zx_DEC_ac_ActivationLimit(struct zx_ctx* c, stru
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_ActivationLimit_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimit_s);
   x->gg.g.tok = zx_ac_ActivationLimit_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -108,41 +106,19 @@ struct zx_ac_ActivationLimit_s* zx_DEC_ac_ActivationLimit(struct zx_ctx* c, stru
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -154,7 +130,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -166,33 +142,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -220,14 +199,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -239,24 +212,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -284,18 +251,16 @@ struct zx_ac_ActivationLimitDuration_s* zx_DEC_ac_ActivationLimitDuration(struct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_ActivationLimitDuration_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimitDuration_s);
   x->gg.g.tok = zx_ac_ActivationLimitDuration_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -303,18 +268,8 @@ struct zx_ac_ActivationLimitDuration_s* zx_DEC_ac_ActivationLimitDuration(struct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_duration_ATTR:
@@ -326,24 +281,12 @@ struct zx_ac_ActivationLimitDuration_s* zx_DEC_ac_ActivationLimitDuration(struct
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -355,7 +298,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -367,33 +310,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -406,14 +352,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -425,24 +365,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -470,18 +404,16 @@ struct zx_ac_ActivationLimitUsages_s* zx_DEC_ac_ActivationLimitUsages(struct zx_
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_ActivationLimitUsages_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationLimitUsages_s);
   x->gg.g.tok = zx_ac_ActivationLimitUsages_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -489,18 +421,8 @@ struct zx_ac_ActivationLimitUsages_s* zx_DEC_ac_ActivationLimitUsages(struct zx_
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_number_ATTR:
@@ -512,24 +434,12 @@ struct zx_ac_ActivationLimitUsages_s* zx_DEC_ac_ActivationLimitUsages(struct zx_
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -541,7 +451,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -553,33 +463,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -592,14 +505,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -611,24 +518,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -656,18 +557,16 @@ struct zx_ac_ActivationPin_s* zx_DEC_ac_ActivationPin(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_ActivationPin_s* x = ZX_ZALLOC(c, struct zx_ac_ActivationPin_s);
   x->gg.g.tok = zx_ac_ActivationPin_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -675,41 +574,19 @@ struct zx_ac_ActivationPin_s* zx_DEC_ac_ActivationPin(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -721,7 +598,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -733,33 +610,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -797,14 +677,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -816,24 +690,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -861,18 +729,16 @@ struct zx_ac_Alphabet_s* zx_DEC_ac_Alphabet(struct zx_ctx* c, struct zx_ns_s* ns
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Alphabet_s* x = ZX_ZALLOC(c, struct zx_ac_Alphabet_s);
   x->gg.g.tok = zx_ac_Alphabet_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -880,24 +746,14 @@ struct zx_ac_Alphabet_s* zx_DEC_ac_Alphabet(struct zx_ctx* c, struct zx_ns_s* ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
-    case zx_requiredChars_ATTR:
+    case zx_case_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->requiredChars->g;
-      x->requiredChars = ss;
+      ss->g.n = &x->case_is_c_keyword->g;
+      x->case_is_c_keyword = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
     case zx_excludedChars_ATTR:
@@ -906,33 +762,21 @@ struct zx_ac_Alphabet_s* zx_DEC_ac_Alphabet(struct zx_ctx* c, struct zx_ns_s* ns
       x->excludedChars = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
-    case zx_case_ATTR:
+    case zx_requiredChars_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->case_is_c_keyword->g;
-      x->case_is_c_keyword = ss;
+      ss->g.n = &x->requiredChars->g;
+      x->requiredChars = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -944,7 +788,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -956,33 +800,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -995,14 +842,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -1014,24 +855,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -1059,18 +894,16 @@ struct zx_ac_AsymmetricDecryption_s* zx_DEC_ac_AsymmetricDecryption(struct zx_ct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_AsymmetricDecryption_s* x = ZX_ZALLOC(c, struct zx_ac_AsymmetricDecryption_s);
   x->gg.g.tok = zx_ac_AsymmetricDecryption_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -1078,41 +911,19 @@ struct zx_ac_AsymmetricDecryption_s* zx_DEC_ac_AsymmetricDecryption(struct zx_ct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -1124,7 +935,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -1136,33 +947,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -1180,14 +994,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -1199,24 +1007,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -1244,18 +1046,16 @@ struct zx_ac_AsymmetricKeyAgreement_s* zx_DEC_ac_AsymmetricKeyAgreement(struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_AsymmetricKeyAgreement_s* x = ZX_ZALLOC(c, struct zx_ac_AsymmetricKeyAgreement_s);
   x->gg.g.tok = zx_ac_AsymmetricKeyAgreement_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -1263,41 +1063,19 @@ struct zx_ac_AsymmetricKeyAgreement_s* zx_DEC_ac_AsymmetricKeyAgreement(struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -1309,7 +1087,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -1321,33 +1099,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -1365,14 +1146,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -1384,24 +1159,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -1429,18 +1198,16 @@ struct zx_ac_AuthenticatingAuthority_s* zx_DEC_ac_AuthenticatingAuthority(struct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_AuthenticatingAuthority_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticatingAuthority_s);
   x->gg.g.tok = zx_ac_AuthenticatingAuthority_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -1448,18 +1215,8 @@ struct zx_ac_AuthenticatingAuthority_s* zx_DEC_ac_AuthenticatingAuthority(struct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_ID_ATTR:
@@ -1471,24 +1228,12 @@ struct zx_ac_AuthenticatingAuthority_s* zx_DEC_ac_AuthenticatingAuthority(struct
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -1500,7 +1245,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -1512,33 +1257,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -1556,14 +1304,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -1575,24 +1317,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -1620,18 +1356,16 @@ struct zx_ac_AuthenticationContextStatement_s* zx_DEC_ac_AuthenticationContextSt
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_AuthenticationContextStatement_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticationContextStatement_s);
   x->gg.g.tok = zx_ac_AuthenticationContextStatement_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -1639,18 +1373,8 @@ struct zx_ac_AuthenticationContextStatement_s* zx_DEC_ac_AuthenticationContextSt
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_ID_ATTR:
@@ -1662,24 +1386,12 @@ struct zx_ac_AuthenticationContextStatement_s* zx_DEC_ac_AuthenticationContextSt
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -1691,7 +1403,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -1703,33 +1415,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -1777,14 +1492,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -1796,24 +1505,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -1841,18 +1544,16 @@ struct zx_ac_AuthenticationMethod_s* zx_DEC_ac_AuthenticationMethod(struct zx_ct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_AuthenticationMethod_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticationMethod_s);
   x->gg.g.tok = zx_ac_AuthenticationMethod_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -1860,41 +1561,19 @@ struct zx_ac_AuthenticationMethod_s* zx_DEC_ac_AuthenticationMethod(struct zx_ct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -1906,7 +1585,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -1918,33 +1597,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -1977,14 +1659,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -1996,24 +1672,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -2041,18 +1711,16 @@ struct zx_ac_Authenticator_s* zx_DEC_ac_Authenticator(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Authenticator_s* x = ZX_ZALLOC(c, struct zx_ac_Authenticator_s);
   x->gg.g.tok = zx_ac_Authenticator_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -2060,41 +1728,19 @@ struct zx_ac_Authenticator_s* zx_DEC_ac_Authenticator(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -2106,7 +1752,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -2118,33 +1764,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -2212,14 +1861,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -2231,24 +1874,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -2276,18 +1913,16 @@ struct zx_ac_AuthenticatorTransportProtocol_s* zx_DEC_ac_AuthenticatorTransportP
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_AuthenticatorTransportProtocol_s* x = ZX_ZALLOC(c, struct zx_ac_AuthenticatorTransportProtocol_s);
   x->gg.g.tok = zx_ac_AuthenticatorTransportProtocol_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -2295,41 +1930,19 @@ struct zx_ac_AuthenticatorTransportProtocol_s* zx_DEC_ac_AuthenticatorTransportP
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -2341,7 +1954,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -2353,33 +1966,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -2432,14 +2048,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -2451,24 +2061,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -2496,18 +2100,16 @@ struct zx_ac_DeactivationCallCenter_s* zx_DEC_ac_DeactivationCallCenter(struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_DeactivationCallCenter_s* x = ZX_ZALLOC(c, struct zx_ac_DeactivationCallCenter_s);
   x->gg.g.tok = zx_ac_DeactivationCallCenter_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -2515,41 +2117,19 @@ struct zx_ac_DeactivationCallCenter_s* zx_DEC_ac_DeactivationCallCenter(struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -2561,7 +2141,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -2573,33 +2153,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -2617,14 +2200,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -2636,24 +2213,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -2681,18 +2252,16 @@ struct zx_ac_DigSig_s* zx_DEC_ac_DigSig(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_DigSig_s* x = ZX_ZALLOC(c, struct zx_ac_DigSig_s);
   x->gg.g.tok = zx_ac_DigSig_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -2700,41 +2269,19 @@ struct zx_ac_DigSig_s* zx_DEC_ac_DigSig(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -2746,7 +2293,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -2758,33 +2305,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -2802,14 +2352,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -2821,24 +2365,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -2866,18 +2404,16 @@ struct zx_ac_Extension_s* zx_DEC_ac_Extension(struct zx_ctx* c, struct zx_ns_s* 
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Extension_s* x = ZX_ZALLOC(c, struct zx_ac_Extension_s);
   x->gg.g.tok = zx_ac_Extension_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -2885,41 +2421,19 @@ struct zx_ac_Extension_s* zx_DEC_ac_Extension(struct zx_ctx* c, struct zx_ns_s* 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -2931,7 +2445,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -2943,33 +2457,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -2982,14 +2499,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -3001,24 +2512,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -3046,18 +2551,16 @@ struct zx_ac_Generation_s* zx_DEC_ac_Generation(struct zx_ctx* c, struct zx_ns_s
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Generation_s* x = ZX_ZALLOC(c, struct zx_ac_Generation_s);
   x->gg.g.tok = zx_ac_Generation_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -3065,18 +2568,8 @@ struct zx_ac_Generation_s* zx_DEC_ac_Generation(struct zx_ctx* c, struct zx_ns_s
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_mechanism_ATTR:
@@ -3088,24 +2581,12 @@ struct zx_ac_Generation_s* zx_DEC_ac_Generation(struct zx_ctx* c, struct zx_ns_s
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -3117,7 +2598,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -3129,33 +2610,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -3168,14 +2652,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -3187,24 +2665,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -3232,18 +2704,16 @@ struct zx_ac_GoverningAgreementRef_s* zx_DEC_ac_GoverningAgreementRef(struct zx_
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_GoverningAgreementRef_s* x = ZX_ZALLOC(c, struct zx_ac_GoverningAgreementRef_s);
   x->gg.g.tok = zx_ac_GoverningAgreementRef_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -3251,18 +2721,8 @@ struct zx_ac_GoverningAgreementRef_s* zx_DEC_ac_GoverningAgreementRef(struct zx_
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_governingAgreementRef_ATTR:
@@ -3274,24 +2734,12 @@ struct zx_ac_GoverningAgreementRef_s* zx_DEC_ac_GoverningAgreementRef(struct zx_
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -3303,7 +2751,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -3315,33 +2763,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -3354,14 +2805,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -3373,24 +2818,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -3418,18 +2857,16 @@ struct zx_ac_GoverningAgreements_s* zx_DEC_ac_GoverningAgreements(struct zx_ctx*
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_GoverningAgreements_s* x = ZX_ZALLOC(c, struct zx_ac_GoverningAgreements_s);
   x->gg.g.tok = zx_ac_GoverningAgreements_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -3437,41 +2874,19 @@ struct zx_ac_GoverningAgreements_s* zx_DEC_ac_GoverningAgreements(struct zx_ctx*
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -3483,7 +2898,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -3495,33 +2910,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -3539,14 +2957,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -3558,24 +2970,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -3603,18 +3009,16 @@ struct zx_ac_HTTP_s* zx_DEC_ac_HTTP(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_HTTP_s* x = ZX_ZALLOC(c, struct zx_ac_HTTP_s);
   x->gg.g.tok = zx_ac_HTTP_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -3622,41 +3026,19 @@ struct zx_ac_HTTP_s* zx_DEC_ac_HTTP(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -3668,7 +3050,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -3680,33 +3062,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -3724,14 +3109,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -3743,24 +3122,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -3788,18 +3161,16 @@ struct zx_ac_IPAddress_s* zx_DEC_ac_IPAddress(struct zx_ctx* c, struct zx_ns_s* 
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_IPAddress_s* x = ZX_ZALLOC(c, struct zx_ac_IPAddress_s);
   x->gg.g.tok = zx_ac_IPAddress_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -3807,41 +3178,19 @@ struct zx_ac_IPAddress_s* zx_DEC_ac_IPAddress(struct zx_ctx* c, struct zx_ns_s* 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -3853,7 +3202,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -3865,33 +3214,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -3909,14 +3261,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -3928,24 +3274,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -3973,18 +3313,16 @@ struct zx_ac_IPSec_s* zx_DEC_ac_IPSec(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_IPSec_s* x = ZX_ZALLOC(c, struct zx_ac_IPSec_s);
   x->gg.g.tok = zx_ac_IPSec_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -3992,41 +3330,19 @@ struct zx_ac_IPSec_s* zx_DEC_ac_IPSec(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -4038,7 +3354,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -4050,33 +3366,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -4094,14 +3413,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -4113,24 +3426,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -4158,18 +3465,16 @@ struct zx_ac_Identification_s* zx_DEC_ac_Identification(struct zx_ctx* c, struct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Identification_s* x = ZX_ZALLOC(c, struct zx_ac_Identification_s);
   x->gg.g.tok = zx_ac_Identification_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -4177,18 +3482,8 @@ struct zx_ac_Identification_s* zx_DEC_ac_Identification(struct zx_ctx* c, struct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_nym_ATTR:
@@ -4200,24 +3495,12 @@ struct zx_ac_Identification_s* zx_DEC_ac_Identification(struct zx_ctx* c, struct
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -4229,7 +3512,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -4241,33 +3524,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -4295,14 +3581,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -4314,24 +3594,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -4359,18 +3633,16 @@ struct zx_ac_KeyActivation_s* zx_DEC_ac_KeyActivation(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_KeyActivation_s* x = ZX_ZALLOC(c, struct zx_ac_KeyActivation_s);
   x->gg.g.tok = zx_ac_KeyActivation_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -4378,41 +3650,19 @@ struct zx_ac_KeyActivation_s* zx_DEC_ac_KeyActivation(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -4424,7 +3674,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -4436,33 +3686,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -4485,14 +3738,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -4504,24 +3751,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -4549,18 +3790,16 @@ struct zx_ac_KeySharing_s* zx_DEC_ac_KeySharing(struct zx_ctx* c, struct zx_ns_s
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_KeySharing_s* x = ZX_ZALLOC(c, struct zx_ac_KeySharing_s);
   x->gg.g.tok = zx_ac_KeySharing_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -4568,18 +3807,8 @@ struct zx_ac_KeySharing_s* zx_DEC_ac_KeySharing(struct zx_ctx* c, struct zx_ns_s
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_sharing_ATTR:
@@ -4591,24 +3820,12 @@ struct zx_ac_KeySharing_s* zx_DEC_ac_KeySharing(struct zx_ctx* c, struct zx_ns_s
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -4620,7 +3837,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -4632,33 +3849,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -4671,14 +3891,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -4690,24 +3904,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -4735,18 +3943,16 @@ struct zx_ac_KeyStorage_s* zx_DEC_ac_KeyStorage(struct zx_ctx* c, struct zx_ns_s
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_KeyStorage_s* x = ZX_ZALLOC(c, struct zx_ac_KeyStorage_s);
   x->gg.g.tok = zx_ac_KeyStorage_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -4754,18 +3960,8 @@ struct zx_ac_KeyStorage_s* zx_DEC_ac_KeyStorage(struct zx_ctx* c, struct zx_ns_s
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_medium_ATTR:
@@ -4777,24 +3973,12 @@ struct zx_ac_KeyStorage_s* zx_DEC_ac_KeyStorage(struct zx_ctx* c, struct zx_ns_s
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -4806,7 +3990,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -4818,33 +4002,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -4857,14 +4044,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -4876,24 +4057,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -4921,18 +4096,16 @@ struct zx_ac_Length_s* zx_DEC_ac_Length(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Length_s* x = ZX_ZALLOC(c, struct zx_ac_Length_s);
   x->gg.g.tok = zx_ac_Length_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -4940,53 +4113,31 @@ struct zx_ac_Length_s* zx_DEC_ac_Length(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
-    case zx_min_ATTR:
-      ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->min->g;
-      x->min = ss;
-      ZX_ATTR_DEC_EXT(ss);
-      break;
     case zx_max_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
       ss->g.n = &x->max->g;
       x->max = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
+    case zx_min_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str);
+      ss->g.n = &x->min->g;
+      x->min = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -4998,7 +4149,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -5010,33 +4161,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -5049,14 +4203,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -5068,24 +4216,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -5113,18 +4255,16 @@ struct zx_ac_MobileNetworkEndToEndEncryption_s* zx_DEC_ac_MobileNetworkEndToEndE
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_MobileNetworkEndToEndEncryption_s* x = ZX_ZALLOC(c, struct zx_ac_MobileNetworkEndToEndEncryption_s);
   x->gg.g.tok = zx_ac_MobileNetworkEndToEndEncryption_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -5132,41 +4272,19 @@ struct zx_ac_MobileNetworkEndToEndEncryption_s* zx_DEC_ac_MobileNetworkEndToEndE
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -5178,7 +4296,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -5190,33 +4308,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -5234,14 +4355,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -5253,24 +4368,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -5298,18 +4407,16 @@ struct zx_ac_MobileNetworkNoEncryption_s* zx_DEC_ac_MobileNetworkNoEncryption(st
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_MobileNetworkNoEncryption_s* x = ZX_ZALLOC(c, struct zx_ac_MobileNetworkNoEncryption_s);
   x->gg.g.tok = zx_ac_MobileNetworkNoEncryption_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -5317,41 +4424,19 @@ struct zx_ac_MobileNetworkNoEncryption_s* zx_DEC_ac_MobileNetworkNoEncryption(st
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -5363,7 +4448,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -5375,33 +4460,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -5419,14 +4507,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -5438,24 +4520,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -5483,18 +4559,16 @@ struct zx_ac_MobileNetworkRadioEncryption_s* zx_DEC_ac_MobileNetworkRadioEncrypt
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_MobileNetworkRadioEncryption_s* x = ZX_ZALLOC(c, struct zx_ac_MobileNetworkRadioEncryption_s);
   x->gg.g.tok = zx_ac_MobileNetworkRadioEncryption_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -5502,41 +4576,19 @@ struct zx_ac_MobileNetworkRadioEncryption_s* zx_DEC_ac_MobileNetworkRadioEncrypt
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -5548,7 +4600,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -5560,33 +4612,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -5604,14 +4659,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -5623,24 +4672,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -5668,18 +4711,16 @@ struct zx_ac_OperationalProtection_s* zx_DEC_ac_OperationalProtection(struct zx_
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_OperationalProtection_s* x = ZX_ZALLOC(c, struct zx_ac_OperationalProtection_s);
   x->gg.g.tok = zx_ac_OperationalProtection_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -5687,41 +4728,19 @@ struct zx_ac_OperationalProtection_s* zx_DEC_ac_OperationalProtection(struct zx_
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -5733,7 +4752,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -5745,33 +4764,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -5799,14 +4821,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -5818,24 +4834,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -5863,18 +4873,16 @@ struct zx_ac_Password_s* zx_DEC_ac_Password(struct zx_ctx* c, struct zx_ns_s* ns
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Password_s* x = ZX_ZALLOC(c, struct zx_ac_Password_s);
   x->gg.g.tok = zx_ac_Password_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -5882,41 +4890,19 @@ struct zx_ac_Password_s* zx_DEC_ac_Password(struct zx_ctx* c, struct zx_ns_s* ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -5928,7 +4914,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -5940,33 +4926,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -5999,14 +4988,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -6018,24 +5001,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -6063,18 +5040,16 @@ struct zx_ac_PhysicalVerification_s* zx_DEC_ac_PhysicalVerification(struct zx_ct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_PhysicalVerification_s* x = ZX_ZALLOC(c, struct zx_ac_PhysicalVerification_s);
   x->gg.g.tok = zx_ac_PhysicalVerification_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -6082,18 +5057,8 @@ struct zx_ac_PhysicalVerification_s* zx_DEC_ac_PhysicalVerification(struct zx_ct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_credentialLevel_ATTR:
@@ -6105,24 +5070,12 @@ struct zx_ac_PhysicalVerification_s* zx_DEC_ac_PhysicalVerification(struct zx_ct
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -6134,7 +5087,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -6146,33 +5099,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -6185,14 +5141,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -6204,24 +5154,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -6249,18 +5193,16 @@ struct zx_ac_PreviousSession_s* zx_DEC_ac_PreviousSession(struct zx_ctx* c, stru
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_PreviousSession_s* x = ZX_ZALLOC(c, struct zx_ac_PreviousSession_s);
   x->gg.g.tok = zx_ac_PreviousSession_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -6268,41 +5210,19 @@ struct zx_ac_PreviousSession_s* zx_DEC_ac_PreviousSession(struct zx_ctx* c, stru
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -6314,7 +5234,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -6326,33 +5246,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -6370,14 +5293,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -6389,24 +5306,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -6434,18 +5345,16 @@ struct zx_ac_PrincipalAuthenticationMechanism_s* zx_DEC_ac_PrincipalAuthenticati
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_PrincipalAuthenticationMechanism_s* x = ZX_ZALLOC(c, struct zx_ac_PrincipalAuthenticationMechanism_s);
   x->gg.g.tok = zx_ac_PrincipalAuthenticationMechanism_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -6453,41 +5362,19 @@ struct zx_ac_PrincipalAuthenticationMechanism_s* zx_DEC_ac_PrincipalAuthenticati
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -6499,7 +5386,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -6511,33 +5398,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -6575,14 +5465,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -6594,24 +5478,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -6639,18 +5517,16 @@ struct zx_ac_PrivateKeyProtection_s* zx_DEC_ac_PrivateKeyProtection(struct zx_ct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_PrivateKeyProtection_s* x = ZX_ZALLOC(c, struct zx_ac_PrivateKeyProtection_s);
   x->gg.g.tok = zx_ac_PrivateKeyProtection_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -6658,41 +5534,19 @@ struct zx_ac_PrivateKeyProtection_s* zx_DEC_ac_PrivateKeyProtection(struct zx_ct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -6704,7 +5558,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -6716,33 +5570,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -6775,14 +5632,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -6794,24 +5645,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -6839,18 +5684,16 @@ struct zx_ac_ResumeSession_s* zx_DEC_ac_ResumeSession(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_ResumeSession_s* x = ZX_ZALLOC(c, struct zx_ac_ResumeSession_s);
   x->gg.g.tok = zx_ac_ResumeSession_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -6858,41 +5701,19 @@ struct zx_ac_ResumeSession_s* zx_DEC_ac_ResumeSession(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -6904,7 +5725,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -6916,33 +5737,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -6960,14 +5784,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -6979,24 +5797,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -7024,18 +5836,16 @@ struct zx_ac_SSL_s* zx_DEC_ac_SSL(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_SSL_s* x = ZX_ZALLOC(c, struct zx_ac_SSL_s);
   x->gg.g.tok = zx_ac_SSL_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -7043,41 +5853,19 @@ struct zx_ac_SSL_s* zx_DEC_ac_SSL(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -7089,7 +5877,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -7101,33 +5889,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -7145,14 +5936,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -7164,24 +5949,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -7209,18 +5988,16 @@ struct zx_ac_SecretKeyProtection_s* zx_DEC_ac_SecretKeyProtection(struct zx_ctx*
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_SecretKeyProtection_s* x = ZX_ZALLOC(c, struct zx_ac_SecretKeyProtection_s);
   x->gg.g.tok = zx_ac_SecretKeyProtection_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -7228,41 +6005,19 @@ struct zx_ac_SecretKeyProtection_s* zx_DEC_ac_SecretKeyProtection(struct zx_ctx*
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -7274,7 +6029,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -7286,33 +6041,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -7340,14 +6098,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -7359,24 +6111,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -7404,18 +6150,16 @@ struct zx_ac_SecurityAudit_s* zx_DEC_ac_SecurityAudit(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_SecurityAudit_s* x = ZX_ZALLOC(c, struct zx_ac_SecurityAudit_s);
   x->gg.g.tok = zx_ac_SecurityAudit_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -7423,41 +6167,19 @@ struct zx_ac_SecurityAudit_s* zx_DEC_ac_SecurityAudit(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -7469,7 +6191,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -7481,33 +6203,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -7530,14 +6255,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -7549,24 +6268,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -7594,18 +6307,16 @@ struct zx_ac_SharedSecretChallengeResponse_s* zx_DEC_ac_SharedSecretChallengeRes
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_SharedSecretChallengeResponse_s* x = ZX_ZALLOC(c, struct zx_ac_SharedSecretChallengeResponse_s);
   x->gg.g.tok = zx_ac_SharedSecretChallengeResponse_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -7613,41 +6324,19 @@ struct zx_ac_SharedSecretChallengeResponse_s* zx_DEC_ac_SharedSecretChallengeRes
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -7659,7 +6348,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -7671,33 +6360,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -7715,14 +6407,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -7734,24 +6420,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -7779,18 +6459,16 @@ struct zx_ac_SharedSecretDynamicPlaintext_s* zx_DEC_ac_SharedSecretDynamicPlaint
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_SharedSecretDynamicPlaintext_s* x = ZX_ZALLOC(c, struct zx_ac_SharedSecretDynamicPlaintext_s);
   x->gg.g.tok = zx_ac_SharedSecretDynamicPlaintext_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -7798,41 +6476,19 @@ struct zx_ac_SharedSecretDynamicPlaintext_s* zx_DEC_ac_SharedSecretDynamicPlaint
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -7844,7 +6500,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -7856,33 +6512,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -7900,14 +6559,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -7919,24 +6572,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -7964,18 +6611,16 @@ struct zx_ac_Smartcard_s* zx_DEC_ac_Smartcard(struct zx_ctx* c, struct zx_ns_s* 
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Smartcard_s* x = ZX_ZALLOC(c, struct zx_ac_Smartcard_s);
   x->gg.g.tok = zx_ac_Smartcard_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -7983,41 +6628,19 @@ struct zx_ac_Smartcard_s* zx_DEC_ac_Smartcard(struct zx_ctx* c, struct zx_ns_s* 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -8029,7 +6652,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -8041,33 +6664,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -8085,14 +6711,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -8104,24 +6724,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -8149,18 +6763,16 @@ struct zx_ac_SwitchAudit_s* zx_DEC_ac_SwitchAudit(struct zx_ctx* c, struct zx_ns
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_SwitchAudit_s* x = ZX_ZALLOC(c, struct zx_ac_SwitchAudit_s);
   x->gg.g.tok = zx_ac_SwitchAudit_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -8168,41 +6780,19 @@ struct zx_ac_SwitchAudit_s* zx_DEC_ac_SwitchAudit(struct zx_ctx* c, struct zx_ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -8214,7 +6804,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -8226,33 +6816,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -8270,14 +6863,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -8289,24 +6876,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -8334,18 +6915,16 @@ struct zx_ac_TechnicalProtection_s* zx_DEC_ac_TechnicalProtection(struct zx_ctx*
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_TechnicalProtection_s* x = ZX_ZALLOC(c, struct zx_ac_TechnicalProtection_s);
   x->gg.g.tok = zx_ac_TechnicalProtection_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -8353,41 +6932,19 @@ struct zx_ac_TechnicalProtection_s* zx_DEC_ac_TechnicalProtection(struct zx_ctx*
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -8399,7 +6956,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -8411,33 +6968,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -8465,14 +7025,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -8484,24 +7038,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -8529,18 +7077,16 @@ struct zx_ac_TimeSyncToken_s* zx_DEC_ac_TimeSyncToken(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_TimeSyncToken_s* x = ZX_ZALLOC(c, struct zx_ac_TimeSyncToken_s);
   x->gg.g.tok = zx_ac_TimeSyncToken_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -8548,20 +7094,16 @@ struct zx_ac_TimeSyncToken_s* zx_DEC_ac_TimeSyncToken(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
+    case zx_DeviceInHand_ATTR:
+      ss = ZX_ZALLOC(c, struct zx_str);
+      ss->g.n = &x->DeviceInHand->g;
+      x->DeviceInHand = ss;
+      ZX_ATTR_DEC_EXT(ss);
+      break;
     case zx_DeviceType_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
       ss->g.n = &x->DeviceType->g;
@@ -8574,33 +7116,15 @@ struct zx_ac_TimeSyncToken_s* zx_DEC_ac_TimeSyncToken(struct zx_ctx* c, struct z
       x->SeedLength = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
-    case zx_DeviceInHand_ATTR:
-      ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->DeviceInHand->g;
-      x->DeviceInHand = ss;
-      ZX_ATTR_DEC_EXT(ss);
-      break;
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -8612,7 +7136,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -8624,33 +7148,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -8663,14 +7190,8 @@ next_attr:
 	  switch (tok) {
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -8682,24 +7203,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -8727,18 +7242,16 @@ struct zx_ac_Token_s* zx_DEC_ac_Token(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_Token_s* x = ZX_ZALLOC(c, struct zx_ac_Token_s);
   x->gg.g.tok = zx_ac_Token_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -8746,41 +7259,19 @@ struct zx_ac_Token_s* zx_DEC_ac_Token(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -8792,7 +7283,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -8804,33 +7295,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -8853,14 +7347,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -8872,24 +7360,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -8917,18 +7399,16 @@ struct zx_ac_WTLS_s* zx_DEC_ac_WTLS(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_WTLS_s* x = ZX_ZALLOC(c, struct zx_ac_WTLS_s);
   x->gg.g.tok = zx_ac_WTLS_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -8936,41 +7416,19 @@ struct zx_ac_WTLS_s* zx_DEC_ac_WTLS(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -8982,7 +7440,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -8994,33 +7452,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -9038,14 +7499,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -9057,24 +7512,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -9102,18 +7551,16 @@ struct zx_ac_WrittenConsent_s* zx_DEC_ac_WrittenConsent(struct zx_ctx* c, struct
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_WrittenConsent_s* x = ZX_ZALLOC(c, struct zx_ac_WrittenConsent_s);
   x->gg.g.tok = zx_ac_WrittenConsent_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -9121,41 +7568,19 @@ struct zx_ac_WrittenConsent_s* zx_DEC_ac_WrittenConsent(struct zx_ctx* c, struct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -9167,7 +7592,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -9179,33 +7604,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -9223,14 +7651,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -9242,24 +7664,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 
@@ -9287,18 +7703,16 @@ struct zx_ac_ZeroKnowledge_s* zx_DEC_ac_ZeroKnowledge(struct zx_ctx* c, struct z
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
-  struct zx_any_attr_s* attr;
   struct zx_ns_s* pop_seen;
   char* name;
   char* data;
-  char quote;
   struct zx_ac_ZeroKnowledge_s* x = ZX_ZALLOC(c, struct zx_ac_ZeroKnowledge_s);
   x->gg.g.tok = zx_ac_ZeroKnowledge_ELEM;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
 #if 1 /* NORMALMODE */
-  x->gg.g.err |= ZXERR_TAG_NOT_CLOSED;
+  ZX_DEC_TAG_NOT_YET_CLOSED(x->gg.g);
 
   /* The tag name has already been detected. Process attributes until '>' */
   
@@ -9306,41 +7720,19 @@ struct zx_ac_ZeroKnowledge_s* zx_DEC_ac_ZeroKnowledge(struct zx_ctx* c, struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    name = c->p;
-    ZX_LOOK_FOR(c,'=',x);
-    
-    ++c->p;
-    if (!ONE_OF_2(*c->p, '"', '\''))
+    if (!(data = zx_dec_attr_val(c, &name)))
       return 0;
-    quote = *c->p;
-    ++c->p;
-    data = c->p;	
-    
-    ZX_LOOK_FOR(c,quote,x);
-    
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
+      DD("xmlns detected(%.*s)", data-2-name, name);
       goto next_attr;
     default:
-      D("known attribute(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
-      tok = ZX_TOK_NOT_FOUND;
-      /* fall thru to classify it as anyAttr extension */
-    case ZX_TOK_NOT_FOUND:
-      attr = ZX_ZALLOC(c, struct zx_any_attr_s);
-      attr->name_len = data - name - 2;
-      attr->name = name;
-      attr->ss.g.n = &x->gg.any_attr->ss.g;
-      x->gg.any_attr = attr;
-      ss = &attr->ss;
-      /* *** namespace handling for unknown element? */
-      ZX_UNKNOWN_ATTR_DEC_EXT(attr);
-      goto set_attr_val;
+      ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
     }
     ss->g.ns = ns;
-set_attr_val:
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
@@ -9352,7 +7744,7 @@ next_attr:
     ++c->p;
     if (c->p[-1] == '/' && c->p[0] == '>') {  /* Tag without content */
       ++c->p;
-      x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+      ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
       goto out;
     }
   }
@@ -9364,33 +7756,36 @@ next_attr:
   
   while (c->p) {
   next_elem:
-    ZX_SKIP_WS(c,x);
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
       switch (*c->p) {
-      case '?':  /* processing instruction */
-	ERR("Processing instructions not supported. %d",0);
-	ZX_PI_DEC_EXT(pi);
-	return 0;
-      case '!':  /* comment */
-	ERR("Comments not supported. %d",0);
-	ZX_COMMENT_DEC_EXT(comment);
-	return 0;
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
       case '/':  /* close tag */
 	++c->p;
 	name = c->p;
-	ZX_LOOK_FOR(c,'>',x);
+	ZX_LOOK_FOR(c,'>');
+#if defined(DEC_WRONG_ELEM)
+	if (c->p-name != namlen || memcmp(name, nam, namlen))
+#else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
-	if (tok != x->gg.g.tok) {
-	  ERR("Mismatching close tag(%.*s)", c->p-name, name);
-	  x->gg.g.err |= ZXERR_MISMATCH_CLOSE;
+	if (tok != x->gg.g.tok)
+#endif
+	{
+	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
+	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
 	}
 	/* Legitimate close tag. Normal exit from this function. */
 	++c->p;
-	x->gg.g.err &= ~ZXERR_TAG_NOT_CLOSED;
+	ZX_DEC_TAG_NOW_CLOSED(x->gg.g);
 	goto out;
       default:
 	if (A_Z_a_z_(*c->p)) {
@@ -9408,14 +7803,8 @@ next_attr:
             break;
 
 	  default:
-	    D("known element(%.*s) tok(%d) in wrong context(%d)", c->p - name, name, tok, x->gg.g.tok);
+	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
 	    tok = ZX_TOK_NOT_FOUND;
-	    /* fall thru to classify it as any extension */
-	  case ZX_TOK_NOT_FOUND:
-	    el = (struct zx_elem_s*)zx_DEC_wrong_elem(c, ns, name, c->p - name);
-	    el->g.n = &x->gg.any_elem->gg.g;
-	    x->gg.any_elem = (struct zx_any_elem_s*)el;
-	    ZX_UNKNOWN_ELEM_DEC_EXT(el);
 	    break;
 	  }
           el->g.wo = &x->gg.kids->g;
@@ -9427,24 +7816,18 @@ next_attr:
       }
       /* false alarm <, fall thru */
     }
-    /* Data */
-    name = c->p;
-    if (c->p) ZX_LOOK_FOR(c,'<',x);
-    ss = ZX_ZALLOC(c, struct zx_str);
-    ss->len = c->p - name;
-    ss->s = name;
-    ss->g.tok = ZX_TOK_DATA;
-    ss->g.n = &x->gg.content->g;
-    x->gg.content = ss;
-    ss->g.wo = &x->gg.kids->g;
-    x->gg.kids = (struct zx_elem_s*)ss;
-    ZX_CONTENT_DEC(ss);
+    if (!zx_scan_data(c, &x->gg))
+      return x;
     goto potential_tag;
   }
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
   ZX_END_DEC_EXT(x);
+  return x;
+
+ look_for_not_found:
+  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
   return x;
 }
 

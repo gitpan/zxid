@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-soap-binding-v2.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-soap-binding-v2.0.sg,v 1.6 2007/02/24 07:50:46 sampo Exp $
+# $Id: liberty-idwsf-soap-binding-v2.0.sg,v 1.7 2007-09-30 05:10:03 sampo Exp $
 
 target(b,    urn:liberty:sb:2006-08)
 import(sp,   urn:oasis:names:tc:SAML:2.0:protocol)
@@ -16,6 +16,7 @@ import(ff12, urn:liberty:iff:2003-08)
   @wsu:Id?
   @e:mustUnderstand?
   @e:actor?
+  @id? -> %xs:anyURI
   ;
 
 Framework	 -> %b:FrameworkType
@@ -28,8 +29,8 @@ Framework	 -> %b:FrameworkType
 
 Sender	 -> %b:SenderType
 %SenderType:
-  @providerID	 -> %xs:anyURI
-  @affiliationID?	 -> %xs:anyURI
+  @providerID      -> %xs:anyURI
+  @affiliationID?  -> %xs:anyURI
   &@b:hdr        # Added by Sampo
   @any
   ;

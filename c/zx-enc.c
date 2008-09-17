@@ -7,19 +7,20 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
+ ** Id: enc-templ.c,v 1.27 2007-10-05 22:24:28 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
+ ** 30.9.2007, improvements to WO encoding --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -53,6 +54,18 @@
 #define EL_NS     
 #define EL_TAG    root
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_root) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -62,7 +75,7 @@
 int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 
   /* root node has no begin tag */
   int len = 0;
@@ -73,6 +86,13 @@ int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
 	  len += zx_LEN_SO_sa_Assertion(c, e);
   }
+  {
+      struct zx_sa_NameID_s* e;
+      for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa_NameID(c, e);
+  }
+  for (se = x->NewID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_SO_simple_elem(c,se, sizeof("sp:NewID")-1, zx_ns_tab+zx_xmlns_ix_sp);
   {
       struct zx_sp_AuthnRequest_s* e;
       for (e = x->AuthnRequest; e; e = (struct zx_sp_AuthnRequest_s*)e->gg.g.n)
@@ -225,8 +245,9 @@ int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, ":root", len);
   return len;
 }
 
@@ -240,7 +261,7 @@ int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
 int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 
   /* root node has no begin tag */
   int len = 0;
@@ -251,6 +272,13 @@ int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
 	  len += zx_LEN_WO_sa_Assertion(c, e);
   }
+  {
+      struct zx_sa_NameID_s* e;
+      for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa_NameID(c, e);
+  }
+  for (se = x->NewID; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_WO_simple_elem(c, se, sizeof("NewID")-1);
   {
       struct zx_sp_AuthnRequest_s* e;
       for (e = x->AuthnRequest; e; e = (struct zx_sp_AuthnRequest_s*)e->gg.g.n)
@@ -405,6 +433,7 @@ int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, ":root", len);
   return len;
 }
 
@@ -417,8 +446,8 @@ int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 /* Called by: */
 char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 
   /* root node has no begin tag */
 
@@ -428,6 +457,13 @@ char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
 	  p = zx_ENC_SO_sa_Assertion(c, e, p);
   }
+  {
+      struct zx_sa_NameID_s* e;
+      for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa_NameID(c, e, p);
+  }
+  for (se = x->NewID; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(c, se, p, "sp:NewID", sizeof("sp:NewID")-1, zx_ns_tab+zx_xmlns_ix_sp);
   {
       struct zx_sp_AuthnRequest_s* e;
       for (e = x->AuthnRequest; e; e = (struct zx_sp_AuthnRequest_s*)e->gg.g.n)
@@ -584,6 +620,7 @@ char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
 
   /* root node has no end tag either */
 
+  ENC_LEN_DEBUG(x, ":root", p-enc_base);
   return p;
 }
 
@@ -597,6 +634,7 @@ char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
 char* zx_ENC_WO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 
   /* root node has no begin tag */
 
@@ -607,6 +645,7 @@ char* zx_ENC_WO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
 
   /* root node has no end tag either */
 
+  ENC_LEN_DEBUG(x, ":root", p-enc_base);
   return p;
 }
 
@@ -661,6 +700,18 @@ struct zx_str* zx_EASY_ENC_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 #define EL_NS     
 #define EL_TAG    simple_elem
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_simple_elem) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -670,9 +721,12 @@ struct zx_str* zx_EASY_ENC_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 int zx_LEN_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen, struct zx_ns_s* ns)
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = simplelen + 1 + 1 + simplelen + 3;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, ns, &pop_seen);
 
 
@@ -683,8 +737,9 @@ int zx_LEN_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen,
   
 
 
-  len += zx_len_so_common(c, x); 
+  len += zx_len_so_common(c, x);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "simple_elem", len);
   return len;
 }
 
@@ -698,13 +753,14 @@ int zx_LEN_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen,
 int zx_LEN_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen)
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + simplelen + 1 + 2 + simplelen + 1;
   
   if (x->g.ns && x->g.ns->prefix_len)
     len += (x->g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->g.ns, &pop_seen);
 
 
@@ -717,6 +773,7 @@ int zx_LEN_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen)
 
   len += zx_len_wo_common(c, x); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "simple_elem", len);
   return len;
 }
 
@@ -729,10 +786,14 @@ int zx_LEN_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen)
 /* Called by: */
 char* zx_ENC_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , char* simpletag, int simplelen, struct zx_ns_s* ns)
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_SIMPLE_TAG(p, simpletag, simplelen);
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, ns, &pop_seen);
 
   p = zx_enc_unknown_attrs(p, x->any_attr);
@@ -749,6 +810,7 @@ char* zx_ENC_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , cha
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "simple_elem", p-enc_base);
   return p;
 }
 
@@ -762,6 +824,7 @@ char* zx_ENC_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , cha
 char* zx_ENC_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , char* simpletag, int simplelen)
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -776,6 +839,8 @@ char* zx_ENC_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , cha
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -797,6 +862,7 @@ char* zx_ENC_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , cha
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "simple_elem", p-enc_base);
   return p;
 }
 
@@ -839,7 +905,7 @@ struct zx_str* zx_EASY_ENC_WO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x 
 int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
 {
   int len;
-  struct zx_elem_s* kid;
+  //struct zx_elem_s* kid;
   switch (x->g.tok) {
   case zx_a_Address_ELEM:
     return zx_LEN_WO_a_Address(c, (struct zx_a_Address_s*)x);
@@ -861,6 +927,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_a_Action(c, (struct zx_a_Action_s*)x);
   case zx_a_SoapAction_ELEM:
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("SoapAction")-1);
+  case zx_b_TargetIdentity_ELEM:
+    return zx_LEN_WO_b_TargetIdentity(c, (struct zx_b_TargetIdentity_s*)x);
   case zx_ac_ActivationLimitDuration_ELEM:
     return zx_LEN_WO_ac_ActivationLimitDuration(c, (struct zx_ac_ActivationLimitDuration_s*)x);
   case zx_ac_ActivationLimitUsages_ELEM:
@@ -1931,8 +1999,6 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_b_Framework(c, (struct zx_b_Framework_s*)x);
   case zx_b_Sender_ELEM:
     return zx_LEN_WO_b_Sender(c, (struct zx_b_Sender_s*)x);
-  case zx_b_TargetIdentity_ELEM:
-    return zx_LEN_WO_b_TargetIdentity(c, (struct zx_b_TargetIdentity_s*)x);
   case zx_b_CredentialsContext_ELEM:
     return zx_LEN_WO_b_CredentialsContext(c, (struct zx_b_CredentialsContext_s*)x);
   case zx_b_EndpointUpdate_ELEM:
@@ -3563,6 +3629,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_sa_OneTimeUse(c, (struct zx_sa_OneTimeUse_s*)x);
   case zx_sa_ProxyRestriction_ELEM:
     return zx_LEN_WO_sa_ProxyRestriction(c, (struct zx_sa_ProxyRestriction_s*)x);
+  case zx_idp_SubjectRestriction_ELEM:
+    return zx_LEN_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x);
   case zx_sa_BaseID_ELEM:
     return zx_LEN_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x);
   case zx_sa_EncryptedID_ELEM:
@@ -3943,7 +4011,7 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_m20_EntitiesDescriptor(c, (struct zx_m20_EntitiesDescriptor_s*)x);
 
   case ZX_TOK_NOT_FOUND:
-    len = 1 + sizeof("ELTAG")-1 + 1 + 2 + sizeof("ELTAG")-1 + 1;
+    len = 1 + ZX_ANY_EL(x)->name_len + 1 + 2 + ZX_ANY_EL(x)->name_len + 1;
     if (x->g.ns && x->g.ns->prefix_len)
       len += (x->g.ns->prefix_len + 1) * 2;
     len += zx_len_wo_common(c, x);
@@ -3962,6 +4030,7 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
 /* Called by: */
 char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
 {
+  struct zx_ns_s* pop_seen = 0;
   struct zx_elem_s* kid;
   switch (x->g.tok) {
   case zx_a_Address_ELEM:
@@ -3984,6 +4053,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_a_Action(c, (struct zx_a_Action_s*)x, p);
   case zx_a_SoapAction_ELEM:
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "SoapAction", sizeof("SoapAction")-1);
+  case zx_b_TargetIdentity_ELEM:
+    return zx_ENC_WO_b_TargetIdentity(c, (struct zx_b_TargetIdentity_s*)x, p);
   case zx_ac_ActivationLimitDuration_ELEM:
     return zx_ENC_WO_ac_ActivationLimitDuration(c, (struct zx_ac_ActivationLimitDuration_s*)x, p);
   case zx_ac_ActivationLimitUsages_ELEM:
@@ -5054,8 +5125,6 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_b_Framework(c, (struct zx_b_Framework_s*)x, p);
   case zx_b_Sender_ELEM:
     return zx_ENC_WO_b_Sender(c, (struct zx_b_Sender_s*)x, p);
-  case zx_b_TargetIdentity_ELEM:
-    return zx_ENC_WO_b_TargetIdentity(c, (struct zx_b_TargetIdentity_s*)x, p);
   case zx_b_CredentialsContext_ELEM:
     return zx_ENC_WO_b_CredentialsContext(c, (struct zx_b_CredentialsContext_s*)x, p);
   case zx_b_EndpointUpdate_ELEM:
@@ -6686,6 +6755,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_sa_OneTimeUse(c, (struct zx_sa_OneTimeUse_s*)x, p);
   case zx_sa_ProxyRestriction_ELEM:
     return zx_ENC_WO_sa_ProxyRestriction(c, (struct zx_sa_ProxyRestriction_s*)x, p);
+  case zx_idp_SubjectRestriction_ELEM:
+    return zx_ENC_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x, p);
   case zx_sa_BaseID_ELEM:
     return zx_ENC_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x, p);
   case zx_sa_EncryptedID_ELEM:
@@ -7066,14 +7137,17 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_m20_EntitiesDescriptor(c, (struct zx_m20_EntitiesDescriptor_s*)x, p);
 
   case ZX_TOK_NOT_FOUND:
+    pop_seen = 0;
     ZX_OUT_CH(p, '<');
     if (x->g.ns && x->g.ns->prefix_len) {
       ZX_OUT_MEM(p, x->g.ns->prefix, x->g.ns->prefix_len);
       ZX_OUT_CH(p, ':');
     }
     ZX_OUT_MEM(p, ZX_ANY_EL(x)->name, ZX_ANY_EL(x)->name_len);
-
+    zx_add_xmlns_if_not_seen(c, x->g.ns, &pop_seen);
+    
     /* *** xmlns specs */ 
+    p = zx_enc_seen(p, pop_seen); 
     p = zx_enc_unknown_attrs(p, ZX_ANY_EL(x)->gg.any_attr);
   
     for (kid = x->kids; kid; kid = ((struct zx_elem_s*)(kid->g.wo)))
@@ -7087,6 +7161,7 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     }
     ZX_OUT_MEM(p, ZX_ANY_EL(x)->name, ZX_ANY_EL(x)->name_len);
     ZX_OUT_CH(p, '>');
+    zx_pop_seen(pop_seen);
     break;
   case ZX_TOK_DATA:
     ZX_OUT_STR(p, x);

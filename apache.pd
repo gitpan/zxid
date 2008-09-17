@@ -1,14 +1,14 @@
 Apache Setup Receipe for ZXID
 #############################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: apache.pd,v 1.3 2007/03/06 07:39:13 sampo Exp $>>
+<<cvsid: $Id: apache.pd,v 1.13 2008-09-17 02:39:21 sampo Exp $>>
 
 While I am not a guru in Apache set ups and others will do this much
 better, not to speak of the official documentation, I still find that
-to ensure initial success of new installer, some help may be in order.
+to ensure initial success of the new installer, some help may be in order.
 
 Consider this receipe only one of many possible setups and not
-ncessarily even the best. The receipe worked for me in August 2006. If
+necessarily even the best. The receipe worked for me in August 2006. If
 you come much later, things may have changed.
 
 This Apache setup aims to illustrate
@@ -17,14 +17,21 @@ This Apache setup aims to illustrate
 * mod_php5 invocation of zxid.php
 * mod_perl invocation of zxid.pl
 * CGI invocation of zxid.pl (alternative to mod_perl)
+* Support mod_auth_saml
 
-1 Compiling from Source
+1 Architectural Overview
+========================
+
+<<dia: arch-zxid-apache:bg,fg: ZXID, via mod_auth_saml, adds to Apache httpd Single Sign-On (SSO), Attribute Broker, and XACML PEP Capabilities that can be used by existing static and dynamic content without alteration.>>
+<<newpage: >>
+
+2 Compiling from Source
 =======================
 
 You may also install from binaries, but I feel the compilation
 route is only reliable way to have reproducible results.
 
-1.1 apache httpd-2.2.3
+2.1 apache httpd-2.2.3
 ----------------------
 
 Download from: http://httpd.apache.org/download.cgi
@@ -64,13 +71,13 @@ stable software.
 
   make install
 
-1.2 perl-5.8.8
+2.2 perl-5.8.8
 --------------
 
 From http://ftp.funet.fi/pub/CPAN/src/
 
 This can be usually skipped if your stock perl is 5.8 series and nonthreaded
-and you are happu with prefork MPM. Try
+and you are happy with prefork MPM. Try
 
   perl -V:useithreads -V:usemultiplicity
 
@@ -86,7 +93,7 @@ To compile perl you would
   ./Configure -prefix=/apps/perl/5.8.8 -des -Dusethreads -Doptimize='-g' -Dusedevel
   make && make test && make install
 
-1.3 mod_perl-2.0.2
+2.3 mod_perl-2.0.2
 ------------------
 
 From http://perl.apache.org/dist/
@@ -102,7 +109,7 @@ Install instructions: http://perl.apache.org/docs/2.0/user/install/install.html
 
 You can read futher at http://perl.apache.org/docs/2.0/user/intro/start_fast.html
 
-1.4 php-5.1.6
+2.4 php-5.1.6
 -------------
 
 From php.net
@@ -113,10 +120,192 @@ Install instructions: http://www.php.net/manual/en/install.unix.apache2.php
   make
   make install
 
-2 Configuring Apache
+2.5 mod_auth_saml
+-----------------
+
+For avoidance of doubt, ~mod_auth_saml~ - based on zxid.org - is
+separate project from ~mod_authn_casa~, ~mod_scalp~ and ~mod_mellon~,
+which provide somewhat similar functionality, but have
+different code bases. It may be possible to use all of these
+simultaneously, but this is not recommended unless you are an expert
+that can sort out the differences.
+
+~mod_auth_saml~ provides Apache2 native integration at authentication
+layer. The objective of ~mod_auth_saml~ is to cause Apache to trigger
+SAML 2.0 Single Sign-On instead of HTTP Basic or Digest authentication.
+
+~mod_auth_saml~ does not backend in any module in the <<italic:
+mod_authn_*>> sense. All authentication information is obtained from
+the frontend IdP without consulting any backend. (However, the zxid.org
+session mechanism needs backend storage - once zxid.org is generalized
+to support other backends than the default file system, we may factor
+out the local session storage to a backend of its own.)
+
+If you want to perform local authentication after the SSO,
+~mod_auth_saml~ will provide for downstream <<italic: mod_authz_*>> modules a
+(pseudonymous) user identifier that can be used to make the
+authorization decisions. It will also provide the attributes that were
+received in the SSO or that were retrieved by later web services calls
+(like ID-DAP or Personal Profile calls).
+
+Eventually ~mod_auth_saml~ may call on a <<italic: mod_authn_*>>
+backend to obtain additional local attributes (beyond the ones
+received in the SSO). Such call will use the pseudonym as key.
+
+2.5.1 Compiling mod_auth_saml
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Before you try compilation and installation of mod_auth_saml, you
+should investigate what type of Apache install you have. Unfortunately
+different OS distributions do this differently, making it difficult to
+provide one set of instructions that would always work.
+
+Out of box, zxid/Makefile assumes your Apache is installed where
+the Apache project source code distribution would put it, namely
+in APACHE_ROOT=/usr/local/httpd. You can change this by adding
+a new definition in localconf.mk.
+
+On some distributions the Apache related files are scattered
+in many places that are not under any specific "root" directory.
+In these cases you may need to define separate variable
+for each use, e.g:
+
+  localconf.mk:
+  APACHE_INCLUDE=/usr/include/apache2
+  APR_INCLUDE=/usr/include/apr-1.0
+  APACHE_MODULES=/usr/lib/apache2/modules
+
+To locate the correct directories, you can try
+
+  find / -name ap_config.h
+  find / -name apr.h
+  find / -name mod_auth_basic.so
+
+Once everything is correctly set up, you can compile
+and install by saying
+
+  make apachezxid
+  make apachezxid_install
+
+The installation step really just copies mod_auth_saml.so to
+modules/ subdirectory of the Apache installation.
+
+2.5.2 Configuration in httpd.conf
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For complete configuration, see next section "Configuring Apache".
+
+First you have to make sure mod_auth_saml.so is located in the modules/
+directory of your Apache httpd installation
+(e.g. /usr/local/httpd/modules/mod_auth_saml.so). Then you should pull
+the module into the configuration with directive:
+
+   LoadModule auth_saml_module modules/mod_auth_saml.so
+
+Next you should configure the Location protected by SSO:
+
+  <Location /protected>
+    Require valid-user
+    AuthType "saml"
+    ZXIDConf "URL=https://sp1.zxidsp.org:5443/protected/saml"
+  </Location>
+
+(*** the saml part should be automatically appeneded, sanity check Location and url matcu, dig virtual host domain name automatically, example http://idrecconv.orange.fr/auth_user/bin/auth_user.cgi?origine=...)
+
+2.5.3 Important TODO items for mod_auth_saml
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Memory management needs an audit. The problem centers around memory
+management of dependency libraries openssl and libcurl. Both libraries
+as well as ZXID itself have vectorable memory allocators, i.e. you
+can supply your own implementation of malloc(3) and free(3). This allows
+Apache pool allocation functions to be used instead of the traditional
+malloc(3) and free(3).
+
+Unfortunately life is not that simple. Which pool should we use? The
+per request pool is suitable for most purposes, but how can we know for what
+purpose openssl and libcurl allocate memory? There is no easy way of
+knowing and the ephemeral nature of per request allocation may land us
+in trouble. Other option would be to allocate everything from global
+pool to make sure the memory will never be freed under us. Unfortunately
+memory from the global pool can not be freed. Thus we may be better
+sticking to malloc(3) and free(3).
+
+To make matters worse, openssl is used by all of zxid, libcurl, and Apache
+mod_ssl. Which one gets to set the function pointers that point to the
+allocator? There is no easy answer - or at least we have not seen one yet.
+
+The allocator problems may be just about manageable for Apache running
+in traditional pre-fork server mode, but become a real night mare for
+threaded execution modes.
+
+2.5.4 mod_auth_saml FAQ
+~~~~~~~~~~~~~~~~~~~~~~~
+
+1.  How it actually works, does the module intercept every http
+    request/response?
+
+    It intercepts every HTTP request destined to URL prefixed by what
+    appears in httpd.conf <Location> configuration, i.e. Apache itself
+    prefilters by URL prefix.
+
+    Then it checks if cookie session is present - if so, the request is
+    passed through to rest of Apache processing. If not, it will start
+    the SSO processing by presenting the IdP selection screen. Eventually
+    this will be improved to attempt automatic detection of IdP, e.g. if
+    there is only one IdP in the CoT.
+
+    If the URL is the special one configured in
+
+      ZXIDConf "URL=https://sp1.zxidsp.org:5443/protected/saml"
+
+    it will pass control to the ZXID code.
+
+    If SSO was triggered, the original URL is held in RelayState and
+    once the SSO completes (which will happen at the special URL), a
+    redirect is performed to the original URL found from RelayState.
+    This could be used beneficially in unsolicited SSO as well.
+
+2.  Does it have the reverse proxy functionality or is it located elsewhere?
+
+    mod_auth_saml works at the same layer and much the same way as
+    HTTP Basic authentication is implemented in Apache. It runs
+    in the Apache process itself and does not invoke any external
+    helper.
+
+    It is not a reverse proxy. However, it is possible to configure
+    a frontend Apache server, with mod_auth_saml, to act as a reverse
+    proxy.<<footnote: Integrating zxid to a dedicated reverse proxy
+    like Pound (http://www.apsis.ch/pound/) should not be difficult.>>
+
+3.  Is it OS independant? I mean, works both for Apache-Linux and
+    Apache-Windows and Apache-Solaris? I wonder not directly, but
+    could be compiled, right?
+
+    It should not be OS dependant. For Unixes I am pretty sure this is a
+    fact. For Windows we need more testing (as of May 2008). It does not
+    yet (May 2008) work in IIS.
+
+4.  How the session creation at application is handled?
+
+    The name of the cookie that ZXID sets is configurable (by default it
+    is called ZXIDSES). This may be enough for some applications.
+
+
+2.6 mod_authz_xacml
+-------------------
+
+We plan to develop a <<italic: mod_authz_*>> layer module that will perform the
+authorization using XACML. ~mod_authz_xacml~ will act as a PEP and
+pass all available session attributes to a PDP and then act on the
+decision of the PDP to deny or permit access to a web resource. This is
+still WIP.
+
+3 Configuring Apache
 ====================
 
-You need to take some configuration steps to accomplish
+These configuration steps are to enable all ZXID Apache related functionality,
+including ~mod_auth_saml~, mod_perl, mod_php, and CGi.
 
 * Allow zxid to be triggered as CGI (the trick is SetHandler inside <Location>)
 * Allow zxid.pl to be triggered by mod_perl. The trick is
@@ -125,6 +314,7 @@ You need to take some configuration steps to accomplish
     PerlOptions +ParseHeaders
 * Allow zxid.php to be triggered by mod_php5. Trick is
     AddType application/x-httpd-php .php .phtml
+* Enable the mod_auth_saml for some directories
 * Set port number and domain
 * Enable SSL operation
 
@@ -290,7 +480,7 @@ diff -u httpd-ssl.conf.orig httpd-ssl.conf
  #       Listen directives: "Listen [::]:443" and "Listen 0.0.0.0:443"
  #
 -Listen 443
-+Listen 8443
++Listen 5443
  
  ##
  ##  SSL Global Context
@@ -299,7 +489,7 @@ diff -u httpd-ssl.conf.orig httpd-ssl.conf
  ##
  
 -<VirtualHost _default_:443>
-+<VirtualHost _default_:8443>
++<VirtualHost _default_:5443>
  
  #   General setup for the virtual host
 -DocumentRoot "/apps/apache/2.2.3/htdocs"
@@ -347,16 +537,35 @@ diff -u httpd-ssl.conf.orig httpd-ssl.conf
  </VirtualHost>                                  
 >>
 
-3 Trying It Out
+4 Trying It Out
 ===============
 
-Use browser to access following URLs to try your accomplishments out:
+Check sp1.zxidsp.org resolves
 
-1. https://sp1.zxidsp.org:8443/README.zxid tests (tests simple file access
+  ping sp1.zxidsp.org
+
+Start Apache httpd using
+
+  apachectl restart
+
+<<ignore:
+/apps/apache/std/bin/apachectl restart
+https://sp1.zxidsp.org:5443/README.zxid
+>>
+
+At this stage you should observe carefully for any unresolved symbols
+or missing shared libraries (.so) (or dynamic link libraries, DLLs).
+If you see any, you need to resolve them, e.g. by setting LD_LIBRARY_PATH
+environment variable.
+
+Now, use browser to access following URLs to try your accomplishments out:
+
+1. https://sp1.zxidsp.org:5443/README.zxid tests (tests simple file access
    and that the server works at all)
-2. https://sp1.zxidsp.org:8443/zxid?o=E (tests the SP CGI written in C)
-3. https://sp1.zxidsp.org:8443/zxid.pl?o=E (tests the SP mod_perl way)
-4. https://sp1.zxidsp.org:8443/zxid.php?o=E (tests the SP mod_php5 way)
+2. https://sp1.zxidsp.org:5443/zxid?o=E (tests the SP CGI written in C)
+3. https://sp1.zxidsp.org:5443/zxid.pl?o=E (tests the SP mod_perl way)
+4. https://sp1.zxidsp.org:5443/zxid.php?o=E (tests the SP mod_php5 way)
+5. https://sp1.zxidsp.org:5443/protected/content.txt
 
 If any of the above does not work, be sure to inspect the apache
 logs (be sure to replace /home/sampo with whatever makes sense):
@@ -370,5 +579,315 @@ Also make sure the execute permission is set for any CGI scripts, e.g:
 
   chmod a+x zxid.pl
 
+5 ZXID Attribute Broker (ZXAB)
+==============================
+
+*** As of 20080324 the XACML PEP functionality has not been implemented. We
+expect progress within weeks. The following description acts as a specification
+for our upcoming implementation.
+
+<<dia: arch-zxid-attr-brkr:bg,fg: Liberty IGF Compliant Attribute Broker fetches the needed attributes from available providers and populates them to the subprocess environment.>>
+
+As can be seen in the accompanying figure, the provision of attributes to the
+applications in the Apache Subprocess Environment (CGI, mod_perm, mod_php, etc.)
+is handled as follows:
+
+1. Configure attribute needs and names (this corresponds to CARML declaration)
+2. Configure attribute sources (this corresponds to AAPML declaration)
+3. Configure source mappings
+4. Filter for needs (and optional wants)
+5. Map to application domain
+6. Provide attributes in to subprocess environment
+7. Comply with obligations (large part of this responsibility rests
+   with the subprocesses and can not be automatically enforced)
+
+5.1 Attribute Broker Configuration Directives
+---------------------------------------------
+
+*** This is provisory specification
+
+NOT IMPLEMENTED YET!
+
+The Attribute Broker configuration in Apache set-up is per <Location>
+directive. Different Locations within same server can have different needs.
+
+*Example*
+
+  <Location /protected>
+  ZXIDConf "NEED=CN$GUI$40000000$none$ext"
+  ZXIDConf "NEED=age$adult-content$100000$log-upon-sso,report-to-dashboard-if-avail$ext"
+  ZXIDConf "WANT=birthday$horoscope$40000000$log-upon-sso,must-report-to-dashboard$ext"
+  ZXIDConf "WANT=street,l,st,zip,c$ship$40000000$log-upon-sso,report-to-dashboard-if-avail$ext"
+  </Location>
+
+5.1.1 NEED specification
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+NOT IMPLEMENTED YET!
+
+NEED specification expresses attributes that are required for the
+application to work. Attribute names are in the +Common Namespace+
+(often same as subprocess environment application
+namespace). Inavailability of the attributes aborts application
+processing.
+
+  NEED=A,B$usage$retention$oblig$ext
+
+A,B:: Names of attributes (comma separated list) needed by subprocess environment
+usage:: The promised usage of the attributes (feeds out to CARML declaration). Specific
+    usage enumerators or policy language are +still To Be Defined+.
+retention:: The data retention policy that will be applied to these attributes
+    if they are received. Specific enumerators or language are +still To Be Defined+.
+    The example illustrates retention in seconds.
+oblig:: The obligations that will be complied to WRT these attributes
+    if they are received. Specific enumerators or language are +still To Be Defined+.
+ext:: Extension fields to describe attribute policies in more detail.
+
+5.1.2 WANT specification
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+NOT IMPLEMENTED YET!
+
+WANT specification expresses attributes that are optional, but useful,
+for the application.  Inavailability of the attributes may cause
+reduced application functionality or the application querying the
+missing attributes directly from the user. WANT specification
+has same syntax as NEED specification. Inavailability of the attribute
+has no consequence or may cause default to be supplied.
+
+  WANT=A,B$usage$retention$oblig$ext$default
+
+A,B:: Names of attributes (comma separated list) needed by subprocess environment. If
+    star (*) is specified, all available attributes are requested.<<footnote: This
+    should not be used light heartedly. Much better to spell out explicitly the
+    attribute requirements so that proper CARML description can be made.>>
+usage:: The promised usage of the attributes (feeds out to CARML declaration). Specific
+    usage enumerators or policy language are +still To Be Defined+.
+retention:: The data retention policy that will be applied to these attributes
+    if they are received. Specific enumerators or language are +still To Be Defined+.
+oblig:: The obligations that will be complied to WRT these attributes
+    if they are received. Specific enumerators or language are +still To Be Defined+.
+ext:: Extension fields to describe attribute policies in more detail.
+default:: Optional default value to use in case the attribute is not available.
+
+5.1.3 ATTRSRC specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NOT IMPLEMENTED YET!
+
+Attribute Source (ATTRSRC for short) specification indicates a
+potential source of attribute data and the mechanics for retreiving
+them. Each attribute originating from a determined source is in
+namespace of that source (+source namespace+). This avoids attribute
+naming conflicts and provides for clean attribute renaming
+framework. If an attribute is not renamed, then it is passed to the
++common namespace+ by just dropping the namespace prefix.
+
+  ATTRSRC=namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext
+
+namespace:: Namespace string assigned to this attribute source.
+A,B:: List of attributes available from this source
+weight:: Weighting factor (integer) determining the prioirity of this source. Less indicates
+    higher preference.
+AAPMLref:: Reference to AAPML declaration about policies applying to this attribute source
+otherLim:: Description of additional policies applying to this attribute source
+ext:: Extensions
+
+5.1.4 INMAP specification
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NOT IMPLEMENTED YET!
+
++INMAP+ specification provides for various input attribute renaming and
+input attribute value decoding operations.
+
+  INMAP=src$A$rule$b$ext
+
+src:: Source namespace of the attribute
+A:: Attribute name in the source namespace
+b:: Attribute name in common namespace (if omitted, same as +A+)
+rule:: transformation rule:
+    rename:: Just renames the attribute. Value is passed intact.
+    feidedec:: Decode the attribute value accoring to Feide (Norway) rules. Also
+        rename if +b+ provided.
+    feideenc:: Encode the attribute value accoring to Feide (Norway) rules. Also
+        rename if +b+ provided.
+    unsb64-rfc1952:: Decode the attribute value accoring to safebase64-RFC1952
+        rules ([RFC3548], [RFC1952]). Also rename if +b+ provided.
+    rfc1952-sb64:: Encode the attribute value accoring to RFC1952-safebase64
+        rules ([RFC1952], [RFC3548]). Also rename if +b+ provided.
+    unsb64:: Decode the attribute value according to safebase64 [RFC3548] rule (NZ). Also
+        rename if +b+ provided.
+    sb64:: Encode the attribute value according to safebase64 [RFC3548] rule (NZ). Also
+        rename if +b+ provided.
+ext:: Extended argument that may be used by some rules.
+
+*SSO derived attributes*
+
+nameid:: Concatenation of +affid+ and +idpnid+ like: "affid$idpnid"
+
+5.1.5 OUTMAP specification
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NOT IMPLEMENTED YET!
+
++OUTMAP+ specification provides for various attribute renaming and
+value encoding operations just before passing attributes to the
+subprocess environment (i.e. what CGI scripts see). Syntax and
+available operations are the same as for +INMAP+.
+
+  OUTMAP=src$A$rule$b$ext
+
+5.1.6 Additional Filtering
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+NOT IMPLEMENTED YET!
+
+By default only attributes listed in +NEED+ and +WANT+ specifications are
+passed thru, and even then only if the available usage policies are acceptable.
+However, if additional attributes are available, they can be accepted using
++WANT+ specification with "*". In this case, some attributes can be filtered
+out using +SUPPRESS+ directive (infact +SUPPRESS+ applies inconditionally
+to all attributes just before +out-map+ stage):
+
+  SUPPRESS=A,B,C
+
+6 ZXID XACML PEP
+================
+
+*** As of 20080324 the XACML PEP functionality has not been implemented. We
+expect progress within weeks.
+
+> *Important*: You need a functioning XACML PDP (Policy Decision Point
+> to use this functionality. ZXID does not include such PDP - you need
+> aquire and configure a commercial (e.g. Symlabs XAML PDP) or third
+> party open source PDP.
+
+The attributes gathered by the Attribute Broker phase are available
+for authorization decisions. The local authorization is applied before,
+and after, the XACML authorization, if any.
+
+* Explicit Deny stops processing
+* Explicit Allow moves to next phase
+* Lack of Allow or Deny at end of phase moves to next phase
+* Lack of Allow after all phases is Deny
+
+6.1 Local PEP Authorization Functionality
+-----------------------------------------
+
+The authorization module can authorize access locally based on
+
+* List of approved user names
+* Role attribute
+* Authorization token (***)
+
+6.2 Configuring XACML PEP
+-------------------------
+
+The attributes gathered by the Attribute Broker phase are available
+for formulating the XAML request.
+
+Since the XAML PDP may expect attributes names differently from the
++Common Namespace+, an additional mapping directive is provided.
+
+* Subject Attributes
+* Resource Attributes
+* Other Attributes?
+
+7 Conclusion
+============
+
+If you have any trouble, please do not hesitate to contact the author.
+
 <<htmlpreamble: <title>Apache Setup Receipe for ZXID</title><body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans><h1>Apache Setup Receipe for ZXID</h1> >>
 <<EOF: >>
+
+grep ap_internal_redirect * */* */*/* */*/*/* */*/*/*/* */*/*/*/*/*
+
+Apparent order of processing in Apache httpd-2.2.3
+
+tail -f tmp/log.httpd &
+tail -f tmp/err-httpd &
+/apps/apache/std/bin/apachectl restart
+https://sp1.zxidsp.org:5443/protected/content.txt
+https://s-idp.liberty-iop.org:8881/N
+
+ulimit -c unlimited
+/apps/apache/std/bin/httpd -X    # Run Apache in single threaded debug mode
+gdb /apps/apache/std/bin/httpd /d/sampo/zxid/core
+
+
+
+  
+    # In general accept any config option that matches canonical config
+    # name. These options are applied after default (zxidconf.h) and
+    # reading /var/zxid/zxid.conf (unless path modified) configuration file.
+    # Thus these directives allow overrride of the default configuration options.
+    #SAMLDecode "*" NZ-safe-base64   # How to decode attributes in SSO a7n
+    #SAMLPrefix SAML_       # All SAML SSO related attributes will be prefixed by this string.
+    #SAMLMap NameID uid     # No default. Map attribute to another (visible as HTTP header to CGI)
+    #SAMLWhitelist attr1,attr2   # attr1 and attr2 are prior to mapping.
+    #SAMLBlacklist *
+    #SAMLWhitelist *
+    #SAMLBlacklist attr3,attr4
+    # Default: Blacklist: *, i.e. nothing is passed.
+    #SAMLRequire attr value    # For authz require attribute to have value (already convered?)
+    #SAMLTrustToken domain ENTERPRISE_  # Import attributes from an enterprise trust token
+
+    # SAMLEnable is used to enable SAML authentication on a location.
+    # It has three possible values:
+    #   "off":  mod_auth_saml disabled. This is the default.
+    #   "passive": If the user is authorized to access the resource, then
+    #           we will populate the environment with information about
+    #           the user. If the user isn't authorized, then we won't
+    #           populate the environment, but we won't deny the user
+    #           access either.
+    #   "active": We will populate the environment with information about
+    #           the user if he is authorized. If he is authenticated
+    #           (logged in), but not authorized (according to the
+    #           SAMLRequire directives, then we will return a 403
+    #           Forbidden error. If he isn't authenticated then we will
+    #           redirect him to the login page of the IdP.
+    #
+    # Default: SAMLEnable "off"
+    #SAMLEnable "active"
+
+    # SAMLAttributeDecoder is used to select which decoder mod_auth_saml
+    # will use when decoding attribute values.
+    # There are two possible values: "none" and "feide". "none" is the
+    # default.
+    # They have the following meanings:
+    #   "none":  mod_auth_saml will store the attribute as it is
+    #            received from the IdP. This is the default behaviour.
+    #   "feide": FEIDE currently stores several values in a single
+    #            AttributeValue element. The values are base64 encoded
+    #            and separated by a underscore. This decoder reverses
+    #            this encoding.
+    #SAMLAttributeDecoder "none"
+
+    # SAMLUser selects which attribute we should use for the username.
+    # The username is passed on to other apache modules and to the web
+    # page the user visits. NAME_ID is an attribute which we set to
+    # the id we get from the IdP.
+    #SAMLUserAttribute "SAML_NAME_ID"
+
+    # SAMLRenameAttribute configuration directives allows you to map
+    # attribute names received from the IdP to names you choose
+    # yourself. The syntax is 'Rename <local name> <IdP name>'.
+    # You can list multiple Rename directives.
+    # Default. None set.
+    #SAMLRenameAttribute "e-mail" "mail"
+
+    # SAMLRequire allows you to limit access to those with specific
+    # attributes. The syntax is
+    # 'SAMLRequire <attribute name> <list of valid values>'.
+    # Note that the attribute name is the name we received from the
+    # IdP.
+    #
+    # If you don't list any SAMLRequire directives, then any user
+    # authenticated by the IdP will have access to this service. If
+    # you list several SAMLRequire directives, then all of them
+    # will have to match.
+    #
+    # Default: None set.
+    #SAMLRequire "eduPersonAffiliation" "student" "employee"

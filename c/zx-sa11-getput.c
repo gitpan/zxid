@@ -1919,6 +1919,18 @@ void zx_sa11_Assertion_DEL_Signature(struct zx_sa11_Assertion_s* x, int n)
 
 #endif
 
+/* FUNC(zx_sa11_Assertion_GET_AssertionID) */
+struct zx_str* zx_sa11_Assertion_GET_AssertionID(struct zx_sa11_Assertion_s* x) { return x->AssertionID; }
+/* FUNC(zx_sa11_Assertion_PUT_AssertionID) */
+void zx_sa11_Assertion_PUT_AssertionID(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->AssertionID = y; }
+/* FUNC(zx_sa11_Assertion_GET_IssueInstant) */
+struct zx_str* zx_sa11_Assertion_GET_IssueInstant(struct zx_sa11_Assertion_s* x) { return x->IssueInstant; }
+/* FUNC(zx_sa11_Assertion_PUT_IssueInstant) */
+void zx_sa11_Assertion_PUT_IssueInstant(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_sa11_Assertion_GET_Issuer) */
+struct zx_str* zx_sa11_Assertion_GET_Issuer(struct zx_sa11_Assertion_s* x) { return x->Issuer; }
+/* FUNC(zx_sa11_Assertion_PUT_Issuer) */
+void zx_sa11_Assertion_PUT_Issuer(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->Issuer = y; }
 /* FUNC(zx_sa11_Assertion_GET_MajorVersion) */
 struct zx_str* zx_sa11_Assertion_GET_MajorVersion(struct zx_sa11_Assertion_s* x) { return x->MajorVersion; }
 /* FUNC(zx_sa11_Assertion_PUT_MajorVersion) */
@@ -1927,18 +1939,6 @@ void zx_sa11_Assertion_PUT_MajorVersion(struct zx_sa11_Assertion_s* x, struct zx
 struct zx_str* zx_sa11_Assertion_GET_MinorVersion(struct zx_sa11_Assertion_s* x) { return x->MinorVersion; }
 /* FUNC(zx_sa11_Assertion_PUT_MinorVersion) */
 void zx_sa11_Assertion_PUT_MinorVersion(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_sa11_Assertion_GET_AssertionID) */
-struct zx_str* zx_sa11_Assertion_GET_AssertionID(struct zx_sa11_Assertion_s* x) { return x->AssertionID; }
-/* FUNC(zx_sa11_Assertion_PUT_AssertionID) */
-void zx_sa11_Assertion_PUT_AssertionID(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->AssertionID = y; }
-/* FUNC(zx_sa11_Assertion_GET_Issuer) */
-struct zx_str* zx_sa11_Assertion_GET_Issuer(struct zx_sa11_Assertion_s* x) { return x->Issuer; }
-/* FUNC(zx_sa11_Assertion_PUT_Issuer) */
-void zx_sa11_Assertion_PUT_Issuer(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->Issuer = y; }
-/* FUNC(zx_sa11_Assertion_GET_IssueInstant) */
-struct zx_str* zx_sa11_Assertion_GET_IssueInstant(struct zx_sa11_Assertion_s* x) { return x->IssueInstant; }
-/* FUNC(zx_sa11_Assertion_PUT_IssueInstant) */
-void zx_sa11_Assertion_PUT_IssueInstant(struct zx_sa11_Assertion_s* x, struct zx_str* y) { x->IssueInstant = y; }
 
 
 
@@ -3191,14 +3191,14 @@ void zx_sa11_AuthenticationStatement_DEL_AuthorityBinding(struct zx_sa11_Authent
 
 #endif
 
-/* FUNC(zx_sa11_AuthenticationStatement_GET_AuthenticationMethod) */
-struct zx_str* zx_sa11_AuthenticationStatement_GET_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x) { return x->AuthenticationMethod; }
-/* FUNC(zx_sa11_AuthenticationStatement_PUT_AuthenticationMethod) */
-void zx_sa11_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x, struct zx_str* y) { x->AuthenticationMethod = y; }
 /* FUNC(zx_sa11_AuthenticationStatement_GET_AuthenticationInstant) */
 struct zx_str* zx_sa11_AuthenticationStatement_GET_AuthenticationInstant(struct zx_sa11_AuthenticationStatement_s* x) { return x->AuthenticationInstant; }
 /* FUNC(zx_sa11_AuthenticationStatement_PUT_AuthenticationInstant) */
 void zx_sa11_AuthenticationStatement_PUT_AuthenticationInstant(struct zx_sa11_AuthenticationStatement_s* x, struct zx_str* y) { x->AuthenticationInstant = y; }
+/* FUNC(zx_sa11_AuthenticationStatement_GET_AuthenticationMethod) */
+struct zx_str* zx_sa11_AuthenticationStatement_GET_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x) { return x->AuthenticationMethod; }
+/* FUNC(zx_sa11_AuthenticationStatement_PUT_AuthenticationMethod) */
+void zx_sa11_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_sa11_AuthenticationStatement_s* x, struct zx_str* y) { x->AuthenticationMethod = y; }
 
 
 
@@ -3208,14 +3208,14 @@ void zx_sa11_AuthenticationStatement_PUT_AuthenticationInstant(struct zx_sa11_Au
 struct zx_str* zx_sa11_AuthorityBinding_GET_AuthorityKind(struct zx_sa11_AuthorityBinding_s* x) { return x->AuthorityKind; }
 /* FUNC(zx_sa11_AuthorityBinding_PUT_AuthorityKind) */
 void zx_sa11_AuthorityBinding_PUT_AuthorityKind(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y) { x->AuthorityKind = y; }
-/* FUNC(zx_sa11_AuthorityBinding_GET_Location) */
-struct zx_str* zx_sa11_AuthorityBinding_GET_Location(struct zx_sa11_AuthorityBinding_s* x) { return x->Location; }
-/* FUNC(zx_sa11_AuthorityBinding_PUT_Location) */
-void zx_sa11_AuthorityBinding_PUT_Location(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y) { x->Location = y; }
 /* FUNC(zx_sa11_AuthorityBinding_GET_Binding) */
 struct zx_str* zx_sa11_AuthorityBinding_GET_Binding(struct zx_sa11_AuthorityBinding_s* x) { return x->Binding; }
 /* FUNC(zx_sa11_AuthorityBinding_PUT_Binding) */
 void zx_sa11_AuthorityBinding_PUT_Binding(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y) { x->Binding = y; }
+/* FUNC(zx_sa11_AuthorityBinding_GET_Location) */
+struct zx_str* zx_sa11_AuthorityBinding_GET_Location(struct zx_sa11_AuthorityBinding_s* x) { return x->Location; }
+/* FUNC(zx_sa11_AuthorityBinding_PUT_Location) */
+void zx_sa11_AuthorityBinding_PUT_Location(struct zx_sa11_AuthorityBinding_s* x, struct zx_str* y) { x->Location = y; }
 
 
 
@@ -3623,14 +3623,14 @@ void zx_sa11_AuthorizationDecisionStatement_DEL_Evidence(struct zx_sa11_Authoriz
 
 #endif
 
-/* FUNC(zx_sa11_AuthorizationDecisionStatement_GET_Resource) */
-struct zx_str* zx_sa11_AuthorizationDecisionStatement_GET_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x) { return x->Resource; }
-/* FUNC(zx_sa11_AuthorizationDecisionStatement_PUT_Resource) */
-void zx_sa11_AuthorizationDecisionStatement_PUT_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_str* y) { x->Resource = y; }
 /* FUNC(zx_sa11_AuthorizationDecisionStatement_GET_Decision) */
 struct zx_str* zx_sa11_AuthorizationDecisionStatement_GET_Decision(struct zx_sa11_AuthorizationDecisionStatement_s* x) { return x->Decision; }
 /* FUNC(zx_sa11_AuthorizationDecisionStatement_PUT_Decision) */
 void zx_sa11_AuthorizationDecisionStatement_PUT_Decision(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_str* y) { x->Decision = y; }
+/* FUNC(zx_sa11_AuthorizationDecisionStatement_GET_Resource) */
+struct zx_str* zx_sa11_AuthorizationDecisionStatement_GET_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x) { return x->Resource; }
+/* FUNC(zx_sa11_AuthorizationDecisionStatement_PUT_Resource) */
+void zx_sa11_AuthorizationDecisionStatement_PUT_Resource(struct zx_sa11_AuthorizationDecisionStatement_s* x, struct zx_str* y) { x->Resource = y; }
 
 
 
@@ -4329,14 +4329,14 @@ void zx_sa11_Evidence_DEL_Assertion(struct zx_sa11_Evidence_s* x, int n)
 
 
 
-/* FUNC(zx_sa11_NameIdentifier_GET_NameQualifier) */
-struct zx_str* zx_sa11_NameIdentifier_GET_NameQualifier(struct zx_sa11_NameIdentifier_s* x) { return x->NameQualifier; }
-/* FUNC(zx_sa11_NameIdentifier_PUT_NameQualifier) */
-void zx_sa11_NameIdentifier_PUT_NameQualifier(struct zx_sa11_NameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 /* FUNC(zx_sa11_NameIdentifier_GET_Format) */
 struct zx_str* zx_sa11_NameIdentifier_GET_Format(struct zx_sa11_NameIdentifier_s* x) { return x->Format; }
 /* FUNC(zx_sa11_NameIdentifier_PUT_Format) */
 void zx_sa11_NameIdentifier_PUT_Format(struct zx_sa11_NameIdentifier_s* x, struct zx_str* y) { x->Format = y; }
+/* FUNC(zx_sa11_NameIdentifier_GET_NameQualifier) */
+struct zx_str* zx_sa11_NameIdentifier_GET_NameQualifier(struct zx_sa11_NameIdentifier_s* x) { return x->NameQualifier; }
+/* FUNC(zx_sa11_NameIdentifier_PUT_NameQualifier) */
+void zx_sa11_NameIdentifier_PUT_NameQualifier(struct zx_sa11_NameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 
 
 
@@ -5022,14 +5022,14 @@ void zx_sa11_SubjectConfirmation_DEL_KeyInfo(struct zx_sa11_SubjectConfirmation_
 
 
 
-/* FUNC(zx_sa11_SubjectLocality_GET_IPAddress) */
-struct zx_str* zx_sa11_SubjectLocality_GET_IPAddress(struct zx_sa11_SubjectLocality_s* x) { return x->IPAddress; }
-/* FUNC(zx_sa11_SubjectLocality_PUT_IPAddress) */
-void zx_sa11_SubjectLocality_PUT_IPAddress(struct zx_sa11_SubjectLocality_s* x, struct zx_str* y) { x->IPAddress = y; }
 /* FUNC(zx_sa11_SubjectLocality_GET_DNSAddress) */
 struct zx_str* zx_sa11_SubjectLocality_GET_DNSAddress(struct zx_sa11_SubjectLocality_s* x) { return x->DNSAddress; }
 /* FUNC(zx_sa11_SubjectLocality_PUT_DNSAddress) */
 void zx_sa11_SubjectLocality_PUT_DNSAddress(struct zx_sa11_SubjectLocality_s* x, struct zx_str* y) { x->DNSAddress = y; }
+/* FUNC(zx_sa11_SubjectLocality_GET_IPAddress) */
+struct zx_str* zx_sa11_SubjectLocality_GET_IPAddress(struct zx_sa11_SubjectLocality_s* x) { return x->IPAddress; }
+/* FUNC(zx_sa11_SubjectLocality_PUT_IPAddress) */
+void zx_sa11_SubjectLocality_PUT_IPAddress(struct zx_sa11_SubjectLocality_s* x, struct zx_str* y) { x->IPAddress = y; }
 
 
 

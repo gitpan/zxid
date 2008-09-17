@@ -123,14 +123,14 @@ struct zx_idhrxml_CreateItem_s {
   zx_idhrxml_CreateItem_EXT
   struct zx_idhrxml_NewData_s* NewData;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
   struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
+  struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_idhrxml_CreateItem_GET_id(struct zx_idhrxml_CreateItem_s* x);
-struct zx_str* zx_idhrxml_CreateItem_GET_objectType(struct zx_idhrxml_CreateItem_s* x);
 struct zx_str* zx_idhrxml_CreateItem_GET_itemID(struct zx_idhrxml_CreateItem_s* x);
+struct zx_str* zx_idhrxml_CreateItem_GET_objectType(struct zx_idhrxml_CreateItem_s* x);
 
 struct zx_idhrxml_NewData_s* zx_idhrxml_CreateItem_GET_NewData(struct zx_idhrxml_CreateItem_s* x, int n);
 
@@ -141,8 +141,8 @@ struct zx_idhrxml_NewData_s* zx_idhrxml_CreateItem_POP_NewData(struct zx_idhrxml
 void zx_idhrxml_CreateItem_PUSH_NewData(struct zx_idhrxml_CreateItem_s* x, struct zx_idhrxml_NewData_s* y);
 
 void zx_idhrxml_CreateItem_PUT_id(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y);
-void zx_idhrxml_CreateItem_PUT_objectType(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y);
 void zx_idhrxml_CreateItem_PUT_itemID(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y);
+void zx_idhrxml_CreateItem_PUT_objectType(struct zx_idhrxml_CreateItem_s* x, struct zx_str* y);
 
 void zx_idhrxml_CreateItem_PUT_NewData(struct zx_idhrxml_CreateItem_s* x, int n, struct zx_idhrxml_NewData_s* y);
 
@@ -252,21 +252,21 @@ struct zx_idhrxml_Data_s {
   zx_idhrxml_Data_EXT
   struct zx_hrxml_Candidate_s* Candidate;	/* {0,1} nada */
   struct zx_idhrxml_Subscription_s* Subscription;	/* {0,1} nada */
+  struct zx_str* nextOffset;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* notSorted;	/* {0,1} attribute Now */
   struct zx_str* remaining;	/* {0,1} attribute xs:integer */
-  struct zx_str* nextOffset;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* setID;	/* {0,1} attribute xs:string */
-  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
   struct zx_str* changeFormat;	/* {0,1} attribute ChangedElements */
+  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_idhrxml_Data_GET_nextOffset(struct zx_idhrxml_Data_s* x);
 struct zx_str* zx_idhrxml_Data_GET_notSorted(struct zx_idhrxml_Data_s* x);
 struct zx_str* zx_idhrxml_Data_GET_remaining(struct zx_idhrxml_Data_s* x);
-struct zx_str* zx_idhrxml_Data_GET_nextOffset(struct zx_idhrxml_Data_s* x);
 struct zx_str* zx_idhrxml_Data_GET_setID(struct zx_idhrxml_Data_s* x);
-struct zx_str* zx_idhrxml_Data_GET_itemIDRef(struct zx_idhrxml_Data_s* x);
 struct zx_str* zx_idhrxml_Data_GET_changeFormat(struct zx_idhrxml_Data_s* x);
+struct zx_str* zx_idhrxml_Data_GET_itemIDRef(struct zx_idhrxml_Data_s* x);
 
 struct zx_hrxml_Candidate_s* zx_idhrxml_Data_GET_Candidate(struct zx_idhrxml_Data_s* x, int n);
 struct zx_idhrxml_Subscription_s* zx_idhrxml_Data_GET_Subscription(struct zx_idhrxml_Data_s* x, int n);
@@ -280,12 +280,12 @@ struct zx_idhrxml_Subscription_s* zx_idhrxml_Data_POP_Subscription(struct zx_idh
 void zx_idhrxml_Data_PUSH_Candidate(struct zx_idhrxml_Data_s* x, struct zx_hrxml_Candidate_s* y);
 void zx_idhrxml_Data_PUSH_Subscription(struct zx_idhrxml_Data_s* x, struct zx_idhrxml_Subscription_s* y);
 
+void zx_idhrxml_Data_PUT_nextOffset(struct zx_idhrxml_Data_s* x, struct zx_str* y);
 void zx_idhrxml_Data_PUT_notSorted(struct zx_idhrxml_Data_s* x, struct zx_str* y);
 void zx_idhrxml_Data_PUT_remaining(struct zx_idhrxml_Data_s* x, struct zx_str* y);
-void zx_idhrxml_Data_PUT_nextOffset(struct zx_idhrxml_Data_s* x, struct zx_str* y);
 void zx_idhrxml_Data_PUT_setID(struct zx_idhrxml_Data_s* x, struct zx_str* y);
-void zx_idhrxml_Data_PUT_itemIDRef(struct zx_idhrxml_Data_s* x, struct zx_str* y);
 void zx_idhrxml_Data_PUT_changeFormat(struct zx_idhrxml_Data_s* x, struct zx_str* y);
+void zx_idhrxml_Data_PUT_itemIDRef(struct zx_idhrxml_Data_s* x, struct zx_str* y);
 
 void zx_idhrxml_Data_PUT_Candidate(struct zx_idhrxml_Data_s* x, int n, struct zx_hrxml_Candidate_s* y);
 void zx_idhrxml_Data_PUT_Subscription(struct zx_idhrxml_Data_s* x, int n, struct zx_idhrxml_Subscription_s* y);
@@ -386,19 +386,19 @@ struct zx_idhrxml_DeleteItem_s {
   ZX_ELEM_EXT
   zx_idhrxml_DeleteItem_EXT
   struct zx_elem_s* Select;	/* {0,1} xs:string */
-  struct zx_str* notChangedSince;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* notChangedSince;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
   struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
   struct zx_str* predefined;	/* {0,1} attribute xs:string */
-  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_idhrxml_DeleteItem_GET_notChangedSince(struct zx_idhrxml_DeleteItem_s* x);
 struct zx_str* zx_idhrxml_DeleteItem_GET_id(struct zx_idhrxml_DeleteItem_s* x);
+struct zx_str* zx_idhrxml_DeleteItem_GET_notChangedSince(struct zx_idhrxml_DeleteItem_s* x);
+struct zx_str* zx_idhrxml_DeleteItem_GET_itemID(struct zx_idhrxml_DeleteItem_s* x);
 struct zx_str* zx_idhrxml_DeleteItem_GET_objectType(struct zx_idhrxml_DeleteItem_s* x);
 struct zx_str* zx_idhrxml_DeleteItem_GET_predefined(struct zx_idhrxml_DeleteItem_s* x);
-struct zx_str* zx_idhrxml_DeleteItem_GET_itemID(struct zx_idhrxml_DeleteItem_s* x);
 
 struct zx_elem_s* zx_idhrxml_DeleteItem_GET_Select(struct zx_idhrxml_DeleteItem_s* x, int n);
 
@@ -408,11 +408,11 @@ struct zx_elem_s* zx_idhrxml_DeleteItem_POP_Select(struct zx_idhrxml_DeleteItem_
 
 void zx_idhrxml_DeleteItem_PUSH_Select(struct zx_idhrxml_DeleteItem_s* x, struct zx_elem_s* y);
 
-void zx_idhrxml_DeleteItem_PUT_notChangedSince(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
 void zx_idhrxml_DeleteItem_PUT_id(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
+void zx_idhrxml_DeleteItem_PUT_notChangedSince(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
+void zx_idhrxml_DeleteItem_PUT_itemID(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
 void zx_idhrxml_DeleteItem_PUT_objectType(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
 void zx_idhrxml_DeleteItem_PUT_predefined(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
-void zx_idhrxml_DeleteItem_PUT_itemID(struct zx_idhrxml_DeleteItem_s* x, struct zx_str* y);
 
 void zx_idhrxml_DeleteItem_PUT_Select(struct zx_idhrxml_DeleteItem_s* x, int n, struct zx_elem_s* y);
 
@@ -511,14 +511,14 @@ struct zx_idhrxml_ItemData_s {
   struct zx_hrxml_Candidate_s* Candidate;	/* {0,1} nada */
   struct zx_idhrxml_Subscription_s* Subscription;	/* {0,1} nada */
   struct zx_str* notSorted;	/* {0,1} attribute Now */
-  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
   struct zx_str* changeFormat;	/* {0,1} attribute ChangedElements */
+  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_idhrxml_ItemData_GET_notSorted(struct zx_idhrxml_ItemData_s* x);
-struct zx_str* zx_idhrxml_ItemData_GET_itemIDRef(struct zx_idhrxml_ItemData_s* x);
 struct zx_str* zx_idhrxml_ItemData_GET_changeFormat(struct zx_idhrxml_ItemData_s* x);
+struct zx_str* zx_idhrxml_ItemData_GET_itemIDRef(struct zx_idhrxml_ItemData_s* x);
 
 struct zx_hrxml_Candidate_s* zx_idhrxml_ItemData_GET_Candidate(struct zx_idhrxml_ItemData_s* x, int n);
 struct zx_idhrxml_Subscription_s* zx_idhrxml_ItemData_GET_Subscription(struct zx_idhrxml_ItemData_s* x, int n);
@@ -533,8 +533,8 @@ void zx_idhrxml_ItemData_PUSH_Candidate(struct zx_idhrxml_ItemData_s* x, struct 
 void zx_idhrxml_ItemData_PUSH_Subscription(struct zx_idhrxml_ItemData_s* x, struct zx_idhrxml_Subscription_s* y);
 
 void zx_idhrxml_ItemData_PUT_notSorted(struct zx_idhrxml_ItemData_s* x, struct zx_str* y);
-void zx_idhrxml_ItemData_PUT_itemIDRef(struct zx_idhrxml_ItemData_s* x, struct zx_str* y);
 void zx_idhrxml_ItemData_PUT_changeFormat(struct zx_idhrxml_ItemData_s* x, struct zx_str* y);
+void zx_idhrxml_ItemData_PUT_itemIDRef(struct zx_idhrxml_ItemData_s* x, struct zx_str* y);
 
 void zx_idhrxml_ItemData_PUT_Candidate(struct zx_idhrxml_ItemData_s* x, int n, struct zx_hrxml_Candidate_s* y);
 void zx_idhrxml_ItemData_PUT_Subscription(struct zx_idhrxml_ItemData_s* x, int n, struct zx_idhrxml_Subscription_s* y);
@@ -654,21 +654,21 @@ struct zx_idhrxml_ModifyItem_s {
   zx_idhrxml_ModifyItem_EXT
   struct zx_elem_s* Select;	/* {0,1} xs:string */
   struct zx_idhrxml_NewData_s* NewData;	/* {0,1} nada */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notChangedSince;	/* {0,1} attribute xs:dateTime */
   struct zx_str* overrideAllowed;	/* {0,1} attribute xs:boolean */
-  struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
   struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
   struct zx_str* predefined;	/* {0,1} attribute xs:string */
-  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_idhrxml_ModifyItem_GET_id(struct zx_idhrxml_ModifyItem_s* x);
 struct zx_str* zx_idhrxml_ModifyItem_GET_notChangedSince(struct zx_idhrxml_ModifyItem_s* x);
 struct zx_str* zx_idhrxml_ModifyItem_GET_overrideAllowed(struct zx_idhrxml_ModifyItem_s* x);
-struct zx_str* zx_idhrxml_ModifyItem_GET_id(struct zx_idhrxml_ModifyItem_s* x);
+struct zx_str* zx_idhrxml_ModifyItem_GET_itemID(struct zx_idhrxml_ModifyItem_s* x);
 struct zx_str* zx_idhrxml_ModifyItem_GET_objectType(struct zx_idhrxml_ModifyItem_s* x);
 struct zx_str* zx_idhrxml_ModifyItem_GET_predefined(struct zx_idhrxml_ModifyItem_s* x);
-struct zx_str* zx_idhrxml_ModifyItem_GET_itemID(struct zx_idhrxml_ModifyItem_s* x);
 
 struct zx_elem_s* zx_idhrxml_ModifyItem_GET_Select(struct zx_idhrxml_ModifyItem_s* x, int n);
 struct zx_idhrxml_NewData_s* zx_idhrxml_ModifyItem_GET_NewData(struct zx_idhrxml_ModifyItem_s* x, int n);
@@ -682,12 +682,12 @@ struct zx_idhrxml_NewData_s* zx_idhrxml_ModifyItem_POP_NewData(struct zx_idhrxml
 void zx_idhrxml_ModifyItem_PUSH_Select(struct zx_idhrxml_ModifyItem_s* x, struct zx_elem_s* y);
 void zx_idhrxml_ModifyItem_PUSH_NewData(struct zx_idhrxml_ModifyItem_s* x, struct zx_idhrxml_NewData_s* y);
 
+void zx_idhrxml_ModifyItem_PUT_id(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
 void zx_idhrxml_ModifyItem_PUT_notChangedSince(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
 void zx_idhrxml_ModifyItem_PUT_overrideAllowed(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
-void zx_idhrxml_ModifyItem_PUT_id(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
+void zx_idhrxml_ModifyItem_PUT_itemID(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
 void zx_idhrxml_ModifyItem_PUT_objectType(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
 void zx_idhrxml_ModifyItem_PUT_predefined(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
-void zx_idhrxml_ModifyItem_PUT_itemID(struct zx_idhrxml_ModifyItem_s* x, struct zx_str* y);
 
 void zx_idhrxml_ModifyItem_PUT_Select(struct zx_idhrxml_ModifyItem_s* x, int n, struct zx_elem_s* y);
 void zx_idhrxml_ModifyItem_PUT_NewData(struct zx_idhrxml_ModifyItem_s* x, int n, struct zx_idhrxml_NewData_s* y);
@@ -858,17 +858,17 @@ struct zx_idhrxml_Notification_s {
   zx_idhrxml_Notification_EXT
   struct zx_lu_TestResult_s* TestResult;	/* {0,-1} nada */
   struct zx_idhrxml_ItemData_s* ItemData;	/* {0,-1} nada */
+  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
-  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_idhrxml_Notification_GET_endReason(struct zx_idhrxml_Notification_s* x);
+struct zx_str* zx_idhrxml_Notification_GET_expires(struct zx_idhrxml_Notification_s* x);
 struct zx_str* zx_idhrxml_Notification_GET_id(struct zx_idhrxml_Notification_s* x);
 struct zx_str* zx_idhrxml_Notification_GET_subscriptionID(struct zx_idhrxml_Notification_s* x);
-struct zx_str* zx_idhrxml_Notification_GET_expires(struct zx_idhrxml_Notification_s* x);
-struct zx_str* zx_idhrxml_Notification_GET_endReason(struct zx_idhrxml_Notification_s* x);
 
 struct zx_lu_TestResult_s* zx_idhrxml_Notification_GET_TestResult(struct zx_idhrxml_Notification_s* x, int n);
 struct zx_idhrxml_ItemData_s* zx_idhrxml_Notification_GET_ItemData(struct zx_idhrxml_Notification_s* x, int n);
@@ -882,10 +882,10 @@ struct zx_idhrxml_ItemData_s* zx_idhrxml_Notification_POP_ItemData(struct zx_idh
 void zx_idhrxml_Notification_PUSH_TestResult(struct zx_idhrxml_Notification_s* x, struct zx_lu_TestResult_s* y);
 void zx_idhrxml_Notification_PUSH_ItemData(struct zx_idhrxml_Notification_s* x, struct zx_idhrxml_ItemData_s* y);
 
+void zx_idhrxml_Notification_PUT_endReason(struct zx_idhrxml_Notification_s* x, struct zx_str* y);
+void zx_idhrxml_Notification_PUT_expires(struct zx_idhrxml_Notification_s* x, struct zx_str* y);
 void zx_idhrxml_Notification_PUT_id(struct zx_idhrxml_Notification_s* x, struct zx_str* y);
 void zx_idhrxml_Notification_PUT_subscriptionID(struct zx_idhrxml_Notification_s* x, struct zx_str* y);
-void zx_idhrxml_Notification_PUT_expires(struct zx_idhrxml_Notification_s* x, struct zx_str* y);
-void zx_idhrxml_Notification_PUT_endReason(struct zx_idhrxml_Notification_s* x, struct zx_str* y);
 
 void zx_idhrxml_Notification_PUT_TestResult(struct zx_idhrxml_Notification_s* x, int n, struct zx_lu_TestResult_s* y);
 void zx_idhrxml_Notification_PUT_ItemData(struct zx_idhrxml_Notification_s* x, int n, struct zx_idhrxml_ItemData_s* y);
@@ -1129,31 +1129,31 @@ struct zx_idhrxml_QueryItem_s {
   struct zx_elem_s* ChangeFormat;	/* {0,2} xs:string */
   struct zx_elem_s* Select;	/* {0,1} xs:string */
   struct zx_elem_s* Sort;	/* {0,1} xs:string */
-  struct zx_str* contingency;	/* {0,1} attribute xs:boolean */
-  struct zx_str* includeCommonAttributes;	/* {0,1} attribute xs:boolean */
   struct zx_str* changedSince;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* contingency;	/* {0,1} attribute xs:boolean */
   struct zx_str* count;	/* {0,1} attribute xs:nonNegativeInteger */
+  struct zx_str* includeCommonAttributes;	/* {0,1} attribute xs:boolean */
   struct zx_str* offset;	/* {0,1} attribute xs:integer */
   struct zx_str* setID;	/* {0,1} attribute xs:string */
   struct zx_str* setReq;	/* {0,1} attribute Static */
+  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
+  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
   struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
   struct zx_str* predefined;	/* {0,1} attribute xs:string */
-  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
-  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_idhrxml_QueryItem_GET_contingency(struct zx_idhrxml_QueryItem_s* x);
-struct zx_str* zx_idhrxml_QueryItem_GET_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_changedSince(struct zx_idhrxml_QueryItem_s* x);
+struct zx_str* zx_idhrxml_QueryItem_GET_contingency(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_count(struct zx_idhrxml_QueryItem_s* x);
+struct zx_str* zx_idhrxml_QueryItem_GET_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_offset(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_setID(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_setReq(struct zx_idhrxml_QueryItem_s* x);
+struct zx_str* zx_idhrxml_QueryItem_GET_itemID(struct zx_idhrxml_QueryItem_s* x);
+struct zx_str* zx_idhrxml_QueryItem_GET_itemIDRef(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_objectType(struct zx_idhrxml_QueryItem_s* x);
 struct zx_str* zx_idhrxml_QueryItem_GET_predefined(struct zx_idhrxml_QueryItem_s* x);
-struct zx_str* zx_idhrxml_QueryItem_GET_itemIDRef(struct zx_idhrxml_QueryItem_s* x);
-struct zx_str* zx_idhrxml_QueryItem_GET_itemID(struct zx_idhrxml_QueryItem_s* x);
 
 struct zx_elem_s* zx_idhrxml_QueryItem_GET_ChangeFormat(struct zx_idhrxml_QueryItem_s* x, int n);
 struct zx_elem_s* zx_idhrxml_QueryItem_GET_Select(struct zx_idhrxml_QueryItem_s* x, int n);
@@ -1171,17 +1171,17 @@ void zx_idhrxml_QueryItem_PUSH_ChangeFormat(struct zx_idhrxml_QueryItem_s* x, st
 void zx_idhrxml_QueryItem_PUSH_Select(struct zx_idhrxml_QueryItem_s* x, struct zx_elem_s* y);
 void zx_idhrxml_QueryItem_PUSH_Sort(struct zx_idhrxml_QueryItem_s* x, struct zx_elem_s* y);
 
-void zx_idhrxml_QueryItem_PUT_contingency(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
-void zx_idhrxml_QueryItem_PUT_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_changedSince(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
+void zx_idhrxml_QueryItem_PUT_contingency(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_count(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
+void zx_idhrxml_QueryItem_PUT_includeCommonAttributes(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_offset(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_setID(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_setReq(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
+void zx_idhrxml_QueryItem_PUT_itemID(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
+void zx_idhrxml_QueryItem_PUT_itemIDRef(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_objectType(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 void zx_idhrxml_QueryItem_PUT_predefined(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
-void zx_idhrxml_QueryItem_PUT_itemIDRef(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
-void zx_idhrxml_QueryItem_PUT_itemID(struct zx_idhrxml_QueryItem_s* x, struct zx_str* y);
 
 void zx_idhrxml_QueryItem_PUT_ChangeFormat(struct zx_idhrxml_QueryItem_s* x, int n, struct zx_elem_s* y);
 void zx_idhrxml_QueryItem_PUT_Select(struct zx_idhrxml_QueryItem_s* x, int n, struct zx_elem_s* y);
@@ -1309,23 +1309,23 @@ struct zx_idhrxml_ResultQuery_s {
   struct zx_elem_s* ChangeFormat;	/* {0,2} xs:string */
   struct zx_elem_s* Select;	/* {0,1} xs:string */
   struct zx_elem_s* Sort;	/* {0,1} xs:string */
+  struct zx_str* changedSince;	/* {0,1} attribute xs:dateTime */
   struct zx_str* contingency;	/* {0,1} attribute xs:boolean */
   struct zx_str* includeCommonAttributes;	/* {0,1} attribute xs:boolean */
-  struct zx_str* changedSince;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
+  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
   struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
   struct zx_str* predefined;	/* {0,1} attribute xs:string */
-  struct zx_str* itemIDRef;	/* {0,1} attribute lu:IDReferenceType */
-  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_idhrxml_ResultQuery_GET_changedSince(struct zx_idhrxml_ResultQuery_s* x);
 struct zx_str* zx_idhrxml_ResultQuery_GET_contingency(struct zx_idhrxml_ResultQuery_s* x);
 struct zx_str* zx_idhrxml_ResultQuery_GET_includeCommonAttributes(struct zx_idhrxml_ResultQuery_s* x);
-struct zx_str* zx_idhrxml_ResultQuery_GET_changedSince(struct zx_idhrxml_ResultQuery_s* x);
+struct zx_str* zx_idhrxml_ResultQuery_GET_itemID(struct zx_idhrxml_ResultQuery_s* x);
+struct zx_str* zx_idhrxml_ResultQuery_GET_itemIDRef(struct zx_idhrxml_ResultQuery_s* x);
 struct zx_str* zx_idhrxml_ResultQuery_GET_objectType(struct zx_idhrxml_ResultQuery_s* x);
 struct zx_str* zx_idhrxml_ResultQuery_GET_predefined(struct zx_idhrxml_ResultQuery_s* x);
-struct zx_str* zx_idhrxml_ResultQuery_GET_itemIDRef(struct zx_idhrxml_ResultQuery_s* x);
-struct zx_str* zx_idhrxml_ResultQuery_GET_itemID(struct zx_idhrxml_ResultQuery_s* x);
 
 struct zx_elem_s* zx_idhrxml_ResultQuery_GET_ChangeFormat(struct zx_idhrxml_ResultQuery_s* x, int n);
 struct zx_elem_s* zx_idhrxml_ResultQuery_GET_Select(struct zx_idhrxml_ResultQuery_s* x, int n);
@@ -1343,13 +1343,13 @@ void zx_idhrxml_ResultQuery_PUSH_ChangeFormat(struct zx_idhrxml_ResultQuery_s* x
 void zx_idhrxml_ResultQuery_PUSH_Select(struct zx_idhrxml_ResultQuery_s* x, struct zx_elem_s* y);
 void zx_idhrxml_ResultQuery_PUSH_Sort(struct zx_idhrxml_ResultQuery_s* x, struct zx_elem_s* y);
 
+void zx_idhrxml_ResultQuery_PUT_changedSince(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
 void zx_idhrxml_ResultQuery_PUT_contingency(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
 void zx_idhrxml_ResultQuery_PUT_includeCommonAttributes(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
-void zx_idhrxml_ResultQuery_PUT_changedSince(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
+void zx_idhrxml_ResultQuery_PUT_itemID(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
+void zx_idhrxml_ResultQuery_PUT_itemIDRef(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
 void zx_idhrxml_ResultQuery_PUT_objectType(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
 void zx_idhrxml_ResultQuery_PUT_predefined(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
-void zx_idhrxml_ResultQuery_PUT_itemIDRef(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
-void zx_idhrxml_ResultQuery_PUT_itemID(struct zx_idhrxml_ResultQuery_s* x, struct zx_str* y);
 
 void zx_idhrxml_ResultQuery_PUT_ChangeFormat(struct zx_idhrxml_ResultQuery_s* x, int n, struct zx_elem_s* y);
 void zx_idhrxml_ResultQuery_PUT_Select(struct zx_idhrxml_ResultQuery_s* x, int n, struct zx_elem_s* y);
@@ -1398,23 +1398,23 @@ struct zx_idhrxml_Subscription_s {
   struct zx_idhrxml_ResultQuery_s* ResultQuery;	/* {0,-1} nada */
   struct zx_elem_s* Aggregation;	/* {0,1} xs:string */
   struct zx_elem_s* Trigger;	/* {0,1} xs:string */
-  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
-  struct zx_str* notifyToRef;	/* {1,1} attribute xs:anyURI */
   struct zx_str* adminNotifyToRef;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
   struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* includeData;	/* {0,1} attribute Yes */
+  struct zx_str* notifyToRef;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_idhrxml_Subscription_GET_subscriptionID(struct zx_idhrxml_Subscription_s* x);
-struct zx_str* zx_idhrxml_Subscription_GET_notifyToRef(struct zx_idhrxml_Subscription_s* x);
 struct zx_str* zx_idhrxml_Subscription_GET_adminNotifyToRef(struct zx_idhrxml_Subscription_s* x);
-struct zx_str* zx_idhrxml_Subscription_GET_starts(struct zx_idhrxml_Subscription_s* x);
 struct zx_str* zx_idhrxml_Subscription_GET_expires(struct zx_idhrxml_Subscription_s* x);
 struct zx_str* zx_idhrxml_Subscription_GET_id(struct zx_idhrxml_Subscription_s* x);
 struct zx_str* zx_idhrxml_Subscription_GET_includeData(struct zx_idhrxml_Subscription_s* x);
+struct zx_str* zx_idhrxml_Subscription_GET_notifyToRef(struct zx_idhrxml_Subscription_s* x);
+struct zx_str* zx_idhrxml_Subscription_GET_starts(struct zx_idhrxml_Subscription_s* x);
+struct zx_str* zx_idhrxml_Subscription_GET_subscriptionID(struct zx_idhrxml_Subscription_s* x);
 
 struct zx_subs_RefItem_s* zx_idhrxml_Subscription_GET_RefItem(struct zx_idhrxml_Subscription_s* x, int n);
 struct zx_lu_Extension_s* zx_idhrxml_Subscription_GET_Extension(struct zx_idhrxml_Subscription_s* x, int n);
@@ -1440,13 +1440,13 @@ void zx_idhrxml_Subscription_PUSH_ResultQuery(struct zx_idhrxml_Subscription_s* 
 void zx_idhrxml_Subscription_PUSH_Aggregation(struct zx_idhrxml_Subscription_s* x, struct zx_elem_s* y);
 void zx_idhrxml_Subscription_PUSH_Trigger(struct zx_idhrxml_Subscription_s* x, struct zx_elem_s* y);
 
-void zx_idhrxml_Subscription_PUT_subscriptionID(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
-void zx_idhrxml_Subscription_PUT_notifyToRef(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
 void zx_idhrxml_Subscription_PUT_adminNotifyToRef(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
-void zx_idhrxml_Subscription_PUT_starts(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
 void zx_idhrxml_Subscription_PUT_expires(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
 void zx_idhrxml_Subscription_PUT_id(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
 void zx_idhrxml_Subscription_PUT_includeData(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
+void zx_idhrxml_Subscription_PUT_notifyToRef(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
+void zx_idhrxml_Subscription_PUT_starts(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
+void zx_idhrxml_Subscription_PUT_subscriptionID(struct zx_idhrxml_Subscription_s* x, struct zx_str* y);
 
 void zx_idhrxml_Subscription_PUT_RefItem(struct zx_idhrxml_Subscription_s* x, int n, struct zx_subs_RefItem_s* y);
 void zx_idhrxml_Subscription_PUT_Extension(struct zx_idhrxml_Subscription_s* x, int n, struct zx_lu_Extension_s* y);
@@ -1500,16 +1500,16 @@ struct zx_idhrxml_TestItem_s {
   zx_idhrxml_TestItem_EXT
   struct zx_elem_s* TestOp;	/* {0,1} xs:string */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
   struct zx_str* objectType;	/* {0,1} attribute xs:NCName */
   struct zx_str* predefined;	/* {0,1} attribute xs:string */
-  struct zx_str* itemID;	/* {0,1} attribute lu:IDType */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_idhrxml_TestItem_GET_id(struct zx_idhrxml_TestItem_s* x);
+struct zx_str* zx_idhrxml_TestItem_GET_itemID(struct zx_idhrxml_TestItem_s* x);
 struct zx_str* zx_idhrxml_TestItem_GET_objectType(struct zx_idhrxml_TestItem_s* x);
 struct zx_str* zx_idhrxml_TestItem_GET_predefined(struct zx_idhrxml_TestItem_s* x);
-struct zx_str* zx_idhrxml_TestItem_GET_itemID(struct zx_idhrxml_TestItem_s* x);
 
 struct zx_elem_s* zx_idhrxml_TestItem_GET_TestOp(struct zx_idhrxml_TestItem_s* x, int n);
 
@@ -1520,9 +1520,9 @@ struct zx_elem_s* zx_idhrxml_TestItem_POP_TestOp(struct zx_idhrxml_TestItem_s* x
 void zx_idhrxml_TestItem_PUSH_TestOp(struct zx_idhrxml_TestItem_s* x, struct zx_elem_s* y);
 
 void zx_idhrxml_TestItem_PUT_id(struct zx_idhrxml_TestItem_s* x, struct zx_str* y);
+void zx_idhrxml_TestItem_PUT_itemID(struct zx_idhrxml_TestItem_s* x, struct zx_str* y);
 void zx_idhrxml_TestItem_PUT_objectType(struct zx_idhrxml_TestItem_s* x, struct zx_str* y);
 void zx_idhrxml_TestItem_PUT_predefined(struct zx_idhrxml_TestItem_s* x, struct zx_str* y);
-void zx_idhrxml_TestItem_PUT_itemID(struct zx_idhrxml_TestItem_s* x, struct zx_str* y);
 
 void zx_idhrxml_TestItem_PUT_TestOp(struct zx_idhrxml_TestItem_s* x, int n, struct zx_elem_s* y);
 

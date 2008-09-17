@@ -200,15 +200,15 @@ struct zx_hrxml_AffirmativeActionPlanJobGroupId_s {
   ZX_ELEM_EXT
   zx_hrxml_AffirmativeActionPlanJobGroupId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x);
 struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_validFrom(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x);
 struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_validTo(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x);
-struct zx_str* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_AffirmativeActionPlanJobGroupId_GET_IdValue(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, int n);
 
@@ -218,9 +218,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_AffirmativeActionPlanJobGroupId_POP_IdValue(
 
 void zx_hrxml_AffirmativeActionPlanJobGroupId_PUSH_IdValue(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y);
 void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_validFrom(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y);
 void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_validTo(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y);
-void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_idOwner(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, struct zx_str* y);
 
 void zx_hrxml_AffirmativeActionPlanJobGroupId_PUT_IdValue(struct zx_hrxml_AffirmativeActionPlanJobGroupId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -989,15 +989,15 @@ struct zx_hrxml_BKZId_s {
   ZX_ELEM_EXT
   zx_hrxml_BKZId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_BKZId_GET_idOwner(struct zx_hrxml_BKZId_s* x);
 struct zx_str* zx_hrxml_BKZId_GET_validFrom(struct zx_hrxml_BKZId_s* x);
 struct zx_str* zx_hrxml_BKZId_GET_validTo(struct zx_hrxml_BKZId_s* x);
-struct zx_str* zx_hrxml_BKZId_GET_idOwner(struct zx_hrxml_BKZId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_BKZId_GET_IdValue(struct zx_hrxml_BKZId_s* x, int n);
 
@@ -1007,9 +1007,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_BKZId_POP_IdValue(struct zx_hrxml_BKZId_s* x
 
 void zx_hrxml_BKZId_PUSH_IdValue(struct zx_hrxml_BKZId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_BKZId_PUT_idOwner(struct zx_hrxml_BKZId_s* x, struct zx_str* y);
 void zx_hrxml_BKZId_PUT_validFrom(struct zx_hrxml_BKZId_s* x, struct zx_str* y);
 void zx_hrxml_BKZId_PUT_validTo(struct zx_hrxml_BKZId_s* x, struct zx_str* y);
-void zx_hrxml_BKZId_PUT_idOwner(struct zx_hrxml_BKZId_s* x, struct zx_str* y);
 
 void zx_hrxml_BKZId_PUT_IdValue(struct zx_hrxml_BKZId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -1047,13 +1047,13 @@ struct zx_hrxml_BasePay_s {
   zx_hrxml_BasePay_EXT
   struct zx_elem_s* BasePayAmountMin;	/* {0,1} xsd:decimal */
   struct zx_elem_s* BasePayAmountMax;	/* {0,1} xsd:decimal */
-  struct zx_str* currencyCode;	/* {0,1} attribute hrxml:CurrencyCodeType */
   struct zx_str* baseInterval;	/* {0,1} attribute hrxml:FrequencyType */
+  struct zx_str* currencyCode;	/* {0,1} attribute hrxml:CurrencyCodeType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_BasePay_GET_currencyCode(struct zx_hrxml_BasePay_s* x);
 struct zx_str* zx_hrxml_BasePay_GET_baseInterval(struct zx_hrxml_BasePay_s* x);
+struct zx_str* zx_hrxml_BasePay_GET_currencyCode(struct zx_hrxml_BasePay_s* x);
 
 struct zx_elem_s* zx_hrxml_BasePay_GET_BasePayAmountMin(struct zx_hrxml_BasePay_s* x, int n);
 struct zx_elem_s* zx_hrxml_BasePay_GET_BasePayAmountMax(struct zx_hrxml_BasePay_s* x, int n);
@@ -1067,8 +1067,8 @@ struct zx_elem_s* zx_hrxml_BasePay_POP_BasePayAmountMax(struct zx_hrxml_BasePay_
 void zx_hrxml_BasePay_PUSH_BasePayAmountMin(struct zx_hrxml_BasePay_s* x, struct zx_elem_s* y);
 void zx_hrxml_BasePay_PUSH_BasePayAmountMax(struct zx_hrxml_BasePay_s* x, struct zx_elem_s* y);
 
-void zx_hrxml_BasePay_PUT_currencyCode(struct zx_hrxml_BasePay_s* x, struct zx_str* y);
 void zx_hrxml_BasePay_PUT_baseInterval(struct zx_hrxml_BasePay_s* x, struct zx_str* y);
+void zx_hrxml_BasePay_PUT_currencyCode(struct zx_hrxml_BasePay_s* x, struct zx_str* y);
 
 void zx_hrxml_BasePay_PUT_BasePayAmountMin(struct zx_hrxml_BasePay_s* x, int n, struct zx_elem_s* y);
 void zx_hrxml_BasePay_PUT_BasePayAmountMax(struct zx_hrxml_BasePay_s* x, int n, struct zx_elem_s* y);
@@ -2284,14 +2284,14 @@ struct zx_hrxml_Competency_s {
   struct zx_hrxml_CompetencyWeight_s* CompetencyWeight;	/* {0,-1}  */
   struct zx_hrxml_Competency_s* Competency;	/* {0,-1} nada */
   struct zx_hrxml_UserArea_s* UserArea;	/* {0,1}  */
-  struct zx_str* name;	/* {0,1} attribute xs:ID */
   struct zx_str* description;	/* {0,1} attribute xsd:string */
+  struct zx_str* name;	/* {0,1} attribute xs:ID */
   struct zx_str* required;	/* {0,1} attribute xsd:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_Competency_GET_name(struct zx_hrxml_Competency_s* x);
 struct zx_str* zx_hrxml_Competency_GET_description(struct zx_hrxml_Competency_s* x);
+struct zx_str* zx_hrxml_Competency_GET_name(struct zx_hrxml_Competency_s* x);
 struct zx_str* zx_hrxml_Competency_GET_required(struct zx_hrxml_Competency_s* x);
 
 struct zx_hrxml_CompetencyId_s* zx_hrxml_Competency_GET_CompetencyId(struct zx_hrxml_Competency_s* x, int n);
@@ -2322,8 +2322,8 @@ void zx_hrxml_Competency_PUSH_CompetencyWeight(struct zx_hrxml_Competency_s* x, 
 void zx_hrxml_Competency_PUSH_Competency(struct zx_hrxml_Competency_s* x, struct zx_hrxml_Competency_s* y);
 void zx_hrxml_Competency_PUSH_UserArea(struct zx_hrxml_Competency_s* x, struct zx_hrxml_UserArea_s* y);
 
-void zx_hrxml_Competency_PUT_name(struct zx_hrxml_Competency_s* x, struct zx_str* y);
 void zx_hrxml_Competency_PUT_description(struct zx_hrxml_Competency_s* x, struct zx_str* y);
+void zx_hrxml_Competency_PUT_name(struct zx_hrxml_Competency_s* x, struct zx_str* y);
 void zx_hrxml_Competency_PUT_required(struct zx_hrxml_Competency_s* x, struct zx_str* y);
 
 void zx_hrxml_Competency_PUT_CompetencyId(struct zx_hrxml_Competency_s* x, int n, struct zx_hrxml_CompetencyId_s* y);
@@ -2385,22 +2385,22 @@ struct zx_hrxml_CompetencyEvidence_s {
   struct zx_hrxml_StringValue_s* StringValue;	/* {0,1} nada */
   struct zx_elem_s* SupportingInformation;	/* {0,-1} xsd:string */
   struct zx_str* dateOfIncident;	/* {0,1} attribute hrxml:AnyDateTimeType */
-  struct zx_str* name;	/* {0,1} attribute xs:ID */
-  struct zx_str* typeDescription;	/* {0,1} attribute xsd:string */
   struct zx_str* expirationDate;	/* {0,1} attribute hrxml:AnyDateTimeType */
-  struct zx_str* typeId;	/* {0,1} attribute xsd:string */
-  struct zx_str* required;	/* {0,1} attribute xsd:boolean */
   struct zx_str* lastUsed;	/* {0,1} attribute hrxml:AnyDateTimeType */
+  struct zx_str* name;	/* {0,1} attribute xs:ID */
+  struct zx_str* required;	/* {0,1} attribute xsd:boolean */
+  struct zx_str* typeDescription;	/* {0,1} attribute xsd:string */
+  struct zx_str* typeId;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_hrxml_CompetencyEvidence_GET_dateOfIncident(struct zx_hrxml_CompetencyEvidence_s* x);
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_name(struct zx_hrxml_CompetencyEvidence_s* x);
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x);
 struct zx_str* zx_hrxml_CompetencyEvidence_GET_expirationDate(struct zx_hrxml_CompetencyEvidence_s* x);
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeId(struct zx_hrxml_CompetencyEvidence_s* x);
-struct zx_str* zx_hrxml_CompetencyEvidence_GET_required(struct zx_hrxml_CompetencyEvidence_s* x);
 struct zx_str* zx_hrxml_CompetencyEvidence_GET_lastUsed(struct zx_hrxml_CompetencyEvidence_s* x);
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_name(struct zx_hrxml_CompetencyEvidence_s* x);
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_required(struct zx_hrxml_CompetencyEvidence_s* x);
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x);
+struct zx_str* zx_hrxml_CompetencyEvidence_GET_typeId(struct zx_hrxml_CompetencyEvidence_s* x);
 
 struct zx_hrxml_EvidenceId_s* zx_hrxml_CompetencyEvidence_GET_EvidenceId(struct zx_hrxml_CompetencyEvidence_s* x, int n);
 struct zx_hrxml_NumericValue_s* zx_hrxml_CompetencyEvidence_GET_NumericValue(struct zx_hrxml_CompetencyEvidence_s* x, int n);
@@ -2423,12 +2423,12 @@ void zx_hrxml_CompetencyEvidence_PUSH_StringValue(struct zx_hrxml_CompetencyEvid
 void zx_hrxml_CompetencyEvidence_PUSH_SupportingInformation(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_elem_s* y);
 
 void zx_hrxml_CompetencyEvidence_PUT_dateOfIncident(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
-void zx_hrxml_CompetencyEvidence_PUT_name(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
-void zx_hrxml_CompetencyEvidence_PUT_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
 void zx_hrxml_CompetencyEvidence_PUT_expirationDate(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
-void zx_hrxml_CompetencyEvidence_PUT_typeId(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
-void zx_hrxml_CompetencyEvidence_PUT_required(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
 void zx_hrxml_CompetencyEvidence_PUT_lastUsed(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
+void zx_hrxml_CompetencyEvidence_PUT_name(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
+void zx_hrxml_CompetencyEvidence_PUT_required(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
+void zx_hrxml_CompetencyEvidence_PUT_typeDescription(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
+void zx_hrxml_CompetencyEvidence_PUT_typeId(struct zx_hrxml_CompetencyEvidence_s* x, struct zx_str* y);
 
 void zx_hrxml_CompetencyEvidence_PUT_EvidenceId(struct zx_hrxml_CompetencyEvidence_s* x, int n, struct zx_hrxml_EvidenceId_s* y);
 void zx_hrxml_CompetencyEvidence_PUT_NumericValue(struct zx_hrxml_CompetencyEvidence_s* x, int n, struct zx_hrxml_NumericValue_s* y);
@@ -2477,15 +2477,15 @@ struct zx_hrxml_CompetencyId_s {
   ZX_ELEM_EXT
   zx_hrxml_CompetencyId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_CompetencyId_GET_idOwner(struct zx_hrxml_CompetencyId_s* x);
 struct zx_str* zx_hrxml_CompetencyId_GET_validFrom(struct zx_hrxml_CompetencyId_s* x);
 struct zx_str* zx_hrxml_CompetencyId_GET_validTo(struct zx_hrxml_CompetencyId_s* x);
-struct zx_str* zx_hrxml_CompetencyId_GET_idOwner(struct zx_hrxml_CompetencyId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_CompetencyId_GET_IdValue(struct zx_hrxml_CompetencyId_s* x, int n);
 
@@ -2495,9 +2495,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_CompetencyId_POP_IdValue(struct zx_hrxml_Com
 
 void zx_hrxml_CompetencyId_PUSH_IdValue(struct zx_hrxml_CompetencyId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_CompetencyId_PUT_idOwner(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y);
 void zx_hrxml_CompetencyId_PUT_validFrom(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y);
 void zx_hrxml_CompetencyId_PUT_validTo(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y);
-void zx_hrxml_CompetencyId_PUT_idOwner(struct zx_hrxml_CompetencyId_s* x, struct zx_str* y);
 
 void zx_hrxml_CompetencyId_PUT_IdValue(struct zx_hrxml_CompetencyId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -2906,15 +2906,15 @@ struct zx_hrxml_ContactId_s {
   ZX_ELEM_EXT
   zx_hrxml_ContactId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_ContactId_GET_idOwner(struct zx_hrxml_ContactId_s* x);
 struct zx_str* zx_hrxml_ContactId_GET_validFrom(struct zx_hrxml_ContactId_s* x);
 struct zx_str* zx_hrxml_ContactId_GET_validTo(struct zx_hrxml_ContactId_s* x);
-struct zx_str* zx_hrxml_ContactId_GET_idOwner(struct zx_hrxml_ContactId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_ContactId_GET_IdValue(struct zx_hrxml_ContactId_s* x, int n);
 
@@ -2924,9 +2924,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_ContactId_POP_IdValue(struct zx_hrxml_Contac
 
 void zx_hrxml_ContactId_PUSH_IdValue(struct zx_hrxml_ContactId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_ContactId_PUT_idOwner(struct zx_hrxml_ContactId_s* x, struct zx_str* y);
 void zx_hrxml_ContactId_PUT_validFrom(struct zx_hrxml_ContactId_s* x, struct zx_str* y);
 void zx_hrxml_ContactId_PUT_validTo(struct zx_hrxml_ContactId_s* x, struct zx_str* y);
-void zx_hrxml_ContactId_PUT_idOwner(struct zx_hrxml_ContactId_s* x, struct zx_str* y);
 
 void zx_hrxml_ContactId_PUT_IdValue(struct zx_hrxml_ContactId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -3387,14 +3387,14 @@ struct zx_hrxml_DatesOfAttendance_s {
   zx_hrxml_DatesOfAttendance_EXT
   struct zx_hrxml_StartDate_s* StartDate;	/* {1,1}  */
   struct zx_hrxml_EndDate_s* EndDate;	/* {0,1}  */
-  struct zx_str* enrollmentStatus;	/* {0,1} attribute xsd:string */
   struct zx_str* currentlyEnrolled;	/* {0,1} attribute xsd:boolean */
+  struct zx_str* enrollmentStatus;	/* {0,1} attribute xsd:string */
   struct zx_str* studentInGoodStanding;	/* {0,1} attribute xsd:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_DatesOfAttendance_GET_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x);
 struct zx_str* zx_hrxml_DatesOfAttendance_GET_currentlyEnrolled(struct zx_hrxml_DatesOfAttendance_s* x);
+struct zx_str* zx_hrxml_DatesOfAttendance_GET_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x);
 struct zx_str* zx_hrxml_DatesOfAttendance_GET_studentInGoodStanding(struct zx_hrxml_DatesOfAttendance_s* x);
 
 struct zx_hrxml_StartDate_s* zx_hrxml_DatesOfAttendance_GET_StartDate(struct zx_hrxml_DatesOfAttendance_s* x, int n);
@@ -3409,8 +3409,8 @@ struct zx_hrxml_EndDate_s* zx_hrxml_DatesOfAttendance_POP_EndDate(struct zx_hrxm
 void zx_hrxml_DatesOfAttendance_PUSH_StartDate(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_hrxml_StartDate_s* y);
 void zx_hrxml_DatesOfAttendance_PUSH_EndDate(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_hrxml_EndDate_s* y);
 
-void zx_hrxml_DatesOfAttendance_PUT_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y);
 void zx_hrxml_DatesOfAttendance_PUT_currentlyEnrolled(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y);
+void zx_hrxml_DatesOfAttendance_PUT_enrollmentStatus(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y);
 void zx_hrxml_DatesOfAttendance_PUT_studentInGoodStanding(struct zx_hrxml_DatesOfAttendance_s* x, struct zx_str* y);
 
 void zx_hrxml_DatesOfAttendance_PUT_StartDate(struct zx_hrxml_DatesOfAttendance_s* x, int n, struct zx_hrxml_StartDate_s* y);
@@ -5261,15 +5261,15 @@ struct zx_hrxml_EnvironmentId_s {
   ZX_ELEM_EXT
   zx_hrxml_EnvironmentId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_EnvironmentId_GET_idOwner(struct zx_hrxml_EnvironmentId_s* x);
 struct zx_str* zx_hrxml_EnvironmentId_GET_validFrom(struct zx_hrxml_EnvironmentId_s* x);
 struct zx_str* zx_hrxml_EnvironmentId_GET_validTo(struct zx_hrxml_EnvironmentId_s* x);
-struct zx_str* zx_hrxml_EnvironmentId_GET_idOwner(struct zx_hrxml_EnvironmentId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_EnvironmentId_GET_IdValue(struct zx_hrxml_EnvironmentId_s* x, int n);
 
@@ -5279,9 +5279,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_EnvironmentId_POP_IdValue(struct zx_hrxml_En
 
 void zx_hrxml_EnvironmentId_PUSH_IdValue(struct zx_hrxml_EnvironmentId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_EnvironmentId_PUT_idOwner(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y);
 void zx_hrxml_EnvironmentId_PUT_validFrom(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y);
 void zx_hrxml_EnvironmentId_PUT_validTo(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y);
-void zx_hrxml_EnvironmentId_PUT_idOwner(struct zx_hrxml_EnvironmentId_s* x, struct zx_str* y);
 
 void zx_hrxml_EnvironmentId_PUT_IdValue(struct zx_hrxml_EnvironmentId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -5317,23 +5317,23 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_EvidenceId(struct zx_ctx* c, struct zx_hrxml
 struct zx_hrxml_EvidenceId_s {
   ZX_ELEM_EXT
   zx_hrxml_EvidenceId_EXT
+  struct zx_str* description;	/* {0,1} attribute xsd:string */
   struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
-  struct zx_str* description;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_EvidenceId_GET_description(struct zx_hrxml_EvidenceId_s* x);
 struct zx_str* zx_hrxml_EvidenceId_GET_id(struct zx_hrxml_EvidenceId_s* x);
 struct zx_str* zx_hrxml_EvidenceId_GET_idOwner(struct zx_hrxml_EvidenceId_s* x);
-struct zx_str* zx_hrxml_EvidenceId_GET_description(struct zx_hrxml_EvidenceId_s* x);
 
 
 
 
 
+void zx_hrxml_EvidenceId_PUT_description(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y);
 void zx_hrxml_EvidenceId_PUT_id(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y);
 void zx_hrxml_EvidenceId_PUT_idOwner(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y);
-void zx_hrxml_EvidenceId_PUT_description(struct zx_hrxml_EvidenceId_s* x, struct zx_str* y);
 
 
 
@@ -5422,20 +5422,20 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_FamilyName(struct zx_ctx* c, struct zx_hrxml
 struct zx_hrxml_FamilyName_s {
   ZX_ELEM_EXT
   zx_hrxml_FamilyName_EXT
-  struct zx_str* primary;	/* {0,1} attribute true */
   struct zx_str* prefix;	/* {0,1} attribute xsd:string */
+  struct zx_str* primary;	/* {0,1} attribute true */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_FamilyName_GET_primary(struct zx_hrxml_FamilyName_s* x);
 struct zx_str* zx_hrxml_FamilyName_GET_prefix(struct zx_hrxml_FamilyName_s* x);
+struct zx_str* zx_hrxml_FamilyName_GET_primary(struct zx_hrxml_FamilyName_s* x);
 
 
 
 
 
-void zx_hrxml_FamilyName_PUT_primary(struct zx_hrxml_FamilyName_s* x, struct zx_str* y);
 void zx_hrxml_FamilyName_PUT_prefix(struct zx_hrxml_FamilyName_s* x, struct zx_str* y);
+void zx_hrxml_FamilyName_PUT_primary(struct zx_hrxml_FamilyName_s* x, struct zx_str* y);
 
 
 
@@ -5783,15 +5783,15 @@ struct zx_hrxml_Id_s {
   ZX_ELEM_EXT
   zx_hrxml_Id_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_Id_GET_idOwner(struct zx_hrxml_Id_s* x);
 struct zx_str* zx_hrxml_Id_GET_validFrom(struct zx_hrxml_Id_s* x);
 struct zx_str* zx_hrxml_Id_GET_validTo(struct zx_hrxml_Id_s* x);
-struct zx_str* zx_hrxml_Id_GET_idOwner(struct zx_hrxml_Id_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_Id_GET_IdValue(struct zx_hrxml_Id_s* x, int n);
 
@@ -5801,9 +5801,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_Id_POP_IdValue(struct zx_hrxml_Id_s* x);
 
 void zx_hrxml_Id_PUSH_IdValue(struct zx_hrxml_Id_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_Id_PUT_idOwner(struct zx_hrxml_Id_s* x, struct zx_str* y);
 void zx_hrxml_Id_PUT_validFrom(struct zx_hrxml_Id_s* x, struct zx_str* y);
 void zx_hrxml_Id_PUT_validTo(struct zx_hrxml_Id_s* x, struct zx_str* y);
-void zx_hrxml_Id_PUT_idOwner(struct zx_hrxml_Id_s* x, struct zx_str* y);
 
 void zx_hrxml_Id_PUT_IdValue(struct zx_hrxml_Id_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -5881,20 +5881,20 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_IndustryCode(struct zx_ctx* c, struct zx_hrx
 struct zx_hrxml_IndustryCode_s {
   ZX_ELEM_EXT
   zx_hrxml_IndustryCode_EXT
-  struct zx_str* primaryIndicator;	/* {0,1} attribute xsd:boolean */
   struct zx_str* classificationName;	/* {0,1} attribute xsd:string */
+  struct zx_str* primaryIndicator;	/* {0,1} attribute xsd:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_IndustryCode_GET_primaryIndicator(struct zx_hrxml_IndustryCode_s* x);
 struct zx_str* zx_hrxml_IndustryCode_GET_classificationName(struct zx_hrxml_IndustryCode_s* x);
+struct zx_str* zx_hrxml_IndustryCode_GET_primaryIndicator(struct zx_hrxml_IndustryCode_s* x);
 
 
 
 
 
-void zx_hrxml_IndustryCode_PUT_primaryIndicator(struct zx_hrxml_IndustryCode_s* x, struct zx_str* y);
 void zx_hrxml_IndustryCode_PUT_classificationName(struct zx_hrxml_IndustryCode_s* x, struct zx_str* y);
+void zx_hrxml_IndustryCode_PUT_primaryIndicator(struct zx_hrxml_IndustryCode_s* x, struct zx_str* y);
 
 
 
@@ -6515,15 +6515,15 @@ struct zx_hrxml_LegalId_s {
   ZX_ELEM_EXT
   zx_hrxml_LegalId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_LegalId_GET_idOwner(struct zx_hrxml_LegalId_s* x);
 struct zx_str* zx_hrxml_LegalId_GET_validFrom(struct zx_hrxml_LegalId_s* x);
 struct zx_str* zx_hrxml_LegalId_GET_validTo(struct zx_hrxml_LegalId_s* x);
-struct zx_str* zx_hrxml_LegalId_GET_idOwner(struct zx_hrxml_LegalId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_LegalId_GET_IdValue(struct zx_hrxml_LegalId_s* x, int n);
 
@@ -6533,9 +6533,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_LegalId_POP_IdValue(struct zx_hrxml_LegalId_
 
 void zx_hrxml_LegalId_PUSH_IdValue(struct zx_hrxml_LegalId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_LegalId_PUT_idOwner(struct zx_hrxml_LegalId_s* x, struct zx_str* y);
 void zx_hrxml_LegalId_PUT_validFrom(struct zx_hrxml_LegalId_s* x, struct zx_str* y);
 void zx_hrxml_LegalId_PUT_validTo(struct zx_hrxml_LegalId_s* x, struct zx_str* y);
-void zx_hrxml_LegalId_PUT_idOwner(struct zx_hrxml_LegalId_s* x, struct zx_str* y);
 
 void zx_hrxml_LegalId_PUT_IdValue(struct zx_hrxml_LegalId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -7073,15 +7073,15 @@ struct zx_hrxml_MatchedObjectId_s {
   ZX_ELEM_EXT
   zx_hrxml_MatchedObjectId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_MatchedObjectId_GET_idOwner(struct zx_hrxml_MatchedObjectId_s* x);
 struct zx_str* zx_hrxml_MatchedObjectId_GET_validFrom(struct zx_hrxml_MatchedObjectId_s* x);
 struct zx_str* zx_hrxml_MatchedObjectId_GET_validTo(struct zx_hrxml_MatchedObjectId_s* x);
-struct zx_str* zx_hrxml_MatchedObjectId_GET_idOwner(struct zx_hrxml_MatchedObjectId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_MatchedObjectId_GET_IdValue(struct zx_hrxml_MatchedObjectId_s* x, int n);
 
@@ -7091,9 +7091,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_MatchedObjectId_POP_IdValue(struct zx_hrxml_
 
 void zx_hrxml_MatchedObjectId_PUSH_IdValue(struct zx_hrxml_MatchedObjectId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_MatchedObjectId_PUT_idOwner(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y);
 void zx_hrxml_MatchedObjectId_PUT_validFrom(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y);
 void zx_hrxml_MatchedObjectId_PUT_validTo(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y);
-void zx_hrxml_MatchedObjectId_PUT_idOwner(struct zx_hrxml_MatchedObjectId_s* x, struct zx_str* y);
 
 void zx_hrxml_MatchedObjectId_PUT_IdValue(struct zx_hrxml_MatchedObjectId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -7546,26 +7546,26 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_NumericValue(struct zx_ctx* c, struct zx_hrx
 struct zx_hrxml_NumericValue_s {
   ZX_ELEM_EXT
   zx_hrxml_NumericValue_EXT
-  struct zx_str* minValue;	/* {0,1} attribute xsd:string */
-  struct zx_str* maxValue;	/* {0,1} attribute xsd:string */
-  struct zx_str* interval;	/* {0,1} attribute xsd:double */
   struct zx_str* description;	/* {0,1} attribute xsd:string */
+  struct zx_str* interval;	/* {0,1} attribute xsd:double */
+  struct zx_str* maxValue;	/* {0,1} attribute xsd:string */
+  struct zx_str* minValue;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_NumericValue_GET_minValue(struct zx_hrxml_NumericValue_s* x);
-struct zx_str* zx_hrxml_NumericValue_GET_maxValue(struct zx_hrxml_NumericValue_s* x);
-struct zx_str* zx_hrxml_NumericValue_GET_interval(struct zx_hrxml_NumericValue_s* x);
 struct zx_str* zx_hrxml_NumericValue_GET_description(struct zx_hrxml_NumericValue_s* x);
+struct zx_str* zx_hrxml_NumericValue_GET_interval(struct zx_hrxml_NumericValue_s* x);
+struct zx_str* zx_hrxml_NumericValue_GET_maxValue(struct zx_hrxml_NumericValue_s* x);
+struct zx_str* zx_hrxml_NumericValue_GET_minValue(struct zx_hrxml_NumericValue_s* x);
 
 
 
 
 
-void zx_hrxml_NumericValue_PUT_minValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
-void zx_hrxml_NumericValue_PUT_maxValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
-void zx_hrxml_NumericValue_PUT_interval(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
 void zx_hrxml_NumericValue_PUT_description(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
+void zx_hrxml_NumericValue_PUT_interval(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
+void zx_hrxml_NumericValue_PUT_maxValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
+void zx_hrxml_NumericValue_PUT_minValue(struct zx_hrxml_NumericValue_s* x, struct zx_str* y);
 
 
 
@@ -7823,15 +7823,15 @@ struct zx_hrxml_OrganizationId_s {
   ZX_ELEM_EXT
   zx_hrxml_OrganizationId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_OrganizationId_GET_idOwner(struct zx_hrxml_OrganizationId_s* x);
 struct zx_str* zx_hrxml_OrganizationId_GET_validFrom(struct zx_hrxml_OrganizationId_s* x);
 struct zx_str* zx_hrxml_OrganizationId_GET_validTo(struct zx_hrxml_OrganizationId_s* x);
-struct zx_str* zx_hrxml_OrganizationId_GET_idOwner(struct zx_hrxml_OrganizationId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_OrganizationId_GET_IdValue(struct zx_hrxml_OrganizationId_s* x, int n);
 
@@ -7841,9 +7841,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_OrganizationId_POP_IdValue(struct zx_hrxml_O
 
 void zx_hrxml_OrganizationId_PUSH_IdValue(struct zx_hrxml_OrganizationId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_OrganizationId_PUT_idOwner(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y);
 void zx_hrxml_OrganizationId_PUT_validFrom(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y);
 void zx_hrxml_OrganizationId_PUT_validTo(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y);
-void zx_hrxml_OrganizationId_PUT_idOwner(struct zx_hrxml_OrganizationId_s* x, struct zx_str* y);
 
 void zx_hrxml_OrganizationId_PUT_IdValue(struct zx_hrxml_OrganizationId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -7879,20 +7879,20 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_OrganizationUnit(struct zx_ctx* c, struct zx
 struct zx_hrxml_OrganizationUnit_s {
   ZX_ELEM_EXT
   zx_hrxml_OrganizationUnit_EXT
-  struct zx_str* organizationType;	/* {1,1} attribute hrxml:OrgTypeStringExtensionType */
   struct zx_str* attendanceStatus;	/* {0,1} attribute current */
+  struct zx_str* organizationType;	/* {1,1} attribute hrxml:OrgTypeStringExtensionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_OrganizationUnit_GET_organizationType(struct zx_hrxml_OrganizationUnit_s* x);
 struct zx_str* zx_hrxml_OrganizationUnit_GET_attendanceStatus(struct zx_hrxml_OrganizationUnit_s* x);
+struct zx_str* zx_hrxml_OrganizationUnit_GET_organizationType(struct zx_hrxml_OrganizationUnit_s* x);
 
 
 
 
 
-void zx_hrxml_OrganizationUnit_PUT_organizationType(struct zx_hrxml_OrganizationUnit_s* x, struct zx_str* y);
 void zx_hrxml_OrganizationUnit_PUT_attendanceStatus(struct zx_hrxml_OrganizationUnit_s* x, struct zx_str* y);
+void zx_hrxml_OrganizationUnit_PUT_organizationType(struct zx_hrxml_OrganizationUnit_s* x, struct zx_str* y);
 
 
 
@@ -7934,13 +7934,13 @@ struct zx_hrxml_OrganizationalUnit_s {
   struct zx_hrxml_RelatedOrganizationalUnit_s* RelatedOrganizationalUnit;	/* {0,-1}  */
   struct zx_hrxml_PersonMember_s* PersonMember;	/* {0,-1}  */
   struct zx_hrxml_UserArea_s* UserArea;	/* {0,1}  */
-  struct zx_str* typeOfGroup;	/* {0,1} attribute xsd:string */
   struct zx_str* hierarchicalRole;	/* {0,1} attribute hrxml:HierarchicalRoleType */
+  struct zx_str* typeOfGroup;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_OrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x);
 struct zx_str* zx_hrxml_OrganizationalUnit_GET_hierarchicalRole(struct zx_hrxml_OrganizationalUnit_s* x);
+struct zx_str* zx_hrxml_OrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x);
 
 struct zx_elem_s* zx_hrxml_OrganizationalUnit_GET_OrganizationalUnitName(struct zx_hrxml_OrganizationalUnit_s* x, int n);
 struct zx_hrxml_OrganizationalUnitId_s* zx_hrxml_OrganizationalUnit_GET_OrganizationalUnitId(struct zx_hrxml_OrganizationalUnit_s* x, int n);
@@ -7986,8 +7986,8 @@ void zx_hrxml_OrganizationalUnit_PUSH_RelatedOrganizationalUnit(struct zx_hrxml_
 void zx_hrxml_OrganizationalUnit_PUSH_PersonMember(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_hrxml_PersonMember_s* y);
 void zx_hrxml_OrganizationalUnit_PUSH_UserArea(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_hrxml_UserArea_s* y);
 
-void zx_hrxml_OrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_str* y);
 void zx_hrxml_OrganizationalUnit_PUT_hierarchicalRole(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_str* y);
+void zx_hrxml_OrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_OrganizationalUnit_s* x, struct zx_str* y);
 
 void zx_hrxml_OrganizationalUnit_PUT_OrganizationalUnitName(struct zx_hrxml_OrganizationalUnit_s* x, int n, struct zx_elem_s* y);
 void zx_hrxml_OrganizationalUnit_PUT_OrganizationalUnitId(struct zx_hrxml_OrganizationalUnit_s* x, int n, struct zx_hrxml_OrganizationalUnitId_s* y);
@@ -8060,15 +8060,15 @@ struct zx_hrxml_OrganizationalUnitId_s {
   ZX_ELEM_EXT
   zx_hrxml_OrganizationalUnitId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_OrganizationalUnitId_GET_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x);
 struct zx_str* zx_hrxml_OrganizationalUnitId_GET_validFrom(struct zx_hrxml_OrganizationalUnitId_s* x);
 struct zx_str* zx_hrxml_OrganizationalUnitId_GET_validTo(struct zx_hrxml_OrganizationalUnitId_s* x);
-struct zx_str* zx_hrxml_OrganizationalUnitId_GET_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_OrganizationalUnitId_GET_IdValue(struct zx_hrxml_OrganizationalUnitId_s* x, int n);
 
@@ -8078,9 +8078,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_OrganizationalUnitId_POP_IdValue(struct zx_h
 
 void zx_hrxml_OrganizationalUnitId_PUSH_IdValue(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_OrganizationalUnitId_PUT_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y);
 void zx_hrxml_OrganizationalUnitId_PUT_validFrom(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y);
 void zx_hrxml_OrganizationalUnitId_PUT_validTo(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y);
-void zx_hrxml_OrganizationalUnitId_PUT_idOwner(struct zx_hrxml_OrganizationalUnitId_s* x, struct zx_str* y);
 
 void zx_hrxml_OrganizationalUnitId_PUT_IdValue(struct zx_hrxml_OrganizationalUnitId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -9083,15 +9083,15 @@ struct zx_hrxml_PersonId_s {
   ZX_ELEM_EXT
   zx_hrxml_PersonId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_PersonId_GET_idOwner(struct zx_hrxml_PersonId_s* x);
 struct zx_str* zx_hrxml_PersonId_GET_validFrom(struct zx_hrxml_PersonId_s* x);
 struct zx_str* zx_hrxml_PersonId_GET_validTo(struct zx_hrxml_PersonId_s* x);
-struct zx_str* zx_hrxml_PersonId_GET_idOwner(struct zx_hrxml_PersonId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_PersonId_GET_IdValue(struct zx_hrxml_PersonId_s* x, int n);
 
@@ -9101,9 +9101,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_PersonId_POP_IdValue(struct zx_hrxml_PersonI
 
 void zx_hrxml_PersonId_PUSH_IdValue(struct zx_hrxml_PersonId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_PersonId_PUT_idOwner(struct zx_hrxml_PersonId_s* x, struct zx_str* y);
 void zx_hrxml_PersonId_PUT_validFrom(struct zx_hrxml_PersonId_s* x, struct zx_str* y);
 void zx_hrxml_PersonId_PUT_validTo(struct zx_hrxml_PersonId_s* x, struct zx_str* y);
-void zx_hrxml_PersonId_PUT_idOwner(struct zx_hrxml_PersonId_s* x, struct zx_str* y);
 
 void zx_hrxml_PersonId_PUT_IdValue(struct zx_hrxml_PersonId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -9140,25 +9140,25 @@ struct zx_hrxml_PersonLegalId_s {
   ZX_ELEM_EXT
   zx_hrxml_PersonLegalId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* countryCode;	/* {0,1} attribute hrxml:CountryCodeType */
+  struct zx_str* documentType;	/* {0,1} attribute xsd:string */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
+  struct zx_str* idSource;	/* {0,1} attribute xsd:string */
+  struct zx_str* issuingRegion;	/* {0,1} attribute xsd:string */
+  struct zx_str* jurisdiction;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
-  struct zx_str* countryCode;	/* {0,1} attribute hrxml:CountryCodeType */
-  struct zx_str* jurisdiction;	/* {0,1} attribute xsd:string */
-  struct zx_str* issuingRegion;	/* {0,1} attribute xsd:string */
-  struct zx_str* documentType;	/* {0,1} attribute xsd:string */
-  struct zx_str* idSource;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_PersonLegalId_GET_countryCode(struct zx_hrxml_PersonLegalId_s* x);
+struct zx_str* zx_hrxml_PersonLegalId_GET_documentType(struct zx_hrxml_PersonLegalId_s* x);
+struct zx_str* zx_hrxml_PersonLegalId_GET_idOwner(struct zx_hrxml_PersonLegalId_s* x);
+struct zx_str* zx_hrxml_PersonLegalId_GET_idSource(struct zx_hrxml_PersonLegalId_s* x);
+struct zx_str* zx_hrxml_PersonLegalId_GET_issuingRegion(struct zx_hrxml_PersonLegalId_s* x);
+struct zx_str* zx_hrxml_PersonLegalId_GET_jurisdiction(struct zx_hrxml_PersonLegalId_s* x);
 struct zx_str* zx_hrxml_PersonLegalId_GET_validFrom(struct zx_hrxml_PersonLegalId_s* x);
 struct zx_str* zx_hrxml_PersonLegalId_GET_validTo(struct zx_hrxml_PersonLegalId_s* x);
-struct zx_str* zx_hrxml_PersonLegalId_GET_idOwner(struct zx_hrxml_PersonLegalId_s* x);
-struct zx_str* zx_hrxml_PersonLegalId_GET_countryCode(struct zx_hrxml_PersonLegalId_s* x);
-struct zx_str* zx_hrxml_PersonLegalId_GET_jurisdiction(struct zx_hrxml_PersonLegalId_s* x);
-struct zx_str* zx_hrxml_PersonLegalId_GET_issuingRegion(struct zx_hrxml_PersonLegalId_s* x);
-struct zx_str* zx_hrxml_PersonLegalId_GET_documentType(struct zx_hrxml_PersonLegalId_s* x);
-struct zx_str* zx_hrxml_PersonLegalId_GET_idSource(struct zx_hrxml_PersonLegalId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_PersonLegalId_GET_IdValue(struct zx_hrxml_PersonLegalId_s* x, int n);
 
@@ -9168,14 +9168,14 @@ struct zx_hrxml_IdValue_s* zx_hrxml_PersonLegalId_POP_IdValue(struct zx_hrxml_Pe
 
 void zx_hrxml_PersonLegalId_PUSH_IdValue(struct zx_hrxml_PersonLegalId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_PersonLegalId_PUT_countryCode(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
+void zx_hrxml_PersonLegalId_PUT_documentType(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
+void zx_hrxml_PersonLegalId_PUT_idOwner(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
+void zx_hrxml_PersonLegalId_PUT_idSource(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
+void zx_hrxml_PersonLegalId_PUT_issuingRegion(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
+void zx_hrxml_PersonLegalId_PUT_jurisdiction(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
 void zx_hrxml_PersonLegalId_PUT_validFrom(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
 void zx_hrxml_PersonLegalId_PUT_validTo(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
-void zx_hrxml_PersonLegalId_PUT_idOwner(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
-void zx_hrxml_PersonLegalId_PUT_countryCode(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
-void zx_hrxml_PersonLegalId_PUT_jurisdiction(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
-void zx_hrxml_PersonLegalId_PUT_issuingRegion(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
-void zx_hrxml_PersonLegalId_PUT_documentType(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
-void zx_hrxml_PersonLegalId_PUT_idSource(struct zx_hrxml_PersonLegalId_s* x, struct zx_str* y);
 
 void zx_hrxml_PersonLegalId_PUT_IdValue(struct zx_hrxml_PersonLegalId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -9679,13 +9679,13 @@ struct zx_hrxml_PositionHistory_s {
   struct zx_hrxml_JobCategory_s* JobCategory;	/* {0,-1}  */
   struct zx_hrxml_Competency_s* Competency;	/* {0,-1} nada */
   struct zx_hrxml_UserArea_s* UserArea;	/* {0,1}  */
-  struct zx_str* positionType;	/* {0,1} attribute hrxml:PositionTypexStringPatternExtensionType */
   struct zx_str* currentEmployer;	/* {0,1} attribute xsd:boolean */
+  struct zx_str* positionType;	/* {0,1} attribute hrxml:PositionTypexStringPatternExtensionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_PositionHistory_GET_positionType(struct zx_hrxml_PositionHistory_s* x);
 struct zx_str* zx_hrxml_PositionHistory_GET_currentEmployer(struct zx_hrxml_PositionHistory_s* x);
+struct zx_str* zx_hrxml_PositionHistory_GET_positionType(struct zx_hrxml_PositionHistory_s* x);
 
 struct zx_elem_s* zx_hrxml_PositionHistory_GET_Title(struct zx_hrxml_PositionHistory_s* x, int n);
 struct zx_hrxml_OrgName_s* zx_hrxml_PositionHistory_GET_OrgName(struct zx_hrxml_PositionHistory_s* x, int n);
@@ -9751,8 +9751,8 @@ void zx_hrxml_PositionHistory_PUSH_JobCategory(struct zx_hrxml_PositionHistory_s
 void zx_hrxml_PositionHistory_PUSH_Competency(struct zx_hrxml_PositionHistory_s* x, struct zx_hrxml_Competency_s* y);
 void zx_hrxml_PositionHistory_PUSH_UserArea(struct zx_hrxml_PositionHistory_s* x, struct zx_hrxml_UserArea_s* y);
 
-void zx_hrxml_PositionHistory_PUT_positionType(struct zx_hrxml_PositionHistory_s* x, struct zx_str* y);
 void zx_hrxml_PositionHistory_PUT_currentEmployer(struct zx_hrxml_PositionHistory_s* x, struct zx_str* y);
+void zx_hrxml_PositionHistory_PUT_positionType(struct zx_hrxml_PositionHistory_s* x, struct zx_str* y);
 
 void zx_hrxml_PositionHistory_PUT_Title(struct zx_hrxml_PositionHistory_s* x, int n, struct zx_elem_s* y);
 void zx_hrxml_PositionHistory_PUT_OrgName(struct zx_hrxml_PositionHistory_s* x, int n, struct zx_hrxml_OrgName_s* y);
@@ -10757,15 +10757,15 @@ struct zx_hrxml_ProfileId_s {
   ZX_ELEM_EXT
   zx_hrxml_ProfileId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_ProfileId_GET_idOwner(struct zx_hrxml_ProfileId_s* x);
 struct zx_str* zx_hrxml_ProfileId_GET_validFrom(struct zx_hrxml_ProfileId_s* x);
 struct zx_str* zx_hrxml_ProfileId_GET_validTo(struct zx_hrxml_ProfileId_s* x);
-struct zx_str* zx_hrxml_ProfileId_GET_idOwner(struct zx_hrxml_ProfileId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_ProfileId_GET_IdValue(struct zx_hrxml_ProfileId_s* x, int n);
 
@@ -10775,9 +10775,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_ProfileId_POP_IdValue(struct zx_hrxml_Profil
 
 void zx_hrxml_ProfileId_PUSH_IdValue(struct zx_hrxml_ProfileId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_ProfileId_PUT_idOwner(struct zx_hrxml_ProfileId_s* x, struct zx_str* y);
 void zx_hrxml_ProfileId_PUT_validFrom(struct zx_hrxml_ProfileId_s* x, struct zx_str* y);
 void zx_hrxml_ProfileId_PUT_validTo(struct zx_hrxml_ProfileId_s* x, struct zx_str* y);
-void zx_hrxml_ProfileId_PUT_idOwner(struct zx_hrxml_ProfileId_s* x, struct zx_str* y);
 
 void zx_hrxml_ProfileId_PUT_IdValue(struct zx_hrxml_ProfileId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -10814,15 +10814,15 @@ struct zx_hrxml_ProgramId_s {
   ZX_ELEM_EXT
   zx_hrxml_ProgramId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_ProgramId_GET_idOwner(struct zx_hrxml_ProgramId_s* x);
 struct zx_str* zx_hrxml_ProgramId_GET_validFrom(struct zx_hrxml_ProgramId_s* x);
 struct zx_str* zx_hrxml_ProgramId_GET_validTo(struct zx_hrxml_ProgramId_s* x);
-struct zx_str* zx_hrxml_ProgramId_GET_idOwner(struct zx_hrxml_ProgramId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_ProgramId_GET_IdValue(struct zx_hrxml_ProgramId_s* x, int n);
 
@@ -10832,9 +10832,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_ProgramId_POP_IdValue(struct zx_hrxml_Progra
 
 void zx_hrxml_ProgramId_PUSH_IdValue(struct zx_hrxml_ProgramId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_ProgramId_PUT_idOwner(struct zx_hrxml_ProgramId_s* x, struct zx_str* y);
 void zx_hrxml_ProgramId_PUT_validFrom(struct zx_hrxml_ProgramId_s* x, struct zx_str* y);
 void zx_hrxml_ProgramId_PUT_validTo(struct zx_hrxml_ProgramId_s* x, struct zx_str* y);
-void zx_hrxml_ProgramId_PUT_idOwner(struct zx_hrxml_ProgramId_s* x, struct zx_str* y);
 
 void zx_hrxml_ProgramId_PUT_IdValue(struct zx_hrxml_ProgramId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -11777,17 +11777,17 @@ struct zx_hrxml_RelatedOrganizationalUnit_s {
   struct zx_hrxml_RelatedOrganizationalUnit_s* RelatedOrganizationalUnit;	/* {0,-1}  */
   struct zx_hrxml_PersonMember_s* PersonMember;	/* {0,-1}  */
   struct zx_hrxml_UserArea_s* UserArea;	/* {0,1}  */
-  struct zx_str* typeOfGroup;	/* {0,1} attribute xsd:string */
   struct zx_str* hierarchicalRole;	/* {0,1} attribute hrxml:HierarchicalRoleType */
-  struct zx_str* relationship;	/* {0,1} attribute hrxml:RelationshipsType */
   struct zx_str* natureOfRelationship;	/* {0,1} attribute hrxml:OrganizationalUnitStructureType */
+  struct zx_str* relationship;	/* {0,1} attribute hrxml:RelationshipsType */
+  struct zx_str* typeOfGroup;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x);
 struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_hierarchicalRole(struct zx_hrxml_RelatedOrganizationalUnit_s* x);
-struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x);
 struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_natureOfRelationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x);
+struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x);
+struct zx_str* zx_hrxml_RelatedOrganizationalUnit_GET_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x);
 
 struct zx_elem_s* zx_hrxml_RelatedOrganizationalUnit_GET_OrganizationalUnitName(struct zx_hrxml_RelatedOrganizationalUnit_s* x, int n);
 struct zx_hrxml_OrganizationalUnitId_s* zx_hrxml_RelatedOrganizationalUnit_GET_OrganizationalUnitId(struct zx_hrxml_RelatedOrganizationalUnit_s* x, int n);
@@ -11833,10 +11833,10 @@ void zx_hrxml_RelatedOrganizationalUnit_PUSH_RelatedOrganizationalUnit(struct zx
 void zx_hrxml_RelatedOrganizationalUnit_PUSH_PersonMember(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_hrxml_PersonMember_s* y);
 void zx_hrxml_RelatedOrganizationalUnit_PUSH_UserArea(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_hrxml_UserArea_s* y);
 
-void zx_hrxml_RelatedOrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y);
 void zx_hrxml_RelatedOrganizationalUnit_PUT_hierarchicalRole(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y);
-void zx_hrxml_RelatedOrganizationalUnit_PUT_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y);
 void zx_hrxml_RelatedOrganizationalUnit_PUT_natureOfRelationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y);
+void zx_hrxml_RelatedOrganizationalUnit_PUT_relationship(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y);
+void zx_hrxml_RelatedOrganizationalUnit_PUT_typeOfGroup(struct zx_hrxml_RelatedOrganizationalUnit_s* x, struct zx_str* y);
 
 void zx_hrxml_RelatedOrganizationalUnit_PUT_OrganizationalUnitName(struct zx_hrxml_RelatedOrganizationalUnit_s* x, int n, struct zx_elem_s* y);
 void zx_hrxml_RelatedOrganizationalUnit_PUT_OrganizationalUnitId(struct zx_hrxml_RelatedOrganizationalUnit_s* x, int n, struct zx_hrxml_OrganizationalUnitId_s* y);
@@ -12329,15 +12329,15 @@ struct zx_hrxml_RoleId_s {
   ZX_ELEM_EXT
   zx_hrxml_RoleId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_RoleId_GET_idOwner(struct zx_hrxml_RoleId_s* x);
 struct zx_str* zx_hrxml_RoleId_GET_validFrom(struct zx_hrxml_RoleId_s* x);
 struct zx_str* zx_hrxml_RoleId_GET_validTo(struct zx_hrxml_RoleId_s* x);
-struct zx_str* zx_hrxml_RoleId_GET_idOwner(struct zx_hrxml_RoleId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_RoleId_GET_IdValue(struct zx_hrxml_RoleId_s* x, int n);
 
@@ -12347,9 +12347,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_RoleId_POP_IdValue(struct zx_hrxml_RoleId_s*
 
 void zx_hrxml_RoleId_PUSH_IdValue(struct zx_hrxml_RoleId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_RoleId_PUT_idOwner(struct zx_hrxml_RoleId_s* x, struct zx_str* y);
 void zx_hrxml_RoleId_PUT_validFrom(struct zx_hrxml_RoleId_s* x, struct zx_str* y);
 void zx_hrxml_RoleId_PUT_validTo(struct zx_hrxml_RoleId_s* x, struct zx_str* y);
-void zx_hrxml_RoleId_PUT_idOwner(struct zx_hrxml_RoleId_s* x, struct zx_str* y);
 
 void zx_hrxml_RoleId_PUT_IdValue(struct zx_hrxml_RoleId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -12599,15 +12599,15 @@ struct zx_hrxml_SchoolId_s {
   ZX_ELEM_EXT
   zx_hrxml_SchoolId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_SchoolId_GET_idOwner(struct zx_hrxml_SchoolId_s* x);
 struct zx_str* zx_hrxml_SchoolId_GET_validFrom(struct zx_hrxml_SchoolId_s* x);
 struct zx_str* zx_hrxml_SchoolId_GET_validTo(struct zx_hrxml_SchoolId_s* x);
-struct zx_str* zx_hrxml_SchoolId_GET_idOwner(struct zx_hrxml_SchoolId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_SchoolId_GET_IdValue(struct zx_hrxml_SchoolId_s* x, int n);
 
@@ -12617,9 +12617,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_SchoolId_POP_IdValue(struct zx_hrxml_SchoolI
 
 void zx_hrxml_SchoolId_PUSH_IdValue(struct zx_hrxml_SchoolId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_SchoolId_PUT_idOwner(struct zx_hrxml_SchoolId_s* x, struct zx_str* y);
 void zx_hrxml_SchoolId_PUT_validFrom(struct zx_hrxml_SchoolId_s* x, struct zx_str* y);
 void zx_hrxml_SchoolId_PUT_validTo(struct zx_hrxml_SchoolId_s* x, struct zx_str* y);
-void zx_hrxml_SchoolId_PUT_idOwner(struct zx_hrxml_SchoolId_s* x, struct zx_str* y);
 
 void zx_hrxml_SchoolId_PUT_IdValue(struct zx_hrxml_SchoolId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -12968,15 +12968,15 @@ struct zx_hrxml_SearchCriteriaId_s {
   ZX_ELEM_EXT
   zx_hrxml_SearchCriteriaId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_SearchCriteriaId_GET_idOwner(struct zx_hrxml_SearchCriteriaId_s* x);
 struct zx_str* zx_hrxml_SearchCriteriaId_GET_validFrom(struct zx_hrxml_SearchCriteriaId_s* x);
 struct zx_str* zx_hrxml_SearchCriteriaId_GET_validTo(struct zx_hrxml_SearchCriteriaId_s* x);
-struct zx_str* zx_hrxml_SearchCriteriaId_GET_idOwner(struct zx_hrxml_SearchCriteriaId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_SearchCriteriaId_GET_IdValue(struct zx_hrxml_SearchCriteriaId_s* x, int n);
 
@@ -12986,9 +12986,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_SearchCriteriaId_POP_IdValue(struct zx_hrxml
 
 void zx_hrxml_SearchCriteriaId_PUSH_IdValue(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_SearchCriteriaId_PUT_idOwner(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y);
 void zx_hrxml_SearchCriteriaId_PUT_validFrom(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y);
 void zx_hrxml_SearchCriteriaId_PUT_validTo(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y);
-void zx_hrxml_SearchCriteriaId_PUT_idOwner(struct zx_hrxml_SearchCriteriaId_s* x, struct zx_str* y);
 
 void zx_hrxml_SearchCriteriaId_PUT_IdValue(struct zx_hrxml_SearchCriteriaId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -13262,15 +13262,15 @@ struct zx_hrxml_SearchResultId_s {
   ZX_ELEM_EXT
   zx_hrxml_SearchResultId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_SearchResultId_GET_idOwner(struct zx_hrxml_SearchResultId_s* x);
 struct zx_str* zx_hrxml_SearchResultId_GET_validFrom(struct zx_hrxml_SearchResultId_s* x);
 struct zx_str* zx_hrxml_SearchResultId_GET_validTo(struct zx_hrxml_SearchResultId_s* x);
-struct zx_str* zx_hrxml_SearchResultId_GET_idOwner(struct zx_hrxml_SearchResultId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_SearchResultId_GET_IdValue(struct zx_hrxml_SearchResultId_s* x, int n);
 
@@ -13280,9 +13280,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_SearchResultId_POP_IdValue(struct zx_hrxml_S
 
 void zx_hrxml_SearchResultId_PUSH_IdValue(struct zx_hrxml_SearchResultId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_SearchResultId_PUT_idOwner(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y);
 void zx_hrxml_SearchResultId_PUT_validFrom(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y);
 void zx_hrxml_SearchResultId_PUT_validTo(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y);
-void zx_hrxml_SearchResultId_PUT_idOwner(struct zx_hrxml_SearchResultId_s* x, struct zx_str* y);
 
 void zx_hrxml_SearchResultId_PUT_IdValue(struct zx_hrxml_SearchResultId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -13574,15 +13574,15 @@ struct zx_hrxml_ServiceNumber_s {
   ZX_ELEM_EXT
   zx_hrxml_ServiceNumber_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_ServiceNumber_GET_idOwner(struct zx_hrxml_ServiceNumber_s* x);
 struct zx_str* zx_hrxml_ServiceNumber_GET_validFrom(struct zx_hrxml_ServiceNumber_s* x);
 struct zx_str* zx_hrxml_ServiceNumber_GET_validTo(struct zx_hrxml_ServiceNumber_s* x);
-struct zx_str* zx_hrxml_ServiceNumber_GET_idOwner(struct zx_hrxml_ServiceNumber_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_ServiceNumber_GET_IdValue(struct zx_hrxml_ServiceNumber_s* x, int n);
 
@@ -13592,9 +13592,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_ServiceNumber_POP_IdValue(struct zx_hrxml_Se
 
 void zx_hrxml_ServiceNumber_PUSH_IdValue(struct zx_hrxml_ServiceNumber_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_ServiceNumber_PUT_idOwner(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y);
 void zx_hrxml_ServiceNumber_PUT_validFrom(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y);
 void zx_hrxml_ServiceNumber_PUT_validTo(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y);
-void zx_hrxml_ServiceNumber_PUT_idOwner(struct zx_hrxml_ServiceNumber_s* x, struct zx_str* y);
 
 void zx_hrxml_ServiceNumber_PUT_IdValue(struct zx_hrxml_ServiceNumber_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -14371,23 +14371,23 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_StringValue(struct zx_ctx* c, struct zx_hrxm
 struct zx_hrxml_StringValue_s {
   ZX_ELEM_EXT
   zx_hrxml_StringValue_EXT
-  struct zx_str* minValue;	/* {0,1} attribute xsd:string */
-  struct zx_str* maxValue;	/* {0,1} attribute xsd:string */
   struct zx_str* description;	/* {0,1} attribute xsd:string */
+  struct zx_str* maxValue;	/* {0,1} attribute xsd:string */
+  struct zx_str* minValue;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_StringValue_GET_minValue(struct zx_hrxml_StringValue_s* x);
-struct zx_str* zx_hrxml_StringValue_GET_maxValue(struct zx_hrxml_StringValue_s* x);
 struct zx_str* zx_hrxml_StringValue_GET_description(struct zx_hrxml_StringValue_s* x);
+struct zx_str* zx_hrxml_StringValue_GET_maxValue(struct zx_hrxml_StringValue_s* x);
+struct zx_str* zx_hrxml_StringValue_GET_minValue(struct zx_hrxml_StringValue_s* x);
 
 
 
 
 
-void zx_hrxml_StringValue_PUT_minValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y);
-void zx_hrxml_StringValue_PUT_maxValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y);
 void zx_hrxml_StringValue_PUT_description(struct zx_hrxml_StringValue_s* x, struct zx_str* y);
+void zx_hrxml_StringValue_PUT_maxValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y);
+void zx_hrxml_StringValue_PUT_minValue(struct zx_hrxml_StringValue_s* x, struct zx_str* y);
 
 
 
@@ -14648,15 +14648,15 @@ struct zx_hrxml_SupplierId_s {
   ZX_ELEM_EXT
   zx_hrxml_SupplierId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_SupplierId_GET_idOwner(struct zx_hrxml_SupplierId_s* x);
 struct zx_str* zx_hrxml_SupplierId_GET_validFrom(struct zx_hrxml_SupplierId_s* x);
 struct zx_str* zx_hrxml_SupplierId_GET_validTo(struct zx_hrxml_SupplierId_s* x);
-struct zx_str* zx_hrxml_SupplierId_GET_idOwner(struct zx_hrxml_SupplierId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_SupplierId_GET_IdValue(struct zx_hrxml_SupplierId_s* x, int n);
 
@@ -14666,9 +14666,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_SupplierId_POP_IdValue(struct zx_hrxml_Suppl
 
 void zx_hrxml_SupplierId_PUSH_IdValue(struct zx_hrxml_SupplierId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_SupplierId_PUT_idOwner(struct zx_hrxml_SupplierId_s* x, struct zx_str* y);
 void zx_hrxml_SupplierId_PUT_validFrom(struct zx_hrxml_SupplierId_s* x, struct zx_str* y);
 void zx_hrxml_SupplierId_PUT_validTo(struct zx_hrxml_SupplierId_s* x, struct zx_str* y);
-void zx_hrxml_SupplierId_PUT_idOwner(struct zx_hrxml_SupplierId_s* x, struct zx_str* y);
 
 void zx_hrxml_SupplierId_PUT_IdValue(struct zx_hrxml_SupplierId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -14819,15 +14819,15 @@ struct zx_hrxml_TaxId_s {
   ZX_ELEM_EXT
   zx_hrxml_TaxId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_TaxId_GET_idOwner(struct zx_hrxml_TaxId_s* x);
 struct zx_str* zx_hrxml_TaxId_GET_validFrom(struct zx_hrxml_TaxId_s* x);
 struct zx_str* zx_hrxml_TaxId_GET_validTo(struct zx_hrxml_TaxId_s* x);
-struct zx_str* zx_hrxml_TaxId_GET_idOwner(struct zx_hrxml_TaxId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_TaxId_GET_IdValue(struct zx_hrxml_TaxId_s* x, int n);
 
@@ -14837,9 +14837,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_TaxId_POP_IdValue(struct zx_hrxml_TaxId_s* x
 
 void zx_hrxml_TaxId_PUSH_IdValue(struct zx_hrxml_TaxId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_TaxId_PUT_idOwner(struct zx_hrxml_TaxId_s* x, struct zx_str* y);
 void zx_hrxml_TaxId_PUT_validFrom(struct zx_hrxml_TaxId_s* x, struct zx_str* y);
 void zx_hrxml_TaxId_PUT_validTo(struct zx_hrxml_TaxId_s* x, struct zx_str* y);
-void zx_hrxml_TaxId_PUT_idOwner(struct zx_hrxml_TaxId_s* x, struct zx_str* y);
 
 void zx_hrxml_TaxId_PUT_IdValue(struct zx_hrxml_TaxId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -14875,23 +14875,23 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_TaxonomyId(struct zx_ctx* c, struct zx_hrxml
 struct zx_hrxml_TaxonomyId_s {
   ZX_ELEM_EXT
   zx_hrxml_TaxonomyId_EXT
+  struct zx_str* description;	/* {0,1} attribute xsd:string */
   struct zx_str* id;	/* {1,1} attribute xs:ID */
   struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
-  struct zx_str* description;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_TaxonomyId_GET_description(struct zx_hrxml_TaxonomyId_s* x);
 struct zx_str* zx_hrxml_TaxonomyId_GET_id(struct zx_hrxml_TaxonomyId_s* x);
 struct zx_str* zx_hrxml_TaxonomyId_GET_idOwner(struct zx_hrxml_TaxonomyId_s* x);
-struct zx_str* zx_hrxml_TaxonomyId_GET_description(struct zx_hrxml_TaxonomyId_s* x);
 
 
 
 
 
+void zx_hrxml_TaxonomyId_PUT_description(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y);
 void zx_hrxml_TaxonomyId_PUT_id(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y);
 void zx_hrxml_TaxonomyId_PUT_idOwner(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y);
-void zx_hrxml_TaxonomyId_PUT_description(struct zx_hrxml_TaxonomyId_s* x, struct zx_str* y);
 
 
 
@@ -15311,15 +15311,15 @@ struct zx_hrxml_UserId_s {
   ZX_ELEM_EXT
   zx_hrxml_UserId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_UserId_GET_idOwner(struct zx_hrxml_UserId_s* x);
 struct zx_str* zx_hrxml_UserId_GET_validFrom(struct zx_hrxml_UserId_s* x);
 struct zx_str* zx_hrxml_UserId_GET_validTo(struct zx_hrxml_UserId_s* x);
-struct zx_str* zx_hrxml_UserId_GET_idOwner(struct zx_hrxml_UserId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_UserId_GET_IdValue(struct zx_hrxml_UserId_s* x, int n);
 
@@ -15329,9 +15329,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_UserId_POP_IdValue(struct zx_hrxml_UserId_s*
 
 void zx_hrxml_UserId_PUSH_IdValue(struct zx_hrxml_UserId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_UserId_PUT_idOwner(struct zx_hrxml_UserId_s* x, struct zx_str* y);
 void zx_hrxml_UserId_PUT_validFrom(struct zx_hrxml_UserId_s* x, struct zx_str* y);
 void zx_hrxml_UserId_PUT_validTo(struct zx_hrxml_UserId_s* x, struct zx_str* y);
-void zx_hrxml_UserId_PUT_idOwner(struct zx_hrxml_UserId_s* x, struct zx_str* y);
 
 void zx_hrxml_UserId_PUT_IdValue(struct zx_hrxml_UserId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 
@@ -15739,26 +15739,26 @@ struct zx_str* zx_EASY_ENC_WO_hrxml_Weight(struct zx_ctx* c, struct zx_hrxml_Wei
 struct zx_hrxml_Weight_s {
   ZX_ELEM_EXT
   zx_hrxml_Weight_EXT
-  struct zx_str* minValue;	/* {0,1} attribute xsd:string */
-  struct zx_str* maxValue;	/* {0,1} attribute xsd:string */
-  struct zx_str* interval;	/* {0,1} attribute xsd:double */
   struct zx_str* description;	/* {0,1} attribute xsd:string */
+  struct zx_str* interval;	/* {0,1} attribute xsd:double */
+  struct zx_str* maxValue;	/* {0,1} attribute xsd:string */
+  struct zx_str* minValue;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_hrxml_Weight_GET_minValue(struct zx_hrxml_Weight_s* x);
-struct zx_str* zx_hrxml_Weight_GET_maxValue(struct zx_hrxml_Weight_s* x);
-struct zx_str* zx_hrxml_Weight_GET_interval(struct zx_hrxml_Weight_s* x);
 struct zx_str* zx_hrxml_Weight_GET_description(struct zx_hrxml_Weight_s* x);
+struct zx_str* zx_hrxml_Weight_GET_interval(struct zx_hrxml_Weight_s* x);
+struct zx_str* zx_hrxml_Weight_GET_maxValue(struct zx_hrxml_Weight_s* x);
+struct zx_str* zx_hrxml_Weight_GET_minValue(struct zx_hrxml_Weight_s* x);
 
 
 
 
 
-void zx_hrxml_Weight_PUT_minValue(struct zx_hrxml_Weight_s* x, struct zx_str* y);
-void zx_hrxml_Weight_PUT_maxValue(struct zx_hrxml_Weight_s* x, struct zx_str* y);
-void zx_hrxml_Weight_PUT_interval(struct zx_hrxml_Weight_s* x, struct zx_str* y);
 void zx_hrxml_Weight_PUT_description(struct zx_hrxml_Weight_s* x, struct zx_str* y);
+void zx_hrxml_Weight_PUT_interval(struct zx_hrxml_Weight_s* x, struct zx_str* y);
+void zx_hrxml_Weight_PUT_maxValue(struct zx_hrxml_Weight_s* x, struct zx_str* y);
+void zx_hrxml_Weight_PUT_minValue(struct zx_hrxml_Weight_s* x, struct zx_str* y);
 
 
 
@@ -15995,15 +15995,15 @@ struct zx_hrxml_WorkSiteId_s {
   ZX_ELEM_EXT
   zx_hrxml_WorkSiteId_EXT
   struct zx_hrxml_IdValue_s* IdValue;	/* {1,-1}  */
+  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
   struct zx_str* validFrom;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
   struct zx_str* validTo;	/* {0,1} attribute hrxml:AnyDateTimeNkNaType */
-  struct zx_str* idOwner;	/* {0,1} attribute xsd:string */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_hrxml_WorkSiteId_GET_idOwner(struct zx_hrxml_WorkSiteId_s* x);
 struct zx_str* zx_hrxml_WorkSiteId_GET_validFrom(struct zx_hrxml_WorkSiteId_s* x);
 struct zx_str* zx_hrxml_WorkSiteId_GET_validTo(struct zx_hrxml_WorkSiteId_s* x);
-struct zx_str* zx_hrxml_WorkSiteId_GET_idOwner(struct zx_hrxml_WorkSiteId_s* x);
 
 struct zx_hrxml_IdValue_s* zx_hrxml_WorkSiteId_GET_IdValue(struct zx_hrxml_WorkSiteId_s* x, int n);
 
@@ -16013,9 +16013,9 @@ struct zx_hrxml_IdValue_s* zx_hrxml_WorkSiteId_POP_IdValue(struct zx_hrxml_WorkS
 
 void zx_hrxml_WorkSiteId_PUSH_IdValue(struct zx_hrxml_WorkSiteId_s* x, struct zx_hrxml_IdValue_s* y);
 
+void zx_hrxml_WorkSiteId_PUT_idOwner(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y);
 void zx_hrxml_WorkSiteId_PUT_validFrom(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y);
 void zx_hrxml_WorkSiteId_PUT_validTo(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y);
-void zx_hrxml_WorkSiteId_PUT_idOwner(struct zx_hrxml_WorkSiteId_s* x, struct zx_str* y);
 
 void zx_hrxml_WorkSiteId_PUT_IdValue(struct zx_hrxml_WorkSiteId_s* x, int n, struct zx_hrxml_IdValue_s* y);
 

@@ -51,6 +51,24 @@ public class zxsig_ref {
     return (cPtr == 0) ? null : new zx_elem_s(cPtr, false);
   }
 
+  public void setId(zx_str value) {
+    zxidjniJNI.zxsig_ref_id_set(swigCPtr, zx_str.getCPtr(value));
+  }
+
+  public zx_str getId() {
+    long cPtr = zxidjniJNI.zxsig_ref_id_get(swigCPtr);
+    return (cPtr == 0) ? null : new zx_str(cPtr, false);
+  }
+
+  public void setCanon(zx_str value) {
+    zxidjniJNI.zxsig_ref_canon_set(swigCPtr, zx_str.getCPtr(value));
+  }
+
+  public zx_str getCanon() {
+    long cPtr = zxidjniJNI.zxsig_ref_canon_get(swigCPtr);
+    return (cPtr == 0) ? null : new zx_str(cPtr, false);
+  }
+
   public zxsig_ref() {
     this(zxidjniJNI.new_zxsig_ref(), true);
   }

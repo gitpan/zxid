@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhlo.c,v 1.8 2007/03/06 07:39:14 sampo Exp $
+ * $Id: zxidhlo.c,v 1.12 2008-09-17 02:39:21 sampo Exp $
  *
  * 16.1.2007, created --Sampo
  *
@@ -46,7 +46,7 @@ Usage: zxidhlo [options]   (when used as CGI, no options can be supplied)\n\
 /* CONFIG: You must edit the URL to match your domain name and port */
 
 #define ZXIDHLO "zxidhlo"
-#define CONF "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:8443/" ZXIDHLO
+#define CONF "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:8443/" ZXIDHLO "&NOSIG_FATAL=0"
 
 /* Called by: */
 int main(int argc, char** argv)
@@ -55,12 +55,17 @@ int main(int argc, char** argv)
   char* sid;
   char* nid;
   char* res;
+  char* setcookie;
 
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */
-  close(2);
-  if (open("tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
-    exit(2);
+  /* Reopen stderr only in mini_httpd case */
+  p = getenv("SERVER_SOFTWARE");
+  if (p && !memcmp(p, "mini_httpd", sizeof("mini_httpd"))) {
+    close(2);
+    if (open("/var/tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
+      exit(2);
+  }
   fprintf(stderr, "=================== Running ===================\n");
 #endif
 
@@ -80,6 +85,7 @@ int main(int argc, char** argv)
 
   sid = strstr(res, "sesid: ");
   nid = strstr(res, "idpnid: ");
+  setcookie = strstr(res, "setcookie: ");
   if (sid) {
     sid += sizeof("sesid: ") - 1;
     p = strchr(sid, '\n');
@@ -92,11 +98,19 @@ int main(int argc, char** argv)
     if (p)
       *p = 0;  /* nul termination */
   }
+  if (setcookie) {
+    setcookie += sizeof("setcookie: ") - 1;
+    p = strchr(setcookie, '\n');
+    if (p)
+      *p = 0;  /* nul termination */
+  }
   
   /* Render protected content page. You should replace this
    * with your own content, or establishment of your own session
    * and then redirection to your own content. Whatever makes sense. */
   
+  if (setcookie && !ONE_OF_2(*setcookie, '-', 0))
+    printf("SET-COOKIE: %s\r\n", setcookie);
   printf("Content-Type: text/html\r\n\r\n");
   printf("<title>ZXID HELLO SP Mgmt</title>" ZXID_BODY_TAG "<h1>ZXID HELLO SP Management (user logged in, session active)</h1><pre>\n");
   printf("</pre><form method=post action=\"" ZXIDHLO "?o=P\">");

@@ -1,5 +1,5 @@
 # zxid/sg/wsf-soap11.sg
-# $Id: wsf-soap11.sg,v 1.10 2007-06-19 15:17:04 sampo Exp $
+# $Id: wsf-soap11.sg,v 1.11 2007-10-05 22:24:28 sampo Exp $
 # Heavily edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
 # 26.2.2007, merged saml20-soap11.sg and di-soap11.sg to only
 #            one SOAP processor. --Sampo
@@ -42,6 +42,7 @@ Envelope -> %e:Envelope
 %Envelope:
   e:Header?
   e:Body
+  @id? -> %xs:ID
   any*
   @any?
   ;
@@ -81,6 +82,7 @@ Header -> %e:Header
   b12:UsageDirective?
   mm7:TransactionID?
   wsse:Security?
+  @id? -> %xs:ID
   any*
   @any?
   ;
@@ -309,6 +311,7 @@ Body -> %e:Body
   idhrxml:DeleteResponse?
   idhrxml:Notify?
   idhrxml:NotifyResponse?
+  @id? -> %xs:ID
   ;
 
 @mustUnderstand -> %xs:boolean

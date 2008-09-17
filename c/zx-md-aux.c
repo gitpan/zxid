@@ -184,10 +184,10 @@ void zx_FREE_md_AffiliationDescriptor(struct zx_ctx* c, struct zx_md_Affiliation
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->affiliationOwnerID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
-  zx_free_attr(c, x->cacheDuration, free_strs);
   zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->affiliationOwnerID, free_strs);
+  zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -248,10 +248,10 @@ void zx_DUP_STRS_md_AffiliationDescriptor(struct zx_ctx* c, struct zx_md_Affilia
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->affiliationOwnerID);
-  zx_dup_attr(c, x->validUntil);
-  zx_dup_attr(c, x->cacheDuration);
   zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->affiliationOwnerID);
+  zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -283,10 +283,10 @@ struct zx_md_AffiliationDescriptor_s* zx_DEEP_CLONE_md_AffiliationDescriptor(str
   x = (struct zx_md_AffiliationDescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_md_AffiliationDescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->affiliationOwnerID = zx_clone_attr(c, x->affiliationOwnerID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
-  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
   x->ID = zx_clone_attr(c, x->ID);
+  x->affiliationOwnerID = zx_clone_attr(c, x->affiliationOwnerID);
+  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -834,10 +834,10 @@ void zx_FREE_md_AttributeAuthorityDescriptor(struct zx_ctx* c, struct zx_md_Attr
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
   zx_free_attr(c, x->errorURL, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -940,10 +940,10 @@ void zx_DUP_STRS_md_AttributeAuthorityDescriptor(struct zx_ctx* c, struct zx_md_
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->protocolSupportEnumeration);
   zx_dup_attr(c, x->errorURL);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -1002,10 +1002,10 @@ struct zx_md_AttributeAuthorityDescriptor_s* zx_DEEP_CLONE_md_AttributeAuthority
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->ID = zx_clone_attr(c, x->ID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
   x->errorURL = zx_clone_attr(c, x->errorURL);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -1619,10 +1619,10 @@ void zx_FREE_md_AuthnAuthorityDescriptor(struct zx_ctx* c, struct zx_md_AuthnAut
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
   zx_free_attr(c, x->errorURL, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -1716,10 +1716,10 @@ void zx_DUP_STRS_md_AuthnAuthorityDescriptor(struct zx_ctx* c, struct zx_md_Auth
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->protocolSupportEnumeration);
   zx_dup_attr(c, x->errorURL);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -1772,10 +1772,10 @@ struct zx_md_AuthnAuthorityDescriptor_s* zx_DEEP_CLONE_md_AuthnAuthorityDescript
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->ID = zx_clone_attr(c, x->ID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
   x->errorURL = zx_clone_attr(c, x->errorURL);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -2594,10 +2594,10 @@ void zx_FREE_md_EntitiesDescriptor(struct zx_ctx* c, struct zx_md_EntitiesDescri
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->validUntil, free_strs);
-  zx_free_attr(c, x->cacheDuration, free_strs);
   zx_free_attr(c, x->ID, free_strs);
   zx_free_attr(c, x->Name, free_strs);
+  zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -2665,10 +2665,10 @@ void zx_DUP_STRS_md_EntitiesDescriptor(struct zx_ctx* c, struct zx_md_EntitiesDe
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->validUntil);
-  zx_dup_attr(c, x->cacheDuration);
   zx_dup_attr(c, x->ID);
   zx_dup_attr(c, x->Name);
+  zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -2704,10 +2704,10 @@ struct zx_md_EntitiesDescriptor_s* zx_DEEP_CLONE_md_EntitiesDescriptor(struct zx
   x = (struct zx_md_EntitiesDescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_md_EntitiesDescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->validUntil = zx_clone_attr(c, x->validUntil);
-  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
   x->ID = zx_clone_attr(c, x->ID);
   x->Name = zx_clone_attr(c, x->Name);
+  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -2863,10 +2863,10 @@ void zx_FREE_md_EntityDescriptor(struct zx_ctx* c, struct zx_md_EntityDescriptor
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->cacheDuration, free_strs);
   zx_free_attr(c, x->entityID, free_strs);
   zx_free_attr(c, x->validUntil, free_strs);
-  zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->ID, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -2998,10 +2998,10 @@ void zx_DUP_STRS_md_EntityDescriptor(struct zx_ctx* c, struct zx_md_EntityDescri
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->cacheDuration);
   zx_dup_attr(c, x->entityID);
   zx_dup_attr(c, x->validUntil);
-  zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->ID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3077,10 +3077,10 @@ struct zx_md_EntityDescriptor_s* zx_DEEP_CLONE_md_EntityDescriptor(struct zx_ctx
   x = (struct zx_md_EntityDescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_md_EntityDescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
   x->entityID = zx_clone_attr(c, x->entityID);
   x->validUntil = zx_clone_attr(c, x->validUntil);
-  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->ID = zx_clone_attr(c, x->ID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3526,11 +3526,11 @@ void zx_FREE_md_IDPSSODescriptor(struct zx_ctx* c, struct zx_md_IDPSSODescriptor
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
-  zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
-  zx_free_attr(c, x->errorURL, free_strs);
   zx_free_attr(c, x->WantAuthnRequestsSigned, free_strs);
+  zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->errorURL, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3665,11 +3665,11 @@ void zx_DUP_STRS_md_IDPSSODescriptor(struct zx_ctx* c, struct zx_md_IDPSSODescri
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->validUntil);
-  zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->protocolSupportEnumeration);
-  zx_dup_attr(c, x->errorURL);
   zx_dup_attr(c, x->WantAuthnRequestsSigned);
+  zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->errorURL);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3748,11 +3748,11 @@ struct zx_md_IDPSSODescriptor_s* zx_DEEP_CLONE_md_IDPSSODescriptor(struct zx_ctx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->ID = zx_clone_attr(c, x->ID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
-  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
-  x->errorURL = zx_clone_attr(c, x->errorURL);
   x->WantAuthnRequestsSigned = zx_clone_attr(c, x->WantAuthnRequestsSigned);
+  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->errorURL = zx_clone_attr(c, x->errorURL);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5178,10 +5178,10 @@ void zx_FREE_md_PDPDescriptor(struct zx_ctx* c, struct zx_md_PDPDescriptor_s* x,
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
   zx_free_attr(c, x->errorURL, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5275,10 +5275,10 @@ void zx_DUP_STRS_md_PDPDescriptor(struct zx_ctx* c, struct zx_md_PDPDescriptor_s
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->protocolSupportEnumeration);
   zx_dup_attr(c, x->errorURL);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5331,10 +5331,10 @@ struct zx_md_PDPDescriptor_s* zx_DEEP_CLONE_md_PDPDescriptor(struct zx_ctx* c, s
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->ID = zx_clone_attr(c, x->ID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
   x->errorURL = zx_clone_attr(c, x->errorURL);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5557,9 +5557,9 @@ void zx_FREE_md_RequestedAttribute(struct zx_ctx* c, struct zx_md_RequestedAttri
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->FriendlyName, free_strs);
   zx_free_attr(c, x->Name, free_strs);
   zx_free_attr(c, x->NameFormat, free_strs);
-  zx_free_attr(c, x->FriendlyName, free_strs);
   zx_free_attr(c, x->isRequired, free_strs);
 
   {
@@ -5604,9 +5604,9 @@ void zx_DUP_STRS_md_RequestedAttribute(struct zx_ctx* c, struct zx_md_RequestedA
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->FriendlyName);
   zx_dup_attr(c, x->Name);
   zx_dup_attr(c, x->NameFormat);
-  zx_dup_attr(c, x->FriendlyName);
   zx_dup_attr(c, x->isRequired);
 
   {
@@ -5628,9 +5628,9 @@ struct zx_md_RequestedAttribute_s* zx_DEEP_CLONE_md_RequestedAttribute(struct zx
   x = (struct zx_md_RequestedAttribute_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_md_RequestedAttribute_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->FriendlyName = zx_clone_attr(c, x->FriendlyName);
   x->Name = zx_clone_attr(c, x->Name);
   x->NameFormat = zx_clone_attr(c, x->NameFormat);
-  x->FriendlyName = zx_clone_attr(c, x->FriendlyName);
   x->isRequired = zx_clone_attr(c, x->isRequired);
 
   {
@@ -5725,10 +5725,10 @@ void zx_FREE_md_RoleDescriptor(struct zx_ctx* c, struct zx_md_RoleDescriptor_s* 
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
   zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
   zx_free_attr(c, x->errorURL, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5805,10 +5805,10 @@ void zx_DUP_STRS_md_RoleDescriptor(struct zx_ctx* c, struct zx_md_RoleDescriptor
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->validUntil);
   zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->protocolSupportEnumeration);
   zx_dup_attr(c, x->errorURL);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5850,10 +5850,10 @@ struct zx_md_RoleDescriptor_s* zx_DEEP_CLONE_md_RoleDescriptor(struct zx_ctx* c,
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->ID = zx_clone_attr(c, x->ID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
   x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
   x->errorURL = zx_clone_attr(c, x->errorURL);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -6030,13 +6030,13 @@ void zx_FREE_md_SPSSODescriptor(struct zx_ctx* c, struct zx_md_SPSSODescriptor_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ID, free_strs);
-  zx_free_attr(c, x->validUntil, free_strs);
-  zx_free_attr(c, x->cacheDuration, free_strs);
-  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
-  zx_free_attr(c, x->errorURL, free_strs);
   zx_free_attr(c, x->AuthnRequestsSigned, free_strs);
+  zx_free_attr(c, x->ID, free_strs);
   zx_free_attr(c, x->WantAssertionsSigned, free_strs);
+  zx_free_attr(c, x->cacheDuration, free_strs);
+  zx_free_attr(c, x->errorURL, free_strs);
+  zx_free_attr(c, x->protocolSupportEnumeration, free_strs);
+  zx_free_attr(c, x->validUntil, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -6153,13 +6153,13 @@ void zx_DUP_STRS_md_SPSSODescriptor(struct zx_ctx* c, struct zx_md_SPSSODescript
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ID);
-  zx_dup_attr(c, x->validUntil);
-  zx_dup_attr(c, x->cacheDuration);
-  zx_dup_attr(c, x->protocolSupportEnumeration);
-  zx_dup_attr(c, x->errorURL);
   zx_dup_attr(c, x->AuthnRequestsSigned);
+  zx_dup_attr(c, x->ID);
   zx_dup_attr(c, x->WantAssertionsSigned);
+  zx_dup_attr(c, x->cacheDuration);
+  zx_dup_attr(c, x->errorURL);
+  zx_dup_attr(c, x->protocolSupportEnumeration);
+  zx_dup_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;
@@ -6226,13 +6226,13 @@ struct zx_md_SPSSODescriptor_s* zx_DEEP_CLONE_md_SPSSODescriptor(struct zx_ctx* 
   x = (struct zx_md_SPSSODescriptor_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_md_SPSSODescriptor_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ID = zx_clone_attr(c, x->ID);
-  x->validUntil = zx_clone_attr(c, x->validUntil);
-  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
-  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
-  x->errorURL = zx_clone_attr(c, x->errorURL);
   x->AuthnRequestsSigned = zx_clone_attr(c, x->AuthnRequestsSigned);
+  x->ID = zx_clone_attr(c, x->ID);
   x->WantAssertionsSigned = zx_clone_attr(c, x->WantAssertionsSigned);
+  x->cacheDuration = zx_clone_attr(c, x->cacheDuration);
+  x->errorURL = zx_clone_attr(c, x->errorURL);
+  x->protocolSupportEnumeration = zx_clone_attr(c, x->protocolSupportEnumeration);
+  x->validUntil = zx_clone_attr(c, x->validUntil);
 
   {
       struct zx_ds_Signature_s* e;

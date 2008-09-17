@@ -574,14 +574,14 @@ void zx_ps_AddCollectionResponse_DEL_Object(struct zx_ps_AddCollectionResponse_s
 
 #endif
 
-/* FUNC(zx_ps_AddCollectionResponse_GET_id) */
-struct zx_str* zx_ps_AddCollectionResponse_GET_id(struct zx_ps_AddCollectionResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_AddCollectionResponse_PUT_id) */
-void zx_ps_AddCollectionResponse_PUT_id(struct zx_ps_AddCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_AddCollectionResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_AddCollectionResponse_GET_TimeStamp(struct zx_ps_AddCollectionResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_AddCollectionResponse_PUT_TimeStamp) */
 void zx_ps_AddCollectionResponse_PUT_TimeStamp(struct zx_ps_AddCollectionResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_AddCollectionResponse_GET_id) */
+struct zx_str* zx_ps_AddCollectionResponse_GET_id(struct zx_ps_AddCollectionResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_AddCollectionResponse_PUT_id) */
+void zx_ps_AddCollectionResponse_PUT_id(struct zx_ps_AddCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -1802,14 +1802,14 @@ void zx_ps_AddEntityResponse_DEL_QueryString(struct zx_ps_AddEntityResponse_s* x
 
 #endif
 
-/* FUNC(zx_ps_AddEntityResponse_GET_id) */
-struct zx_str* zx_ps_AddEntityResponse_GET_id(struct zx_ps_AddEntityResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_AddEntityResponse_PUT_id) */
-void zx_ps_AddEntityResponse_PUT_id(struct zx_ps_AddEntityResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_AddEntityResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_AddEntityResponse_GET_TimeStamp(struct zx_ps_AddEntityResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_AddEntityResponse_PUT_TimeStamp) */
 void zx_ps_AddEntityResponse_PUT_TimeStamp(struct zx_ps_AddEntityResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_AddEntityResponse_GET_id) */
+struct zx_str* zx_ps_AddEntityResponse_GET_id(struct zx_ps_AddEntityResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_AddEntityResponse_PUT_id) */
+void zx_ps_AddEntityResponse_PUT_id(struct zx_ps_AddEntityResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -3030,14 +3030,14 @@ void zx_ps_AddKnownEntityResponse_DEL_QueryString(struct zx_ps_AddKnownEntityRes
 
 #endif
 
-/* FUNC(zx_ps_AddKnownEntityResponse_GET_id) */
-struct zx_str* zx_ps_AddKnownEntityResponse_GET_id(struct zx_ps_AddKnownEntityResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_AddKnownEntityResponse_PUT_id) */
-void zx_ps_AddKnownEntityResponse_PUT_id(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_AddKnownEntityResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_AddKnownEntityResponse_GET_TimeStamp(struct zx_ps_AddKnownEntityResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_AddKnownEntityResponse_PUT_TimeStamp) */
 void zx_ps_AddKnownEntityResponse_PUT_TimeStamp(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_AddKnownEntityResponse_GET_id) */
+struct zx_str* zx_ps_AddKnownEntityResponse_GET_id(struct zx_ps_AddKnownEntityResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_AddKnownEntityResponse_PUT_id) */
+void zx_ps_AddKnownEntityResponse_PUT_id(struct zx_ps_AddKnownEntityResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -3588,14 +3588,14 @@ void zx_ps_AddToCollectionResponse_DEL_Status(struct zx_ps_AddToCollectionRespon
 
 #endif
 
-/* FUNC(zx_ps_AddToCollectionResponse_GET_id) */
-struct zx_str* zx_ps_AddToCollectionResponse_GET_id(struct zx_ps_AddToCollectionResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_AddToCollectionResponse_PUT_id) */
-void zx_ps_AddToCollectionResponse_PUT_id(struct zx_ps_AddToCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_AddToCollectionResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_AddToCollectionResponse_GET_TimeStamp(struct zx_ps_AddToCollectionResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_AddToCollectionResponse_PUT_TimeStamp) */
 void zx_ps_AddToCollectionResponse_PUT_TimeStamp(struct zx_ps_AddToCollectionResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_AddToCollectionResponse_GET_id) */
+struct zx_str* zx_ps_AddToCollectionResponse_GET_id(struct zx_ps_AddToCollectionResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_AddToCollectionResponse_PUT_id) */
+void zx_ps_AddToCollectionResponse_PUT_id(struct zx_ps_AddToCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -3606,14 +3606,14 @@ void zx_ps_AddToCollectionResponse_PUT_TimeStamp(struct zx_ps_AddToCollectionRes
 
 
 
-/* FUNC(zx_ps_DisplayName_GET_Locale) */
-struct zx_str* zx_ps_DisplayName_GET_Locale(struct zx_ps_DisplayName_s* x) { return x->Locale; }
-/* FUNC(zx_ps_DisplayName_PUT_Locale) */
-void zx_ps_DisplayName_PUT_Locale(struct zx_ps_DisplayName_s* x, struct zx_str* y) { x->Locale = y; }
 /* FUNC(zx_ps_DisplayName_GET_IsDefault) */
 struct zx_str* zx_ps_DisplayName_GET_IsDefault(struct zx_ps_DisplayName_s* x) { return x->IsDefault; }
 /* FUNC(zx_ps_DisplayName_PUT_IsDefault) */
 void zx_ps_DisplayName_PUT_IsDefault(struct zx_ps_DisplayName_s* x, struct zx_str* y) { x->IsDefault = y; }
+/* FUNC(zx_ps_DisplayName_GET_Locale) */
+struct zx_str* zx_ps_DisplayName_GET_Locale(struct zx_ps_DisplayName_s* x) { return x->Locale; }
+/* FUNC(zx_ps_DisplayName_PUT_Locale) */
+void zx_ps_DisplayName_PUT_Locale(struct zx_ps_DisplayName_s* x, struct zx_str* y) { x->Locale = y; }
 
 
 
@@ -4164,14 +4164,14 @@ void zx_ps_GetObjectInfoResponse_DEL_Object(struct zx_ps_GetObjectInfoResponse_s
 
 #endif
 
-/* FUNC(zx_ps_GetObjectInfoResponse_GET_id) */
-struct zx_str* zx_ps_GetObjectInfoResponse_GET_id(struct zx_ps_GetObjectInfoResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_GetObjectInfoResponse_PUT_id) */
-void zx_ps_GetObjectInfoResponse_PUT_id(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_GetObjectInfoResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_GetObjectInfoResponse_GET_TimeStamp(struct zx_ps_GetObjectInfoResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_GetObjectInfoResponse_PUT_TimeStamp) */
 void zx_ps_GetObjectInfoResponse_PUT_TimeStamp(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_GetObjectInfoResponse_GET_id) */
+struct zx_str* zx_ps_GetObjectInfoResponse_GET_id(struct zx_ps_GetObjectInfoResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_GetObjectInfoResponse_PUT_id) */
+void zx_ps_GetObjectInfoResponse_PUT_id(struct zx_ps_GetObjectInfoResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -4584,14 +4584,6 @@ void zx_ps_ListMembersRequest_DEL_Subscription(struct zx_ps_ListMembersRequest_s
 
 #endif
 
-/* FUNC(zx_ps_ListMembersRequest_GET_id) */
-struct zx_str* zx_ps_ListMembersRequest_GET_id(struct zx_ps_ListMembersRequest_s* x) { return x->id; }
-/* FUNC(zx_ps_ListMembersRequest_PUT_id) */
-void zx_ps_ListMembersRequest_PUT_id(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_ps_ListMembersRequest_GET_Structured) */
-struct zx_str* zx_ps_ListMembersRequest_GET_Structured(struct zx_ps_ListMembersRequest_s* x) { return x->Structured; }
-/* FUNC(zx_ps_ListMembersRequest_PUT_Structured) */
-void zx_ps_ListMembersRequest_PUT_Structured(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y) { x->Structured = y; }
 /* FUNC(zx_ps_ListMembersRequest_GET_Count) */
 struct zx_str* zx_ps_ListMembersRequest_GET_Count(struct zx_ps_ListMembersRequest_s* x) { return x->Count; }
 /* FUNC(zx_ps_ListMembersRequest_PUT_Count) */
@@ -4600,6 +4592,14 @@ void zx_ps_ListMembersRequest_PUT_Count(struct zx_ps_ListMembersRequest_s* x, st
 struct zx_str* zx_ps_ListMembersRequest_GET_Offset(struct zx_ps_ListMembersRequest_s* x) { return x->Offset; }
 /* FUNC(zx_ps_ListMembersRequest_PUT_Offset) */
 void zx_ps_ListMembersRequest_PUT_Offset(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y) { x->Offset = y; }
+/* FUNC(zx_ps_ListMembersRequest_GET_Structured) */
+struct zx_str* zx_ps_ListMembersRequest_GET_Structured(struct zx_ps_ListMembersRequest_s* x) { return x->Structured; }
+/* FUNC(zx_ps_ListMembersRequest_PUT_Structured) */
+void zx_ps_ListMembersRequest_PUT_Structured(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y) { x->Structured = y; }
+/* FUNC(zx_ps_ListMembersRequest_GET_id) */
+struct zx_str* zx_ps_ListMembersRequest_GET_id(struct zx_ps_ListMembersRequest_s* x) { return x->id; }
+/* FUNC(zx_ps_ListMembersRequest_PUT_id) */
+void zx_ps_ListMembersRequest_PUT_id(struct zx_ps_ListMembersRequest_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -4873,14 +4873,14 @@ void zx_ps_ListMembersResponse_DEL_Object(struct zx_ps_ListMembersResponse_s* x,
 
 #endif
 
-/* FUNC(zx_ps_ListMembersResponse_GET_id) */
-struct zx_str* zx_ps_ListMembersResponse_GET_id(struct zx_ps_ListMembersResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_ListMembersResponse_PUT_id) */
-void zx_ps_ListMembersResponse_PUT_id(struct zx_ps_ListMembersResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_ListMembersResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_ListMembersResponse_GET_TimeStamp(struct zx_ps_ListMembersResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_ListMembersResponse_PUT_TimeStamp) */
 void zx_ps_ListMembersResponse_PUT_TimeStamp(struct zx_ps_ListMembersResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_ListMembersResponse_GET_id) */
+struct zx_str* zx_ps_ListMembersResponse_GET_id(struct zx_ps_ListMembersResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_ListMembersResponse_PUT_id) */
+void zx_ps_ListMembersResponse_PUT_id(struct zx_ps_ListMembersResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -5154,6 +5154,14 @@ void zx_ps_Notification_DEL_ItemData(struct zx_ps_Notification_s* x, int n)
 
 #endif
 
+/* FUNC(zx_ps_Notification_GET_endReason) */
+struct zx_str* zx_ps_Notification_GET_endReason(struct zx_ps_Notification_s* x) { return x->endReason; }
+/* FUNC(zx_ps_Notification_PUT_endReason) */
+void zx_ps_Notification_PUT_endReason(struct zx_ps_Notification_s* x, struct zx_str* y) { x->endReason = y; }
+/* FUNC(zx_ps_Notification_GET_expires) */
+struct zx_str* zx_ps_Notification_GET_expires(struct zx_ps_Notification_s* x) { return x->expires; }
+/* FUNC(zx_ps_Notification_PUT_expires) */
+void zx_ps_Notification_PUT_expires(struct zx_ps_Notification_s* x, struct zx_str* y) { x->expires = y; }
 /* FUNC(zx_ps_Notification_GET_id) */
 struct zx_str* zx_ps_Notification_GET_id(struct zx_ps_Notification_s* x) { return x->id; }
 /* FUNC(zx_ps_Notification_PUT_id) */
@@ -5162,14 +5170,6 @@ void zx_ps_Notification_PUT_id(struct zx_ps_Notification_s* x, struct zx_str* y)
 struct zx_str* zx_ps_Notification_GET_subscriptionID(struct zx_ps_Notification_s* x) { return x->subscriptionID; }
 /* FUNC(zx_ps_Notification_PUT_subscriptionID) */
 void zx_ps_Notification_PUT_subscriptionID(struct zx_ps_Notification_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_ps_Notification_GET_expires) */
-struct zx_str* zx_ps_Notification_GET_expires(struct zx_ps_Notification_s* x) { return x->expires; }
-/* FUNC(zx_ps_Notification_PUT_expires) */
-void zx_ps_Notification_PUT_expires(struct zx_ps_Notification_s* x, struct zx_str* y) { x->expires = y; }
-/* FUNC(zx_ps_Notification_GET_endReason) */
-struct zx_str* zx_ps_Notification_GET_endReason(struct zx_ps_Notification_s* x) { return x->endReason; }
-/* FUNC(zx_ps_Notification_PUT_endReason) */
-void zx_ps_Notification_PUT_endReason(struct zx_ps_Notification_s* x, struct zx_str* y) { x->endReason = y; }
 
 
 
@@ -6269,10 +6269,6 @@ void zx_ps_Object_DEL_ObjectRef(struct zx_ps_Object_s* x, int n)
 
 #endif
 
-/* FUNC(zx_ps_Object_GET_NodeType) */
-struct zx_str* zx_ps_Object_GET_NodeType(struct zx_ps_Object_s* x) { return x->NodeType; }
-/* FUNC(zx_ps_Object_PUT_NodeType) */
-void zx_ps_Object_PUT_NodeType(struct zx_ps_Object_s* x, struct zx_str* y) { x->NodeType = y; }
 /* FUNC(zx_ps_Object_GET_CreatedDateTime) */
 struct zx_str* zx_ps_Object_GET_CreatedDateTime(struct zx_ps_Object_s* x) { return x->CreatedDateTime; }
 /* FUNC(zx_ps_Object_PUT_CreatedDateTime) */
@@ -6281,6 +6277,10 @@ void zx_ps_Object_PUT_CreatedDateTime(struct zx_ps_Object_s* x, struct zx_str* y
 struct zx_str* zx_ps_Object_GET_ModifiedDateTime(struct zx_ps_Object_s* x) { return x->ModifiedDateTime; }
 /* FUNC(zx_ps_Object_PUT_ModifiedDateTime) */
 void zx_ps_Object_PUT_ModifiedDateTime(struct zx_ps_Object_s* x, struct zx_str* y) { x->ModifiedDateTime = y; }
+/* FUNC(zx_ps_Object_GET_NodeType) */
+struct zx_str* zx_ps_Object_GET_NodeType(struct zx_ps_Object_s* x) { return x->NodeType; }
+/* FUNC(zx_ps_Object_PUT_NodeType) */
+void zx_ps_Object_PUT_NodeType(struct zx_ps_Object_s* x, struct zx_str* y) { x->NodeType = y; }
 
 
 
@@ -6554,10 +6554,6 @@ void zx_ps_QueryObjectsRequest_DEL_Subscription(struct zx_ps_QueryObjectsRequest
 
 #endif
 
-/* FUNC(zx_ps_QueryObjectsRequest_GET_id) */
-struct zx_str* zx_ps_QueryObjectsRequest_GET_id(struct zx_ps_QueryObjectsRequest_s* x) { return x->id; }
-/* FUNC(zx_ps_QueryObjectsRequest_PUT_id) */
-void zx_ps_QueryObjectsRequest_PUT_id(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_QueryObjectsRequest_GET_Count) */
 struct zx_str* zx_ps_QueryObjectsRequest_GET_Count(struct zx_ps_QueryObjectsRequest_s* x) { return x->Count; }
 /* FUNC(zx_ps_QueryObjectsRequest_PUT_Count) */
@@ -6566,6 +6562,10 @@ void zx_ps_QueryObjectsRequest_PUT_Count(struct zx_ps_QueryObjectsRequest_s* x, 
 struct zx_str* zx_ps_QueryObjectsRequest_GET_Offset(struct zx_ps_QueryObjectsRequest_s* x) { return x->Offset; }
 /* FUNC(zx_ps_QueryObjectsRequest_PUT_Offset) */
 void zx_ps_QueryObjectsRequest_PUT_Offset(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y) { x->Offset = y; }
+/* FUNC(zx_ps_QueryObjectsRequest_GET_id) */
+struct zx_str* zx_ps_QueryObjectsRequest_GET_id(struct zx_ps_QueryObjectsRequest_s* x) { return x->id; }
+/* FUNC(zx_ps_QueryObjectsRequest_PUT_id) */
+void zx_ps_QueryObjectsRequest_PUT_id(struct zx_ps_QueryObjectsRequest_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -6839,14 +6839,14 @@ void zx_ps_QueryObjectsResponse_DEL_Object(struct zx_ps_QueryObjectsResponse_s* 
 
 #endif
 
-/* FUNC(zx_ps_QueryObjectsResponse_GET_id) */
-struct zx_str* zx_ps_QueryObjectsResponse_GET_id(struct zx_ps_QueryObjectsResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_QueryObjectsResponse_PUT_id) */
-void zx_ps_QueryObjectsResponse_PUT_id(struct zx_ps_QueryObjectsResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_QueryObjectsResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_QueryObjectsResponse_GET_TimeStamp(struct zx_ps_QueryObjectsResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_QueryObjectsResponse_PUT_TimeStamp) */
 void zx_ps_QueryObjectsResponse_PUT_TimeStamp(struct zx_ps_QueryObjectsResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_QueryObjectsResponse_GET_id) */
+struct zx_str* zx_ps_QueryObjectsResponse_GET_id(struct zx_ps_QueryObjectsResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_QueryObjectsResponse_PUT_id) */
+void zx_ps_QueryObjectsResponse_PUT_id(struct zx_ps_QueryObjectsResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -7129,14 +7129,14 @@ void zx_ps_RemoveCollectionResponse_DEL_Status(struct zx_ps_RemoveCollectionResp
 
 #endif
 
-/* FUNC(zx_ps_RemoveCollectionResponse_GET_id) */
-struct zx_str* zx_ps_RemoveCollectionResponse_GET_id(struct zx_ps_RemoveCollectionResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_RemoveCollectionResponse_PUT_id) */
-void zx_ps_RemoveCollectionResponse_PUT_id(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_RemoveCollectionResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_RemoveCollectionResponse_GET_TimeStamp(struct zx_ps_RemoveCollectionResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_RemoveCollectionResponse_PUT_TimeStamp) */
 void zx_ps_RemoveCollectionResponse_PUT_TimeStamp(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_RemoveCollectionResponse_GET_id) */
+struct zx_str* zx_ps_RemoveCollectionResponse_GET_id(struct zx_ps_RemoveCollectionResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_RemoveCollectionResponse_PUT_id) */
+void zx_ps_RemoveCollectionResponse_PUT_id(struct zx_ps_RemoveCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -7419,14 +7419,14 @@ void zx_ps_RemoveEntityResponse_DEL_Status(struct zx_ps_RemoveEntityResponse_s* 
 
 #endif
 
-/* FUNC(zx_ps_RemoveEntityResponse_GET_id) */
-struct zx_str* zx_ps_RemoveEntityResponse_GET_id(struct zx_ps_RemoveEntityResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_RemoveEntityResponse_PUT_id) */
-void zx_ps_RemoveEntityResponse_PUT_id(struct zx_ps_RemoveEntityResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_RemoveEntityResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_RemoveEntityResponse_GET_TimeStamp(struct zx_ps_RemoveEntityResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_RemoveEntityResponse_PUT_TimeStamp) */
 void zx_ps_RemoveEntityResponse_PUT_TimeStamp(struct zx_ps_RemoveEntityResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_RemoveEntityResponse_GET_id) */
+struct zx_str* zx_ps_RemoveEntityResponse_GET_id(struct zx_ps_RemoveEntityResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_RemoveEntityResponse_PUT_id) */
+void zx_ps_RemoveEntityResponse_PUT_id(struct zx_ps_RemoveEntityResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -7977,14 +7977,14 @@ void zx_ps_RemoveFromCollectionResponse_DEL_Status(struct zx_ps_RemoveFromCollec
 
 #endif
 
-/* FUNC(zx_ps_RemoveFromCollectionResponse_GET_id) */
-struct zx_str* zx_ps_RemoveFromCollectionResponse_GET_id(struct zx_ps_RemoveFromCollectionResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_RemoveFromCollectionResponse_PUT_id) */
-void zx_ps_RemoveFromCollectionResponse_PUT_id(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_RemoveFromCollectionResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_RemoveFromCollectionResponse_GET_TimeStamp(struct zx_ps_RemoveFromCollectionResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_RemoveFromCollectionResponse_PUT_TimeStamp) */
 void zx_ps_RemoveFromCollectionResponse_PUT_TimeStamp(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_RemoveFromCollectionResponse_GET_id) */
+struct zx_str* zx_ps_RemoveFromCollectionResponse_GET_id(struct zx_ps_RemoveFromCollectionResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_RemoveFromCollectionResponse_PUT_id) */
+void zx_ps_RemoveFromCollectionResponse_PUT_id(struct zx_ps_RemoveFromCollectionResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -8401,14 +8401,14 @@ void zx_ps_ResolveIdentifierResponse_DEL_ResolveOutput(struct zx_ps_ResolveIdent
 
 #endif
 
-/* FUNC(zx_ps_ResolveIdentifierResponse_GET_id) */
-struct zx_str* zx_ps_ResolveIdentifierResponse_GET_id(struct zx_ps_ResolveIdentifierResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_ResolveIdentifierResponse_PUT_id) */
-void zx_ps_ResolveIdentifierResponse_PUT_id(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_ResolveIdentifierResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_ResolveIdentifierResponse_GET_TimeStamp(struct zx_ps_ResolveIdentifierResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_ResolveIdentifierResponse_PUT_TimeStamp) */
 void zx_ps_ResolveIdentifierResponse_PUT_TimeStamp(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_ResolveIdentifierResponse_GET_id) */
+struct zx_str* zx_ps_ResolveIdentifierResponse_GET_id(struct zx_ps_ResolveIdentifierResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_ResolveIdentifierResponse_PUT_id) */
+void zx_ps_ResolveIdentifierResponse_PUT_id(struct zx_ps_ResolveIdentifierResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -9379,14 +9379,14 @@ void zx_ps_SetObjectInfoResponse_DEL_Status(struct zx_ps_SetObjectInfoResponse_s
 
 #endif
 
-/* FUNC(zx_ps_SetObjectInfoResponse_GET_id) */
-struct zx_str* zx_ps_SetObjectInfoResponse_GET_id(struct zx_ps_SetObjectInfoResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_SetObjectInfoResponse_PUT_id) */
-void zx_ps_SetObjectInfoResponse_PUT_id(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_SetObjectInfoResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_SetObjectInfoResponse_GET_TimeStamp(struct zx_ps_SetObjectInfoResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_SetObjectInfoResponse_PUT_TimeStamp) */
 void zx_ps_SetObjectInfoResponse_PUT_TimeStamp(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_SetObjectInfoResponse_GET_id) */
+struct zx_str* zx_ps_SetObjectInfoResponse_GET_id(struct zx_ps_SetObjectInfoResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_SetObjectInfoResponse_PUT_id) */
+void zx_ps_SetObjectInfoResponse_PUT_id(struct zx_ps_SetObjectInfoResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 
@@ -9660,22 +9660,10 @@ void zx_ps_Subscription_DEL_Extension(struct zx_ps_Subscription_s* x, int n)
 
 #endif
 
-/* FUNC(zx_ps_Subscription_GET_subscriptionID) */
-struct zx_str* zx_ps_Subscription_GET_subscriptionID(struct zx_ps_Subscription_s* x) { return x->subscriptionID; }
-/* FUNC(zx_ps_Subscription_PUT_subscriptionID) */
-void zx_ps_Subscription_PUT_subscriptionID(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_ps_Subscription_GET_notifyToRef) */
-struct zx_str* zx_ps_Subscription_GET_notifyToRef(struct zx_ps_Subscription_s* x) { return x->notifyToRef; }
-/* FUNC(zx_ps_Subscription_PUT_notifyToRef) */
-void zx_ps_Subscription_PUT_notifyToRef(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->notifyToRef = y; }
 /* FUNC(zx_ps_Subscription_GET_adminNotifyToRef) */
 struct zx_str* zx_ps_Subscription_GET_adminNotifyToRef(struct zx_ps_Subscription_s* x) { return x->adminNotifyToRef; }
 /* FUNC(zx_ps_Subscription_PUT_adminNotifyToRef) */
 void zx_ps_Subscription_PUT_adminNotifyToRef(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->adminNotifyToRef = y; }
-/* FUNC(zx_ps_Subscription_GET_starts) */
-struct zx_str* zx_ps_Subscription_GET_starts(struct zx_ps_Subscription_s* x) { return x->starts; }
-/* FUNC(zx_ps_Subscription_PUT_starts) */
-void zx_ps_Subscription_PUT_starts(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->starts = y; }
 /* FUNC(zx_ps_Subscription_GET_expires) */
 struct zx_str* zx_ps_Subscription_GET_expires(struct zx_ps_Subscription_s* x) { return x->expires; }
 /* FUNC(zx_ps_Subscription_PUT_expires) */
@@ -9688,6 +9676,18 @@ void zx_ps_Subscription_PUT_id(struct zx_ps_Subscription_s* x, struct zx_str* y)
 struct zx_str* zx_ps_Subscription_GET_includeData(struct zx_ps_Subscription_s* x) { return x->includeData; }
 /* FUNC(zx_ps_Subscription_PUT_includeData) */
 void zx_ps_Subscription_PUT_includeData(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->includeData = y; }
+/* FUNC(zx_ps_Subscription_GET_notifyToRef) */
+struct zx_str* zx_ps_Subscription_GET_notifyToRef(struct zx_ps_Subscription_s* x) { return x->notifyToRef; }
+/* FUNC(zx_ps_Subscription_PUT_notifyToRef) */
+void zx_ps_Subscription_PUT_notifyToRef(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->notifyToRef = y; }
+/* FUNC(zx_ps_Subscription_GET_starts) */
+struct zx_str* zx_ps_Subscription_GET_starts(struct zx_ps_Subscription_s* x) { return x->starts; }
+/* FUNC(zx_ps_Subscription_PUT_starts) */
+void zx_ps_Subscription_PUT_starts(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->starts = y; }
+/* FUNC(zx_ps_Subscription_GET_subscriptionID) */
+struct zx_str* zx_ps_Subscription_GET_subscriptionID(struct zx_ps_Subscription_s* x) { return x->subscriptionID; }
+/* FUNC(zx_ps_Subscription_PUT_subscriptionID) */
+void zx_ps_Subscription_PUT_subscriptionID(struct zx_ps_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
 
 
 
@@ -10381,14 +10381,14 @@ void zx_ps_TestMembershipResponse_DEL_Result(struct zx_ps_TestMembershipResponse
 
 #endif
 
-/* FUNC(zx_ps_TestMembershipResponse_GET_id) */
-struct zx_str* zx_ps_TestMembershipResponse_GET_id(struct zx_ps_TestMembershipResponse_s* x) { return x->id; }
-/* FUNC(zx_ps_TestMembershipResponse_PUT_id) */
-void zx_ps_TestMembershipResponse_PUT_id(struct zx_ps_TestMembershipResponse_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_ps_TestMembershipResponse_GET_TimeStamp) */
 struct zx_str* zx_ps_TestMembershipResponse_GET_TimeStamp(struct zx_ps_TestMembershipResponse_s* x) { return x->TimeStamp; }
 /* FUNC(zx_ps_TestMembershipResponse_PUT_TimeStamp) */
 void zx_ps_TestMembershipResponse_PUT_TimeStamp(struct zx_ps_TestMembershipResponse_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_ps_TestMembershipResponse_GET_id) */
+struct zx_str* zx_ps_TestMembershipResponse_GET_id(struct zx_ps_TestMembershipResponse_s* x) { return x->id; }
+/* FUNC(zx_ps_TestMembershipResponse_PUT_id) */
+void zx_ps_TestMembershipResponse_PUT_id(struct zx_ps_TestMembershipResponse_s* x, struct zx_str* y) { x->id = y; }
 
 
 

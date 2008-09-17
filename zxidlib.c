@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidlib.c,v 1.46 2007/05/10 18:19:57 sampo Exp $
+ * $Id: zxidlib.c,v 1.55 2008-03-23 19:34:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, factored out ses, conf, cgi, ecp, cdc, and loc --Sampo
@@ -13,10 +13,6 @@
 
 #include <string.h>
 #include <stdio.h>
-
-#ifdef USE_CURL
-#include <curl/curl.h>
-#endif
 
 #include "errmac.h"
 #include "zxid.h"
@@ -27,7 +23,7 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
-int debug = 0;
+int zx_debug = 0;   /* declared in errmac.h */
 int assert_nonfatal = 0;
 char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately provoking a core dump.\nSorry for the inconvenience.\n";
 int trace = 0;
@@ -45,71 +41,6 @@ char* zxid_version_str()
 }
 
 /* ============== SOAP Call ============= */
-
-/* See also: http://curl.haxx.se/libcurl/ */
-
-#define ZXID_MAX_SOAP (64*1024)
-
-/* Called by:  zxid_soap_call_body */
-struct zx_root_s* zxid_soap_call_raw(struct zxid_conf* cf, struct zx_str* url, struct zx_str* data)
-{
-#ifdef USE_CURL
-  struct zx_root_s* r;
-  CURLcode res;
-  struct zxid_curl_ctx rc;
-  struct zxid_curl_ctx wc;
-  struct curl_slist content_type;
-  struct curl_slist SOAPaction;
-  char* urli;
-  char* buf = ZX_ALLOC(cf->ctx, ZXID_MAX_SOAP+1);
-  rc.p = buf;
-  rc.lim = buf + ZXID_MAX_SOAP;
-  curl_easy_setopt(cf->curl, CURLOPT_WRITEDATA, &rc);
-  curl_easy_setopt(cf->curl, CURLOPT_WRITEFUNCTION, zxid_curl_write_data);
-  curl_easy_setopt(cf->curl, CURLOPT_NOPROGRESS, 1);
-  curl_easy_setopt(cf->curl, CURLOPT_FOLLOWLOCATION, 1);
-  curl_easy_setopt(cf->curl, CURLOPT_MAXREDIRS, 110);
-  curl_easy_setopt(cf->curl, CURLOPT_SSL_VERIFYPEER, 0);  /* *** arrange verification */
-  curl_easy_setopt(cf->curl, CURLOPT_SSL_VERIFYHOST, 0);  /* *** arrange verification */
-  urli = zx_str_to_c(cf->ctx, url);
-  D("urli(%s) data->len=%d", urli, data->len);
-  curl_easy_setopt(cf->curl, CURLOPT_URL, urli);
-  
-  wc.p = data->s;
-  wc.lim = data->s + data->len;
-  
-  curl_easy_setopt(cf->curl, CURLOPT_POST, 1);
-  curl_easy_setopt(cf->curl, CURLOPT_POSTFIELDSIZE, data->len);
-  curl_easy_setopt(cf->curl, CURLOPT_READDATA, &wc);
-  curl_easy_setopt(cf->curl, CURLOPT_READFUNCTION, zxid_curl_read_data);
-  
-  memset(&content_type, 0, sizeof(content_type));
-  content_type.data = "Content-Type: text/xml";
-  curl_easy_setopt(cf->curl, CURLOPT_HTTPHEADER, &content_type);
-
-  memset(&SOAPaction, 0, sizeof(SOAPaction));
-  SOAPaction.data = "SOAPAction: \"\"";
-  curl_easy_setopt(cf->curl, CURLOPT_HTTPHEADER, &SOAPaction);
-  
-  D("------------------------ url(%.*s) ------------------------", url->len, url->s);
-  res = curl_easy_perform(cf->curl);  /* <========= Actual call, blocks. */
-  ZX_FREE(cf->ctx, urli);
-  rc.lim = rc.p;
-  rc.p[1] = 0;
-  rc.p = buf;
-  
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, rc.lim);
-  r = zx_DEC_root(cf->ctx, 0, 1);
-  if (!r || !r->Envelope || !r->Envelope->Body) {
-    ERR("Failed to parse SOAP response url(%.*s) CURLcode(%d) CURLerr(%s) buf(%.*s)", url->len, url->s, res, curl_easy_strerror(res), rc.lim-buf, buf);
-    return 0;
-  }
-  return r;
-#else
-  ERR("This copy of zxid was compiled to NOT use libcurl. SOAP calls (such as Artifact profile and WSC) are not supported. Add -DUSE_CURL and recompile. %d", 0);
-  return 0;
-#endif
-}
 
 /* To be called from ID-WSF world */
 
@@ -155,7 +86,7 @@ int zxid_soap_cgi_resp_body(struct zxid_conf* cf, struct zx_e_Body_s* body)
   ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
 
   D("SOAP_RESP(%.*s)", ss->len, ss->s);
-  printf("text/xml" CRLF2 "%.*s", ss->len, ss->s);
+  printf("CONTENT-TYPE: text/xml" CRLF "CONTENT-LENGTH: %d" CRLF2 "%.*s", ss->len, ss->len, ss->s);
   return ZXID_REDIR_OK;
 }
 
@@ -167,14 +98,17 @@ int zxid_soap_cgi_resp_body(struct zxid_conf* cf, struct zx_e_Body_s* body)
 #define SIGNATURE_EQ "&Signature="
 
 /* Called by:  zxid_saml2_location, zxid_saml2_redir, zxid_saml2_redir_url, zxid_saml2_resp_location, zxid_saml2_resp_redir */
-struct zx_str* zxid_saml2_redir_enc(struct zxid_conf* cf, struct zx_str* pay_load)
+
+struct zx_str* zxid_saml2_redir_enc(struct zxid_conf* cf, char* cgivar, struct zx_str* pay_load, char* relay_state)
 {
   char* zbuf;
   char* b64;
   char* url;
   char* sig;
   char* p;
-  int zlen, len, slen;
+  int zlen, len, slen, cvlen, rs_len;
+  cvlen = strlen(cgivar);
+  rs_len = relay_state?strlen(relay_state):0;
   
   /* RFC1951 per SAML2 binding line 576 (p.17), i.e. NOT gzip or ordinary zlib */
   zbuf = zx_zlib_raw_deflate(cf->ctx, pay_load->len, pay_load->s, &zlen);
@@ -185,15 +119,22 @@ struct zx_str* zxid_saml2_redir_enc(struct zxid_conf* cf, struct zx_str* pay_loa
   b64 = ZX_ALLOC(cf->ctx, len);
   p = base64_fancy_raw(zbuf, zlen, b64, std_basis_64, 1<<31, 0, 0, '=');
   
-  len = zx_url_encode_len(p-b64, b64) - 1;  /* zap nul termination */
-  url = ZX_ALLOC(cf->ctx, len + sizeof(SIG_ALGO_RSA_SHA1_URLENC));
-  zx_url_encode_raw(p-b64, b64, url);
+  len = zx_url_encode_len(p-b64, b64) - 1 /* zap nul termination */ + cvlen;
+  url = ZX_ALLOC(cf->ctx, len + sizeof(SIG_ALGO_RSA_SHA1_URLENC)
+		 + (rs_len?(sizeof("&RelayState=")-1+rs_len):0));
+  memcpy(url, cgivar, cvlen);
+
+  zx_url_encode_raw(p-b64, b64, url+cvlen);
   ZX_FREE(cf->ctx, b64);
-
-  /* *** relay state ... */
-
+  
+  if (rs_len) {
+    memcpy(url + len, "&RelayState=", sizeof("&RelayState=")-1);
+    memcpy(url + len + sizeof("&RelayState=")-1, relay_state, rs_len);
+    len += sizeof("&RelayState=")-1+rs_len;
+  }
+  
   if (!cf->authn_req_sign) {    /* Simple nonsigned case. */
-    url[len] = 0;
+    url[len] = 0;  /* Reservation for SIG_ALGO_RSA_SHA1_URLENC provides space for nul term. */
     return zx_ref_len_str(cf->ctx, len, url);
   }
   
@@ -225,16 +166,16 @@ struct zx_str* zxid_saml2_redir_enc(struct zxid_conf* cf, struct zx_str* pay_loa
 }
 
 /* Called by:  zxid_start_sso_url */
-struct zx_str* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
+struct zx_str* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state)
 {
   struct zx_str* ss;
-  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLRequest=", pay_load, relay_state);
   if (!loc || !rse) {
     ERR("Redirection location URL missing. %d", 0);
     return 0;
   }
-  D("%.*s?SAMLRequest=%.*s", loc->len, loc->s, rse->len, rse->s);
-  ss = zx_strf(cf->ctx, "%.*s?SAMLRequest=%.*s", loc->len, loc->s, rse->len, rse->s);
+  D("%.*s?%.*s", loc->len, loc->s, rse->len, rse->s);
+  ss = zx_strf(cf->ctx, "%.*s?%.*s", loc->len, loc->s, rse->len, rse->s);
   zx_str_free(cf->ctx, rse);
   return ss;
 }
@@ -242,60 +183,60 @@ struct zx_str* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str* loc, st
 /* Return the HTTP 302 redirect LOCATION header + CRLF2 */
 
 /* Called by:  zxid_sp_nireg_location, zxid_sp_slo_location */
-struct zx_str* zxid_saml2_location(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
+struct zx_str* zxid_saml2_location(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state)
 {
   struct zx_str* ss;
-  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLRequest=", pay_load, relay_state);
   if (!loc) {
     ERR("Redirection location URL missing. rse(%.*s)", rse->len, rse->s);
     return 0;
   }
-  D("Location: %.*s?SAMLRequest=%.*s", loc->len, loc->s, rse->len, rse->s);
-  ss = zx_strf(cf->ctx, "Location: %.*s?SAMLRequest=%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
+  D("Location: %.*s?%.*s", loc->len, loc->s, rse->len, rse->s);
+  ss = zx_strf(cf->ctx, "Location: %.*s?%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
   zx_str_free(cf->ctx, rse);
   return ss;
 }
 
 /* Called by:  zxid_sp_nireg_redir, zxid_sp_slo_redir */
-int zxid_saml2_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
+int zxid_saml2_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state)
 {
-  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLRequest=", pay_load, relay_state);
   if (!loc || !rse) {
     ERR("Redirection location URL missing. %d", 0);
     return 0;
   }
-  D("Location: %.*s?SAMLRequest=%.*s", loc->len, loc->s, rse->len, rse->s);
-  printf("Location: %.*s?SAMLRequest=%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
+  D("Location: %.*s?%.*s", loc->len, loc->s, rse->len, rse->s);
+  printf("Location: %.*s?%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
   zx_str_free(cf->ctx, rse);
   fflush(stdout);
   return ZXID_REDIR_OK;
 }
 
 /* Called by:  zxid_sp_dispatch_location x2 */
-struct zx_str* zxid_saml2_resp_location(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
+struct zx_str* zxid_saml2_resp_location(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state)
 {
   struct zx_str* ss;
-  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLResponse=", pay_load, relay_state);
   if (!loc || !rse) {
     ERR("Redirection location URL missing. rse(%.*s)", rse->len, rse->s);
     return 0;
   }
-  D("Location: %.*s?SAMLResponse=%.*s", loc->len, loc->s, rse->len, rse->s);
-  ss = zx_strf(cf->ctx, "Location: %.*s?SAMLResponse=%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
+  D("Location: %.*s?%.*s", loc->len, loc->s, rse->len, rse->s);
+  ss = zx_strf(cf->ctx, "Location: %.*s?%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
   zx_str_free(cf->ctx, rse);
   return ss;
 }
 
 /* Called by:  zxid_sp_dispatch x2 */
-int zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* rs)
+int zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state)
 {
-  struct zx_str* rse = zxid_saml2_redir_enc(cf, rs);
+  struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLResponse=", pay_load, relay_state);
   if (!loc || !rse) {
-    ERR("Redirection location URL missing. %d", 0);
+    ERR("Redirection location URL missing. %p", loc);
     return 0;
   }
-  D("Location: %.*s?SAMLResponse=%.*s", loc->len, loc->s, rse->len, rse->s);
-  printf("Location: %.*s?SAMLResponse=%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
+  D("Location: %.*s?%.*s", loc->len, loc->s, rse->len, rse->s);
+  printf("Location: %.*s?%.*s" CRLF2, loc->len, loc->s, rse->len, rse->s);
   zx_str_free(cf->ctx, rse);
   return ZXID_REDIR_OK;
 }
@@ -310,6 +251,8 @@ int zxid_saml_ok(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_Status
   struct zx_sp_StatusCode_s* sc = st->StatusCode;
   if (!memcmp(SAML2_SC_SUCCESS, sc->Value->s, sc->Value->len)) {
     D("SAML ok what(%s)", what);
+    if (cf->log_level>0)
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "K", "SAMLOK", what, 0);
     return 1;
   }
   if (st->StatusMessage && (m = st->StatusMessage->content))
@@ -320,15 +263,62 @@ int zxid_saml_ok(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_Status
     sc2 = sc->StatusCode->Value;
   for (sc = sc->StatusCode; sc; sc = sc->StatusCode)
     ERR("SAML Fail what(%s) subcode(%.*s)", what, sc->Value->len, sc->Value->s);
-  
-  if (!cgi)
-    return 0;
-  
+    
   ss = zx_strf(cf->ctx, "SAML Fail what(%s) msg(%.*s) SC1(%.*s) subcode(%.*s)", what,
 	       m?m->len:0, m?m->s:"",
 	       sc1?sc1->len:0, sc1?sc1->s:"",
 	       sc2?sc2->len:0, sc2?sc2->s:"");
+
+  if (cf->log_level>0)
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "F", "SAMLFAIL", what, ss->s);
+  
+  if (!cgi)
+    return 0;
   cgi->err = ss->s;
+  return 0;
+}
+
+struct zx_sa_NameID_s* zxid_decrypt_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_sa_EncryptedID_s* encid)
+{
+  struct zx_str* ss;
+  struct zx_root_s* r;
+  if (nid)
+    return nid;
+  if (encid) {
+    ss = zxenc_privkey_dec(cf, encid->EncryptedData, encid->EncryptedKey);
+    if (!ss) {
+      ERR("Failed to decrypt NameID. Most probably certificate-private key mismatch or metadata problem. Could also be corrupt message. %d", 0);
+      return 0;
+    }
+    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, ss->s, ss->s + ss->len);
+    r = zx_DEC_root(cf->ctx, 0, 1);
+    if (!r) {
+      ERR("Failed to parse EncryptedID buf(%.*s)", ss->len, ss->s);
+      return 0;
+    }
+    return r->NameID;
+  }
+  ERR("Neither NameID nor EncryptedID available %d", 0);
+  return 0;
+}
+
+struct zx_str* zxid_decrypt_newnym(struct zxid_conf* cf, struct zx_str* newnym, struct zx_sp_NewEncryptedID_s* encid)
+{
+  struct zx_str* ss;
+  struct zx_root_s* r;
+  if (newnym)
+    return newnym;
+  if (encid) {
+    ss = zxenc_privkey_dec(cf, encid->EncryptedData, encid->EncryptedKey);
+    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, ss->s, ss->s + ss->len);
+    r = zx_DEC_root(cf->ctx, 0, 1);
+    if (!r) {
+      ERR("Failed to parse NewEncryptedID buf(%.*s)", ss->len, ss->s);
+      return 0;
+    }
+    return r->NewID->content;
+  }
+  ERR("Neither NewNameID nor NewEncryptedID available %d", 0);
   return 0;
 }
 

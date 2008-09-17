@@ -90,16 +90,16 @@ struct zx_m20_AffiliationDescriptor_s {
   struct zx_m20_KeyDescriptor_s* KeyDescriptor;	/* {0,-1}  */
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_str* affiliationOwnerID;	/* {1,1} attribute m20:entityIDType */
-  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
   struct zx_str* cacheDuration;	/* {0,1} attribute xs:duration */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_m20_AffiliationDescriptor_GET_affiliationOwnerID(struct zx_m20_AffiliationDescriptor_s* x);
-struct zx_str* zx_m20_AffiliationDescriptor_GET_validUntil(struct zx_m20_AffiliationDescriptor_s* x);
 struct zx_str* zx_m20_AffiliationDescriptor_GET_cacheDuration(struct zx_m20_AffiliationDescriptor_s* x);
 struct zx_str* zx_m20_AffiliationDescriptor_GET_id(struct zx_m20_AffiliationDescriptor_s* x);
+struct zx_str* zx_m20_AffiliationDescriptor_GET_validUntil(struct zx_m20_AffiliationDescriptor_s* x);
 
 struct zx_elem_s* zx_m20_AffiliationDescriptor_GET_AffiliateMember(struct zx_m20_AffiliationDescriptor_s* x, int n);
 struct zx_m20_Extension_s* zx_m20_AffiliationDescriptor_GET_Extension(struct zx_m20_AffiliationDescriptor_s* x, int n);
@@ -122,9 +122,9 @@ void zx_m20_AffiliationDescriptor_PUSH_KeyDescriptor(struct zx_m20_AffiliationDe
 void zx_m20_AffiliationDescriptor_PUSH_Signature(struct zx_m20_AffiliationDescriptor_s* x, struct zx_ds_Signature_s* y);
 
 void zx_m20_AffiliationDescriptor_PUT_affiliationOwnerID(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y);
-void zx_m20_AffiliationDescriptor_PUT_validUntil(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y);
 void zx_m20_AffiliationDescriptor_PUT_cacheDuration(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y);
 void zx_m20_AffiliationDescriptor_PUT_id(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y);
+void zx_m20_AffiliationDescriptor_PUT_validUntil(struct zx_m20_AffiliationDescriptor_s* x, struct zx_str* y);
 
 void zx_m20_AffiliationDescriptor_PUT_AffiliateMember(struct zx_m20_AffiliationDescriptor_s* x, int n, struct zx_elem_s* y);
 void zx_m20_AffiliationDescriptor_PUT_Extension(struct zx_m20_AffiliationDescriptor_s* x, int n, struct zx_m20_Extension_s* y);
@@ -223,13 +223,13 @@ struct zx_m20_ContactPerson_s {
   struct zx_elem_s* EmailAddress;	/* {0,-1} xs:anyURI */
   struct zx_elem_s* TelephoneNumber;	/* {0,-1} xs:string */
   struct zx_m20_Extension_s* Extension;	/* {0,1}  */
-  struct zx_str* libertyPrincipalIdentifier;	/* {0,1} attribute m20:entityIDType */
   struct zx_str* contactType;	/* {1,1} attribute hrxml:ContactTypeStringExtensionType */
+  struct zx_str* libertyPrincipalIdentifier;	/* {0,1} attribute m20:entityIDType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_m20_ContactPerson_GET_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x);
 struct zx_str* zx_m20_ContactPerson_GET_contactType(struct zx_m20_ContactPerson_s* x);
+struct zx_str* zx_m20_ContactPerson_GET_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x);
 
 struct zx_elem_s* zx_m20_ContactPerson_GET_Company(struct zx_m20_ContactPerson_s* x, int n);
 struct zx_elem_s* zx_m20_ContactPerson_GET_GivenName(struct zx_m20_ContactPerson_s* x, int n);
@@ -259,8 +259,8 @@ void zx_m20_ContactPerson_PUSH_EmailAddress(struct zx_m20_ContactPerson_s* x, st
 void zx_m20_ContactPerson_PUSH_TelephoneNumber(struct zx_m20_ContactPerson_s* x, struct zx_elem_s* y);
 void zx_m20_ContactPerson_PUSH_Extension(struct zx_m20_ContactPerson_s* x, struct zx_m20_Extension_s* y);
 
-void zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x, struct zx_str* y);
 void zx_m20_ContactPerson_PUT_contactType(struct zx_m20_ContactPerson_s* x, struct zx_str* y);
+void zx_m20_ContactPerson_PUT_libertyPrincipalIdentifier(struct zx_m20_ContactPerson_s* x, struct zx_str* y);
 
 void zx_m20_ContactPerson_PUT_Company(struct zx_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
 void zx_m20_ContactPerson_PUT_GivenName(struct zx_m20_ContactPerson_s* x, int n, struct zx_elem_s* y);
@@ -371,17 +371,17 @@ struct zx_m20_EntityDescriptor_s {
   struct zx_m20_Organization_s* Organization;	/* {0,1}  */
   struct zx_m20_Extension_s* Extension;	/* {0,1}  */
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
   struct zx_str* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_m20_EntityDescriptor_GET_providerID(struct zx_m20_EntityDescriptor_s* x);
-struct zx_str* zx_m20_EntityDescriptor_GET_id(struct zx_m20_EntityDescriptor_s* x);
-struct zx_str* zx_m20_EntityDescriptor_GET_validUntil(struct zx_m20_EntityDescriptor_s* x);
 struct zx_str* zx_m20_EntityDescriptor_GET_cacheDuration(struct zx_m20_EntityDescriptor_s* x);
+struct zx_str* zx_m20_EntityDescriptor_GET_id(struct zx_m20_EntityDescriptor_s* x);
+struct zx_str* zx_m20_EntityDescriptor_GET_providerID(struct zx_m20_EntityDescriptor_s* x);
+struct zx_str* zx_m20_EntityDescriptor_GET_validUntil(struct zx_m20_EntityDescriptor_s* x);
 
 struct zx_m20_IDPDescriptor_s* zx_m20_EntityDescriptor_GET_IDPDescriptor(struct zx_m20_EntityDescriptor_s* x, int n);
 struct zx_m20_SPDescriptor_s* zx_m20_EntityDescriptor_GET_SPDescriptor(struct zx_m20_EntityDescriptor_s* x, int n);
@@ -415,10 +415,10 @@ void zx_m20_EntityDescriptor_PUSH_Organization(struct zx_m20_EntityDescriptor_s*
 void zx_m20_EntityDescriptor_PUSH_Extension(struct zx_m20_EntityDescriptor_s* x, struct zx_m20_Extension_s* y);
 void zx_m20_EntityDescriptor_PUSH_Signature(struct zx_m20_EntityDescriptor_s* x, struct zx_ds_Signature_s* y);
 
-void zx_m20_EntityDescriptor_PUT_providerID(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
-void zx_m20_EntityDescriptor_PUT_id(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
-void zx_m20_EntityDescriptor_PUT_validUntil(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
 void zx_m20_EntityDescriptor_PUT_cacheDuration(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
+void zx_m20_EntityDescriptor_PUT_id(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
+void zx_m20_EntityDescriptor_PUT_providerID(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
+void zx_m20_EntityDescriptor_PUT_validUntil(struct zx_m20_EntityDescriptor_s* x, struct zx_str* y);
 
 void zx_m20_EntityDescriptor_PUT_IDPDescriptor(struct zx_m20_EntityDescriptor_s* x, int n, struct zx_m20_IDPDescriptor_s* y);
 void zx_m20_EntityDescriptor_PUT_SPDescriptor(struct zx_m20_EntityDescriptor_s* x, int n, struct zx_m20_SPDescriptor_s* y);
@@ -538,17 +538,17 @@ struct zx_m20_IDPDescriptor_s {
   struct zx_elem_s* SingleSignOnServiceURL;	/* {1,1} xs:anyURI */
   struct zx_elem_s* SingleSignOnProtocolProfile;	/* {1,-1} xs:anyURI */
   struct zx_elem_s* AuthnServiceURL;	/* {0,1} xs:anyURI */
-  struct zx_str* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
-  struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
   struct zx_str* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
+  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_m20_IDPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x);
-struct zx_str* zx_m20_IDPDescriptor_GET_id(struct zx_m20_IDPDescriptor_s* x);
-struct zx_str* zx_m20_IDPDescriptor_GET_validUntil(struct zx_m20_IDPDescriptor_s* x);
 struct zx_str* zx_m20_IDPDescriptor_GET_cacheDuration(struct zx_m20_IDPDescriptor_s* x);
+struct zx_str* zx_m20_IDPDescriptor_GET_id(struct zx_m20_IDPDescriptor_s* x);
+struct zx_str* zx_m20_IDPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x);
+struct zx_str* zx_m20_IDPDescriptor_GET_validUntil(struct zx_m20_IDPDescriptor_s* x);
 
 struct zx_m20_KeyDescriptor_s* zx_m20_IDPDescriptor_GET_KeyDescriptor(struct zx_m20_IDPDescriptor_s* x, int n);
 struct zx_elem_s* zx_m20_IDPDescriptor_GET_SoapEndpoint(struct zx_m20_IDPDescriptor_s* x, int n);
@@ -638,10 +638,10 @@ void zx_m20_IDPDescriptor_PUSH_SingleSignOnServiceURL(struct zx_m20_IDPDescripto
 void zx_m20_IDPDescriptor_PUSH_SingleSignOnProtocolProfile(struct zx_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
 void zx_m20_IDPDescriptor_PUSH_AuthnServiceURL(struct zx_m20_IDPDescriptor_s* x, struct zx_elem_s* y);
 
-void zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
-void zx_m20_IDPDescriptor_PUT_id(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
-void zx_m20_IDPDescriptor_PUT_validUntil(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
 void zx_m20_IDPDescriptor_PUT_cacheDuration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
+void zx_m20_IDPDescriptor_PUT_id(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
+void zx_m20_IDPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
+void zx_m20_IDPDescriptor_PUT_validUntil(struct zx_m20_IDPDescriptor_s* x, struct zx_str* y);
 
 void zx_m20_IDPDescriptor_PUT_KeyDescriptor(struct zx_m20_IDPDescriptor_s* x, int n, struct zx_m20_KeyDescriptor_s* y);
 void zx_m20_IDPDescriptor_PUT_SoapEndpoint(struct zx_m20_IDPDescriptor_s* x, int n, struct zx_elem_s* y);
@@ -1056,17 +1056,17 @@ struct zx_m20_SPDescriptor_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_m20_AssertionConsumerServiceURL_s* AssertionConsumerServiceURL;	/* {1,-1}  */
   struct zx_elem_s* AuthnRequestsSigned;	/* {1,1} xs:boolean */
-  struct zx_str* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
-  struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
   struct zx_str* cacheDuration;	/* {0,1} attribute xs:duration */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* protocolSupportEnumeration;	/* {1,1} attribute xs:string */
+  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_m20_SPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x);
-struct zx_str* zx_m20_SPDescriptor_GET_id(struct zx_m20_SPDescriptor_s* x);
-struct zx_str* zx_m20_SPDescriptor_GET_validUntil(struct zx_m20_SPDescriptor_s* x);
 struct zx_str* zx_m20_SPDescriptor_GET_cacheDuration(struct zx_m20_SPDescriptor_s* x);
+struct zx_str* zx_m20_SPDescriptor_GET_id(struct zx_m20_SPDescriptor_s* x);
+struct zx_str* zx_m20_SPDescriptor_GET_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x);
+struct zx_str* zx_m20_SPDescriptor_GET_validUntil(struct zx_m20_SPDescriptor_s* x);
 
 struct zx_m20_KeyDescriptor_s* zx_m20_SPDescriptor_GET_KeyDescriptor(struct zx_m20_SPDescriptor_s* x, int n);
 struct zx_elem_s* zx_m20_SPDescriptor_GET_SoapEndpoint(struct zx_m20_SPDescriptor_s* x, int n);
@@ -1152,10 +1152,10 @@ void zx_m20_SPDescriptor_PUSH_Signature(struct zx_m20_SPDescriptor_s* x, struct 
 void zx_m20_SPDescriptor_PUSH_AssertionConsumerServiceURL(struct zx_m20_SPDescriptor_s* x, struct zx_m20_AssertionConsumerServiceURL_s* y);
 void zx_m20_SPDescriptor_PUSH_AuthnRequestsSigned(struct zx_m20_SPDescriptor_s* x, struct zx_elem_s* y);
 
-void zx_m20_SPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
-void zx_m20_SPDescriptor_PUT_id(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
-void zx_m20_SPDescriptor_PUT_validUntil(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
 void zx_m20_SPDescriptor_PUT_cacheDuration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
+void zx_m20_SPDescriptor_PUT_id(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
+void zx_m20_SPDescriptor_PUT_protocolSupportEnumeration(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
+void zx_m20_SPDescriptor_PUT_validUntil(struct zx_m20_SPDescriptor_s* x, struct zx_str* y);
 
 void zx_m20_SPDescriptor_PUT_KeyDescriptor(struct zx_m20_SPDescriptor_s* x, int n, struct zx_m20_KeyDescriptor_s* y);
 void zx_m20_SPDescriptor_PUT_SoapEndpoint(struct zx_m20_SPDescriptor_s* x, int n, struct zx_elem_s* y);

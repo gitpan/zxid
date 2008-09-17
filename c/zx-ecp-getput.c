@@ -29,14 +29,14 @@
 #include "c/zx-data.h"
 #include "c/zx-ecp-data.h"
 
-/* FUNC(zx_ecp_RelayState_GET_mustUnderstand) */
-struct zx_str* zx_ecp_RelayState_GET_mustUnderstand(struct zx_ecp_RelayState_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_ecp_RelayState_PUT_mustUnderstand) */
-void zx_ecp_RelayState_PUT_mustUnderstand(struct zx_ecp_RelayState_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 /* FUNC(zx_ecp_RelayState_GET_actor) */
 struct zx_str* zx_ecp_RelayState_GET_actor(struct zx_ecp_RelayState_s* x) { return x->actor; }
 /* FUNC(zx_ecp_RelayState_PUT_actor) */
 void zx_ecp_RelayState_PUT_actor(struct zx_ecp_RelayState_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_ecp_RelayState_GET_mustUnderstand) */
+struct zx_str* zx_ecp_RelayState_GET_mustUnderstand(struct zx_ecp_RelayState_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_ecp_RelayState_PUT_mustUnderstand) */
+void zx_ecp_RelayState_PUT_mustUnderstand(struct zx_ecp_RelayState_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -310,22 +310,22 @@ void zx_ecp_Request_DEL_IDPList(struct zx_ecp_Request_s* x, int n)
 
 #endif
 
-/* FUNC(zx_ecp_Request_GET_ProviderName) */
-struct zx_str* zx_ecp_Request_GET_ProviderName(struct zx_ecp_Request_s* x) { return x->ProviderName; }
-/* FUNC(zx_ecp_Request_PUT_ProviderName) */
-void zx_ecp_Request_PUT_ProviderName(struct zx_ecp_Request_s* x, struct zx_str* y) { x->ProviderName = y; }
 /* FUNC(zx_ecp_Request_GET_IsPassive) */
 struct zx_str* zx_ecp_Request_GET_IsPassive(struct zx_ecp_Request_s* x) { return x->IsPassive; }
 /* FUNC(zx_ecp_Request_PUT_IsPassive) */
 void zx_ecp_Request_PUT_IsPassive(struct zx_ecp_Request_s* x, struct zx_str* y) { x->IsPassive = y; }
-/* FUNC(zx_ecp_Request_GET_mustUnderstand) */
-struct zx_str* zx_ecp_Request_GET_mustUnderstand(struct zx_ecp_Request_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_ecp_Request_PUT_mustUnderstand) */
-void zx_ecp_Request_PUT_mustUnderstand(struct zx_ecp_Request_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+/* FUNC(zx_ecp_Request_GET_ProviderName) */
+struct zx_str* zx_ecp_Request_GET_ProviderName(struct zx_ecp_Request_s* x) { return x->ProviderName; }
+/* FUNC(zx_ecp_Request_PUT_ProviderName) */
+void zx_ecp_Request_PUT_ProviderName(struct zx_ecp_Request_s* x, struct zx_str* y) { x->ProviderName = y; }
 /* FUNC(zx_ecp_Request_GET_actor) */
 struct zx_str* zx_ecp_Request_GET_actor(struct zx_ecp_Request_s* x) { return x->actor; }
 /* FUNC(zx_ecp_Request_PUT_actor) */
 void zx_ecp_Request_PUT_actor(struct zx_ecp_Request_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_ecp_Request_GET_mustUnderstand) */
+struct zx_str* zx_ecp_Request_GET_mustUnderstand(struct zx_ecp_Request_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_ecp_Request_PUT_mustUnderstand) */
+void zx_ecp_Request_PUT_mustUnderstand(struct zx_ecp_Request_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -335,14 +335,14 @@ void zx_ecp_Request_PUT_actor(struct zx_ecp_Request_s* x, struct zx_str* y) { x-
 struct zx_str* zx_ecp_Response_GET_AssertionConsumerServiceURL(struct zx_ecp_Response_s* x) { return x->AssertionConsumerServiceURL; }
 /* FUNC(zx_ecp_Response_PUT_AssertionConsumerServiceURL) */
 void zx_ecp_Response_PUT_AssertionConsumerServiceURL(struct zx_ecp_Response_s* x, struct zx_str* y) { x->AssertionConsumerServiceURL = y; }
-/* FUNC(zx_ecp_Response_GET_mustUnderstand) */
-struct zx_str* zx_ecp_Response_GET_mustUnderstand(struct zx_ecp_Response_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_ecp_Response_PUT_mustUnderstand) */
-void zx_ecp_Response_PUT_mustUnderstand(struct zx_ecp_Response_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 /* FUNC(zx_ecp_Response_GET_actor) */
 struct zx_str* zx_ecp_Response_GET_actor(struct zx_ecp_Response_s* x) { return x->actor; }
 /* FUNC(zx_ecp_Response_PUT_actor) */
 void zx_ecp_Response_PUT_actor(struct zx_ecp_Response_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_ecp_Response_GET_mustUnderstand) */
+struct zx_str* zx_ecp_Response_GET_mustUnderstand(struct zx_ecp_Response_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_ecp_Response_PUT_mustUnderstand) */
+void zx_ecp_Response_PUT_mustUnderstand(struct zx_ecp_Response_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

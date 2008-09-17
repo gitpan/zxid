@@ -84,14 +84,14 @@ struct zx_lu_Status_s {
   zx_lu_Status_EXT
   struct zx_lu_Status_s* Status;	/* {0,-1} nada */
   struct zx_str* code;	/* {1,1} attribute xs:QName */
-  struct zx_str* ref;	/* {0,1} attribute xs:string */
   struct zx_str* comment;	/* {0,1} attribute xs:string */
+  struct zx_str* ref;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_lu_Status_GET_code(struct zx_lu_Status_s* x);
-struct zx_str* zx_lu_Status_GET_ref(struct zx_lu_Status_s* x);
 struct zx_str* zx_lu_Status_GET_comment(struct zx_lu_Status_s* x);
+struct zx_str* zx_lu_Status_GET_ref(struct zx_lu_Status_s* x);
 
 struct zx_lu_Status_s* zx_lu_Status_GET_Status(struct zx_lu_Status_s* x, int n);
 
@@ -102,8 +102,8 @@ struct zx_lu_Status_s* zx_lu_Status_POP_Status(struct zx_lu_Status_s* x);
 void zx_lu_Status_PUSH_Status(struct zx_lu_Status_s* x, struct zx_lu_Status_s* y);
 
 void zx_lu_Status_PUT_code(struct zx_lu_Status_s* x, struct zx_str* y);
-void zx_lu_Status_PUT_ref(struct zx_lu_Status_s* x, struct zx_str* y);
 void zx_lu_Status_PUT_comment(struct zx_lu_Status_s* x, struct zx_str* y);
+void zx_lu_Status_PUT_ref(struct zx_lu_Status_s* x, struct zx_str* y);
 
 void zx_lu_Status_PUT_Status(struct zx_lu_Status_s* x, int n, struct zx_lu_Status_s* y);
 

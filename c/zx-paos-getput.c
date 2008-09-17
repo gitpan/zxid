@@ -29,6 +29,10 @@
 #include "c/zx-data.h"
 #include "c/zx-paos-data.h"
 
+/* FUNC(zx_paos_Request_GET_messageID) */
+struct zx_str* zx_paos_Request_GET_messageID(struct zx_paos_Request_s* x) { return x->messageID; }
+/* FUNC(zx_paos_Request_PUT_messageID) */
+void zx_paos_Request_PUT_messageID(struct zx_paos_Request_s* x, struct zx_str* y) { x->messageID = y; }
 /* FUNC(zx_paos_Request_GET_responseConsumerURL) */
 struct zx_str* zx_paos_Request_GET_responseConsumerURL(struct zx_paos_Request_s* x) { return x->responseConsumerURL; }
 /* FUNC(zx_paos_Request_PUT_responseConsumerURL) */
@@ -37,18 +41,14 @@ void zx_paos_Request_PUT_responseConsumerURL(struct zx_paos_Request_s* x, struct
 struct zx_str* zx_paos_Request_GET_service(struct zx_paos_Request_s* x) { return x->service; }
 /* FUNC(zx_paos_Request_PUT_service) */
 void zx_paos_Request_PUT_service(struct zx_paos_Request_s* x, struct zx_str* y) { x->service = y; }
-/* FUNC(zx_paos_Request_GET_messageID) */
-struct zx_str* zx_paos_Request_GET_messageID(struct zx_paos_Request_s* x) { return x->messageID; }
-/* FUNC(zx_paos_Request_PUT_messageID) */
-void zx_paos_Request_PUT_messageID(struct zx_paos_Request_s* x, struct zx_str* y) { x->messageID = y; }
-/* FUNC(zx_paos_Request_GET_mustUnderstand) */
-struct zx_str* zx_paos_Request_GET_mustUnderstand(struct zx_paos_Request_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_paos_Request_PUT_mustUnderstand) */
-void zx_paos_Request_PUT_mustUnderstand(struct zx_paos_Request_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 /* FUNC(zx_paos_Request_GET_actor) */
 struct zx_str* zx_paos_Request_GET_actor(struct zx_paos_Request_s* x) { return x->actor; }
 /* FUNC(zx_paos_Request_PUT_actor) */
 void zx_paos_Request_PUT_actor(struct zx_paos_Request_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_paos_Request_GET_mustUnderstand) */
+struct zx_str* zx_paos_Request_GET_mustUnderstand(struct zx_paos_Request_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_paos_Request_PUT_mustUnderstand) */
+void zx_paos_Request_PUT_mustUnderstand(struct zx_paos_Request_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
@@ -58,14 +58,14 @@ void zx_paos_Request_PUT_actor(struct zx_paos_Request_s* x, struct zx_str* y) { 
 struct zx_str* zx_paos_Response_GET_refToMessageID(struct zx_paos_Response_s* x) { return x->refToMessageID; }
 /* FUNC(zx_paos_Response_PUT_refToMessageID) */
 void zx_paos_Response_PUT_refToMessageID(struct zx_paos_Response_s* x, struct zx_str* y) { x->refToMessageID = y; }
-/* FUNC(zx_paos_Response_GET_mustUnderstand) */
-struct zx_str* zx_paos_Response_GET_mustUnderstand(struct zx_paos_Response_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_paos_Response_PUT_mustUnderstand) */
-void zx_paos_Response_PUT_mustUnderstand(struct zx_paos_Response_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 /* FUNC(zx_paos_Response_GET_actor) */
 struct zx_str* zx_paos_Response_GET_actor(struct zx_paos_Response_s* x) { return x->actor; }
 /* FUNC(zx_paos_Response_PUT_actor) */
 void zx_paos_Response_PUT_actor(struct zx_paos_Response_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_paos_Response_GET_mustUnderstand) */
+struct zx_str* zx_paos_Response_GET_mustUnderstand(struct zx_paos_Response_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_paos_Response_PUT_mustUnderstand) */
+void zx_paos_Response_PUT_mustUnderstand(struct zx_paos_Response_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

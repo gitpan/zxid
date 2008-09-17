@@ -47,19 +47,19 @@ struct zx_sp_ArtifactResolve_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_elem_s* Artifact;	/* {1,1} xs:string */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_ArtifactResolve_GET_ID(struct zx_sp_ArtifactResolve_s* x);
-struct zx_str* zx_sp_ArtifactResolve_GET_Version(struct zx_sp_ArtifactResolve_s* x);
-struct zx_str* zx_sp_ArtifactResolve_GET_IssueInstant(struct zx_sp_ArtifactResolve_s* x);
-struct zx_str* zx_sp_ArtifactResolve_GET_Destination(struct zx_sp_ArtifactResolve_s* x);
 struct zx_str* zx_sp_ArtifactResolve_GET_Consent(struct zx_sp_ArtifactResolve_s* x);
+struct zx_str* zx_sp_ArtifactResolve_GET_Destination(struct zx_sp_ArtifactResolve_s* x);
+struct zx_str* zx_sp_ArtifactResolve_GET_ID(struct zx_sp_ArtifactResolve_s* x);
+struct zx_str* zx_sp_ArtifactResolve_GET_IssueInstant(struct zx_sp_ArtifactResolve_s* x);
+struct zx_str* zx_sp_ArtifactResolve_GET_Version(struct zx_sp_ArtifactResolve_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_ArtifactResolve_GET_Issuer(struct zx_sp_ArtifactResolve_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_ArtifactResolve_GET_Signature(struct zx_sp_ArtifactResolve_s* x, int n);
@@ -81,11 +81,11 @@ void zx_sp_ArtifactResolve_PUSH_Signature(struct zx_sp_ArtifactResolve_s* x, str
 void zx_sp_ArtifactResolve_PUSH_Extensions(struct zx_sp_ArtifactResolve_s* x, struct zx_sp_Extensions_s* y);
 void zx_sp_ArtifactResolve_PUSH_Artifact(struct zx_sp_ArtifactResolve_s* x, struct zx_elem_s* y);
 
-void zx_sp_ArtifactResolve_PUT_ID(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
-void zx_sp_ArtifactResolve_PUT_Version(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
-void zx_sp_ArtifactResolve_PUT_IssueInstant(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
-void zx_sp_ArtifactResolve_PUT_Destination(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
 void zx_sp_ArtifactResolve_PUT_Consent(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
+void zx_sp_ArtifactResolve_PUT_Destination(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
+void zx_sp_ArtifactResolve_PUT_ID(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
+void zx_sp_ArtifactResolve_PUT_IssueInstant(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
+void zx_sp_ArtifactResolve_PUT_Version(struct zx_sp_ArtifactResolve_s* x, struct zx_str* y);
 
 void zx_sp_ArtifactResolve_PUT_Issuer(struct zx_sp_ArtifactResolve_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_ArtifactResolve_PUT_Signature(struct zx_sp_ArtifactResolve_s* x, int n, struct zx_ds_Signature_s* y);
@@ -138,21 +138,21 @@ struct zx_sp_ArtifactResponse_s {
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_sp_Status_s* Status;	/* {1,1} nada */
   struct zx_sp_Response_s* Response;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sp_ArtifactResponse_GET_Consent(struct zx_sp_ArtifactResponse_s* x);
+struct zx_str* zx_sp_ArtifactResponse_GET_Destination(struct zx_sp_ArtifactResponse_s* x);
 struct zx_str* zx_sp_ArtifactResponse_GET_ID(struct zx_sp_ArtifactResponse_s* x);
 struct zx_str* zx_sp_ArtifactResponse_GET_InResponseTo(struct zx_sp_ArtifactResponse_s* x);
-struct zx_str* zx_sp_ArtifactResponse_GET_Version(struct zx_sp_ArtifactResponse_s* x);
 struct zx_str* zx_sp_ArtifactResponse_GET_IssueInstant(struct zx_sp_ArtifactResponse_s* x);
-struct zx_str* zx_sp_ArtifactResponse_GET_Destination(struct zx_sp_ArtifactResponse_s* x);
-struct zx_str* zx_sp_ArtifactResponse_GET_Consent(struct zx_sp_ArtifactResponse_s* x);
+struct zx_str* zx_sp_ArtifactResponse_GET_Version(struct zx_sp_ArtifactResponse_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_ArtifactResponse_GET_Issuer(struct zx_sp_ArtifactResponse_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_ArtifactResponse_GET_Signature(struct zx_sp_ArtifactResponse_s* x, int n);
@@ -178,12 +178,12 @@ void zx_sp_ArtifactResponse_PUSH_Extensions(struct zx_sp_ArtifactResponse_s* x, 
 void zx_sp_ArtifactResponse_PUSH_Status(struct zx_sp_ArtifactResponse_s* x, struct zx_sp_Status_s* y);
 void zx_sp_ArtifactResponse_PUSH_Response(struct zx_sp_ArtifactResponse_s* x, struct zx_sp_Response_s* y);
 
+void zx_sp_ArtifactResponse_PUT_Consent(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
+void zx_sp_ArtifactResponse_PUT_Destination(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
 void zx_sp_ArtifactResponse_PUT_ID(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
 void zx_sp_ArtifactResponse_PUT_InResponseTo(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
-void zx_sp_ArtifactResponse_PUT_Version(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
 void zx_sp_ArtifactResponse_PUT_IssueInstant(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
-void zx_sp_ArtifactResponse_PUT_Destination(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
-void zx_sp_ArtifactResponse_PUT_Consent(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
+void zx_sp_ArtifactResponse_PUT_Version(struct zx_sp_ArtifactResponse_s* x, struct zx_str* y);
 
 void zx_sp_ArtifactResponse_PUT_Issuer(struct zx_sp_ArtifactResponse_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_ArtifactResponse_PUT_Signature(struct zx_sp_ArtifactResponse_s* x, int n, struct zx_ds_Signature_s* y);
@@ -239,19 +239,19 @@ struct zx_sp_AssertionIDRequest_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_elem_s* AssertionIDRef;	/* {1,-1} xs:NCName */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_AssertionIDRequest_GET_ID(struct zx_sp_AssertionIDRequest_s* x);
-struct zx_str* zx_sp_AssertionIDRequest_GET_Version(struct zx_sp_AssertionIDRequest_s* x);
-struct zx_str* zx_sp_AssertionIDRequest_GET_IssueInstant(struct zx_sp_AssertionIDRequest_s* x);
-struct zx_str* zx_sp_AssertionIDRequest_GET_Destination(struct zx_sp_AssertionIDRequest_s* x);
 struct zx_str* zx_sp_AssertionIDRequest_GET_Consent(struct zx_sp_AssertionIDRequest_s* x);
+struct zx_str* zx_sp_AssertionIDRequest_GET_Destination(struct zx_sp_AssertionIDRequest_s* x);
+struct zx_str* zx_sp_AssertionIDRequest_GET_ID(struct zx_sp_AssertionIDRequest_s* x);
+struct zx_str* zx_sp_AssertionIDRequest_GET_IssueInstant(struct zx_sp_AssertionIDRequest_s* x);
+struct zx_str* zx_sp_AssertionIDRequest_GET_Version(struct zx_sp_AssertionIDRequest_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_AssertionIDRequest_GET_Issuer(struct zx_sp_AssertionIDRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_AssertionIDRequest_GET_Signature(struct zx_sp_AssertionIDRequest_s* x, int n);
@@ -273,11 +273,11 @@ void zx_sp_AssertionIDRequest_PUSH_Signature(struct zx_sp_AssertionIDRequest_s* 
 void zx_sp_AssertionIDRequest_PUSH_Extensions(struct zx_sp_AssertionIDRequest_s* x, struct zx_sp_Extensions_s* y);
 void zx_sp_AssertionIDRequest_PUSH_AssertionIDRef(struct zx_sp_AssertionIDRequest_s* x, struct zx_elem_s* y);
 
-void zx_sp_AssertionIDRequest_PUT_ID(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
-void zx_sp_AssertionIDRequest_PUT_Version(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
-void zx_sp_AssertionIDRequest_PUT_IssueInstant(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
-void zx_sp_AssertionIDRequest_PUT_Destination(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
 void zx_sp_AssertionIDRequest_PUT_Consent(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
+void zx_sp_AssertionIDRequest_PUT_Destination(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
+void zx_sp_AssertionIDRequest_PUT_ID(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
+void zx_sp_AssertionIDRequest_PUT_IssueInstant(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
+void zx_sp_AssertionIDRequest_PUT_Version(struct zx_sp_AssertionIDRequest_s* x, struct zx_str* y);
 
 void zx_sp_AssertionIDRequest_PUT_Issuer(struct zx_sp_AssertionIDRequest_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_AssertionIDRequest_PUT_Signature(struct zx_sp_AssertionIDRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -330,19 +330,19 @@ struct zx_sp_AttributeQuery_s {
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_sa_Subject_s* Subject;	/* {1,1} nada */
   struct zx_sa_Attribute_s* Attribute;	/* {0,-1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_AttributeQuery_GET_ID(struct zx_sp_AttributeQuery_s* x);
-struct zx_str* zx_sp_AttributeQuery_GET_Version(struct zx_sp_AttributeQuery_s* x);
-struct zx_str* zx_sp_AttributeQuery_GET_IssueInstant(struct zx_sp_AttributeQuery_s* x);
-struct zx_str* zx_sp_AttributeQuery_GET_Destination(struct zx_sp_AttributeQuery_s* x);
 struct zx_str* zx_sp_AttributeQuery_GET_Consent(struct zx_sp_AttributeQuery_s* x);
+struct zx_str* zx_sp_AttributeQuery_GET_Destination(struct zx_sp_AttributeQuery_s* x);
+struct zx_str* zx_sp_AttributeQuery_GET_ID(struct zx_sp_AttributeQuery_s* x);
+struct zx_str* zx_sp_AttributeQuery_GET_IssueInstant(struct zx_sp_AttributeQuery_s* x);
+struct zx_str* zx_sp_AttributeQuery_GET_Version(struct zx_sp_AttributeQuery_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_AttributeQuery_GET_Issuer(struct zx_sp_AttributeQuery_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_AttributeQuery_GET_Signature(struct zx_sp_AttributeQuery_s* x, int n);
@@ -368,11 +368,11 @@ void zx_sp_AttributeQuery_PUSH_Extensions(struct zx_sp_AttributeQuery_s* x, stru
 void zx_sp_AttributeQuery_PUSH_Subject(struct zx_sp_AttributeQuery_s* x, struct zx_sa_Subject_s* y);
 void zx_sp_AttributeQuery_PUSH_Attribute(struct zx_sp_AttributeQuery_s* x, struct zx_sa_Attribute_s* y);
 
-void zx_sp_AttributeQuery_PUT_ID(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
-void zx_sp_AttributeQuery_PUT_Version(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
-void zx_sp_AttributeQuery_PUT_IssueInstant(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
-void zx_sp_AttributeQuery_PUT_Destination(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
 void zx_sp_AttributeQuery_PUT_Consent(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
+void zx_sp_AttributeQuery_PUT_Destination(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
+void zx_sp_AttributeQuery_PUT_ID(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
+void zx_sp_AttributeQuery_PUT_IssueInstant(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
+void zx_sp_AttributeQuery_PUT_Version(struct zx_sp_AttributeQuery_s* x, struct zx_str* y);
 
 void zx_sp_AttributeQuery_PUT_Issuer(struct zx_sp_AttributeQuery_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_AttributeQuery_PUT_Signature(struct zx_sp_AttributeQuery_s* x, int n, struct zx_ds_Signature_s* y);
@@ -429,21 +429,21 @@ struct zx_sp_AuthnQuery_s {
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_sa_Subject_s* Subject;	/* {1,1} nada */
   struct zx_sp_RequestedAuthnContext_s* RequestedAuthnContext;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* SessionIndex;	/* {0,1} attribute xs:string */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_AuthnQuery_GET_ID(struct zx_sp_AuthnQuery_s* x);
-struct zx_str* zx_sp_AuthnQuery_GET_Version(struct zx_sp_AuthnQuery_s* x);
-struct zx_str* zx_sp_AuthnQuery_GET_IssueInstant(struct zx_sp_AuthnQuery_s* x);
-struct zx_str* zx_sp_AuthnQuery_GET_Destination(struct zx_sp_AuthnQuery_s* x);
 struct zx_str* zx_sp_AuthnQuery_GET_Consent(struct zx_sp_AuthnQuery_s* x);
+struct zx_str* zx_sp_AuthnQuery_GET_Destination(struct zx_sp_AuthnQuery_s* x);
+struct zx_str* zx_sp_AuthnQuery_GET_ID(struct zx_sp_AuthnQuery_s* x);
+struct zx_str* zx_sp_AuthnQuery_GET_IssueInstant(struct zx_sp_AuthnQuery_s* x);
 struct zx_str* zx_sp_AuthnQuery_GET_SessionIndex(struct zx_sp_AuthnQuery_s* x);
+struct zx_str* zx_sp_AuthnQuery_GET_Version(struct zx_sp_AuthnQuery_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_AuthnQuery_GET_Issuer(struct zx_sp_AuthnQuery_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_AuthnQuery_GET_Signature(struct zx_sp_AuthnQuery_s* x, int n);
@@ -469,12 +469,12 @@ void zx_sp_AuthnQuery_PUSH_Extensions(struct zx_sp_AuthnQuery_s* x, struct zx_sp
 void zx_sp_AuthnQuery_PUSH_Subject(struct zx_sp_AuthnQuery_s* x, struct zx_sa_Subject_s* y);
 void zx_sp_AuthnQuery_PUSH_RequestedAuthnContext(struct zx_sp_AuthnQuery_s* x, struct zx_sp_RequestedAuthnContext_s* y);
 
-void zx_sp_AuthnQuery_PUT_ID(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
-void zx_sp_AuthnQuery_PUT_Version(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
-void zx_sp_AuthnQuery_PUT_IssueInstant(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
-void zx_sp_AuthnQuery_PUT_Destination(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
 void zx_sp_AuthnQuery_PUT_Consent(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
+void zx_sp_AuthnQuery_PUT_Destination(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
+void zx_sp_AuthnQuery_PUT_ID(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
+void zx_sp_AuthnQuery_PUT_IssueInstant(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
 void zx_sp_AuthnQuery_PUT_SessionIndex(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
+void zx_sp_AuthnQuery_PUT_Version(struct zx_sp_AuthnQuery_s* x, struct zx_str* y);
 
 void zx_sp_AuthnQuery_PUT_Issuer(struct zx_sp_AuthnQuery_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_AuthnQuery_PUT_Signature(struct zx_sp_AuthnQuery_s* x, int n, struct zx_ds_Signature_s* y);
@@ -534,33 +534,33 @@ struct zx_sp_AuthnRequest_s {
   struct zx_sa_Conditions_s* Conditions;	/* {0,1} nada */
   struct zx_sp_RequestedAuthnContext_s* RequestedAuthnContext;	/* {0,1} nada */
   struct zx_sp_Scoping_s* Scoping;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* ForceAuthn;	/* {0,1} attribute xs:boolean */
-  struct zx_str* IsPassive;	/* {0,1} attribute xs:boolean */
-  struct zx_str* ProtocolBinding;	/* {0,1} attribute xs:anyURI */
   struct zx_str* AssertionConsumerServiceIndex;	/* {0,1} attribute xs:unsignedShort */
   struct zx_str* AssertionConsumerServiceURL;	/* {0,1} attribute xs:anyURI */
   struct zx_str* AttributeConsumingServiceIndex;	/* {0,1} attribute xs:unsignedShort */
+  struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ForceAuthn;	/* {0,1} attribute xs:boolean */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IsPassive;	/* {0,1} attribute xs:boolean */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* ProtocolBinding;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ProviderName;	/* {0,1} attribute xs:string */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_AuthnRequest_GET_ID(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_Version(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_IssueInstant(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_Destination(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_Consent(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_ForceAuthn(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_IsPassive(struct zx_sp_AuthnRequest_s* x);
-struct zx_str* zx_sp_AuthnRequest_GET_ProtocolBinding(struct zx_sp_AuthnRequest_s* x);
 struct zx_str* zx_sp_AuthnRequest_GET_AssertionConsumerServiceIndex(struct zx_sp_AuthnRequest_s* x);
 struct zx_str* zx_sp_AuthnRequest_GET_AssertionConsumerServiceURL(struct zx_sp_AuthnRequest_s* x);
 struct zx_str* zx_sp_AuthnRequest_GET_AttributeConsumingServiceIndex(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_Consent(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_Destination(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_ForceAuthn(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_ID(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_IsPassive(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_IssueInstant(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_ProtocolBinding(struct zx_sp_AuthnRequest_s* x);
 struct zx_str* zx_sp_AuthnRequest_GET_ProviderName(struct zx_sp_AuthnRequest_s* x);
+struct zx_str* zx_sp_AuthnRequest_GET_Version(struct zx_sp_AuthnRequest_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_AuthnRequest_GET_Issuer(struct zx_sp_AuthnRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_AuthnRequest_GET_Signature(struct zx_sp_AuthnRequest_s* x, int n);
@@ -598,18 +598,18 @@ void zx_sp_AuthnRequest_PUSH_Conditions(struct zx_sp_AuthnRequest_s* x, struct z
 void zx_sp_AuthnRequest_PUSH_RequestedAuthnContext(struct zx_sp_AuthnRequest_s* x, struct zx_sp_RequestedAuthnContext_s* y);
 void zx_sp_AuthnRequest_PUSH_Scoping(struct zx_sp_AuthnRequest_s* x, struct zx_sp_Scoping_s* y);
 
-void zx_sp_AuthnRequest_PUT_ID(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_Version(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_IssueInstant(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_Destination(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_Consent(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_ForceAuthn(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_IsPassive(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
-void zx_sp_AuthnRequest_PUT_ProtocolBinding(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
 void zx_sp_AuthnRequest_PUT_AssertionConsumerServiceIndex(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
 void zx_sp_AuthnRequest_PUT_AssertionConsumerServiceURL(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
 void zx_sp_AuthnRequest_PUT_AttributeConsumingServiceIndex(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_Consent(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_Destination(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_ForceAuthn(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_ID(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_IsPassive(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_IssueInstant(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_ProtocolBinding(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
 void zx_sp_AuthnRequest_PUT_ProviderName(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
+void zx_sp_AuthnRequest_PUT_Version(struct zx_sp_AuthnRequest_s* x, struct zx_str* y);
 
 void zx_sp_AuthnRequest_PUT_Issuer(struct zx_sp_AuthnRequest_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_AuthnRequest_PUT_Signature(struct zx_sp_AuthnRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -679,21 +679,21 @@ struct zx_sp_AuthzDecisionQuery_s {
   struct zx_sa_Subject_s* Subject;	/* {1,1} nada */
   struct zx_sa_Action_s* Action;	/* {1,-1} nada */
   struct zx_sa_Evidence_s* Evidence;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Resource;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_AuthzDecisionQuery_GET_ID(struct zx_sp_AuthzDecisionQuery_s* x);
-struct zx_str* zx_sp_AuthzDecisionQuery_GET_Version(struct zx_sp_AuthzDecisionQuery_s* x);
-struct zx_str* zx_sp_AuthzDecisionQuery_GET_IssueInstant(struct zx_sp_AuthzDecisionQuery_s* x);
-struct zx_str* zx_sp_AuthzDecisionQuery_GET_Destination(struct zx_sp_AuthzDecisionQuery_s* x);
 struct zx_str* zx_sp_AuthzDecisionQuery_GET_Consent(struct zx_sp_AuthzDecisionQuery_s* x);
+struct zx_str* zx_sp_AuthzDecisionQuery_GET_Destination(struct zx_sp_AuthzDecisionQuery_s* x);
+struct zx_str* zx_sp_AuthzDecisionQuery_GET_ID(struct zx_sp_AuthzDecisionQuery_s* x);
+struct zx_str* zx_sp_AuthzDecisionQuery_GET_IssueInstant(struct zx_sp_AuthzDecisionQuery_s* x);
 struct zx_str* zx_sp_AuthzDecisionQuery_GET_Resource(struct zx_sp_AuthzDecisionQuery_s* x);
+struct zx_str* zx_sp_AuthzDecisionQuery_GET_Version(struct zx_sp_AuthzDecisionQuery_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_AuthzDecisionQuery_GET_Issuer(struct zx_sp_AuthzDecisionQuery_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_AuthzDecisionQuery_GET_Signature(struct zx_sp_AuthzDecisionQuery_s* x, int n);
@@ -723,12 +723,12 @@ void zx_sp_AuthzDecisionQuery_PUSH_Subject(struct zx_sp_AuthzDecisionQuery_s* x,
 void zx_sp_AuthzDecisionQuery_PUSH_Action(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_sa_Action_s* y);
 void zx_sp_AuthzDecisionQuery_PUSH_Evidence(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_sa_Evidence_s* y);
 
-void zx_sp_AuthzDecisionQuery_PUT_ID(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
-void zx_sp_AuthzDecisionQuery_PUT_Version(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
-void zx_sp_AuthzDecisionQuery_PUT_IssueInstant(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
-void zx_sp_AuthzDecisionQuery_PUT_Destination(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
 void zx_sp_AuthzDecisionQuery_PUT_Consent(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_sp_AuthzDecisionQuery_PUT_Destination(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_sp_AuthzDecisionQuery_PUT_ID(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_sp_AuthzDecisionQuery_PUT_IssueInstant(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
 void zx_sp_AuthzDecisionQuery_PUT_Resource(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
+void zx_sp_AuthzDecisionQuery_PUT_Version(struct zx_sp_AuthzDecisionQuery_s* x, struct zx_str* y);
 
 void zx_sp_AuthzDecisionQuery_PUT_Issuer(struct zx_sp_AuthzDecisionQuery_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_AuthzDecisionQuery_PUT_Signature(struct zx_sp_AuthzDecisionQuery_s* x, int n, struct zx_ds_Signature_s* y);
@@ -823,23 +823,23 @@ struct zx_str* zx_EASY_ENC_WO_sp_IDPEntry(struct zx_ctx* c, struct zx_sp_IDPEntr
 struct zx_sp_IDPEntry_s {
   ZX_ELEM_EXT
   zx_sp_IDPEntry_EXT
-  struct zx_str* ProviderID;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* Name;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Loc;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Name;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ProviderID;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_IDPEntry_GET_ProviderID(struct zx_sp_IDPEntry_s* x);
-struct zx_str* zx_sp_IDPEntry_GET_Name(struct zx_sp_IDPEntry_s* x);
 struct zx_str* zx_sp_IDPEntry_GET_Loc(struct zx_sp_IDPEntry_s* x);
+struct zx_str* zx_sp_IDPEntry_GET_Name(struct zx_sp_IDPEntry_s* x);
+struct zx_str* zx_sp_IDPEntry_GET_ProviderID(struct zx_sp_IDPEntry_s* x);
 
 
 
 
 
-void zx_sp_IDPEntry_PUT_ProviderID(struct zx_sp_IDPEntry_s* x, struct zx_str* y);
-void zx_sp_IDPEntry_PUT_Name(struct zx_sp_IDPEntry_s* x, struct zx_str* y);
 void zx_sp_IDPEntry_PUT_Loc(struct zx_sp_IDPEntry_s* x, struct zx_str* y);
+void zx_sp_IDPEntry_PUT_Name(struct zx_sp_IDPEntry_s* x, struct zx_str* y);
+void zx_sp_IDPEntry_PUT_ProviderID(struct zx_sp_IDPEntry_s* x, struct zx_str* y);
 
 
 
@@ -935,23 +935,23 @@ struct zx_sp_LogoutRequest_s {
   struct zx_sa_NameID_s* NameID;	/* {0,1} nada */
   struct zx_sa_EncryptedID_s* EncryptedID;	/* {0,1} nada */
   struct zx_elem_s* SessionIndex;	/* {0,-1} xs:string */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* Reason;	/* {0,1} attribute xs:string */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* NotOnOrAfter;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* Reason;	/* {0,1} attribute xs:string */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_LogoutRequest_GET_ID(struct zx_sp_LogoutRequest_s* x);
-struct zx_str* zx_sp_LogoutRequest_GET_Version(struct zx_sp_LogoutRequest_s* x);
-struct zx_str* zx_sp_LogoutRequest_GET_IssueInstant(struct zx_sp_LogoutRequest_s* x);
-struct zx_str* zx_sp_LogoutRequest_GET_Destination(struct zx_sp_LogoutRequest_s* x);
 struct zx_str* zx_sp_LogoutRequest_GET_Consent(struct zx_sp_LogoutRequest_s* x);
-struct zx_str* zx_sp_LogoutRequest_GET_Reason(struct zx_sp_LogoutRequest_s* x);
+struct zx_str* zx_sp_LogoutRequest_GET_Destination(struct zx_sp_LogoutRequest_s* x);
+struct zx_str* zx_sp_LogoutRequest_GET_ID(struct zx_sp_LogoutRequest_s* x);
+struct zx_str* zx_sp_LogoutRequest_GET_IssueInstant(struct zx_sp_LogoutRequest_s* x);
 struct zx_str* zx_sp_LogoutRequest_GET_NotOnOrAfter(struct zx_sp_LogoutRequest_s* x);
+struct zx_str* zx_sp_LogoutRequest_GET_Reason(struct zx_sp_LogoutRequest_s* x);
+struct zx_str* zx_sp_LogoutRequest_GET_Version(struct zx_sp_LogoutRequest_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_LogoutRequest_GET_Issuer(struct zx_sp_LogoutRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_LogoutRequest_GET_Signature(struct zx_sp_LogoutRequest_s* x, int n);
@@ -985,13 +985,13 @@ void zx_sp_LogoutRequest_PUSH_NameID(struct zx_sp_LogoutRequest_s* x, struct zx_
 void zx_sp_LogoutRequest_PUSH_EncryptedID(struct zx_sp_LogoutRequest_s* x, struct zx_sa_EncryptedID_s* y);
 void zx_sp_LogoutRequest_PUSH_SessionIndex(struct zx_sp_LogoutRequest_s* x, struct zx_elem_s* y);
 
-void zx_sp_LogoutRequest_PUT_ID(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
-void zx_sp_LogoutRequest_PUT_Version(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
-void zx_sp_LogoutRequest_PUT_IssueInstant(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
-void zx_sp_LogoutRequest_PUT_Destination(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
 void zx_sp_LogoutRequest_PUT_Consent(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
-void zx_sp_LogoutRequest_PUT_Reason(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
+void zx_sp_LogoutRequest_PUT_Destination(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
+void zx_sp_LogoutRequest_PUT_ID(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
+void zx_sp_LogoutRequest_PUT_IssueInstant(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
 void zx_sp_LogoutRequest_PUT_NotOnOrAfter(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
+void zx_sp_LogoutRequest_PUT_Reason(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
+void zx_sp_LogoutRequest_PUT_Version(struct zx_sp_LogoutRequest_s* x, struct zx_str* y);
 
 void zx_sp_LogoutRequest_PUT_Issuer(struct zx_sp_LogoutRequest_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_LogoutRequest_PUT_Signature(struct zx_sp_LogoutRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1055,21 +1055,21 @@ struct zx_sp_LogoutResponse_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_sp_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sp_LogoutResponse_GET_Consent(struct zx_sp_LogoutResponse_s* x);
+struct zx_str* zx_sp_LogoutResponse_GET_Destination(struct zx_sp_LogoutResponse_s* x);
 struct zx_str* zx_sp_LogoutResponse_GET_ID(struct zx_sp_LogoutResponse_s* x);
 struct zx_str* zx_sp_LogoutResponse_GET_InResponseTo(struct zx_sp_LogoutResponse_s* x);
-struct zx_str* zx_sp_LogoutResponse_GET_Version(struct zx_sp_LogoutResponse_s* x);
 struct zx_str* zx_sp_LogoutResponse_GET_IssueInstant(struct zx_sp_LogoutResponse_s* x);
-struct zx_str* zx_sp_LogoutResponse_GET_Destination(struct zx_sp_LogoutResponse_s* x);
-struct zx_str* zx_sp_LogoutResponse_GET_Consent(struct zx_sp_LogoutResponse_s* x);
+struct zx_str* zx_sp_LogoutResponse_GET_Version(struct zx_sp_LogoutResponse_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_LogoutResponse_GET_Issuer(struct zx_sp_LogoutResponse_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_LogoutResponse_GET_Signature(struct zx_sp_LogoutResponse_s* x, int n);
@@ -1091,12 +1091,12 @@ void zx_sp_LogoutResponse_PUSH_Signature(struct zx_sp_LogoutResponse_s* x, struc
 void zx_sp_LogoutResponse_PUSH_Extensions(struct zx_sp_LogoutResponse_s* x, struct zx_sp_Extensions_s* y);
 void zx_sp_LogoutResponse_PUSH_Status(struct zx_sp_LogoutResponse_s* x, struct zx_sp_Status_s* y);
 
+void zx_sp_LogoutResponse_PUT_Consent(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
+void zx_sp_LogoutResponse_PUT_Destination(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
 void zx_sp_LogoutResponse_PUT_ID(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
 void zx_sp_LogoutResponse_PUT_InResponseTo(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
-void zx_sp_LogoutResponse_PUT_Version(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
 void zx_sp_LogoutResponse_PUT_IssueInstant(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
-void zx_sp_LogoutResponse_PUT_Destination(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
-void zx_sp_LogoutResponse_PUT_Consent(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
+void zx_sp_LogoutResponse_PUT_Version(struct zx_sp_LogoutResponse_s* x, struct zx_str* y);
 
 void zx_sp_LogoutResponse_PUT_Issuer(struct zx_sp_LogoutResponse_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_LogoutResponse_PUT_Signature(struct zx_sp_LogoutResponse_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1152,19 +1152,19 @@ struct zx_sp_ManageNameIDRequest_s {
   struct zx_elem_s* NewID;	/* {0,1} xs:string */
   struct zx_sp_NewEncryptedID_s* NewEncryptedID;	/* {0,1} nada */
   struct zx_elem_s* Terminate;	/* {0,1} sp:TerminateType */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_ManageNameIDRequest_GET_ID(struct zx_sp_ManageNameIDRequest_s* x);
-struct zx_str* zx_sp_ManageNameIDRequest_GET_Version(struct zx_sp_ManageNameIDRequest_s* x);
-struct zx_str* zx_sp_ManageNameIDRequest_GET_IssueInstant(struct zx_sp_ManageNameIDRequest_s* x);
-struct zx_str* zx_sp_ManageNameIDRequest_GET_Destination(struct zx_sp_ManageNameIDRequest_s* x);
 struct zx_str* zx_sp_ManageNameIDRequest_GET_Consent(struct zx_sp_ManageNameIDRequest_s* x);
+struct zx_str* zx_sp_ManageNameIDRequest_GET_Destination(struct zx_sp_ManageNameIDRequest_s* x);
+struct zx_str* zx_sp_ManageNameIDRequest_GET_ID(struct zx_sp_ManageNameIDRequest_s* x);
+struct zx_str* zx_sp_ManageNameIDRequest_GET_IssueInstant(struct zx_sp_ManageNameIDRequest_s* x);
+struct zx_str* zx_sp_ManageNameIDRequest_GET_Version(struct zx_sp_ManageNameIDRequest_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_ManageNameIDRequest_GET_Issuer(struct zx_sp_ManageNameIDRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_ManageNameIDRequest_GET_Signature(struct zx_sp_ManageNameIDRequest_s* x, int n);
@@ -1202,11 +1202,11 @@ void zx_sp_ManageNameIDRequest_PUSH_NewID(struct zx_sp_ManageNameIDRequest_s* x,
 void zx_sp_ManageNameIDRequest_PUSH_NewEncryptedID(struct zx_sp_ManageNameIDRequest_s* x, struct zx_sp_NewEncryptedID_s* y);
 void zx_sp_ManageNameIDRequest_PUSH_Terminate(struct zx_sp_ManageNameIDRequest_s* x, struct zx_elem_s* y);
 
-void zx_sp_ManageNameIDRequest_PUT_ID(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
-void zx_sp_ManageNameIDRequest_PUT_Version(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
-void zx_sp_ManageNameIDRequest_PUT_IssueInstant(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
-void zx_sp_ManageNameIDRequest_PUT_Destination(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
 void zx_sp_ManageNameIDRequest_PUT_Consent(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
+void zx_sp_ManageNameIDRequest_PUT_Destination(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
+void zx_sp_ManageNameIDRequest_PUT_ID(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
+void zx_sp_ManageNameIDRequest_PUT_IssueInstant(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
+void zx_sp_ManageNameIDRequest_PUT_Version(struct zx_sp_ManageNameIDRequest_s* x, struct zx_str* y);
 
 void zx_sp_ManageNameIDRequest_PUT_Issuer(struct zx_sp_ManageNameIDRequest_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_ManageNameIDRequest_PUT_Signature(struct zx_sp_ManageNameIDRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1274,21 +1274,21 @@ struct zx_sp_ManageNameIDResponse_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_sp_Status_s* Status;	/* {1,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sp_ManageNameIDResponse_GET_Consent(struct zx_sp_ManageNameIDResponse_s* x);
+struct zx_str* zx_sp_ManageNameIDResponse_GET_Destination(struct zx_sp_ManageNameIDResponse_s* x);
 struct zx_str* zx_sp_ManageNameIDResponse_GET_ID(struct zx_sp_ManageNameIDResponse_s* x);
 struct zx_str* zx_sp_ManageNameIDResponse_GET_InResponseTo(struct zx_sp_ManageNameIDResponse_s* x);
-struct zx_str* zx_sp_ManageNameIDResponse_GET_Version(struct zx_sp_ManageNameIDResponse_s* x);
 struct zx_str* zx_sp_ManageNameIDResponse_GET_IssueInstant(struct zx_sp_ManageNameIDResponse_s* x);
-struct zx_str* zx_sp_ManageNameIDResponse_GET_Destination(struct zx_sp_ManageNameIDResponse_s* x);
-struct zx_str* zx_sp_ManageNameIDResponse_GET_Consent(struct zx_sp_ManageNameIDResponse_s* x);
+struct zx_str* zx_sp_ManageNameIDResponse_GET_Version(struct zx_sp_ManageNameIDResponse_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_ManageNameIDResponse_GET_Issuer(struct zx_sp_ManageNameIDResponse_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_ManageNameIDResponse_GET_Signature(struct zx_sp_ManageNameIDResponse_s* x, int n);
@@ -1310,12 +1310,12 @@ void zx_sp_ManageNameIDResponse_PUSH_Signature(struct zx_sp_ManageNameIDResponse
 void zx_sp_ManageNameIDResponse_PUSH_Extensions(struct zx_sp_ManageNameIDResponse_s* x, struct zx_sp_Extensions_s* y);
 void zx_sp_ManageNameIDResponse_PUSH_Status(struct zx_sp_ManageNameIDResponse_s* x, struct zx_sp_Status_s* y);
 
+void zx_sp_ManageNameIDResponse_PUT_Consent(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
+void zx_sp_ManageNameIDResponse_PUT_Destination(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
 void zx_sp_ManageNameIDResponse_PUT_ID(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
 void zx_sp_ManageNameIDResponse_PUT_InResponseTo(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
-void zx_sp_ManageNameIDResponse_PUT_Version(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
 void zx_sp_ManageNameIDResponse_PUT_IssueInstant(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
-void zx_sp_ManageNameIDResponse_PUT_Destination(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
-void zx_sp_ManageNameIDResponse_PUT_Consent(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
+void zx_sp_ManageNameIDResponse_PUT_Version(struct zx_sp_ManageNameIDResponse_s* x, struct zx_str* y);
 
 void zx_sp_ManageNameIDResponse_PUT_Issuer(struct zx_sp_ManageNameIDResponse_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_ManageNameIDResponse_PUT_Signature(struct zx_sp_ManageNameIDResponse_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1370,19 +1370,19 @@ struct zx_sp_NameIDMappingRequest_s {
   struct zx_sa_NameID_s* NameID;	/* {0,1} nada */
   struct zx_sa_EncryptedID_s* EncryptedID;	/* {0,1} nada */
   struct zx_sp_NameIDPolicy_s* NameIDPolicy;	/* {1,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_NameIDMappingRequest_GET_ID(struct zx_sp_NameIDMappingRequest_s* x);
-struct zx_str* zx_sp_NameIDMappingRequest_GET_Version(struct zx_sp_NameIDMappingRequest_s* x);
-struct zx_str* zx_sp_NameIDMappingRequest_GET_IssueInstant(struct zx_sp_NameIDMappingRequest_s* x);
-struct zx_str* zx_sp_NameIDMappingRequest_GET_Destination(struct zx_sp_NameIDMappingRequest_s* x);
 struct zx_str* zx_sp_NameIDMappingRequest_GET_Consent(struct zx_sp_NameIDMappingRequest_s* x);
+struct zx_str* zx_sp_NameIDMappingRequest_GET_Destination(struct zx_sp_NameIDMappingRequest_s* x);
+struct zx_str* zx_sp_NameIDMappingRequest_GET_ID(struct zx_sp_NameIDMappingRequest_s* x);
+struct zx_str* zx_sp_NameIDMappingRequest_GET_IssueInstant(struct zx_sp_NameIDMappingRequest_s* x);
+struct zx_str* zx_sp_NameIDMappingRequest_GET_Version(struct zx_sp_NameIDMappingRequest_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_NameIDMappingRequest_GET_Issuer(struct zx_sp_NameIDMappingRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_NameIDMappingRequest_GET_Signature(struct zx_sp_NameIDMappingRequest_s* x, int n);
@@ -1416,11 +1416,11 @@ void zx_sp_NameIDMappingRequest_PUSH_NameID(struct zx_sp_NameIDMappingRequest_s*
 void zx_sp_NameIDMappingRequest_PUSH_EncryptedID(struct zx_sp_NameIDMappingRequest_s* x, struct zx_sa_EncryptedID_s* y);
 void zx_sp_NameIDMappingRequest_PUSH_NameIDPolicy(struct zx_sp_NameIDMappingRequest_s* x, struct zx_sp_NameIDPolicy_s* y);
 
-void zx_sp_NameIDMappingRequest_PUT_ID(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
-void zx_sp_NameIDMappingRequest_PUT_Version(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
-void zx_sp_NameIDMappingRequest_PUT_IssueInstant(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
-void zx_sp_NameIDMappingRequest_PUT_Destination(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
 void zx_sp_NameIDMappingRequest_PUT_Consent(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
+void zx_sp_NameIDMappingRequest_PUT_Destination(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
+void zx_sp_NameIDMappingRequest_PUT_ID(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
+void zx_sp_NameIDMappingRequest_PUT_IssueInstant(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
+void zx_sp_NameIDMappingRequest_PUT_Version(struct zx_sp_NameIDMappingRequest_s* x, struct zx_str* y);
 
 void zx_sp_NameIDMappingRequest_PUT_Issuer(struct zx_sp_NameIDMappingRequest_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_NameIDMappingRequest_PUT_Signature(struct zx_sp_NameIDMappingRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1486,21 +1486,21 @@ struct zx_sp_NameIDMappingResponse_s {
   struct zx_sp_Status_s* Status;	/* {1,1} nada */
   struct zx_sa_NameID_s* NameID;	/* {0,1} nada */
   struct zx_sa_EncryptedID_s* EncryptedID;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sp_NameIDMappingResponse_GET_Consent(struct zx_sp_NameIDMappingResponse_s* x);
+struct zx_str* zx_sp_NameIDMappingResponse_GET_Destination(struct zx_sp_NameIDMappingResponse_s* x);
 struct zx_str* zx_sp_NameIDMappingResponse_GET_ID(struct zx_sp_NameIDMappingResponse_s* x);
 struct zx_str* zx_sp_NameIDMappingResponse_GET_InResponseTo(struct zx_sp_NameIDMappingResponse_s* x);
-struct zx_str* zx_sp_NameIDMappingResponse_GET_Version(struct zx_sp_NameIDMappingResponse_s* x);
 struct zx_str* zx_sp_NameIDMappingResponse_GET_IssueInstant(struct zx_sp_NameIDMappingResponse_s* x);
-struct zx_str* zx_sp_NameIDMappingResponse_GET_Destination(struct zx_sp_NameIDMappingResponse_s* x);
-struct zx_str* zx_sp_NameIDMappingResponse_GET_Consent(struct zx_sp_NameIDMappingResponse_s* x);
+struct zx_str* zx_sp_NameIDMappingResponse_GET_Version(struct zx_sp_NameIDMappingResponse_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_NameIDMappingResponse_GET_Issuer(struct zx_sp_NameIDMappingResponse_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_NameIDMappingResponse_GET_Signature(struct zx_sp_NameIDMappingResponse_s* x, int n);
@@ -1530,12 +1530,12 @@ void zx_sp_NameIDMappingResponse_PUSH_Status(struct zx_sp_NameIDMappingResponse_
 void zx_sp_NameIDMappingResponse_PUSH_NameID(struct zx_sp_NameIDMappingResponse_s* x, struct zx_sa_NameID_s* y);
 void zx_sp_NameIDMappingResponse_PUSH_EncryptedID(struct zx_sp_NameIDMappingResponse_s* x, struct zx_sa_EncryptedID_s* y);
 
+void zx_sp_NameIDMappingResponse_PUT_Consent(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
+void zx_sp_NameIDMappingResponse_PUT_Destination(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
 void zx_sp_NameIDMappingResponse_PUT_ID(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
 void zx_sp_NameIDMappingResponse_PUT_InResponseTo(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
-void zx_sp_NameIDMappingResponse_PUT_Version(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
 void zx_sp_NameIDMappingResponse_PUT_IssueInstant(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
-void zx_sp_NameIDMappingResponse_PUT_Destination(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
-void zx_sp_NameIDMappingResponse_PUT_Consent(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
+void zx_sp_NameIDMappingResponse_PUT_Version(struct zx_sp_NameIDMappingResponse_s* x, struct zx_str* y);
 
 void zx_sp_NameIDMappingResponse_PUT_Issuer(struct zx_sp_NameIDMappingResponse_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_NameIDMappingResponse_PUT_Signature(struct zx_sp_NameIDMappingResponse_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1591,23 +1591,23 @@ struct zx_str* zx_EASY_ENC_WO_sp_NameIDPolicy(struct zx_ctx* c, struct zx_sp_Nam
 struct zx_sp_NameIDPolicy_s {
   ZX_ELEM_EXT
   zx_sp_NameIDPolicy_EXT
+  struct zx_str* AllowCreate;	/* {0,1} attribute xs:boolean */
   struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
   struct zx_str* SPNameQualifier;	/* {0,1} attribute xs:string */
-  struct zx_str* AllowCreate;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sp_NameIDPolicy_GET_AllowCreate(struct zx_sp_NameIDPolicy_s* x);
 struct zx_str* zx_sp_NameIDPolicy_GET_Format(struct zx_sp_NameIDPolicy_s* x);
 struct zx_str* zx_sp_NameIDPolicy_GET_SPNameQualifier(struct zx_sp_NameIDPolicy_s* x);
-struct zx_str* zx_sp_NameIDPolicy_GET_AllowCreate(struct zx_sp_NameIDPolicy_s* x);
 
 
 
 
 
+void zx_sp_NameIDPolicy_PUT_AllowCreate(struct zx_sp_NameIDPolicy_s* x, struct zx_str* y);
 void zx_sp_NameIDPolicy_PUT_Format(struct zx_sp_NameIDPolicy_s* x, struct zx_str* y);
 void zx_sp_NameIDPolicy_PUT_SPNameQualifier(struct zx_sp_NameIDPolicy_s* x, struct zx_str* y);
-void zx_sp_NameIDPolicy_PUT_AllowCreate(struct zx_sp_NameIDPolicy_s* x, struct zx_str* y);
 
 
 
@@ -1762,21 +1762,21 @@ struct zx_sp_Response_s {
   struct zx_sp_Status_s* Status;	/* {1,1} nada */
   struct zx_sa_Assertion_s* Assertion;	/* {0,1} nada */
   struct zx_sa_EncryptedAssertion_s* EncryptedAssertion;	/* {0,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sp_Response_GET_Consent(struct zx_sp_Response_s* x);
+struct zx_str* zx_sp_Response_GET_Destination(struct zx_sp_Response_s* x);
 struct zx_str* zx_sp_Response_GET_ID(struct zx_sp_Response_s* x);
 struct zx_str* zx_sp_Response_GET_InResponseTo(struct zx_sp_Response_s* x);
-struct zx_str* zx_sp_Response_GET_Version(struct zx_sp_Response_s* x);
 struct zx_str* zx_sp_Response_GET_IssueInstant(struct zx_sp_Response_s* x);
-struct zx_str* zx_sp_Response_GET_Destination(struct zx_sp_Response_s* x);
-struct zx_str* zx_sp_Response_GET_Consent(struct zx_sp_Response_s* x);
+struct zx_str* zx_sp_Response_GET_Version(struct zx_sp_Response_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_Response_GET_Issuer(struct zx_sp_Response_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_Response_GET_Signature(struct zx_sp_Response_s* x, int n);
@@ -1806,12 +1806,12 @@ void zx_sp_Response_PUSH_Status(struct zx_sp_Response_s* x, struct zx_sp_Status_
 void zx_sp_Response_PUSH_Assertion(struct zx_sp_Response_s* x, struct zx_sa_Assertion_s* y);
 void zx_sp_Response_PUSH_EncryptedAssertion(struct zx_sp_Response_s* x, struct zx_sa_EncryptedAssertion_s* y);
 
+void zx_sp_Response_PUT_Consent(struct zx_sp_Response_s* x, struct zx_str* y);
+void zx_sp_Response_PUT_Destination(struct zx_sp_Response_s* x, struct zx_str* y);
 void zx_sp_Response_PUT_ID(struct zx_sp_Response_s* x, struct zx_str* y);
 void zx_sp_Response_PUT_InResponseTo(struct zx_sp_Response_s* x, struct zx_str* y);
-void zx_sp_Response_PUT_Version(struct zx_sp_Response_s* x, struct zx_str* y);
 void zx_sp_Response_PUT_IssueInstant(struct zx_sp_Response_s* x, struct zx_str* y);
-void zx_sp_Response_PUT_Destination(struct zx_sp_Response_s* x, struct zx_str* y);
-void zx_sp_Response_PUT_Consent(struct zx_sp_Response_s* x, struct zx_str* y);
+void zx_sp_Response_PUT_Version(struct zx_sp_Response_s* x, struct zx_str* y);
 
 void zx_sp_Response_PUT_Issuer(struct zx_sp_Response_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_Response_PUT_Signature(struct zx_sp_Response_s* x, int n, struct zx_ds_Signature_s* y);
@@ -2087,19 +2087,19 @@ struct zx_sp_SubjectQuery_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp_Extensions_s* Extensions;	/* {0,1}  */
   struct zx_sa_Subject_s* Subject;	/* {1,1} nada */
-  struct zx_str* ID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp_SubjectQuery_GET_ID(struct zx_sp_SubjectQuery_s* x);
-struct zx_str* zx_sp_SubjectQuery_GET_Version(struct zx_sp_SubjectQuery_s* x);
-struct zx_str* zx_sp_SubjectQuery_GET_IssueInstant(struct zx_sp_SubjectQuery_s* x);
-struct zx_str* zx_sp_SubjectQuery_GET_Destination(struct zx_sp_SubjectQuery_s* x);
 struct zx_str* zx_sp_SubjectQuery_GET_Consent(struct zx_sp_SubjectQuery_s* x);
+struct zx_str* zx_sp_SubjectQuery_GET_Destination(struct zx_sp_SubjectQuery_s* x);
+struct zx_str* zx_sp_SubjectQuery_GET_ID(struct zx_sp_SubjectQuery_s* x);
+struct zx_str* zx_sp_SubjectQuery_GET_IssueInstant(struct zx_sp_SubjectQuery_s* x);
+struct zx_str* zx_sp_SubjectQuery_GET_Version(struct zx_sp_SubjectQuery_s* x);
 
 struct zx_sa_Issuer_s* zx_sp_SubjectQuery_GET_Issuer(struct zx_sp_SubjectQuery_s* x, int n);
 struct zx_ds_Signature_s* zx_sp_SubjectQuery_GET_Signature(struct zx_sp_SubjectQuery_s* x, int n);
@@ -2121,11 +2121,11 @@ void zx_sp_SubjectQuery_PUSH_Signature(struct zx_sp_SubjectQuery_s* x, struct zx
 void zx_sp_SubjectQuery_PUSH_Extensions(struct zx_sp_SubjectQuery_s* x, struct zx_sp_Extensions_s* y);
 void zx_sp_SubjectQuery_PUSH_Subject(struct zx_sp_SubjectQuery_s* x, struct zx_sa_Subject_s* y);
 
-void zx_sp_SubjectQuery_PUT_ID(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
-void zx_sp_SubjectQuery_PUT_Version(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
-void zx_sp_SubjectQuery_PUT_IssueInstant(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
-void zx_sp_SubjectQuery_PUT_Destination(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
 void zx_sp_SubjectQuery_PUT_Consent(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
+void zx_sp_SubjectQuery_PUT_Destination(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
+void zx_sp_SubjectQuery_PUT_ID(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
+void zx_sp_SubjectQuery_PUT_IssueInstant(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
+void zx_sp_SubjectQuery_PUT_Version(struct zx_sp_SubjectQuery_s* x, struct zx_str* y);
 
 void zx_sp_SubjectQuery_PUT_Issuer(struct zx_sp_SubjectQuery_s* x, int n, struct zx_sa_Issuer_s* y);
 void zx_sp_SubjectQuery_PUT_Signature(struct zx_sp_SubjectQuery_s* x, int n, struct zx_ds_Signature_s* y);

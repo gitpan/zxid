@@ -46,17 +46,21 @@ struct zx_b_ApplicationEPR_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_ApplicationEPR_GET_ID(struct zx_b_ApplicationEPR_s* x);
+struct zx_str* zx_b_ApplicationEPR_GET_id(struct zx_b_ApplicationEPR_s* x);
 struct zx_str* zx_b_ApplicationEPR_GET_notOnOrAfter(struct zx_b_ApplicationEPR_s* x);
-struct zx_str* zx_b_ApplicationEPR_GET_mustUnderstand(struct zx_b_ApplicationEPR_s* x);
-struct zx_str* zx_b_ApplicationEPR_GET_actor(struct zx_b_ApplicationEPR_s* x);
 struct zx_str* zx_b_ApplicationEPR_GET_Id(struct zx_b_ApplicationEPR_s* x);
+struct zx_str* zx_b_ApplicationEPR_GET_actor(struct zx_b_ApplicationEPR_s* x);
+struct zx_str* zx_b_ApplicationEPR_GET_mustUnderstand(struct zx_b_ApplicationEPR_s* x);
 
 struct zx_a_Address_s* zx_b_ApplicationEPR_GET_Address(struct zx_b_ApplicationEPR_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_b_ApplicationEPR_GET_ReferenceParameters(struct zx_b_ApplicationEPR_s* x, int n);
@@ -74,10 +78,12 @@ void zx_b_ApplicationEPR_PUSH_Address(struct zx_b_ApplicationEPR_s* x, struct zx
 void zx_b_ApplicationEPR_PUSH_ReferenceParameters(struct zx_b_ApplicationEPR_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_b_ApplicationEPR_PUSH_Metadata(struct zx_b_ApplicationEPR_s* x, struct zx_a_Metadata_s* y);
 
+void zx_b_ApplicationEPR_PUT_ID(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
+void zx_b_ApplicationEPR_PUT_id(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
 void zx_b_ApplicationEPR_PUT_notOnOrAfter(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
-void zx_b_ApplicationEPR_PUT_mustUnderstand(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
-void zx_b_ApplicationEPR_PUT_actor(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
 void zx_b_ApplicationEPR_PUT_Id(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
+void zx_b_ApplicationEPR_PUT_actor(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
+void zx_b_ApplicationEPR_PUT_mustUnderstand(struct zx_b_ApplicationEPR_s* x, struct zx_str* y);
 
 void zx_b_ApplicationEPR_PUT_Address(struct zx_b_ApplicationEPR_s* x, int n, struct zx_a_Address_s* y);
 void zx_b_ApplicationEPR_PUT_ReferenceParameters(struct zx_b_ApplicationEPR_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -121,29 +127,32 @@ struct zx_str* zx_EASY_ENC_WO_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s*
 struct zx_b_Consent_s {
   ZX_ELEM_EXT
   zx_b_Consent_EXT
-  struct zx_str* uri;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* timestamp;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* uri;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b_Consent_GET_uri(struct zx_b_Consent_s* x);
+struct zx_str* zx_b_Consent_GET_id(struct zx_b_Consent_s* x);
 struct zx_str* zx_b_Consent_GET_timestamp(struct zx_b_Consent_s* x);
-struct zx_str* zx_b_Consent_GET_mustUnderstand(struct zx_b_Consent_s* x);
-struct zx_str* zx_b_Consent_GET_actor(struct zx_b_Consent_s* x);
+struct zx_str* zx_b_Consent_GET_uri(struct zx_b_Consent_s* x);
 struct zx_str* zx_b_Consent_GET_Id(struct zx_b_Consent_s* x);
+struct zx_str* zx_b_Consent_GET_actor(struct zx_b_Consent_s* x);
+struct zx_str* zx_b_Consent_GET_mustUnderstand(struct zx_b_Consent_s* x);
 
 
 
 
 
-void zx_b_Consent_PUT_uri(struct zx_b_Consent_s* x, struct zx_str* y);
+void zx_b_Consent_PUT_id(struct zx_b_Consent_s* x, struct zx_str* y);
 void zx_b_Consent_PUT_timestamp(struct zx_b_Consent_s* x, struct zx_str* y);
-void zx_b_Consent_PUT_mustUnderstand(struct zx_b_Consent_s* x, struct zx_str* y);
-void zx_b_Consent_PUT_actor(struct zx_b_Consent_s* x, struct zx_str* y);
+void zx_b_Consent_PUT_uri(struct zx_b_Consent_s* x, struct zx_str* y);
 void zx_b_Consent_PUT_Id(struct zx_b_Consent_s* x, struct zx_str* y);
+void zx_b_Consent_PUT_actor(struct zx_b_Consent_s* x, struct zx_str* y);
+void zx_b_Consent_PUT_mustUnderstand(struct zx_b_Consent_s* x, struct zx_str* y);
 
 
 
@@ -177,15 +186,17 @@ struct zx_b_CredentialsContext_s {
   zx_b_CredentialsContext_EXT
   struct zx_sp_RequestedAuthnContext_s* RequestedAuthnContext;	/* {0,1} nada */
   struct zx_elem_s* SecurityMechID;	/* {0,-1} xs:anyURI */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b_CredentialsContext_GET_mustUnderstand(struct zx_b_CredentialsContext_s* x);
-struct zx_str* zx_b_CredentialsContext_GET_actor(struct zx_b_CredentialsContext_s* x);
+struct zx_str* zx_b_CredentialsContext_GET_id(struct zx_b_CredentialsContext_s* x);
 struct zx_str* zx_b_CredentialsContext_GET_Id(struct zx_b_CredentialsContext_s* x);
+struct zx_str* zx_b_CredentialsContext_GET_actor(struct zx_b_CredentialsContext_s* x);
+struct zx_str* zx_b_CredentialsContext_GET_mustUnderstand(struct zx_b_CredentialsContext_s* x);
 
 struct zx_sp_RequestedAuthnContext_s* zx_b_CredentialsContext_GET_RequestedAuthnContext(struct zx_b_CredentialsContext_s* x, int n);
 struct zx_elem_s* zx_b_CredentialsContext_GET_SecurityMechID(struct zx_b_CredentialsContext_s* x, int n);
@@ -199,9 +210,10 @@ struct zx_elem_s* zx_b_CredentialsContext_POP_SecurityMechID(struct zx_b_Credent
 void zx_b_CredentialsContext_PUSH_RequestedAuthnContext(struct zx_b_CredentialsContext_s* x, struct zx_sp_RequestedAuthnContext_s* y);
 void zx_b_CredentialsContext_PUSH_SecurityMechID(struct zx_b_CredentialsContext_s* x, struct zx_elem_s* y);
 
-void zx_b_CredentialsContext_PUT_mustUnderstand(struct zx_b_CredentialsContext_s* x, struct zx_str* y);
-void zx_b_CredentialsContext_PUT_actor(struct zx_b_CredentialsContext_s* x, struct zx_str* y);
+void zx_b_CredentialsContext_PUT_id(struct zx_b_CredentialsContext_s* x, struct zx_str* y);
 void zx_b_CredentialsContext_PUT_Id(struct zx_b_CredentialsContext_s* x, struct zx_str* y);
+void zx_b_CredentialsContext_PUT_actor(struct zx_b_CredentialsContext_s* x, struct zx_str* y);
+void zx_b_CredentialsContext_PUT_mustUnderstand(struct zx_b_CredentialsContext_s* x, struct zx_str* y);
 
 void zx_b_CredentialsContext_PUT_RequestedAuthnContext(struct zx_b_CredentialsContext_s* x, int n, struct zx_sp_RequestedAuthnContext_s* y);
 void zx_b_CredentialsContext_PUT_SecurityMechID(struct zx_b_CredentialsContext_s* x, int n, struct zx_elem_s* y);
@@ -244,19 +256,23 @@ struct zx_b_EndpointUpdate_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
   struct zx_str* updateType;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_EndpointUpdate_GET_ID(struct zx_b_EndpointUpdate_s* x);
+struct zx_str* zx_b_EndpointUpdate_GET_id(struct zx_b_EndpointUpdate_s* x);
 struct zx_str* zx_b_EndpointUpdate_GET_notOnOrAfter(struct zx_b_EndpointUpdate_s* x);
 struct zx_str* zx_b_EndpointUpdate_GET_updateType(struct zx_b_EndpointUpdate_s* x);
-struct zx_str* zx_b_EndpointUpdate_GET_mustUnderstand(struct zx_b_EndpointUpdate_s* x);
-struct zx_str* zx_b_EndpointUpdate_GET_actor(struct zx_b_EndpointUpdate_s* x);
 struct zx_str* zx_b_EndpointUpdate_GET_Id(struct zx_b_EndpointUpdate_s* x);
+struct zx_str* zx_b_EndpointUpdate_GET_actor(struct zx_b_EndpointUpdate_s* x);
+struct zx_str* zx_b_EndpointUpdate_GET_mustUnderstand(struct zx_b_EndpointUpdate_s* x);
 
 struct zx_a_Address_s* zx_b_EndpointUpdate_GET_Address(struct zx_b_EndpointUpdate_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_b_EndpointUpdate_GET_ReferenceParameters(struct zx_b_EndpointUpdate_s* x, int n);
@@ -274,11 +290,13 @@ void zx_b_EndpointUpdate_PUSH_Address(struct zx_b_EndpointUpdate_s* x, struct zx
 void zx_b_EndpointUpdate_PUSH_ReferenceParameters(struct zx_b_EndpointUpdate_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_b_EndpointUpdate_PUSH_Metadata(struct zx_b_EndpointUpdate_s* x, struct zx_a_Metadata_s* y);
 
+void zx_b_EndpointUpdate_PUT_ID(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
+void zx_b_EndpointUpdate_PUT_id(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
 void zx_b_EndpointUpdate_PUT_notOnOrAfter(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
 void zx_b_EndpointUpdate_PUT_updateType(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
-void zx_b_EndpointUpdate_PUT_mustUnderstand(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
-void zx_b_EndpointUpdate_PUT_actor(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
 void zx_b_EndpointUpdate_PUT_Id(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
+void zx_b_EndpointUpdate_PUT_actor(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
+void zx_b_EndpointUpdate_PUT_mustUnderstand(struct zx_b_EndpointUpdate_s* x, struct zx_str* y);
 
 void zx_b_EndpointUpdate_PUT_Address(struct zx_b_EndpointUpdate_s* x, int n, struct zx_a_Address_s* y);
 void zx_b_EndpointUpdate_PUT_ReferenceParameters(struct zx_b_EndpointUpdate_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -322,26 +340,29 @@ struct zx_str* zx_EASY_ENC_WO_b_Framework(struct zx_ctx* c, struct zx_b_Framewor
 struct zx_b_Framework_s {
   ZX_ELEM_EXT
   zx_b_Framework_EXT
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* version;	/* {1,1} attribute xsd:string */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_Framework_GET_id(struct zx_b_Framework_s* x);
 struct zx_str* zx_b_Framework_GET_version(struct zx_b_Framework_s* x);
-struct zx_str* zx_b_Framework_GET_mustUnderstand(struct zx_b_Framework_s* x);
-struct zx_str* zx_b_Framework_GET_actor(struct zx_b_Framework_s* x);
 struct zx_str* zx_b_Framework_GET_Id(struct zx_b_Framework_s* x);
+struct zx_str* zx_b_Framework_GET_actor(struct zx_b_Framework_s* x);
+struct zx_str* zx_b_Framework_GET_mustUnderstand(struct zx_b_Framework_s* x);
 
 
 
 
 
+void zx_b_Framework_PUT_id(struct zx_b_Framework_s* x, struct zx_str* y);
 void zx_b_Framework_PUT_version(struct zx_b_Framework_s* x, struct zx_str* y);
-void zx_b_Framework_PUT_mustUnderstand(struct zx_b_Framework_s* x, struct zx_str* y);
-void zx_b_Framework_PUT_actor(struct zx_b_Framework_s* x, struct zx_str* y);
 void zx_b_Framework_PUT_Id(struct zx_b_Framework_s* x, struct zx_str* y);
+void zx_b_Framework_PUT_actor(struct zx_b_Framework_s* x, struct zx_str* y);
+void zx_b_Framework_PUT_mustUnderstand(struct zx_b_Framework_s* x, struct zx_str* y);
 
 
 
@@ -376,17 +397,21 @@ struct zx_b_InteractionService_s {
   struct zx_a_Address_s* Address;	/* {1,1}  */
   struct zx_a_ReferenceParameters_s* ReferenceParameters;	/* {0,1} nada */
   struct zx_a_Metadata_s* Metadata;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_InteractionService_GET_ID(struct zx_b_InteractionService_s* x);
+struct zx_str* zx_b_InteractionService_GET_id(struct zx_b_InteractionService_s* x);
 struct zx_str* zx_b_InteractionService_GET_notOnOrAfter(struct zx_b_InteractionService_s* x);
-struct zx_str* zx_b_InteractionService_GET_mustUnderstand(struct zx_b_InteractionService_s* x);
-struct zx_str* zx_b_InteractionService_GET_actor(struct zx_b_InteractionService_s* x);
 struct zx_str* zx_b_InteractionService_GET_Id(struct zx_b_InteractionService_s* x);
+struct zx_str* zx_b_InteractionService_GET_actor(struct zx_b_InteractionService_s* x);
+struct zx_str* zx_b_InteractionService_GET_mustUnderstand(struct zx_b_InteractionService_s* x);
 
 struct zx_a_Address_s* zx_b_InteractionService_GET_Address(struct zx_b_InteractionService_s* x, int n);
 struct zx_a_ReferenceParameters_s* zx_b_InteractionService_GET_ReferenceParameters(struct zx_b_InteractionService_s* x, int n);
@@ -404,10 +429,12 @@ void zx_b_InteractionService_PUSH_Address(struct zx_b_InteractionService_s* x, s
 void zx_b_InteractionService_PUSH_ReferenceParameters(struct zx_b_InteractionService_s* x, struct zx_a_ReferenceParameters_s* y);
 void zx_b_InteractionService_PUSH_Metadata(struct zx_b_InteractionService_s* x, struct zx_a_Metadata_s* y);
 
+void zx_b_InteractionService_PUT_ID(struct zx_b_InteractionService_s* x, struct zx_str* y);
+void zx_b_InteractionService_PUT_id(struct zx_b_InteractionService_s* x, struct zx_str* y);
 void zx_b_InteractionService_PUT_notOnOrAfter(struct zx_b_InteractionService_s* x, struct zx_str* y);
-void zx_b_InteractionService_PUT_mustUnderstand(struct zx_b_InteractionService_s* x, struct zx_str* y);
-void zx_b_InteractionService_PUT_actor(struct zx_b_InteractionService_s* x, struct zx_str* y);
 void zx_b_InteractionService_PUT_Id(struct zx_b_InteractionService_s* x, struct zx_str* y);
+void zx_b_InteractionService_PUT_actor(struct zx_b_InteractionService_s* x, struct zx_str* y);
+void zx_b_InteractionService_PUT_mustUnderstand(struct zx_b_InteractionService_s* x, struct zx_str* y);
 
 void zx_b_InteractionService_PUT_Address(struct zx_b_InteractionService_s* x, int n, struct zx_a_Address_s* y);
 void zx_b_InteractionService_PUT_ReferenceParameters(struct zx_b_InteractionService_s* x, int n, struct zx_a_ReferenceParameters_s* y);
@@ -451,23 +478,26 @@ struct zx_str* zx_EASY_ENC_WO_b_ProcessingContext(struct zx_ctx* c, struct zx_b_
 struct zx_b_ProcessingContext_s {
   ZX_ELEM_EXT
   zx_b_ProcessingContext_EXT
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b_ProcessingContext_GET_mustUnderstand(struct zx_b_ProcessingContext_s* x);
-struct zx_str* zx_b_ProcessingContext_GET_actor(struct zx_b_ProcessingContext_s* x);
+struct zx_str* zx_b_ProcessingContext_GET_id(struct zx_b_ProcessingContext_s* x);
 struct zx_str* zx_b_ProcessingContext_GET_Id(struct zx_b_ProcessingContext_s* x);
+struct zx_str* zx_b_ProcessingContext_GET_actor(struct zx_b_ProcessingContext_s* x);
+struct zx_str* zx_b_ProcessingContext_GET_mustUnderstand(struct zx_b_ProcessingContext_s* x);
 
 
 
 
 
-void zx_b_ProcessingContext_PUT_mustUnderstand(struct zx_b_ProcessingContext_s* x, struct zx_str* y);
-void zx_b_ProcessingContext_PUT_actor(struct zx_b_ProcessingContext_s* x, struct zx_str* y);
+void zx_b_ProcessingContext_PUT_id(struct zx_b_ProcessingContext_s* x, struct zx_str* y);
 void zx_b_ProcessingContext_PUT_Id(struct zx_b_ProcessingContext_s* x, struct zx_str* y);
+void zx_b_ProcessingContext_PUT_actor(struct zx_b_ProcessingContext_s* x, struct zx_str* y);
+void zx_b_ProcessingContext_PUT_mustUnderstand(struct zx_b_ProcessingContext_s* x, struct zx_str* y);
 
 
 
@@ -499,26 +529,29 @@ struct zx_str* zx_EASY_ENC_WO_b_RedirectRequest(struct zx_ctx* c, struct zx_b_Re
 struct zx_b_RedirectRequest_s {
   ZX_ELEM_EXT
   zx_b_RedirectRequest_EXT
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* redirectURL;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_RedirectRequest_GET_id(struct zx_b_RedirectRequest_s* x);
 struct zx_str* zx_b_RedirectRequest_GET_redirectURL(struct zx_b_RedirectRequest_s* x);
-struct zx_str* zx_b_RedirectRequest_GET_mustUnderstand(struct zx_b_RedirectRequest_s* x);
-struct zx_str* zx_b_RedirectRequest_GET_actor(struct zx_b_RedirectRequest_s* x);
 struct zx_str* zx_b_RedirectRequest_GET_Id(struct zx_b_RedirectRequest_s* x);
+struct zx_str* zx_b_RedirectRequest_GET_actor(struct zx_b_RedirectRequest_s* x);
+struct zx_str* zx_b_RedirectRequest_GET_mustUnderstand(struct zx_b_RedirectRequest_s* x);
 
 
 
 
 
+void zx_b_RedirectRequest_PUT_id(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
 void zx_b_RedirectRequest_PUT_redirectURL(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
-void zx_b_RedirectRequest_PUT_mustUnderstand(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
-void zx_b_RedirectRequest_PUT_actor(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
 void zx_b_RedirectRequest_PUT_Id(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
+void zx_b_RedirectRequest_PUT_actor(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
+void zx_b_RedirectRequest_PUT_mustUnderstand(struct zx_b_RedirectRequest_s* x, struct zx_str* y);
 
 
 
@@ -550,29 +583,32 @@ struct zx_str* zx_EASY_ENC_WO_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x
 struct zx_b_Sender_s {
   ZX_ELEM_EXT
   zx_b_Sender_EXT
-  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* affiliationID;	/* {0,1} attribute xs:anyURI */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b_Sender_GET_providerID(struct zx_b_Sender_s* x);
 struct zx_str* zx_b_Sender_GET_affiliationID(struct zx_b_Sender_s* x);
-struct zx_str* zx_b_Sender_GET_mustUnderstand(struct zx_b_Sender_s* x);
-struct zx_str* zx_b_Sender_GET_actor(struct zx_b_Sender_s* x);
+struct zx_str* zx_b_Sender_GET_id(struct zx_b_Sender_s* x);
+struct zx_str* zx_b_Sender_GET_providerID(struct zx_b_Sender_s* x);
 struct zx_str* zx_b_Sender_GET_Id(struct zx_b_Sender_s* x);
+struct zx_str* zx_b_Sender_GET_actor(struct zx_b_Sender_s* x);
+struct zx_str* zx_b_Sender_GET_mustUnderstand(struct zx_b_Sender_s* x);
 
 
 
 
 
-void zx_b_Sender_PUT_providerID(struct zx_b_Sender_s* x, struct zx_str* y);
 void zx_b_Sender_PUT_affiliationID(struct zx_b_Sender_s* x, struct zx_str* y);
-void zx_b_Sender_PUT_mustUnderstand(struct zx_b_Sender_s* x, struct zx_str* y);
-void zx_b_Sender_PUT_actor(struct zx_b_Sender_s* x, struct zx_str* y);
+void zx_b_Sender_PUT_id(struct zx_b_Sender_s* x, struct zx_str* y);
+void zx_b_Sender_PUT_providerID(struct zx_b_Sender_s* x, struct zx_str* y);
 void zx_b_Sender_PUT_Id(struct zx_b_Sender_s* x, struct zx_str* y);
+void zx_b_Sender_PUT_actor(struct zx_b_Sender_s* x, struct zx_str* y);
+void zx_b_Sender_PUT_mustUnderstand(struct zx_b_Sender_s* x, struct zx_str* y);
 
 
 
@@ -580,7 +616,7 @@ void zx_b_Sender_PUT_Id(struct zx_b_Sender_s* x, struct zx_str* y);
 
 #endif
 /* -------------------------- b_TargetIdentity -------------------------- */
-/* refby( zx_e_Header_s ) */
+/* refby( zx_a_ReferenceParameters_s zx_e_Header_s ) */
 #ifndef zx_b_TargetIdentity_EXT
 #define zx_b_TargetIdentity_EXT
 #endif
@@ -607,15 +643,17 @@ struct zx_b_TargetIdentity_s {
   struct zx_sa_Assertion_s* Assertion;	/* {0,1} nada */
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,1} nada */
   struct zx_ff12_Assertion_s* ff12_Assertion;	/* {0,1} nada */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b_TargetIdentity_GET_mustUnderstand(struct zx_b_TargetIdentity_s* x);
-struct zx_str* zx_b_TargetIdentity_GET_actor(struct zx_b_TargetIdentity_s* x);
+struct zx_str* zx_b_TargetIdentity_GET_id(struct zx_b_TargetIdentity_s* x);
 struct zx_str* zx_b_TargetIdentity_GET_Id(struct zx_b_TargetIdentity_s* x);
+struct zx_str* zx_b_TargetIdentity_GET_actor(struct zx_b_TargetIdentity_s* x);
+struct zx_str* zx_b_TargetIdentity_GET_mustUnderstand(struct zx_b_TargetIdentity_s* x);
 
 struct zx_sa_Assertion_s* zx_b_TargetIdentity_GET_Assertion(struct zx_b_TargetIdentity_s* x, int n);
 struct zx_sa11_Assertion_s* zx_b_TargetIdentity_GET_sa11_Assertion(struct zx_b_TargetIdentity_s* x, int n);
@@ -633,9 +671,10 @@ void zx_b_TargetIdentity_PUSH_Assertion(struct zx_b_TargetIdentity_s* x, struct 
 void zx_b_TargetIdentity_PUSH_sa11_Assertion(struct zx_b_TargetIdentity_s* x, struct zx_sa11_Assertion_s* y);
 void zx_b_TargetIdentity_PUSH_ff12_Assertion(struct zx_b_TargetIdentity_s* x, struct zx_ff12_Assertion_s* y);
 
-void zx_b_TargetIdentity_PUT_mustUnderstand(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
-void zx_b_TargetIdentity_PUT_actor(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
+void zx_b_TargetIdentity_PUT_id(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
 void zx_b_TargetIdentity_PUT_Id(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
+void zx_b_TargetIdentity_PUT_actor(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
+void zx_b_TargetIdentity_PUT_mustUnderstand(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
 
 void zx_b_TargetIdentity_PUT_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_Assertion_s* y);
 void zx_b_TargetIdentity_PUT_sa11_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa11_Assertion_s* y);
@@ -679,26 +718,29 @@ struct zx_str* zx_EASY_ENC_WO_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s*
 struct zx_b_Timeout_s {
   ZX_ELEM_EXT
   zx_b_Timeout_EXT
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* maxProcessingTime;	/* {1,1} attribute xs:integer */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_Timeout_GET_id(struct zx_b_Timeout_s* x);
 struct zx_str* zx_b_Timeout_GET_maxProcessingTime(struct zx_b_Timeout_s* x);
-struct zx_str* zx_b_Timeout_GET_mustUnderstand(struct zx_b_Timeout_s* x);
-struct zx_str* zx_b_Timeout_GET_actor(struct zx_b_Timeout_s* x);
 struct zx_str* zx_b_Timeout_GET_Id(struct zx_b_Timeout_s* x);
+struct zx_str* zx_b_Timeout_GET_actor(struct zx_b_Timeout_s* x);
+struct zx_str* zx_b_Timeout_GET_mustUnderstand(struct zx_b_Timeout_s* x);
 
 
 
 
 
+void zx_b_Timeout_PUT_id(struct zx_b_Timeout_s* x, struct zx_str* y);
 void zx_b_Timeout_PUT_maxProcessingTime(struct zx_b_Timeout_s* x, struct zx_str* y);
-void zx_b_Timeout_PUT_mustUnderstand(struct zx_b_Timeout_s* x, struct zx_str* y);
-void zx_b_Timeout_PUT_actor(struct zx_b_Timeout_s* x, struct zx_str* y);
 void zx_b_Timeout_PUT_Id(struct zx_b_Timeout_s* x, struct zx_str* y);
+void zx_b_Timeout_PUT_actor(struct zx_b_Timeout_s* x, struct zx_str* y);
+void zx_b_Timeout_PUT_mustUnderstand(struct zx_b_Timeout_s* x, struct zx_str* y);
 
 
 
@@ -730,26 +772,29 @@ struct zx_str* zx_EASY_ENC_WO_b_UsageDirective(struct zx_ctx* c, struct zx_b_Usa
 struct zx_b_UsageDirective_s {
   ZX_ELEM_EXT
   zx_b_UsageDirective_EXT
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* ref;	/* {1,1} attribute xs:string */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_UsageDirective_GET_id(struct zx_b_UsageDirective_s* x);
 struct zx_str* zx_b_UsageDirective_GET_ref(struct zx_b_UsageDirective_s* x);
-struct zx_str* zx_b_UsageDirective_GET_mustUnderstand(struct zx_b_UsageDirective_s* x);
-struct zx_str* zx_b_UsageDirective_GET_actor(struct zx_b_UsageDirective_s* x);
 struct zx_str* zx_b_UsageDirective_GET_Id(struct zx_b_UsageDirective_s* x);
+struct zx_str* zx_b_UsageDirective_GET_actor(struct zx_b_UsageDirective_s* x);
+struct zx_str* zx_b_UsageDirective_GET_mustUnderstand(struct zx_b_UsageDirective_s* x);
 
 
 
 
 
+void zx_b_UsageDirective_PUT_id(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 void zx_b_UsageDirective_PUT_ref(struct zx_b_UsageDirective_s* x, struct zx_str* y);
-void zx_b_UsageDirective_PUT_mustUnderstand(struct zx_b_UsageDirective_s* x, struct zx_str* y);
-void zx_b_UsageDirective_PUT_actor(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 void zx_b_UsageDirective_PUT_Id(struct zx_b_UsageDirective_s* x, struct zx_str* y);
+void zx_b_UsageDirective_PUT_actor(struct zx_b_UsageDirective_s* x, struct zx_str* y);
+void zx_b_UsageDirective_PUT_mustUnderstand(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 
 
 
@@ -782,23 +827,25 @@ struct zx_b_UserInteraction_s {
   ZX_ELEM_EXT
   zx_b_UserInteraction_EXT
   struct zx_b_InteractionService_s* InteractionService;	/* {0,-1}  */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* interact;	/* {0,1} attribute xs:QName */
   struct zx_str* language;	/* {0,1} attribute xs:NMTOKENS */
-  struct zx_str* redirect;	/* {0,1} attribute xs:boolean */
   struct zx_str* maxInteractTime;	/* {0,1} attribute xs:integer */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* redirect;	/* {0,1} attribute xs:boolean */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b_UserInteraction_GET_id(struct zx_b_UserInteraction_s* x);
 struct zx_str* zx_b_UserInteraction_GET_interact(struct zx_b_UserInteraction_s* x);
 struct zx_str* zx_b_UserInteraction_GET_language(struct zx_b_UserInteraction_s* x);
-struct zx_str* zx_b_UserInteraction_GET_redirect(struct zx_b_UserInteraction_s* x);
 struct zx_str* zx_b_UserInteraction_GET_maxInteractTime(struct zx_b_UserInteraction_s* x);
-struct zx_str* zx_b_UserInteraction_GET_mustUnderstand(struct zx_b_UserInteraction_s* x);
-struct zx_str* zx_b_UserInteraction_GET_actor(struct zx_b_UserInteraction_s* x);
+struct zx_str* zx_b_UserInteraction_GET_redirect(struct zx_b_UserInteraction_s* x);
 struct zx_str* zx_b_UserInteraction_GET_Id(struct zx_b_UserInteraction_s* x);
+struct zx_str* zx_b_UserInteraction_GET_actor(struct zx_b_UserInteraction_s* x);
+struct zx_str* zx_b_UserInteraction_GET_mustUnderstand(struct zx_b_UserInteraction_s* x);
 
 struct zx_b_InteractionService_s* zx_b_UserInteraction_GET_InteractionService(struct zx_b_UserInteraction_s* x, int n);
 
@@ -808,13 +855,14 @@ struct zx_b_InteractionService_s* zx_b_UserInteraction_POP_InteractionService(st
 
 void zx_b_UserInteraction_PUSH_InteractionService(struct zx_b_UserInteraction_s* x, struct zx_b_InteractionService_s* y);
 
+void zx_b_UserInteraction_PUT_id(struct zx_b_UserInteraction_s* x, struct zx_str* y);
 void zx_b_UserInteraction_PUT_interact(struct zx_b_UserInteraction_s* x, struct zx_str* y);
 void zx_b_UserInteraction_PUT_language(struct zx_b_UserInteraction_s* x, struct zx_str* y);
-void zx_b_UserInteraction_PUT_redirect(struct zx_b_UserInteraction_s* x, struct zx_str* y);
 void zx_b_UserInteraction_PUT_maxInteractTime(struct zx_b_UserInteraction_s* x, struct zx_str* y);
-void zx_b_UserInteraction_PUT_mustUnderstand(struct zx_b_UserInteraction_s* x, struct zx_str* y);
-void zx_b_UserInteraction_PUT_actor(struct zx_b_UserInteraction_s* x, struct zx_str* y);
+void zx_b_UserInteraction_PUT_redirect(struct zx_b_UserInteraction_s* x, struct zx_str* y);
 void zx_b_UserInteraction_PUT_Id(struct zx_b_UserInteraction_s* x, struct zx_str* y);
+void zx_b_UserInteraction_PUT_actor(struct zx_b_UserInteraction_s* x, struct zx_str* y);
+void zx_b_UserInteraction_PUT_mustUnderstand(struct zx_b_UserInteraction_s* x, struct zx_str* y);
 
 void zx_b_UserInteraction_PUT_InteractionService(struct zx_b_UserInteraction_s* x, int n, struct zx_b_InteractionService_s* y);
 

@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_f_p_struct_zx_node_s_p_void__int {
+public class SWIGTYPE_p_zx_dap_QueryItem_s {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_f_p_struct_zx_node_s_p_void__int(long cPtr, boolean futureUse) {
+  protected SWIGTYPE_p_zx_dap_QueryItem_s(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_f_p_struct_zx_node_s_p_void__int() {
+  protected SWIGTYPE_p_zx_dap_QueryItem_s() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_f_p_struct_zx_node_s_p_void__int obj) {
+  protected static long getCPtr(SWIGTYPE_p_zx_dap_QueryItem_s obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

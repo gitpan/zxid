@@ -44,6 +44,7 @@ struct zx_sec_Token_s {
   ZX_ELEM_EXT
   zx_sec_Token_EXT
   struct zx_sa_Assertion_s* Assertion;	/* {0,1} nada */
+  struct zx_sa_EncryptedAssertion_s* EncryptedAssertion;	/* {0,1} nada */
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,1} nada */
   struct zx_ff12_Assertion_s* ff12_Assertion;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
@@ -57,18 +58,22 @@ struct zx_str* zx_sec_Token_GET_ref(struct zx_sec_Token_s* x);
 struct zx_str* zx_sec_Token_GET_usage(struct zx_sec_Token_s* x);
 
 struct zx_sa_Assertion_s* zx_sec_Token_GET_Assertion(struct zx_sec_Token_s* x, int n);
+struct zx_sa_EncryptedAssertion_s* zx_sec_Token_GET_EncryptedAssertion(struct zx_sec_Token_s* x, int n);
 struct zx_sa11_Assertion_s* zx_sec_Token_GET_sa11_Assertion(struct zx_sec_Token_s* x, int n);
 struct zx_ff12_Assertion_s* zx_sec_Token_GET_ff12_Assertion(struct zx_sec_Token_s* x, int n);
 
 int zx_sec_Token_NUM_Assertion(struct zx_sec_Token_s* x);
+int zx_sec_Token_NUM_EncryptedAssertion(struct zx_sec_Token_s* x);
 int zx_sec_Token_NUM_sa11_Assertion(struct zx_sec_Token_s* x);
 int zx_sec_Token_NUM_ff12_Assertion(struct zx_sec_Token_s* x);
 
 struct zx_sa_Assertion_s* zx_sec_Token_POP_Assertion(struct zx_sec_Token_s* x);
+struct zx_sa_EncryptedAssertion_s* zx_sec_Token_POP_EncryptedAssertion(struct zx_sec_Token_s* x);
 struct zx_sa11_Assertion_s* zx_sec_Token_POP_sa11_Assertion(struct zx_sec_Token_s* x);
 struct zx_ff12_Assertion_s* zx_sec_Token_POP_ff12_Assertion(struct zx_sec_Token_s* x);
 
 void zx_sec_Token_PUSH_Assertion(struct zx_sec_Token_s* x, struct zx_sa_Assertion_s* y);
+void zx_sec_Token_PUSH_EncryptedAssertion(struct zx_sec_Token_s* x, struct zx_sa_EncryptedAssertion_s* y);
 void zx_sec_Token_PUSH_sa11_Assertion(struct zx_sec_Token_s* x, struct zx_sa11_Assertion_s* y);
 void zx_sec_Token_PUSH_ff12_Assertion(struct zx_sec_Token_s* x, struct zx_ff12_Assertion_s* y);
 
@@ -77,18 +82,22 @@ void zx_sec_Token_PUT_ref(struct zx_sec_Token_s* x, struct zx_str* y);
 void zx_sec_Token_PUT_usage(struct zx_sec_Token_s* x, struct zx_str* y);
 
 void zx_sec_Token_PUT_Assertion(struct zx_sec_Token_s* x, int n, struct zx_sa_Assertion_s* y);
+void zx_sec_Token_PUT_EncryptedAssertion(struct zx_sec_Token_s* x, int n, struct zx_sa_EncryptedAssertion_s* y);
 void zx_sec_Token_PUT_sa11_Assertion(struct zx_sec_Token_s* x, int n, struct zx_sa11_Assertion_s* y);
 void zx_sec_Token_PUT_ff12_Assertion(struct zx_sec_Token_s* x, int n, struct zx_ff12_Assertion_s* y);
 
 void zx_sec_Token_ADD_Assertion(struct zx_sec_Token_s* x, int n, struct zx_sa_Assertion_s* z);
+void zx_sec_Token_ADD_EncryptedAssertion(struct zx_sec_Token_s* x, int n, struct zx_sa_EncryptedAssertion_s* z);
 void zx_sec_Token_ADD_sa11_Assertion(struct zx_sec_Token_s* x, int n, struct zx_sa11_Assertion_s* z);
 void zx_sec_Token_ADD_ff12_Assertion(struct zx_sec_Token_s* x, int n, struct zx_ff12_Assertion_s* z);
 
 void zx_sec_Token_DEL_Assertion(struct zx_sec_Token_s* x, int n);
+void zx_sec_Token_DEL_EncryptedAssertion(struct zx_sec_Token_s* x, int n);
 void zx_sec_Token_DEL_sa11_Assertion(struct zx_sec_Token_s* x, int n);
 void zx_sec_Token_DEL_ff12_Assertion(struct zx_sec_Token_s* x, int n);
 
 void zx_sec_Token_REV_Assertion(struct zx_sec_Token_s* x);
+void zx_sec_Token_REV_EncryptedAssertion(struct zx_sec_Token_s* x);
 void zx_sec_Token_REV_sa11_Assertion(struct zx_sec_Token_s* x);
 void zx_sec_Token_REV_ff12_Assertion(struct zx_sec_Token_s* x);
 
@@ -118,25 +127,25 @@ struct zx_str* zx_EASY_ENC_WO_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_To
 struct zx_sec_TokenPolicy_s {
   ZX_ELEM_EXT
   zx_sec_TokenPolicy_EXT
-  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
   struct zx_str* issueTo;	/* {0,1} attribute xs:anyURI */
   struct zx_str* type;	/* {0,1} attribute hrxml:ExtendedAssociationTypeType */
+  struct zx_str* validUntil;	/* {0,1} attribute xs:dateTime */
   struct zx_str* wantDSEPR;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sec_TokenPolicy_GET_validUntil(struct zx_sec_TokenPolicy_s* x);
 struct zx_str* zx_sec_TokenPolicy_GET_issueTo(struct zx_sec_TokenPolicy_s* x);
 struct zx_str* zx_sec_TokenPolicy_GET_type(struct zx_sec_TokenPolicy_s* x);
+struct zx_str* zx_sec_TokenPolicy_GET_validUntil(struct zx_sec_TokenPolicy_s* x);
 struct zx_str* zx_sec_TokenPolicy_GET_wantDSEPR(struct zx_sec_TokenPolicy_s* x);
 
 
 
 
 
-void zx_sec_TokenPolicy_PUT_validUntil(struct zx_sec_TokenPolicy_s* x, struct zx_str* y);
 void zx_sec_TokenPolicy_PUT_issueTo(struct zx_sec_TokenPolicy_s* x, struct zx_str* y);
 void zx_sec_TokenPolicy_PUT_type(struct zx_sec_TokenPolicy_s* x, struct zx_str* y);
+void zx_sec_TokenPolicy_PUT_validUntil(struct zx_sec_TokenPolicy_s* x, struct zx_str* y);
 void zx_sec_TokenPolicy_PUT_wantDSEPR(struct zx_sec_TokenPolicy_s* x, struct zx_str* y);
 
 
@@ -169,20 +178,20 @@ struct zx_str* zx_EASY_ENC_WO_sec_TransitedProvider(struct zx_ctx* c, struct zx_
 struct zx_sec_TransitedProvider_s {
   ZX_ELEM_EXT
   zx_sec_TransitedProvider_EXT
-  struct zx_str* timeStamp;	/* {0,1} attribute xs:dateTime */
   struct zx_str* confirmationURI;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* timeStamp;	/* {0,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sec_TransitedProvider_GET_timeStamp(struct zx_sec_TransitedProvider_s* x);
 struct zx_str* zx_sec_TransitedProvider_GET_confirmationURI(struct zx_sec_TransitedProvider_s* x);
+struct zx_str* zx_sec_TransitedProvider_GET_timeStamp(struct zx_sec_TransitedProvider_s* x);
 
 
 
 
 
-void zx_sec_TransitedProvider_PUT_timeStamp(struct zx_sec_TransitedProvider_s* x, struct zx_str* y);
 void zx_sec_TransitedProvider_PUT_confirmationURI(struct zx_sec_TransitedProvider_s* x, struct zx_str* y);
+void zx_sec_TransitedProvider_PUT_timeStamp(struct zx_sec_TransitedProvider_s* x, struct zx_str* y);
 
 
 

@@ -87,6 +87,15 @@ public class zx_ns_s {
     return (cPtr == 0) ? null : new zx_ns_s(cPtr, false);
   }
 
+  public void setInc_n(zx_ns_s value) {
+    zxidjniJNI.zx_ns_s_inc_n_set(swigCPtr, zx_ns_s.getCPtr(value));
+  }
+
+  public zx_ns_s getInc_n() {
+    long cPtr = zxidjniJNI.zx_ns_s_inc_n_get(swigCPtr);
+    return (cPtr == 0) ? null : new zx_ns_s(cPtr, false);
+  }
+
   public void setPrefix_len(int value) {
     zxidjniJNI.zx_ns_s_prefix_len_set(swigCPtr, value);
   }

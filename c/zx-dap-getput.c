@@ -712,14 +712,14 @@ void zx_dap_CreateItem_DEL_NewData(struct zx_dap_CreateItem_s* x, int n)
 struct zx_str* zx_dap_CreateItem_GET_id(struct zx_dap_CreateItem_s* x) { return x->id; }
 /* FUNC(zx_dap_CreateItem_PUT_id) */
 void zx_dap_CreateItem_PUT_id(struct zx_dap_CreateItem_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_dap_CreateItem_GET_objectType) */
-struct zx_str* zx_dap_CreateItem_GET_objectType(struct zx_dap_CreateItem_s* x) { return x->objectType; }
-/* FUNC(zx_dap_CreateItem_PUT_objectType) */
-void zx_dap_CreateItem_PUT_objectType(struct zx_dap_CreateItem_s* x, struct zx_str* y) { x->objectType = y; }
 /* FUNC(zx_dap_CreateItem_GET_itemID) */
 struct zx_str* zx_dap_CreateItem_GET_itemID(struct zx_dap_CreateItem_s* x) { return x->itemID; }
 /* FUNC(zx_dap_CreateItem_PUT_itemID) */
 void zx_dap_CreateItem_PUT_itemID(struct zx_dap_CreateItem_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_dap_CreateItem_GET_objectType) */
+struct zx_str* zx_dap_CreateItem_GET_objectType(struct zx_dap_CreateItem_s* x) { return x->objectType; }
+/* FUNC(zx_dap_CreateItem_PUT_objectType) */
+void zx_dap_CreateItem_PUT_objectType(struct zx_dap_CreateItem_s* x, struct zx_str* y) { x->objectType = y; }
 
 
 
@@ -1408,6 +1408,10 @@ void zx_dap_Data_DEL_Subscription(struct zx_dap_Data_s* x, int n)
 
 #endif
 
+/* FUNC(zx_dap_Data_GET_nextOffset) */
+struct zx_str* zx_dap_Data_GET_nextOffset(struct zx_dap_Data_s* x) { return x->nextOffset; }
+/* FUNC(zx_dap_Data_PUT_nextOffset) */
+void zx_dap_Data_PUT_nextOffset(struct zx_dap_Data_s* x, struct zx_str* y) { x->nextOffset = y; }
 /* FUNC(zx_dap_Data_GET_notSorted) */
 struct zx_str* zx_dap_Data_GET_notSorted(struct zx_dap_Data_s* x) { return x->notSorted; }
 /* FUNC(zx_dap_Data_PUT_notSorted) */
@@ -1416,22 +1420,18 @@ void zx_dap_Data_PUT_notSorted(struct zx_dap_Data_s* x, struct zx_str* y) { x->n
 struct zx_str* zx_dap_Data_GET_remaining(struct zx_dap_Data_s* x) { return x->remaining; }
 /* FUNC(zx_dap_Data_PUT_remaining) */
 void zx_dap_Data_PUT_remaining(struct zx_dap_Data_s* x, struct zx_str* y) { x->remaining = y; }
-/* FUNC(zx_dap_Data_GET_nextOffset) */
-struct zx_str* zx_dap_Data_GET_nextOffset(struct zx_dap_Data_s* x) { return x->nextOffset; }
-/* FUNC(zx_dap_Data_PUT_nextOffset) */
-void zx_dap_Data_PUT_nextOffset(struct zx_dap_Data_s* x, struct zx_str* y) { x->nextOffset = y; }
 /* FUNC(zx_dap_Data_GET_setID) */
 struct zx_str* zx_dap_Data_GET_setID(struct zx_dap_Data_s* x) { return x->setID; }
 /* FUNC(zx_dap_Data_PUT_setID) */
 void zx_dap_Data_PUT_setID(struct zx_dap_Data_s* x, struct zx_str* y) { x->setID = y; }
-/* FUNC(zx_dap_Data_GET_itemIDRef) */
-struct zx_str* zx_dap_Data_GET_itemIDRef(struct zx_dap_Data_s* x) { return x->itemIDRef; }
-/* FUNC(zx_dap_Data_PUT_itemIDRef) */
-void zx_dap_Data_PUT_itemIDRef(struct zx_dap_Data_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_dap_Data_GET_changeFormat) */
 struct zx_str* zx_dap_Data_GET_changeFormat(struct zx_dap_Data_s* x) { return x->changeFormat; }
 /* FUNC(zx_dap_Data_PUT_changeFormat) */
 void zx_dap_Data_PUT_changeFormat(struct zx_dap_Data_s* x, struct zx_str* y) { x->changeFormat = y; }
+/* FUNC(zx_dap_Data_GET_itemIDRef) */
+struct zx_str* zx_dap_Data_GET_itemIDRef(struct zx_dap_Data_s* x) { return x->itemIDRef; }
+/* FUNC(zx_dap_Data_PUT_itemIDRef) */
+void zx_dap_Data_PUT_itemIDRef(struct zx_dap_Data_s* x, struct zx_str* y) { x->itemIDRef = y; }
 
 
 
@@ -1848,14 +1848,18 @@ void zx_dap_DeleteItem_DEL_Select(struct zx_dap_DeleteItem_s* x, int n)
 
 #endif
 
-/* FUNC(zx_dap_DeleteItem_GET_notChangedSince) */
-struct zx_str* zx_dap_DeleteItem_GET_notChangedSince(struct zx_dap_DeleteItem_s* x) { return x->notChangedSince; }
-/* FUNC(zx_dap_DeleteItem_PUT_notChangedSince) */
-void zx_dap_DeleteItem_PUT_notChangedSince(struct zx_dap_DeleteItem_s* x, struct zx_str* y) { x->notChangedSince = y; }
 /* FUNC(zx_dap_DeleteItem_GET_id) */
 struct zx_str* zx_dap_DeleteItem_GET_id(struct zx_dap_DeleteItem_s* x) { return x->id; }
 /* FUNC(zx_dap_DeleteItem_PUT_id) */
 void zx_dap_DeleteItem_PUT_id(struct zx_dap_DeleteItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_dap_DeleteItem_GET_notChangedSince) */
+struct zx_str* zx_dap_DeleteItem_GET_notChangedSince(struct zx_dap_DeleteItem_s* x) { return x->notChangedSince; }
+/* FUNC(zx_dap_DeleteItem_PUT_notChangedSince) */
+void zx_dap_DeleteItem_PUT_notChangedSince(struct zx_dap_DeleteItem_s* x, struct zx_str* y) { x->notChangedSince = y; }
+/* FUNC(zx_dap_DeleteItem_GET_itemID) */
+struct zx_str* zx_dap_DeleteItem_GET_itemID(struct zx_dap_DeleteItem_s* x) { return x->itemID; }
+/* FUNC(zx_dap_DeleteItem_PUT_itemID) */
+void zx_dap_DeleteItem_PUT_itemID(struct zx_dap_DeleteItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_dap_DeleteItem_GET_objectType) */
 struct zx_str* zx_dap_DeleteItem_GET_objectType(struct zx_dap_DeleteItem_s* x) { return x->objectType; }
 /* FUNC(zx_dap_DeleteItem_PUT_objectType) */
@@ -1864,10 +1868,6 @@ void zx_dap_DeleteItem_PUT_objectType(struct zx_dap_DeleteItem_s* x, struct zx_s
 struct zx_str* zx_dap_DeleteItem_GET_predefined(struct zx_dap_DeleteItem_s* x) { return x->predefined; }
 /* FUNC(zx_dap_DeleteItem_PUT_predefined) */
 void zx_dap_DeleteItem_PUT_predefined(struct zx_dap_DeleteItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_dap_DeleteItem_GET_itemID) */
-struct zx_str* zx_dap_DeleteItem_GET_itemID(struct zx_dap_DeleteItem_s* x) { return x->itemID; }
-/* FUNC(zx_dap_DeleteItem_PUT_itemID) */
-void zx_dap_DeleteItem_PUT_itemID(struct zx_dap_DeleteItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -2422,27 +2422,23 @@ void zx_dap_ItemData_DEL_Subscription(struct zx_dap_ItemData_s* x, int n)
 struct zx_str* zx_dap_ItemData_GET_notSorted(struct zx_dap_ItemData_s* x) { return x->notSorted; }
 /* FUNC(zx_dap_ItemData_PUT_notSorted) */
 void zx_dap_ItemData_PUT_notSorted(struct zx_dap_ItemData_s* x, struct zx_str* y) { x->notSorted = y; }
-/* FUNC(zx_dap_ItemData_GET_itemIDRef) */
-struct zx_str* zx_dap_ItemData_GET_itemIDRef(struct zx_dap_ItemData_s* x) { return x->itemIDRef; }
-/* FUNC(zx_dap_ItemData_PUT_itemIDRef) */
-void zx_dap_ItemData_PUT_itemIDRef(struct zx_dap_ItemData_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_dap_ItemData_GET_changeFormat) */
 struct zx_str* zx_dap_ItemData_GET_changeFormat(struct zx_dap_ItemData_s* x) { return x->changeFormat; }
 /* FUNC(zx_dap_ItemData_PUT_changeFormat) */
 void zx_dap_ItemData_PUT_changeFormat(struct zx_dap_ItemData_s* x, struct zx_str* y) { x->changeFormat = y; }
+/* FUNC(zx_dap_ItemData_GET_itemIDRef) */
+struct zx_str* zx_dap_ItemData_GET_itemIDRef(struct zx_dap_ItemData_s* x) { return x->itemIDRef; }
+/* FUNC(zx_dap_ItemData_PUT_itemIDRef) */
+void zx_dap_ItemData_PUT_itemIDRef(struct zx_dap_ItemData_s* x, struct zx_str* y) { x->itemIDRef = y; }
 
 
 
 
 
-/* FUNC(zx_dap_LDIF_GET_id) */
-struct zx_str* zx_dap_LDIF_GET_id(struct zx_dap_LDIF_s* x) { return x->id; }
-/* FUNC(zx_dap_LDIF_PUT_id) */
-void zx_dap_LDIF_PUT_id(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_dap_LDIF_GET_modificationTime) */
-struct zx_str* zx_dap_LDIF_GET_modificationTime(struct zx_dap_LDIF_s* x) { return x->modificationTime; }
-/* FUNC(zx_dap_LDIF_PUT_modificationTime) */
-void zx_dap_LDIF_PUT_modificationTime(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->modificationTime = y; }
+/* FUNC(zx_dap_LDIF_GET_lang) */
+struct zx_str* zx_dap_LDIF_GET_lang(struct zx_dap_LDIF_s* x) { return x->lang; }
+/* FUNC(zx_dap_LDIF_PUT_lang) */
+void zx_dap_LDIF_PUT_lang(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->lang = y; }
 /* FUNC(zx_dap_LDIF_GET_ACC) */
 struct zx_str* zx_dap_LDIF_GET_ACC(struct zx_dap_LDIF_s* x) { return x->ACC; }
 /* FUNC(zx_dap_LDIF_PUT_ACC) */
@@ -2451,6 +2447,14 @@ void zx_dap_LDIF_PUT_ACC(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->ACC = y
 struct zx_str* zx_dap_LDIF_GET_ACCTime(struct zx_dap_LDIF_s* x) { return x->ACCTime; }
 /* FUNC(zx_dap_LDIF_PUT_ACCTime) */
 void zx_dap_LDIF_PUT_ACCTime(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->ACCTime = y; }
+/* FUNC(zx_dap_LDIF_GET_id) */
+struct zx_str* zx_dap_LDIF_GET_id(struct zx_dap_LDIF_s* x) { return x->id; }
+/* FUNC(zx_dap_LDIF_PUT_id) */
+void zx_dap_LDIF_PUT_id(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_dap_LDIF_GET_modificationTime) */
+struct zx_str* zx_dap_LDIF_GET_modificationTime(struct zx_dap_LDIF_s* x) { return x->modificationTime; }
+/* FUNC(zx_dap_LDIF_PUT_modificationTime) */
+void zx_dap_LDIF_PUT_modificationTime(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->modificationTime = y; }
 /* FUNC(zx_dap_LDIF_GET_modifier) */
 struct zx_str* zx_dap_LDIF_GET_modifier(struct zx_dap_LDIF_s* x) { return x->modifier; }
 /* FUNC(zx_dap_LDIF_PUT_modifier) */
@@ -2459,10 +2463,6 @@ void zx_dap_LDIF_PUT_modifier(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->mo
 struct zx_str* zx_dap_LDIF_GET_script(struct zx_dap_LDIF_s* x) { return x->script; }
 /* FUNC(zx_dap_LDIF_PUT_script) */
 void zx_dap_LDIF_PUT_script(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->script = y; }
-/* FUNC(zx_dap_LDIF_GET_lang) */
-struct zx_str* zx_dap_LDIF_GET_lang(struct zx_dap_LDIF_s* x) { return x->lang; }
-/* FUNC(zx_dap_LDIF_PUT_lang) */
-void zx_dap_LDIF_PUT_lang(struct zx_dap_LDIF_s* x, struct zx_str* y) { x->lang = y; }
 
 
 
@@ -3281,6 +3281,10 @@ void zx_dap_ModifyItem_DEL_NewData(struct zx_dap_ModifyItem_s* x, int n)
 
 #endif
 
+/* FUNC(zx_dap_ModifyItem_GET_id) */
+struct zx_str* zx_dap_ModifyItem_GET_id(struct zx_dap_ModifyItem_s* x) { return x->id; }
+/* FUNC(zx_dap_ModifyItem_PUT_id) */
+void zx_dap_ModifyItem_PUT_id(struct zx_dap_ModifyItem_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_dap_ModifyItem_GET_notChangedSince) */
 struct zx_str* zx_dap_ModifyItem_GET_notChangedSince(struct zx_dap_ModifyItem_s* x) { return x->notChangedSince; }
 /* FUNC(zx_dap_ModifyItem_PUT_notChangedSince) */
@@ -3289,10 +3293,10 @@ void zx_dap_ModifyItem_PUT_notChangedSince(struct zx_dap_ModifyItem_s* x, struct
 struct zx_str* zx_dap_ModifyItem_GET_overrideAllowed(struct zx_dap_ModifyItem_s* x) { return x->overrideAllowed; }
 /* FUNC(zx_dap_ModifyItem_PUT_overrideAllowed) */
 void zx_dap_ModifyItem_PUT_overrideAllowed(struct zx_dap_ModifyItem_s* x, struct zx_str* y) { x->overrideAllowed = y; }
-/* FUNC(zx_dap_ModifyItem_GET_id) */
-struct zx_str* zx_dap_ModifyItem_GET_id(struct zx_dap_ModifyItem_s* x) { return x->id; }
-/* FUNC(zx_dap_ModifyItem_PUT_id) */
-void zx_dap_ModifyItem_PUT_id(struct zx_dap_ModifyItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_dap_ModifyItem_GET_itemID) */
+struct zx_str* zx_dap_ModifyItem_GET_itemID(struct zx_dap_ModifyItem_s* x) { return x->itemID; }
+/* FUNC(zx_dap_ModifyItem_PUT_itemID) */
+void zx_dap_ModifyItem_PUT_itemID(struct zx_dap_ModifyItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_dap_ModifyItem_GET_objectType) */
 struct zx_str* zx_dap_ModifyItem_GET_objectType(struct zx_dap_ModifyItem_s* x) { return x->objectType; }
 /* FUNC(zx_dap_ModifyItem_PUT_objectType) */
@@ -3301,10 +3305,6 @@ void zx_dap_ModifyItem_PUT_objectType(struct zx_dap_ModifyItem_s* x, struct zx_s
 struct zx_str* zx_dap_ModifyItem_GET_predefined(struct zx_dap_ModifyItem_s* x) { return x->predefined; }
 /* FUNC(zx_dap_ModifyItem_PUT_predefined) */
 void zx_dap_ModifyItem_PUT_predefined(struct zx_dap_ModifyItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_dap_ModifyItem_GET_itemID) */
-struct zx_str* zx_dap_ModifyItem_GET_itemID(struct zx_dap_ModifyItem_s* x) { return x->itemID; }
-/* FUNC(zx_dap_ModifyItem_PUT_itemID) */
-void zx_dap_ModifyItem_PUT_itemID(struct zx_dap_ModifyItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -4266,6 +4266,14 @@ void zx_dap_Notification_DEL_ItemData(struct zx_dap_Notification_s* x, int n)
 
 #endif
 
+/* FUNC(zx_dap_Notification_GET_endReason) */
+struct zx_str* zx_dap_Notification_GET_endReason(struct zx_dap_Notification_s* x) { return x->endReason; }
+/* FUNC(zx_dap_Notification_PUT_endReason) */
+void zx_dap_Notification_PUT_endReason(struct zx_dap_Notification_s* x, struct zx_str* y) { x->endReason = y; }
+/* FUNC(zx_dap_Notification_GET_expires) */
+struct zx_str* zx_dap_Notification_GET_expires(struct zx_dap_Notification_s* x) { return x->expires; }
+/* FUNC(zx_dap_Notification_PUT_expires) */
+void zx_dap_Notification_PUT_expires(struct zx_dap_Notification_s* x, struct zx_str* y) { x->expires = y; }
 /* FUNC(zx_dap_Notification_GET_id) */
 struct zx_str* zx_dap_Notification_GET_id(struct zx_dap_Notification_s* x) { return x->id; }
 /* FUNC(zx_dap_Notification_PUT_id) */
@@ -4274,14 +4282,6 @@ void zx_dap_Notification_PUT_id(struct zx_dap_Notification_s* x, struct zx_str* 
 struct zx_str* zx_dap_Notification_GET_subscriptionID(struct zx_dap_Notification_s* x) { return x->subscriptionID; }
 /* FUNC(zx_dap_Notification_PUT_subscriptionID) */
 void zx_dap_Notification_PUT_subscriptionID(struct zx_dap_Notification_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_dap_Notification_GET_expires) */
-struct zx_str* zx_dap_Notification_GET_expires(struct zx_dap_Notification_s* x) { return x->expires; }
-/* FUNC(zx_dap_Notification_PUT_expires) */
-void zx_dap_Notification_PUT_expires(struct zx_dap_Notification_s* x, struct zx_str* y) { x->expires = y; }
-/* FUNC(zx_dap_Notification_GET_endReason) */
-struct zx_str* zx_dap_Notification_GET_endReason(struct zx_dap_Notification_s* x) { return x->endReason; }
-/* FUNC(zx_dap_Notification_PUT_endReason) */
-void zx_dap_Notification_PUT_endReason(struct zx_dap_Notification_s* x, struct zx_str* y) { x->endReason = y; }
 
 
 
@@ -5792,22 +5792,22 @@ void zx_dap_QueryItem_DEL_Sort(struct zx_dap_QueryItem_s* x, int n)
 
 #endif
 
-/* FUNC(zx_dap_QueryItem_GET_contingency) */
-struct zx_str* zx_dap_QueryItem_GET_contingency(struct zx_dap_QueryItem_s* x) { return x->contingency; }
-/* FUNC(zx_dap_QueryItem_PUT_contingency) */
-void zx_dap_QueryItem_PUT_contingency(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->contingency = y; }
-/* FUNC(zx_dap_QueryItem_GET_includeCommonAttributes) */
-struct zx_str* zx_dap_QueryItem_GET_includeCommonAttributes(struct zx_dap_QueryItem_s* x) { return x->includeCommonAttributes; }
-/* FUNC(zx_dap_QueryItem_PUT_includeCommonAttributes) */
-void zx_dap_QueryItem_PUT_includeCommonAttributes(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->includeCommonAttributes = y; }
 /* FUNC(zx_dap_QueryItem_GET_changedSince) */
 struct zx_str* zx_dap_QueryItem_GET_changedSince(struct zx_dap_QueryItem_s* x) { return x->changedSince; }
 /* FUNC(zx_dap_QueryItem_PUT_changedSince) */
 void zx_dap_QueryItem_PUT_changedSince(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->changedSince = y; }
+/* FUNC(zx_dap_QueryItem_GET_contingency) */
+struct zx_str* zx_dap_QueryItem_GET_contingency(struct zx_dap_QueryItem_s* x) { return x->contingency; }
+/* FUNC(zx_dap_QueryItem_PUT_contingency) */
+void zx_dap_QueryItem_PUT_contingency(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->contingency = y; }
 /* FUNC(zx_dap_QueryItem_GET_count) */
 struct zx_str* zx_dap_QueryItem_GET_count(struct zx_dap_QueryItem_s* x) { return x->count; }
 /* FUNC(zx_dap_QueryItem_PUT_count) */
 void zx_dap_QueryItem_PUT_count(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->count = y; }
+/* FUNC(zx_dap_QueryItem_GET_includeCommonAttributes) */
+struct zx_str* zx_dap_QueryItem_GET_includeCommonAttributes(struct zx_dap_QueryItem_s* x) { return x->includeCommonAttributes; }
+/* FUNC(zx_dap_QueryItem_PUT_includeCommonAttributes) */
+void zx_dap_QueryItem_PUT_includeCommonAttributes(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->includeCommonAttributes = y; }
 /* FUNC(zx_dap_QueryItem_GET_offset) */
 struct zx_str* zx_dap_QueryItem_GET_offset(struct zx_dap_QueryItem_s* x) { return x->offset; }
 /* FUNC(zx_dap_QueryItem_PUT_offset) */
@@ -5820,6 +5820,14 @@ void zx_dap_QueryItem_PUT_setID(struct zx_dap_QueryItem_s* x, struct zx_str* y) 
 struct zx_str* zx_dap_QueryItem_GET_setReq(struct zx_dap_QueryItem_s* x) { return x->setReq; }
 /* FUNC(zx_dap_QueryItem_PUT_setReq) */
 void zx_dap_QueryItem_PUT_setReq(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->setReq = y; }
+/* FUNC(zx_dap_QueryItem_GET_itemID) */
+struct zx_str* zx_dap_QueryItem_GET_itemID(struct zx_dap_QueryItem_s* x) { return x->itemID; }
+/* FUNC(zx_dap_QueryItem_PUT_itemID) */
+void zx_dap_QueryItem_PUT_itemID(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_dap_QueryItem_GET_itemIDRef) */
+struct zx_str* zx_dap_QueryItem_GET_itemIDRef(struct zx_dap_QueryItem_s* x) { return x->itemIDRef; }
+/* FUNC(zx_dap_QueryItem_PUT_itemIDRef) */
+void zx_dap_QueryItem_PUT_itemIDRef(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_dap_QueryItem_GET_objectType) */
 struct zx_str* zx_dap_QueryItem_GET_objectType(struct zx_dap_QueryItem_s* x) { return x->objectType; }
 /* FUNC(zx_dap_QueryItem_PUT_objectType) */
@@ -5828,14 +5836,6 @@ void zx_dap_QueryItem_PUT_objectType(struct zx_dap_QueryItem_s* x, struct zx_str
 struct zx_str* zx_dap_QueryItem_GET_predefined(struct zx_dap_QueryItem_s* x) { return x->predefined; }
 /* FUNC(zx_dap_QueryItem_PUT_predefined) */
 void zx_dap_QueryItem_PUT_predefined(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_dap_QueryItem_GET_itemIDRef) */
-struct zx_str* zx_dap_QueryItem_GET_itemIDRef(struct zx_dap_QueryItem_s* x) { return x->itemIDRef; }
-/* FUNC(zx_dap_QueryItem_PUT_itemIDRef) */
-void zx_dap_QueryItem_PUT_itemIDRef(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->itemIDRef = y; }
-/* FUNC(zx_dap_QueryItem_GET_itemID) */
-struct zx_str* zx_dap_QueryItem_GET_itemID(struct zx_dap_QueryItem_s* x) { return x->itemID; }
-/* FUNC(zx_dap_QueryItem_PUT_itemID) */
-void zx_dap_QueryItem_PUT_itemID(struct zx_dap_QueryItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -6792,6 +6792,10 @@ void zx_dap_ResultQuery_DEL_Sort(struct zx_dap_ResultQuery_s* x, int n)
 
 #endif
 
+/* FUNC(zx_dap_ResultQuery_GET_changedSince) */
+struct zx_str* zx_dap_ResultQuery_GET_changedSince(struct zx_dap_ResultQuery_s* x) { return x->changedSince; }
+/* FUNC(zx_dap_ResultQuery_PUT_changedSince) */
+void zx_dap_ResultQuery_PUT_changedSince(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->changedSince = y; }
 /* FUNC(zx_dap_ResultQuery_GET_contingency) */
 struct zx_str* zx_dap_ResultQuery_GET_contingency(struct zx_dap_ResultQuery_s* x) { return x->contingency; }
 /* FUNC(zx_dap_ResultQuery_PUT_contingency) */
@@ -6800,10 +6804,14 @@ void zx_dap_ResultQuery_PUT_contingency(struct zx_dap_ResultQuery_s* x, struct z
 struct zx_str* zx_dap_ResultQuery_GET_includeCommonAttributes(struct zx_dap_ResultQuery_s* x) { return x->includeCommonAttributes; }
 /* FUNC(zx_dap_ResultQuery_PUT_includeCommonAttributes) */
 void zx_dap_ResultQuery_PUT_includeCommonAttributes(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->includeCommonAttributes = y; }
-/* FUNC(zx_dap_ResultQuery_GET_changedSince) */
-struct zx_str* zx_dap_ResultQuery_GET_changedSince(struct zx_dap_ResultQuery_s* x) { return x->changedSince; }
-/* FUNC(zx_dap_ResultQuery_PUT_changedSince) */
-void zx_dap_ResultQuery_PUT_changedSince(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->changedSince = y; }
+/* FUNC(zx_dap_ResultQuery_GET_itemID) */
+struct zx_str* zx_dap_ResultQuery_GET_itemID(struct zx_dap_ResultQuery_s* x) { return x->itemID; }
+/* FUNC(zx_dap_ResultQuery_PUT_itemID) */
+void zx_dap_ResultQuery_PUT_itemID(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_dap_ResultQuery_GET_itemIDRef) */
+struct zx_str* zx_dap_ResultQuery_GET_itemIDRef(struct zx_dap_ResultQuery_s* x) { return x->itemIDRef; }
+/* FUNC(zx_dap_ResultQuery_PUT_itemIDRef) */
+void zx_dap_ResultQuery_PUT_itemIDRef(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->itemIDRef = y; }
 /* FUNC(zx_dap_ResultQuery_GET_objectType) */
 struct zx_str* zx_dap_ResultQuery_GET_objectType(struct zx_dap_ResultQuery_s* x) { return x->objectType; }
 /* FUNC(zx_dap_ResultQuery_PUT_objectType) */
@@ -6812,14 +6820,6 @@ void zx_dap_ResultQuery_PUT_objectType(struct zx_dap_ResultQuery_s* x, struct zx
 struct zx_str* zx_dap_ResultQuery_GET_predefined(struct zx_dap_ResultQuery_s* x) { return x->predefined; }
 /* FUNC(zx_dap_ResultQuery_PUT_predefined) */
 void zx_dap_ResultQuery_PUT_predefined(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_dap_ResultQuery_GET_itemIDRef) */
-struct zx_str* zx_dap_ResultQuery_GET_itemIDRef(struct zx_dap_ResultQuery_s* x) { return x->itemIDRef; }
-/* FUNC(zx_dap_ResultQuery_PUT_itemIDRef) */
-void zx_dap_ResultQuery_PUT_itemIDRef(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->itemIDRef = y; }
-/* FUNC(zx_dap_ResultQuery_GET_itemID) */
-struct zx_str* zx_dap_ResultQuery_GET_itemID(struct zx_dap_ResultQuery_s* x) { return x->itemID; }
-/* FUNC(zx_dap_ResultQuery_PUT_itemID) */
-void zx_dap_ResultQuery_PUT_itemID(struct zx_dap_ResultQuery_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -7093,6 +7093,14 @@ void zx_dap_Select_DEL_filter(struct zx_dap_Select_s* x, int n)
 
 #endif
 
+/* FUNC(zx_dap_Select_GET_attributes) */
+struct zx_str* zx_dap_Select_GET_attributes(struct zx_dap_Select_s* x) { return x->attributes; }
+/* FUNC(zx_dap_Select_PUT_attributes) */
+void zx_dap_Select_PUT_attributes(struct zx_dap_Select_s* x, struct zx_str* y) { x->attributes = y; }
+/* FUNC(zx_dap_Select_GET_derefaliases) */
+struct zx_str* zx_dap_Select_GET_derefaliases(struct zx_dap_Select_s* x) { return x->derefaliases; }
+/* FUNC(zx_dap_Select_PUT_derefaliases) */
+void zx_dap_Select_PUT_derefaliases(struct zx_dap_Select_s* x, struct zx_str* y) { x->derefaliases = y; }
 /* FUNC(zx_dap_Select_GET_scope) */
 struct zx_str* zx_dap_Select_GET_scope(struct zx_dap_Select_s* x) { return x->scope; }
 /* FUNC(zx_dap_Select_PUT_scope) */
@@ -7105,18 +7113,10 @@ void zx_dap_Select_PUT_sizelimit(struct zx_dap_Select_s* x, struct zx_str* y) { 
 struct zx_str* zx_dap_Select_GET_timelimit(struct zx_dap_Select_s* x) { return x->timelimit; }
 /* FUNC(zx_dap_Select_PUT_timelimit) */
 void zx_dap_Select_PUT_timelimit(struct zx_dap_Select_s* x, struct zx_str* y) { x->timelimit = y; }
-/* FUNC(zx_dap_Select_GET_attributes) */
-struct zx_str* zx_dap_Select_GET_attributes(struct zx_dap_Select_s* x) { return x->attributes; }
-/* FUNC(zx_dap_Select_PUT_attributes) */
-void zx_dap_Select_PUT_attributes(struct zx_dap_Select_s* x, struct zx_str* y) { x->attributes = y; }
 /* FUNC(zx_dap_Select_GET_typesonly) */
 struct zx_str* zx_dap_Select_GET_typesonly(struct zx_dap_Select_s* x) { return x->typesonly; }
 /* FUNC(zx_dap_Select_PUT_typesonly) */
 void zx_dap_Select_PUT_typesonly(struct zx_dap_Select_s* x, struct zx_str* y) { x->typesonly = y; }
-/* FUNC(zx_dap_Select_GET_derefaliases) */
-struct zx_str* zx_dap_Select_GET_derefaliases(struct zx_dap_Select_s* x) { return x->derefaliases; }
-/* FUNC(zx_dap_Select_PUT_derefaliases) */
-void zx_dap_Select_PUT_derefaliases(struct zx_dap_Select_s* x, struct zx_str* y) { x->derefaliases = y; }
 
 
 
@@ -7792,22 +7792,10 @@ void zx_dap_Subscription_DEL_Trigger(struct zx_dap_Subscription_s* x, int n)
 
 #endif
 
-/* FUNC(zx_dap_Subscription_GET_subscriptionID) */
-struct zx_str* zx_dap_Subscription_GET_subscriptionID(struct zx_dap_Subscription_s* x) { return x->subscriptionID; }
-/* FUNC(zx_dap_Subscription_PUT_subscriptionID) */
-void zx_dap_Subscription_PUT_subscriptionID(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_dap_Subscription_GET_notifyToRef) */
-struct zx_str* zx_dap_Subscription_GET_notifyToRef(struct zx_dap_Subscription_s* x) { return x->notifyToRef; }
-/* FUNC(zx_dap_Subscription_PUT_notifyToRef) */
-void zx_dap_Subscription_PUT_notifyToRef(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->notifyToRef = y; }
 /* FUNC(zx_dap_Subscription_GET_adminNotifyToRef) */
 struct zx_str* zx_dap_Subscription_GET_adminNotifyToRef(struct zx_dap_Subscription_s* x) { return x->adminNotifyToRef; }
 /* FUNC(zx_dap_Subscription_PUT_adminNotifyToRef) */
 void zx_dap_Subscription_PUT_adminNotifyToRef(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->adminNotifyToRef = y; }
-/* FUNC(zx_dap_Subscription_GET_starts) */
-struct zx_str* zx_dap_Subscription_GET_starts(struct zx_dap_Subscription_s* x) { return x->starts; }
-/* FUNC(zx_dap_Subscription_PUT_starts) */
-void zx_dap_Subscription_PUT_starts(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->starts = y; }
 /* FUNC(zx_dap_Subscription_GET_expires) */
 struct zx_str* zx_dap_Subscription_GET_expires(struct zx_dap_Subscription_s* x) { return x->expires; }
 /* FUNC(zx_dap_Subscription_PUT_expires) */
@@ -7820,6 +7808,18 @@ void zx_dap_Subscription_PUT_id(struct zx_dap_Subscription_s* x, struct zx_str* 
 struct zx_str* zx_dap_Subscription_GET_includeData(struct zx_dap_Subscription_s* x) { return x->includeData; }
 /* FUNC(zx_dap_Subscription_PUT_includeData) */
 void zx_dap_Subscription_PUT_includeData(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->includeData = y; }
+/* FUNC(zx_dap_Subscription_GET_notifyToRef) */
+struct zx_str* zx_dap_Subscription_GET_notifyToRef(struct zx_dap_Subscription_s* x) { return x->notifyToRef; }
+/* FUNC(zx_dap_Subscription_PUT_notifyToRef) */
+void zx_dap_Subscription_PUT_notifyToRef(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->notifyToRef = y; }
+/* FUNC(zx_dap_Subscription_GET_starts) */
+struct zx_str* zx_dap_Subscription_GET_starts(struct zx_dap_Subscription_s* x) { return x->starts; }
+/* FUNC(zx_dap_Subscription_PUT_starts) */
+void zx_dap_Subscription_PUT_starts(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->starts = y; }
+/* FUNC(zx_dap_Subscription_GET_subscriptionID) */
+struct zx_str* zx_dap_Subscription_GET_subscriptionID(struct zx_dap_Subscription_s* x) { return x->subscriptionID; }
+/* FUNC(zx_dap_Subscription_PUT_subscriptionID) */
+void zx_dap_Subscription_PUT_subscriptionID(struct zx_dap_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
 
 
 
@@ -7963,6 +7963,10 @@ void zx_dap_TestItem_DEL_TestOp(struct zx_dap_TestItem_s* x, int n)
 struct zx_str* zx_dap_TestItem_GET_id(struct zx_dap_TestItem_s* x) { return x->id; }
 /* FUNC(zx_dap_TestItem_PUT_id) */
 void zx_dap_TestItem_PUT_id(struct zx_dap_TestItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_dap_TestItem_GET_itemID) */
+struct zx_str* zx_dap_TestItem_GET_itemID(struct zx_dap_TestItem_s* x) { return x->itemID; }
+/* FUNC(zx_dap_TestItem_PUT_itemID) */
+void zx_dap_TestItem_PUT_itemID(struct zx_dap_TestItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_dap_TestItem_GET_objectType) */
 struct zx_str* zx_dap_TestItem_GET_objectType(struct zx_dap_TestItem_s* x) { return x->objectType; }
 /* FUNC(zx_dap_TestItem_PUT_objectType) */
@@ -7971,10 +7975,6 @@ void zx_dap_TestItem_PUT_objectType(struct zx_dap_TestItem_s* x, struct zx_str* 
 struct zx_str* zx_dap_TestItem_GET_predefined(struct zx_dap_TestItem_s* x) { return x->predefined; }
 /* FUNC(zx_dap_TestItem_PUT_predefined) */
 void zx_dap_TestItem_PUT_predefined(struct zx_dap_TestItem_s* x, struct zx_str* y) { x->predefined = y; }
-/* FUNC(zx_dap_TestItem_GET_itemID) */
-struct zx_str* zx_dap_TestItem_GET_itemID(struct zx_dap_TestItem_s* x) { return x->itemID; }
-/* FUNC(zx_dap_TestItem_PUT_itemID) */
-void zx_dap_TestItem_PUT_itemID(struct zx_dap_TestItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -8248,6 +8248,14 @@ void zx_dap_TestOp_DEL_filter(struct zx_dap_TestOp_s* x, int n)
 
 #endif
 
+/* FUNC(zx_dap_TestOp_GET_attributes) */
+struct zx_str* zx_dap_TestOp_GET_attributes(struct zx_dap_TestOp_s* x) { return x->attributes; }
+/* FUNC(zx_dap_TestOp_PUT_attributes) */
+void zx_dap_TestOp_PUT_attributes(struct zx_dap_TestOp_s* x, struct zx_str* y) { x->attributes = y; }
+/* FUNC(zx_dap_TestOp_GET_derefaliases) */
+struct zx_str* zx_dap_TestOp_GET_derefaliases(struct zx_dap_TestOp_s* x) { return x->derefaliases; }
+/* FUNC(zx_dap_TestOp_PUT_derefaliases) */
+void zx_dap_TestOp_PUT_derefaliases(struct zx_dap_TestOp_s* x, struct zx_str* y) { x->derefaliases = y; }
 /* FUNC(zx_dap_TestOp_GET_scope) */
 struct zx_str* zx_dap_TestOp_GET_scope(struct zx_dap_TestOp_s* x) { return x->scope; }
 /* FUNC(zx_dap_TestOp_PUT_scope) */
@@ -8260,18 +8268,10 @@ void zx_dap_TestOp_PUT_sizelimit(struct zx_dap_TestOp_s* x, struct zx_str* y) { 
 struct zx_str* zx_dap_TestOp_GET_timelimit(struct zx_dap_TestOp_s* x) { return x->timelimit; }
 /* FUNC(zx_dap_TestOp_PUT_timelimit) */
 void zx_dap_TestOp_PUT_timelimit(struct zx_dap_TestOp_s* x, struct zx_str* y) { x->timelimit = y; }
-/* FUNC(zx_dap_TestOp_GET_attributes) */
-struct zx_str* zx_dap_TestOp_GET_attributes(struct zx_dap_TestOp_s* x) { return x->attributes; }
-/* FUNC(zx_dap_TestOp_PUT_attributes) */
-void zx_dap_TestOp_PUT_attributes(struct zx_dap_TestOp_s* x, struct zx_str* y) { x->attributes = y; }
 /* FUNC(zx_dap_TestOp_GET_typesonly) */
 struct zx_str* zx_dap_TestOp_GET_typesonly(struct zx_dap_TestOp_s* x) { return x->typesonly; }
 /* FUNC(zx_dap_TestOp_PUT_typesonly) */
 void zx_dap_TestOp_PUT_typesonly(struct zx_dap_TestOp_s* x, struct zx_str* y) { x->typesonly = y; }
-/* FUNC(zx_dap_TestOp_GET_derefaliases) */
-struct zx_str* zx_dap_TestOp_GET_derefaliases(struct zx_dap_TestOp_s* x) { return x->derefaliases; }
-/* FUNC(zx_dap_TestOp_PUT_derefaliases) */
-void zx_dap_TestOp_PUT_derefaliases(struct zx_dap_TestOp_s* x, struct zx_str* y) { x->derefaliases = y; }
 
 
 

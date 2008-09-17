@@ -588,6 +588,10 @@ void zx_idp_CreatedStatus_DEL_CreatedStatusItem(struct zx_idp_CreatedStatus_s* x
 
 
 
+/* FUNC(zx_idp_CreatedStatusItem_GET_firstUsed) */
+struct zx_str* zx_idp_CreatedStatusItem_GET_firstUsed(struct zx_idp_CreatedStatusItem_s* x) { return x->firstUsed; }
+/* FUNC(zx_idp_CreatedStatusItem_PUT_firstUsed) */
+void zx_idp_CreatedStatusItem_PUT_firstUsed(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y) { x->firstUsed = y; }
 /* FUNC(zx_idp_CreatedStatusItem_GET_ref) */
 struct zx_str* zx_idp_CreatedStatusItem_GET_ref(struct zx_idp_CreatedStatusItem_s* x) { return x->ref; }
 /* FUNC(zx_idp_CreatedStatusItem_PUT_ref) */
@@ -596,10 +600,6 @@ void zx_idp_CreatedStatusItem_PUT_ref(struct zx_idp_CreatedStatusItem_s* x, stru
 struct zx_str* zx_idp_CreatedStatusItem_GET_used(struct zx_idp_CreatedStatusItem_s* x) { return x->used; }
 /* FUNC(zx_idp_CreatedStatusItem_PUT_used) */
 void zx_idp_CreatedStatusItem_PUT_used(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y) { x->used = y; }
-/* FUNC(zx_idp_CreatedStatusItem_GET_firstUsed) */
-struct zx_str* zx_idp_CreatedStatusItem_GET_firstUsed(struct zx_idp_CreatedStatusItem_s* x) { return x->firstUsed; }
-/* FUNC(zx_idp_CreatedStatusItem_PUT_firstUsed) */
-void zx_idp_CreatedStatusItem_PUT_firstUsed(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y) { x->firstUsed = y; }
 
 
 
@@ -1294,14 +1294,14 @@ void zx_idp_GetAssertionResponseItem_DEL_AssertionItem(struct zx_idp_GetAssertio
 
 #endif
 
-/* FUNC(zx_idp_GetAssertionResponseItem_GET_ref) */
-struct zx_str* zx_idp_GetAssertionResponseItem_GET_ref(struct zx_idp_GetAssertionResponseItem_s* x) { return x->ref; }
-/* FUNC(zx_idp_GetAssertionResponseItem_PUT_ref) */
-void zx_idp_GetAssertionResponseItem_PUT_ref(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_str* y) { x->ref = y; }
 /* FUNC(zx_idp_GetAssertionResponseItem_GET_id) */
 struct zx_str* zx_idp_GetAssertionResponseItem_GET_id(struct zx_idp_GetAssertionResponseItem_s* x) { return x->id; }
 /* FUNC(zx_idp_GetAssertionResponseItem_PUT_id) */
 void zx_idp_GetAssertionResponseItem_PUT_id(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_idp_GetAssertionResponseItem_GET_ref) */
+struct zx_str* zx_idp_GetAssertionResponseItem_GET_ref(struct zx_idp_GetAssertionResponseItem_s* x) { return x->ref; }
+/* FUNC(zx_idp_GetAssertionResponseItem_PUT_ref) */
+void zx_idp_GetAssertionResponseItem_PUT_ref(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_str* y) { x->ref = y; }
 
 
 
@@ -1996,14 +1996,14 @@ void zx_idp_MEDInfo_DEL_AttributeStatement(struct zx_idp_MEDInfo_s* x, int n)
 
 
 
-/* FUNC(zx_idp_ProviderInfo_GET_providerID) */
-struct zx_str* zx_idp_ProviderInfo_GET_providerID(struct zx_idp_ProviderInfo_s* x) { return x->providerID; }
-/* FUNC(zx_idp_ProviderInfo_PUT_providerID) */
-void zx_idp_ProviderInfo_PUT_providerID(struct zx_idp_ProviderInfo_s* x, struct zx_str* y) { x->providerID = y; }
 /* FUNC(zx_idp_ProviderInfo_GET_name) */
 struct zx_str* zx_idp_ProviderInfo_GET_name(struct zx_idp_ProviderInfo_s* x) { return x->name; }
 /* FUNC(zx_idp_ProviderInfo_PUT_name) */
 void zx_idp_ProviderInfo_PUT_name(struct zx_idp_ProviderInfo_s* x, struct zx_str* y) { x->name = y; }
+/* FUNC(zx_idp_ProviderInfo_GET_providerID) */
+struct zx_str* zx_idp_ProviderInfo_GET_providerID(struct zx_idp_ProviderInfo_s* x) { return x->providerID; }
+/* FUNC(zx_idp_ProviderInfo_PUT_providerID) */
+void zx_idp_ProviderInfo_PUT_providerID(struct zx_idp_ProviderInfo_s* x, struct zx_str* y) { x->providerID = y; }
 
 
 

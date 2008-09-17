@@ -182,8 +182,8 @@ void zx_FREE_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x, int free_strs
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->code, free_strs);
-  zx_free_attr(c, x->ref, free_strs);
   zx_free_attr(c, x->comment, free_strs);
+  zx_free_attr(c, x->ref, free_strs);
 
   {
       struct zx_lu_Status_s* e;
@@ -228,8 +228,8 @@ void zx_DUP_STRS_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->code);
-  zx_dup_attr(c, x->ref);
   zx_dup_attr(c, x->comment);
+  zx_dup_attr(c, x->ref);
 
   {
       struct zx_lu_Status_s* e;
@@ -251,8 +251,8 @@ struct zx_lu_Status_s* zx_DEEP_CLONE_lu_Status(struct zx_ctx* c, struct zx_lu_St
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->code = zx_clone_attr(c, x->code);
-  x->ref = zx_clone_attr(c, x->ref);
   x->comment = zx_clone_attr(c, x->comment);
+  x->ref = zx_clone_attr(c, x->ref);
 
   {
       struct zx_lu_Status_s* e;

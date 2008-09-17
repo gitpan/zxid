@@ -2326,8 +2326,8 @@ void zx_FREE_is12_Select(struct zx_ctx* c, struct zx_is12_Select_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->name, free_strs);
   zx_free_attr(c, x->multiple, free_strs);
+  zx_free_attr(c, x->name, free_strs);
 
   {
       struct zx_is12_Help_s* e;
@@ -2382,8 +2382,8 @@ void zx_DUP_STRS_is12_Select(struct zx_ctx* c, struct zx_is12_Select_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->name);
   zx_dup_attr(c, x->multiple);
+  zx_dup_attr(c, x->name);
 
   {
       struct zx_is12_Help_s* e;
@@ -2412,8 +2412,8 @@ struct zx_is12_Select_s* zx_DEEP_CLONE_is12_Select(struct zx_ctx* c, struct zx_i
   x = (struct zx_is12_Select_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_is12_Select_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->name = zx_clone_attr(c, x->name);
   x->multiple = zx_clone_attr(c, x->multiple);
+  x->name = zx_clone_attr(c, x->name);
 
   {
       struct zx_is12_Help_s* e;
@@ -2540,8 +2540,8 @@ void zx_FREE_is12_Status(struct zx_ctx* c, struct zx_is12_Status_s* x, int free_
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->code, free_strs);
-  zx_free_attr(c, x->ref, free_strs);
   zx_free_attr(c, x->comment, free_strs);
+  zx_free_attr(c, x->ref, free_strs);
 
   {
       struct zx_is12_Status_s* e;
@@ -2586,8 +2586,8 @@ void zx_DUP_STRS_is12_Status(struct zx_ctx* c, struct zx_is12_Status_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->code);
-  zx_dup_attr(c, x->ref);
   zx_dup_attr(c, x->comment);
+  zx_dup_attr(c, x->ref);
 
   {
       struct zx_is12_Status_s* e;
@@ -2609,8 +2609,8 @@ struct zx_is12_Status_s* zx_DEEP_CLONE_is12_Status(struct zx_ctx* c, struct zx_i
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->code = zx_clone_attr(c, x->code);
-  x->ref = zx_clone_attr(c, x->ref);
   x->comment = zx_clone_attr(c, x->comment);
+  x->ref = zx_clone_attr(c, x->ref);
 
   {
       struct zx_is12_Status_s* e;
@@ -2703,10 +2703,10 @@ void zx_FREE_is12_Text(struct zx_ctx* c, struct zx_is12_Text_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->name, free_strs);
-  zx_free_attr(c, x->minChars, free_strs);
-  zx_free_attr(c, x->maxChars, free_strs);
   zx_free_attr(c, x->format, free_strs);
+  zx_free_attr(c, x->maxChars, free_strs);
+  zx_free_attr(c, x->minChars, free_strs);
+  zx_free_attr(c, x->name, free_strs);
 
   {
       struct zx_is12_Help_s* e;
@@ -2753,10 +2753,10 @@ void zx_DUP_STRS_is12_Text(struct zx_ctx* c, struct zx_is12_Text_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->name);
-  zx_dup_attr(c, x->minChars);
-  zx_dup_attr(c, x->maxChars);
   zx_dup_attr(c, x->format);
+  zx_dup_attr(c, x->maxChars);
+  zx_dup_attr(c, x->minChars);
+  zx_dup_attr(c, x->name);
 
   {
       struct zx_is12_Help_s* e;
@@ -2780,10 +2780,10 @@ struct zx_is12_Text_s* zx_DEEP_CLONE_is12_Text(struct zx_ctx* c, struct zx_is12_
   x = (struct zx_is12_Text_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_is12_Text_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->name = zx_clone_attr(c, x->name);
-  x->minChars = zx_clone_attr(c, x->minChars);
-  x->maxChars = zx_clone_attr(c, x->maxChars);
   x->format = zx_clone_attr(c, x->format);
+  x->maxChars = zx_clone_attr(c, x->maxChars);
+  x->minChars = zx_clone_attr(c, x->minChars);
+  x->name = zx_clone_attr(c, x->name);
 
   {
       struct zx_is12_Help_s* e;
@@ -2891,8 +2891,8 @@ void zx_FREE_is12_UserInteraction(struct zx_ctx* c, struct zx_is12_UserInteracti
   zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->interact, free_strs);
   zx_free_attr(c, x->language, free_strs);
-  zx_free_attr(c, x->redirect, free_strs);
   zx_free_attr(c, x->maxInteractTime, free_strs);
+  zx_free_attr(c, x->redirect, free_strs);
   zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->mustUnderstand, free_strs);
 
@@ -2941,8 +2941,8 @@ void zx_DUP_STRS_is12_UserInteraction(struct zx_ctx* c, struct zx_is12_UserInter
   zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->interact);
   zx_dup_attr(c, x->language);
-  zx_dup_attr(c, x->redirect);
   zx_dup_attr(c, x->maxInteractTime);
+  zx_dup_attr(c, x->redirect);
   zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->mustUnderstand);
 
@@ -2968,8 +2968,8 @@ struct zx_is12_UserInteraction_s* zx_DEEP_CLONE_is12_UserInteraction(struct zx_c
   x->id = zx_clone_attr(c, x->id);
   x->interact = zx_clone_attr(c, x->interact);
   x->language = zx_clone_attr(c, x->language);
-  x->redirect = zx_clone_attr(c, x->redirect);
   x->maxInteractTime = zx_clone_attr(c, x->maxInteractTime);
+  x->redirect = zx_clone_attr(c, x->redirect);
   x->actor = zx_clone_attr(c, x->actor);
   x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 

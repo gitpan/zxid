@@ -636,10 +636,10 @@ void zx_FREE_sp11_Request(struct zx_ctx* c, struct zx_sp11_Request_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->RequestID, free_strs);
 
   zx_free_simple_elems(c, x->RespondWith, free_strs);
   {
@@ -719,10 +719,10 @@ void zx_DUP_STRS_sp11_Request(struct zx_ctx* c, struct zx_sp11_Request_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->RequestID);
 
   zx_dup_strs_simple_elems(c, x->RespondWith);
   {
@@ -767,10 +767,10 @@ struct zx_sp11_Request_s* zx_DEEP_CLONE_sp11_Request(struct zx_ctx* c, struct zx
   x = (struct zx_sp11_Request_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sp11_Request_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->RequestID = zx_clone_attr(c, x->RequestID);
 
   x->RespondWith = zx_deep_clone_simple_elems(c,x->RespondWith, dup_strs);
   {
@@ -963,12 +963,12 @@ void zx_FREE_sp11_Response(struct zx_ctx* c, struct zx_sp11_Response_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ResponseID, free_strs);
   zx_free_attr(c, x->InResponseTo, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
+  zx_free_attr(c, x->ResponseID, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -1028,12 +1028,12 @@ void zx_DUP_STRS_sp11_Response(struct zx_ctx* c, struct zx_sp11_Response_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ResponseID);
   zx_dup_attr(c, x->InResponseTo);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->Recipient);
+  zx_dup_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -1064,12 +1064,12 @@ struct zx_sp11_Response_s* zx_DEEP_CLONE_sp11_Response(struct zx_ctx* c, struct 
   x = (struct zx_sp11_Response_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sp11_Response_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ResponseID = zx_clone_attr(c, x->ResponseID);
   x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->Recipient = zx_clone_attr(c, x->Recipient);
+  x->ResponseID = zx_clone_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;

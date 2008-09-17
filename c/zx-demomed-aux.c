@@ -1623,8 +1623,8 @@ void zx_FREE_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_ObjectS
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->storeRef, free_strs);
   zx_free_attr(c, x->objectID, free_strs);
+  zx_free_attr(c, x->storeRef, free_strs);
 
 
 
@@ -1660,8 +1660,8 @@ void zx_DUP_STRS_demomed_ObjectStoreInfo(struct zx_ctx* c, struct zx_demomed_Obj
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->storeRef);
   zx_dup_attr(c, x->objectID);
+  zx_dup_attr(c, x->storeRef);
 
 
 }
@@ -1677,8 +1677,8 @@ struct zx_demomed_ObjectStoreInfo_s* zx_DEEP_CLONE_demomed_ObjectStoreInfo(struc
   x = (struct zx_demomed_ObjectStoreInfo_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_demomed_ObjectStoreInfo_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->storeRef = zx_clone_attr(c, x->storeRef);
   x->objectID = zx_clone_attr(c, x->objectID);
+  x->storeRef = zx_clone_attr(c, x->storeRef);
 
 
   return x;

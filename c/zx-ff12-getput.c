@@ -1369,6 +1369,22 @@ void zx_ff12_Assertion_DEL_Signature(struct zx_ff12_Assertion_s* x, int n)
 
 #endif
 
+/* FUNC(zx_ff12_Assertion_GET_AssertionID) */
+struct zx_str* zx_ff12_Assertion_GET_AssertionID(struct zx_ff12_Assertion_s* x) { return x->AssertionID; }
+/* FUNC(zx_ff12_Assertion_PUT_AssertionID) */
+void zx_ff12_Assertion_PUT_AssertionID(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->AssertionID = y; }
+/* FUNC(zx_ff12_Assertion_GET_InResponseTo) */
+struct zx_str* zx_ff12_Assertion_GET_InResponseTo(struct zx_ff12_Assertion_s* x) { return x->InResponseTo; }
+/* FUNC(zx_ff12_Assertion_PUT_InResponseTo) */
+void zx_ff12_Assertion_PUT_InResponseTo(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->InResponseTo = y; }
+/* FUNC(zx_ff12_Assertion_GET_IssueInstant) */
+struct zx_str* zx_ff12_Assertion_GET_IssueInstant(struct zx_ff12_Assertion_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_Assertion_PUT_IssueInstant) */
+void zx_ff12_Assertion_PUT_IssueInstant(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_ff12_Assertion_GET_Issuer) */
+struct zx_str* zx_ff12_Assertion_GET_Issuer(struct zx_ff12_Assertion_s* x) { return x->Issuer; }
+/* FUNC(zx_ff12_Assertion_PUT_Issuer) */
+void zx_ff12_Assertion_PUT_Issuer(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->Issuer = y; }
 /* FUNC(zx_ff12_Assertion_GET_MajorVersion) */
 struct zx_str* zx_ff12_Assertion_GET_MajorVersion(struct zx_ff12_Assertion_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_Assertion_PUT_MajorVersion) */
@@ -1377,22 +1393,6 @@ void zx_ff12_Assertion_PUT_MajorVersion(struct zx_ff12_Assertion_s* x, struct zx
 struct zx_str* zx_ff12_Assertion_GET_MinorVersion(struct zx_ff12_Assertion_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_Assertion_PUT_MinorVersion) */
 void zx_ff12_Assertion_PUT_MinorVersion(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_Assertion_GET_AssertionID) */
-struct zx_str* zx_ff12_Assertion_GET_AssertionID(struct zx_ff12_Assertion_s* x) { return x->AssertionID; }
-/* FUNC(zx_ff12_Assertion_PUT_AssertionID) */
-void zx_ff12_Assertion_PUT_AssertionID(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->AssertionID = y; }
-/* FUNC(zx_ff12_Assertion_GET_Issuer) */
-struct zx_str* zx_ff12_Assertion_GET_Issuer(struct zx_ff12_Assertion_s* x) { return x->Issuer; }
-/* FUNC(zx_ff12_Assertion_PUT_Issuer) */
-void zx_ff12_Assertion_PUT_Issuer(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->Issuer = y; }
-/* FUNC(zx_ff12_Assertion_GET_IssueInstant) */
-struct zx_str* zx_ff12_Assertion_GET_IssueInstant(struct zx_ff12_Assertion_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_Assertion_PUT_IssueInstant) */
-void zx_ff12_Assertion_PUT_IssueInstant(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->IssueInstant = y; }
-/* FUNC(zx_ff12_Assertion_GET_InResponseTo) */
-struct zx_str* zx_ff12_Assertion_GET_InResponseTo(struct zx_ff12_Assertion_s* x) { return x->InResponseTo; }
-/* FUNC(zx_ff12_Assertion_PUT_InResponseTo) */
-void zx_ff12_Assertion_PUT_InResponseTo(struct zx_ff12_Assertion_s* x, struct zx_str* y) { x->InResponseTo = y; }
 
 
 
@@ -1934,14 +1934,14 @@ void zx_ff12_AuthenticationStatement_DEL_AuthnContext(struct zx_ff12_Authenticat
 
 #endif
 
-/* FUNC(zx_ff12_AuthenticationStatement_GET_AuthenticationMethod) */
-struct zx_str* zx_ff12_AuthenticationStatement_GET_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x) { return x->AuthenticationMethod; }
-/* FUNC(zx_ff12_AuthenticationStatement_PUT_AuthenticationMethod) */
-void zx_ff12_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y) { x->AuthenticationMethod = y; }
 /* FUNC(zx_ff12_AuthenticationStatement_GET_AuthenticationInstant) */
 struct zx_str* zx_ff12_AuthenticationStatement_GET_AuthenticationInstant(struct zx_ff12_AuthenticationStatement_s* x) { return x->AuthenticationInstant; }
 /* FUNC(zx_ff12_AuthenticationStatement_PUT_AuthenticationInstant) */
 void zx_ff12_AuthenticationStatement_PUT_AuthenticationInstant(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y) { x->AuthenticationInstant = y; }
+/* FUNC(zx_ff12_AuthenticationStatement_GET_AuthenticationMethod) */
+struct zx_str* zx_ff12_AuthenticationStatement_GET_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x) { return x->AuthenticationMethod; }
+/* FUNC(zx_ff12_AuthenticationStatement_PUT_AuthenticationMethod) */
+void zx_ff12_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y) { x->AuthenticationMethod = y; }
 /* FUNC(zx_ff12_AuthenticationStatement_GET_ReauthenticateOnOrAfter) */
 struct zx_str* zx_ff12_AuthenticationStatement_GET_ReauthenticateOnOrAfter(struct zx_ff12_AuthenticationStatement_s* x) { return x->ReauthenticateOnOrAfter; }
 /* FUNC(zx_ff12_AuthenticationStatement_PUT_ReauthenticateOnOrAfter) */
@@ -4104,10 +4104,10 @@ void zx_ff12_AuthnRequest_DEL_Scoping(struct zx_ff12_AuthnRequest_s* x, int n)
 
 #endif
 
-/* FUNC(zx_ff12_AuthnRequest_GET_RequestID) */
-struct zx_str* zx_ff12_AuthnRequest_GET_RequestID(struct zx_ff12_AuthnRequest_s* x) { return x->RequestID; }
-/* FUNC(zx_ff12_AuthnRequest_PUT_RequestID) */
-void zx_ff12_AuthnRequest_PUT_RequestID(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_ff12_AuthnRequest_GET_IssueInstant) */
+struct zx_str* zx_ff12_AuthnRequest_GET_IssueInstant(struct zx_ff12_AuthnRequest_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_AuthnRequest_PUT_IssueInstant) */
+void zx_ff12_AuthnRequest_PUT_IssueInstant(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_AuthnRequest_GET_MajorVersion) */
 struct zx_str* zx_ff12_AuthnRequest_GET_MajorVersion(struct zx_ff12_AuthnRequest_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_AuthnRequest_PUT_MajorVersion) */
@@ -4116,10 +4116,10 @@ void zx_ff12_AuthnRequest_PUT_MajorVersion(struct zx_ff12_AuthnRequest_s* x, str
 struct zx_str* zx_ff12_AuthnRequest_GET_MinorVersion(struct zx_ff12_AuthnRequest_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_AuthnRequest_PUT_MinorVersion) */
 void zx_ff12_AuthnRequest_PUT_MinorVersion(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_AuthnRequest_GET_IssueInstant) */
-struct zx_str* zx_ff12_AuthnRequest_GET_IssueInstant(struct zx_ff12_AuthnRequest_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_AuthnRequest_PUT_IssueInstant) */
-void zx_ff12_AuthnRequest_PUT_IssueInstant(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_ff12_AuthnRequest_GET_RequestID) */
+struct zx_str* zx_ff12_AuthnRequest_GET_RequestID(struct zx_ff12_AuthnRequest_s* x) { return x->RequestID; }
+/* FUNC(zx_ff12_AuthnRequest_PUT_RequestID) */
+void zx_ff12_AuthnRequest_PUT_RequestID(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y) { x->RequestID = y; }
 /* FUNC(zx_ff12_AuthnRequest_GET_consent) */
 struct zx_str* zx_ff12_AuthnRequest_GET_consent(struct zx_ff12_AuthnRequest_s* x) { return x->consent; }
 /* FUNC(zx_ff12_AuthnRequest_PUT_consent) */
@@ -5876,14 +5876,14 @@ void zx_ff12_AuthnResponse_DEL_RelayState(struct zx_ff12_AuthnResponse_s* x, int
 
 #endif
 
-/* FUNC(zx_ff12_AuthnResponse_GET_ResponseID) */
-struct zx_str* zx_ff12_AuthnResponse_GET_ResponseID(struct zx_ff12_AuthnResponse_s* x) { return x->ResponseID; }
-/* FUNC(zx_ff12_AuthnResponse_PUT_ResponseID) */
-void zx_ff12_AuthnResponse_PUT_ResponseID(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_ff12_AuthnResponse_GET_InResponseTo) */
 struct zx_str* zx_ff12_AuthnResponse_GET_InResponseTo(struct zx_ff12_AuthnResponse_s* x) { return x->InResponseTo; }
 /* FUNC(zx_ff12_AuthnResponse_PUT_InResponseTo) */
 void zx_ff12_AuthnResponse_PUT_InResponseTo(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->InResponseTo = y; }
+/* FUNC(zx_ff12_AuthnResponse_GET_IssueInstant) */
+struct zx_str* zx_ff12_AuthnResponse_GET_IssueInstant(struct zx_ff12_AuthnResponse_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_AuthnResponse_PUT_IssueInstant) */
+void zx_ff12_AuthnResponse_PUT_IssueInstant(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_AuthnResponse_GET_MajorVersion) */
 struct zx_str* zx_ff12_AuthnResponse_GET_MajorVersion(struct zx_ff12_AuthnResponse_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_AuthnResponse_PUT_MajorVersion) */
@@ -5892,14 +5892,14 @@ void zx_ff12_AuthnResponse_PUT_MajorVersion(struct zx_ff12_AuthnResponse_s* x, s
 struct zx_str* zx_ff12_AuthnResponse_GET_MinorVersion(struct zx_ff12_AuthnResponse_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_AuthnResponse_PUT_MinorVersion) */
 void zx_ff12_AuthnResponse_PUT_MinorVersion(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_AuthnResponse_GET_IssueInstant) */
-struct zx_str* zx_ff12_AuthnResponse_GET_IssueInstant(struct zx_ff12_AuthnResponse_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_AuthnResponse_PUT_IssueInstant) */
-void zx_ff12_AuthnResponse_PUT_IssueInstant(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_AuthnResponse_GET_Recipient) */
 struct zx_str* zx_ff12_AuthnResponse_GET_Recipient(struct zx_ff12_AuthnResponse_s* x) { return x->Recipient; }
 /* FUNC(zx_ff12_AuthnResponse_PUT_Recipient) */
 void zx_ff12_AuthnResponse_PUT_Recipient(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->Recipient = y; }
+/* FUNC(zx_ff12_AuthnResponse_GET_ResponseID) */
+struct zx_str* zx_ff12_AuthnResponse_GET_ResponseID(struct zx_ff12_AuthnResponse_s* x) { return x->ResponseID; }
+/* FUNC(zx_ff12_AuthnResponse_PUT_ResponseID) */
+void zx_ff12_AuthnResponse_PUT_ResponseID(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_ff12_AuthnResponse_GET_consent) */
 struct zx_str* zx_ff12_AuthnResponse_GET_consent(struct zx_ff12_AuthnResponse_s* x) { return x->consent; }
 /* FUNC(zx_ff12_AuthnResponse_PUT_consent) */
@@ -6316,10 +6316,6 @@ void zx_ff12_AuthnResponseEnvelope_DEL_AssertionConsumerServiceURL(struct zx_ff1
 
 
 
-/* FUNC(zx_ff12_EncryptableNameIdentifier_GET_NameQualifier) */
-struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x) { return x->NameQualifier; }
-/* FUNC(zx_ff12_EncryptableNameIdentifier_PUT_NameQualifier) */
-void zx_ff12_EncryptableNameIdentifier_PUT_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 /* FUNC(zx_ff12_EncryptableNameIdentifier_GET_Format) */
 struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_Format(struct zx_ff12_EncryptableNameIdentifier_s* x) { return x->Format; }
 /* FUNC(zx_ff12_EncryptableNameIdentifier_PUT_Format) */
@@ -6328,6 +6324,10 @@ void zx_ff12_EncryptableNameIdentifier_PUT_Format(struct zx_ff12_EncryptableName
 struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_IssueInstant(struct zx_ff12_EncryptableNameIdentifier_s* x) { return x->IssueInstant; }
 /* FUNC(zx_ff12_EncryptableNameIdentifier_PUT_IssueInstant) */
 void zx_ff12_EncryptableNameIdentifier_PUT_IssueInstant(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_ff12_EncryptableNameIdentifier_GET_NameQualifier) */
+struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x) { return x->NameQualifier; }
+/* FUNC(zx_ff12_EncryptableNameIdentifier_PUT_NameQualifier) */
+void zx_ff12_EncryptableNameIdentifier_PUT_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 /* FUNC(zx_ff12_EncryptableNameIdentifier_GET_Nonce) */
 struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_Nonce(struct zx_ff12_EncryptableNameIdentifier_s* x) { return x->Nonce; }
 /* FUNC(zx_ff12_EncryptableNameIdentifier_PUT_Nonce) */
@@ -7285,10 +7285,10 @@ void zx_ff12_FederationTerminationNotification_DEL_NameIdentifier(struct zx_ff12
 
 #endif
 
-/* FUNC(zx_ff12_FederationTerminationNotification_GET_RequestID) */
-struct zx_str* zx_ff12_FederationTerminationNotification_GET_RequestID(struct zx_ff12_FederationTerminationNotification_s* x) { return x->RequestID; }
-/* FUNC(zx_ff12_FederationTerminationNotification_PUT_RequestID) */
-void zx_ff12_FederationTerminationNotification_PUT_RequestID(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_ff12_FederationTerminationNotification_GET_IssueInstant) */
+struct zx_str* zx_ff12_FederationTerminationNotification_GET_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_FederationTerminationNotification_PUT_IssueInstant) */
+void zx_ff12_FederationTerminationNotification_PUT_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_FederationTerminationNotification_GET_MajorVersion) */
 struct zx_str* zx_ff12_FederationTerminationNotification_GET_MajorVersion(struct zx_ff12_FederationTerminationNotification_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_FederationTerminationNotification_PUT_MajorVersion) */
@@ -7297,10 +7297,10 @@ void zx_ff12_FederationTerminationNotification_PUT_MajorVersion(struct zx_ff12_F
 struct zx_str* zx_ff12_FederationTerminationNotification_GET_MinorVersion(struct zx_ff12_FederationTerminationNotification_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_FederationTerminationNotification_PUT_MinorVersion) */
 void zx_ff12_FederationTerminationNotification_PUT_MinorVersion(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_FederationTerminationNotification_GET_IssueInstant) */
-struct zx_str* zx_ff12_FederationTerminationNotification_GET_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_FederationTerminationNotification_PUT_IssueInstant) */
-void zx_ff12_FederationTerminationNotification_PUT_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_ff12_FederationTerminationNotification_GET_RequestID) */
+struct zx_str* zx_ff12_FederationTerminationNotification_GET_RequestID(struct zx_ff12_FederationTerminationNotification_s* x) { return x->RequestID; }
+/* FUNC(zx_ff12_FederationTerminationNotification_PUT_RequestID) */
+void zx_ff12_FederationTerminationNotification_PUT_RequestID(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y) { x->RequestID = y; }
 /* FUNC(zx_ff12_FederationTerminationNotification_GET_consent) */
 struct zx_str* zx_ff12_FederationTerminationNotification_GET_consent(struct zx_ff12_FederationTerminationNotification_s* x) { return x->consent; }
 /* FUNC(zx_ff12_FederationTerminationNotification_PUT_consent) */
@@ -8129,14 +8129,14 @@ void zx_ff12_IDPList_DEL_GetComplete(struct zx_ff12_IDPList_s* x, int n)
 
 
 
-/* FUNC(zx_ff12_IDPProvidedNameIdentifier_GET_NameQualifier) */
-struct zx_str* zx_ff12_IDPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x) { return x->NameQualifier; }
-/* FUNC(zx_ff12_IDPProvidedNameIdentifier_PUT_NameQualifier) */
-void zx_ff12_IDPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 /* FUNC(zx_ff12_IDPProvidedNameIdentifier_GET_Format) */
 struct zx_str* zx_ff12_IDPProvidedNameIdentifier_GET_Format(struct zx_ff12_IDPProvidedNameIdentifier_s* x) { return x->Format; }
 /* FUNC(zx_ff12_IDPProvidedNameIdentifier_PUT_Format) */
 void zx_ff12_IDPProvidedNameIdentifier_PUT_Format(struct zx_ff12_IDPProvidedNameIdentifier_s* x, struct zx_str* y) { x->Format = y; }
+/* FUNC(zx_ff12_IDPProvidedNameIdentifier_GET_NameQualifier) */
+struct zx_str* zx_ff12_IDPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x) { return x->NameQualifier; }
+/* FUNC(zx_ff12_IDPProvidedNameIdentifier_PUT_NameQualifier) */
+void zx_ff12_IDPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 
 
 
@@ -9080,10 +9080,10 @@ void zx_ff12_LogoutRequest_DEL_RelayState(struct zx_ff12_LogoutRequest_s* x, int
 
 #endif
 
-/* FUNC(zx_ff12_LogoutRequest_GET_RequestID) */
-struct zx_str* zx_ff12_LogoutRequest_GET_RequestID(struct zx_ff12_LogoutRequest_s* x) { return x->RequestID; }
-/* FUNC(zx_ff12_LogoutRequest_PUT_RequestID) */
-void zx_ff12_LogoutRequest_PUT_RequestID(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_ff12_LogoutRequest_GET_IssueInstant) */
+struct zx_str* zx_ff12_LogoutRequest_GET_IssueInstant(struct zx_ff12_LogoutRequest_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_LogoutRequest_PUT_IssueInstant) */
+void zx_ff12_LogoutRequest_PUT_IssueInstant(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_LogoutRequest_GET_MajorVersion) */
 struct zx_str* zx_ff12_LogoutRequest_GET_MajorVersion(struct zx_ff12_LogoutRequest_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_LogoutRequest_PUT_MajorVersion) */
@@ -9092,18 +9092,18 @@ void zx_ff12_LogoutRequest_PUT_MajorVersion(struct zx_ff12_LogoutRequest_s* x, s
 struct zx_str* zx_ff12_LogoutRequest_GET_MinorVersion(struct zx_ff12_LogoutRequest_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_LogoutRequest_PUT_MinorVersion) */
 void zx_ff12_LogoutRequest_PUT_MinorVersion(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_LogoutRequest_GET_IssueInstant) */
-struct zx_str* zx_ff12_LogoutRequest_GET_IssueInstant(struct zx_ff12_LogoutRequest_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_LogoutRequest_PUT_IssueInstant) */
-void zx_ff12_LogoutRequest_PUT_IssueInstant(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
-/* FUNC(zx_ff12_LogoutRequest_GET_consent) */
-struct zx_str* zx_ff12_LogoutRequest_GET_consent(struct zx_ff12_LogoutRequest_s* x) { return x->consent; }
-/* FUNC(zx_ff12_LogoutRequest_PUT_consent) */
-void zx_ff12_LogoutRequest_PUT_consent(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->consent = y; }
 /* FUNC(zx_ff12_LogoutRequest_GET_NotOnOrAfter) */
 struct zx_str* zx_ff12_LogoutRequest_GET_NotOnOrAfter(struct zx_ff12_LogoutRequest_s* x) { return x->NotOnOrAfter; }
 /* FUNC(zx_ff12_LogoutRequest_PUT_NotOnOrAfter) */
 void zx_ff12_LogoutRequest_PUT_NotOnOrAfter(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->NotOnOrAfter = y; }
+/* FUNC(zx_ff12_LogoutRequest_GET_RequestID) */
+struct zx_str* zx_ff12_LogoutRequest_GET_RequestID(struct zx_ff12_LogoutRequest_s* x) { return x->RequestID; }
+/* FUNC(zx_ff12_LogoutRequest_PUT_RequestID) */
+void zx_ff12_LogoutRequest_PUT_RequestID(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_ff12_LogoutRequest_GET_consent) */
+struct zx_str* zx_ff12_LogoutRequest_GET_consent(struct zx_ff12_LogoutRequest_s* x) { return x->consent; }
+/* FUNC(zx_ff12_LogoutRequest_PUT_consent) */
+void zx_ff12_LogoutRequest_PUT_consent(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y) { x->consent = y; }
 
 
 
@@ -9779,14 +9779,14 @@ void zx_ff12_LogoutResponse_DEL_RelayState(struct zx_ff12_LogoutResponse_s* x, i
 
 #endif
 
-/* FUNC(zx_ff12_LogoutResponse_GET_ResponseID) */
-struct zx_str* zx_ff12_LogoutResponse_GET_ResponseID(struct zx_ff12_LogoutResponse_s* x) { return x->ResponseID; }
-/* FUNC(zx_ff12_LogoutResponse_PUT_ResponseID) */
-void zx_ff12_LogoutResponse_PUT_ResponseID(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_ff12_LogoutResponse_GET_InResponseTo) */
 struct zx_str* zx_ff12_LogoutResponse_GET_InResponseTo(struct zx_ff12_LogoutResponse_s* x) { return x->InResponseTo; }
 /* FUNC(zx_ff12_LogoutResponse_PUT_InResponseTo) */
 void zx_ff12_LogoutResponse_PUT_InResponseTo(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->InResponseTo = y; }
+/* FUNC(zx_ff12_LogoutResponse_GET_IssueInstant) */
+struct zx_str* zx_ff12_LogoutResponse_GET_IssueInstant(struct zx_ff12_LogoutResponse_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_LogoutResponse_PUT_IssueInstant) */
+void zx_ff12_LogoutResponse_PUT_IssueInstant(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_LogoutResponse_GET_MajorVersion) */
 struct zx_str* zx_ff12_LogoutResponse_GET_MajorVersion(struct zx_ff12_LogoutResponse_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_LogoutResponse_PUT_MajorVersion) */
@@ -9795,14 +9795,14 @@ void zx_ff12_LogoutResponse_PUT_MajorVersion(struct zx_ff12_LogoutResponse_s* x,
 struct zx_str* zx_ff12_LogoutResponse_GET_MinorVersion(struct zx_ff12_LogoutResponse_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_LogoutResponse_PUT_MinorVersion) */
 void zx_ff12_LogoutResponse_PUT_MinorVersion(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_LogoutResponse_GET_IssueInstant) */
-struct zx_str* zx_ff12_LogoutResponse_GET_IssueInstant(struct zx_ff12_LogoutResponse_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_LogoutResponse_PUT_IssueInstant) */
-void zx_ff12_LogoutResponse_PUT_IssueInstant(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_LogoutResponse_GET_Recipient) */
 struct zx_str* zx_ff12_LogoutResponse_GET_Recipient(struct zx_ff12_LogoutResponse_s* x) { return x->Recipient; }
 /* FUNC(zx_ff12_LogoutResponse_PUT_Recipient) */
 void zx_ff12_LogoutResponse_PUT_Recipient(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->Recipient = y; }
+/* FUNC(zx_ff12_LogoutResponse_GET_ResponseID) */
+struct zx_str* zx_ff12_LogoutResponse_GET_ResponseID(struct zx_ff12_LogoutResponse_s* x) { return x->ResponseID; }
+/* FUNC(zx_ff12_LogoutResponse_PUT_ResponseID) */
+void zx_ff12_LogoutResponse_PUT_ResponseID(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 
 
 
@@ -10612,10 +10612,10 @@ void zx_ff12_NameIdentifierMappingRequest_DEL_TargetNamespace(struct zx_ff12_Nam
 
 #endif
 
-/* FUNC(zx_ff12_NameIdentifierMappingRequest_GET_RequestID) */
-struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->RequestID; }
-/* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_RequestID) */
-void zx_ff12_NameIdentifierMappingRequest_PUT_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_ff12_NameIdentifierMappingRequest_GET_IssueInstant) */
+struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_IssueInstant) */
+void zx_ff12_NameIdentifierMappingRequest_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_NameIdentifierMappingRequest_GET_MajorVersion) */
 struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_MajorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_MajorVersion) */
@@ -10624,10 +10624,10 @@ void zx_ff12_NameIdentifierMappingRequest_PUT_MajorVersion(struct zx_ff12_NameId
 struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_MinorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_MinorVersion) */
 void zx_ff12_NameIdentifierMappingRequest_PUT_MinorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_NameIdentifierMappingRequest_GET_IssueInstant) */
-struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_IssueInstant) */
-void zx_ff12_NameIdentifierMappingRequest_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_ff12_NameIdentifierMappingRequest_GET_RequestID) */
+struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->RequestID; }
+/* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_RequestID) */
+void zx_ff12_NameIdentifierMappingRequest_PUT_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y) { x->RequestID = y; }
 /* FUNC(zx_ff12_NameIdentifierMappingRequest_GET_consent) */
 struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_consent(struct zx_ff12_NameIdentifierMappingRequest_s* x) { return x->consent; }
 /* FUNC(zx_ff12_NameIdentifierMappingRequest_PUT_consent) */
@@ -11307,14 +11307,14 @@ void zx_ff12_NameIdentifierMappingResponse_DEL_NameIdentifier(struct zx_ff12_Nam
 
 #endif
 
-/* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_ResponseID) */
-struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->ResponseID; }
-/* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_ResponseID) */
-void zx_ff12_NameIdentifierMappingResponse_PUT_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_InResponseTo) */
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_InResponseTo(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->InResponseTo; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_InResponseTo) */
 void zx_ff12_NameIdentifierMappingResponse_PUT_InResponseTo(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->InResponseTo = y; }
+/* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_IssueInstant) */
+struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_IssueInstant) */
+void zx_ff12_NameIdentifierMappingResponse_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_MajorVersion) */
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_MajorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_MajorVersion) */
@@ -11323,27 +11323,27 @@ void zx_ff12_NameIdentifierMappingResponse_PUT_MajorVersion(struct zx_ff12_NameI
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_MinorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_MinorVersion) */
 void zx_ff12_NameIdentifierMappingResponse_PUT_MinorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_IssueInstant) */
-struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_IssueInstant) */
-void zx_ff12_NameIdentifierMappingResponse_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_Recipient) */
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_Recipient(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->Recipient; }
 /* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_Recipient) */
 void zx_ff12_NameIdentifierMappingResponse_PUT_Recipient(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->Recipient = y; }
+/* FUNC(zx_ff12_NameIdentifierMappingResponse_GET_ResponseID) */
+struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x) { return x->ResponseID; }
+/* FUNC(zx_ff12_NameIdentifierMappingResponse_PUT_ResponseID) */
+void zx_ff12_NameIdentifierMappingResponse_PUT_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 
 
 
 
 
-/* FUNC(zx_ff12_OldProvidedNameIdentifier_GET_NameQualifier) */
-struct zx_str* zx_ff12_OldProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x) { return x->NameQualifier; }
-/* FUNC(zx_ff12_OldProvidedNameIdentifier_PUT_NameQualifier) */
-void zx_ff12_OldProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 /* FUNC(zx_ff12_OldProvidedNameIdentifier_GET_Format) */
 struct zx_str* zx_ff12_OldProvidedNameIdentifier_GET_Format(struct zx_ff12_OldProvidedNameIdentifier_s* x) { return x->Format; }
 /* FUNC(zx_ff12_OldProvidedNameIdentifier_PUT_Format) */
 void zx_ff12_OldProvidedNameIdentifier_PUT_Format(struct zx_ff12_OldProvidedNameIdentifier_s* x, struct zx_str* y) { x->Format = y; }
+/* FUNC(zx_ff12_OldProvidedNameIdentifier_GET_NameQualifier) */
+struct zx_str* zx_ff12_OldProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x) { return x->NameQualifier; }
+/* FUNC(zx_ff12_OldProvidedNameIdentifier_PUT_NameQualifier) */
+void zx_ff12_OldProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 
 
 
@@ -12421,10 +12421,10 @@ void zx_ff12_RegisterNameIdentifierRequest_DEL_RelayState(struct zx_ff12_Registe
 
 #endif
 
-/* FUNC(zx_ff12_RegisterNameIdentifierRequest_GET_RequestID) */
-struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x) { return x->RequestID; }
-/* FUNC(zx_ff12_RegisterNameIdentifierRequest_PUT_RequestID) */
-void zx_ff12_RegisterNameIdentifierRequest_PUT_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_ff12_RegisterNameIdentifierRequest_GET_IssueInstant) */
+struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_RegisterNameIdentifierRequest_PUT_IssueInstant) */
+void zx_ff12_RegisterNameIdentifierRequest_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_RegisterNameIdentifierRequest_GET_MajorVersion) */
 struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_MajorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_RegisterNameIdentifierRequest_PUT_MajorVersion) */
@@ -12433,10 +12433,10 @@ void zx_ff12_RegisterNameIdentifierRequest_PUT_MajorVersion(struct zx_ff12_Regis
 struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_MinorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_RegisterNameIdentifierRequest_PUT_MinorVersion) */
 void zx_ff12_RegisterNameIdentifierRequest_PUT_MinorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_RegisterNameIdentifierRequest_GET_IssueInstant) */
-struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_RegisterNameIdentifierRequest_PUT_IssueInstant) */
-void zx_ff12_RegisterNameIdentifierRequest_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_ff12_RegisterNameIdentifierRequest_GET_RequestID) */
+struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x) { return x->RequestID; }
+/* FUNC(zx_ff12_RegisterNameIdentifierRequest_PUT_RequestID) */
+void zx_ff12_RegisterNameIdentifierRequest_PUT_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y) { x->RequestID = y; }
 
 
 
@@ -13112,14 +13112,14 @@ void zx_ff12_RegisterNameIdentifierResponse_DEL_RelayState(struct zx_ff12_Regist
 
 #endif
 
-/* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_ResponseID) */
-struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->ResponseID; }
-/* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_ResponseID) */
-void zx_ff12_RegisterNameIdentifierResponse_PUT_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_InResponseTo) */
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_InResponseTo(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->InResponseTo; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_InResponseTo) */
 void zx_ff12_RegisterNameIdentifierResponse_PUT_InResponseTo(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->InResponseTo = y; }
+/* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_IssueInstant) */
+struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->IssueInstant; }
+/* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_IssueInstant) */
+void zx_ff12_RegisterNameIdentifierResponse_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_MajorVersion) */
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_MajorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->MajorVersion; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_MajorVersion) */
@@ -13128,14 +13128,14 @@ void zx_ff12_RegisterNameIdentifierResponse_PUT_MajorVersion(struct zx_ff12_Regi
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_MinorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->MinorVersion; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_MinorVersion) */
 void zx_ff12_RegisterNameIdentifierResponse_PUT_MinorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_IssueInstant) */
-struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->IssueInstant; }
-/* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_IssueInstant) */
-void zx_ff12_RegisterNameIdentifierResponse_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_Recipient) */
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_Recipient(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->Recipient; }
 /* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_Recipient) */
 void zx_ff12_RegisterNameIdentifierResponse_PUT_Recipient(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->Recipient = y; }
+/* FUNC(zx_ff12_RegisterNameIdentifierResponse_GET_ResponseID) */
+struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x) { return x->ResponseID; }
+/* FUNC(zx_ff12_RegisterNameIdentifierResponse_PUT_ResponseID) */
+void zx_ff12_RegisterNameIdentifierResponse_PUT_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y) { x->ResponseID = y; }
 
 
 
@@ -13548,14 +13548,14 @@ void zx_ff12_RequestAuthnContext_DEL_AuthnContextComparison(struct zx_ff12_Reque
 
 
 
-/* FUNC(zx_ff12_SPProvidedNameIdentifier_GET_NameQualifier) */
-struct zx_str* zx_ff12_SPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x) { return x->NameQualifier; }
-/* FUNC(zx_ff12_SPProvidedNameIdentifier_PUT_NameQualifier) */
-void zx_ff12_SPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 /* FUNC(zx_ff12_SPProvidedNameIdentifier_GET_Format) */
 struct zx_str* zx_ff12_SPProvidedNameIdentifier_GET_Format(struct zx_ff12_SPProvidedNameIdentifier_s* x) { return x->Format; }
 /* FUNC(zx_ff12_SPProvidedNameIdentifier_PUT_Format) */
 void zx_ff12_SPProvidedNameIdentifier_PUT_Format(struct zx_ff12_SPProvidedNameIdentifier_s* x, struct zx_str* y) { x->Format = y; }
+/* FUNC(zx_ff12_SPProvidedNameIdentifier_GET_NameQualifier) */
+struct zx_str* zx_ff12_SPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x) { return x->NameQualifier; }
+/* FUNC(zx_ff12_SPProvidedNameIdentifier_PUT_NameQualifier) */
+void zx_ff12_SPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x, struct zx_str* y) { x->NameQualifier = y; }
 
 
 

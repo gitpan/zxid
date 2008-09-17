@@ -7,19 +7,20 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
+ ** Id: enc-templ.c,v 1.27 2007-10-05 22:24:28 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
+ ** 30.9.2007, improvements to WO encoding --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -54,6 +55,18 @@
 #define EL_NS     mm7
 #define EL_TAG    AdditionalInformation
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_AdditionalInformation) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -63,9 +76,12 @@
 int zx_LEN_SO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_AdditionalInformation_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:AdditionalInformation")-1 + 1 + sizeof("</mm7:AdditionalInformation>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   len += zx_attr_so_len(x->href, sizeof("href")-1);
@@ -77,8 +93,9 @@ int zx_LEN_SO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Addition
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:AdditionalInformation", len);
   return len;
 }
 
@@ -92,13 +109,14 @@ int zx_LEN_SO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Addition
 int zx_LEN_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_AdditionalInformation_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("AdditionalInformation")-1 + 1 + 2 + sizeof("AdditionalInformation")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->href, sizeof("href")-1);
@@ -112,6 +130,7 @@ int zx_LEN_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Addition
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:AdditionalInformation", len);
   return len;
 }
 
@@ -124,10 +143,14 @@ int zx_LEN_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Addition
 /* Called by: */
 char* zx_ENC_SO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_AdditionalInformation_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:AdditionalInformation");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   p = zx_attr_so_enc(p, x->href, " href=\"", sizeof(" href=\"")-1);
@@ -146,6 +169,7 @@ char* zx_ENC_SO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Additi
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:AdditionalInformation", p-enc_base);
   return p;
 }
 
@@ -159,6 +183,7 @@ char* zx_ENC_SO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Additi
 char* zx_ENC_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_AdditionalInformation_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -173,6 +198,8 @@ char* zx_ENC_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Additi
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -195,6 +222,7 @@ char* zx_ENC_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct zx_mm7_Additi
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:AdditionalInformation", p-enc_base);
   return p;
 }
 
@@ -249,6 +277,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct
 #define EL_NS     mm7
 #define EL_TAG    Bcc
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Bcc) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -258,9 +298,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_AdditionalInformation(struct zx_ctx* c, struct
 int zx_LEN_SO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Bcc")-1 + 1 + sizeof("</mm7:Bcc>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -291,8 +334,9 @@ int zx_LEN_SO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Bcc", len);
   return len;
 }
 
@@ -306,13 +350,14 @@ int zx_LEN_SO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 int zx_LEN_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Bcc")-1 + 1 + 2 + sizeof("Bcc")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -345,6 +390,7 @@ int zx_LEN_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Bcc", len);
   return len;
 }
 
@@ -357,10 +403,14 @@ int zx_LEN_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Bcc");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -398,6 +448,7 @@ char* zx_ENC_SO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Bcc", p-enc_base);
   return p;
 }
 
@@ -411,6 +462,7 @@ char* zx_ENC_SO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x, char* p )
 char* zx_ENC_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -425,6 +477,8 @@ char* zx_ENC_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x, char* p )
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -446,6 +500,7 @@ char* zx_ENC_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Bcc", p-enc_base);
   return p;
 }
 
@@ -500,6 +555,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 #define EL_NS     mm7
 #define EL_TAG    CancelReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_CancelReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -509,9 +576,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Bcc(struct zx_ctx* c, struct zx_mm7_Bcc_s* x )
 int zx_LEN_SO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:CancelReq")-1 + 1 + sizeof("</mm7:CancelReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -547,8 +617,9 @@ int zx_LEN_SO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x )
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:AuxApplicInfo")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:CancelReq", len);
   return len;
 }
 
@@ -562,13 +633,14 @@ int zx_LEN_SO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x )
 int zx_LEN_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("CancelReq")-1 + 1 + 2 + sizeof("CancelReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -606,6 +678,7 @@ int zx_LEN_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:CancelReq", len);
   return len;
 }
 
@@ -618,10 +691,14 @@ int zx_LEN_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:CancelReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -664,6 +741,7 @@ char* zx_ENC_SO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:CancelReq", p-enc_base);
   return p;
 }
 
@@ -677,6 +755,7 @@ char* zx_ENC_SO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x, ch
 char* zx_ENC_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -691,6 +770,8 @@ char* zx_ENC_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -712,6 +793,7 @@ char* zx_ENC_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_CancelReq_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:CancelReq", p-enc_base);
   return p;
 }
 
@@ -766,6 +848,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_Canc
 #define EL_NS     mm7
 #define EL_TAG    CancelRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_CancelRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -775,9 +869,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_CancelReq(struct zx_ctx* c, struct zx_mm7_Canc
 int zx_LEN_SO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:CancelRsp")-1 + 1 + sizeof("</mm7:CancelRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -800,8 +897,9 @@ int zx_LEN_SO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:CancelRsp", len);
   return len;
 }
 
@@ -815,13 +913,14 @@ int zx_LEN_SO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x )
 int zx_LEN_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("CancelRsp")-1 + 1 + 2 + sizeof("CancelRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -846,6 +945,7 @@ int zx_LEN_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:CancelRsp", len);
   return len;
 }
 
@@ -858,10 +958,14 @@ int zx_LEN_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:CancelRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -891,6 +995,7 @@ char* zx_ENC_SO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:CancelRsp", p-enc_base);
   return p;
 }
 
@@ -904,6 +1009,7 @@ char* zx_ENC_SO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x, ch
 char* zx_ENC_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -918,6 +1024,8 @@ char* zx_ENC_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -939,6 +1047,7 @@ char* zx_ENC_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_CancelRsp_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:CancelRsp", p-enc_base);
   return p;
 }
 
@@ -993,6 +1102,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_Canc
 #define EL_NS     mm7
 #define EL_TAG    Cc
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Cc) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1002,9 +1123,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_CancelRsp(struct zx_ctx* c, struct zx_mm7_Canc
 int zx_LEN_SO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Cc")-1 + 1 + sizeof("</mm7:Cc>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -1035,8 +1159,9 @@ int zx_LEN_SO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Cc", len);
   return len;
 }
 
@@ -1050,13 +1175,14 @@ int zx_LEN_SO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 int zx_LEN_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Cc")-1 + 1 + 2 + sizeof("Cc")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -1089,6 +1215,7 @@ int zx_LEN_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Cc", len);
   return len;
 }
 
@@ -1101,10 +1228,14 @@ int zx_LEN_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Cc");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -1142,6 +1273,7 @@ char* zx_ENC_SO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Cc", p-enc_base);
   return p;
 }
 
@@ -1155,6 +1287,7 @@ char* zx_ENC_SO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x, char* p )
 char* zx_ENC_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1169,6 +1302,8 @@ char* zx_ENC_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x, char* p )
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1190,6 +1325,7 @@ char* zx_ENC_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Cc", p-enc_base);
   return p;
 }
 
@@ -1244,6 +1380,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 #define EL_NS     mm7
 #define EL_TAG    Content
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Content) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1253,14 +1401,17 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Cc(struct zx_ctx* c, struct zx_mm7_Cc_s* x )
 int zx_LEN_SO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Content")-1 + 1 + sizeof("</mm7:Content>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  len += zx_attr_so_len(x->type, sizeof("type")-1);
-  len += zx_attr_so_len(x->href, sizeof("href")-1);
   len += zx_attr_so_len(x->allowAdaptations, sizeof("allowAdaptations")-1);
+  len += zx_attr_so_len(x->href, sizeof("href")-1);
+  len += zx_attr_so_len(x->type, sizeof("type")-1);
 
 #else
   /* root node has no begin tag */
@@ -1269,8 +1420,9 @@ int zx_LEN_SO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Content", len);
   return len;
 }
 
@@ -1284,18 +1436,19 @@ int zx_LEN_SO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x )
 int zx_LEN_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Content")-1 + 1 + 2 + sizeof("Content")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->type, sizeof("type")-1);
-  len += zx_attr_wo_len(x->href, sizeof("href")-1);
   len += zx_attr_wo_len(x->allowAdaptations, sizeof("allowAdaptations")-1);
+  len += zx_attr_wo_len(x->href, sizeof("href")-1);
+  len += zx_attr_wo_len(x->type, sizeof("type")-1);
 
 #else
   /* root node has no begin tag */
@@ -1306,6 +1459,7 @@ int zx_LEN_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Content", len);
   return len;
 }
 
@@ -1318,15 +1472,19 @@ int zx_LEN_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Content");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->type, " type=\"", sizeof(" type=\"")-1);
-  p = zx_attr_so_enc(p, x->href, " href=\"", sizeof(" href=\"")-1);
   p = zx_attr_so_enc(p, x->allowAdaptations, " allowAdaptations=\"", sizeof(" allowAdaptations=\"")-1);
+  p = zx_attr_so_enc(p, x->href, " href=\"", sizeof(" href=\"")-1);
+  p = zx_attr_so_enc(p, x->type, " type=\"", sizeof(" type=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -1342,6 +1500,7 @@ char* zx_ENC_SO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, char* 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Content", p-enc_base);
   return p;
 }
 
@@ -1355,6 +1514,7 @@ char* zx_ENC_SO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, char* 
 char* zx_ENC_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1369,12 +1529,14 @@ char* zx_ENC_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, char* 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->type, "type=\"", sizeof("type=\"")-1);
-  p = zx_attr_wo_enc(p, x->href, "href=\"", sizeof("href=\"")-1);
   p = zx_attr_wo_enc(p, x->allowAdaptations, "allowAdaptations=\"", sizeof("allowAdaptations=\"")-1);
+  p = zx_attr_wo_enc(p, x->href, "href=\"", sizeof("href=\"")-1);
+  p = zx_attr_wo_enc(p, x->type, "type=\"", sizeof("type=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -1393,6 +1555,7 @@ char* zx_ENC_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, char* 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Content", p-enc_base);
   return p;
 }
 
@@ -1447,6 +1610,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Conten
 #define EL_NS     mm7
 #define EL_TAG    DateTime
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_DateTime) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1456,9 +1631,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Content(struct zx_ctx* c, struct zx_mm7_Conten
 int zx_LEN_SO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:DateTime")-1 + 1 + sizeof("</mm7:DateTime>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   len += zx_attr_so_len(x->sequence, sizeof("sequence")-1);
@@ -1470,8 +1648,9 @@ int zx_LEN_SO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DateTime", len);
   return len;
 }
 
@@ -1485,13 +1664,14 @@ int zx_LEN_SO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x )
 int zx_LEN_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DateTime")-1 + 1 + 2 + sizeof("DateTime")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->sequence, sizeof("sequence")-1);
@@ -1505,6 +1685,7 @@ int zx_LEN_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DateTime", len);
   return len;
 }
 
@@ -1517,10 +1698,14 @@ int zx_LEN_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:DateTime");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   p = zx_attr_so_enc(p, x->sequence, " sequence=\"", sizeof(" sequence=\"")-1);
@@ -1539,6 +1724,7 @@ char* zx_ENC_SO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x, char
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DateTime", p-enc_base);
   return p;
 }
 
@@ -1552,6 +1738,7 @@ char* zx_ENC_SO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x, char
 char* zx_ENC_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1566,6 +1753,8 @@ char* zx_ENC_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x, char
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1588,6 +1777,7 @@ char* zx_ENC_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateTime_s* x, char
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DateTime", p-enc_base);
   return p;
 }
 
@@ -1642,6 +1832,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateT
 #define EL_NS     mm7
 #define EL_TAG    DeliverReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_DeliverReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1651,9 +1853,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DateTime(struct zx_ctx* c, struct zx_mm7_DateT
 int zx_LEN_SO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:DeliverReq")-1 + 1 + sizeof("</mm7:DeliverReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -1737,8 +1942,9 @@ int zx_LEN_SO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliverReq", len);
   return len;
 }
 
@@ -1752,13 +1958,14 @@ int zx_LEN_SO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x )
 int zx_LEN_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeliverReq")-1 + 1 + 2 + sizeof("DeliverReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -1844,6 +2051,7 @@ int zx_LEN_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliverReq", len);
   return len;
 }
 
@@ -1856,10 +2064,14 @@ int zx_LEN_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:DeliverReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -1950,6 +2162,7 @@ char* zx_ENC_SO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliverReq", p-enc_base);
   return p;
 }
 
@@ -1963,6 +2176,7 @@ char* zx_ENC_SO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x, 
 char* zx_ENC_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1977,6 +2191,8 @@ char* zx_ENC_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1998,6 +2214,7 @@ char* zx_ENC_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_DeliverReq_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliverReq", p-enc_base);
   return p;
 }
 
@@ -2052,6 +2269,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_Del
 #define EL_NS     mm7
 #define EL_TAG    DeliverRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_DeliverRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2061,9 +2290,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliverReq(struct zx_ctx* c, struct zx_mm7_Del
 int zx_LEN_SO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:DeliverRsp")-1 + 1 + sizeof("</mm7:DeliverRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2091,8 +2323,9 @@ int zx_LEN_SO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliverRsp", len);
   return len;
 }
 
@@ -2106,13 +2339,14 @@ int zx_LEN_SO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x )
 int zx_LEN_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeliverRsp")-1 + 1 + 2 + sizeof("DeliverRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2142,6 +2376,7 @@ int zx_LEN_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliverRsp", len);
   return len;
 }
 
@@ -2154,10 +2389,14 @@ int zx_LEN_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:DeliverRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2192,6 +2431,7 @@ char* zx_ENC_SO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliverRsp", p-enc_base);
   return p;
 }
 
@@ -2205,6 +2445,7 @@ char* zx_ENC_SO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x, 
 char* zx_ENC_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2219,6 +2460,8 @@ char* zx_ENC_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2240,6 +2483,7 @@ char* zx_ENC_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_DeliverRsp_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliverRsp", p-enc_base);
   return p;
 }
 
@@ -2294,6 +2538,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_Del
 #define EL_NS     mm7
 #define EL_TAG    DeliveryCondition
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_DeliveryCondition) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2303,9 +2559,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliverRsp(struct zx_ctx* c, struct zx_mm7_Del
 int zx_LEN_SO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCondition_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:DeliveryCondition")-1 + 1 + sizeof("</mm7:DeliveryCondition>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2318,8 +2577,9 @@ int zx_LEN_SO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCond
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:DC")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliveryCondition", len);
   return len;
 }
 
@@ -2333,13 +2593,14 @@ int zx_LEN_SO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCond
 int zx_LEN_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCondition_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeliveryCondition")-1 + 1 + 2 + sizeof("DeliveryCondition")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2354,6 +2615,7 @@ int zx_LEN_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCond
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliveryCondition", len);
   return len;
 }
 
@@ -2366,10 +2628,14 @@ int zx_LEN_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCond
 /* Called by: */
 char* zx_ENC_SO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCondition_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:DeliveryCondition");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2389,6 +2655,7 @@ char* zx_ENC_SO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCo
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliveryCondition", p-enc_base);
   return p;
 }
 
@@ -2402,6 +2669,7 @@ char* zx_ENC_SO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCo
 char* zx_ENC_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCondition_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2416,6 +2684,8 @@ char* zx_ENC_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCo
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2437,6 +2707,7 @@ char* zx_ENC_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_mm7_DeliveryCo
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliveryCondition", p-enc_base);
   return p;
 }
 
@@ -2491,6 +2762,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_
 #define EL_NS     mm7
 #define EL_TAG    DeliveryReportReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_DeliveryReportReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2500,9 +2783,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliveryCondition(struct zx_ctx* c, struct zx_
 int zx_LEN_SO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryReportReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:DeliveryReportReq")-1 + 1 + sizeof("</mm7:DeliveryReportReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2553,8 +2839,9 @@ int zx_LEN_SO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportReq", len);
   return len;
 }
 
@@ -2568,13 +2855,14 @@ int zx_LEN_SO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
 int zx_LEN_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryReportReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeliveryReportReq")-1 + 1 + 2 + sizeof("DeliveryReportReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2627,6 +2915,7 @@ int zx_LEN_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportReq", len);
   return len;
 }
 
@@ -2639,10 +2928,14 @@ int zx_LEN_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
 /* Called by: */
 char* zx_ENC_SO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryReportReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:DeliveryReportReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2700,6 +2993,7 @@ char* zx_ENC_SO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRe
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportReq", p-enc_base);
   return p;
 }
 
@@ -2713,6 +3007,7 @@ char* zx_ENC_SO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRe
 char* zx_ENC_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryReportReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2727,6 +3022,8 @@ char* zx_ENC_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRe
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2748,6 +3045,7 @@ char* zx_ENC_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_mm7_DeliveryRe
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportReq", p-enc_base);
   return p;
 }
 
@@ -2802,6 +3100,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_
 #define EL_NS     mm7
 #define EL_TAG    DeliveryReportRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_DeliveryReportRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -2811,9 +3121,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliveryReportReq(struct zx_ctx* c, struct zx_
 int zx_LEN_SO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryReportRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:DeliveryReportRsp")-1 + 1 + sizeof("</mm7:DeliveryReportRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2836,8 +3149,9 @@ int zx_LEN_SO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportRsp", len);
   return len;
 }
 
@@ -2851,13 +3165,14 @@ int zx_LEN_SO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
 int zx_LEN_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryReportRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("DeliveryReportRsp")-1 + 1 + 2 + sizeof("DeliveryReportRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -2882,6 +3197,7 @@ int zx_LEN_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportRsp", len);
   return len;
 }
 
@@ -2894,10 +3210,14 @@ int zx_LEN_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRepo
 /* Called by: */
 char* zx_ENC_SO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryReportRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:DeliveryReportRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -2927,6 +3247,7 @@ char* zx_ENC_SO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRe
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportRsp", p-enc_base);
   return p;
 }
 
@@ -2940,6 +3261,7 @@ char* zx_ENC_SO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRe
 char* zx_ENC_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryReportRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -2954,6 +3276,8 @@ char* zx_ENC_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRe
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -2975,6 +3299,7 @@ char* zx_ENC_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_mm7_DeliveryRe
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:DeliveryReportRsp", p-enc_base);
   return p;
 }
 
@@ -3029,6 +3354,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_
 #define EL_NS     mm7
 #define EL_TAG    Details
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Details) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -3038,9 +3375,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_DeliveryReportRsp(struct zx_ctx* c, struct zx_
 int zx_LEN_SO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Details")-1 + 1 + sizeof("</mm7:Details>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3051,8 +3391,9 @@ int zx_LEN_SO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Details", len);
   return len;
 }
 
@@ -3066,13 +3407,14 @@ int zx_LEN_SO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x )
 int zx_LEN_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Details")-1 + 1 + 2 + sizeof("Details")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -3085,6 +3427,7 @@ int zx_LEN_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Details", len);
   return len;
 }
 
@@ -3097,10 +3440,14 @@ int zx_LEN_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Details");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3118,6 +3465,7 @@ char* zx_ENC_SO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x, char* 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Details", p-enc_base);
   return p;
 }
 
@@ -3131,6 +3479,7 @@ char* zx_ENC_SO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x, char* 
 char* zx_ENC_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -3145,6 +3494,8 @@ char* zx_ENC_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x, char* 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -3166,6 +3517,7 @@ char* zx_ENC_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Details_s* x, char* 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Details", p-enc_base);
   return p;
 }
 
@@ -3220,6 +3572,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Detail
 #define EL_NS     mm7
 #define EL_TAG    Extension
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Extension) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -3229,9 +3593,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Details(struct zx_ctx* c, struct zx_mm7_Detail
 int zx_LEN_SO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Extension")-1 + 1 + sizeof("</mm7:Extension>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3252,8 +3619,9 @@ int zx_LEN_SO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Extension", len);
   return len;
 }
 
@@ -3267,13 +3635,14 @@ int zx_LEN_SO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x )
 int zx_LEN_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Extension")-1 + 1 + 2 + sizeof("Extension")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -3296,6 +3665,7 @@ int zx_LEN_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Extension", len);
   return len;
 }
 
@@ -3308,10 +3678,14 @@ int zx_LEN_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Extension");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3339,6 +3713,7 @@ char* zx_ENC_SO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Extension", p-enc_base);
   return p;
 }
 
@@ -3352,6 +3727,7 @@ char* zx_ENC_SO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x, ch
 char* zx_ENC_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -3366,6 +3742,8 @@ char* zx_ENC_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -3387,6 +3765,7 @@ char* zx_ENC_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Extension_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Extension", p-enc_base);
   return p;
 }
 
@@ -3441,6 +3820,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Exte
 #define EL_NS     mm7
 #define EL_TAG    IdentityAddressingToken
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_IdentityAddressingToken) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -3450,9 +3841,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Extension(struct zx_ctx* c, struct zx_mm7_Exte
 int zx_LEN_SO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_IdentityAddressingToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:IdentityAddressingToken")-1 + 1 + sizeof("</mm7:IdentityAddressingToken>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3465,8 +3859,9 @@ int zx_LEN_SO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Identi
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:CredentialRef")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:IdentityAddressingToken", len);
   return len;
 }
 
@@ -3480,13 +3875,14 @@ int zx_LEN_SO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Identi
 int zx_LEN_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_IdentityAddressingToken_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("IdentityAddressingToken")-1 + 1 + 2 + sizeof("IdentityAddressingToken")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -3501,6 +3897,7 @@ int zx_LEN_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Identi
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:IdentityAddressingToken", len);
   return len;
 }
 
@@ -3513,10 +3910,14 @@ int zx_LEN_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Identi
 /* Called by: */
 char* zx_ENC_SO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_IdentityAddressingToken_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:IdentityAddressingToken");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3536,6 +3937,7 @@ char* zx_ENC_SO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Iden
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:IdentityAddressingToken", p-enc_base);
   return p;
 }
 
@@ -3549,6 +3951,7 @@ char* zx_ENC_SO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Iden
 char* zx_ENC_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_IdentityAddressingToken_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -3563,6 +3966,8 @@ char* zx_ENC_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Iden
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -3584,6 +3989,7 @@ char* zx_ENC_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, struct zx_mm7_Iden
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:IdentityAddressingToken", p-enc_base);
   return p;
 }
 
@@ -3638,6 +4044,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, stru
 #define EL_NS     mm7
 #define EL_TAG    MessageExtraData
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_MessageExtraData) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -3647,9 +4065,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_IdentityAddressingToken(struct zx_ctx* c, stru
 int zx_LEN_SO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraData_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:MessageExtraData")-1 + 1 + sizeof("</mm7:MessageExtraData>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3665,8 +4086,9 @@ int zx_LEN_SO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraD
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:MessageExtraData", len);
   return len;
 }
 
@@ -3680,13 +4102,14 @@ int zx_LEN_SO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraD
 int zx_LEN_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraData_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("MessageExtraData")-1 + 1 + 2 + sizeof("MessageExtraData")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -3704,6 +4127,7 @@ int zx_LEN_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraD
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:MessageExtraData", len);
   return len;
 }
 
@@ -3716,10 +4140,14 @@ int zx_LEN_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraD
 /* Called by: */
 char* zx_ENC_SO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraData_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:MessageExtraData");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -3742,6 +4170,7 @@ char* zx_ENC_SO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtr
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:MessageExtraData", p-enc_base);
   return p;
 }
 
@@ -3755,6 +4184,7 @@ char* zx_ENC_SO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtr
 char* zx_ENC_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtraData_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -3769,6 +4199,8 @@ char* zx_ENC_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtr
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -3790,6 +4222,7 @@ char* zx_ENC_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_mm7_MessageExtr
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:MessageExtraData", p-enc_base);
   return p;
 }
 
@@ -3844,6 +4277,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_m
 #define EL_NS     mm7
 #define EL_TAG    Number
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Number) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -3853,13 +4298,16 @@ struct zx_str* zx_EASY_ENC_WO_mm7_MessageExtraData(struct zx_ctx* c, struct zx_m
 int zx_LEN_SO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Number")-1 + 1 + sizeof("</mm7:Number>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  len += zx_attr_so_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_so_len(x->addressCoding, sizeof("addressCoding")-1);
+  len += zx_attr_so_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_so_len(x->id, sizeof("id")-1);
 
 #else
@@ -3869,8 +4317,9 @@ int zx_LEN_SO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Number", len);
   return len;
 }
 
@@ -3884,17 +4333,18 @@ int zx_LEN_SO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x )
 int zx_LEN_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Number")-1 + 1 + 2 + sizeof("Number")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_wo_len(x->addressCoding, sizeof("addressCoding")-1);
+  len += zx_attr_wo_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_wo_len(x->id, sizeof("id")-1);
 
 #else
@@ -3906,6 +4356,7 @@ int zx_LEN_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Number", len);
   return len;
 }
 
@@ -3918,14 +4369,18 @@ int zx_LEN_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Number");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->displayOnly, " displayOnly=\"", sizeof(" displayOnly=\"")-1);
   p = zx_attr_so_enc(p, x->addressCoding, " addressCoding=\"", sizeof(" addressCoding=\"")-1);
+  p = zx_attr_so_enc(p, x->displayOnly, " displayOnly=\"", sizeof(" displayOnly=\"")-1);
   p = zx_attr_so_enc(p, x->id, " id=\"", sizeof(" id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
@@ -3942,6 +4397,7 @@ char* zx_ENC_SO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Number", p-enc_base);
   return p;
 }
 
@@ -3955,6 +4411,7 @@ char* zx_ENC_SO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, char* p 
 char* zx_ENC_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -3969,11 +4426,13 @@ char* zx_ENC_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, char* p 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->displayOnly, "displayOnly=\"", sizeof("displayOnly=\"")-1);
   p = zx_attr_wo_enc(p, x->addressCoding, "addressCoding=\"", sizeof("addressCoding=\"")-1);
+  p = zx_attr_wo_enc(p, x->displayOnly, "displayOnly=\"", sizeof("displayOnly=\"")-1);
   p = zx_attr_wo_enc(p, x->id, "id=\"", sizeof("id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
@@ -3993,6 +4452,7 @@ char* zx_ENC_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Number", p-enc_base);
   return p;
 }
 
@@ -4047,6 +4507,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_
 #define EL_NS     mm7
 #define EL_TAG    PreferredChannels
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_PreferredChannels) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -4056,9 +4528,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_
 int zx_LEN_SO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredChannels_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:PreferredChannels")-1 + 1 + sizeof("</mm7:PreferredChannels>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4071,8 +4546,9 @@ int zx_LEN_SO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredCha
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:DeliverUsing")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:PreferredChannels", len);
   return len;
 }
 
@@ -4086,13 +4562,14 @@ int zx_LEN_SO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredCha
 int zx_LEN_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredChannels_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("PreferredChannels")-1 + 1 + 2 + sizeof("PreferredChannels")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -4107,6 +4584,7 @@ int zx_LEN_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredCha
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:PreferredChannels", len);
   return len;
 }
 
@@ -4119,10 +4597,14 @@ int zx_LEN_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredCha
 /* Called by: */
 char* zx_ENC_SO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredChannels_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:PreferredChannels");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4142,6 +4624,7 @@ char* zx_ENC_SO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredC
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:PreferredChannels", p-enc_base);
   return p;
 }
 
@@ -4155,6 +4638,7 @@ char* zx_ENC_SO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredC
 char* zx_ENC_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredChannels_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -4169,6 +4653,8 @@ char* zx_ENC_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredC
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -4190,6 +4676,7 @@ char* zx_ENC_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_mm7_PreferredC
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:PreferredChannels", p-enc_base);
   return p;
 }
 
@@ -4244,6 +4731,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_
 #define EL_NS     mm7
 #define EL_TAG    Previouslysentby
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Previouslysentby) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -4253,9 +4752,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_PreferredChannels(struct zx_ctx* c, struct zx_
 int zx_LEN_SO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysentby_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Previouslysentby")-1 + 1 + sizeof("</mm7:Previouslysentby>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4271,8 +4773,9 @@ int zx_LEN_SO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysen
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentby", len);
   return len;
 }
 
@@ -4286,13 +4789,14 @@ int zx_LEN_SO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysen
 int zx_LEN_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysentby_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Previouslysentby")-1 + 1 + 2 + sizeof("Previouslysentby")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -4310,6 +4814,7 @@ int zx_LEN_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysen
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentby", len);
   return len;
 }
 
@@ -4322,10 +4827,14 @@ int zx_LEN_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysen
 /* Called by: */
 char* zx_ENC_SO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysentby_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Previouslysentby");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4348,6 +4857,7 @@ char* zx_ENC_SO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslys
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentby", p-enc_base);
   return p;
 }
 
@@ -4361,6 +4871,7 @@ char* zx_ENC_SO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslys
 char* zx_ENC_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslysentby_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -4375,6 +4886,8 @@ char* zx_ENC_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslys
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -4396,6 +4909,7 @@ char* zx_ENC_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_mm7_Previouslys
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentby", p-enc_base);
   return p;
 }
 
@@ -4450,6 +4964,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_m
 #define EL_NS     mm7
 #define EL_TAG    Previouslysentdateandtime
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Previouslysentdateandtime) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -4459,9 +4985,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Previouslysentby(struct zx_ctx* c, struct zx_m
 int zx_LEN_SO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Previouslysentdateandtime_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Previouslysentdateandtime")-1 + 1 + sizeof("</mm7:Previouslysentdateandtime>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4477,8 +5006,9 @@ int zx_LEN_SO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Prev
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentdateandtime", len);
   return len;
 }
 
@@ -4492,13 +5022,14 @@ int zx_LEN_SO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Prev
 int zx_LEN_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Previouslysentdateandtime_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Previouslysentdateandtime")-1 + 1 + 2 + sizeof("Previouslysentdateandtime")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -4516,6 +5047,7 @@ int zx_LEN_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Prev
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentdateandtime", len);
   return len;
 }
 
@@ -4528,10 +5060,14 @@ int zx_LEN_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Prev
 /* Called by: */
 char* zx_ENC_SO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Previouslysentdateandtime_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Previouslysentdateandtime");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4554,6 +5090,7 @@ char* zx_ENC_SO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Pr
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentdateandtime", p-enc_base);
   return p;
 }
 
@@ -4567,6 +5104,7 @@ char* zx_ENC_SO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Pr
 char* zx_ENC_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Previouslysentdateandtime_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -4581,6 +5119,8 @@ char* zx_ENC_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Pr
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -4602,6 +5142,7 @@ char* zx_ENC_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, struct zx_mm7_Pr
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Previouslysentdateandtime", p-enc_base);
   return p;
 }
 
@@ -4656,6 +5197,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, st
 #define EL_NS     mm7
 #define EL_TAG    QueryStatusReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_QueryStatusReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -4665,9 +5218,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Previouslysentdateandtime(struct zx_ctx* c, st
 int zx_LEN_SO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:QueryStatusReq")-1 + 1 + sizeof("</mm7:QueryStatusReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4693,8 +5249,9 @@ int zx_LEN_SO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:MessageID")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusReq", len);
   return len;
 }
 
@@ -4708,13 +5265,14 @@ int zx_LEN_SO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_
 int zx_LEN_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("QueryStatusReq")-1 + 1 + 2 + sizeof("QueryStatusReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -4742,6 +5300,7 @@ int zx_LEN_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusReq", len);
   return len;
 }
 
@@ -4754,10 +5313,14 @@ int zx_LEN_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_
 /* Called by: */
 char* zx_ENC_SO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:QueryStatusReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4790,6 +5353,7 @@ char* zx_ENC_SO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusRe
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusReq", p-enc_base);
   return p;
 }
 
@@ -4803,6 +5367,7 @@ char* zx_ENC_SO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusRe
 char* zx_ENC_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -4817,6 +5382,8 @@ char* zx_ENC_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusRe
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -4838,6 +5405,7 @@ char* zx_ENC_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7_QueryStatusRe
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusReq", p-enc_base);
   return p;
 }
 
@@ -4892,6 +5460,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7
 #define EL_NS     mm7
 #define EL_TAG    QueryStatusRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_QueryStatusRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -4901,9 +5481,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_QueryStatusReq(struct zx_ctx* c, struct zx_mm7
 int zx_LEN_SO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:QueryStatusRsp")-1 + 1 + sizeof("</mm7:QueryStatusRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -4932,8 +5515,9 @@ int zx_LEN_SO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusRsp", len);
   return len;
 }
 
@@ -4947,13 +5531,14 @@ int zx_LEN_SO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_
 int zx_LEN_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("QueryStatusRsp")-1 + 1 + 2 + sizeof("QueryStatusRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -4984,6 +5569,7 @@ int zx_LEN_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusRsp", len);
   return len;
 }
 
@@ -4996,10 +5582,14 @@ int zx_LEN_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_
 /* Called by: */
 char* zx_ENC_SO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:QueryStatusRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5035,6 +5625,7 @@ char* zx_ENC_SO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRs
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusRsp", p-enc_base);
   return p;
 }
 
@@ -5048,6 +5639,7 @@ char* zx_ENC_SO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRs
 char* zx_ENC_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -5062,6 +5654,8 @@ char* zx_ENC_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRs
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -5083,6 +5677,7 @@ char* zx_ENC_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7_QueryStatusRs
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:QueryStatusRsp", p-enc_base);
   return p;
 }
 
@@ -5137,6 +5732,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7
 #define EL_NS     mm7
 #define EL_TAG    RFC2822Address
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_RFC2822Address) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -5146,13 +5753,16 @@ struct zx_str* zx_EASY_ENC_WO_mm7_QueryStatusRsp(struct zx_ctx* c, struct zx_mm7
 int zx_LEN_SO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:RFC2822Address")-1 + 1 + sizeof("</mm7:RFC2822Address>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  len += zx_attr_so_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_so_len(x->addressCoding, sizeof("addressCoding")-1);
+  len += zx_attr_so_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_so_len(x->id, sizeof("id")-1);
 
 #else
@@ -5162,8 +5772,9 @@ int zx_LEN_SO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:RFC2822Address", len);
   return len;
 }
 
@@ -5177,17 +5788,18 @@ int zx_LEN_SO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_
 int zx_LEN_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("RFC2822Address")-1 + 1 + 2 + sizeof("RFC2822Address")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_wo_len(x->addressCoding, sizeof("addressCoding")-1);
+  len += zx_attr_wo_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_wo_len(x->id, sizeof("id")-1);
 
 #else
@@ -5199,6 +5811,7 @@ int zx_LEN_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:RFC2822Address", len);
   return len;
 }
 
@@ -5211,14 +5824,18 @@ int zx_LEN_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_
 /* Called by: */
 char* zx_ENC_SO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:RFC2822Address");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->displayOnly, " displayOnly=\"", sizeof(" displayOnly=\"")-1);
   p = zx_attr_so_enc(p, x->addressCoding, " addressCoding=\"", sizeof(" addressCoding=\"")-1);
+  p = zx_attr_so_enc(p, x->displayOnly, " displayOnly=\"", sizeof(" displayOnly=\"")-1);
   p = zx_attr_so_enc(p, x->id, " id=\"", sizeof(" id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
@@ -5235,6 +5852,7 @@ char* zx_ENC_SO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Addres
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:RFC2822Address", p-enc_base);
   return p;
 }
 
@@ -5248,6 +5866,7 @@ char* zx_ENC_SO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Addres
 char* zx_ENC_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -5262,11 +5881,13 @@ char* zx_ENC_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Addres
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->displayOnly, "displayOnly=\"", sizeof("displayOnly=\"")-1);
   p = zx_attr_wo_enc(p, x->addressCoding, "addressCoding=\"", sizeof("addressCoding=\"")-1);
+  p = zx_attr_wo_enc(p, x->displayOnly, "displayOnly=\"", sizeof("displayOnly=\"")-1);
   p = zx_attr_wo_enc(p, x->id, "id=\"", sizeof("id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
@@ -5286,6 +5907,7 @@ char* zx_ENC_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Addres
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:RFC2822Address", p-enc_base);
   return p;
 }
 
@@ -5340,6 +5962,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7
 #define EL_NS     mm7
 #define EL_TAG    RSErrorRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_RSErrorRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -5349,9 +5983,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7
 int zx_LEN_SO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:RSErrorRsp")-1 + 1 + sizeof("</mm7:RSErrorRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5374,8 +6011,9 @@ int zx_LEN_SO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:RSErrorRsp", len);
   return len;
 }
 
@@ -5389,13 +6027,14 @@ int zx_LEN_SO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x )
 int zx_LEN_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("RSErrorRsp")-1 + 1 + 2 + sizeof("RSErrorRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -5420,6 +6059,7 @@ int zx_LEN_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:RSErrorRsp", len);
   return len;
 }
 
@@ -5432,10 +6072,14 @@ int zx_LEN_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:RSErrorRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5465,6 +6109,7 @@ char* zx_ENC_SO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:RSErrorRsp", p-enc_base);
   return p;
 }
 
@@ -5478,6 +6123,7 @@ char* zx_ENC_SO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x, 
 char* zx_ENC_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -5492,6 +6138,8 @@ char* zx_ENC_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -5513,6 +6161,7 @@ char* zx_ENC_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSErrorRsp_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:RSErrorRsp", p-enc_base);
   return p;
 }
 
@@ -5567,6 +6216,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSE
 #define EL_NS     mm7
 #define EL_TAG    ReadReplyReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ReadReplyReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -5576,9 +6237,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_RSErrorRsp(struct zx_ctx* c, struct zx_mm7_RSE
 int zx_LEN_SO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ReadReplyReq")-1 + 1 + sizeof("</mm7:ReadReplyReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5622,8 +6286,9 @@ int zx_LEN_SO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:AuxApplicInfo")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyReq", len);
   return len;
 }
 
@@ -5637,13 +6302,14 @@ int zx_LEN_SO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x
 int zx_LEN_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ReadReplyReq")-1 + 1 + 2 + sizeof("ReadReplyReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -5689,6 +6355,7 @@ int zx_LEN_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyReq", len);
   return len;
 }
 
@@ -5701,10 +6368,14 @@ int zx_LEN_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x
 /* Called by: */
 char* zx_ENC_SO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ReadReplyReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5755,6 +6426,7 @@ char* zx_ENC_SO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s*
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyReq", p-enc_base);
   return p;
 }
 
@@ -5768,6 +6440,7 @@ char* zx_ENC_SO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s*
 char* zx_ENC_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -5782,6 +6455,8 @@ char* zx_ENC_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s*
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -5803,6 +6478,7 @@ char* zx_ENC_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_ReadReplyReq_s*
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyReq", p-enc_base);
   return p;
 }
 
@@ -5857,6 +6533,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_R
 #define EL_NS     mm7
 #define EL_TAG    ReadReplyRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ReadReplyRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -5866,9 +6554,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReadReplyReq(struct zx_ctx* c, struct zx_mm7_R
 int zx_LEN_SO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ReadReplyRsp")-1 + 1 + sizeof("</mm7:ReadReplyRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5891,8 +6582,9 @@ int zx_LEN_SO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyRsp", len);
   return len;
 }
 
@@ -5906,13 +6598,14 @@ int zx_LEN_SO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x
 int zx_LEN_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ReadReplyRsp")-1 + 1 + 2 + sizeof("ReadReplyRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -5937,6 +6630,7 @@ int zx_LEN_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyRsp", len);
   return len;
 }
 
@@ -5949,10 +6643,14 @@ int zx_LEN_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x
 /* Called by: */
 char* zx_ENC_SO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ReadReplyRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -5982,6 +6680,7 @@ char* zx_ENC_SO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s*
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyRsp", p-enc_base);
   return p;
 }
 
@@ -5995,6 +6694,7 @@ char* zx_ENC_SO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s*
 char* zx_ENC_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -6009,6 +6709,8 @@ char* zx_ENC_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s*
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -6030,6 +6732,7 @@ char* zx_ENC_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_ReadReplyRsp_s*
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReadReplyRsp", p-enc_base);
   return p;
 }
 
@@ -6084,6 +6787,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_R
 #define EL_NS     mm7
 #define EL_TAG    Recipient
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Recipient) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -6093,9 +6808,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReadReplyRsp(struct zx_ctx* c, struct zx_mm7_R
 int zx_LEN_SO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Recipient")-1 + 1 + sizeof("</mm7:Recipient>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6126,8 +6844,9 @@ int zx_LEN_SO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Recipient", len);
   return len;
 }
 
@@ -6141,13 +6860,14 @@ int zx_LEN_SO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x )
 int zx_LEN_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Recipient")-1 + 1 + 2 + sizeof("Recipient")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -6180,6 +6900,7 @@ int zx_LEN_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Recipient", len);
   return len;
 }
 
@@ -6192,10 +6913,14 @@ int zx_LEN_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Recipient");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6233,6 +6958,7 @@ char* zx_ENC_SO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Recipient", p-enc_base);
   return p;
 }
 
@@ -6246,6 +6972,7 @@ char* zx_ENC_SO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x, ch
 char* zx_ENC_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -6260,6 +6987,8 @@ char* zx_ENC_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -6281,6 +7010,7 @@ char* zx_ENC_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Recipient_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Recipient", p-enc_base);
   return p;
 }
 
@@ -6335,6 +7065,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Reci
 #define EL_NS     mm7
 #define EL_TAG    Recipients
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Recipients) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -6344,9 +7086,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Recipient(struct zx_ctx* c, struct zx_mm7_Reci
 int zx_LEN_SO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Recipients")-1 + 1 + sizeof("</mm7:Recipients>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6372,8 +7117,9 @@ int zx_LEN_SO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Recipients", len);
   return len;
 }
 
@@ -6387,13 +7133,14 @@ int zx_LEN_SO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x )
 int zx_LEN_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Recipients")-1 + 1 + 2 + sizeof("Recipients")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -6421,6 +7168,7 @@ int zx_LEN_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Recipients", len);
   return len;
 }
 
@@ -6433,10 +7181,14 @@ int zx_LEN_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Recipients");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6469,6 +7221,7 @@ char* zx_ENC_SO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Recipients", p-enc_base);
   return p;
 }
 
@@ -6482,6 +7235,7 @@ char* zx_ENC_SO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x, 
 char* zx_ENC_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -6496,6 +7250,8 @@ char* zx_ENC_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -6517,6 +7273,7 @@ char* zx_ENC_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Recipients_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Recipients", p-enc_base);
   return p;
 }
 
@@ -6571,6 +7328,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Rec
 #define EL_NS     mm7
 #define EL_TAG    ReplaceReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ReplaceReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -6580,9 +7349,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Recipients(struct zx_ctx* c, struct zx_mm7_Rec
 int zx_LEN_SO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ReplaceReq")-1 + 1 + sizeof("</mm7:ReplaceReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6645,8 +7417,9 @@ int zx_LEN_SO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReplaceReq", len);
   return len;
 }
 
@@ -6660,13 +7433,14 @@ int zx_LEN_SO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x )
 int zx_LEN_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ReplaceReq")-1 + 1 + 2 + sizeof("ReplaceReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -6731,6 +7505,7 @@ int zx_LEN_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReplaceReq", len);
   return len;
 }
 
@@ -6743,10 +7518,14 @@ int zx_LEN_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ReplaceReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6816,6 +7595,7 @@ char* zx_ENC_SO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReplaceReq", p-enc_base);
   return p;
 }
 
@@ -6829,6 +7609,7 @@ char* zx_ENC_SO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x, 
 char* zx_ENC_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -6843,6 +7624,8 @@ char* zx_ENC_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -6864,6 +7647,7 @@ char* zx_ENC_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_ReplaceReq_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReplaceReq", p-enc_base);
   return p;
 }
 
@@ -6918,6 +7702,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_Rep
 #define EL_NS     mm7
 #define EL_TAG    ReplaceRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ReplaceRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -6927,9 +7723,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReplaceReq(struct zx_ctx* c, struct zx_mm7_Rep
 int zx_LEN_SO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ReplaceRsp")-1 + 1 + sizeof("</mm7:ReplaceRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -6952,8 +7751,9 @@ int zx_LEN_SO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReplaceRsp", len);
   return len;
 }
 
@@ -6967,13 +7767,14 @@ int zx_LEN_SO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x )
 int zx_LEN_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ReplaceRsp")-1 + 1 + 2 + sizeof("ReplaceRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -6998,6 +7799,7 @@ int zx_LEN_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReplaceRsp", len);
   return len;
 }
 
@@ -7010,10 +7812,14 @@ int zx_LEN_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ReplaceRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7043,6 +7849,7 @@ char* zx_ENC_SO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReplaceRsp", p-enc_base);
   return p;
 }
 
@@ -7056,6 +7863,7 @@ char* zx_ENC_SO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x, 
 char* zx_ENC_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -7070,6 +7878,8 @@ char* zx_ENC_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -7091,6 +7901,7 @@ char* zx_ENC_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_ReplaceRsp_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReplaceRsp", p-enc_base);
   return p;
 }
 
@@ -7145,6 +7956,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_Rep
 #define EL_NS     mm7
 #define EL_TAG    ReplyCharging
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ReplyCharging) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -7154,9 +7977,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReplaceRsp(struct zx_ctx* c, struct zx_mm7_Rep
 int zx_LEN_SO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ReplyCharging")-1 + 1 + sizeof("</mm7:ReplyCharging>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   len += zx_attr_so_len(x->replyChargingSize, sizeof("replyChargingSize")-1);
@@ -7169,8 +7995,9 @@ int zx_LEN_SO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s*
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReplyCharging", len);
   return len;
 }
 
@@ -7184,13 +8011,14 @@ int zx_LEN_SO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s*
 int zx_LEN_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ReplyCharging")-1 + 1 + 2 + sizeof("ReplyCharging")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->replyChargingSize, sizeof("replyChargingSize")-1);
@@ -7205,6 +8033,7 @@ int zx_LEN_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s*
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ReplyCharging", len);
   return len;
 }
 
@@ -7217,10 +8046,14 @@ int zx_LEN_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s*
 /* Called by: */
 char* zx_ENC_SO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ReplyCharging");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   p = zx_attr_so_enc(p, x->replyChargingSize, " replyChargingSize=\"", sizeof(" replyChargingSize=\"")-1);
@@ -7240,6 +8073,7 @@ char* zx_ENC_SO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReplyCharging", p-enc_base);
   return p;
 }
 
@@ -7253,6 +8087,7 @@ char* zx_ENC_SO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_
 char* zx_ENC_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -7267,6 +8102,8 @@ char* zx_ENC_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -7290,6 +8127,7 @@ char* zx_ENC_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_ReplyCharging_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ReplyCharging", p-enc_base);
   return p;
 }
 
@@ -7344,6 +8182,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_
 #define EL_NS     mm7
 #define EL_TAG    Sender
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Sender) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -7353,9 +8203,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ReplyCharging(struct zx_ctx* c, struct zx_mm7_
 int zx_LEN_SO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Sender")-1 + 1 + sizeof("</mm7:Sender>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7386,8 +8239,9 @@ int zx_LEN_SO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Sender", len);
   return len;
 }
 
@@ -7401,13 +8255,14 @@ int zx_LEN_SO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x )
 int zx_LEN_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Sender")-1 + 1 + 2 + sizeof("Sender")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -7440,6 +8295,7 @@ int zx_LEN_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Sender", len);
   return len;
 }
 
@@ -7452,10 +8308,14 @@ int zx_LEN_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Sender");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7493,6 +8353,7 @@ char* zx_ENC_SO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Sender", p-enc_base);
   return p;
 }
 
@@ -7506,6 +8367,7 @@ char* zx_ENC_SO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x, char* p 
 char* zx_ENC_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -7520,6 +8382,8 @@ char* zx_ENC_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x, char* p 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -7541,6 +8405,7 @@ char* zx_ENC_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Sender", p-enc_base);
   return p;
 }
 
@@ -7595,6 +8460,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_
 #define EL_NS     mm7
 #define EL_TAG    SenderAddress
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_SenderAddress) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -7604,9 +8481,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Sender(struct zx_ctx* c, struct zx_mm7_Sender_
 int zx_LEN_SO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:SenderAddress")-1 + 1 + sizeof("</mm7:SenderAddress>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7637,8 +8517,9 @@ int zx_LEN_SO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s*
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SenderAddress", len);
   return len;
 }
 
@@ -7652,13 +8533,14 @@ int zx_LEN_SO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s*
 int zx_LEN_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("SenderAddress")-1 + 1 + 2 + sizeof("SenderAddress")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -7691,6 +8573,7 @@ int zx_LEN_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s*
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SenderAddress", len);
   return len;
 }
 
@@ -7703,10 +8586,14 @@ int zx_LEN_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s*
 /* Called by: */
 char* zx_ENC_SO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:SenderAddress");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7744,6 +8631,7 @@ char* zx_ENC_SO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SenderAddress", p-enc_base);
   return p;
 }
 
@@ -7757,6 +8645,7 @@ char* zx_ENC_SO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_
 char* zx_ENC_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -7771,6 +8660,8 @@ char* zx_ENC_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -7792,6 +8683,7 @@ char* zx_ENC_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_SenderAddress_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SenderAddress", p-enc_base);
   return p;
 }
 
@@ -7846,6 +8738,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_
 #define EL_NS     mm7
 #define EL_TAG    SenderIdentification
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_SenderIdentification) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -7855,9 +8759,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SenderAddress(struct zx_ctx* c, struct zx_mm7_
 int zx_LEN_SO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIdentification_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:SenderIdentification")-1 + 1 + sizeof("</mm7:SenderIdentification>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7877,8 +8784,9 @@ int zx_LEN_SO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIde
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SenderIdentification", len);
   return len;
 }
 
@@ -7892,13 +8800,14 @@ int zx_LEN_SO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIde
 int zx_LEN_WO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIdentification_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("SenderIdentification")-1 + 1 + 2 + sizeof("SenderIdentification")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -7920,6 +8829,7 @@ int zx_LEN_WO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIde
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SenderIdentification", len);
   return len;
 }
 
@@ -7932,10 +8842,14 @@ int zx_LEN_WO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIde
 /* Called by: */
 char* zx_ENC_SO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIdentification_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:SenderIdentification");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -7962,6 +8876,7 @@ char* zx_ENC_SO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderI
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SenderIdentification", p-enc_base);
   return p;
 }
 
@@ -7975,6 +8890,7 @@ char* zx_ENC_SO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderI
 char* zx_ENC_WO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderIdentification_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -7989,6 +8905,8 @@ char* zx_ENC_WO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderI
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -8010,6 +8928,7 @@ char* zx_ENC_WO_mm7_SenderIdentification(struct zx_ctx* c, struct zx_mm7_SenderI
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SenderIdentification", p-enc_base);
   return p;
 }
 
@@ -8064,6 +8983,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SenderIdentification(struct zx_ctx* c, struct 
 #define EL_NS     mm7
 #define EL_TAG    ServiceCode
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ServiceCode) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -8073,9 +9004,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SenderIdentification(struct zx_ctx* c, struct 
 int zx_LEN_SO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ServiceCode")-1 + 1 + sizeof("</mm7:ServiceCode>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -8086,8 +9020,9 @@ int zx_LEN_SO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ServiceCode", len);
   return len;
 }
 
@@ -8101,13 +9036,14 @@ int zx_LEN_SO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x )
 int zx_LEN_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ServiceCode")-1 + 1 + 2 + sizeof("ServiceCode")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -8120,6 +9056,7 @@ int zx_LEN_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ServiceCode", len);
   return len;
 }
 
@@ -8132,10 +9069,14 @@ int zx_LEN_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ServiceCode");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -8153,6 +9094,7 @@ char* zx_ENC_SO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ServiceCode", p-enc_base);
   return p;
 }
 
@@ -8166,6 +9108,7 @@ char* zx_ENC_SO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x
 char* zx_ENC_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -8180,6 +9123,8 @@ char* zx_ENC_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -8201,6 +9146,7 @@ char* zx_ENC_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_ServiceCode_s* x
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ServiceCode", p-enc_base);
   return p;
 }
 
@@ -8255,6 +9201,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_Se
 #define EL_NS     mm7
 #define EL_TAG    ShortCode
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ShortCode) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -8264,13 +9222,16 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ServiceCode(struct zx_ctx* c, struct zx_mm7_Se
 int zx_LEN_SO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ShortCode")-1 + 1 + sizeof("</mm7:ShortCode>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  len += zx_attr_so_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_so_len(x->addressCoding, sizeof("addressCoding")-1);
+  len += zx_attr_so_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_so_len(x->id, sizeof("id")-1);
 
 #else
@@ -8280,8 +9241,9 @@ int zx_LEN_SO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ShortCode", len);
   return len;
 }
 
@@ -8295,17 +9257,18 @@ int zx_LEN_SO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x )
 int zx_LEN_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ShortCode")-1 + 1 + 2 + sizeof("ShortCode")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_wo_len(x->addressCoding, sizeof("addressCoding")-1);
+  len += zx_attr_wo_len(x->displayOnly, sizeof("displayOnly")-1);
   len += zx_attr_wo_len(x->id, sizeof("id")-1);
 
 #else
@@ -8317,6 +9280,7 @@ int zx_LEN_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ShortCode", len);
   return len;
 }
 
@@ -8329,14 +9293,18 @@ int zx_LEN_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ShortCode");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->displayOnly, " displayOnly=\"", sizeof(" displayOnly=\"")-1);
   p = zx_attr_so_enc(p, x->addressCoding, " addressCoding=\"", sizeof(" addressCoding=\"")-1);
+  p = zx_attr_so_enc(p, x->displayOnly, " displayOnly=\"", sizeof(" displayOnly=\"")-1);
   p = zx_attr_so_enc(p, x->id, " id=\"", sizeof(" id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
@@ -8353,6 +9321,7 @@ char* zx_ENC_SO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ShortCode", p-enc_base);
   return p;
 }
 
@@ -8366,6 +9335,7 @@ char* zx_ENC_SO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, ch
 char* zx_ENC_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -8380,11 +9350,13 @@ char* zx_ENC_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->displayOnly, "displayOnly=\"", sizeof("displayOnly=\"")-1);
   p = zx_attr_wo_enc(p, x->addressCoding, "addressCoding=\"", sizeof("addressCoding=\"")-1);
+  p = zx_attr_wo_enc(p, x->displayOnly, "displayOnly=\"", sizeof("displayOnly=\"")-1);
   p = zx_attr_wo_enc(p, x->id, "id=\"", sizeof("id=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
@@ -8404,6 +9376,7 @@ char* zx_ENC_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ShortCode", p-enc_base);
   return p;
 }
 
@@ -8458,6 +9431,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_Shor
 #define EL_NS     mm7
 #define EL_TAG    Status
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_Status) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -8467,9 +9452,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_Shor
 int zx_LEN_SO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:Status")-1 + 1 + sizeof("</mm7:Status>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -8489,8 +9477,9 @@ int zx_LEN_SO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Status", len);
   return len;
 }
 
@@ -8504,13 +9493,14 @@ int zx_LEN_SO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x )
 int zx_LEN_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Status")-1 + 1 + 2 + sizeof("Status")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -8532,6 +9522,7 @@ int zx_LEN_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:Status", len);
   return len;
 }
 
@@ -8544,10 +9535,14 @@ int zx_LEN_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:Status");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -8574,6 +9569,7 @@ char* zx_ENC_SO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Status", p-enc_base);
   return p;
 }
 
@@ -8587,6 +9583,7 @@ char* zx_ENC_SO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x, char* p 
 char* zx_ENC_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -8601,6 +9598,8 @@ char* zx_ENC_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x, char* p 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -8622,6 +9621,7 @@ char* zx_ENC_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:Status", p-enc_base);
   return p;
 }
 
@@ -8676,6 +9676,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_
 #define EL_NS     mm7
 #define EL_TAG    SubmitReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_SubmitReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -8685,9 +9697,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_Status(struct zx_ctx* c, struct zx_mm7_Status_
 int zx_LEN_SO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:SubmitReq")-1 + 1 + sizeof("</mm7:SubmitReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -8789,8 +9804,9 @@ int zx_LEN_SO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SubmitReq", len);
   return len;
 }
 
@@ -8804,13 +9820,14 @@ int zx_LEN_SO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x )
 int zx_LEN_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("SubmitReq")-1 + 1 + 2 + sizeof("SubmitReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -8914,6 +9931,7 @@ int zx_LEN_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SubmitReq", len);
   return len;
 }
 
@@ -8926,10 +9944,14 @@ int zx_LEN_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:SubmitReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9038,6 +10060,7 @@ char* zx_ENC_SO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SubmitReq", p-enc_base);
   return p;
 }
 
@@ -9051,6 +10074,7 @@ char* zx_ENC_SO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x, ch
 char* zx_ENC_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -9065,6 +10089,8 @@ char* zx_ENC_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -9086,6 +10112,7 @@ char* zx_ENC_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_SubmitReq_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SubmitReq", p-enc_base);
   return p;
 }
 
@@ -9140,6 +10167,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_Subm
 #define EL_NS     mm7
 #define EL_TAG    SubmitRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_SubmitRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -9149,9 +10188,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SubmitReq(struct zx_ctx* c, struct zx_mm7_Subm
 int zx_LEN_SO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:SubmitRsp")-1 + 1 + sizeof("</mm7:SubmitRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9176,8 +10218,9 @@ int zx_LEN_SO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x )
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:MessageID")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SubmitRsp", len);
   return len;
 }
 
@@ -9191,13 +10234,14 @@ int zx_LEN_SO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x )
 int zx_LEN_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("SubmitRsp")-1 + 1 + 2 + sizeof("SubmitRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -9224,6 +10268,7 @@ int zx_LEN_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:SubmitRsp", len);
   return len;
 }
 
@@ -9236,10 +10281,14 @@ int zx_LEN_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:SubmitRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9271,6 +10320,7 @@ char* zx_ENC_SO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SubmitRsp", p-enc_base);
   return p;
 }
 
@@ -9284,6 +10334,7 @@ char* zx_ENC_SO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x, ch
 char* zx_ENC_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -9298,6 +10349,8 @@ char* zx_ENC_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -9319,6 +10372,7 @@ char* zx_ENC_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_SubmitRsp_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:SubmitRsp", p-enc_base);
   return p;
 }
 
@@ -9373,6 +10427,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_Subm
 #define EL_NS     mm7
 #define EL_TAG    ThirdPartyPayer
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_ThirdPartyPayer) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -9382,9 +10448,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_SubmitRsp(struct zx_ctx* c, struct zx_mm7_Subm
 int zx_LEN_SO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPayer_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:ThirdPartyPayer")-1 + 1 + sizeof("</mm7:ThirdPartyPayer>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9415,8 +10484,9 @@ int zx_LEN_SO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPaye
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ThirdPartyPayer", len);
   return len;
 }
 
@@ -9430,13 +10500,14 @@ int zx_LEN_SO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPaye
 int zx_LEN_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPayer_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ThirdPartyPayer")-1 + 1 + 2 + sizeof("ThirdPartyPayer")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -9469,6 +10540,7 @@ int zx_LEN_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPaye
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:ThirdPartyPayer", len);
   return len;
 }
 
@@ -9481,10 +10553,14 @@ int zx_LEN_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPaye
 /* Called by: */
 char* zx_ENC_SO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPayer_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:ThirdPartyPayer");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9522,6 +10598,7 @@ char* zx_ENC_SO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPa
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ThirdPartyPayer", p-enc_base);
   return p;
 }
 
@@ -9535,6 +10612,7 @@ char* zx_ENC_SO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPa
 char* zx_ENC_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPayer_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -9549,6 +10627,8 @@ char* zx_ENC_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPa
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -9570,6 +10650,7 @@ char* zx_ENC_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm7_ThirdPartyPa
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:ThirdPartyPayer", p-enc_base);
   return p;
 }
 
@@ -9624,6 +10705,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm
 #define EL_NS     mm7
 #define EL_TAG    To
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_To) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -9633,9 +10726,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_ThirdPartyPayer(struct zx_ctx* c, struct zx_mm
 int zx_LEN_SO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:To")-1 + 1 + sizeof("</mm7:To>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9666,8 +10762,9 @@ int zx_LEN_SO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:To", len);
   return len;
 }
 
@@ -9681,13 +10778,14 @@ int zx_LEN_SO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 int zx_LEN_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("To")-1 + 1 + 2 + sizeof("To")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -9720,6 +10818,7 @@ int zx_LEN_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:To", len);
   return len;
 }
 
@@ -9732,10 +10831,14 @@ int zx_LEN_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:To");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -9773,6 +10876,7 @@ char* zx_ENC_SO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:To", p-enc_base);
   return p;
 }
 
@@ -9786,6 +10890,7 @@ char* zx_ENC_SO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x, char* p )
 char* zx_ENC_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -9800,6 +10905,8 @@ char* zx_ENC_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x, char* p )
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -9821,6 +10928,7 @@ char* zx_ENC_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:To", p-enc_base);
   return p;
 }
 
@@ -9875,6 +10983,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 #define EL_NS     mm7
 #define EL_TAG    TransactionID
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_TransactionID) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -9884,17 +11004,19 @@ struct zx_str* zx_EASY_ENC_WO_mm7_To(struct zx_ctx* c, struct zx_mm7_To_s* x )
 int zx_LEN_SO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:TransactionID")-1 + 1 + sizeof("</mm7:TransactionID>")-1;
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
+  if (x->actor || x->encodingStyle || x->mustUnderstand)
+    len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  len += zx_attr_so_len(x->mustUnderstand, sizeof("e:mustUnderstand")-1);
-  len += zx_attr_so_len(x->encodingStyle, sizeof("e:encodingStyle")-1);
   len += zx_attr_so_len(x->actor, sizeof("e:actor")-1);
+  len += zx_attr_so_len(x->encodingStyle, sizeof("e:encodingStyle")-1);
+  len += zx_attr_so_len(x->mustUnderstand, sizeof("e:mustUnderstand")-1);
 
 #else
   /* root node has no begin tag */
@@ -9903,8 +11025,9 @@ int zx_LEN_SO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s*
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:TransactionID", len);
   return len;
 }
 
@@ -9918,21 +11041,25 @@ int zx_LEN_SO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s*
 int zx_LEN_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("TransactionID")-1 + 1 + 2 + sizeof("TransactionID")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
+  if (x->actor)
+    len += zx_len_xmlns_if_not_seen(c, x->actor->g.ns, &pop_seen);
+  if (x->encodingStyle)
+    len += zx_len_xmlns_if_not_seen(c, x->encodingStyle->g.ns, &pop_seen);
+  if (x->mustUnderstand)
+    len += zx_len_xmlns_if_not_seen(c, x->mustUnderstand->g.ns, &pop_seen);
+  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-
-  len += zx_attr_wo_len(x->mustUnderstand, sizeof("mustUnderstand")-1);
-  len += zx_attr_wo_len(x->encodingStyle, sizeof("encodingStyle")-1);
   len += zx_attr_wo_len(x->actor, sizeof("actor")-1);
+  len += zx_attr_wo_len(x->encodingStyle, sizeof("encodingStyle")-1);
+  len += zx_attr_wo_len(x->mustUnderstand, sizeof("mustUnderstand")-1);
 
 #else
   /* root node has no begin tag */
@@ -9943,6 +11070,7 @@ int zx_LEN_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s*
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:TransactionID", len);
   return len;
 }
 
@@ -9955,18 +11083,21 @@ int zx_LEN_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s*
 /* Called by: */
 char* zx_ENC_SO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:TransactionID");
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
+  if (x->actor || x->encodingStyle || x->mustUnderstand)
+    p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_e, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->mustUnderstand, " e:mustUnderstand=\"", sizeof(" e:mustUnderstand=\"")-1);
-  p = zx_attr_so_enc(p, x->encodingStyle, " e:encodingStyle=\"", sizeof(" e:encodingStyle=\"")-1);
   p = zx_attr_so_enc(p, x->actor, " e:actor=\"", sizeof(" e:actor=\"")-1);
+  p = zx_attr_so_enc(p, x->encodingStyle, " e:encodingStyle=\"", sizeof(" e:encodingStyle=\"")-1);
+  p = zx_attr_so_enc(p, x->mustUnderstand, " e:mustUnderstand=\"", sizeof(" e:mustUnderstand=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -9982,6 +11113,7 @@ char* zx_ENC_SO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:TransactionID", p-enc_base);
   return p;
 }
 
@@ -9995,6 +11127,7 @@ char* zx_ENC_SO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_
 char* zx_ENC_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -10009,15 +11142,20 @@ char* zx_ENC_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_
   qq = p;
 
   /* *** sort the namespaces */
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
+  if (x->actor)
+    zx_add_xmlns_if_not_seen(c, x->actor->g.ns, &pop_seen);
+  if (x->encodingStyle)
+    zx_add_xmlns_if_not_seen(c, x->encodingStyle->g.ns, &pop_seen);
+  if (x->mustUnderstand)
+    zx_add_xmlns_if_not_seen(c, x->mustUnderstand->g.ns, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->mustUnderstand, "mustUnderstand=\"", sizeof("mustUnderstand=\"")-1);
-  p = zx_attr_wo_enc(p, x->encodingStyle, "encodingStyle=\"", sizeof("encodingStyle=\"")-1);
   p = zx_attr_wo_enc(p, x->actor, "actor=\"", sizeof("actor=\"")-1);
+  p = zx_attr_wo_enc(p, x->encodingStyle, "encodingStyle=\"", sizeof("encodingStyle=\"")-1);
+  p = zx_attr_wo_enc(p, x->mustUnderstand, "mustUnderstand=\"", sizeof("mustUnderstand=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -10036,6 +11174,7 @@ char* zx_ENC_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:TransactionID", p-enc_base);
   return p;
 }
 
@@ -10090,6 +11229,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_
 #define EL_NS     mm7
 #define EL_TAG    UACapabilities
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_UACapabilities) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -10099,13 +11250,16 @@ struct zx_str* zx_EASY_ENC_WO_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_
 int zx_LEN_SO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:UACapabilities")-1 + 1 + sizeof("</mm7:UACapabilities>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  len += zx_attr_so_len(x->UAProf, sizeof("UAProf")-1);
   len += zx_attr_so_len(x->TimeStamp, sizeof("TimeStamp")-1);
+  len += zx_attr_so_len(x->UAProf, sizeof("UAProf")-1);
 
 #else
   /* root node has no begin tag */
@@ -10114,8 +11268,9 @@ int zx_LEN_SO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:UACapabilities", len);
   return len;
 }
 
@@ -10129,17 +11284,18 @@ int zx_LEN_SO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_
 int zx_LEN_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("UACapabilities")-1 + 1 + 2 + sizeof("UACapabilities")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->UAProf, sizeof("UAProf")-1);
   len += zx_attr_wo_len(x->TimeStamp, sizeof("TimeStamp")-1);
+  len += zx_attr_wo_len(x->UAProf, sizeof("UAProf")-1);
 
 #else
   /* root node has no begin tag */
@@ -10150,6 +11306,7 @@ int zx_LEN_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:UACapabilities", len);
   return len;
 }
 
@@ -10162,14 +11319,18 @@ int zx_LEN_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_
 /* Called by: */
 char* zx_ENC_SO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:UACapabilities");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->UAProf, " UAProf=\"", sizeof(" UAProf=\"")-1);
   p = zx_attr_so_enc(p, x->TimeStamp, " TimeStamp=\"", sizeof(" TimeStamp=\"")-1);
+  p = zx_attr_so_enc(p, x->UAProf, " UAProf=\"", sizeof(" UAProf=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -10185,6 +11346,7 @@ char* zx_ENC_SO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilitie
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:UACapabilities", p-enc_base);
   return p;
 }
 
@@ -10198,6 +11360,7 @@ char* zx_ENC_SO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilitie
 char* zx_ENC_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -10212,11 +11375,13 @@ char* zx_ENC_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilitie
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->UAProf, "UAProf=\"", sizeof("UAProf=\"")-1);
   p = zx_attr_wo_enc(p, x->TimeStamp, "TimeStamp=\"", sizeof("TimeStamp=\"")-1);
+  p = zx_attr_wo_enc(p, x->UAProf, "UAProf=\"", sizeof("UAProf=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -10235,6 +11400,7 @@ char* zx_ENC_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilitie
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:UACapabilities", p-enc_base);
   return p;
 }
 
@@ -10289,6 +11455,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7
 #define EL_NS     mm7
 #define EL_TAG    UserAgent
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_UserAgent) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -10298,9 +11476,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7
 int zx_LEN_SO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:UserAgent")-1 + 1 + sizeof("</mm7:UserAgent>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   len += zx_attr_so_len(x->sequence, sizeof("sequence")-1);
@@ -10332,8 +11513,9 @@ int zx_LEN_SO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:UserAgent", len);
   return len;
 }
 
@@ -10347,13 +11529,14 @@ int zx_LEN_SO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x )
 int zx_LEN_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("UserAgent")-1 + 1 + 2 + sizeof("UserAgent")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->sequence, sizeof("sequence")-1);
@@ -10387,6 +11570,7 @@ int zx_LEN_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:UserAgent", len);
   return len;
 }
 
@@ -10399,10 +11583,14 @@ int zx_LEN_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:UserAgent");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
   p = zx_attr_so_enc(p, x->sequence, " sequence=\"", sizeof(" sequence=\"")-1);
@@ -10441,6 +11629,7 @@ char* zx_ENC_SO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:UserAgent", p-enc_base);
   return p;
 }
 
@@ -10454,6 +11643,7 @@ char* zx_ENC_SO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x, ch
 char* zx_ENC_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -10468,6 +11658,8 @@ char* zx_ENC_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -10490,6 +11682,7 @@ char* zx_ENC_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_UserAgent_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:UserAgent", p-enc_base);
   return p;
 }
 
@@ -10544,6 +11737,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_User
 #define EL_NS     mm7
 #define EL_TAG    VASPErrorRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_VASPErrorRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -10553,9 +11758,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_UserAgent(struct zx_ctx* c, struct zx_mm7_User
 int zx_LEN_SO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:VASPErrorRsp")-1 + 1 + sizeof("</mm7:VASPErrorRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -10578,8 +11786,9 @@ int zx_LEN_SO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:VASPErrorRsp", len);
   return len;
 }
 
@@ -10593,13 +11802,14 @@ int zx_LEN_SO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x
 int zx_LEN_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("VASPErrorRsp")-1 + 1 + 2 + sizeof("VASPErrorRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -10624,6 +11834,7 @@ int zx_LEN_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:VASPErrorRsp", len);
   return len;
 }
 
@@ -10636,10 +11847,14 @@ int zx_LEN_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x
 /* Called by: */
 char* zx_ENC_SO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:VASPErrorRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -10669,6 +11884,7 @@ char* zx_ENC_SO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s*
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:VASPErrorRsp", p-enc_base);
   return p;
 }
 
@@ -10682,6 +11898,7 @@ char* zx_ENC_SO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s*
 char* zx_ENC_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -10696,6 +11913,8 @@ char* zx_ENC_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s*
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -10717,6 +11936,7 @@ char* zx_ENC_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_VASPErrorRsp_s*
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:VASPErrorRsp", p-enc_base);
   return p;
 }
 
@@ -10771,6 +11991,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_V
 #define EL_NS     mm7
 #define EL_TAG    element
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_element) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -10780,9 +12012,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_VASPErrorRsp(struct zx_ctx* c, struct zx_mm7_V
 int zx_LEN_SO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:element")-1 + 1 + sizeof("</mm7:element>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -10797,8 +12032,9 @@ int zx_LEN_SO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x )
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:value")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:element", len);
   return len;
 }
 
@@ -10812,13 +12048,14 @@ int zx_LEN_SO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x )
 int zx_LEN_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("element")-1 + 1 + 2 + sizeof("element")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -10835,6 +12072,7 @@ int zx_LEN_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:element", len);
   return len;
 }
 
@@ -10847,10 +12085,14 @@ int zx_LEN_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x )
 /* Called by: */
 char* zx_ENC_SO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:element");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -10872,6 +12114,7 @@ char* zx_ENC_SO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x, char* 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:element", p-enc_base);
   return p;
 }
 
@@ -10885,6 +12128,7 @@ char* zx_ENC_SO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x, char* 
 char* zx_ENC_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -10899,6 +12143,8 @@ char* zx_ENC_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x, char* 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -10920,6 +12166,7 @@ char* zx_ENC_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_element_s* x, char* 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:element", p-enc_base);
   return p;
 }
 
@@ -10974,6 +12221,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_elemen
 #define EL_NS     mm7
 #define EL_TAG    extendedCancelReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_extendedCancelReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -10983,9 +12242,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_element(struct zx_ctx* c, struct zx_mm7_elemen
 int zx_LEN_SO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCancelReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:extendedCancelReq")-1 + 1 + sizeof("</mm7:extendedCancelReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11010,8 +12272,9 @@ int zx_LEN_SO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCanc
     len += zx_LEN_SO_simple_elem(c,se, sizeof("mm7:CancelID")-1, zx_ns_tab+zx_xmlns_ix_mm7);
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelReq", len);
   return len;
 }
 
@@ -11025,13 +12288,14 @@ int zx_LEN_SO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCanc
 int zx_LEN_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCancelReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("extendedCancelReq")-1 + 1 + 2 + sizeof("extendedCancelReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -11058,6 +12322,7 @@ int zx_LEN_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCanc
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelReq", len);
   return len;
 }
 
@@ -11070,10 +12335,14 @@ int zx_LEN_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCanc
 /* Called by: */
 char* zx_ENC_SO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCancelReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:extendedCancelReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11105,6 +12374,7 @@ char* zx_ENC_SO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCa
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelReq", p-enc_base);
   return p;
 }
 
@@ -11118,6 +12388,7 @@ char* zx_ENC_SO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCa
 char* zx_ENC_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCancelReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -11132,6 +12403,8 @@ char* zx_ENC_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCa
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -11153,6 +12426,7 @@ char* zx_ENC_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_mm7_extendedCa
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelReq", p-enc_base);
   return p;
 }
 
@@ -11207,6 +12481,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_
 #define EL_NS     mm7
 #define EL_TAG    extendedCancelRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_extendedCancelRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -11216,9 +12502,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_extendedCancelReq(struct zx_ctx* c, struct zx_
 int zx_LEN_SO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCancelRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:extendedCancelRsp")-1 + 1 + sizeof("</mm7:extendedCancelRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11236,8 +12525,9 @@ int zx_LEN_SO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCanc
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelRsp", len);
   return len;
 }
 
@@ -11251,13 +12541,14 @@ int zx_LEN_SO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCanc
 int zx_LEN_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCancelRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("extendedCancelRsp")-1 + 1 + 2 + sizeof("extendedCancelRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -11277,6 +12568,7 @@ int zx_LEN_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCanc
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelRsp", len);
   return len;
 }
 
@@ -11289,10 +12581,14 @@ int zx_LEN_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCanc
 /* Called by: */
 char* zx_ENC_SO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCancelRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:extendedCancelRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11317,6 +12613,7 @@ char* zx_ENC_SO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCa
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelRsp", p-enc_base);
   return p;
 }
 
@@ -11330,6 +12627,7 @@ char* zx_ENC_SO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCa
 char* zx_ENC_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCancelRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -11344,6 +12642,8 @@ char* zx_ENC_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCa
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -11365,6 +12665,7 @@ char* zx_ENC_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_mm7_extendedCa
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedCancelRsp", p-enc_base);
   return p;
 }
 
@@ -11419,6 +12720,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_
 #define EL_NS     mm7
 #define EL_TAG    extendedReplaceReq
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_extendedReplaceReq) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -11428,9 +12741,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_extendedCancelRsp(struct zx_ctx* c, struct zx_
 int zx_LEN_SO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedReplaceReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:extendedReplaceReq")-1 + 1 + sizeof("</mm7:extendedReplaceReq>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11479,8 +12795,9 @@ int zx_LEN_SO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedRep
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceReq", len);
   return len;
 }
 
@@ -11494,13 +12811,14 @@ int zx_LEN_SO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedRep
 int zx_LEN_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedReplaceReq_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("extendedReplaceReq")-1 + 1 + 2 + sizeof("extendedReplaceReq")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -11551,6 +12869,7 @@ int zx_LEN_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedRep
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceReq", len);
   return len;
 }
 
@@ -11563,10 +12882,14 @@ int zx_LEN_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedRep
 /* Called by: */
 char* zx_ENC_SO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedReplaceReq_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:extendedReplaceReq");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11622,6 +12945,7 @@ char* zx_ENC_SO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedR
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceReq", p-enc_base);
   return p;
 }
 
@@ -11635,6 +12959,7 @@ char* zx_ENC_SO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedR
 char* zx_ENC_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedReplaceReq_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -11649,6 +12974,8 @@ char* zx_ENC_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedR
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -11670,6 +12997,7 @@ char* zx_ENC_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx_mm7_extendedR
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceReq", p-enc_base);
   return p;
 }
 
@@ -11724,6 +13052,18 @@ struct zx_str* zx_EASY_ENC_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx
 #define EL_NS     mm7
 #define EL_TAG    extendedReplaceRsp
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_mm7_extendedReplaceRsp) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -11733,9 +13073,12 @@ struct zx_str* zx_EASY_ENC_WO_mm7_extendedReplaceReq(struct zx_ctx* c, struct zx
 int zx_LEN_SO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedReplaceRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<mm7:extendedReplaceRsp")-1 + 1 + sizeof("</mm7:extendedReplaceRsp>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11755,8 +13098,9 @@ int zx_LEN_SO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedRep
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceRsp", len);
   return len;
 }
 
@@ -11770,13 +13114,14 @@ int zx_LEN_SO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedRep
 int zx_LEN_WO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedReplaceRsp_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("extendedReplaceRsp")-1 + 1 + 2 + sizeof("extendedReplaceRsp")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -11798,6 +13143,7 @@ int zx_LEN_WO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedRep
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceRsp", len);
   return len;
 }
 
@@ -11810,10 +13156,14 @@ int zx_LEN_WO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedRep
 /* Called by: */
 char* zx_ENC_SO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedReplaceRsp_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<mm7:extendedReplaceRsp");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_mm7, &pop_seen);
 
 
@@ -11840,6 +13190,7 @@ char* zx_ENC_SO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedR
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceRsp", p-enc_base);
   return p;
 }
 
@@ -11853,6 +13204,7 @@ char* zx_ENC_SO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedR
 char* zx_ENC_WO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedReplaceRsp_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -11867,6 +13219,8 @@ char* zx_ENC_WO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedR
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -11888,6 +13242,7 @@ char* zx_ENC_WO_mm7_extendedReplaceRsp(struct zx_ctx* c, struct zx_mm7_extendedR
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "mm7:extendedReplaceRsp", p-enc_base);
   return p;
 }
 

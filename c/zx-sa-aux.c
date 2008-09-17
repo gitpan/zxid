@@ -453,9 +453,9 @@ void zx_FREE_sa_Assertion(struct zx_ctx* c, struct zx_sa_Assertion_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Version, free_strs);
   zx_free_attr(c, x->ID, free_strs);
   zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->Version, free_strs);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -572,9 +572,9 @@ void zx_DUP_STRS_sa_Assertion(struct zx_ctx* c, struct zx_sa_Assertion_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Version);
   zx_dup_attr(c, x->ID);
   zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->Version);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -641,9 +641,9 @@ struct zx_sa_Assertion_s* zx_DEEP_CLONE_sa_Assertion(struct zx_ctx* c, struct zx
   x = (struct zx_sa_Assertion_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa_Assertion_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Version = zx_clone_attr(c, x->Version);
   x->ID = zx_clone_attr(c, x->ID);
   x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->Version = zx_clone_attr(c, x->Version);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -929,9 +929,9 @@ void zx_FREE_sa_Attribute(struct zx_ctx* c, struct zx_sa_Attribute_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->FriendlyName, free_strs);
   zx_free_attr(c, x->Name, free_strs);
   zx_free_attr(c, x->NameFormat, free_strs);
-  zx_free_attr(c, x->FriendlyName, free_strs);
 
   {
       struct zx_sa_AttributeValue_s* e;
@@ -975,9 +975,9 @@ void zx_DUP_STRS_sa_Attribute(struct zx_ctx* c, struct zx_sa_Attribute_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->FriendlyName);
   zx_dup_attr(c, x->Name);
   zx_dup_attr(c, x->NameFormat);
-  zx_dup_attr(c, x->FriendlyName);
 
   {
       struct zx_sa_AttributeValue_s* e;
@@ -998,9 +998,9 @@ struct zx_sa_Attribute_s* zx_DEEP_CLONE_sa_Attribute(struct zx_ctx* c, struct zx
   x = (struct zx_sa_Attribute_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa_Attribute_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->FriendlyName = zx_clone_attr(c, x->FriendlyName);
   x->Name = zx_clone_attr(c, x->Name);
   x->NameFormat = zx_clone_attr(c, x->NameFormat);
-  x->FriendlyName = zx_clone_attr(c, x->FriendlyName);
 
   {
       struct zx_sa_AttributeValue_s* e;
@@ -1941,8 +1941,8 @@ void zx_FREE_sa_AuthzDecisionStatement(struct zx_ctx* c, struct zx_sa_AuthzDecis
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Resource, free_strs);
   zx_free_attr(c, x->Decision, free_strs);
+  zx_free_attr(c, x->Resource, free_strs);
 
   {
       struct zx_sa_Action_s* e;
@@ -1994,8 +1994,8 @@ void zx_DUP_STRS_sa_AuthzDecisionStatement(struct zx_ctx* c, struct zx_sa_AuthzD
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Resource);
   zx_dup_attr(c, x->Decision);
+  zx_dup_attr(c, x->Resource);
 
   {
       struct zx_sa_Action_s* e;
@@ -2021,8 +2021,8 @@ struct zx_sa_AuthzDecisionStatement_s* zx_DEEP_CLONE_sa_AuthzDecisionStatement(s
   x = (struct zx_sa_AuthzDecisionStatement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa_AuthzDecisionStatement_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Resource = zx_clone_attr(c, x->Resource);
   x->Decision = zx_clone_attr(c, x->Decision);
+  x->Resource = zx_clone_attr(c, x->Resource);
 
   {
       struct zx_sa_Action_s* e;
@@ -2291,6 +2291,14 @@ void zx_FREE_sa_Conditions(struct zx_ctx* c, struct zx_sa_Conditions_s* x, int f
 	  zx_FREE_sa_ProxyRestriction(c, e, free_strs);
       }
   }
+  {
+      struct zx_idp_SubjectRestriction_s* e;
+      struct zx_idp_SubjectRestriction_s* en;
+      for (e = x->SubjectRestriction; e; e = en) {
+	  en = (struct zx_idp_SubjectRestriction_s*)e->gg.g.n;
+	  zx_FREE_idp_SubjectRestriction(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -2343,6 +2351,11 @@ void zx_DUP_STRS_sa_Conditions(struct zx_ctx* c, struct zx_sa_Conditions_s* x)
       struct zx_sa_ProxyRestriction_s* e;
       for (e = x->ProxyRestriction; e; e = (struct zx_sa_ProxyRestriction_s*)e->gg.g.n)
 	  zx_DUP_STRS_sa_ProxyRestriction(c, e);
+  }
+  {
+      struct zx_idp_SubjectRestriction_s* e;
+      for (e = x->SubjectRestriction; e; e = (struct zx_idp_SubjectRestriction_s*)e->gg.g.n)
+	  zx_DUP_STRS_idp_SubjectRestriction(c, e);
   }
 
 }
@@ -2401,6 +2414,19 @@ struct zx_sa_Conditions_s* zx_DEEP_CLONE_sa_Conditions(struct zx_ctx* c, struct 
 	  enn = en;
       }
   }
+  {
+      struct zx_idp_SubjectRestriction_s* e;
+      struct zx_idp_SubjectRestriction_s* en;
+      struct zx_idp_SubjectRestriction_s* enn;
+      for (enn = 0, e = x->SubjectRestriction; e; e = (struct zx_idp_SubjectRestriction_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_idp_SubjectRestriction(c, e, dup_strs);
+	  if (!enn)
+	      x->SubjectRestriction = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -2446,6 +2472,14 @@ int zx_WALK_SO_sa_Conditions(struct zx_ctx* c, struct zx_sa_Conditions_s* x, voi
       struct zx_sa_ProxyRestriction_s* e;
       for (e = x->ProxyRestriction; e; e = (struct zx_sa_ProxyRestriction_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_sa_ProxyRestriction(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_idp_SubjectRestriction_s* e;
+      for (e = x->SubjectRestriction; e; e = (struct zx_idp_SubjectRestriction_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_idp_SubjectRestriction(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }
@@ -3266,9 +3300,9 @@ void zx_FREE_sa_Issuer(struct zx_ctx* c, struct zx_sa_Issuer_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->Format, free_strs);
   zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->SPNameQualifier, free_strs);
-  zx_free_attr(c, x->Format, free_strs);
   zx_free_attr(c, x->SPProvidedID, free_strs);
 
 
@@ -3305,9 +3339,9 @@ void zx_DUP_STRS_sa_Issuer(struct zx_ctx* c, struct zx_sa_Issuer_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->Format);
   zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->SPNameQualifier);
-  zx_dup_attr(c, x->Format);
   zx_dup_attr(c, x->SPProvidedID);
 
 
@@ -3324,9 +3358,9 @@ struct zx_sa_Issuer_s* zx_DEEP_CLONE_sa_Issuer(struct zx_ctx* c, struct zx_sa_Is
   x = (struct zx_sa_Issuer_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa_Issuer_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->Format = zx_clone_attr(c, x->Format);
   x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->SPNameQualifier = zx_clone_attr(c, x->SPNameQualifier);
-  x->Format = zx_clone_attr(c, x->Format);
   x->SPProvidedID = zx_clone_attr(c, x->SPProvidedID);
 
 
@@ -3399,9 +3433,9 @@ void zx_FREE_sa_NameID(struct zx_ctx* c, struct zx_sa_NameID_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->Format, free_strs);
   zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->SPNameQualifier, free_strs);
-  zx_free_attr(c, x->Format, free_strs);
   zx_free_attr(c, x->SPProvidedID, free_strs);
 
 
@@ -3438,9 +3472,9 @@ void zx_DUP_STRS_sa_NameID(struct zx_ctx* c, struct zx_sa_NameID_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->Format);
   zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->SPNameQualifier);
-  zx_dup_attr(c, x->Format);
   zx_dup_attr(c, x->SPProvidedID);
 
 
@@ -3457,9 +3491,9 @@ struct zx_sa_NameID_s* zx_DEEP_CLONE_sa_NameID(struct zx_ctx* c, struct zx_sa_Na
   x = (struct zx_sa_NameID_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa_NameID_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->Format = zx_clone_attr(c, x->Format);
   x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->SPNameQualifier = zx_clone_attr(c, x->SPNameQualifier);
-  x->Format = zx_clone_attr(c, x->Format);
   x->SPProvidedID = zx_clone_attr(c, x->SPProvidedID);
 
 
@@ -4300,11 +4334,12 @@ void zx_FREE_sa_SubjectConfirmationData(struct zx_ctx* c, struct zx_sa_SubjectCo
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->Address, free_strs);
+  zx_free_attr(c, x->InResponseTo, free_strs);
   zx_free_attr(c, x->NotBefore, free_strs);
   zx_free_attr(c, x->NotOnOrAfter, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
-  zx_free_attr(c, x->InResponseTo, free_strs);
-  zx_free_attr(c, x->Address, free_strs);
+  zx_free_attr(c, x->type, free_strs);
 
   {
       struct zx_ds_KeyInfo_s* e;
@@ -4348,11 +4383,12 @@ void zx_DUP_STRS_sa_SubjectConfirmationData(struct zx_ctx* c, struct zx_sa_Subje
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->Address);
+  zx_dup_attr(c, x->InResponseTo);
   zx_dup_attr(c, x->NotBefore);
   zx_dup_attr(c, x->NotOnOrAfter);
   zx_dup_attr(c, x->Recipient);
-  zx_dup_attr(c, x->InResponseTo);
-  zx_dup_attr(c, x->Address);
+  zx_dup_attr(c, x->type);
 
   {
       struct zx_ds_KeyInfo_s* e;
@@ -4373,11 +4409,12 @@ struct zx_sa_SubjectConfirmationData_s* zx_DEEP_CLONE_sa_SubjectConfirmationData
   x = (struct zx_sa_SubjectConfirmationData_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa_SubjectConfirmationData_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->Address = zx_clone_attr(c, x->Address);
+  x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
   x->NotBefore = zx_clone_attr(c, x->NotBefore);
   x->NotOnOrAfter = zx_clone_attr(c, x->NotOnOrAfter);
   x->Recipient = zx_clone_attr(c, x->Recipient);
-  x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
-  x->Address = zx_clone_attr(c, x->Address);
+  x->type = zx_clone_attr(c, x->type);
 
   {
       struct zx_ds_KeyInfo_s* e;

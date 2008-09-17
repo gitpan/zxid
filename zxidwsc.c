@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidwsc.c,v 1.10 2007-06-21 23:32:32 sampo Exp $
+ * $Id: zxidwsc.c,v 1.11 2007-10-12 13:51:47 sampo Exp $
  *
  * 7.1.2007, created --Sampo
  */
@@ -309,7 +309,7 @@ struct zx_e_Envelope_s* vzxid_new_envf(struct zxid_conf* cf, char* body_f, va_li
   /* First allocate temporary buffer for string representation of the SOAP Envelope */
   
   va_copy(ap2, ap);
-  len = vsnprintf(buf, 1, body_f, ap);
+  len = vsnprintf(buf, 1, body_f, ap2);
   va_end(ap2);
   if (len < 0) {
     perror("vsnprintf");

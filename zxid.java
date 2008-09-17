@@ -5,7 +5,7 @@
 // NO WARRANTY, not even implied warranties. Contains trade secrets.
 // Distribution prohibited unless authorized in writing.
 // Licensed under Apache License 2.0, see file COPYING.
-// $Id: zxid.java,v 1.9 2007/02/21 06:33:12 sampo Exp $
+// $Id: zxid.java,v 1.10 2008-02-23 03:59:31 sampo Exp $
 // 12.1.2007, created --Sampo
 
 import zxidjava.*;
@@ -204,10 +204,10 @@ public class zxid {
 	  msg = "SP Initiated logout (SOAP). Session terminated.";
 	  return 0;  // Falls thru to login screen.
       case 't':
-	  zxidjni.sp_nireg_redir(cf, cgi, ses, null);
+	  zxidjni.sp_mni_redir(cf, cgi, ses, null);
 	  return 1;  // Redirect already happened. Do not show login screen.
       case 'u':
-	  zxidjni.sp_nireg_soap(cf, cgi, ses, null);
+	  zxidjni.sp_mni_soap(cf, cgi, ses, null);
 	  msg = "SP Initiated defederation (SOAP).";
 	  break;
       case 'P':

@@ -81,6 +81,14 @@ public class zxid_cgi {
     return zxidjniJNI.zxid_cgi_force_authn_get(swigCPtr);
   }
 
+  public void setEnc_hint(char value) {
+    zxidjniJNI.zxid_cgi_enc_hint_set(swigCPtr, value);
+  }
+
+  public char getEnc_hint() {
+    return zxidjniJNI.zxid_cgi_enc_hint_get(swigCPtr);
+  }
+
   public void setSid(String value) {
     zxidjniJNI.zxid_cgi_sid_set(swigCPtr, value);
   }
@@ -169,12 +177,44 @@ public class zxid_cgi {
     return zxidjniJNI.zxid_cgi_authn_ctx_get(swigCPtr);
   }
 
+  public void setPxy_count(String value) {
+    zxidjniJNI.zxid_cgi_pxy_count_set(swigCPtr, value);
+  }
+
+  public String getPxy_count() {
+    return zxidjniJNI.zxid_cgi_pxy_count_get(swigCPtr);
+  }
+
+  public void setGet_complete(String value) {
+    zxidjniJNI.zxid_cgi_get_complete_set(swigCPtr, value);
+  }
+
+  public String getGet_complete() {
+    return zxidjniJNI.zxid_cgi_get_complete_get(swigCPtr);
+  }
+
+  public void setIdppxylist(String value) {
+    zxidjniJNI.zxid_cgi_idppxylist_set(swigCPtr, value);
+  }
+
+  public String getIdppxylist() {
+    return zxidjniJNI.zxid_cgi_idppxylist_get(swigCPtr);
+  }
+
   public void setRs(String value) {
     zxidjniJNI.zxid_cgi_rs_set(swigCPtr, value);
   }
 
   public String getRs() {
     return zxidjniJNI.zxid_cgi_rs_get(swigCPtr);
+  }
+
+  public void setNewnym(String value) {
+    zxidjniJNI.zxid_cgi_newnym_set(swigCPtr, value);
+  }
+
+  public String getNewnym() {
+    return zxidjniJNI.zxid_cgi_newnym_get(swigCPtr);
   }
 
   public void setSaml_art(String value) {
@@ -255,6 +295,15 @@ public class zxid_cgi {
 
   public String getDbg() {
     return zxidjniJNI.zxid_cgi_dbg_get(swigCPtr);
+  }
+
+  public void setIdp_list(zxid_entity value) {
+    zxidjniJNI.zxid_cgi_idp_list_set(swigCPtr, zxid_entity.getCPtr(value));
+  }
+
+  public zxid_entity getIdp_list() {
+    long cPtr = zxidjniJNI.zxid_cgi_idp_list_get(swigCPtr);
+    return (cPtr == 0) ? null : new zxid_entity(cPtr, false);
   }
 
   public zxid_cgi() {

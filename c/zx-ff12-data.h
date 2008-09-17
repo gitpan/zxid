@@ -53,21 +53,21 @@ struct zx_ff12_Assertion_s {
   struct zx_xasa_XACMLAuthzDecisionStatement_s* XACMLAuthzDecisionStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLPolicyStatement_s* XACMLPolicyStatement;	/* {0,-1} nada */
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
+  struct zx_str* AssertionID;	/* {1,1} attribute xs:ID */
+  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* Issuer;	/* {1,1} attribute xs:string */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* AssertionID;	/* {1,1} attribute xs:ID */
-  struct zx_str* Issuer;	/* {1,1} attribute xs:string */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_ff12_Assertion_GET_AssertionID(struct zx_ff12_Assertion_s* x);
+struct zx_str* zx_ff12_Assertion_GET_InResponseTo(struct zx_ff12_Assertion_s* x);
+struct zx_str* zx_ff12_Assertion_GET_IssueInstant(struct zx_ff12_Assertion_s* x);
+struct zx_str* zx_ff12_Assertion_GET_Issuer(struct zx_ff12_Assertion_s* x);
 struct zx_str* zx_ff12_Assertion_GET_MajorVersion(struct zx_ff12_Assertion_s* x);
 struct zx_str* zx_ff12_Assertion_GET_MinorVersion(struct zx_ff12_Assertion_s* x);
-struct zx_str* zx_ff12_Assertion_GET_AssertionID(struct zx_ff12_Assertion_s* x);
-struct zx_str* zx_ff12_Assertion_GET_Issuer(struct zx_ff12_Assertion_s* x);
-struct zx_str* zx_ff12_Assertion_GET_IssueInstant(struct zx_ff12_Assertion_s* x);
-struct zx_str* zx_ff12_Assertion_GET_InResponseTo(struct zx_ff12_Assertion_s* x);
 
 struct zx_sa11_Conditions_s* zx_ff12_Assertion_GET_Conditions(struct zx_ff12_Assertion_s* x, int n);
 struct zx_sa11_Advice_s* zx_ff12_Assertion_GET_Advice(struct zx_ff12_Assertion_s* x, int n);
@@ -113,12 +113,12 @@ void zx_ff12_Assertion_PUSH_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion
 void zx_ff12_Assertion_PUSH_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, struct zx_xasa_XACMLPolicyStatement_s* y);
 void zx_ff12_Assertion_PUSH_Signature(struct zx_ff12_Assertion_s* x, struct zx_ds_Signature_s* y);
 
+void zx_ff12_Assertion_PUT_AssertionID(struct zx_ff12_Assertion_s* x, struct zx_str* y);
+void zx_ff12_Assertion_PUT_InResponseTo(struct zx_ff12_Assertion_s* x, struct zx_str* y);
+void zx_ff12_Assertion_PUT_IssueInstant(struct zx_ff12_Assertion_s* x, struct zx_str* y);
+void zx_ff12_Assertion_PUT_Issuer(struct zx_ff12_Assertion_s* x, struct zx_str* y);
 void zx_ff12_Assertion_PUT_MajorVersion(struct zx_ff12_Assertion_s* x, struct zx_str* y);
 void zx_ff12_Assertion_PUT_MinorVersion(struct zx_ff12_Assertion_s* x, struct zx_str* y);
-void zx_ff12_Assertion_PUT_AssertionID(struct zx_ff12_Assertion_s* x, struct zx_str* y);
-void zx_ff12_Assertion_PUT_Issuer(struct zx_ff12_Assertion_s* x, struct zx_str* y);
-void zx_ff12_Assertion_PUT_IssueInstant(struct zx_ff12_Assertion_s* x, struct zx_str* y);
-void zx_ff12_Assertion_PUT_InResponseTo(struct zx_ff12_Assertion_s* x, struct zx_str* y);
 
 void zx_ff12_Assertion_PUT_Conditions(struct zx_ff12_Assertion_s* x, int n, struct zx_sa11_Conditions_s* y);
 void zx_ff12_Assertion_PUT_Advice(struct zx_ff12_Assertion_s* x, int n, struct zx_sa11_Advice_s* y);
@@ -194,15 +194,15 @@ struct zx_ff12_AuthenticationStatement_s {
   struct zx_sa11_SubjectLocality_s* SubjectLocality;	/* {0,1} nada */
   struct zx_sa11_AuthorityBinding_s* AuthorityBinding;	/* {0,-1} nada */
   struct zx_ff12_AuthnContext_s* AuthnContext;	/* {0,1}  */
-  struct zx_str* AuthenticationMethod;	/* {1,1} attribute xs:anyURI */
   struct zx_str* AuthenticationInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* AuthenticationMethod;	/* {1,1} attribute xs:anyURI */
   struct zx_str* ReauthenticateOnOrAfter;	/* {0,1} attribute xs:dateTime */
   struct zx_str* SessionIndex;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_AuthenticationStatement_GET_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x);
 struct zx_str* zx_ff12_AuthenticationStatement_GET_AuthenticationInstant(struct zx_ff12_AuthenticationStatement_s* x);
+struct zx_str* zx_ff12_AuthenticationStatement_GET_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x);
 struct zx_str* zx_ff12_AuthenticationStatement_GET_ReauthenticateOnOrAfter(struct zx_ff12_AuthenticationStatement_s* x);
 struct zx_str* zx_ff12_AuthenticationStatement_GET_SessionIndex(struct zx_ff12_AuthenticationStatement_s* x);
 
@@ -226,8 +226,8 @@ void zx_ff12_AuthenticationStatement_PUSH_SubjectLocality(struct zx_ff12_Authent
 void zx_ff12_AuthenticationStatement_PUSH_AuthorityBinding(struct zx_ff12_AuthenticationStatement_s* x, struct zx_sa11_AuthorityBinding_s* y);
 void zx_ff12_AuthenticationStatement_PUSH_AuthnContext(struct zx_ff12_AuthenticationStatement_s* x, struct zx_ff12_AuthnContext_s* y);
 
-void zx_ff12_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y);
 void zx_ff12_AuthenticationStatement_PUT_AuthenticationInstant(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y);
+void zx_ff12_AuthenticationStatement_PUT_AuthenticationMethod(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y);
 void zx_ff12_AuthenticationStatement_PUT_ReauthenticateOnOrAfter(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y);
 void zx_ff12_AuthenticationStatement_PUT_SessionIndex(struct zx_ff12_AuthenticationStatement_s* x, struct zx_str* y);
 
@@ -356,18 +356,18 @@ struct zx_ff12_AuthnRequest_s {
   struct zx_ff12_RequestAuthnContext_s* RequestAuthnContext;	/* {0,1} nada */
   struct zx_elem_s* RelayState;	/* {0,1} xs:string */
   struct zx_ff12_Scoping_s* Scoping;	/* {0,1} nada */
-  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
   struct zx_str* consent;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_AuthnRequest_GET_RequestID(struct zx_ff12_AuthnRequest_s* x);
+struct zx_str* zx_ff12_AuthnRequest_GET_IssueInstant(struct zx_ff12_AuthnRequest_s* x);
 struct zx_str* zx_ff12_AuthnRequest_GET_MajorVersion(struct zx_ff12_AuthnRequest_s* x);
 struct zx_str* zx_ff12_AuthnRequest_GET_MinorVersion(struct zx_ff12_AuthnRequest_s* x);
-struct zx_str* zx_ff12_AuthnRequest_GET_IssueInstant(struct zx_ff12_AuthnRequest_s* x);
+struct zx_str* zx_ff12_AuthnRequest_GET_RequestID(struct zx_ff12_AuthnRequest_s* x);
 struct zx_str* zx_ff12_AuthnRequest_GET_consent(struct zx_ff12_AuthnRequest_s* x);
 
 struct zx_elem_s* zx_ff12_AuthnRequest_GET_RespondWith(struct zx_ff12_AuthnRequest_s* x, int n);
@@ -426,10 +426,10 @@ void zx_ff12_AuthnRequest_PUSH_RequestAuthnContext(struct zx_ff12_AuthnRequest_s
 void zx_ff12_AuthnRequest_PUSH_RelayState(struct zx_ff12_AuthnRequest_s* x, struct zx_elem_s* y);
 void zx_ff12_AuthnRequest_PUSH_Scoping(struct zx_ff12_AuthnRequest_s* x, struct zx_ff12_Scoping_s* y);
 
-void zx_ff12_AuthnRequest_PUT_RequestID(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
+void zx_ff12_AuthnRequest_PUT_IssueInstant(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
 void zx_ff12_AuthnRequest_PUT_MajorVersion(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
 void zx_ff12_AuthnRequest_PUT_MinorVersion(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
-void zx_ff12_AuthnRequest_PUT_IssueInstant(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
+void zx_ff12_AuthnRequest_PUT_RequestID(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
 void zx_ff12_AuthnRequest_PUT_consent(struct zx_ff12_AuthnRequest_s* x, struct zx_str* y);
 
 void zx_ff12_AuthnRequest_PUT_RespondWith(struct zx_ff12_AuthnRequest_s* x, int n, struct zx_elem_s* y);
@@ -622,22 +622,22 @@ struct zx_ff12_AuthnResponse_s {
   struct zx_ff12_Extension_s* Extension;	/* {0,-1}  */
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_elem_s* RelayState;	/* {0,1} xs:string */
-  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
   struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
   struct zx_str* consent;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_AuthnResponse_GET_ResponseID(struct zx_ff12_AuthnResponse_s* x);
 struct zx_str* zx_ff12_AuthnResponse_GET_InResponseTo(struct zx_ff12_AuthnResponse_s* x);
+struct zx_str* zx_ff12_AuthnResponse_GET_IssueInstant(struct zx_ff12_AuthnResponse_s* x);
 struct zx_str* zx_ff12_AuthnResponse_GET_MajorVersion(struct zx_ff12_AuthnResponse_s* x);
 struct zx_str* zx_ff12_AuthnResponse_GET_MinorVersion(struct zx_ff12_AuthnResponse_s* x);
-struct zx_str* zx_ff12_AuthnResponse_GET_IssueInstant(struct zx_ff12_AuthnResponse_s* x);
 struct zx_str* zx_ff12_AuthnResponse_GET_Recipient(struct zx_ff12_AuthnResponse_s* x);
+struct zx_str* zx_ff12_AuthnResponse_GET_ResponseID(struct zx_ff12_AuthnResponse_s* x);
 struct zx_str* zx_ff12_AuthnResponse_GET_consent(struct zx_ff12_AuthnResponse_s* x);
 
 struct zx_ds_Signature_s* zx_ff12_AuthnResponse_GET_Signature(struct zx_ff12_AuthnResponse_s* x, int n);
@@ -668,12 +668,12 @@ void zx_ff12_AuthnResponse_PUSH_Extension(struct zx_ff12_AuthnResponse_s* x, str
 void zx_ff12_AuthnResponse_PUSH_ProviderID(struct zx_ff12_AuthnResponse_s* x, struct zx_elem_s* y);
 void zx_ff12_AuthnResponse_PUSH_RelayState(struct zx_ff12_AuthnResponse_s* x, struct zx_elem_s* y);
 
-void zx_ff12_AuthnResponse_PUT_ResponseID(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
 void zx_ff12_AuthnResponse_PUT_InResponseTo(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
+void zx_ff12_AuthnResponse_PUT_IssueInstant(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
 void zx_ff12_AuthnResponse_PUT_MajorVersion(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
 void zx_ff12_AuthnResponse_PUT_MinorVersion(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
-void zx_ff12_AuthnResponse_PUT_IssueInstant(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
 void zx_ff12_AuthnResponse_PUT_Recipient(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
+void zx_ff12_AuthnResponse_PUT_ResponseID(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
 void zx_ff12_AuthnResponse_PUT_consent(struct zx_ff12_AuthnResponse_s* x, struct zx_str* y);
 
 void zx_ff12_AuthnResponse_PUT_Signature(struct zx_ff12_AuthnResponse_s* x, int n, struct zx_ds_Signature_s* y);
@@ -796,25 +796,25 @@ struct zx_str* zx_EASY_ENC_WO_ff12_EncryptableNameIdentifier(struct zx_ctx* c, s
 struct zx_ff12_EncryptableNameIdentifier_s {
   ZX_ELEM_EXT
   zx_ff12_EncryptableNameIdentifier_EXT
-  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
   struct zx_str* IssueInstant;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* Nonce;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x);
 struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_Format(struct zx_ff12_EncryptableNameIdentifier_s* x);
 struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_IssueInstant(struct zx_ff12_EncryptableNameIdentifier_s* x);
+struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x);
 struct zx_str* zx_ff12_EncryptableNameIdentifier_GET_Nonce(struct zx_ff12_EncryptableNameIdentifier_s* x);
 
 
 
 
 
-void zx_ff12_EncryptableNameIdentifier_PUT_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y);
 void zx_ff12_EncryptableNameIdentifier_PUT_Format(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y);
 void zx_ff12_EncryptableNameIdentifier_PUT_IssueInstant(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y);
+void zx_ff12_EncryptableNameIdentifier_PUT_NameQualifier(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y);
 void zx_ff12_EncryptableNameIdentifier_PUT_Nonce(struct zx_ff12_EncryptableNameIdentifier_s* x, struct zx_str* y);
 
 
@@ -948,18 +948,18 @@ struct zx_ff12_FederationTerminationNotification_s {
   struct zx_ff12_Extension_s* Extension;	/* {0,-1}  */
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_sa11_NameIdentifier_s* NameIdentifier;	/* {1,1} nada */
-  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
   struct zx_str* consent;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_FederationTerminationNotification_GET_RequestID(struct zx_ff12_FederationTerminationNotification_s* x);
+struct zx_str* zx_ff12_FederationTerminationNotification_GET_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x);
 struct zx_str* zx_ff12_FederationTerminationNotification_GET_MajorVersion(struct zx_ff12_FederationTerminationNotification_s* x);
 struct zx_str* zx_ff12_FederationTerminationNotification_GET_MinorVersion(struct zx_ff12_FederationTerminationNotification_s* x);
-struct zx_str* zx_ff12_FederationTerminationNotification_GET_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x);
+struct zx_str* zx_ff12_FederationTerminationNotification_GET_RequestID(struct zx_ff12_FederationTerminationNotification_s* x);
 struct zx_str* zx_ff12_FederationTerminationNotification_GET_consent(struct zx_ff12_FederationTerminationNotification_s* x);
 
 struct zx_elem_s* zx_ff12_FederationTerminationNotification_GET_RespondWith(struct zx_ff12_FederationTerminationNotification_s* x, int n);
@@ -986,10 +986,10 @@ void zx_ff12_FederationTerminationNotification_PUSH_Extension(struct zx_ff12_Fed
 void zx_ff12_FederationTerminationNotification_PUSH_ProviderID(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_elem_s* y);
 void zx_ff12_FederationTerminationNotification_PUSH_NameIdentifier(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_sa11_NameIdentifier_s* y);
 
-void zx_ff12_FederationTerminationNotification_PUT_RequestID(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
+void zx_ff12_FederationTerminationNotification_PUT_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
 void zx_ff12_FederationTerminationNotification_PUT_MajorVersion(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
 void zx_ff12_FederationTerminationNotification_PUT_MinorVersion(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
-void zx_ff12_FederationTerminationNotification_PUT_IssueInstant(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
+void zx_ff12_FederationTerminationNotification_PUT_RequestID(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
 void zx_ff12_FederationTerminationNotification_PUT_consent(struct zx_ff12_FederationTerminationNotification_s* x, struct zx_str* y);
 
 void zx_ff12_FederationTerminationNotification_PUT_RespondWith(struct zx_ff12_FederationTerminationNotification_s* x, int n, struct zx_elem_s* y);
@@ -1213,20 +1213,20 @@ struct zx_str* zx_EASY_ENC_WO_ff12_IDPProvidedNameIdentifier(struct zx_ctx* c, s
 struct zx_ff12_IDPProvidedNameIdentifier_s {
   ZX_ELEM_EXT
   zx_ff12_IDPProvidedNameIdentifier_EXT
-  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_IDPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x);
 struct zx_str* zx_ff12_IDPProvidedNameIdentifier_GET_Format(struct zx_ff12_IDPProvidedNameIdentifier_s* x);
+struct zx_str* zx_ff12_IDPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x);
 
 
 
 
 
-void zx_ff12_IDPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x, struct zx_str* y);
 void zx_ff12_IDPProvidedNameIdentifier_PUT_Format(struct zx_ff12_IDPProvidedNameIdentifier_s* x, struct zx_str* y);
+void zx_ff12_IDPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_IDPProvidedNameIdentifier_s* x, struct zx_str* y);
 
 
 
@@ -1265,21 +1265,21 @@ struct zx_ff12_LogoutRequest_s {
   struct zx_sa11_NameIdentifier_s* NameIdentifier;	/* {1,1} nada */
   struct zx_elem_s* SessionIndex;	/* {0,-1} xs:string */
   struct zx_elem_s* RelayState;	/* {0,1} xs:string */
-  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* consent;	/* {0,1} attribute xs:string */
   struct zx_str* NotOnOrAfter;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* consent;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_LogoutRequest_GET_RequestID(struct zx_ff12_LogoutRequest_s* x);
+struct zx_str* zx_ff12_LogoutRequest_GET_IssueInstant(struct zx_ff12_LogoutRequest_s* x);
 struct zx_str* zx_ff12_LogoutRequest_GET_MajorVersion(struct zx_ff12_LogoutRequest_s* x);
 struct zx_str* zx_ff12_LogoutRequest_GET_MinorVersion(struct zx_ff12_LogoutRequest_s* x);
-struct zx_str* zx_ff12_LogoutRequest_GET_IssueInstant(struct zx_ff12_LogoutRequest_s* x);
-struct zx_str* zx_ff12_LogoutRequest_GET_consent(struct zx_ff12_LogoutRequest_s* x);
 struct zx_str* zx_ff12_LogoutRequest_GET_NotOnOrAfter(struct zx_ff12_LogoutRequest_s* x);
+struct zx_str* zx_ff12_LogoutRequest_GET_RequestID(struct zx_ff12_LogoutRequest_s* x);
+struct zx_str* zx_ff12_LogoutRequest_GET_consent(struct zx_ff12_LogoutRequest_s* x);
 
 struct zx_elem_s* zx_ff12_LogoutRequest_GET_RespondWith(struct zx_ff12_LogoutRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_ff12_LogoutRequest_GET_Signature(struct zx_ff12_LogoutRequest_s* x, int n);
@@ -1313,12 +1313,12 @@ void zx_ff12_LogoutRequest_PUSH_NameIdentifier(struct zx_ff12_LogoutRequest_s* x
 void zx_ff12_LogoutRequest_PUSH_SessionIndex(struct zx_ff12_LogoutRequest_s* x, struct zx_elem_s* y);
 void zx_ff12_LogoutRequest_PUSH_RelayState(struct zx_ff12_LogoutRequest_s* x, struct zx_elem_s* y);
 
-void zx_ff12_LogoutRequest_PUT_RequestID(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
+void zx_ff12_LogoutRequest_PUT_IssueInstant(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
 void zx_ff12_LogoutRequest_PUT_MajorVersion(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
 void zx_ff12_LogoutRequest_PUT_MinorVersion(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
-void zx_ff12_LogoutRequest_PUT_IssueInstant(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
-void zx_ff12_LogoutRequest_PUT_consent(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
 void zx_ff12_LogoutRequest_PUT_NotOnOrAfter(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
+void zx_ff12_LogoutRequest_PUT_RequestID(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
+void zx_ff12_LogoutRequest_PUT_consent(struct zx_ff12_LogoutRequest_s* x, struct zx_str* y);
 
 void zx_ff12_LogoutRequest_PUT_RespondWith(struct zx_ff12_LogoutRequest_s* x, int n, struct zx_elem_s* y);
 void zx_ff12_LogoutRequest_PUT_Signature(struct zx_ff12_LogoutRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1383,21 +1383,21 @@ struct zx_ff12_LogoutResponse_s {
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_sp11_Status_s* Status;	/* {1,1} nada */
   struct zx_elem_s* RelayState;	/* {0,1} xs:string */
-  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
   struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_LogoutResponse_GET_ResponseID(struct zx_ff12_LogoutResponse_s* x);
 struct zx_str* zx_ff12_LogoutResponse_GET_InResponseTo(struct zx_ff12_LogoutResponse_s* x);
+struct zx_str* zx_ff12_LogoutResponse_GET_IssueInstant(struct zx_ff12_LogoutResponse_s* x);
 struct zx_str* zx_ff12_LogoutResponse_GET_MajorVersion(struct zx_ff12_LogoutResponse_s* x);
 struct zx_str* zx_ff12_LogoutResponse_GET_MinorVersion(struct zx_ff12_LogoutResponse_s* x);
-struct zx_str* zx_ff12_LogoutResponse_GET_IssueInstant(struct zx_ff12_LogoutResponse_s* x);
 struct zx_str* zx_ff12_LogoutResponse_GET_Recipient(struct zx_ff12_LogoutResponse_s* x);
+struct zx_str* zx_ff12_LogoutResponse_GET_ResponseID(struct zx_ff12_LogoutResponse_s* x);
 
 struct zx_ds_Signature_s* zx_ff12_LogoutResponse_GET_Signature(struct zx_ff12_LogoutResponse_s* x, int n);
 struct zx_ff12_Extension_s* zx_ff12_LogoutResponse_GET_Extension(struct zx_ff12_LogoutResponse_s* x, int n);
@@ -1423,12 +1423,12 @@ void zx_ff12_LogoutResponse_PUSH_ProviderID(struct zx_ff12_LogoutResponse_s* x, 
 void zx_ff12_LogoutResponse_PUSH_Status(struct zx_ff12_LogoutResponse_s* x, struct zx_sp11_Status_s* y);
 void zx_ff12_LogoutResponse_PUSH_RelayState(struct zx_ff12_LogoutResponse_s* x, struct zx_elem_s* y);
 
-void zx_ff12_LogoutResponse_PUT_ResponseID(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
 void zx_ff12_LogoutResponse_PUT_InResponseTo(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
+void zx_ff12_LogoutResponse_PUT_IssueInstant(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
 void zx_ff12_LogoutResponse_PUT_MajorVersion(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
 void zx_ff12_LogoutResponse_PUT_MinorVersion(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
-void zx_ff12_LogoutResponse_PUT_IssueInstant(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
 void zx_ff12_LogoutResponse_PUT_Recipient(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
+void zx_ff12_LogoutResponse_PUT_ResponseID(struct zx_ff12_LogoutResponse_s* x, struct zx_str* y);
 
 void zx_ff12_LogoutResponse_PUT_Signature(struct zx_ff12_LogoutResponse_s* x, int n, struct zx_ds_Signature_s* y);
 void zx_ff12_LogoutResponse_PUT_Extension(struct zx_ff12_LogoutResponse_s* x, int n, struct zx_ff12_Extension_s* y);
@@ -1486,18 +1486,18 @@ struct zx_ff12_NameIdentifierMappingRequest_s {
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_sa11_NameIdentifier_s* NameIdentifier;	/* {1,1} nada */
   struct zx_elem_s* TargetNamespace;	/* {1,1} xs:anyURI */
-  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
   struct zx_str* consent;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x);
+struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_MajorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_MinorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x);
-struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x);
+struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingRequest_GET_consent(struct zx_ff12_NameIdentifierMappingRequest_s* x);
 
 struct zx_elem_s* zx_ff12_NameIdentifierMappingRequest_GET_RespondWith(struct zx_ff12_NameIdentifierMappingRequest_s* x, int n);
@@ -1528,10 +1528,10 @@ void zx_ff12_NameIdentifierMappingRequest_PUSH_ProviderID(struct zx_ff12_NameIde
 void zx_ff12_NameIdentifierMappingRequest_PUSH_NameIdentifier(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_sa11_NameIdentifier_s* y);
 void zx_ff12_NameIdentifierMappingRequest_PUSH_TargetNamespace(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_elem_s* y);
 
-void zx_ff12_NameIdentifierMappingRequest_PUT_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
+void zx_ff12_NameIdentifierMappingRequest_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingRequest_PUT_MajorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingRequest_PUT_MinorVersion(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
-void zx_ff12_NameIdentifierMappingRequest_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
+void zx_ff12_NameIdentifierMappingRequest_PUT_RequestID(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingRequest_PUT_consent(struct zx_ff12_NameIdentifierMappingRequest_s* x, struct zx_str* y);
 
 void zx_ff12_NameIdentifierMappingRequest_PUT_RespondWith(struct zx_ff12_NameIdentifierMappingRequest_s* x, int n, struct zx_elem_s* y);
@@ -1593,21 +1593,21 @@ struct zx_ff12_NameIdentifierMappingResponse_s {
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_sp11_Status_s* Status;	/* {1,1} nada */
   struct zx_sa11_NameIdentifier_s* NameIdentifier;	/* {0,1} nada */
-  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
   struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_InResponseTo(struct zx_ff12_NameIdentifierMappingResponse_s* x);
+struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_MajorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_MinorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x);
-struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x);
 struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_Recipient(struct zx_ff12_NameIdentifierMappingResponse_s* x);
+struct zx_str* zx_ff12_NameIdentifierMappingResponse_GET_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x);
 
 struct zx_ds_Signature_s* zx_ff12_NameIdentifierMappingResponse_GET_Signature(struct zx_ff12_NameIdentifierMappingResponse_s* x, int n);
 struct zx_ff12_Extension_s* zx_ff12_NameIdentifierMappingResponse_GET_Extension(struct zx_ff12_NameIdentifierMappingResponse_s* x, int n);
@@ -1633,12 +1633,12 @@ void zx_ff12_NameIdentifierMappingResponse_PUSH_ProviderID(struct zx_ff12_NameId
 void zx_ff12_NameIdentifierMappingResponse_PUSH_Status(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_sp11_Status_s* y);
 void zx_ff12_NameIdentifierMappingResponse_PUSH_NameIdentifier(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_sa11_NameIdentifier_s* y);
 
-void zx_ff12_NameIdentifierMappingResponse_PUT_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingResponse_PUT_InResponseTo(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
+void zx_ff12_NameIdentifierMappingResponse_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingResponse_PUT_MajorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingResponse_PUT_MinorVersion(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
-void zx_ff12_NameIdentifierMappingResponse_PUT_IssueInstant(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
 void zx_ff12_NameIdentifierMappingResponse_PUT_Recipient(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
+void zx_ff12_NameIdentifierMappingResponse_PUT_ResponseID(struct zx_ff12_NameIdentifierMappingResponse_s* x, struct zx_str* y);
 
 void zx_ff12_NameIdentifierMappingResponse_PUT_Signature(struct zx_ff12_NameIdentifierMappingResponse_s* x, int n, struct zx_ds_Signature_s* y);
 void zx_ff12_NameIdentifierMappingResponse_PUT_Extension(struct zx_ff12_NameIdentifierMappingResponse_s* x, int n, struct zx_ff12_Extension_s* y);
@@ -1690,20 +1690,20 @@ struct zx_str* zx_EASY_ENC_WO_ff12_OldProvidedNameIdentifier(struct zx_ctx* c, s
 struct zx_ff12_OldProvidedNameIdentifier_s {
   ZX_ELEM_EXT
   zx_ff12_OldProvidedNameIdentifier_EXT
-  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_OldProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x);
 struct zx_str* zx_ff12_OldProvidedNameIdentifier_GET_Format(struct zx_ff12_OldProvidedNameIdentifier_s* x);
+struct zx_str* zx_ff12_OldProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x);
 
 
 
 
 
-void zx_ff12_OldProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x, struct zx_str* y);
 void zx_ff12_OldProvidedNameIdentifier_PUT_Format(struct zx_ff12_OldProvidedNameIdentifier_s* x, struct zx_str* y);
+void zx_ff12_OldProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_OldProvidedNameIdentifier_s* x, struct zx_str* y);
 
 
 
@@ -1743,17 +1743,17 @@ struct zx_ff12_RegisterNameIdentifierRequest_s {
   struct zx_ff12_SPProvidedNameIdentifier_s* SPProvidedNameIdentifier;	/* {0,1} nada */
   struct zx_ff12_OldProvidedNameIdentifier_s* OldProvidedNameIdentifier;	/* {1,1} nada */
   struct zx_elem_s* RelayState;	/* {0,1} xs:string */
-  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x);
+struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x);
 struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_MajorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x);
 struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_MinorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x);
-struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x);
+struct zx_str* zx_ff12_RegisterNameIdentifierRequest_GET_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x);
 
 struct zx_elem_s* zx_ff12_RegisterNameIdentifierRequest_GET_RespondWith(struct zx_ff12_RegisterNameIdentifierRequest_s* x, int n);
 struct zx_ds_Signature_s* zx_ff12_RegisterNameIdentifierRequest_GET_Signature(struct zx_ff12_RegisterNameIdentifierRequest_s* x, int n);
@@ -1791,10 +1791,10 @@ void zx_ff12_RegisterNameIdentifierRequest_PUSH_SPProvidedNameIdentifier(struct 
 void zx_ff12_RegisterNameIdentifierRequest_PUSH_OldProvidedNameIdentifier(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_ff12_OldProvidedNameIdentifier_s* y);
 void zx_ff12_RegisterNameIdentifierRequest_PUSH_RelayState(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_elem_s* y);
 
-void zx_ff12_RegisterNameIdentifierRequest_PUT_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y);
+void zx_ff12_RegisterNameIdentifierRequest_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y);
 void zx_ff12_RegisterNameIdentifierRequest_PUT_MajorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y);
 void zx_ff12_RegisterNameIdentifierRequest_PUT_MinorVersion(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y);
-void zx_ff12_RegisterNameIdentifierRequest_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y);
+void zx_ff12_RegisterNameIdentifierRequest_PUT_RequestID(struct zx_ff12_RegisterNameIdentifierRequest_s* x, struct zx_str* y);
 
 void zx_ff12_RegisterNameIdentifierRequest_PUT_RespondWith(struct zx_ff12_RegisterNameIdentifierRequest_s* x, int n, struct zx_elem_s* y);
 void zx_ff12_RegisterNameIdentifierRequest_PUT_Signature(struct zx_ff12_RegisterNameIdentifierRequest_s* x, int n, struct zx_ds_Signature_s* y);
@@ -1863,21 +1863,21 @@ struct zx_ff12_RegisterNameIdentifierResponse_s {
   struct zx_elem_s* ProviderID;	/* {1,1} xs:anyURI */
   struct zx_sp11_Status_s* Status;	/* {1,1} nada */
   struct zx_elem_s* RelayState;	/* {0,1} xs:string */
-  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
   struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_InResponseTo(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
+struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_MajorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_MinorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
-struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
 struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_Recipient(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
+struct zx_str* zx_ff12_RegisterNameIdentifierResponse_GET_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x);
 
 struct zx_ds_Signature_s* zx_ff12_RegisterNameIdentifierResponse_GET_Signature(struct zx_ff12_RegisterNameIdentifierResponse_s* x, int n);
 struct zx_ff12_Extension_s* zx_ff12_RegisterNameIdentifierResponse_GET_Extension(struct zx_ff12_RegisterNameIdentifierResponse_s* x, int n);
@@ -1903,12 +1903,12 @@ void zx_ff12_RegisterNameIdentifierResponse_PUSH_ProviderID(struct zx_ff12_Regis
 void zx_ff12_RegisterNameIdentifierResponse_PUSH_Status(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_sp11_Status_s* y);
 void zx_ff12_RegisterNameIdentifierResponse_PUSH_RelayState(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_elem_s* y);
 
-void zx_ff12_RegisterNameIdentifierResponse_PUT_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
 void zx_ff12_RegisterNameIdentifierResponse_PUT_InResponseTo(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
+void zx_ff12_RegisterNameIdentifierResponse_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
 void zx_ff12_RegisterNameIdentifierResponse_PUT_MajorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
 void zx_ff12_RegisterNameIdentifierResponse_PUT_MinorVersion(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
-void zx_ff12_RegisterNameIdentifierResponse_PUT_IssueInstant(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
 void zx_ff12_RegisterNameIdentifierResponse_PUT_Recipient(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
+void zx_ff12_RegisterNameIdentifierResponse_PUT_ResponseID(struct zx_ff12_RegisterNameIdentifierResponse_s* x, struct zx_str* y);
 
 void zx_ff12_RegisterNameIdentifierResponse_PUT_Signature(struct zx_ff12_RegisterNameIdentifierResponse_s* x, int n, struct zx_ds_Signature_s* y);
 void zx_ff12_RegisterNameIdentifierResponse_PUT_Extension(struct zx_ff12_RegisterNameIdentifierResponse_s* x, int n, struct zx_ff12_Extension_s* y);
@@ -2026,20 +2026,20 @@ struct zx_str* zx_EASY_ENC_WO_ff12_SPProvidedNameIdentifier(struct zx_ctx* c, st
 struct zx_ff12_SPProvidedNameIdentifier_s {
   ZX_ELEM_EXT
   zx_ff12_SPProvidedNameIdentifier_EXT
-  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
   struct zx_str* Format;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* NameQualifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_ff12_SPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x);
 struct zx_str* zx_ff12_SPProvidedNameIdentifier_GET_Format(struct zx_ff12_SPProvidedNameIdentifier_s* x);
+struct zx_str* zx_ff12_SPProvidedNameIdentifier_GET_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x);
 
 
 
 
 
-void zx_ff12_SPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x, struct zx_str* y);
 void zx_ff12_SPProvidedNameIdentifier_PUT_Format(struct zx_ff12_SPProvidedNameIdentifier_s* x, struct zx_str* y);
+void zx_ff12_SPProvidedNameIdentifier_PUT_NameQualifier(struct zx_ff12_SPProvidedNameIdentifier_s* x, struct zx_str* y);
 
 
 

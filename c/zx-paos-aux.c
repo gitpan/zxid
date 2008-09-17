@@ -60,11 +60,11 @@ void zx_FREE_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x, int fre
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->messageID, free_strs);
   zx_free_attr(c, x->responseConsumerURL, free_strs);
   zx_free_attr(c, x->service, free_strs);
-  zx_free_attr(c, x->messageID, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -100,11 +100,11 @@ void zx_DUP_STRS_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->messageID);
   zx_dup_attr(c, x->responseConsumerURL);
   zx_dup_attr(c, x->service);
-  zx_dup_attr(c, x->messageID);
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -120,11 +120,11 @@ struct zx_paos_Request_s* zx_DEEP_CLONE_paos_Request(struct zx_ctx* c, struct zx
   x = (struct zx_paos_Request_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_paos_Request_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->messageID = zx_clone_attr(c, x->messageID);
   x->responseConsumerURL = zx_clone_attr(c, x->responseConsumerURL);
   x->service = zx_clone_attr(c, x->service);
-  x->messageID = zx_clone_attr(c, x->messageID);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -197,8 +197,8 @@ void zx_FREE_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x, int f
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->refToMessageID, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -235,8 +235,8 @@ void zx_DUP_STRS_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->refToMessageID);
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -253,8 +253,8 @@ struct zx_paos_Response_s* zx_DEEP_CLONE_paos_Response(struct zx_ctx* c, struct 
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->refToMessageID = zx_clone_attr(c, x->refToMessageID);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;

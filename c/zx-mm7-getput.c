@@ -2604,18 +2604,18 @@ void zx_mm7_Cc_DEL_Extension(struct zx_mm7_Cc_s* x, int n)
 
 
 
-/* FUNC(zx_mm7_Content_GET_type) */
-struct zx_str* zx_mm7_Content_GET_type(struct zx_mm7_Content_s* x) { return x->type; }
-/* FUNC(zx_mm7_Content_PUT_type) */
-void zx_mm7_Content_PUT_type(struct zx_mm7_Content_s* x, struct zx_str* y) { x->type = y; }
-/* FUNC(zx_mm7_Content_GET_href) */
-struct zx_str* zx_mm7_Content_GET_href(struct zx_mm7_Content_s* x) { return x->href; }
-/* FUNC(zx_mm7_Content_PUT_href) */
-void zx_mm7_Content_PUT_href(struct zx_mm7_Content_s* x, struct zx_str* y) { x->href = y; }
 /* FUNC(zx_mm7_Content_GET_allowAdaptations) */
 struct zx_str* zx_mm7_Content_GET_allowAdaptations(struct zx_mm7_Content_s* x) { return x->allowAdaptations; }
 /* FUNC(zx_mm7_Content_PUT_allowAdaptations) */
 void zx_mm7_Content_PUT_allowAdaptations(struct zx_mm7_Content_s* x, struct zx_str* y) { x->allowAdaptations = y; }
+/* FUNC(zx_mm7_Content_GET_href) */
+struct zx_str* zx_mm7_Content_GET_href(struct zx_mm7_Content_s* x) { return x->href; }
+/* FUNC(zx_mm7_Content_PUT_href) */
+void zx_mm7_Content_PUT_href(struct zx_mm7_Content_s* x, struct zx_str* y) { x->href = y; }
+/* FUNC(zx_mm7_Content_GET_type) */
+struct zx_str* zx_mm7_Content_GET_type(struct zx_mm7_Content_s* x) { return x->type; }
+/* FUNC(zx_mm7_Content_PUT_type) */
+void zx_mm7_Content_PUT_type(struct zx_mm7_Content_s* x, struct zx_str* y) { x->type = y; }
 
 
 
@@ -9241,14 +9241,14 @@ void zx_mm7_MessageExtraData_DEL_element(struct zx_mm7_MessageExtraData_s* x, in
 
 
 
-/* FUNC(zx_mm7_Number_GET_displayOnly) */
-struct zx_str* zx_mm7_Number_GET_displayOnly(struct zx_mm7_Number_s* x) { return x->displayOnly; }
-/* FUNC(zx_mm7_Number_PUT_displayOnly) */
-void zx_mm7_Number_PUT_displayOnly(struct zx_mm7_Number_s* x, struct zx_str* y) { x->displayOnly = y; }
 /* FUNC(zx_mm7_Number_GET_addressCoding) */
 struct zx_str* zx_mm7_Number_GET_addressCoding(struct zx_mm7_Number_s* x) { return x->addressCoding; }
 /* FUNC(zx_mm7_Number_PUT_addressCoding) */
 void zx_mm7_Number_PUT_addressCoding(struct zx_mm7_Number_s* x, struct zx_str* y) { x->addressCoding = y; }
+/* FUNC(zx_mm7_Number_GET_displayOnly) */
+struct zx_str* zx_mm7_Number_GET_displayOnly(struct zx_mm7_Number_s* x) { return x->displayOnly; }
+/* FUNC(zx_mm7_Number_PUT_displayOnly) */
+void zx_mm7_Number_PUT_displayOnly(struct zx_mm7_Number_s* x, struct zx_str* y) { x->displayOnly = y; }
 /* FUNC(zx_mm7_Number_GET_id) */
 struct zx_str* zx_mm7_Number_GET_id(struct zx_mm7_Number_s* x) { return x->id; }
 /* FUNC(zx_mm7_Number_PUT_id) */
@@ -11293,14 +11293,14 @@ void zx_mm7_QueryStatusRsp_DEL_Details(struct zx_mm7_QueryStatusRsp_s* x, int n)
 
 
 
-/* FUNC(zx_mm7_RFC2822Address_GET_displayOnly) */
-struct zx_str* zx_mm7_RFC2822Address_GET_displayOnly(struct zx_mm7_RFC2822Address_s* x) { return x->displayOnly; }
-/* FUNC(zx_mm7_RFC2822Address_PUT_displayOnly) */
-void zx_mm7_RFC2822Address_PUT_displayOnly(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y) { x->displayOnly = y; }
 /* FUNC(zx_mm7_RFC2822Address_GET_addressCoding) */
 struct zx_str* zx_mm7_RFC2822Address_GET_addressCoding(struct zx_mm7_RFC2822Address_s* x) { return x->addressCoding; }
 /* FUNC(zx_mm7_RFC2822Address_PUT_addressCoding) */
 void zx_mm7_RFC2822Address_PUT_addressCoding(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y) { x->addressCoding = y; }
+/* FUNC(zx_mm7_RFC2822Address_GET_displayOnly) */
+struct zx_str* zx_mm7_RFC2822Address_GET_displayOnly(struct zx_mm7_RFC2822Address_s* x) { return x->displayOnly; }
+/* FUNC(zx_mm7_RFC2822Address_PUT_displayOnly) */
+void zx_mm7_RFC2822Address_PUT_displayOnly(struct zx_mm7_RFC2822Address_s* x, struct zx_str* y) { x->displayOnly = y; }
 /* FUNC(zx_mm7_RFC2822Address_GET_id) */
 struct zx_str* zx_mm7_RFC2822Address_GET_id(struct zx_mm7_RFC2822Address_s* x) { return x->id; }
 /* FUNC(zx_mm7_RFC2822Address_PUT_id) */
@@ -18882,14 +18882,14 @@ void zx_mm7_SenderIdentification_DEL_SenderAddress(struct zx_mm7_SenderIdentific
 
 
 
-/* FUNC(zx_mm7_ShortCode_GET_displayOnly) */
-struct zx_str* zx_mm7_ShortCode_GET_displayOnly(struct zx_mm7_ShortCode_s* x) { return x->displayOnly; }
-/* FUNC(zx_mm7_ShortCode_PUT_displayOnly) */
-void zx_mm7_ShortCode_PUT_displayOnly(struct zx_mm7_ShortCode_s* x, struct zx_str* y) { x->displayOnly = y; }
 /* FUNC(zx_mm7_ShortCode_GET_addressCoding) */
 struct zx_str* zx_mm7_ShortCode_GET_addressCoding(struct zx_mm7_ShortCode_s* x) { return x->addressCoding; }
 /* FUNC(zx_mm7_ShortCode_PUT_addressCoding) */
 void zx_mm7_ShortCode_PUT_addressCoding(struct zx_mm7_ShortCode_s* x, struct zx_str* y) { x->addressCoding = y; }
+/* FUNC(zx_mm7_ShortCode_GET_displayOnly) */
+struct zx_str* zx_mm7_ShortCode_GET_displayOnly(struct zx_mm7_ShortCode_s* x) { return x->displayOnly; }
+/* FUNC(zx_mm7_ShortCode_PUT_displayOnly) */
+void zx_mm7_ShortCode_PUT_displayOnly(struct zx_mm7_ShortCode_s* x, struct zx_str* y) { x->displayOnly = y; }
 /* FUNC(zx_mm7_ShortCode_GET_id) */
 struct zx_str* zx_mm7_ShortCode_GET_id(struct zx_mm7_ShortCode_s* x) { return x->id; }
 /* FUNC(zx_mm7_ShortCode_PUT_id) */
@@ -24820,31 +24820,31 @@ void zx_mm7_To_DEL_Extension(struct zx_mm7_To_s* x, int n)
 
 
 
-/* FUNC(zx_mm7_TransactionID_GET_mustUnderstand) */
-struct zx_str* zx_mm7_TransactionID_GET_mustUnderstand(struct zx_mm7_TransactionID_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_mm7_TransactionID_PUT_mustUnderstand) */
-void zx_mm7_TransactionID_PUT_mustUnderstand(struct zx_mm7_TransactionID_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_mm7_TransactionID_GET_encodingStyle) */
-struct zx_str* zx_mm7_TransactionID_GET_encodingStyle(struct zx_mm7_TransactionID_s* x) { return x->encodingStyle; }
-/* FUNC(zx_mm7_TransactionID_PUT_encodingStyle) */
-void zx_mm7_TransactionID_PUT_encodingStyle(struct zx_mm7_TransactionID_s* x, struct zx_str* y) { x->encodingStyle = y; }
 /* FUNC(zx_mm7_TransactionID_GET_actor) */
 struct zx_str* zx_mm7_TransactionID_GET_actor(struct zx_mm7_TransactionID_s* x) { return x->actor; }
 /* FUNC(zx_mm7_TransactionID_PUT_actor) */
 void zx_mm7_TransactionID_PUT_actor(struct zx_mm7_TransactionID_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_mm7_TransactionID_GET_encodingStyle) */
+struct zx_str* zx_mm7_TransactionID_GET_encodingStyle(struct zx_mm7_TransactionID_s* x) { return x->encodingStyle; }
+/* FUNC(zx_mm7_TransactionID_PUT_encodingStyle) */
+void zx_mm7_TransactionID_PUT_encodingStyle(struct zx_mm7_TransactionID_s* x, struct zx_str* y) { x->encodingStyle = y; }
+/* FUNC(zx_mm7_TransactionID_GET_mustUnderstand) */
+struct zx_str* zx_mm7_TransactionID_GET_mustUnderstand(struct zx_mm7_TransactionID_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_mm7_TransactionID_PUT_mustUnderstand) */
+void zx_mm7_TransactionID_PUT_mustUnderstand(struct zx_mm7_TransactionID_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 
 
 
-/* FUNC(zx_mm7_UACapabilities_GET_UAProf) */
-struct zx_str* zx_mm7_UACapabilities_GET_UAProf(struct zx_mm7_UACapabilities_s* x) { return x->UAProf; }
-/* FUNC(zx_mm7_UACapabilities_PUT_UAProf) */
-void zx_mm7_UACapabilities_PUT_UAProf(struct zx_mm7_UACapabilities_s* x, struct zx_str* y) { x->UAProf = y; }
 /* FUNC(zx_mm7_UACapabilities_GET_TimeStamp) */
 struct zx_str* zx_mm7_UACapabilities_GET_TimeStamp(struct zx_mm7_UACapabilities_s* x) { return x->TimeStamp; }
 /* FUNC(zx_mm7_UACapabilities_PUT_TimeStamp) */
 void zx_mm7_UACapabilities_PUT_TimeStamp(struct zx_mm7_UACapabilities_s* x, struct zx_str* y) { x->TimeStamp = y; }
+/* FUNC(zx_mm7_UACapabilities_GET_UAProf) */
+struct zx_str* zx_mm7_UACapabilities_GET_UAProf(struct zx_mm7_UACapabilities_s* x) { return x->UAProf; }
+/* FUNC(zx_mm7_UACapabilities_PUT_UAProf) */
+void zx_mm7_UACapabilities_PUT_UAProf(struct zx_mm7_UACapabilities_s* x, struct zx_str* y) { x->UAProf = y; }
 
 
 

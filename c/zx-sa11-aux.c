@@ -413,11 +413,11 @@ void zx_FREE_sa11_Assertion(struct zx_ctx* c, struct zx_sa11_Assertion_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->AssertionID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->Issuer, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->AssertionID, free_strs);
-  zx_free_attr(c, x->Issuer, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
 
   {
       struct zx_sa11_Conditions_s* e;
@@ -526,11 +526,11 @@ void zx_DUP_STRS_sa11_Assertion(struct zx_ctx* c, struct zx_sa11_Assertion_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->AssertionID);
+  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->Issuer);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->AssertionID);
-  zx_dup_attr(c, x->Issuer);
-  zx_dup_attr(c, x->IssueInstant);
 
   {
       struct zx_sa11_Conditions_s* e;
@@ -592,11 +592,11 @@ struct zx_sa11_Assertion_s* zx_DEEP_CLONE_sa11_Assertion(struct zx_ctx* c, struc
   x = (struct zx_sa11_Assertion_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa11_Assertion_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->AssertionID = zx_clone_attr(c, x->AssertionID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->Issuer = zx_clone_attr(c, x->Issuer);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->AssertionID = zx_clone_attr(c, x->AssertionID);
-  x->Issuer = zx_clone_attr(c, x->Issuer);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
 
   {
       struct zx_sa11_Conditions_s* e;
@@ -1654,8 +1654,8 @@ void zx_FREE_sa11_AuthenticationStatement(struct zx_ctx* c, struct zx_sa11_Authe
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->AuthenticationMethod, free_strs);
   zx_free_attr(c, x->AuthenticationInstant, free_strs);
+  zx_free_attr(c, x->AuthenticationMethod, free_strs);
 
   {
       struct zx_sa11_Subject_s* e;
@@ -1715,8 +1715,8 @@ void zx_DUP_STRS_sa11_AuthenticationStatement(struct zx_ctx* c, struct zx_sa11_A
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->AuthenticationMethod);
   zx_dup_attr(c, x->AuthenticationInstant);
+  zx_dup_attr(c, x->AuthenticationMethod);
 
   {
       struct zx_sa11_Subject_s* e;
@@ -1747,8 +1747,8 @@ struct zx_sa11_AuthenticationStatement_s* zx_DEEP_CLONE_sa11_AuthenticationState
   x = (struct zx_sa11_AuthenticationStatement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa11_AuthenticationStatement_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->AuthenticationMethod = zx_clone_attr(c, x->AuthenticationMethod);
   x->AuthenticationInstant = zx_clone_attr(c, x->AuthenticationInstant);
+  x->AuthenticationMethod = zx_clone_attr(c, x->AuthenticationMethod);
 
   {
       struct zx_sa11_Subject_s* e;
@@ -1884,8 +1884,8 @@ void zx_FREE_sa11_AuthorityBinding(struct zx_ctx* c, struct zx_sa11_AuthorityBin
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->AuthorityKind, free_strs);
-  zx_free_attr(c, x->Location, free_strs);
   zx_free_attr(c, x->Binding, free_strs);
+  zx_free_attr(c, x->Location, free_strs);
 
 
 
@@ -1922,8 +1922,8 @@ void zx_DUP_STRS_sa11_AuthorityBinding(struct zx_ctx* c, struct zx_sa11_Authorit
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->AuthorityKind);
-  zx_dup_attr(c, x->Location);
   zx_dup_attr(c, x->Binding);
+  zx_dup_attr(c, x->Location);
 
 
 }
@@ -1940,8 +1940,8 @@ struct zx_sa11_AuthorityBinding_s* zx_DEEP_CLONE_sa11_AuthorityBinding(struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->AuthorityKind = zx_clone_attr(c, x->AuthorityKind);
-  x->Location = zx_clone_attr(c, x->Location);
   x->Binding = zx_clone_attr(c, x->Binding);
+  x->Location = zx_clone_attr(c, x->Location);
 
 
   return x;
@@ -2013,8 +2013,8 @@ void zx_FREE_sa11_AuthorizationDecisionStatement(struct zx_ctx* c, struct zx_sa1
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->Resource, free_strs);
   zx_free_attr(c, x->Decision, free_strs);
+  zx_free_attr(c, x->Resource, free_strs);
 
   {
       struct zx_sa11_Subject_s* e;
@@ -2074,8 +2074,8 @@ void zx_DUP_STRS_sa11_AuthorizationDecisionStatement(struct zx_ctx* c, struct zx
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->Resource);
   zx_dup_attr(c, x->Decision);
+  zx_dup_attr(c, x->Resource);
 
   {
       struct zx_sa11_Subject_s* e;
@@ -2106,8 +2106,8 @@ struct zx_sa11_AuthorizationDecisionStatement_s* zx_DEEP_CLONE_sa11_Authorizatio
   x = (struct zx_sa11_AuthorizationDecisionStatement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa11_AuthorizationDecisionStatement_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->Resource = zx_clone_attr(c, x->Resource);
   x->Decision = zx_clone_attr(c, x->Decision);
+  x->Resource = zx_clone_attr(c, x->Resource);
 
   {
       struct zx_sa11_Subject_s* e;
@@ -2725,8 +2725,8 @@ void zx_FREE_sa11_NameIdentifier(struct zx_ctx* c, struct zx_sa11_NameIdentifier
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->Format, free_strs);
+  zx_free_attr(c, x->NameQualifier, free_strs);
 
 
 
@@ -2762,8 +2762,8 @@ void zx_DUP_STRS_sa11_NameIdentifier(struct zx_ctx* c, struct zx_sa11_NameIdenti
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->Format);
+  zx_dup_attr(c, x->NameQualifier);
 
 
 }
@@ -2779,8 +2779,8 @@ struct zx_sa11_NameIdentifier_s* zx_DEEP_CLONE_sa11_NameIdentifier(struct zx_ctx
   x = (struct zx_sa11_NameIdentifier_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa11_NameIdentifier_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->Format = zx_clone_attr(c, x->Format);
+  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
 
 
   return x;
@@ -3208,8 +3208,8 @@ void zx_FREE_sa11_SubjectLocality(struct zx_ctx* c, struct zx_sa11_SubjectLocali
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->IPAddress, free_strs);
   zx_free_attr(c, x->DNSAddress, free_strs);
+  zx_free_attr(c, x->IPAddress, free_strs);
 
 
 
@@ -3245,8 +3245,8 @@ void zx_DUP_STRS_sa11_SubjectLocality(struct zx_ctx* c, struct zx_sa11_SubjectLo
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->IPAddress);
   zx_dup_attr(c, x->DNSAddress);
+  zx_dup_attr(c, x->IPAddress);
 
 
 }
@@ -3262,8 +3262,8 @@ struct zx_sa11_SubjectLocality_s* zx_DEEP_CLONE_sa11_SubjectLocality(struct zx_c
   x = (struct zx_sa11_SubjectLocality_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_sa11_SubjectLocality_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->IPAddress = zx_clone_attr(c, x->IPAddress);
   x->DNSAddress = zx_clone_attr(c, x->DNSAddress);
+  x->IPAddress = zx_clone_attr(c, x->IPAddress);
 
 
   return x;

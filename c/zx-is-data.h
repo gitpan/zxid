@@ -546,13 +546,13 @@ struct zx_is_Select_s {
   struct zx_elem_s* Label;	/* {0,1} xs:normalizedString */
   struct zx_elem_s* Value;	/* {0,1} xs:normalizedString */
   struct zx_is_Item_s* Item;	/* {2,unbounded}  */
-  struct zx_str* name;	/* {1,1} attribute xs:ID */
   struct zx_str* multiple;	/* {0,1} attribute xs:boolean */
+  struct zx_str* name;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_is_Select_GET_name(struct zx_is_Select_s* x);
 struct zx_str* zx_is_Select_GET_multiple(struct zx_is_Select_s* x);
+struct zx_str* zx_is_Select_GET_name(struct zx_is_Select_s* x);
 
 struct zx_is_Help_s* zx_is_Select_GET_Help(struct zx_is_Select_s* x, int n);
 struct zx_elem_s* zx_is_Select_GET_Hint(struct zx_is_Select_s* x, int n);
@@ -578,8 +578,8 @@ void zx_is_Select_PUSH_Label(struct zx_is_Select_s* x, struct zx_elem_s* y);
 void zx_is_Select_PUSH_Value(struct zx_is_Select_s* x, struct zx_elem_s* y);
 void zx_is_Select_PUSH_Item(struct zx_is_Select_s* x, struct zx_is_Item_s* y);
 
-void zx_is_Select_PUT_name(struct zx_is_Select_s* x, struct zx_str* y);
 void zx_is_Select_PUT_multiple(struct zx_is_Select_s* x, struct zx_str* y);
+void zx_is_Select_PUT_name(struct zx_is_Select_s* x, struct zx_str* y);
 
 void zx_is_Select_PUT_Help(struct zx_is_Select_s* x, int n, struct zx_is_Help_s* y);
 void zx_is_Select_PUT_Hint(struct zx_is_Select_s* x, int n, struct zx_elem_s* y);
@@ -635,17 +635,17 @@ struct zx_is_Text_s {
   struct zx_elem_s* Hint;	/* {0,1} xs:string */
   struct zx_elem_s* Label;	/* {0,1} xs:normalizedString */
   struct zx_elem_s* Value;	/* {0,1} xs:normalizedString */
-  struct zx_str* name;	/* {1,1} attribute xs:ID */
-  struct zx_str* minChars;	/* {0,1} attribute xs:integer */
-  struct zx_str* maxChars;	/* {0,1} attribute xs:integer */
   struct zx_str* format;	/* {0,1} attribute xs:string */
+  struct zx_str* maxChars;	/* {0,1} attribute xs:integer */
+  struct zx_str* minChars;	/* {0,1} attribute xs:integer */
+  struct zx_str* name;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_is_Text_GET_name(struct zx_is_Text_s* x);
-struct zx_str* zx_is_Text_GET_minChars(struct zx_is_Text_s* x);
-struct zx_str* zx_is_Text_GET_maxChars(struct zx_is_Text_s* x);
 struct zx_str* zx_is_Text_GET_format(struct zx_is_Text_s* x);
+struct zx_str* zx_is_Text_GET_maxChars(struct zx_is_Text_s* x);
+struct zx_str* zx_is_Text_GET_minChars(struct zx_is_Text_s* x);
+struct zx_str* zx_is_Text_GET_name(struct zx_is_Text_s* x);
 
 struct zx_is_Help_s* zx_is_Text_GET_Help(struct zx_is_Text_s* x, int n);
 struct zx_elem_s* zx_is_Text_GET_Hint(struct zx_is_Text_s* x, int n);
@@ -667,10 +667,10 @@ void zx_is_Text_PUSH_Hint(struct zx_is_Text_s* x, struct zx_elem_s* y);
 void zx_is_Text_PUSH_Label(struct zx_is_Text_s* x, struct zx_elem_s* y);
 void zx_is_Text_PUSH_Value(struct zx_is_Text_s* x, struct zx_elem_s* y);
 
-void zx_is_Text_PUT_name(struct zx_is_Text_s* x, struct zx_str* y);
-void zx_is_Text_PUT_minChars(struct zx_is_Text_s* x, struct zx_str* y);
-void zx_is_Text_PUT_maxChars(struct zx_is_Text_s* x, struct zx_str* y);
 void zx_is_Text_PUT_format(struct zx_is_Text_s* x, struct zx_str* y);
+void zx_is_Text_PUT_maxChars(struct zx_is_Text_s* x, struct zx_str* y);
+void zx_is_Text_PUT_minChars(struct zx_is_Text_s* x, struct zx_str* y);
+void zx_is_Text_PUT_name(struct zx_is_Text_s* x, struct zx_str* y);
 
 void zx_is_Text_PUT_Help(struct zx_is_Text_s* x, int n, struct zx_is_Help_s* y);
 void zx_is_Text_PUT_Hint(struct zx_is_Text_s* x, int n, struct zx_elem_s* y);

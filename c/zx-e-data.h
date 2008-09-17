@@ -265,9 +265,11 @@ struct zx_e_Body_s {
   struct zx_idhrxml_DeleteResponse_s* idhrxml_DeleteResponse;	/* {0,1} nada */
   struct zx_idhrxml_Notify_s* idhrxml_Notify;	/* {0,1} nada */
   struct zx_idhrxml_NotifyResponse_s* idhrxml_NotifyResponse;	/* {0,1} nada */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_e_Body_GET_id(struct zx_e_Body_s* x);
 
 struct zx_sp_ArtifactResolve_s* zx_e_Body_GET_ArtifactResolve(struct zx_e_Body_s* x, int n);
 struct zx_sp_ArtifactResponse_s* zx_e_Body_GET_ArtifactResponse(struct zx_e_Body_s* x, int n);
@@ -1161,6 +1163,7 @@ void zx_e_Body_PUSH_idhrxml_DeleteResponse(struct zx_e_Body_s* x, struct zx_idhr
 void zx_e_Body_PUSH_idhrxml_Notify(struct zx_e_Body_s* x, struct zx_idhrxml_Notify_s* y);
 void zx_e_Body_PUSH_idhrxml_NotifyResponse(struct zx_e_Body_s* x, struct zx_idhrxml_NotifyResponse_s* y);
 
+void zx_e_Body_PUT_id(struct zx_e_Body_s* x, struct zx_str* y);
 
 void zx_e_Body_PUT_ArtifactResolve(struct zx_e_Body_s* x, int n, struct zx_sp_ArtifactResolve_s* y);
 void zx_e_Body_PUT_ArtifactResponse(struct zx_e_Body_s* x, int n, struct zx_sp_ArtifactResponse_s* y);
@@ -2082,9 +2085,11 @@ struct zx_e_Envelope_s {
   zx_e_Envelope_EXT
   struct zx_e_Header_s* Header;	/* {0,1} nada */
   struct zx_e_Body_s* Body;	/* {1,1} nada */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_e_Envelope_GET_id(struct zx_e_Envelope_s* x);
 
 struct zx_e_Header_s* zx_e_Envelope_GET_Header(struct zx_e_Envelope_s* x, int n);
 struct zx_e_Body_s* zx_e_Envelope_GET_Body(struct zx_e_Envelope_s* x, int n);
@@ -2098,6 +2103,7 @@ struct zx_e_Body_s* zx_e_Envelope_POP_Body(struct zx_e_Envelope_s* x);
 void zx_e_Envelope_PUSH_Header(struct zx_e_Envelope_s* x, struct zx_e_Header_s* y);
 void zx_e_Envelope_PUSH_Body(struct zx_e_Envelope_s* x, struct zx_e_Body_s* y);
 
+void zx_e_Envelope_PUT_id(struct zx_e_Envelope_s* x, struct zx_str* y);
 
 void zx_e_Envelope_PUT_Header(struct zx_e_Envelope_s* x, int n, struct zx_e_Header_s* y);
 void zx_e_Envelope_PUT_Body(struct zx_e_Envelope_s* x, int n, struct zx_e_Body_s* y);
@@ -2245,9 +2251,11 @@ struct zx_e_Header_s {
   struct zx_b12_UsageDirective_s* b12_UsageDirective;	/* {0,1} nada */
   struct zx_mm7_TransactionID_s* TransactionID;	/* {0,1} nada */
   struct zx_wsse_Security_s* Security;	/* {0,1} nada */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_e_Header_GET_id(struct zx_e_Header_s* x);
 
 struct zx_paos_Request_s* zx_e_Header_GET_Request(struct zx_e_Header_s* x, int n);
 struct zx_paos_Response_s* zx_e_Header_GET_Response(struct zx_e_Header_s* x, int n);
@@ -2385,6 +2393,7 @@ void zx_e_Header_PUSH_b12_UsageDirective(struct zx_e_Header_s* x, struct zx_b12_
 void zx_e_Header_PUSH_TransactionID(struct zx_e_Header_s* x, struct zx_mm7_TransactionID_s* y);
 void zx_e_Header_PUSH_Security(struct zx_e_Header_s* x, struct zx_wsse_Security_s* y);
 
+void zx_e_Header_PUT_id(struct zx_e_Header_s* x, struct zx_str* y);
 
 void zx_e_Header_PUT_Request(struct zx_e_Header_s* x, int n, struct zx_paos_Request_s* y);
 void zx_e_Header_PUT_Response(struct zx_e_Header_s* x, int n, struct zx_paos_Response_s* y);

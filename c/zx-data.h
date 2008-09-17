@@ -64,6 +64,9 @@
 #include "c/zx-xasa-data.h"
 #include "c/zx-xasp-data.h"
 #include "c/zx-xenc-data.h"
+#include "c/zx-xml-data.h"
+#include "c/zx-xs-data.h"
+#include "c/zx-xsi-data.h"
 
 
 #ifndef ZX_ELEM_EXT
@@ -74,6 +77,7 @@ extern const struct zx_tok zx_attrs[zx__ATTR_MAX];    /* gperf generated, see *-
 extern const struct zx_tok zx_elems[zx__ELEM_MAX];    /* gperf generated, see *-elems.c */
 const struct zx_tok* zx_attr2tok(const char* s, unsigned int len);
 const struct zx_tok* zx_elem2tok(const char* s, unsigned int len);
+struct zx_elem_s* zx_known_or_unknown_elem(struct zx_ctx* c, int tok, struct zx_elem_s* x, int len, char* name, struct zx_ns_s* ns);
 int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns);
 int zx_elem_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns);
 
@@ -103,6 +107,8 @@ struct zx_root_s {
   ZX_ELEM_EXT
   zx_root_EXT
   struct zx_sa_Assertion_s* Assertion;	/* {0,-1} root */
+  struct zx_sa_NameID_s* NameID;	/* {0,-1} root */
+  struct zx_elem_s* NewID;	/* {0,-1} xs:string */
   struct zx_sp_AuthnRequest_s* AuthnRequest;	/* {0,-1} root */
   struct zx_sp_Response_s* Response;	/* {0,-1} root */
   struct zx_sp_LogoutRequest_s* LogoutRequest;	/* {0,-1} root */
@@ -138,6 +144,8 @@ struct zx_root_s {
 #ifdef ZX_ENA_GETPUT
 
 struct zx_sa_Assertion_s* zx_root_GET_Assertion(struct zx_root_s* x, int n);
+struct zx_sa_NameID_s* zx_root_GET_NameID(struct zx_root_s* x, int n);
+struct zx_elem_s* zx_root_GET_NewID(struct zx_root_s* x, int n);
 struct zx_sp_AuthnRequest_s* zx_root_GET_AuthnRequest(struct zx_root_s* x, int n);
 struct zx_sp_Response_s* zx_root_GET_Response(struct zx_root_s* x, int n);
 struct zx_sp_LogoutRequest_s* zx_root_GET_LogoutRequest(struct zx_root_s* x, int n);
@@ -170,6 +178,8 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_GET_XACMLAuthzDecisionQuery(st
 struct zx_xasp_XACMLPolicyQuery_s* zx_root_GET_XACMLPolicyQuery(struct zx_root_s* x, int n);
 
 int zx_root_NUM_Assertion(struct zx_root_s* x);
+int zx_root_NUM_NameID(struct zx_root_s* x);
+int zx_root_NUM_NewID(struct zx_root_s* x);
 int zx_root_NUM_AuthnRequest(struct zx_root_s* x);
 int zx_root_NUM_Response(struct zx_root_s* x);
 int zx_root_NUM_LogoutRequest(struct zx_root_s* x);
@@ -202,6 +212,8 @@ int zx_root_NUM_XACMLAuthzDecisionQuery(struct zx_root_s* x);
 int zx_root_NUM_XACMLPolicyQuery(struct zx_root_s* x);
 
 struct zx_sa_Assertion_s* zx_root_POP_Assertion(struct zx_root_s* x);
+struct zx_sa_NameID_s* zx_root_POP_NameID(struct zx_root_s* x);
+struct zx_elem_s* zx_root_POP_NewID(struct zx_root_s* x);
 struct zx_sp_AuthnRequest_s* zx_root_POP_AuthnRequest(struct zx_root_s* x);
 struct zx_sp_Response_s* zx_root_POP_Response(struct zx_root_s* x);
 struct zx_sp_LogoutRequest_s* zx_root_POP_LogoutRequest(struct zx_root_s* x);
@@ -234,6 +246,8 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_POP_XACMLAuthzDecisionQuery(st
 struct zx_xasp_XACMLPolicyQuery_s* zx_root_POP_XACMLPolicyQuery(struct zx_root_s* x);
 
 void zx_root_PUSH_Assertion(struct zx_root_s* x, struct zx_sa_Assertion_s* y);
+void zx_root_PUSH_NameID(struct zx_root_s* x, struct zx_sa_NameID_s* y);
+void zx_root_PUSH_NewID(struct zx_root_s* x, struct zx_elem_s* y);
 void zx_root_PUSH_AuthnRequest(struct zx_root_s* x, struct zx_sp_AuthnRequest_s* y);
 void zx_root_PUSH_Response(struct zx_root_s* x, struct zx_sp_Response_s* y);
 void zx_root_PUSH_LogoutRequest(struct zx_root_s* x, struct zx_sp_LogoutRequest_s* y);
@@ -267,6 +281,8 @@ void zx_root_PUSH_XACMLPolicyQuery(struct zx_root_s* x, struct zx_xasp_XACMLPoli
 
 
 void zx_root_PUT_Assertion(struct zx_root_s* x, int n, struct zx_sa_Assertion_s* y);
+void zx_root_PUT_NameID(struct zx_root_s* x, int n, struct zx_sa_NameID_s* y);
+void zx_root_PUT_NewID(struct zx_root_s* x, int n, struct zx_elem_s* y);
 void zx_root_PUT_AuthnRequest(struct zx_root_s* x, int n, struct zx_sp_AuthnRequest_s* y);
 void zx_root_PUT_Response(struct zx_root_s* x, int n, struct zx_sp_Response_s* y);
 void zx_root_PUT_LogoutRequest(struct zx_root_s* x, int n, struct zx_sp_LogoutRequest_s* y);
@@ -299,6 +315,8 @@ void zx_root_PUT_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_x
 void zx_root_PUT_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* y);
 
 void zx_root_ADD_Assertion(struct zx_root_s* x, int n, struct zx_sa_Assertion_s* z);
+void zx_root_ADD_NameID(struct zx_root_s* x, int n, struct zx_sa_NameID_s* z);
+void zx_root_ADD_NewID(struct zx_root_s* x, int n, struct zx_elem_s* z);
 void zx_root_ADD_AuthnRequest(struct zx_root_s* x, int n, struct zx_sp_AuthnRequest_s* z);
 void zx_root_ADD_Response(struct zx_root_s* x, int n, struct zx_sp_Response_s* z);
 void zx_root_ADD_LogoutRequest(struct zx_root_s* x, int n, struct zx_sp_LogoutRequest_s* z);
@@ -331,6 +349,8 @@ void zx_root_ADD_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_x
 void zx_root_ADD_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* z);
 
 void zx_root_DEL_Assertion(struct zx_root_s* x, int n);
+void zx_root_DEL_NameID(struct zx_root_s* x, int n);
+void zx_root_DEL_NewID(struct zx_root_s* x, int n);
 void zx_root_DEL_AuthnRequest(struct zx_root_s* x, int n);
 void zx_root_DEL_Response(struct zx_root_s* x, int n);
 void zx_root_DEL_LogoutRequest(struct zx_root_s* x, int n);
@@ -363,6 +383,8 @@ void zx_root_DEL_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
 void zx_root_DEL_XACMLPolicyQuery(struct zx_root_s* x, int n);
 
 void zx_root_REV_Assertion(struct zx_root_s* x);
+void zx_root_REV_NameID(struct zx_root_s* x);
+void zx_root_REV_NewID(struct zx_root_s* x);
 void zx_root_REV_AuthnRequest(struct zx_root_s* x);
 void zx_root_REV_Response(struct zx_root_s* x);
 void zx_root_REV_LogoutRequest(struct zx_root_s* x);

@@ -1,21 +1,20 @@
-/* zxlog.c  -  Liber oriented logging facility
- * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+/* zxlog.c  -  Liberty oriented logging facility with log signing and encryption
+ * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxlog.c,v 1.12 2007/03/27 18:10:06 sampo Exp $
+ * $Id: zxlog.c,v 1.16 2007-10-14 03:34:27 sampo Exp $
  *
  * 18.11.2006, created --Sampo
+ * 10.10.2007, added ipport --Sampo
  *
  * See also: Logging chapter in README.zxid
  */
 
-//#include <pthread.h>
 #include <signal.h>
 #include <fcntl.h>
-//#include <netdb.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -26,10 +25,8 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-//#include <sys/wait.h>
 
 #ifdef USE_OPENSSL
-#include <openssl/rand.h>
 #include <openssl/x509.h>
 #include <openssl/rsa.h>
 #include <openssl/evp.h>
@@ -45,23 +42,17 @@
 #include "zxidconf.h"
 
 #define ZXID_LOG_DIR "log/"
-#define ZXLOG_TIME_FMT "%04d%02d%02d-%02d%02d%02d.%03d"
+#define ZXLOG_TIME_FMT "%04d%02d%02d-%02d%02d%02d.%03ld"
 #define ZXLOG_TIME_ARG(t,usec) t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, \
                                t.tm_hour, t.tm_min, t.tm_sec, usec/1000
 
 /* Called by:  zxlog_write_line x3 */
-static char*
-zxlog_alloc_zbuf(struct zxid_conf* cf, int *zlen, char* zbuf, int len, char* sig, int nonce)
+static char* zxlog_alloc_zbuf(struct zxid_conf* cf, int *zlen, char* zbuf, int len, char* sig, int nonce)
 {
   char* p;
   p = ZX_ALLOC(cf->ctx, nonce + 2 + len + *zlen);
-  if (nonce) {
-#if ZXID_TRUE_RAND
-    RAND_bytes(p, nonce);
-#else
-    RAND_pseudo_bytes(p, nonce);
-#endif
-  }
+  if (nonce)
+    zx_rand(p, nonce);
   p[nonce] = (len >> 8) & 0xff;
   p[nonce+1] = len & 0xff;
   if (len) {
@@ -77,7 +68,6 @@ zxlog_alloc_zbuf(struct zxid_conf* cf, int *zlen, char* zbuf, int len, char* sig
 /* Called by:  test_mode x12, zxlog x2 */
 void zxlog_write_line(struct zxid_conf* cf, char* c_path, int encflags, int n, char* logbuf)
 {
-  EVP_PKEY* evp_pkey;
   struct rsa_st* rsa_pkey;
   struct aes_key_st aes_key;
   int len = 0, blen, zlen;
@@ -121,29 +111,14 @@ void zxlog_write_line(struct zxid_conf* cf, char* c_path, int encflags, int n, c
     case 0x20:  /* xA RSA-AES */
       encletter = 'A';
       zbuf = zxlog_alloc_zbuf(cf, &zlen, zbuf, len, sig, 16);
-#if ZXID_TRUE_RAND
-      RAND_bytes(keybuf, 16);
-#else
-      RAND_pseudo_bytes(keybuf, 16);
-#endif
+      zx_rand(keybuf, 16);
       AES_set_encrypt_key(keybuf, 128, &aes_key);
       memcpy(ivec, zbuf, sizeof(ivec));
       AES_cbc_encrypt(zbuf+16, zbuf+16, zlen-16, &aes_key, ivec, 1);
 
       if (!cf->log_enc_cert)
 	cf->log_enc_cert = zxid_read_cert(cf, "logenc-nopw-cert.pem");
-      evp_pkey = X509_get_pubkey(cf->log_enc_cert);
-      if (!evp_pkey) {
-	ERR("RSA enc: failed to get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %p", cf->log_enc_cert);
-	zx_report_openssl_error("zxlog rsa enc get_pub");
-	return;
-      }
-      rsa_pkey = EVP_PKEY_get1_RSA(evp_pkey);
-      if (!rsa_pkey) {
-	ERR("RSA enc: failed to extract RSA get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %p", cf->log_enc_cert);
-	zx_report_openssl_error("zxlog rsa rsa get_pub rsa");
-	return;
-      }
+      rsa_pkey = zx_get_rsa_pub_from_cert(cf->log_enc_cert, "log_enc_cert");
       
       len = RSA_size(rsa_pkey);
       sig = ZX_ALLOC(cf->ctx, len);
@@ -246,7 +221,7 @@ int zxlog(struct zxid_conf* cf,
 	  char* arg,
 	  char* fmt, ...)
 {
-  int n, nn;
+  int n;
   char* p;
   char sha1_name[28];
   char logbuf[1024];
@@ -287,13 +262,18 @@ int zxlog(struct zxid_conf* cf,
     sha1_name[1] = 0;
   }
   
+  if (!ipport) {
+    ipport = cf->ipport;
+    if (!ipport)
+      ipport = "-:-";
+  }
+  
   /* Format */
   
   n = snprintf(logbuf, sizeof(logbuf)-3, ZXLOG_TIME_FMT " " ZXLOG_TIME_FMT
-	       " %d.%d.%d.%d:%d %s %.*s %.*s %.*s %s %s %s %s ",
+	       " %s %s %.*s %.*s %.*s %s %s %s %s ",
 	       ZXLOG_TIME_ARG(ot, ourts->tv_usec), ZXLOG_TIME_ARG(st, srcts->tv_usec),
-	       0,0,0,0,0,
-	       sha1_name,
+	       ipport, sha1_name,
 	       msgid?msgid->len:1, msgid?msgid->s:"-",
 	       a7nid?a7nid->len:1, a7nid?a7nid->s:"-",
 	       nid?nid->len:1,     nid?nid->s:"-",
@@ -453,7 +433,6 @@ int zxlog_dup_check(struct zxid_conf* cf, struct zx_str* path, char* logkey)
 /* Called by:  zxid_sp_sso_finalize */
 int zxlog_blob(struct zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob)
 {
-  char* c_path;
   if (!logflag)
     return 0;
   if (logflag != 1) {

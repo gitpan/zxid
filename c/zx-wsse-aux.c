@@ -825,9 +825,9 @@ void zx_FREE_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->mustUnderstand, free_strs);
-  zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -919,9 +919,9 @@ void zx_DUP_STRS_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->mustUnderstand);
-  zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
   {
       struct zx_ds_Signature_s* e;
@@ -972,9 +972,9 @@ struct zx_wsse_Security_s* zx_DEEP_CLONE_wsse_Security(struct zx_ctx* c, struct 
   x = (struct zx_wsse_Security_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wsse_Security_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
-  x->actor = zx_clone_attr(c, x->actor);
   x->Id = zx_clone_attr(c, x->Id);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
   {
       struct zx_ds_Signature_s* e;

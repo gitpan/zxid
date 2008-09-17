@@ -1,11 +1,11 @@
 /* zxidconf.h  -  Configuration of ZXID SP CGI
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidconf.h,v 1.17 2007/02/24 07:50:46 sampo Exp $
+ * $Id: zxidconf.h,v 1.28 2008-04-26 01:04:35 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  *
@@ -31,7 +31,7 @@
 
 #define ZXID_CONF_FILE 1     /* (compile) */
 #define ZXID_CONF_FLAG 1     /* (compile) */
-#define ZXID_MAX_CONF  1024  /* (compile) Maximum size of conf file. */
+#define ZXID_MAX_CONF  4096  /* (compile) Maximum size of conf file. */
 
 /* In following, if you renamed zxid binary, you need to change any URL ending
  * in /zxid to match the new name. */
@@ -46,13 +46,23 @@
  * be short human readable name or description. */
 #define ZXID_NICE_NAME "ZXID Demo SP"
 
-/* URL for most zxid operations. It must end in "zxid". The hostname
+/* URL for most zxid operations. It must end in whatever triggers
+ * the ZXID functionality in the web server. The hostname
  * and port number should match the server under which zxid CGI is accessible.
  * N.B. There is no explicit way to configure Entity ID (Provider ID) for
  * the zxid SP. The Entity ID is always of form ZXID_URL?o=B, for example
  *   https://sp1.zxidsp.org:8443/zxid?o=B */
 #define ZXID_URL "https://sp1.zxidsp.org:8443/zxid"
 /*#define ZXID_URL "https://a-sp.liberty-iop.org:8443/zxid"*/
+
+/* The best practise is that SP Entity ID is chosen by the SP (and not
+ * forced upon SP by IdP). In ZXID this is done by setting ZXID_URL,
+ * see above. However, should you have to work with an obstinate IdP
+ * that refuses to follow this best practise, you can use this option
+ * to manually set the Entity ID. Not following the best practise
+ * breaks automatic metadata exchange (Auto-CoT). Recommended
+ * value: leave as 0 so that Entity ID is formed from ZXID_URL */
+#define ZXID_NON_STANDARD_ENTITYID 0
 
 /* URL for reading Common Domain Cookie. It must end in "zxid". The hostname
  * and port number should match the server under which zxid CGI is accessible.
@@ -104,11 +114,26 @@
  * Boolean. Recommended value: 1. */
 #define ZXID_WANT_SSO_A7N_SIGNED 1
 
-/* How many random bits to use in an ID. It would be useful of this was
+/* Whether SOAP messsages for ArtifactResolution, SLO, and MNI are signed. Whether
+ * responses are signed as well. (*** doc) */
+#define ZXID_SSO_SOAP_SIGN 1
+#define ZXID_SSO_SOAP_RESP_SIGN 1
+
+/* Whether SLO and MNI requests emitted by ZXID will encrypt the
+ * NameID (on received requests ZXID accepts either plain or encrypted
+ * automatically and without configuration). (*** doc) */
+
+#define ZXID_NAMEID_ENC 0x0f
+
+/* How many random bits to use in an ID. It would be useful if this was
  * such that it produces nice unpadded base64 string, i.e. multiple of 24 bits.
  * Longer IDs reduce chances of random collision (most code does not
  * check uniqueness of ID) and may increase security. For security purposes
- * 144 bits is probably good enugh.
+ * 144 bits is probably good enugh. The unguessability of ID has security
+ * implications, among others, in session IDs. You may want to use less than
+ * 144 bits if your application could benefit from shorter IDs (e.g. you target
+ * browsers with length constrained URLs) and does not need to be
+ * secure against attacks with government level resources.
  * E.g:  24 bits ==  3 bytes ==  4 base64 chars,
  *       48 bits ==  6 bytes ==  8 base64 chars,
  *      120 bits == 15 bytes == 20 base64 chars,
@@ -138,6 +163,28 @@
  *
  * If set to 0, causes old sessions to be unlink(2)'d. */
 #define ZXID_SES_ARCH_DIR 0  /* 0=Remove dead sessions. */
+
+/* Session cookies. (*** doc)
+ * For original Netscape cookie spec see: http://curl.haxx.se/rfc/cookie_spec.html (Oct2007)
+ *
+ * If SES_COOKIE_NAME is nonempty string, then
+ * zxid_simple() will look for said cookie and use it as session ID.
+ * It will also attempt to set a cookie by that name when new session
+ * is created (but this may rely on some support in the calling app,
+ * generally the need to set a cookie is expressed by presence of
+ * setcookie attribute in the LDIF entry. setcookie specifies what
+ * should appear in the Set-Cookie HTTP header of HTTP response). */
+
+#define ZXID_SES_COOKIE_NAME "ZXIDSES"
+
+/* Local user account management. This is optional unless you require IdP
+ * initiated ManageNameID requests to work. Local user account management
+ * may be useful on its own right if your application does not yet have
+ * such system. If it has, you probably want to continue to use
+ * the application's own system. Local accounts are stored under
+ * /var/zxid/user/SHA1 */
+
+#define ZXID_USER_LOCAL 1
 
 /* Maximum filesystem path used in /var/zxid tree. */
 #define ZXID_MAX_BUF 1024  /* (compile) */
@@ -213,6 +260,14 @@
 #define ZXLOG_ERR_IN_ACT     1  /* Log errors to /var/zxid/log/act (in addition to err) */
 #define ZXLOG_SIGFAIL_IS_ERR 1  /* Log line with signature validation error to /var/zxid/log/err */
 
+/* Log level for activity log.
+ * 0 = Only essential audit relevant events are logged. Note that
+ *     there is no way to turn off logging audit relevant events.
+ * 1 = Audit and external interactions
+ * 2 = Audit, external interactions, and significant internal events
+ * 3 and higher: reserved for future definition and debugging */
+#define ZXLOG_LEVEL 2
+
 /* Assertion validation options. These MUST all be turned on (and assertions signed)
  * if you want to rely on assertions to hold the other party liable. */
 
@@ -224,16 +279,33 @@
 #define ZXID_DUP_MSG_FATAL  0 /* Whether duplication of MessageID is considered fatal. */
 
 /* Because clock sychronization amoung the servers in the CoT is unlikely
- * to be perfect, not to speak of timezone mis configurations and the
+ * to be perfect, not to speak of timezone misconfigurations and the
  * dreaded officially introduced time errors (e.g. daylight "savings" time),
  * you can configure some slop in how the timeout is evaluated. For production
  * use something like 60 seconds could be a good value. 3600 = 1 hour, 86400 = 1 day. */
 #define ZXID_BEFORE_SLOP    86400  /* Number of seconds before that is acceptable. */
 #define ZXID_AFTER_SLOP     86400  /* Number of seconds after that is acceptable. */
 
+#define ZXID_TIMESKEW       0      /* Timeskew, in seconds, for timestamps we emit. */
+
+/* Should explicit redirect to content be used (vs. internal redir). With
+ * internal redirect there is one over teh wire transaction less, but
+ * the URL appears as whatever was sent by the IdP. With explicit (302)
+ * redirect the URL will appear as the true content URL, without SSO goo. */
+#define ZXID_REDIR_TO_CONTENT 0
+
 /* ID-WSF SOAP Call parameters */
 
 #define ZXID_MAX_SOAP_RETRY 5  /* Maximum retries due, e.g., EndpointMoved */
+
+/* In mod_auth_saml the URL ending that triggers session management (e.g. SLO MNI). */
+// *** remove #define ZXID_MOD_SAML_MGMT_SUFFIX "/saml"
+
+/* In mod_auth_saml the prefix (potentially empty) for attributes brought into environment. */
+
+#define ZXID_MOD_SAML_ATTR_PREFIX "SAML_"
+
+#define ZXID_DEFAULTQS ""   /* Default Query String used by mod_auth_saml for protected page */
 
 /* ----------------------------------------------------------------------------- */
 /* Simple API HTML customization. These allow simple branding and customization.

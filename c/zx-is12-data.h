@@ -813,13 +813,13 @@ struct zx_is12_Select_s {
   struct zx_elem_s* Label;	/* {0,1} xs:normalizedString */
   struct zx_elem_s* Value;	/* {0,1} xs:normalizedString */
   struct zx_is12_Item_s* Item;	/* {2,unbounded}  */
-  struct zx_str* name;	/* {1,1} attribute xs:ID */
   struct zx_str* multiple;	/* {0,1} attribute xs:boolean */
+  struct zx_str* name;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_is12_Select_GET_name(struct zx_is12_Select_s* x);
 struct zx_str* zx_is12_Select_GET_multiple(struct zx_is12_Select_s* x);
+struct zx_str* zx_is12_Select_GET_name(struct zx_is12_Select_s* x);
 
 struct zx_is12_Help_s* zx_is12_Select_GET_Help(struct zx_is12_Select_s* x, int n);
 struct zx_elem_s* zx_is12_Select_GET_Hint(struct zx_is12_Select_s* x, int n);
@@ -845,8 +845,8 @@ void zx_is12_Select_PUSH_Label(struct zx_is12_Select_s* x, struct zx_elem_s* y);
 void zx_is12_Select_PUSH_Value(struct zx_is12_Select_s* x, struct zx_elem_s* y);
 void zx_is12_Select_PUSH_Item(struct zx_is12_Select_s* x, struct zx_is12_Item_s* y);
 
-void zx_is12_Select_PUT_name(struct zx_is12_Select_s* x, struct zx_str* y);
 void zx_is12_Select_PUT_multiple(struct zx_is12_Select_s* x, struct zx_str* y);
+void zx_is12_Select_PUT_name(struct zx_is12_Select_s* x, struct zx_str* y);
 
 void zx_is12_Select_PUT_Help(struct zx_is12_Select_s* x, int n, struct zx_is12_Help_s* y);
 void zx_is12_Select_PUT_Hint(struct zx_is12_Select_s* x, int n, struct zx_elem_s* y);
@@ -900,14 +900,14 @@ struct zx_is12_Status_s {
   zx_is12_Status_EXT
   struct zx_is12_Status_s* Status;	/* {0,-1} nada */
   struct zx_str* code;	/* {1,1} attribute xs:QName */
-  struct zx_str* ref;	/* {0,1} attribute xs:string */
   struct zx_str* comment;	/* {0,1} attribute xs:string */
+  struct zx_str* ref;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_is12_Status_GET_code(struct zx_is12_Status_s* x);
-struct zx_str* zx_is12_Status_GET_ref(struct zx_is12_Status_s* x);
 struct zx_str* zx_is12_Status_GET_comment(struct zx_is12_Status_s* x);
+struct zx_str* zx_is12_Status_GET_ref(struct zx_is12_Status_s* x);
 
 struct zx_is12_Status_s* zx_is12_Status_GET_Status(struct zx_is12_Status_s* x, int n);
 
@@ -918,8 +918,8 @@ struct zx_is12_Status_s* zx_is12_Status_POP_Status(struct zx_is12_Status_s* x);
 void zx_is12_Status_PUSH_Status(struct zx_is12_Status_s* x, struct zx_is12_Status_s* y);
 
 void zx_is12_Status_PUT_code(struct zx_is12_Status_s* x, struct zx_str* y);
-void zx_is12_Status_PUT_ref(struct zx_is12_Status_s* x, struct zx_str* y);
 void zx_is12_Status_PUT_comment(struct zx_is12_Status_s* x, struct zx_str* y);
+void zx_is12_Status_PUT_ref(struct zx_is12_Status_s* x, struct zx_str* y);
 
 void zx_is12_Status_PUT_Status(struct zx_is12_Status_s* x, int n, struct zx_is12_Status_s* y);
 
@@ -959,17 +959,17 @@ struct zx_is12_Text_s {
   struct zx_elem_s* Hint;	/* {0,1} xs:string */
   struct zx_elem_s* Label;	/* {0,1} xs:normalizedString */
   struct zx_elem_s* Value;	/* {0,1} xs:normalizedString */
-  struct zx_str* name;	/* {1,1} attribute xs:ID */
-  struct zx_str* minChars;	/* {0,1} attribute xs:integer */
-  struct zx_str* maxChars;	/* {0,1} attribute xs:integer */
   struct zx_str* format;	/* {0,1} attribute xs:string */
+  struct zx_str* maxChars;	/* {0,1} attribute xs:integer */
+  struct zx_str* minChars;	/* {0,1} attribute xs:integer */
+  struct zx_str* name;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_is12_Text_GET_name(struct zx_is12_Text_s* x);
-struct zx_str* zx_is12_Text_GET_minChars(struct zx_is12_Text_s* x);
-struct zx_str* zx_is12_Text_GET_maxChars(struct zx_is12_Text_s* x);
 struct zx_str* zx_is12_Text_GET_format(struct zx_is12_Text_s* x);
+struct zx_str* zx_is12_Text_GET_maxChars(struct zx_is12_Text_s* x);
+struct zx_str* zx_is12_Text_GET_minChars(struct zx_is12_Text_s* x);
+struct zx_str* zx_is12_Text_GET_name(struct zx_is12_Text_s* x);
 
 struct zx_is12_Help_s* zx_is12_Text_GET_Help(struct zx_is12_Text_s* x, int n);
 struct zx_elem_s* zx_is12_Text_GET_Hint(struct zx_is12_Text_s* x, int n);
@@ -991,10 +991,10 @@ void zx_is12_Text_PUSH_Hint(struct zx_is12_Text_s* x, struct zx_elem_s* y);
 void zx_is12_Text_PUSH_Label(struct zx_is12_Text_s* x, struct zx_elem_s* y);
 void zx_is12_Text_PUSH_Value(struct zx_is12_Text_s* x, struct zx_elem_s* y);
 
-void zx_is12_Text_PUT_name(struct zx_is12_Text_s* x, struct zx_str* y);
-void zx_is12_Text_PUT_minChars(struct zx_is12_Text_s* x, struct zx_str* y);
-void zx_is12_Text_PUT_maxChars(struct zx_is12_Text_s* x, struct zx_str* y);
 void zx_is12_Text_PUT_format(struct zx_is12_Text_s* x, struct zx_str* y);
+void zx_is12_Text_PUT_maxChars(struct zx_is12_Text_s* x, struct zx_str* y);
+void zx_is12_Text_PUT_minChars(struct zx_is12_Text_s* x, struct zx_str* y);
+void zx_is12_Text_PUT_name(struct zx_is12_Text_s* x, struct zx_str* y);
 
 void zx_is12_Text_PUT_Help(struct zx_is12_Text_s* x, int n, struct zx_is12_Help_s* y);
 void zx_is12_Text_PUT_Hint(struct zx_is12_Text_s* x, int n, struct zx_elem_s* y);
@@ -1046,8 +1046,8 @@ struct zx_is12_UserInteraction_s {
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* interact;	/* {0,1} attribute xs:QName */
   struct zx_str* language;	/* {0,1} attribute xs:NMTOKENS */
-  struct zx_str* redirect;	/* {0,1} attribute xs:boolean */
   struct zx_str* maxInteractTime;	/* {0,1} attribute xs:integer */
+  struct zx_str* redirect;	/* {0,1} attribute xs:boolean */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
@@ -1056,8 +1056,8 @@ struct zx_is12_UserInteraction_s {
 struct zx_str* zx_is12_UserInteraction_GET_id(struct zx_is12_UserInteraction_s* x);
 struct zx_str* zx_is12_UserInteraction_GET_interact(struct zx_is12_UserInteraction_s* x);
 struct zx_str* zx_is12_UserInteraction_GET_language(struct zx_is12_UserInteraction_s* x);
-struct zx_str* zx_is12_UserInteraction_GET_redirect(struct zx_is12_UserInteraction_s* x);
 struct zx_str* zx_is12_UserInteraction_GET_maxInteractTime(struct zx_is12_UserInteraction_s* x);
+struct zx_str* zx_is12_UserInteraction_GET_redirect(struct zx_is12_UserInteraction_s* x);
 struct zx_str* zx_is12_UserInteraction_GET_actor(struct zx_is12_UserInteraction_s* x);
 struct zx_str* zx_is12_UserInteraction_GET_mustUnderstand(struct zx_is12_UserInteraction_s* x);
 
@@ -1072,8 +1072,8 @@ void zx_is12_UserInteraction_PUSH_InteractionService(struct zx_is12_UserInteract
 void zx_is12_UserInteraction_PUT_id(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
 void zx_is12_UserInteraction_PUT_interact(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
 void zx_is12_UserInteraction_PUT_language(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
-void zx_is12_UserInteraction_PUT_redirect(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
 void zx_is12_UserInteraction_PUT_maxInteractTime(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
+void zx_is12_UserInteraction_PUT_redirect(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
 void zx_is12_UserInteraction_PUT_actor(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
 void zx_is12_UserInteraction_PUT_mustUnderstand(struct zx_is12_UserInteraction_s* x, struct zx_str* y);
 

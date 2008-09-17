@@ -1,14 +1,14 @@
 README.zxid
 ###########
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: README.zxid,v 1.78 2007-08-10 19:19:10 sampo Exp $>>
-<<class: article!!!ZXID 19>>
+<<cvsid: $Id: README.zxid,v 1.109 2008-09-17 02:39:21 sampo Exp $>>
+<<class: article!!!ZXID 23>>
 
 <<abstract:
 
 ZXID.org Identity Management toolkit implements standalone SAML 2.0 and
 Liberty ID-WSF 2.0 stacks and aims at implementing all popular
-federation and ID web services protocols.  It is a C implementation
+federation and ID Web Services protocols.  It is a C implementation
 with minimal external dependencies - OpenSSL, CURL, and zlib -
 ensuring easy deployment (no DLLhell). Due to its small footprint and
 efficient and accurate schema driven implementation, it is suitable
@@ -24,7 +24,7 @@ WS-Federation, WS-Trust und ID-Webservices wie Liberty ID-WSF 1.1 und
 2.0 implementieren will. Sie beruht auf Schema-basierter
 Code-Erzeugung, woraus eine genaue Implementation resultiert. SWIG
 wird verwendet, um Schnittstellen zu Skriptsprachen wie Perl, PHP und
-Python sowie zu Java bereitzustellen. Sie kann als SP, IdP, WSC und
+Python sowie zu Java bereitzustellen. Sie kann als SP, WSC und
 WSP fungieren.
 
 A biblioteca de gestão de identidades ZXID.org é uma
@@ -40,30 +40,30 @@ PHP, Perl, e Java, atravez de interfáces SWIG. ZXID de hoje (Jul
 sendo o papel IdP (Provedor de Identidade) suportado
 na futura evolução do projecto.
 
-La libraria de gestión de idendidades ZXID.org es una
-implementación, en C, de las normas SAML 2.0 y Liberty ID-WSF 2.0
-con dependencias extranjas minimas - OpenSSL, CURL, y zlib - que
-elimina el "DLL Hell" en implantación. Como ZXID es mui economica
-es adepto para aplicaciones embutidos o de gran volumen y
-envergadura. Los lenguas de programación de alta nivel, como Perl,
-PHP, y Java, son suportados con gerador de interfaces SWIG. Hoy (Jul
-07) el ZXID suporta papeles SP (proveédor de servicios), WSC
-(cliente de los servicios web) y WSP (proveédos de los servicios web).
-Lo papel IdP (proveédos de los identidades) sea suportado
-en fase futuro de el proyecto.
+La librería de gestión de identidades ZXID.org es una
+implementación en C de las normas SAML 2.0 y Liberty ID-WSF 2.0,
+con dependencias externas mínimas - OpenSSL, CURL, y zlib - que
+elimina el "Infierno DLL" en su implantación. Como ZXID es muy económica,
+es apta para aplicaciones embebidas o de gran volumen y
+envergadura. Los lenguajes de programación de alto nivel, como Perl,
+PHP, y Java, son soportados con generador de interfaces SWIG. Hoy (Feb
+07) el ZXID soporta los roles SP (proveedor de servicios) y WSC
+(cliente de los servicios web). Los roles IdP (proveedor de
+identidades) y WSP (proveedor de servicios web) serán soportados
+en fases futuras del proyecto.
 
-ZXID.org on elektonisenhenkilöllisyyden ja -tunnisteiden hallinta
-kirjasto joka tukee SAML 2.0 (sisäänkirjaantuminen) ja Liberty
-ID-WSF 2.0 (henkilöllisyyteen pohjautuvat webbipalvelut)
-standardeja. ZXID on riippuvainen vain OpenSSL, CURL ja zlib
-kirjastoista joten se välttää "DLL helvetti"
--ongelman. Skemapohjaisena C toteutuksena se on tarkka ja
-taloudellinen ja soveltuu sulautettuihin ja erittäin kovaa
+ZXID.org on verkkohenkilöllisyyden ja -tunnisteiden
+hallintakirjasto joka tukee SAML 2.0 (sisäänkirjaantuminen) ja
+Liberty ID-WSF 2.0 (henkilöllisyyteen pohjautuvat webbipalvelut)
+standardeja. ZXID vaatii vain OpenSSL, CURL ja zlib
+kirjastot joten se välttää "DLL helvetti"-ongelman.
+Skemapohjaisena C toteutuksena se on tarkka ja
+taloudellinen ja kelpaa sulautettuihin ja erittäin kovaa
 suorituskykyä vaativiin sovelluksiin. Se tukee korkeantason
-kieliä, kuten Perliä, PHP:tä, ja Javaa, SWIG generoiduin
+kieliä - kuten Perliä, PHP:tä, ja Javaa - SWIG generoiduin
 rajapinnoin. ZXID tukee (Heinäkuu 07) SP (palveluntarjoaja), WSC
-(webbipalvelunkutsuja), ja WSP (webbipalveluntarjoaja) rooleja.
-IdP (henkilöllisyydenvarmentaja) rooli toteutetaan projektin tulevissa
+(webbipalvelunkutsuja), ja WSP (webbipalveluntarjoaja) rooleja.  IdP
+(henkilöllisyydenvarmentaja) rooli toteutetaan projektin tulevissa
 vaiheissa.
 
 >>
@@ -120,6 +120,14 @@ Identity Management hacker:: You need some building blocks: you
 ZXID Project has vastly more ambitious goals. See the ZXID Project chapter
 later in this document.
 
+Conor Cahill of Intel (formerly AOL) said back in 2006:
+> IMNSHO, better go Liberty up front and have the confidence that you
+> do not need to upgrade later - or run two parallel systems. The Liberty
+> (or SAML 2.0) system is comprehensive and addresses every use case
+> anyone has thought so far. The percieved complexity is really an
+> implementation issue and not underlying propery of the spec. Since
+> we provide an implementation, the "complexity" is not customer problem.
+
 2 Installing
 ============
 
@@ -133,8 +141,10 @@ script in an existing web server. See later chapters for more details.
   #       supported platforms by provision of correct TARGET option.
   # N.B2: We distribute some generated files. If they are missing, you need
   #       to regenerate them: make cleaner; make dep ENA_GEN=1
+  # Standard place is /var/zxid. You can change this with
+  #   make ZXID_PATH=/usr/local/var
   make                   # default Linux. Do `make TARGET=sol8' for Solaris
-  make dir               # Creates /var/zxid hierarchy
+  make dir               # Creates /var/zxid hierarchy (may need to be root)
   
   make samlmod           # optional
   make samlmod_install   # optional: install Net::SAML perl module
@@ -200,8 +210,11 @@ D. plaindoc from http://mercnet.pt/plaindoc/pd.html (only for
 Although technically not needed to build zxid, you will need an IdP
 to test against. We do not, at the time, supply one, so you
 will need to find a third party, perhaps a free download of one of the
-commercial ones like http://symlabs.com/Products/SFIAM.html or
-http://www.lasso.org/
+commercial ones like
+
+* http://symlabs.com/Products/SFIAM.html
+* Lasso: http://lasso.entrouvert.org/
+* The IDP:  http://authentic.labs.libre-entreprise.org/ 
 
 2.2 Canned Tutorial: Running ZXID as CGI under mini_httpd
 ---------------------------------------------------------
@@ -289,6 +302,7 @@ If you suspect this problem, try following:
      echo
      echo Test $$
      echo lib_path is --$LD_LIBRARY_PATH--
+     ldd zxid
      ./zxid -h 2>&1
      echo Exit value --$?--
 
@@ -325,8 +339,11 @@ protocol encoders and decoders are latently available in libzxid,
 should anyone wish to make an attempt to hack an IdP together).
 For you to test zxid, you will need to acquire an IdP from
 somewhere - any vendor whose product is SAML 2.0 certified
-will do. One possible source is http://symlabs.com/Products/SFIAM.html
-who have a free download, another is http://www.lasso.org/
+will do. Possible sources are
+
+* http://symlabs.com/Products/SFIAM.html who have a free download of commercial product
+* Lasso: http://lasso.entrouvert.org/
+* The IDP:  http://authentic.labs.libre-entreprise.org/ 
 
 If you do not want to install an IdP yourself (even for testing), find
 someone who already runs one and ask if they would be willing to load
@@ -357,7 +374,7 @@ zxid SP, by default, has automatic fetching of IdP metadata enabled so
 there is no manual configuration step needed, provided that the IdP
 supports the well known location method. All SAML 2.0 certified IdP
 implementations must support it (but you may still need to enable it
-in configuration). See [SAML2Meta] section 4.1 "Publication and
+in configuration). See [SAML2meta] section 4.1 "Publication and
 Resolution via Well-Known Location", p.29, for normative description of this
 method.
 
@@ -447,18 +464,22 @@ production use you MUST generate your own certificate and private key.
 Usually configuring a system involves following tasks
 
 1. Configure web server (see your web server documentation)
+
    a. HTTPS operation and TLS certificate. In the minimum you need
       the main site, but you may want to configure the Common Domain
       Cookie virtual host as well.
+
    b. Arrange for ZXID to be invoked. This could mean configuring
       zxid, zxid-java.sh, or zxid.pl to be recognized as a CGI script, or
       it could mean setting up your ~mod_perl~ or ~mod_php~ system to call
       ZXID at the appropriate place.
 
 2. Configure ZXID, including signing certificate and CoT with peer metadata
+
    a. generate or acquire certificate
+
    b. Obtain peer metadata (from their well known location) or
-      enable +Instant CoT+ feature.
+      enable +Auto CoT+ feature.
 
 3. Configure CoT peers with your metadata. They can download your
    metadata from your well known location (which is the URL that
@@ -520,10 +541,21 @@ cdc-nopw-cert.pem:: SSL or TLS certificate for Common Domain Cookie
 ~~~~~~~~~
 
 Directory that holds metadata of the Circle of Trust (CoT)
-partners. If +Instant CoT+ is enabled, this directory needs to be
+partners. If +Auto CoT+ is enabled, this directory needs to be
 writable at run time.
 
-3.2 Configuration file format
+Typical metadata file path would be
+
+  /var/zxid/cot/Inkl5fOnhVNa0LbWjHem2Y2UphY
+
+If the metadata file appears in this directory, then the entity is in
+the CoT.
+
+The file name component of the path is safe base64 encoded
+SHA1 hash of the Entity ID, with last character stripped (that
+character would always be an equals sign).
+
+3.2 Configuration File Format
 -----------------------------
 
 During zxid project development phase (ongoing as of Jan 2007), most
@@ -558,6 +590,9 @@ To give some idea consider following /var/zxid/zxid.conf example:
 
 N.B. zxidconf.h contains a wealth of logging related config options.
 
+> Tip: Your web server also has logging options. You may want
+> to correlate the web server logs with zxid audit logs.
+
 In serious use of SSO it is fundamental that the relying party, the SP,
 WSC, or WSP, archives the digitally signed evidence that justifies its
 actions. Generally this means that at least the SSO or credential
@@ -577,15 +612,16 @@ anyone as well as preserving every (signed) response it makes.
 
 Generally every assertion, request, and response will have its unique
 ID that can be used as the primary key, or filename, for storing it in
-a database. Unfortunately these namespaces are not disjoint (it is not
-very well specified in any of the standards how they interact or how
-wide their uniqueness properties are).<<footnote: Many rational
-implementations use 128 bit random identifiers, which statistically
-guarantees that there will not be collisions, but unfortunately we can
-not rely on other parties to adopt this behaviour.>> The only safe
-assumption is the pessimistic one: each type of object observes a
-unique namespace only towards its issuer and type and hence we need to
-map such namespaces to subdirectories.
+a database. Unfortunately these namespaces<<footnote: Namespace, as
+used here, has nothing to do with XML namespaces.>> are not disjoint
+(it is not very well specified in any of the standards how they
+interact or how wide their uniqueness properties are).<<footnote: Many
+rational implementations use 128 bit random identifiers, which
+statistically guarantees that there will not be collisions, but
+unfortunately we can not rely on other parties to adopt this
+behaviour.>> The only safe assumption is the pessimistic one: each
+type of object observes a unique namespace only towards its issuer and
+type and hence we need to map such namespaces to subdirectories.
 
 4.1 Filesystem Layout for Logs
 ------------------------------
@@ -646,7 +682,21 @@ All activity and error log file lines have the following format (any one of the 
 
   # comment
   SE CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-  SE SSSS OURTS SRCTS IP:PORT SUCCENTID MSGID A7NID NID VVV RES OP PPP FMT
+  SE SIG OURTS SRCTS IP:PORT SUCCEID MID A7NID NID VVV RES OP PPP FMT
+
+<<ignore:
+
+PP - 20070929-041314.599 20070929-121312.501 0.0.0.0:0 zIDxx57qGA-qwnsymUf4JD0Er2A - A7NHKJdRVk8P_WNEV-RFqB4 PT7cP8WWiZy3g3jCTDciT G K FEDSSO - -
+
+PP - 20070929-041314.599 - 0.0.0.0:0 - - - - N K GETMD https://s-xtra.liberty-iop.org:8443/zxidgsa?o=B time 237ms
+
+  SE SSSS OURTS SRCTS IP:PORT VVV RES OP SUCCENTID MSGID A7NID NID PPP FMT
+
+PP - 20070929-041314.599 20070929-121312.501 0.0.0.0:0 G K FEDSSO zIDxx57qGA-qwnsymUf4JD0Er2A - A7NHKJdRVk8P_WNEV-RFqB4 PT7cP8WWiZy3g3jCTDciT - -
+
+PP - 20070929-041314.599 - 0.0.0.0:0 N K GETMD https://s-xtra.liberty-iop.org:8443/zxidgsa?o=B time 237ms
+
+>>
 
 where
 
@@ -662,14 +712,14 @@ SE:: Log signing and encryption designator. In all cases
     xT:: Asymmetrically 3DES encrypted
     xB:: Symmetrically AES encrypted (theoretical: how to safeguard the key?)
     xU:: Symmetrically 3DES encrypted (theoretical: how to safeguard the key?)
-    xZ:: RFC1951 zipped (not really encryption)
+    xZ:: [RFC1951] zipped (not really encryption)
     Xxx:: Experimental arrangements.
 
 CCCC:: Safe base64 encoded log encryption blob. In case of encryption blob, the rest of
     the log fields will not appear. Decrypted logline will contain
     fields starting from SSSS.
 
-SSSS:: Safe base64 encoded log line signature blob. If no signature, this is a dash ("-").
+SIG:: Safe base64 encoded log line signature blob. If no signature, this is a dash ("-").
 
 OURTS:: Our time stamp, format YYYYMMDD-HHMMSS.TTT where TTT are the milliseconds.
     The time is always in GMT (UTC, Zulutime).
@@ -680,9 +730,9 @@ SRCTS:: Source time stamp, format YYYYMMDD-HHMMSS.TTT. If TTT was not originally
 IP:PORT:: The IP address and the port number of the other end point (usually client,
     but could be spoofed, caveat emptor).
 
-SUCCENTID:: The SHA1 name of the entity (succinct entity ID without the equals sign).
+SUCCEID:: The SHA1 name of the entity (succinct entity ID without the equals sign).
 
-MSGID:: Message ID relating to the log line. Allows message to be fetched from
+MID:: Message ID relating to the log line. Allows message to be fetched from
     the database or the file system. Any relates-to or similar ID is only
     available by fetching the original message. Dash ("-") if none.
 
@@ -696,7 +746,7 @@ A7NID:: Assertion ID relating to the log line. Allows assertion to be fetched fr
 NID:: IdP assigned NameID relating to the message, if any. If the NameID is
     encrypted and can not be decrypted, then placeholder "-encnid-" is used.
 
-VVV:: Signature validation codes
+VVV:: Signature validation codes (*** still avail HJLMQUYZ)
     O:: Capital Oh (not zero). All relevant signatures validate (generally assertion)
     A:: Unsupported or bad signature or message digest algorithm
     G:: Checksum of XML DSIG does not validate
@@ -704,6 +754,7 @@ VVV:: Signature validation codes
     N:: No signature detected.
     I:: Issuer metadata not found (or not in CoT, or corrupt metadata).
     V:: Assertion validity error (e.g. not in time range or wrong audience)
+    F:: Operation failed or faulted by error code (low level protocol ok)
     Exx:: Extended signature validation code (generally failure)
     Xxx:: Experimental signature validation code (generally failure)
 
@@ -713,7 +764,9 @@ RES:: Result of the operation.
     S:: Operation failed due to server side error
     P:: Operation failed due to policy or permissions issue
     T:: Temporary error, client was encouraged to retry
+    B:: Metadata related error (no metadata or parse error in metadata)
     D:: Redirect or recredential. Client was encouraged to retry.
+    W:: Way point message. Neither success nor failure.
     Exx:: Extended result (generally failure)
     Xxx:: Experimental result (generally failure)
 
@@ -722,18 +775,46 @@ OP:: The documented operation
     FEDNEW:: Federation and SSO request succeeded, new federation was created.
     FEDSSO:: SSO using federated ID was performed
     TMPSSO:: SSO using temporary NameID was performed
-    SLO::    Single Logout was performed
+    SLO::    Single Logout was completed
     DEFED::  Defederation was performed
+    BADCF::  Server configuration (/var/zxid/zxid.conf) is bad
+    NOMD::   No metadata found after options exhausted (cache, fetch from net)
+    BADMD::  Metadata parsing error
+    BADXML:: XML parsing error in protocol
+    SAMLFAIL:: SAML call failed (often SOAP call)
+    ERR::    Other error
 
     For WSP the OP is the command verb that was exercised.
 
     For WSC the OP is the command verb preceded by capital C, e.g. "CQuery".
 
     Additional OP verbs may need to be specified for protocol substeps like
-    artifact resolution (ART).
+    artifact resolution (ART) and direct authentication (AUTH).
 
-    Additional OP verbs may need to be specified for other logging operations like
-    regular web access logs (HEAD, GET, POST).
+    ART:: Artifact resolution request sent with SOAP (1)
+    ANREDIR:: Redirection with Authentication Request
+    LOCLO:: Local Logout (1)
+
+    SLOREDIR:: Redirection with Single Logout Request
+    MNIREDIR:: Redirection with Manage NameID Request for changing NameID
+    DEFEDREDIR:: Redirection with Manage NameID Request for defederation
+
+    SLOSOAP:: Single Logout Request SOAP call made
+    MNISOAP:: Manage NameID Request for changing NameID SOAP call
+    DEFEDSOAP:: Manage NameID Request for defederation SOAP call
+    SAMLOK:: SAML call OK (often SOAP call)
+
+    Additional OP verbs may need to be specified for other logging operations
+    like regular web access logs (HEAD, GET, POST).
+
+    IDPSEL:: IdP Selection screen is shown (2)
+    MGMT::   Management screen is shown (2)
+    SHOWPC:: Logged in (by SSO or session). Show protected content. arg is sid. (1)
+    SPDISP:: SP Command Dispatch (received POST or redir) (2)
+    MYMD::   My metadata was served to requester on the net (1)
+    GETMD::  Getting metadata from net (2)
+    GOTMD::  Got metadata from net (1)
+    BADCGI:: Unknown CGI options (0, but not implemented yet)
 
 PPP:: Operation dependent one most relevant parameter. Dash ("-") if none.
 
@@ -772,7 +853,7 @@ configure the configuration level in the config file zxidconf.h
 (compile time):
 
 0x00:: no encryption (xP)
-0x10:: RFC1951 zip - safe-base64 (xZ)
+0x10:: [RFC1951] zip - safe-base64 [RFC3548] (xZ)
 0x20:: RSA-AES (xA)
 0x30:: RSA-3DES (xT)
 0x40:: Symmetric AES (xB)
@@ -790,7 +871,7 @@ For symmetric encryption the key is the SHA1 hash of file
 /var/zxid/pem/logenc.key. Obviously this key must be kept secret,
 but see the caveat about stolen machine in the previous paragraph.
 
-All encryption modes, except for 0, RFC1951 zip compress the log line
+All encryption modes, except for 0, [RFC1951] zip compress the log line
 before encryption and safe-base64 encode the result of the
 encryption. All encryption modes, except 0 and 1, prefix the zipped log
 line with 128 bit nonce before encrypting.
@@ -825,7 +906,7 @@ sign. Similarly logenc-nopw-cert.pem needs to contain the private key
 4.4 Internal Crypto Formats
 ---------------------------
 
-For RFC1951 zipped safe-base64 output the input to base64 encoding is
+For [RFC1951] zipped safe-base64 [RFC3548] output the input to base64 encoding is
 
   LLSSSSZZZZZZZZZZZZZZ    -- RFC1951 zipped safe-base64
 
@@ -846,7 +927,7 @@ NNNN:: 16 bytes of nonce. This is used as initialization vector
 LL::   Bigendian integer representing signature length in bytes.
        0 means none. Negative values reserved for future use.
 SSSS:: The signature in binary
-ZZZZ:: RFC1951 zipped base64 of the payload
+ZZZZ:: [RFC1951] zipped safe-base64 [RFC3548] of the payload
 KK::   Bigendian integer representing encrypted session key
        length in bytes. Negative values are reserved for future use.
 EEEE:: RSA encrypted session key in binary
@@ -916,11 +997,15 @@ but are not specified at this time.
 The ZXID session system serves three purposes:
 
 1. Remember whether user has logged in. The session ID is carried
-   either in a cookie or aspart of the URL.
+   either in a cookie or as part of the URL.
+
 2. Make it possible to perform Single Logout (SLO) and
    certain federation management tasks.
+
 3. Remember the service end points (EPRs) that were either
+
    a. supplied as bootstrap attributes in the SSO assertion, or
+
    b. later discovered
 
 The biggest complication is the requirement to remember the EPRs and
@@ -939,13 +1024,22 @@ directory under the /var/zxid/ses tree.
    |         +-- .ses      The session file
    |         +-- SVC,SHA1  Each bootstrap is kept in its own file
    |
+   +-- user/      Local user accounts (if enabled)
+   |    |
+   |    +-- SHA1/ Each local user has a directory whose name is SHA1
+   |         |    of the user's NameID (idpnid)
+   |         +-- .mni     Information needed by Name ID management
+   |
    `-- log/       Log files, pid files, and the like
 
-The session ID is an unguessable safe base64 encoded pseudorandom
-number. Unguessability ensures that the session can only be
-crated via SSO.
+4.7.1 Session directory
+~~~~~~~~~~~~~~~~~~~~~~~
 
-The service EPRs are XML documents whose name is coposed from
+The session ID is an unguessable (but see ID_BITS configuration
+options) safe base64 encoded pseudorandom number. Unguessability
+ensures that the session can only be crated via SSO.
+
+The service EPRs are XML documents whose name is composed from
 two components
 
   SVC,SHA1
@@ -959,6 +1053,59 @@ SHA1:: safe base64 encoded SHA1 hash of the content of the EPR. The
     purpose of the SHA1 hash is to produce a unique identifier
     so that two distinct EPRs for same service will have
     different file names.
+
+The session directory also contains .ses file. The first line
+is as follows (still subject to change, Oct 2007):
+
+  NameID|a7n-ref
+
+The pipey symbol (|) is a field separator. Future versions
+may define further fields beyound these original two. All other
+lines are reserved for future expansion. Fields:
+
+NameID:: NameID, extracted during SSO
+a7n-ref:: Filesystem path to the SSO assertion.
+
+4.7.2 User directory
+~~~~~~~~~~~~~~~~~~~~
+
+User directories are used for storage of +local account+ information.
+Since many web applications, to which ZXID may be integrated, already
+have their own local user storage, the ZXID user directory is optional,
+see USER_LOCAL configuration option.
+
+IdP initiated ManageNameID requests depend on local user accounts, so
+if you want this to work you need to enable them. Local user account
+management may be useful on its own right if your application does not
+yet have such system. If it has, you probably want to continue to use the
+application's own system.
+
+Each user is represented by a file whose filename is safe base64
+of the SHA1 hash of the user's NameID.
+
+Inside the directory, a file called .mni captures the information
+needed for NameID Management. It is expected that other files
+about the user may be populated to capture other aspects. Your own
+applications could even create files here.
+
+The first line of the .mni file is as follows
+
+  FMT|IDPEnt|SPqual|NameID|MNIptr
+
+The pipey symbol (|) is a field separator. Future versions
+may define further fields beyound these original two. All other
+lines are reserved for future expansion. Fields:
+
+FMT:: NameID Format
+IDPent:: IdP entity ID that qualifies the NameID (namespace if you like).
+    This usually corresponds to the NameQualifier of <NameID>
+SPqual:: SP entity or affilitation ID (optionally) sent by IdP. This
+    further qualifies the namespace of the Name ID.
+NameID:: NameID of the account
+MNIptr:: If NameID Management has been used to change the
+    IdP assigned NameID, then the new NameID. There will be
+    a local user account directory for the new NameID. Consider
+    this as a sort of symlink functionality.
 
 5 Compilation for Experts
 =========================
@@ -1225,9 +1372,10 @@ features in that gcc series). If you hit compile time problems with
 5.7 Overview of the xsd2sg.pl Tool
 ----------------------------------
 
-The xsd2sg.pl tool, distributed as part of Plaindoc system, is at the
-heart of the ZXID conde generation. Unfortunately the tool is still
-in flux. What follows is general outline valid as of March 2007.
+The xsd2sg.pl tool, distributed as part of Plaindoc
+(http://mercnet.pt/plaindoc/pd.html) system, is at the heart of the
+ZXID code generation. Unfortunately the tool is still in flux. What
+follows is general outline valid as of March 2007.
 
 xsd2sg.pl can be invoked in three ways (see xsd2sg.pl --help), but the
 invocation of interest to use is the -S SG to XSD with Code generation
@@ -1278,8 +1426,8 @@ to do the job.
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Once %dt is in expanded form, the get_element() is called for each
-namespace. It will generate the code for encoders and decoders
-for the elements in the namespace. Finally the root decoder
+XML namespace. It will generate the code for encoders and decoders
+for the elements in the XML namespace. Finally the root decoder
 is gnerated using gen_element(). Furing generation following
 template files are used
 
@@ -1480,7 +1628,7 @@ by web server can easily be different than in your shell and some
 web servers even ignore ~LD_LIBRARY_PATH~ environment variable. Sometimes
 you just have to copy the dependency libraries to one of the allowed
 directories. This is "dirty", but works. See ldconfig(8) and
-section <<see:ZXID-Installing-CannedTutorialRunningZXIDasCGIundermini_httpd-AccessingZXID>> for further information.
+section <<see: ZXID-Installing-CannedTutorialRunningZXIDasCGIundermini_httpd-AccessingZXID>> for further information.
 
 You can easily see the dependencies using ldd(1)
 
@@ -1499,13 +1647,13 @@ outside normal places, i.e. /lib and /usr/lib.
 
 Another thing to remember is that CGI specification requires that the
 ~Content-Type~ header and an empty line (to separate headers from
-content) is emitted before the actual page. If this happens, the
+content) is emitted before the actual page. If this fails to happen, the
 page will mysteriously not appear although your script ran successfully.
 
 Sometimes the debug output can end up in stdout (e.g. somewhere stderr
 was redirected to stdout) and this will garble the returned web page.
 Easy fix is to disable debug output by not supplying ~ZXID_AUTO_DEBUG~.
-See section <<see:ZXID-ZXID_simpleAPI-HelloWorld-AUTOoptions>>.
+See section <<see: ZXID-ZXID_simpleAPI-HelloWorld-AUTOoptions>>.
 
 7.2 Programming with ZXID PHP Extension
 ---------------------------------------
@@ -1523,7 +1671,15 @@ zxidhlo.php for further usage examples.
 8 Python Extension
 ==================
 
-TBD using SWIG
+*** TBD using SWIG. Very preliminary support in Makefile exists, but
+*** this has not been tested in any real world set up.
+
+THe Python extension is built into subdirectory ~py~ with
+command
+
+  make pyzxid
+
+The result should be py/py_zxid.so
 
 9 Java Native API (JNI): zxidjava package and zxidjni class
 ===========================================================
@@ -1667,7 +1823,7 @@ After ~make javazxid~ and restart of Tomcat (~killall java;
 apache-tomcat-5.5.20/bin/startup.sh~), you can access the application
 using URL (defined in servlet/WEB-INF/web.xml)
 
-  http://sp1.zxidsp.org:8180/zxidservlet/zxidHLO?o=E
+  http://sp1.zxidsp.org:8080/zxidservlet/zxidHLO?o=E
 
 9.5 Troubleshooting class loader
 --------------------------------
@@ -1745,7 +1901,7 @@ Then ... ? Currently it seems you have to restart Tomcat.
 
 If you get
 
-java.lang.NoClassDefFoundError: javax/servlet/http/HttpServlet
+  java.lang.NoClassDefFoundError: javax/servlet/http/HttpServlet
         java.lang.ClassLoader.defineClass1(Native Method)
         java.lang.ClassLoader.defineClass(ClassLoader.java:620)
         java.security.SecureClassLoader.defineClass(SecureClassLoader.java:124)
@@ -1803,7 +1959,19 @@ jdb prompt.
   > print cf
   > cont
 
-10 zxid_simple() API
+10 C# (csharp) Support
+======================
+
+*** TBD: SWIG based, try make csharpzxid
+
+(*** see also cvsdoc:fiam-man/sdk-dotnet.pd)
+
+11 Ruby Support
+===============
+
+*** TBD: SWIG based, try make rubyzxid
+
+12 zxid_simple() API
 ====================
 
 The ZXID library provides two main APIs: the simple and the full. The
@@ -1811,7 +1979,7 @@ simple API is meant to get you going with minimal understanding about
 SAML or SSO. It tries to encapsulate as much control flow as
 possible.
 
-10.1 Hello World
+12.1 Hello World
 ----------------
 
 Consider the follwing "Hello World" CGI example in C<<footnote: zxidhlo.c
@@ -1861,21 +2029,39 @@ What happens here:
    where
 
    dn:: LDAP distinguished name (part of LDIF format). Always first.
+
    objectclass:: Part of LDIF format.
+
    affid:: Specifies which IdP was used for SSO
+
    idpnid:: The federated ID, or pseudonym (IdP assigned NameID)
+
    authnctxlevel:: Rough indication of how IdP authenticated user
+
    sesid:: Session ID, as may be stored in cookie or used for
        file name in the session cache (/var/zxid/ses)
+
+   setcookie:: If this field is not empty and not equal to '-' (single dash),
+       then the controlling appication should take the necessary actions
+       to set the cookie as specified. Namely, the controlling application
+       should create 'Set-Cookie' HTTP response header whose value is the value
+       of the +setcookie+ field. How this is done is environment dependent.
+
+   cookie:: The ZXIDSES (or other as configured) cookie value. For reference.
+
    cn:: Common Name. This attribute just exemplifies how any
        additional attributes the IdP may have set will appear.
        Typically the LDAP attribute names are used.
 
    The ~dn~ line will always be the first. All other lines may appear
    in any order. String representation of LDIF was chosen
-   as it is easy to parse in most programming languages.
+   as it is easy to parse in most programming languages.<<footnote:
+   Some people have advocated JSON representation and it indeed seems
+   reasonable. But there is no compelling argument why it would be better
+   than LDIF. It clearly is better for JavaScript programs, but it is
+   more complicated for most other scripting languages. Keep the feedback coming.>>
 
-10.1.1 Configuration Options
+12.1.1 Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The zxid_simple() can be configured in following ways (later
@@ -1902,8 +2088,8 @@ URL:: The URL of the SP
 CDC_URL:: The Common Domain URL (optional, if omitted
     the Common Domain Cookie processing is disabled)
 
-10.1.2 AUTO options
-~~~~~~~~~~~~~~~~~~~
+12.1.2 AUTO options (auto flags)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The ~auto_flags~ argument allows you to control which
 operations should be performed automatically and
@@ -1939,10 +2125,10 @@ The SOAP, META, LOGIN, and MGMT flags follow convention:
 
   HC
   00  No automation. Only action letter is returned ("e"=login, "b"=meta, etc.)
-  01  Content, not wrapped in headers, is returned
-  10  Headers and content is returned
+  01  Content, not wrapped in headers, is returned as a string
+  10  Headers and content is returned as a string
   11  Headers and content are sent to stdout, CGI style and
-      exit(0) may be called, depdending on AUTO_EXIT.
+      exit(0) may be called, depending on AUTO_EXIT. Otherwise "n" is returned.
 
 Whether exit(0) is called in 11 case depends on ZXID_AUTO_NOEXIT flag.
 
@@ -1955,7 +2141,7 @@ depends on AUTO_PAGE and AUTO_FORM flags
   10  Complete form is generated
   11  Whole page is generated (best support)
 
-10.1.3 Configuration options for customizing HTML
+12.1.3 Configuration options for customizing HTML
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 When whole page is generated, some templating information is taken
@@ -1999,7 +2185,7 @@ IDP_TECH_SITE:: Technical parameters that the site administrator
     fp:: Forbid IdP from interacting with the user (IsPassive flag)
     ff:: Request reauthentication of user (ForceAuthn flag)
 
-10.2 Gaining More Control
+12.2 Gaining More Control
 -------------------------
 
 The fully automated interface works well for CGI deployment
@@ -2101,7 +2287,7 @@ Asterisk ("*"):: Although any unknown letter should be
     interpreted as an error, we follow convention
     of prefixing errors with an asterisk ("*").
 
-10.3 Some Generalization and Optimizations
+12.3 Some Generalization and Optimizations
 ------------------------------------------
 
 The simplest APIs are easy to use and suitable for CGIs where the
@@ -2165,7 +2351,7 @@ Notes
    ~auto_flags == 0xc0~ enabled the form wrapper). As can be
    seen the same configuration object, ~$cf~, is used through out.
 
-10.4 Java Servlet Example Using Tomcat
+12.4 Java Servlet Example Using Tomcat
 --------------------------------------
 
 Consider
@@ -2225,13 +2411,13 @@ Consider
   53 }
 
 
-10.5 Shell Script API
+12.5 Shell Script API
 ---------------------
 
 Any Bourne shell (Unix shell) shell script can be converted
 to a SAML SSO enabled CGI script using zxidsimple(1) helper
-utility. The helper utility simply wraps the zxid_simple()
-API function so that the inputs can be provided as arguments,
+utility. The program simply wraps the zxid_simple()
+API function so that the inputs can be provided as command line arguments,
 or in case of ~qs~ as stdin, and the output is returned on stdout.
 
 Synopsis
@@ -2285,7 +2471,7 @@ for the interesting attributes and capture them into local variables.
 
 Finally the protected content page is output.
 
-10.5 Form Field Naming
+12.5 Form Field Naming
 ----------------------
 
 The ZXID cgi interface assumes certain hardwired form field
@@ -2295,7 +2481,7 @@ method) or as POST content (though depending on your programming
 environment and language, you may need to read the POST data in
 yourself prior to calling zxid_simple()).
 
-10.5.1 Common Fields
+12.5.1 Common Fields
 ~~~~~~~~~~~~~~~~~~~~
 
 o:: Operation. In particular o=P means that form uses POST method.
@@ -2307,7 +2493,7 @@ SAMLRequest:: SAML 2.0 mandated field name for SAML request
 SigAlg:: SAML 2.0 mandated field name for signature algorithm in redirect binding
 Signature:: SAML 2.0 mandated field name for signature in redirect binding
 
-10.5.2 IdP Selection (Login) Screen
+12.5.2 IdP Selection (Login) Screen
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 u:: User (local login)
@@ -2373,7 +2559,7 @@ examples illustrate.
 
 ***
 
-10.5.3 Single Logout and Federation Management
+12.5.3 Single Logout and Federation Management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 gl:: Local Logout
@@ -2650,8 +2836,8 @@ common base type of element objects.>>
 
 <<notacountry: so wo>>
 
-12.1.1 Handling Namespaces
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+12.1.1 Handling XML Namespaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 An annoying feature of XML documents is that they have variable
 namespace prefixes. The namespace prefix for the unqualified elements
@@ -2826,7 +3012,7 @@ Since our aim is to be lax in what we accept, every element can handle
 unexpected additional attributes as well as unexpected elements. Thus
 whether the schema specifies any or anyAttribute or not, we handle
 everything as if they were there. However, when attributes and
-elements are received out side of their expected context, they are
+elements are received outside of their expected context, they are
 simply treated as strings with string names. This is true even for
 those attributes and elements that would be recognizable in their
 proper context.
@@ -3034,7 +3220,7 @@ generation time, i.e. the renderers are already in the order
 that the sort mandates.
 
 For attributes we know the sort order directly from the schema
-because [xml-c14n], sec 2.2, p.7, specifies that they
+because [XML-C14N], sec 2.2, p.7, specifies that they
 sort first by namespace URI and then by name, bot of which
 we know from the schema.
 
@@ -3079,7 +3265,7 @@ For example:
 
 Render an element into string. The XML elements are processed in
 schema order. The xmlns declarations and XML attributes are always
-sorted per [xml-exc-c14n] rules.<<footnote: The sort is actually done
+sorted per [XML-EXC-C14N] rules.<<footnote: The sort is actually done
 already at code generation time by xsd2sg.pl.>> This is what you
 generally want for rendering new data structure to a string. The wo
 pointers are not used.
@@ -3319,7 +3505,100 @@ first consult the cache, and if there is a miss, then try discovering
 the EPR using discovery service EPR, if any (usually one was obtained
 as bootstrap during the SSO).
 
-13.2 Low Level WSC API
+13.2 High level WSC API
+-----------------------
+
+The high level API is based on the idea of constructing
+the SOAB body (the payload) as a string and passing that
+to function that performs the SOAP call and returns
+response.
+
+  01 cf = zxid_new_conf_to_cf(CONF);
+  02
+  03 res = zxid_simple_cf(cf, cl, qs2, 0, 0x1fff);
+  04 switch (res[0]) {
+  05 default:
+  06   ERR("Unknown zxid_simple() response(%s)", res);
+  07 case 'd': break; /* Logged in case */
+  08 }
+  09 sid = strstr(res, "sesid: ");
+  10 zxid_get_ses(cf, &sess, sid);
+
+  11 env = zxid_callf(cf, &sess, zx_xmlns_idhrxml,
+  12         "<idhrxml:Modify>"
+  13           "<idhrxml:ModifyItem>"
+  14             "<idhrxml:Select>%s</idhrxml:Select>"
+  15             "<idhrxml:NewData>%s</idhrxml:NewData>"
+  16           "</idhrxml:ModifyItem>"
+  17         "</idhrxml:Modify>", cgi.select, cgi.data);
+  18 ZXID_CHK_STATUS(env, idhrxml_ModifyResponse,
+  19                 hrxml_resp = "Modify failed"; break);
+  20 hrxml_resp = "Modify OK";
+
+On lines 1-10 a single sign on is done to prepare the
+session and EPR cache.
+
+13.2.1 zxid_callf() - Make SOAP call with specified body
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  env = zxid_callf(cf, ses, svctype, fmt, ...)
+
+zxid_callf() first creates the body of the SOAP call
+by expanding the format string (which may involve additional
+arguments). Next it parses the string into XML data structure.
+If the format string uses unresolved namespaces, they are
+resolved using the svctype argument.
+
+Next zxid_callf() will attempt to locate an EPR for
+the service type. This may already be in cache, or
+discovery step may be performed.
+
+Then zxid_callf() augments the XML data structure with
+Liberty ID-WSF mandated headers. It will look at the
+security mechanism and token specified in the EPR and
+perform appropriate steps to create WS-Security header
+and apply signature as needed.
+
+Finally a SOAP call is made. The result is XML parsed
+and returned as SOAP envelope object.
+
+cf:: Configuration object, see zxid_new_conf_to_cf()
+ses:: Session object, used to locate EPRs, see zxid_get_ses()
+svctype:: Service type and namespace that is applicable
+    to the body. This is one of the constants from c/zx-ns.h
+fmt:: printf style format string that is used to describe
+    the body of the call as a string. If fmt contains
+    format specifiers, then additional arguments
+    are used to expand these.
+
+Return value:: SOAP envelope structure.
+
+> N.B. Although the request body is formulated as a string,
+> you can only use XML constructs whose schema is known to
+> ZXID. The resulting XML must be validly parseable by ZXID.
+
+13.2.2 ZXID_CHK_STATUS() - Macro for checking OK status
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  ZXID_CHK_STATUS(env, resp_tag, abort-action);
+  ZXID_CHK_STATUS(env, idhrxml_ModifyResponse, break);
+
+In ID-WSF web services it is very common that the overall
+outcome of the operation is expressed by <Status> element
+at top level. This macro makes it easy to check the status.
+
+If status is NOT "OK", then +abort-action+ is invoked. This
+would be whatever needed in your program to report error
+and abort further processing of the response. It could
+be a ~break~, ~return~, or even a ~goto~ statement.
+
+env:: SOAP envelope representing the response
+resp_tag:: The response tag as it appears as a child of env->Body
+abort-action:: Statement, or statements, used to report error and abort processing.
+
+There is no return value. This macro is "procedural".
+
+13.3 Low Level WSC API
 ----------------------
 
 Typical code for calling a web service at low level
@@ -3361,13 +3640,37 @@ Typical code for calling a web service at low level
        eprs in not currently well defined and may change
        from one version of ZXID to another.>>
 
-13.3 ID-DAP Interface
+13.3.1 zxid_get_epr() - Obtain EPR fron cache or by discovery
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  epr = zxid_get_epr(cf, ses, svctype, n);
+
+See if an EPR for service +svctype+ is available
+in current session EPR cache. If not, see if discovery
+EPR is available and try to discover the EPR for
+the +svctype+. Note that the discovery is transparent
+to the programmer - indeed programmer can not know
+whether EPR was served from cache (where it may have
+appeared by virtue of a bootstrap) or whether it
+was discovered.
+
+cf:: Configuration object, see zxid_new_conf_to_cf()
+ses:: Session object, used to locate EPRs in cache, see zxid_get_ses()
+svctype:: Service type (usually namespace of the service).
+    This is one of the constants from c/zx-ns.h
+n:: Ordinal. If more than one EPR is available, specifies
+    which one is desired. Usually 1 is supplied, to pick the first EPR.
+
+Return Value:: An EPR object (URL of the service, security mechanism,
+    and possibly security token (SAML assertion)).
+
+13.4 ID-DAP Interface
 ---------------------
 
 The ID-DAP search filters and data model are very similar to
 LDAP, see [RFC2251] for further explanation.
 
-13.3.1 Short example of using low level API
+13.4.1 Short example of using low level API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   env->Body->dap_Query
@@ -3408,7 +3711,7 @@ without comments as
           0);  /* No subscriptions */
 
 
-13.3.2 Fully winded example of using low level API
+13.4.2 Fully winded example of using low level API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 As a query can also have test and subscription clauses, the
@@ -3478,7 +3781,7 @@ just use the simple API instead.
               "http://host/notif_sink")
           );
 
-13.3.3 zxid_mk_dap_query()
+13.4.3 zxid_mk_dap_query()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_Query_s* zxid_mk_dap_query(struct zxid_conf* cf,
@@ -3486,7 +3789,7 @@ just use the simple API instead.
                                            struct zx_dap_QueryItem_s* qis,
                                            struct zx_dap_Subscription_s* subs);
 
-13.3.4 zxid_mk_dap_query_item()
+13.4.4 zxid_mk_dap_query_item()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_QueryItem_s* zxid_mk_dap_query_item(struct zxid_conf* cf,
@@ -3557,7 +3860,7 @@ contingent_itemidref:: A query item can be made contingent
     implementation of the tests may actually require a query
     to be made anyway.
 
-13.3.5 zxid_mk_dap_select()
+13.4.5 zxid_mk_dap_select()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_Select_s* zxid_mk_dap_select(struct zxid_conf* cf,
@@ -3595,7 +3898,7 @@ typesonly:: If true, only attribute names are returned, without their
     passing the values over the network. Usually you want the
     values so you would pass 0 (false).
 
-13.3.6 zxid_mk_dap_test_item()
+13.4.6 zxid_mk_dap_test_item()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_TestItem_s* zxid_mk_dap_test_item(struct zxid_conf* cf,
@@ -3607,7 +3910,7 @@ tstop:: See zxid_mk_dap_testop().
 objtype:: See +objtype+ in zxid_mk_dap_query_item().
 predef:: See +predef+ in zxid_mk_dap_query_item().
 
-13.3.7 zxid_mk_dap_testop()
+13.4.7 zxid_mk_dap_testop()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_TestOp_s* zxid_mk_dap_testop(struct zxid_conf* cf,
@@ -3626,7 +3929,7 @@ the case for Data Services Template (DST) based services in
 general. Hence, the data types for Select and TestOp are different
 (although very similar) and two separate constructors are needed.
 
-13.3.8 zxid_mk_dap_subscription()
+13.4.8 zxid_mk_dap_subscription()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_Subscription_s* zxid_mk_dap_subscription(struct zxid_conf* cf,
@@ -3669,7 +3972,7 @@ admin_notif:: Administrative notification address. If NULL, the
     as well.
 notify_ref:: Notification address.
 
-13.3.9 zxid_mk_dap_resquery()
+13.4.9 zxid_mk_dap_resquery()
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   struct zx_dap_ResultQuery_s* zxid_mk_dap_resquery(struct zxid_conf* cf,
@@ -3684,23 +3987,23 @@ notify_ref:: Notification address.
 See description of zxid_mk_dap_query_item().
 
 
-13.4 ID Messaging Interface
+13.5 ID Messaging Interface
 ---------------------------
 
-13.5 ID Geo Location Interface
+13.6 ID Geo Location Interface
 ------------------------------
 
-13.6 Contact Book Interface
+13.7 Contact Book Interface
 ---------------------------
 
-13.7 People Service Interface
+13.8 People Service Interface
 -----------------------------
 
-13.8 Interface to Conor's Demo Media Service
+13.9 Interface to Conor's Demo Media Service
 --------------------------------------------
 
-13.9 ID-SIS Data Service for HR-XML
------------------------------------
+13.10 ID-SIS Data Service for HR-XML
+------------------------------------
 
 HR-XML defines a XML document format that can be used for data
 interchange in the Human Resources world. The essence of HR-XML is to
@@ -3804,7 +4107,7 @@ Pat Patterson of Sun distributes a pure PHP module (not to be confused
 with Sun's OpenSSO open source effort, with which Pat has some
 contact) that implements some aspects of SAML 2.0. As of May 2007, his
 library provides functionality that, by and large, parallels that of the
-php_zxid module. A major advatage of his modle is that it does not have
+php_zxid module. A major advatage of his module is that it does not have
 C shared library dependency, but beware that he still depends on XML
 parsing and popular crypto libraries (openssl) to be available. These
 assumptions are not onerous, but you should be aware of them in case
@@ -4065,7 +4368,7 @@ xasa   urn:oasis:xacml:2.0:saml:assertion:schema:os
 wst
 http://docs.oasis-open.org/ws-sx/ws-trust/200512/
 WS-Trust 1.3 CD-01
-wsp    http://schemas.xmlsoap.org/ws/2004/09/policy
+wsp    http://schemas.xmlsoap.org/ws/2004/09/policy   *** Newer version? http://www.w3.org/ns/ws-policy/
 
 wsc
 http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512
@@ -4082,8 +4385,12 @@ WS Security SecExt 1.0
 wsu
 http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd
 WS Security Utility 1.0
-xml    http://www.w3.org/XML/1998/namespace
+xml    http://www.w3.org/XML/1998/namespace           http://www.w3.org/2001/xml.xsd
+xsi    http://www.w3.org/2001/XMLSchema-instance
 xs     http://www.w3.org/2001/XMLSchema               Namespace only, no code
+
+igf0   urn:LibertyAlliance:igf:0.3:core               Early draft 01, WIP
+carml0 urn:LibertyAlliance:igf:0.3:carml              Early draft 03, WIP
 >>
 
 17 Code Generation Tools
@@ -4157,6 +4464,7 @@ URL          Description
 /zxid?o=C    Common Domain Cookie (CDC) reader, usually under common domain host name.
 /zxid?o=E    SSO after CDC read; or management if already logged in.
 /zxid?o=P    HTTP POST end point. Used for forms and last part of POST profile SSO.
+/zxid?o=Q    HTTP binding (POST or redirect) request end point (e.g. SLO, MNI).
 /zxid?o=S    SOAP end point (HTTP POST)
 /zxid?o=B    Get SP metadata (or combined SP and IdP metadata if proxying).
 >>
@@ -4186,10 +4494,38 @@ your private key using Unix filesystem permissions. See OpenSSL.org
 or modssl.org FAQs for further information, including how to remove
 a password if you accidentally enabled it.
 
+20 Testing
+==========
+
+ZXID test suite is still in tatters. Some things that should
+be tested
+
+1. Will generated HTTP redirect sig validate at IdP?
+2. Does IdP issued A7N validate?
+3. Validation of EncryptedAssertion?
+4. Will generated SOAP binding sig validate at IdP?
+5. Does IdP issued SOAP sig validate?
+
+Metadata related
+
+1. IBM metadata (can we parse)
+2. Sun metadata (can we parse)
+
+XML related
+
+1. Fully qualified XML parses?
+2. Unknown ns prefix that refers to known namespace URI
+3. Known ns prefix, referring to wrong URI
+4. Known prefix refers to aliased URI
+5. Use of default namespaces working?
+6. Unknown prefix and URI as long as it is never used
+7. Unknown prefix and URI, used
+8. Known NS (prefix or URI), unknown element
+
 96 License
 ==========
 
-Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 Author: Sampo Kellomäki (sampo@iki.fi)
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -4221,7 +4557,7 @@ And remember, you, and nobody else but you, are responsible for
 auditing ZXID and OpenSSL library for security problems,
 back-doors, and general suitability for your application.
 
-96.1 Dependency library licenses
+96.1 Dependency Library Licenses
 --------------------------------
 
 ZXID strives to maintain IPR hygiene and avoid both
@@ -4263,12 +4599,57 @@ Symlabs Professional Services rate, please contact sales@symlabs.com.
 97 FAQ
 ======
 
-*** real user FAQs are still lacking. Maybe this stuff is perfect?
-
 97.1 Compilation Problems
 -------------------------
 
-97.1.1 Missing gperf
+97.1.1 OpenSSL not found: you need to create localconf.mk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ZXID does NOT have a configure script. It ships with a notion
+of "standard" locations for the three dependency libraries,
+but if these libraries are not where it expects to find them,
+then typically you see (n.b. lines were folded for presentation):
+
+  make
+  If you get compilation errors, try: make help
+  gcc -g -fpic -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas
+     -fno-strict-aliasing -D_REENTRANT -DDEBUG -DUSE_CURL -DUSE_OPENSSL
+     -DLINUX -I/tmp/zxid-0.20 -I/usr/local/ssl/include -I/usr/local/include
+     -c -o zxid.o zxid.c
+  zxid.c:34:23: curl/curl.h: No such file or directory
+  In file included from zxid.c:38:
+  zx.h:26:25: openssl/rsa.h: No such file or directory
+  ...
+
+What happened is that OpenSSL for some reason is not in the location
+where standard OpenSSL distribution would install it (as indicated by
+-I/usr/local/ssl/include flag that ships with ZXID Makefile). You need
+to determine where OpenSSL is installed in your case. You can use
+
+  find / -name rsa.h -ls
+
+to locate candidates.
+
+For example, if it turns out that OpenSSL is installed in /opt/ssl, then
+you need to create a localconf.mk file that indicates this location:
+
+  echo OPENSSL_ROOT=/opt/ssl >localconf.mk
+
+There are several other make variables you may need to tweak. In the
+above example, we also notice that libcurl was not found where
+expected. This would be fixed like this
+
+  echo CURL_ROOT=/opt/curl >>localconf.mk
+
+Net result? ZXID does not try to guess where the libraries are. It
+makes you do the foot work of locating the correct libraries (some
+people have more than one instance installed) and prepare the
+localconf.mk. This may seem like a lot of work, but in my experience,
+fixing GNU autohell configure scripts that guess wrong is thousand
+times more frustrating. The system is dumb by design so you, as a human,
+do not have to try to second guess it - you are in control.
+
+97.1.2 Missing gperf
 ~~~~~~~~~~~~~~~~~~~~
 
   gcc -g -fpic -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing -D_REENTRANT -DDEBUG -DUSE_CURL -DUSE_OPENSSL -DLINUX -I/c/cvs/zxid_cvs -I/usr/local/ssl/include -I/usr//include   -c -o c/zx-a-aux.o c/zx-a-aux.c
@@ -4277,7 +4658,7 @@ Symlabs Professional Services rate, please contact sales@symlabs.com.
 
 This happens because c/zx-const.h was misgenerated (it should not happen at
 all if you do not supply ENA_GEN=1) and does not include the necessary defines.
-c/zx-const.h should have more then 1900 lines and look something like
+c/zx-const.h should have more than 1900 lines and look something like
 
   /* generated file, do not edit! zx_ _ATTR */
   #ifndef _zx__ATTR
@@ -4302,7 +4683,13 @@ c/zx-const.h should have more then 1900 lines and look something like
   #define zx__ELEM_MAX    1631
   #endif
 
-97.1.2 Perl compiled with different compiler than zxid
+97.1.3 make samlmod gives "incompatible types in assignment"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Should not happen with version 0.21 or later. See zxidnoswig.h
+for explanation of the problem.
+
+97.1.4 Perl compiled with different compiler than zxid
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Perl modules generally want to be compiled with the same C compiler
@@ -4328,6 +4715,7 @@ get an error like:
      make CC=the-compiler-that-perl-wants
 
 2. Recompile perl using the compiler that you want to use for zxid
+
 3. Tinker with PATH environment variable so that both C compilers
    are found. However, using two different compilers is not really supported.
 
@@ -4340,91 +4728,383 @@ A similar situation can arise with incompatibility of the compiler and
 options used for dependency libraries, such as OpenSSL or libcurl, and
 those used for compiling zxid itself.
 
-97.2 Common Mistakes
+97.1.5 All files under zx missing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You need to symlink zx to zxid source directory, thus
+
+  ln -s . zx
+
+If you do not have it, then you will get a lot of file inclusion errors for
+headers that are supposed to be in path starting by zx/
+
+The symlink is there to keep all hand written source files on top
+level of directory for ease of development, yet allow inclusions to go
+through ~zx~ subdirectory. When zxid is installed, it goes to
+/usr/include/zx. Hence the symlink keeps the includes the same whether
+developing or using installed version.
+
+97.1.6 Compiler Warnings
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you compile zxid with compiler warnings turned on (CFLAGS += -Wall),
+you will see quite a number of warnings, most of which are
+unwarranted. Since the warnings are unwarranted, I ship zxid Makefile
+with warnings turned off. If this bothers you, feel free to investigate
+the warnings and report to me any issues you uncover.
+
+Following warnings in partuclar are unwarranted:
+
+1. Any unusued variable warnings, especially in generated code. Most
+   common of these is ~se~ variable (see enc-templ.c).
+2. "Suggest parenthesis around assignment when used as truth value." I
+   rely on C language operator precedence. Also, in most cases the
+   assignment is the only expression in the truth test - there simply
+   is no opportunity for ambiguity -- and no justified case for gcc to
+   warn about this.
+3. "Suggest parenthesis around && when used in ||". I rely on C
+   language operator precedence, hence the suggestion is redundant.
+
+Some warnings you may want to worry about
+
+A. "int format, long int arg". On 32 bit platforms int and long
+   are both 32 bits so this warning is not an issue. On 64 bit platforms,
+   however, there may be cause for worry.
+
+97.1.7 SWIG and Java Problems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+javac -J-Xmx128m -g zxid.java zxidjava/*.java
+zxidjava/zxidjni.java:159: cannot find symbol
+symbol  : class SWIGTYPE_p_p_void
+location: class zxidjava.zxidjni
+  public static zx_str zx_rsa_pub_enc(zx_ctx c, zx_str plain, SWIGTYPE_p_p_void rsa_pkey, int pad) {
+                                                              ^
+zxidjava/zxidjni.java:164: cannot find symbol
+symbol  : class SWIGTYPE_p_p_void
+location: class zxidjava.zxidjni
+  public static zx_str zx_rsa_pub_dec(zx_ctx c, zx_str ciphered, SWIGTYPE_p_p_void rsa_pkey, int pad) {
+                                                                 ^
+zxidjava/zxidjni.java:169: cannot find symbol
+symbol  : class SWIGTYPE_p_p_void
+location: class zxidjava.zxidjni
+  public static zx_str zx_rsa_priv_dec(zx_ctx c, zx_str ciphered, SWIGTYPE_p_p_void rsa_pkey, int pad) {
+                                                                  ^
+zxidjava/zxidjni.java:174: cannot find symbol
+symbol  : class SWIGTYPE_p_p_void
+location: class zxidjava.zxidjni
+  public static zx_str zx_rsa_priv_enc(zx_ctx c, zx_str plain, SWIGTYPE_p_p_void rsa_pkey, int pad) {
+                                                               ^
+This was due to missing SWIG generated classes. Probably interrupted file transfer.
+
+javac -J-Xmx128m -g zxid.java zxidjava/*.java
+zxid.java:24: cannot find symbol
+symbol  : method new_conf(java.lang.String)
+location: class zxidjava.zxidjni
+      cf = zxidjni.new_conf("/var/zxid/");
+                  ^
+zxid.java:27: cannot find symbol
+symbol  : method url_set(zxidjava.zxid_conf,java.lang.String)
+location: class zxidjava.zxidjni
+      zxidjni.url_set(cf, url);
+             ^
+zxid.java:28: cannot find symbol
+
+jar cf zxidjava.jar *.class
+jar cf /tmp/zxidjava.jar zxidjava/*.class
+
+javac -J-Xmx128m -g zxid.java                
+zxid.java:187: cannot access zxid_conf
+bad class file: /Library/Java/Extensions/zxidjava.jar(zxid_conf.class)
+class file contains wrong class: zxidjava.zxid_conf
+Please remove or make sure it appears in the correct subdirectory of the classpath.
+  public static int mgmt_screen(zxid_conf cf, zxid_cgi cgi, zxid_ses ses, char op)
+                                ^
+1 error
+
+Underscore in linking error
+
+./zxid-java.sh 
+Start...
+Exception in thread "main" java.lang.NoSuchMethodError: zxidjava.zxidjni.new_conf(Ljava/lang/String;)Lzxidjava/zxid_conf;
+        at zxid.main(zxid.java:24)
+
+This was due to finding some old copies from system paths.
+
+java -classpath .:zxidjava -Djava.library.path=zxidjava zxid 
+Start...
+Exception in thread "main" java.lang.UnsatisfiedLinkError: _zxid_new_conf
+        at zxidjava.zxidjniJNI._zxid_new_conf(Native Method)
+        at zxidjava.zxidjni.new_conf(zxidjni.java:586)
+        at zxid.main(zxid.java:24)
+
+
+97.2 Platform Specifics
+-----------------------
+
+If your Unix platform is not mentioned, you should try saying just
+
+  make
+
+which will compile with Linux options. These options actually
+are pretty close to pure POSIX compile so you should get very close
+to working configuration.
+
+97.2.1 Linux
+~~~~~~~~~~~~
+
+Native development platform. Just say
+
+  make
+
+Seems there are some "improvements" that distributions have made. ZXID
+adopts the policy of expecting dependency modules where the module
+author meant it to be installed by default - for example OpenSSL by
+default installs in /usr/local/ssl (naming is historic, but has stuck).
+Many distros tinker with these paths. This means you need to create
+a localconf.mk.
+
+Redhat used to have an issue with Net::SAML (make samlmod). This has
+since been fixed, please see zxidnoswig.h for explanation.
+
+No doubt, distros will eventually pick up ZXID and provide it as a package.
+Once that happens they will solve any path issues accoring to their
+disto policy and that is fine, just do not ask me to comply with any
+such policy.
+
+97.2.2 FreeBSD
+~~~~~~~~~~~~~~
+
+No target available on Makefile, but a port is available from
+http://www.freshports.org/security/zxid/
+
+97.2.3 Solaris (Sparc)
+~~~~~~~~~~~~~~~~~~~~~~
+
+  make TARGET=sol8
+  make TARGET=xsol8    # Cross compile for Solaris (e.g. on Linux host)
+
+97.2.4 MacOS X (PowerPC?)
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  make TARGET=macosx
+
+97.2.5 Windows Using MinGW
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  make zxid.dll TARGET=xmingw    # Cross compile on Linux host (best supported)
+  make zxid.dll TARGET=mingw     # Native compile for mingw target in Cygwin environment
+
+Eitherway, the net result is native Windows DLL that does not have
+Cygwin library dependencies or GPL encumberation.
+
+See Makefile for further mingw notes.
+
+97.2.6 Windows Using Cygwin
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  make TARGET=cygwin
+
+Very experimental (as of Oct 2007) native build for Cygwin.
+
+Cygwin appears to not have neither flock(2) nor lockf(2). This is
+strange because at least one of these is implemented on MinGW.
+Current workaround is to define flock() to be empty macro. This
+of course means there is no file locking. There are 3 known races
+where things can go wrong
+
+1. Audit logs can get garbled. This does not stop ZXID from working,
+   but may make log analysis more complicated.
+2. Auto-CoT metadata writes can get garbled. This is very unprobable,
+   but if it happens, the ZXID deployment will not work towards
+   affected IdP. Nothing to worry about really.
+3. Locking is used to protect against updates of zxid.conf while
+   zxid is running. Again any corruption is very unlikely. Nothing
+   to worry about.
+
+The results of Cygwin compile may be GPL encumbered due to libraries.
+
+97.2.7 Windows Using MSVC
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Never been done (as of Oct 2007), but probably this is not very
+difficult given that MinGW port already has addressed many Windows
+platform issues. Please send any success reports, and receipes, my way.
+
+97.3 Configuration Questions
+----------------------------
+
+1. Q: In mod_auth_saml, what is the relation between ZXIDConf and httpd.conf?
+
+   A: httpd.conf can contain ZXIDConf directives. Those directives are
+   processed as if they came from /var/zxid/zxid.conf file (which is
+   processed first, before and ZXIDConf directives), except that if you
+   specify ZXIDConf "PATH=/your/path", this triggers reporcessing of
+   the zxid.conf (from the new path).
+
+2. Q: In mod_auth_saml, what is the relation between the +port+ in ZXIDConf
+   and the +port+ in the httpd.conf?
+
+   A: The ports must agree. ZXID configuration must match the way the
+   Apache layer is configured.
+
+3. Q: Multiple roles of same entity, acting as SP, WSC, and WSP for
+   different services
+
+   Asa:
+   > Part of what you are saying is that the service
+   > registration is WSC.  This is rather confusing since the case is a WSP
+   > acting as a WSC of the Discovery Service.   For the ClientLib thus far,
+   > I have chosen to think of service registration as a WSP to WSP.  What is
+   > the downside to this approach?
+
+   Conor:
+   > Service registrations can't be done WSP to WSP with any Liberty protocol
+   > (in fact, we don't define any such method of invocation as the invoking
+   > party is always  a WSC for the intent of that message - there's no
+   > problem with a WSP in turn being a WSC of another service instance, just
+
+   Right. You can don WSC role whenever convenient. There is nothing confusing
+   about WSP of one service being WSC of another service. Perhaps the
+   confusion would be avoided if everybody fully qualified their descriptions
+   until common convention about less than fully qualified roles emerges.
+
+   Entity E1, an ID-DAP WSP (primary role), will act as Discovery WSC
+   (secondary role) to perform metadata registration. This same entity E1
+   will also have SP interface (another secondary role) which allows
+   the user to trigger discovery association, again E1 acting in secondary
+   role of Discovery WSC.
+
+   No confusion as far as I can see.
+
+97.3 Common Mistakes
 --------------------
 
-1. Single Logout does not end the IdP session (i.e. IdP does
-   not force you to supply password when you do SSO next time).
+1.  When I try accessing https://sp1.zxidsp.org:8443/zxidtest.sh nothing happens!
 
-   Usual cause is that the management form (the one with the SLO buttons)
-   does not have correct or any session ID. Do a view source on the
-   the page and look for field called "s". The session ID is
-   supposed to be extracted from the Single Sign-On result. For
-   zxid_simple() you need to parse the returned LDIF and
-   take the sesid. Pass that to zxid_fed_mgmt() as second argument.
+    Assuming you have the web server correctly running, the most common
+    gotcha is that zxidhlo has dynamic linking problem.
+    See <<see: ZXID-Installing-CannedTutorialRunningZXIDasCGIundermini_httpd-AccessingZXID>>
+    subsection "Dynamic Linking Problems", for explanation and resolution.
 
-2. Login buttons do nothing.
+2.  Single Logout does not end the IdP session (i.e. IdP does
+    not force you to supply password when you do SSO next time).
 
-   A possible cause is that the entity ID is not passed from
-   the IdP selection form. If the form is using POST method,
-   you must make sure you actually read the HTTP body and
-   pass its contents to the zxid_simple() as the qs argument.
+    Usual cause is that the management form (the one with the SLO buttons)
+    does not have correct or any session ID. Do a view source on the
+    the page and look for field called "s". The session ID is
+    supposed to be extracted from the Single Sign-On result. For
+    zxid_simple() you need to parse the returned LDIF and
+    take the sesid. Pass that to zxid_fed_mgmt() as second argument.
 
-3. The SP Login, a.k.a. IdP selection, page shows, but SSO does not work
+3.  Login buttons do nothing.
 
-   a. Your configuration does not match actual URL used to
-      access the zxid system. For the zxidhlo family of
-      examples you MUST edit the configuration string
-      to match your situation. Watch out for domain name
-      and port number.
+    A possible cause is that the entity ID is not passed from
+    the IdP selection form. If the form is using POST method,
+    you must make sure you actually read the HTTP body and
+    pass its contents to the zxid_simple() as the ~qs~ argument.
 
-   b. Connectivity issue prevents IdP from fetching metadata.
-      Make sure your domain name is resolvable at IdP (e.g.
-      add it to /etc/hosts). See also next point.
+4.  The SP Login, a.k.a. IdP selection, page shows, but SSO does not work
 
-   c. IdP is not configured to get your metadata automatically.
-      You have to configure your metadata to the IdP manually.
-      How to do this depends on IdP product. Do not ask us.
+    a. Your configuration does not match actual URL used to
+       access the zxid system. For the zxidhlo family of
+       examples you MUST edit the configuration string
+       to match your situation. Watch out for domain name
+       and port number.
 
-   d. You supplied IdP URL that, in fact, is not the well known
-      location for fetching IdP metadata. Or the IdP does
-      not have well known location enabled. In the latter
-      case you will need to install the IdP metadata
-      manually (*** procedure to be documented). See [SAML2Meta]
-      section 4.1 "Publication and Resolution via Well-Known Location",
-      p.29, for normative description of this method.
+    b. Connectivity issue prevents IdP from fetching metadata.
+       Make sure your domain name is resolvable at IdP (e.g.
+       add it to /etc/hosts). See also next point.
 
-   e. Connectivity issue at web browser level. Make sure your
-      web browser can resolve both SP and IdP domain names.
-      Edit /etc/hosts as needed.
+    c. IdP is not configured to get your metadata automatically.
+       You have to configure your metadata to the IdP manually.
+       How to do this depends on IdP product. Do not ask us.
 
-   f. Personal firewall blocks access. Check firewall set up on
-      * browser machine
-      * SP machine
-      * IdP machine
+    d. You supplied IdP URL that, in fact, is not the well known
+       location for fetching IdP metadata. Or the IdP does
+       not have well known location enabled. In the latter
+       case you will need to install the IdP metadata
+       manually (*** procedure to be documented). See [SAML2meta]
+       section 4.1 "Publication and Resolution via Well-Known Location",
+       p.29, for normative description of this method.
 
-4. The SP Login, a.k.a. IdP selection, page does not show at all
+    e. Connectivity issue at web browser level. Make sure your
+       web browser can resolve both SP and IdP domain names.
+       Edit /etc/hosts as needed on the machine where the browser runs.
 
-   a. Connectivity issue at web browser level. Make sure your
-      web browser can resolve both SP and IdP domain names.
-      Edit /etc/hosts as needed.
+    f. Personal firewall blocks access. Check firewall set up on
+       * browser machine
+       * SP machine
+       * IdP machine
 
-   b. Personal firewall blocks access. Check firewall set up on
-      * browser machine
-      * SP machine
+5.  The SP Login, a.k.a. IdP selection, page does not show at all
 
-   c. You deployed the zxid in some other URL than you thought.
-      Double check your webserver or Servlet container
-      configuration and be sure you understand where
-      zxid is supposed to appear. Be sure you are editing
-      the right configuration - some people run multiple
-      web servers in their machine and get confused about
-      which one actually is active on which port and where
-      the configuration files are located.
+    a. Connectivity issue at web browser level. Make sure your
+       web browser can resolve both SP and IdP domain names.
+       Edit /etc/hosts as needed.
 
-   d. ZXID lacks execute permissions or CGI permission
-      setup prevents it from running. See previous bullet.
+    b. Personal firewall blocks access. Check firewall set up on
+       * browser machine
+       * SP machine
 
-4. Mystery configuration problems. Double check /var/zxid/zxid.conf
-   or consider removing it if you do not understand what it does.
-   Double check the conf string if using zxid_simple() interface.
+    c. You deployed the zxid in some other URL than you thought.
+       Double check your webserver or servlet container
+       configuration and be sure you understand where
+       zxid is supposed to appear. Be sure you are editing
+       the right configuration - some people run multiple
+       web servers in their machine and get confused about
+       which one actually is active on which port and where
+       the configuration files are located.
 
-97.3 Consent
+    d. ZXID lacks execute permissions, dynamic link libraries
+       are missing (use "ldd zxid" to check), or CGI permission
+       setup prevents it from running. See previous bullet.
+
+6.  Mystery configuration problems. Double check /var/zxid/zxid.conf
+    or consider removing it if you do not understand what it does.
+    Double check the conf string if using zxid_simple() interface.
+
+7.  Writes a user...
+
+    > Once it has been compiled, I copied the files zxidhlo.php and zxid.php
+    > to /var/www/zxid (my webroot). I accessed zxidhlo.php?o=E with my browser
+    > and I saw a page asking for IDP metadata. But when I looked at
+    > the /var/log/apache2/error.log, I found these: 
+    > 
+    >  tb77f96c0 zxidmeta.c:352 zxid_get_ent_by_sha1_name zxid d Trying 
+    >    sha1_name(cot) open (vopen_fd_from_path): No such file or directory 
+
+    Did you create the /var/zxid hierarchy (make dir) and make sure your
+    web user (nobody?) has write permission to the ~log~ directory? Or did
+    you configure it to use some other directory than /var/zxid?
+
+8.  What is this /var/zxidcot directory?
+
+    It is supposed to be /var/zxid/cot
+
+    When configuring PATH, did you forget trailing slash? E.g.
+
+      "PATH=/var/zxid&URL=..."    # WRONG!
+      "PATH=/var/zxid/&URL=..."   # Right
+
+9.  If configuration appears to be prematurely truncated, then
+    see if you need to adjust ZXID_MAX_CONF (default 4KB) in
+    zxidconf.h and recompile.
+
+
+97.3.2 Doubts
+~~~~~~~~~~~~~
+
+How to decode auto_flags
+
+  0x1d54   1 = debug; d = FORMT + FORMF + MGMTC; 5 = METAC + LOGINC; 4 = SOAPC
+
+97.4 Consent
 ------------
 
 A frequent concern among the business people and lawyer types is
 whether the architecture provides for consent by the user. Usually
-this is related to (avoidance of) liability and if the system can be
+this is related to (avoidance of) liability. If the system can be
 said to have gathered the consent of the user, we are safe.
 
 Unfortunately the standards do not mandate an uniform user interface,
@@ -4538,14 +5218,38 @@ following:
    invite. Further consent may be obtained
    by Bob's own IdP, see bullet 2.
 
-97.4 Use of Signing and Crypto, Security Concerns
+97.5 Deployment Planning
+------------------------
+
+Here is a rudimentary decision tree for deployment planning
+
+1. List your applications
+   a. Any provided by external partner?
+   b. Non web apps
+2. Document your existing identity stores and approaches to
+   a. User provisioning (when someone is employed)
+   b. Application provisioning (when someone starts using app)
+   c. Authorization: how do you know who is supposed to be
+      doing what?
+   d. Deprovisioning: what happens when someone is fired?
+   e. Login? Per app? Harmonized user names? Enterprise SSO?
+3. Document your goal: federated SAML SSO über alles :-)
+   a. Do you want to run IdP?
+   b. Could you out-source IdP?
+   c. Will your partners / customers be running their own IdPs?
+   d. Will you participate (or run) single CoT or do you
+      need to consider cross CoT inter-operation (e.g. IdP proxying)
+
+To be continued...
+
+97.6 Use of Signing and Crypto, Security Concerns
 -------------------------------------------------
 
-97.5 Vendor products
+97.7 Vendor products
 --------------------
 
-97.5.1 Symlabs Federated Identity Access Manager (FIAM)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+97.7.1 Symlabs Federated Identity Suite (SFIS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Metadata import to IdP?
 
@@ -4554,25 +5258,23 @@ What I usually do is
   cd /opt/SYMfiam/3.0.x/conf/symdemo-idpa
   echo 'sp: zxid-sp1$https://sp1.zxidsp.org:8443/zxid?o=B$$' >>cot.ldif
 
-Double check with text editor that the file is sensible.
-Note that the single quotes are essential as the dollars
-are to be interpretted literally, as separators.
+Double check with text editor that the file is sensible.  Note that
+the single quotes are essential as the dollars are to be interpretted
+literally, as separators.
 
   cd pem
   wget https://sp1.zxidsp.org:8443/zxid?o=B >zxid-sp1.xml
 
-Here the intent is to fetch the metadata from the SP and
-store it in a file whose name (without .xml extension)
-matches the first component of the sp: line. I am not
-100% on the wget syntax. You can also use browser
-to fetch the metadata and simply Save as under the
-correct name.
+Here the intent is to fetch the metadata from the SP and store it in a
+file whose name (without .xml extension) matches the first component
+of the sp: line. I am not 100% on the wget syntax. You can also use
+browser to fetch the metadata and simply Save as under the correct
+name.
 
   cd /opt/SYMfiam/3.0.x/conf/symdemo-idpa/start.sh restart
 
-This should restart the IdP server process and cause a
-refresh of the metadata it may have cached. You may
-want to
+This should restart the IdP server process and cause a refresh of the
+metadata it may have cached. You may want to
 
   tail -f /opt/SYMfiam/3.0.x/conf/symdemo-idpa/log/debug.log
 
@@ -4586,25 +5288,26 @@ this off by editing slimidp.ldif:
 If this is not done, the SSO will fail (with what appears like signature
 error).1x
 
-97.6 Known Bugs
+97.8 Known Bugs
 ---------------
 
 Following are known limitations. We document them here
-because we do not plan to fix them in foreseeable future.
+because we do not plan to fix them in near-to-medium future.
 
-1. Unknown XML attributes are not sorted according to rules
-   of exc-c14n. Instead they appear always +after+ known
-   XML attributes and in the order they happen to be
-   in the linked list.
+1.  Unknown XML attributes are not sorted according to rules
+    of exc-c14n. Instead they appear always +after+ known
+    XML attributes and in the order they happen to be
+    in the linked list.
 
-   *Work around:* Add the attribute to schema (.sg) and
-   regenerate and rebuild.
+    *Work around:* Add the attribute to schema (.sg) and
+    regenerate and rebuild.
 
-2. Encrypted NameIDs (or EncryptedAssertion) are not supported
+2.  XML canonicalization
+    a. CRLF to LF
+    b. Single quote to double quote
+    c. Special character handling, entity escapes?
 
-3. Namespace qualified XML attributes have underscore instead of colon
-
-97.7 Mysterious Error Messages
+97.9 Mysterious Error Messages
 ------------------------------
 
 "Random number generator not seeded!!!"
@@ -4630,15 +5333,95 @@ means with this command:
 
      /usr/local/ssl/bin/ssleay errstr 02001002
 
-97.7.1 Password is being asked for private key
+97.9.1 Password is being asked for private key
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is normal behaviour if your private key is encrypted. Either
 you have to supply the password or you have to use unencrypted
-private key. Scan OpenSSL.org for the FAQ that explains how to
-do this.
+private key.
 
-97.7.2 snprintf() multibyte character related errors in log
+One way to remove password is
+
+  openssl rsa -in key.pem -out keyout-nopw.pem
+
+For this to work, key.pem must contain only the private key. On the other
+hand, for ZXID to work, the file must have both certificate and
+private key. You will need to use your favorite text editor to
+split them for password removal and then to join them for use.
+
+Scan OpenSSL.org for the FAQ for full explanation on how to
+remove password from the private key.
+
+97.9.2 Quick command for looking at certificate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Sometimes you get warning messages (in browser) or signature
+validation errors (in IdP end) because the Subject field of the
+certificate does not match your actual domain name. You can
+check this with
+
+  openssl x509 -text </var/zxid/pem/ssl-nopw-cert.pem | grep Subject:
+
+and then look at "CN=" part (CN means Common Name and this by
+convention has to match domain name of your server). If the domain
+name is different, then you need to obtain a certificate with correct
+domain name, see next question.
+
+> N.B. As of OpenSSL 0.9.8d (2007) it seems that some certificates
+> issued by Equifax can not be decoded using openssl x509 tool, resulting
+> ":Expecting: TRUSTED CERTIFICATE" error. Trying openssl asn1parse
+> also results in error: "SN1_get_object:header too long". Curiously,
+> these certificates still seem to work for encryption and decryption,
+> as witnessed using the procedure for checking whether certificate
+> and private key belong together (see below).
+
+97.9.3 Self signed certificate
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ZXID ships with zxid.pem which gets by default copied to /var/zxid/pem
+under various different names. This is fine for testing, but disastrous
+for production or security sentitive use as the private key corresponding
+to zxid.pem certificate is of public knowledge (it is distributed with
+every copy of ZXID) - it offers no security and no non-repudiation
+what-so-ever.
+
+For production or security sensitive install you need to either
+
+1. Obtain certificates from an official certification authority,
+   usually a commercial one. ZXID uses same certificate format as
+   Apache (i.e. the pem format), so aquiring certificates is easy. Or,
+
+2. Generate your own certificate. The simplest case is a self signed
+   certificate:
+
+     openssl req -new -x509 -nodes -keyout pkey.pem -out cert.pem
+     cat cert.pem pkey.pem >/var/zxid/pem/ssl-nopw-cert.pem
+
+The cat step is there because you need to supply both certificate
+and the private key in same file for ZXID to understand it.
+
+> Warning: Although ZXID wants to see the private key in the same
+> file as the certificate, you MUST NOT give this concatenated
+> file to any outsider. Others have legitimate need to know your
+> certificate, but they MUST NOT know your private key. If they
+> ask, you should take special care to delete the private key from
+> the file prior to giving it to them. Often those who need to
+> get your certificate, actually need your metadata: just tell them
+> to fetch it from the Well Known Location URL (i.e. the Entity ID
+> of your SP). ZXID will never leak the private key to the metadata.
+
+97.9.4 Checking that cert and private key belong together
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can use openssl(1) tool to test if a keypair is good
+
+  echo boo >foo
+  openssl rsautl -encrypt -pkcs -in foo -out foo.enc -inkey enc-nopw-cert.pem 
+  openssl rsautl -decrypt -pkcs -in foo.enc -out foo2 -inkey enc-nopw-cert.pem
+  diff foo foo2
+
+
+97.9.4 snprintf() multibyte character related errors in log
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is due to locale setting. Try
@@ -4647,8 +5430,108 @@ This is due to locale setting. Try
 
 This will disable any UTF-8 processing in sprintf().
 
-97.8 Author's Pet Peeves
-------------------------
+97.9.5 My own messages are redirected back to me
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In several SAML profiles a HTTP redirect is performed to send the user
+to other party, usually with a request or response in the query
+string.
+
+A mysterious error is when you see yourself receiving as input the
+stuff that was supposed to be sent to the other. The way this happens
+is if for some reason the other party's URL can not be determined,
+then the ~Location~ header will only consist of the query string that
+you are trying to send. Without domain name part of the URL, the
+browser will redirect back to the web site where the redirection came
+from. This is called "local redirect" and is usually the cause of you
+receiving your own output as input.
+
+To fix this, make sure you have the other site's metadata and make
+sure it parses and loads correctly. If that does not resolve the
+problem, see if the metadata has any binding for the operation you are
+trying.  No binding will result in no URL.
+
+97.9.6 SSL Handshake Fails
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Possible causes:
+
+1. No common ground in terms of cipher suites. While venerable SSL2
+   cipher suite ~SSL_RSA_WITH_RC4_128_MD5~ works with legacy browsers,
+   some "modern" software do not support this out of box.
+
+   [SAML2conf], sections 4 "XML Digital Signature and XML Encryption"
+   and 5 "Use of SSL 3.0 and TLS 1.0" mandate some algorithms, but
+   unfortunately these do not overlap with SSL2 legacy use. The latter
+   section mandates ~TLS_RSA_WITH_3DES_EDE_CBC_SHA~ and
+   ~SSL_RSA_WITH_3DES_EDE_CBC_SHA~.
+
+2. To make matters more complex, enabling all cipher suites at once has
+   historically caused some vendor implementations of SAML2 to fail.
+   As bugs get fixed, this may improve. (Information as of late 2007.)
+
+3. OpenSSL SSLv23 autonegotiation mode (which can also autonegotiate
+   to TLSv1) works mostly great, but some vendor implementations
+   of SSL have trouble with this. Apparently the only way to work
+   around them is to disable the autonegotiation and hardwire
+   the protocol to TLSv1 or SSL3. (Information as of OpenSSL 0.9.8g,
+   Feb, 2008)
+
+4. On some platforms wireshark(1) network sniffer reports TCP layer
+   checksum errors even when communications work fine. This is
+   probably a bug in those wireshark(1) installations (as of early
+   2008, unknown version, difficult to reproduce). Please note that
+   getting TCP checksums wrong at user land networking code is (nearly?)
+   impossible. It would have to be a kernel bug - and that is unlikely.
+
+   > wireshark(1) hint: Right click on SSL packet and choose "Decode as..."
+   > and then select SSL, to see the details of SSL/TLS handshake
+   > that can cause the handshake failures.
+
+5. Some implementations of SSL report handshake failure when they
+   are unable to establish trust in certificate. Technically this
+   is a trust failure and the handshake happened OK - they just
+   report it in a misleading way. The fix is to either supply
+   appropriate CA certificate (chain for multilevel) or relax
+   the trust check.
+
+6. One sure fire way to break SSL or signing is to mismatch certificate
+   and private key. Sometimes this happens due to practise of storing
+   certificate, its CA certificates, and the private key in the same file.
+   If you suspect this, just remove the CA certificates so that the
+   PEM file only contains certificate and its private key.
+
+   Also any manual key exchanges are much more prone to error than
+   ones effectuated via automatically generated metadata.
+
+   Finally, sometimes the OpenSSL PEM parsing code can not digest
+   line endings that are not natural for the platform. On Unix machines,
+   running dos2unix(1) on the PEM file may help.
+
+To adjust cipher suite and SSL version parameters, first
+see http://www.openssl.org/docs/apps/ciphers.html and
+the man page for SSL_CTX_set_cipher_list(3) at
+http://www.openssl.org/docs/ssl/SSL_CTX_set_cipher_list.html
+
+Then diagnose whether adjustment is needed in SSL server
+or client role:
+
+a. For SSL server role, you need to consult the documentation
+   of the web server under which you run ZXID.
+
+b. For SSL client role, you need to consult the documentation
+   for the libcurl(3) package, which uses OpenSSL in its guts.
+
+> Note: ZXID and Apache (the web server you are likely to use)
+> use main stream OpenSSL package for SSL and crypto. While
+> bugs are always possible, OpenSSL is considered stable. Many
+> newer implementations of SSL or crypto, e.g. for Java, are not
+> nearly as well tested and are more likely to contain bugs or
+> limitations. Many vendors do not disclose what SSL or crypto
+> code base they use - you should suspect the worst.
+
+97.10 Author's Pet Peeves
+-------------------------
 
 1. What is Schema Grammar (.sg) and why are you using it?
    * Schema Grammar is a compact formal description of XML documents. It is
@@ -4711,27 +5594,28 @@ This will disable any UTF-8 processing in sprintf().
      inhabitants of the irrelevant systems can support themselves, probably
      learning a great deal on the side.
 
-97.9 What does ZXID aim at - an answer
---------------------------------------
+97.11 What does ZXID aim at - an answer
+---------------------------------------
 
-A recent conversation that touched on the aims of ZXID project:
+A recent (Sept 2006) conversation that touched on the aims of ZXID project:
 
 > So just generally, what are your goals for it, are you interested in making
 > it work well with what other people are producing (e.g. SAML -> WSF
 > cross-over), etc? I'm certainly assuming the answer's yes to that.
 
-I aim at full stack client side implementation. ID-FF, SAML 2.0,
-WSF (both versions). The generation technique I use will yield
-the encoders and decoders for both WSP and WSC, but the hand written
-higher level logic will at first be only written for SP and WSC.
-Some WSP support has now been written as well.
+I aim at full stack client side implementation. ID-FF, SAML 2.0, WSF
+(both versions). The generation technique I use will yield the
+encoders and decoders for both WSP and WSC, but the hand written
+higher level logic will at first be only written for SP and WSC. 
+Some WSP support has now been written as well (complete WSP support
+was completed as of July 2007).
 
 It is Apache licensed project, of course, so if someone contributes
 the IdP and WSP capabilities, I'll merge them into the distribution.
 
 I am interested to have it working with other people's code at 3 levels:
 
-1. Over-the-wire iop
+1. Over-the-wire interoperability
 2. I have split the functionality of the SP from the WSC such that
    zxid SP could probably be used with someone else's WSC and someone
    else's SP would reasonably easily be able to use zxid WSC.
@@ -4774,11 +5658,12 @@ In SSO world SAML 1.1 and ID-FF 1.2 capabilities are definitely on the
 road map. In ID-WSF world, I'll probably start with 2.0 DS-WSC (don't
 we all) followed by ID-DAP WSC and then tackle 1.1 after
 that.<<footnote: As of version 0.18, July 2007, both WSC and WSP roles
-of ID-DAP as well as ID-HR-XML have been implemented. This means the
-generic WSC and WSP support is there.>>
+of ID-DAP as well as ID-HR-XML have been implemented. Discovery client
+was implemented as well. This means the generic WSC and WSP support is
+there.>>
 
-97.9 Annoyances and improvement ideas
--------------------------------------
+97.12 Annoyances and improvement ideas
+--------------------------------------
 
 There is a lot of commonality that is not leveraged, especially in the
 way service end points are chose given the metadata.  The descriptors
@@ -4795,6 +5680,163 @@ Namespace aliasing scheme would allow us to consider two versions of
 schema the same. It seems to be fairly common that the schema
 changes are so minor that there is no justification for two
 different decoding engines.
+
+97.13 Non-obvious SAML
+----------------------
+
+1.  Destination XML attribute is needed in redirect and POST bindings.
+
+2.  Assertion//SubjectConfirmationData/@InResponseTo XML attribute
+    is needed in SSO assertions, unless the SSO was unsolicited.
+    SAML is not very explicit about this, [SAML2core], ll.729-732
+    describes it as optional, but [SAML2prof], ll.580-582 and
+    ll.559-560 seem to imply this requirement.
+
+3.  Some deployments use POST binding for many more things than
+    officially sanctioned by SAML [SAML2conf], Table 1 "Possible
+    Implementations", p.6. None of the offical profiles, see
+    [SAML2conf], Table 2 "Feature Matrix", p.9, require support
+    for POST for sending or receiving Single Logout or Manage NameID
+    requests. Nor is sending AuthnRequest using POST officially
+    sanctioned. Using artifact profile for anything else than
+    fetching the SSO assertion is not official. Never-the-less,
+    some of these bindings are perfectly implementable and some
+    deployments actually use them. ZXID may support some of them,
+    especially the POST bindings, if it is easy to do so, but
+    we make no commitment beyound official SAML conformance.
+
+4.  In SAML SOAP bindings it is bit unclear if the caller needs
+    to be authenticated. Currently ZXID solves this by signing
+    the SOAP requests (see SSO_SOAP_SIGN configuration options).
+    Other approaches are using HTTP Basic authentication,
+    using Client-TLS, or simply not authenticating the peer.
+
+5.  Interpretation of metadata KeyDescriptor/EncryptionMethod
+
+    Algos on [SAML2conf], section 4.2 "XML Encryption Algorithms",
+    ll.252-253.
+
+    The interpretation in [SAML2meta], section 2.4.1.1 "Element
+    <KeyDescriptor>", ll.621-624, p.16, and the example
+    on l.1117.
+
+    Since the <EncryptionMethod> can appear several times, it
+    would seem reasonable to specify it once for assymmetric crypto
+    and once for symmetric crypto. If specified, then for each
+    of the cases, only one of the allowed algos may be used.
+    If not specified, then any algo authorized in [SAML2conf]
+    is allowed. If specified, but the algo is not authorized
+    by [SAML2conf], then implementation is nonconformant.
+
+6.  The selection of protocol binding for return path of
+    SSO is non-trivial. The Authentication Request may
+    specify any number of parameters like ProtocolBinding
+    or Index.
+
+7.  When passing around Name IDs or storing them in database,
+    remember to store all components, including NameQualifier
+    and SPNameQualifier.
+
+8.  Single Logout: IdP should not call originator of SLO when
+    it is logging out everybody.
+
+97.14 Best Practises
+--------------------
+
+1.  Each entity chooses its own Entity ID. When you are setting
+    up a SP, you choose your Entity ID and the IdP(s) MUST be
+    able to adapt to your choice. Similarily, an IdP decides
+    its own Entity ID and all SPs MUST be able to adapt to it.
+
+2.  Entity IDs MUST be unique within a Circle of Trust (CoT). Given
+    that CoT relationships may change from time to time, its best
+    to choose Entity ID so that it is globally unique. If Entity ID
+    contains a domain name as a component, then the +globally unique+
+    property tends to be enforced by the domain name allocation
+    system.
+
+3.  Entity ID SHOULD be the Well Known Location (WKL), i.e. the
+    URL from which the metadata can be fetched.
+
+4.  Providing metadata by URL, ideally by the Entity ID, SHOULD
+    always be enabled. This greatly facilitates configuration.
+
+5.  <KeyDescriptor> elements should have ~use~ XML attribute
+
+97.15 Cardspace / Infocard / DigitalMe Tutorial
+-----------------------------------------------
+
+N.B. zxid.org does not yet support Infocard, but since we
+are starting the investigation, we thought to share
+some of it
+
+97.15.1 Installing DigitalMe and Firefox plugin
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+DigitalMe by Bandit project is an open source Infocard
+implementation, providing functionality roughly similar to
+CardSpace. You can download it from
+
+  http://www.bandit-project.org/index.php/Digital_Me
+
+rpm2cpio digitalme-0.4.1238-2.1.i586.rpm | cpio -di
+
+97.15.2 Setting up IdP account
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+For one InfoCard aware IdP, please see: http://www.cdatazone.org/index.php?/archives/27-Managed-Infocard-Demo.html
+
+1. Register at the IdP site (e.g. https://www.ctindustries.net/icard/index.php)
+2. Download the card ("Retrieve Managed Card" link (savea as "cdatamanaged.crd" by default).
+3. Install the card to DigitalMe
+
+97.15.9 Legal
+~~~~~~~~~~~~~
+
+Microsoft promises to not sue you: http://www.microsoft.com/interop/osp/default.mspx
+
+97.16 Attributes
+----------------
+
+Q:: I want to read the attributes that come in the assertion. how do I do that?
+
+A:: You get attributes back as an LDIF entry as return value of zxid_simple()
+    The attributes are also available by reparsing the assertion, which gets
+    stored in /var/zxid/rely hierarchy.
+
+    /var/zxid/ses/SuzZQS5Ub/.ses file contains the path to the assertion file.
+
+Q:: In the zxid directory you store some users. what does the extension .mni stand for?
+    Why is the info stored? I assume it is some sort of local cache. I would like
+    to store the attributes there too. how do I do that?
+
+A:: The .mni file is used to support Manage NameID requests. In normal operation of ZXID
+    it really is not needed, but to support some of the SAML conformance test requests
+    it is needed.
+
+    Rather than store attributes in that directory, I'd suggest reparsing
+    the assertion when you need them. But if you must, you could create a
+    file of your own in that directory. We of course need a naming
+    convention that prevents naming conflicts with future versions of
+    ZXID: Your file extension should start by ".x-", for example:
+    "attributes.x-attr"
+
+Q:: The ldif returned by zxid_simple() is perfect for my needs. but
+    nothing is being stored in log\rely directory. could be some
+    configuration issue? also, can I have zxid automatically store the
+    ldif file returned zxid_simple()?
+
+A:: The log/rely should be populated by default, but if the directory
+    structure itself is missing, may be it does not work. Try make dirs.
+    Or check that web server user's permissions allow writing there.
+
+A:: Re ldif cached: the logic is supposed to be that the zxid_simple() will
+    be called to protect every page, therefore its return value is available
+    on every page.
+
+    If you do not call it every time, but instead bootstrap some sort of
+    app specific session, then you would strore the LDIF (or the attributes
+    parsed out of it) to that app specific session.
 
 98 Support
 ==========
@@ -5208,7 +6250,7 @@ is the SP that will eventually call the Discovery Service.
   <e:Header>
     <wsa:MessageID wsu:Id="MID">123</>
     <wsa:To wsu:Id="TO">...</>
-    <wsa:Action wsu:Id="ACT">...</>
+    <wsa:Action wsu:Id="ACT">urn:xx:Query</>
     <wsse:Security mustUnderstand="1">
       <wsu:Timestamp wsu:Id="TS"><wsu:Created>2005-06-17T04:49:17Z</></>
       <wsse:BinarySecurityToken
@@ -5260,7 +6302,7 @@ X509 a viable option).
   <e:Header>
     <wsa:MessageID wsu:Id="MID">...</>
     <wsa:To wsu:Id="TO">...</>
-    <wsa:Action wsu:Id="ACT">...</>
+    <wsa:Action wsu:Id="ACT">urn:xx:Query</>
     <wsse:Security mustUnderstand="1">
       <wsu:Timestamp wsu:Id="TS">
         <wsu:Created>2005-06-17T04:49:17Z</></>
@@ -5300,9 +6342,12 @@ X509 a viable option).
     xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
     xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
   <e:Header>
+    <sbf:Framework version="2.0-simple" e:mustUnderstand="1"
+      e:actor="http://schemas.../next"
+      wsu:Id="SBF"/>
     <wsa:MessageID wsu:Id="MID">...</>
     <wsa:To wsu:Id="TO">...</>
-    <wsa:Action wsu:Id="ACT">...</>
+    <wsa:Action wsu:Id="ACT">urn:xx:Query</>
     <wsse:Security mustUnderstand="1">
       <wsu:Timestamp wsu:Id="TS">
         <wsu:Created>2005-06-17T04:49:17Z</></>
@@ -5367,15 +6412,39 @@ the NameID at the WSP.
 
 <<references:
 
-[SAMLCore11] SAML 1.1 Core, OASIS
+[SAML11core] SAML 1.1 Core, OASIS, 2003
 
-[SAMLCore2] SAML 2.0 Core, OASIS 2005.
+[SAML11bind] "Bindings and Profiles for the OASIS Security Assertion Markup Language (SAML) V1.1", Oasis Standard, 2.9.2003, oasis-sstc-saml-bindings-1.1
 
-[SAML2Meta] Cantor, Moreh, Phipott, Maler, eds., "Metadata for the OASIS Security Assertion Markup Language (SAML) V2.0", OASIS 2005.
+[IDFF12] http://www.projectliberty.org/resources/specifications.php
 
-[xml-c14n] XML Canonicalization (non-exclusive), http://www.w3.org/TR/2001/REC-xml-c14n-20010315
+[IDFF12meta] Peted Davis, Ed., "Liberty Metadata Description and Discovery Specification", version 1.1, Liberty Alliance Project, 2004. (liberty-metadata-v1.1.pdf)
 
-[xml-exc-c14n] Exclusive XML Canonicalization, http://www.w3.org/TR/xml-exc-c14n/
+[SAML2core] "Assertions and Protocols for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-core-2.0-os
+
+[SAML2prof] "Profiles for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-profiles-2.0-os
+
+[SAML2bind] "Bindings for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-bindings-2.0-os
+
+[SAML2context] "Authentication Context for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-authn-context-2.0-os
+
+[SAML2meta] Cantor, Moreh, Phipott, Maler, eds., "Metadata for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-metadata-2.0-os
+
+[SAML2security] "Security and Privacy Considerations for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-sec-consider-2.0-os
+
+[SAML2conf] "Conformance Requirements for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-conformance-2.0-os
+
+[SAML2glossary] "Glossary for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-glossary-2.0-os
+
+[XML-C14N] XML Canonicalization (non-exclusive), http://www.w3.org/TR/2001/REC-xml-c14n-20010315; J. Boyer: "Canonical XML Version 1.0", W3C Recommendation, 15.3.2001, http://www.w3.org/TR/xml-c14n, RFC3076
+
+[XML-EXC-C14N] Exclusive XML Canonicalization, http://www.w3.org/TR/xml-exc-c14n/ 
+
+[Shibboleth] http://shibboleth.internet2.edu/shibboleth-documents.html
+
+[XMLENC] "XML Encryption Syntax and Processing", W3C Recommendation, 10.12.2002, http://www.w3.org/TR/xmlenc-core
+
+[XMLDSIG] "XML-Signature Syntax and Processing", W3C Recommendation, 12.2.2002, http://www.w3.org/TR/xmldsig-core, RFC3275
 
 [Disco2] Liberty ID-WSF Discovery service 2.0
 
@@ -5407,7 +6476,19 @@ the NameID at the WSP.
 
 [XML] http://www.w3.org/TR/REC-xml
 
+[RFC1950] P. Deutcsh, J-L. Gailly: "ZLIB Compressed Data Format Specification version 3.3", Aladdin Enterprises, Info-ZIP, May 1996
+
+[RFC1951] P. Deutcsh: "DEFLATE Compressed Data Format Specification version 1.3", Aladdin Enterprises, May 1996
+
+[RFC1952] P. Deutcsh: "GZIP file format specification version 4.3", Aladdin Enterprises, May 1996
+
+[RFC2246] TLSv1
+
 [RFC2251] LDAP
+
+[RFC3548] S. Josefsson, ed.: "The Base16, Base32, and Base64 Data Encodings", July 2003. (Section 4 describes Safebase64)
+
+[MS-MWBF] Microsoft Web Browser Federated Sign-On Protocol Specification, 20080207, http://msdn2.microsoft.com/en-us/library/cc236471.aspx
 
 >>
 
@@ -5416,17 +6497,212 @@ the NameID at the WSP.
 <<notapath: TCP/IP a.k.a xBSD/Unix n/a Perl/mod_perl PHP/mod_php Java/Tomcat>>
 <<EOF: >>
 
+SAML Open Source catalogs
+http://saml.xml.org/saml-open-source-implementations
+http://openliberty.org/wiki/index.php/Existing_Identity_Systems#Open_Source_
+http://docs.safehaus.org/display/HAUS/Id+OSS+Map
+
+Suspicious: when decrypting elements and plugging their plain
+text variants into original data structure, the wo pointers
+are not updated. Thus the "old" encrypted data may remain
+accessible for some purposes.
 
 Pointers from Pat
 http://rnd.feide.no/2007/04/13/light-bulb-update-request-for-testing/
 https://opensso.dev.java.net/public/extensions/index.html
 
-wsu namespace missing from cached EPRs
-
-Empty namespace prefix gives trouble
-
-Sun XML does not parse
-
-Add string and XML parsing based interface to create requests (and responses).
-
 Add macros for OK response.
+
+http://wiki.oasis-open.org/security/SstcSamlX509AuthnAttribProfile
+http://wiki.oasis-open.org/security/SimpleSignBinding
+
+
+On CYGWIN lockf() and flock() apparently are not defined.
+On mingw they are.
+
+Way to pass RelayState through zxid_simple()
+
+AuditExplorer
+
+elgg.org is very relevant for e-Learning / HR-XML market
+https://imb.phil.uni-augsburg.de/elgg/
+
+FEDORA
+
+Moodle (Open Source, Open University)
+MyStuff (Open Source, Open University)
+
+Privacy features of SAML/Liberty
+User centric features of SAML/Liberty
+- User control (not necessarily interaction every steps of the way)
+
+ECP + IS plugin for Firefox
+
+==================
+In general, wild card cert is one whose cn field is of form *.cellmail.com
+
+The openssl command for creating CSR is 'openssl req', for example
+
+> openssl req -new -nodes -keyout pkey.pem -out req.pem       
+Generating a 1024 bit RSA private key
+......................++++++
+.................................................................................++++++
+writing new private key to 'pkey.pem'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:FI
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:Helsinki
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:Tietosampo
+Organizational Unit Name (eg, section) []:
+Common Name (eg, YOUR name) []:*.tietosampo.fi
+Email Address []:sampo@iki.fi
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+
+In the example above I left the challenge password and company name empty, but
+it could be that Thawte insists that you fill in something there. They may
+also have specific requirements about the company name (and possibly the Organization
+Name and Oraganization Unit Name) matching the registered name of your company.
+
+Anyway, the output from the above should be
+
+> cat req.pem 
+-----BEGIN CERTIFICATE REQUEST-----
+MIIBwjCCASsCAQAwgYExCzAJBgNVBAYTAkZJMRMwEQYDVQQIEwpTb21lLVN0YXRl
+MREwDwYDVQQHEwhIZWxzaW5raTETMBEGA1UEChMKVGlldG9zYW1wbzEYMBYGA1UE
+AxQPKi50aWV0b3NhbXBvLmZpMRswGQYJKoZIhvcNAQkBFgxzYW1wb0Bpa2kuZmkw
+gZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALudDsX0ZU13ajartg4IECD0+5Lo
+xSThKu47vQ6GfIeh1+5QO0PCytmrUAI+w0mai9gIp4MssBGqvLs5e2No09ih1KmM
+7s8tgXnnexRQ7FsTEVnaZlZ2dgMNO4DYYtRgX+Kxks6hpHLEY0R3VmCVe1BPlkPs
+0Y4gP1yDNMXMAO+bAgMBAAGgADANBgkqhkiG9w0BAQUFAAOBgQBSWviTot4mScAi
+xGlky+UqkYtih0dmqhBBTiiSaVHBerUATKG0p8NkM0NGXuPt8Wozx6t53f8VeXDo
+BML4SzkoYSrmOkEqk8np8O3IWSG4+HRwhetG/THOvNwRz9shvadPec+VQxJEL2FC
+vxz/z/oQ8oFxyCwVUtTb4zKhT9rFEw==
+-----END CERTIFICATE REQUEST-----
+
+Or if you want to convince yourself that the wild card is
+really in there, you can check with
+
+> openssl asn1parse  <req.pem      
+    0:d=0  hl=4 l= 450 cons: SEQUENCE          
+    4:d=1  hl=4 l= 299 cons: SEQUENCE          
+    8:d=2  hl=2 l=   1 prim: INTEGER           :00
+   11:d=2  hl=3 l= 129 cons: SEQUENCE          
+   14:d=3  hl=2 l=  11 cons: SET               
+   16:d=4  hl=2 l=   9 cons: SEQUENCE          
+   18:d=5  hl=2 l=   3 prim: OBJECT            :countryName
+   23:d=5  hl=2 l=   2 prim: PRINTABLESTRING   :FI
+   27:d=3  hl=2 l=  19 cons: SET               
+   29:d=4  hl=2 l=  17 cons: SEQUENCE          
+   31:d=5  hl=2 l=   3 prim: OBJECT            :stateOrProvinceName
+   36:d=5  hl=2 l=  10 prim: PRINTABLESTRING   :Some-State
+   48:d=3  hl=2 l=  17 cons: SET               
+   50:d=4  hl=2 l=  15 cons: SEQUENCE          
+   52:d=5  hl=2 l=   3 prim: OBJECT            :localityName
+   57:d=5  hl=2 l=   8 prim: PRINTABLESTRING   :Helsinki
+   67:d=3  hl=2 l=  19 cons: SET               
+   69:d=4  hl=2 l=  17 cons: SEQUENCE          
+   71:d=5  hl=2 l=   3 prim: OBJECT            :organizationName
+   76:d=5  hl=2 l=  10 prim: PRINTABLESTRING   :Tietosampo
+   88:d=3  hl=2 l=  24 cons: SET               
+   90:d=4  hl=2 l=  22 cons: SEQUENCE          
+   92:d=5  hl=2 l=   3 prim: OBJECT            :commonName
+   97:d=5  hl=2 l=  15 prim: T61STRING         :*.tietosampo.fi
+  114:d=3  hl=2 l=  27 cons: SET               
+  116:d=4  hl=2 l=  25 cons: SEQUENCE          
+  118:d=5  hl=2 l=   9 prim: OBJECT            :emailAddress
+  129:d=5  hl=2 l=  12 prim: IA5STRING         :sampo@iki.fi
+  143:d=2  hl=3 l= 159 cons: SEQUENCE          
+  146:d=3  hl=2 l=  13 cons: SEQUENCE          
+  148:d=4  hl=2 l=   9 prim: OBJECT            :rsaEncryption
+  159:d=4  hl=2 l=   0 prim: NULL              
+  161:d=3  hl=3 l= 141 prim: BIT STRING        
+  305:d=2  hl=2 l=   0 cons: cont [ 0 ]        
+  307:d=1  hl=2 l=  13 cons: SEQUENCE          
+  309:d=2  hl=2 l=   9 prim: OBJECT            :sha1WithRSAEncryption
+  320:d=2  hl=2 l=   0 prim: NULL              
+  322:d=1  hl=3 l= 129 prim: BIT STRING        
+
+Here we can see that hitting empty for State or Provice question was not
+such a smart idea after all: it used nonsensical default value. I guess
+you would have to invent something as place holder.
+ 
+> On another train of thought, if I was to have a local CA here, could I use the
+> commercial certificate I get to sign the x509 certificates I would make? The
+> x509 would be used to sign emails via smart cards. This is not a commercial
+> project but rather one to learn more about smart cards. Sun has made code
+> available to manage smart cards so it may be interesting to learn more.
+
+The regular SSL certificate usually will not work as CA certificate due
+to certificate usage indicators. Technically it is possible to ignore
+such indicators and use the certificate anyway, but a lot of widely
+distributed software does not ignore them so you would have a lot of
+interoperability problems or at least confirmation questions.
+
+Commercial CAs do issue CA certificates, but they tend to be expensive.
+
+Even if you get commercial CA certificate, you should know that some (older)
+software only supports one level of certificate hierarchy. This problem
+has surfaced when some commercial CAs tried to structure themselves
+internally as multi layer CA.
+
+If you want to run your own CA, all you really have to do is configure
+the CA cert of yours to be trusted by all the software. For browsers
+this is easy enough within the GUI itself. For servers (such as apache
+or dsproxy), there is a way to do this at config file level. Configuring
+direct trust to your CA cert tends to be easier than trying to get
+commercial CA cert and playing multilayer CA games.
+
+Re Thunderbird, I am bit surprised that it does not accept self signed
+certs. It seems more probable to me that it actually can be configured
+to accept them, but does not ship with that turned on to protect
+naive users. The most basic way to use self signed cert would be
+to import the self signed cert as one of the trusted CA certs.
+
+Was your problem with Thunderbird not accepting the IMAPS connection? In
+that case the Thunderbird client software needs to start trusting the
+self signed cert as CA cert. There is probably a GUI way to do this - probably
+something very similar to the Firefox GUI for configuring certs.
+
+If you were trying to configure a ClientTLS certificate and the IMAPS
+server refused it, then you need to adjust configuration in the
+server end, probably in a config file.
+
+
+
+-----
+
+ZXID CARML stack
+
+* frontend API bindings
+* middle layer routing and mapping engine
+* backend connectors
+
+--Sampo
+
+
+-----
+
+http://saml.xml.org/products
+http://saml.xml.org/zxid
+
+ZXID.org Identity Management toolkit implements standalone SAML 2.0
+and Liberty ID-WSF 2.0 stacks. It is a C implementation with minimal
+external dependencies - OpenSSL, CURL, and zlib - ensuring easy
+deployment (no DLLhell). Due to its small footprint and efficient and
+accurate schema driven implementation, it is suitable for embedded and
+high volume applications. Language bindings to all popular highlevel
+languages such as PHP, Perl, and Java, are provided via SWIG.  ZXID
+implements, as of July 07, SP, WSC, and WSP roles.
+

@@ -60,12 +60,12 @@ void zx_FREE_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->AssertionID, free_strs);
+  zx_free_attr(c, x->InResponseTo, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->Issuer, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->AssertionID, free_strs);
-  zx_free_attr(c, x->Issuer, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
-  zx_free_attr(c, x->InResponseTo, free_strs);
 
   {
       struct zx_sa11_Conditions_s* e;
@@ -174,12 +174,12 @@ void zx_DUP_STRS_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->AssertionID);
+  zx_dup_attr(c, x->InResponseTo);
+  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->Issuer);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->AssertionID);
-  zx_dup_attr(c, x->Issuer);
-  zx_dup_attr(c, x->IssueInstant);
-  zx_dup_attr(c, x->InResponseTo);
 
   {
       struct zx_sa11_Conditions_s* e;
@@ -241,12 +241,12 @@ struct zx_ff12_Assertion_s* zx_DEEP_CLONE_ff12_Assertion(struct zx_ctx* c, struc
   x = (struct zx_ff12_Assertion_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_Assertion_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->AssertionID = zx_clone_attr(c, x->AssertionID);
+  x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->Issuer = zx_clone_attr(c, x->Issuer);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->AssertionID = zx_clone_attr(c, x->AssertionID);
-  x->Issuer = zx_clone_attr(c, x->Issuer);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
-  x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
 
   {
       struct zx_sa11_Conditions_s* e;
@@ -511,8 +511,8 @@ void zx_FREE_ff12_AuthenticationStatement(struct zx_ctx* c, struct zx_ff12_Authe
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->AuthenticationMethod, free_strs);
   zx_free_attr(c, x->AuthenticationInstant, free_strs);
+  zx_free_attr(c, x->AuthenticationMethod, free_strs);
   zx_free_attr(c, x->ReauthenticateOnOrAfter, free_strs);
   zx_free_attr(c, x->SessionIndex, free_strs);
 
@@ -582,8 +582,8 @@ void zx_DUP_STRS_ff12_AuthenticationStatement(struct zx_ctx* c, struct zx_ff12_A
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->AuthenticationMethod);
   zx_dup_attr(c, x->AuthenticationInstant);
+  zx_dup_attr(c, x->AuthenticationMethod);
   zx_dup_attr(c, x->ReauthenticateOnOrAfter);
   zx_dup_attr(c, x->SessionIndex);
 
@@ -621,8 +621,8 @@ struct zx_ff12_AuthenticationStatement_s* zx_DEEP_CLONE_ff12_AuthenticationState
   x = (struct zx_ff12_AuthenticationStatement_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_AuthenticationStatement_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->AuthenticationMethod = zx_clone_attr(c, x->AuthenticationMethod);
   x->AuthenticationInstant = zx_clone_attr(c, x->AuthenticationInstant);
+  x->AuthenticationMethod = zx_clone_attr(c, x->AuthenticationMethod);
   x->ReauthenticateOnOrAfter = zx_clone_attr(c, x->ReauthenticateOnOrAfter);
   x->SessionIndex = zx_clone_attr(c, x->SessionIndex);
 
@@ -947,10 +947,10 @@ void zx_FREE_ff12_AuthnRequest(struct zx_ctx* c, struct zx_ff12_AuthnRequest_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->RequestID, free_strs);
   zx_free_attr(c, x->consent, free_strs);
 
   zx_free_simple_elems(c, x->RespondWith, free_strs);
@@ -1028,10 +1028,10 @@ void zx_DUP_STRS_ff12_AuthnRequest(struct zx_ctx* c, struct zx_ff12_AuthnRequest
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->RequestID);
   zx_dup_attr(c, x->consent);
 
   zx_dup_strs_simple_elems(c, x->RespondWith);
@@ -1077,10 +1077,10 @@ struct zx_ff12_AuthnRequest_s* zx_DEEP_CLONE_ff12_AuthnRequest(struct zx_ctx* c,
   x = (struct zx_ff12_AuthnRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_AuthnRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->RequestID = zx_clone_attr(c, x->RequestID);
   x->consent = zx_clone_attr(c, x->consent);
 
   x->RespondWith = zx_deep_clone_simple_elems(c,x->RespondWith, dup_strs);
@@ -1520,12 +1520,12 @@ void zx_FREE_ff12_AuthnResponse(struct zx_ctx* c, struct zx_ff12_AuthnResponse_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ResponseID, free_strs);
   zx_free_attr(c, x->InResponseTo, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
+  zx_free_attr(c, x->ResponseID, free_strs);
   zx_free_attr(c, x->consent, free_strs);
 
   {
@@ -1596,12 +1596,12 @@ void zx_DUP_STRS_ff12_AuthnResponse(struct zx_ctx* c, struct zx_ff12_AuthnRespon
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ResponseID);
   zx_dup_attr(c, x->InResponseTo);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->Recipient);
+  zx_dup_attr(c, x->ResponseID);
   zx_dup_attr(c, x->consent);
 
   {
@@ -1640,12 +1640,12 @@ struct zx_ff12_AuthnResponse_s* zx_DEEP_CLONE_ff12_AuthnResponse(struct zx_ctx* 
   x = (struct zx_ff12_AuthnResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_AuthnResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ResponseID = zx_clone_attr(c, x->ResponseID);
   x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->Recipient = zx_clone_attr(c, x->Recipient);
+  x->ResponseID = zx_clone_attr(c, x->ResponseID);
   x->consent = zx_clone_attr(c, x->consent);
 
   {
@@ -2005,9 +2005,9 @@ void zx_FREE_ff12_EncryptableNameIdentifier(struct zx_ctx* c, struct zx_ff12_Enc
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->Format, free_strs);
   zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->Nonce, free_strs);
 
 
@@ -2044,9 +2044,9 @@ void zx_DUP_STRS_ff12_EncryptableNameIdentifier(struct zx_ctx* c, struct zx_ff12
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->Format);
   zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->Nonce);
 
 
@@ -2063,9 +2063,9 @@ struct zx_ff12_EncryptableNameIdentifier_s* zx_DEEP_CLONE_ff12_EncryptableNameId
   x = (struct zx_ff12_EncryptableNameIdentifier_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_EncryptableNameIdentifier_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->Format = zx_clone_attr(c, x->Format);
   x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->Nonce = zx_clone_attr(c, x->Nonce);
 
 
@@ -2448,10 +2448,10 @@ void zx_FREE_ff12_FederationTerminationNotification(struct zx_ctx* c, struct zx_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->RequestID, free_strs);
   zx_free_attr(c, x->consent, free_strs);
 
   zx_free_simple_elems(c, x->RespondWith, free_strs);
@@ -2514,10 +2514,10 @@ void zx_DUP_STRS_ff12_FederationTerminationNotification(struct zx_ctx* c, struct
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->RequestID);
   zx_dup_attr(c, x->consent);
 
   zx_dup_strs_simple_elems(c, x->RespondWith);
@@ -2551,10 +2551,10 @@ struct zx_ff12_FederationTerminationNotification_s* zx_DEEP_CLONE_ff12_Federatio
   x = (struct zx_ff12_FederationTerminationNotification_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_FederationTerminationNotification_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->RequestID = zx_clone_attr(c, x->RequestID);
   x->consent = zx_clone_attr(c, x->consent);
 
   x->RespondWith = zx_deep_clone_simple_elems(c,x->RespondWith, dup_strs);
@@ -3153,8 +3153,8 @@ void zx_FREE_ff12_IDPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_IDP
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->Format, free_strs);
+  zx_free_attr(c, x->NameQualifier, free_strs);
 
 
 
@@ -3190,8 +3190,8 @@ void zx_DUP_STRS_ff12_IDPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->Format);
+  zx_dup_attr(c, x->NameQualifier);
 
 
 }
@@ -3207,8 +3207,8 @@ struct zx_ff12_IDPProvidedNameIdentifier_s* zx_DEEP_CLONE_ff12_IDPProvidedNameId
   x = (struct zx_ff12_IDPProvidedNameIdentifier_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_IDPProvidedNameIdentifier_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->Format = zx_clone_attr(c, x->Format);
+  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
 
 
   return x;
@@ -3280,12 +3280,12 @@ void zx_FREE_ff12_LogoutRequest(struct zx_ctx* c, struct zx_ff12_LogoutRequest_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
-  zx_free_attr(c, x->consent, free_strs);
   zx_free_attr(c, x->NotOnOrAfter, free_strs);
+  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->consent, free_strs);
 
   zx_free_simple_elems(c, x->RespondWith, free_strs);
   {
@@ -3349,12 +3349,12 @@ void zx_DUP_STRS_ff12_LogoutRequest(struct zx_ctx* c, struct zx_ff12_LogoutReque
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
-  zx_dup_attr(c, x->consent);
   zx_dup_attr(c, x->NotOnOrAfter);
+  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->consent);
 
   zx_dup_strs_simple_elems(c, x->RespondWith);
   {
@@ -3389,12 +3389,12 @@ struct zx_ff12_LogoutRequest_s* zx_DEEP_CLONE_ff12_LogoutRequest(struct zx_ctx* 
   x = (struct zx_ff12_LogoutRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_LogoutRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
-  x->consent = zx_clone_attr(c, x->consent);
   x->NotOnOrAfter = zx_clone_attr(c, x->NotOnOrAfter);
+  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->consent = zx_clone_attr(c, x->consent);
 
   x->RespondWith = zx_deep_clone_simple_elems(c,x->RespondWith, dup_strs);
   {
@@ -3545,12 +3545,12 @@ void zx_FREE_ff12_LogoutResponse(struct zx_ctx* c, struct zx_ff12_LogoutResponse
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ResponseID, free_strs);
   zx_free_attr(c, x->InResponseTo, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
+  zx_free_attr(c, x->ResponseID, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3612,12 +3612,12 @@ void zx_DUP_STRS_ff12_LogoutResponse(struct zx_ctx* c, struct zx_ff12_LogoutResp
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ResponseID);
   zx_dup_attr(c, x->InResponseTo);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->Recipient);
+  zx_dup_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3650,12 +3650,12 @@ struct zx_ff12_LogoutResponse_s* zx_DEEP_CLONE_ff12_LogoutResponse(struct zx_ctx
   x = (struct zx_ff12_LogoutResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_LogoutResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ResponseID = zx_clone_attr(c, x->ResponseID);
   x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->Recipient = zx_clone_attr(c, x->Recipient);
+  x->ResponseID = zx_clone_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -3798,10 +3798,10 @@ void zx_FREE_ff12_NameIdentifierMappingRequest(struct zx_ctx* c, struct zx_ff12_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->RequestID, free_strs);
   zx_free_attr(c, x->consent, free_strs);
 
   zx_free_simple_elems(c, x->RespondWith, free_strs);
@@ -3865,10 +3865,10 @@ void zx_DUP_STRS_ff12_NameIdentifierMappingRequest(struct zx_ctx* c, struct zx_f
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->RequestID);
   zx_dup_attr(c, x->consent);
 
   zx_dup_strs_simple_elems(c, x->RespondWith);
@@ -3903,10 +3903,10 @@ struct zx_ff12_NameIdentifierMappingRequest_s* zx_DEEP_CLONE_ff12_NameIdentifier
   x = (struct zx_ff12_NameIdentifierMappingRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_NameIdentifierMappingRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->RequestID = zx_clone_attr(c, x->RequestID);
   x->consent = zx_clone_attr(c, x->consent);
 
   x->RespondWith = zx_deep_clone_simple_elems(c,x->RespondWith, dup_strs);
@@ -4054,12 +4054,12 @@ void zx_FREE_ff12_NameIdentifierMappingResponse(struct zx_ctx* c, struct zx_ff12
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ResponseID, free_strs);
   zx_free_attr(c, x->InResponseTo, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
+  zx_free_attr(c, x->ResponseID, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -4128,12 +4128,12 @@ void zx_DUP_STRS_ff12_NameIdentifierMappingResponse(struct zx_ctx* c, struct zx_
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ResponseID);
   zx_dup_attr(c, x->InResponseTo);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->Recipient);
+  zx_dup_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -4170,12 +4170,12 @@ struct zx_ff12_NameIdentifierMappingResponse_s* zx_DEEP_CLONE_ff12_NameIdentifie
   x = (struct zx_ff12_NameIdentifierMappingResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_NameIdentifierMappingResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ResponseID = zx_clone_attr(c, x->ResponseID);
   x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->Recipient = zx_clone_attr(c, x->Recipient);
+  x->ResponseID = zx_clone_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -4335,8 +4335,8 @@ void zx_FREE_ff12_OldProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_Old
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->Format, free_strs);
+  zx_free_attr(c, x->NameQualifier, free_strs);
 
 
 
@@ -4372,8 +4372,8 @@ void zx_DUP_STRS_ff12_OldProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->Format);
+  zx_dup_attr(c, x->NameQualifier);
 
 
 }
@@ -4389,8 +4389,8 @@ struct zx_ff12_OldProvidedNameIdentifier_s* zx_DEEP_CLONE_ff12_OldProvidedNameId
   x = (struct zx_ff12_OldProvidedNameIdentifier_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_OldProvidedNameIdentifier_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->Format = zx_clone_attr(c, x->Format);
+  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
 
 
   return x;
@@ -4462,10 +4462,10 @@ void zx_FREE_ff12_RegisterNameIdentifierRequest(struct zx_ctx* c, struct zx_ff12
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->RequestID, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
+  zx_free_attr(c, x->RequestID, free_strs);
 
   zx_free_simple_elems(c, x->RespondWith, free_strs);
   {
@@ -4544,10 +4544,10 @@ void zx_DUP_STRS_ff12_RegisterNameIdentifierRequest(struct zx_ctx* c, struct zx_
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->RequestID);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
+  zx_dup_attr(c, x->RequestID);
 
   zx_dup_strs_simple_elems(c, x->RespondWith);
   {
@@ -4591,10 +4591,10 @@ struct zx_ff12_RegisterNameIdentifierRequest_s* zx_DEEP_CLONE_ff12_RegisterNameI
   x = (struct zx_ff12_RegisterNameIdentifierRequest_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_RegisterNameIdentifierRequest_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->RequestID = zx_clone_attr(c, x->RequestID);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
+  x->RequestID = zx_clone_attr(c, x->RequestID);
 
   x->RespondWith = zx_deep_clone_simple_elems(c,x->RespondWith, dup_strs);
   {
@@ -4783,12 +4783,12 @@ void zx_FREE_ff12_RegisterNameIdentifierResponse(struct zx_ctx* c, struct zx_ff1
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ResponseID, free_strs);
   zx_free_attr(c, x->InResponseTo, free_strs);
+  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->MajorVersion, free_strs);
   zx_free_attr(c, x->MinorVersion, free_strs);
-  zx_free_attr(c, x->IssueInstant, free_strs);
   zx_free_attr(c, x->Recipient, free_strs);
+  zx_free_attr(c, x->ResponseID, free_strs);
 
   {
       struct zx_ds_Signature_s* e;
@@ -4850,12 +4850,12 @@ void zx_DUP_STRS_ff12_RegisterNameIdentifierResponse(struct zx_ctx* c, struct zx
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ResponseID);
   zx_dup_attr(c, x->InResponseTo);
+  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->MajorVersion);
   zx_dup_attr(c, x->MinorVersion);
-  zx_dup_attr(c, x->IssueInstant);
   zx_dup_attr(c, x->Recipient);
+  zx_dup_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -4888,12 +4888,12 @@ struct zx_ff12_RegisterNameIdentifierResponse_s* zx_DEEP_CLONE_ff12_RegisterName
   x = (struct zx_ff12_RegisterNameIdentifierResponse_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_RegisterNameIdentifierResponse_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ResponseID = zx_clone_attr(c, x->ResponseID);
   x->InResponseTo = zx_clone_attr(c, x->InResponseTo);
+  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->MajorVersion = zx_clone_attr(c, x->MajorVersion);
   x->MinorVersion = zx_clone_attr(c, x->MinorVersion);
-  x->IssueInstant = zx_clone_attr(c, x->IssueInstant);
   x->Recipient = zx_clone_attr(c, x->Recipient);
+  x->ResponseID = zx_clone_attr(c, x->ResponseID);
 
   {
       struct zx_ds_Signature_s* e;
@@ -5175,8 +5175,8 @@ void zx_FREE_ff12_SPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_SPPr
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->NameQualifier, free_strs);
   zx_free_attr(c, x->Format, free_strs);
+  zx_free_attr(c, x->NameQualifier, free_strs);
 
 
 
@@ -5212,8 +5212,8 @@ void zx_DUP_STRS_ff12_SPProvidedNameIdentifier(struct zx_ctx* c, struct zx_ff12_
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->NameQualifier);
   zx_dup_attr(c, x->Format);
+  zx_dup_attr(c, x->NameQualifier);
 
 
 }
@@ -5229,8 +5229,8 @@ struct zx_ff12_SPProvidedNameIdentifier_s* zx_DEEP_CLONE_ff12_SPProvidedNameIden
   x = (struct zx_ff12_SPProvidedNameIdentifier_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ff12_SPProvidedNameIdentifier_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
   x->Format = zx_clone_attr(c, x->Format);
+  x->NameQualifier = zx_clone_attr(c, x->NameQualifier);
 
 
   return x;

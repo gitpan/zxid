@@ -69,6 +69,15 @@ void zx_FREE_root(struct zx_ctx* c, struct zx_root_s* x, int free_strs)
       }
   }
   {
+      struct zx_sa_NameID_s* e;
+      struct zx_sa_NameID_s* en;
+      for (e = x->NameID; e; e = en) {
+	  en = (struct zx_sa_NameID_s*)e->gg.g.n;
+	  zx_FREE_sa_NameID(c, e, free_strs);
+      }
+  }
+  zx_free_simple_elems(c, x->NewID, free_strs);
+  {
       struct zx_sp_AuthnRequest_s* e;
       struct zx_sp_AuthnRequest_s* en;
       for (e = x->AuthnRequest; e; e = en) {
@@ -349,6 +358,12 @@ void zx_DUP_STRS_root(struct zx_ctx* c, struct zx_root_s* x)
 	  zx_DUP_STRS_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_NameID_s* e;
+      for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
+	  zx_DUP_STRS_sa_NameID(c, e);
+  }
+  zx_dup_strs_simple_elems(c, x->NewID);
+  {
       struct zx_sp_AuthnRequest_s* e;
       for (e = x->AuthnRequest; e; e = (struct zx_sp_AuthnRequest_s*)e->gg.g.n)
 	  zx_DUP_STRS_sp_AuthnRequest(c, e);
@@ -526,6 +541,20 @@ struct zx_root_s* zx_DEEP_CLONE_root(struct zx_ctx* c, struct zx_root_s* x, int 
 	  enn = en;
       }
   }
+  {
+      struct zx_sa_NameID_s* e;
+      struct zx_sa_NameID_s* en;
+      struct zx_sa_NameID_s* enn;
+      for (enn = 0, e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_sa_NameID(c, e, dup_strs);
+	  if (!enn)
+	      x->NameID = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  x->NewID = zx_deep_clone_simple_elems(c,x->NewID, dup_strs);
   {
       struct zx_sp_AuthnRequest_s* e;
       struct zx_sp_AuthnRequest_s* en;
@@ -946,6 +975,17 @@ int zx_WALK_SO_root(struct zx_ctx* c, struct zx_root_s* x, void* ctx, int (*call
 	      return ret;
       }
   }
+  {
+      struct zx_sa_NameID_s* e;
+      for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_sa_NameID(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  ret = zx_walk_so_simple_elems(c, x->NewID, ctx, callback);
+  if (ret)
+    return ret;
   {
       struct zx_sp_AuthnRequest_s* e;
       for (e = x->AuthnRequest; e; e = (struct zx_sp_AuthnRequest_s*)e->gg.g.n) {

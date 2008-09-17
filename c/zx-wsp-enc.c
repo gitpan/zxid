@@ -7,19 +7,20 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
- ** Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: enc-templ.c,v 1.24 2007/03/28 20:31:54 sampo Exp $
+ ** Id: enc-templ.c,v 1.27 2007-10-05 22:24:28 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006,  factored data structure walking to aux-templ.c --Sampo
  ** 8.8.2006,  reworked namespace handling --Sampo
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
+ ** 30.9.2007, improvements to WO encoding --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -54,6 +55,18 @@
 #define EL_NS     wsp
 #define EL_TAG    All
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsp_All) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -63,9 +76,12 @@
 int zx_LEN_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsp:All")-1 + 1 + sizeof("</wsp:All>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -96,8 +112,9 @@ int zx_LEN_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:All", len);
   return len;
 }
 
@@ -111,13 +128,14 @@ int zx_LEN_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 int zx_LEN_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("All")-1 + 1 + 2 + sizeof("All")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -150,6 +168,7 @@ int zx_LEN_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:All", len);
   return len;
 }
 
@@ -162,10 +181,14 @@ int zx_LEN_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 /* Called by: */
 char* zx_ENC_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsp:All");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -203,6 +226,7 @@ char* zx_ENC_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:All", p-enc_base);
   return p;
 }
 
@@ -216,6 +240,7 @@ char* zx_ENC_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p )
 char* zx_ENC_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -230,6 +255,8 @@ char* zx_ENC_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p )
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -251,6 +278,7 @@ char* zx_ENC_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p )
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:All", p-enc_base);
   return p;
 }
 
@@ -305,6 +333,18 @@ struct zx_str* zx_EASY_ENC_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 #define EL_NS     wsp
 #define EL_TAG    AppliesTo
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsp_AppliesTo) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -314,9 +354,12 @@ struct zx_str* zx_EASY_ENC_WO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x )
 int zx_LEN_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsp:AppliesTo")-1 + 1 + sizeof("</wsp:AppliesTo>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -327,8 +370,9 @@ int zx_LEN_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x )
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:AppliesTo", len);
   return len;
 }
 
@@ -342,13 +386,14 @@ int zx_LEN_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x )
 int zx_LEN_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("AppliesTo")-1 + 1 + 2 + sizeof("AppliesTo")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -361,6 +406,7 @@ int zx_LEN_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:AppliesTo", len);
   return len;
 }
 
@@ -373,10 +419,14 @@ int zx_LEN_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x )
 /* Called by: */
 char* zx_ENC_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsp:AppliesTo");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -394,6 +444,7 @@ char* zx_ENC_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:AppliesTo", p-enc_base);
   return p;
 }
 
@@ -407,6 +458,7 @@ char* zx_ENC_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, ch
 char* zx_ENC_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -421,6 +473,8 @@ char* zx_ENC_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, ch
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -442,6 +496,7 @@ char* zx_ENC_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, ch
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:AppliesTo", p-enc_base);
   return p;
 }
 
@@ -496,6 +551,18 @@ struct zx_str* zx_EASY_ENC_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_Appl
 #define EL_NS     wsp
 #define EL_TAG    ExactlyOne
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsp_ExactlyOne) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -505,9 +572,12 @@ struct zx_str* zx_EASY_ENC_WO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_Appl
 int zx_LEN_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsp:ExactlyOne")-1 + 1 + sizeof("</wsp:ExactlyOne>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -538,8 +608,9 @@ int zx_LEN_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:ExactlyOne", len);
   return len;
 }
 
@@ -553,13 +624,14 @@ int zx_LEN_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x )
 int zx_LEN_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("ExactlyOne")-1 + 1 + 2 + sizeof("ExactlyOne")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -592,6 +664,7 @@ int zx_LEN_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:ExactlyOne", len);
   return len;
 }
 
@@ -604,10 +677,14 @@ int zx_LEN_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x )
 /* Called by: */
 char* zx_ENC_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsp:ExactlyOne");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -645,6 +722,7 @@ char* zx_ENC_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:ExactlyOne", p-enc_base);
   return p;
 }
 
@@ -658,6 +736,7 @@ char* zx_ENC_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, 
 char* zx_ENC_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -672,6 +751,8 @@ char* zx_ENC_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -693,6 +774,7 @@ char* zx_ENC_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:ExactlyOne", p-enc_base);
   return p;
 }
 
@@ -747,6 +829,18 @@ struct zx_str* zx_EASY_ENC_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_Exa
 #define EL_NS     wsp
 #define EL_TAG    Policy
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsp_Policy) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -756,11 +850,15 @@ struct zx_str* zx_EASY_ENC_WO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_Exa
 int zx_LEN_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsp:Policy")-1 + 1 + sizeof("</wsp:Policy>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
+  if (x->Id)
+    len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   len += zx_attr_so_len(x->Name, sizeof("Name")-1);
   len += zx_attr_so_len(x->Id, sizeof("wsu:Id")-1);
@@ -792,8 +890,9 @@ int zx_LEN_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x )
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:Policy", len);
   return len;
 }
 
@@ -807,15 +906,17 @@ int zx_LEN_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x )
 int zx_LEN_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("Policy")-1 + 1 + 2 + sizeof("Policy")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (x->Id)
+    len += zx_len_xmlns_if_not_seen(c, x->Id->g.ns, &pop_seen);
 
   len += zx_attr_wo_len(x->Name, sizeof("Name")-1);
   len += zx_attr_wo_len(x->Id, sizeof("Id")-1);
@@ -849,6 +950,7 @@ int zx_LEN_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x )
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:Policy", len);
   return len;
 }
 
@@ -861,12 +963,17 @@ int zx_LEN_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x )
 /* Called by: */
 char* zx_ENC_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsp:Policy");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
+  if (x->Id)
+    p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsu, &pop_seen);
 
   p = zx_attr_so_enc(p, x->Name, " Name=\"", sizeof(" Name=\"")-1);
   p = zx_attr_so_enc(p, x->Id, " wsu:Id=\"", sizeof(" wsu:Id=\"")-1);
@@ -905,6 +1012,7 @@ char* zx_ENC_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:Policy", p-enc_base);
   return p;
 }
 
@@ -918,6 +1026,7 @@ char* zx_ENC_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p 
 char* zx_ENC_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -932,8 +1041,11 @@ char* zx_ENC_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p 
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
+  if (x->Id)
+    zx_add_xmlns_if_not_seen(c, x->Id->g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
   p = zx_attr_wo_enc(p, x->Name, "Name=\"", sizeof("Name=\"")-1);
@@ -956,6 +1068,7 @@ char* zx_ENC_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p 
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:Policy", p-enc_base);
   return p;
 }
 
@@ -1010,6 +1123,18 @@ struct zx_str* zx_EASY_ENC_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_
 #define EL_NS     wsp
 #define EL_TAG    PolicyAttachment
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsp_PolicyAttachment) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1019,9 +1144,12 @@ struct zx_str* zx_EASY_ENC_WO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_
 int zx_LEN_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsp:PolicyAttachment")-1 + 1 + sizeof("</wsp:PolicyAttachment>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -1047,8 +1175,9 @@ int zx_LEN_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachm
   }
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:PolicyAttachment", len);
   return len;
 }
 
@@ -1062,13 +1191,14 @@ int zx_LEN_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachm
 int zx_LEN_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("PolicyAttachment")-1 + 1 + 2 + sizeof("PolicyAttachment")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
 
@@ -1096,6 +1226,7 @@ int zx_LEN_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachm
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:PolicyAttachment", len);
   return len;
 }
 
@@ -1108,10 +1239,14 @@ int zx_LEN_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachm
 /* Called by: */
 char* zx_ENC_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsp:PolicyAttachment");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
 
@@ -1144,6 +1279,7 @@ char* zx_ENC_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttac
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:PolicyAttachment", p-enc_base);
   return p;
 }
 
@@ -1157,6 +1293,7 @@ char* zx_ENC_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttac
 char* zx_ENC_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1171,6 +1308,8 @@ char* zx_ENC_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttac
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
@@ -1192,6 +1331,7 @@ char* zx_ENC_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttac
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:PolicyAttachment", p-enc_base);
   return p;
 }
 
@@ -1246,6 +1386,18 @@ struct zx_str* zx_EASY_ENC_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_w
 #define EL_NS     wsp
 #define EL_TAG    PolicyReference
 
+#ifndef MAYBE_UNUSED
+#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
+#endif
+
+#if 0
+#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
+#define ENC_LEN_DEBUG_BASE char* enc_base = p
+#else
+#define ENC_LEN_DEBUG(x,tag,len)
+#define ENC_LEN_DEBUG_BASE
+#endif
+
 /* FUNC(zx_LEN_SO_wsp_PolicyReference) */
 
 /* Compute length of an element (and its subelements). The XML attributes
@@ -1255,14 +1407,17 @@ struct zx_str* zx_EASY_ENC_WO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_w
 int zx_LEN_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
+  /* *** in simple_elem case should output ns prefix from ns node. */
   int len = sizeof("<wsp:PolicyReference")-1 + 1 + sizeof("</wsp:PolicyReference>")-1;
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
-  len += zx_attr_so_len(x->URI, sizeof("URI")-1);
   len += zx_attr_so_len(x->Digest, sizeof("Digest")-1);
   len += zx_attr_so_len(x->DigestAlgorithm, sizeof("DigestAlgorithm")-1);
+  len += zx_attr_so_len(x->URI, sizeof("URI")-1);
 
 #else
   /* root node has no begin tag */
@@ -1271,8 +1426,9 @@ int zx_LEN_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReferenc
   
 
 
-  len += zx_len_so_common(c, &x->gg); 
+  len += zx_len_so_common(c, &x->gg);
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:PolicyReference", len);
   return len;
 }
 
@@ -1286,18 +1442,19 @@ int zx_LEN_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReferenc
 int zx_LEN_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x )
 {
   struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   int len = 1 + sizeof("PolicyReference")-1 + 1 + 2 + sizeof("PolicyReference")-1 + 1;
   
   if (x->gg.g.ns && x->gg.g.ns->prefix_len)
     len += (x->gg.g.ns->prefix_len + 1) * 2;
-
+  if (c->inc_ns_len)
+    len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->URI, sizeof("URI")-1);
   len += zx_attr_wo_len(x->Digest, sizeof("Digest")-1);
   len += zx_attr_wo_len(x->DigestAlgorithm, sizeof("DigestAlgorithm")-1);
+  len += zx_attr_wo_len(x->URI, sizeof("URI")-1);
 
 #else
   /* root node has no begin tag */
@@ -1308,6 +1465,7 @@ int zx_LEN_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReferenc
 
   len += zx_len_wo_common(c, &x->gg); 
   zx_pop_seen(pop_seen);
+  ENC_LEN_DEBUG(x, "wsp:PolicyReference", len);
   return len;
 }
 
@@ -1320,15 +1478,19 @@ int zx_LEN_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReferenc
 /* Called by: */
 char* zx_ENC_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x, char* p )
 {
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se;
+  struct zx_elem_s* se MAYBE_UNUSED;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
+  struct zx_ns_s* pop_seen = 0;
+  /* *** in simple_elem case should output ns prefix from ns node. */
   ZX_OUT_TAG(p, "<wsp:PolicyReference");
+  if (c->inc_ns)
+    p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_wsp, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->URI, " URI=\"", sizeof(" URI=\"")-1);
   p = zx_attr_so_enc(p, x->Digest, " Digest=\"", sizeof(" Digest=\"")-1);
   p = zx_attr_so_enc(p, x->DigestAlgorithm, " DigestAlgorithm=\"", sizeof(" DigestAlgorithm=\"")-1);
+  p = zx_attr_so_enc(p, x->URI, " URI=\"", sizeof(" URI=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -1344,6 +1506,7 @@ char* zx_ENC_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyRefere
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:PolicyReference", p-enc_base);
   return p;
 }
 
@@ -1357,6 +1520,7 @@ char* zx_ENC_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyRefere
 char* zx_ENC_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x, char* p )
 {
   struct zx_elem_s* kid;
+  ENC_LEN_DEBUG_BASE;
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   char* q;
@@ -1371,12 +1535,14 @@ char* zx_ENC_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyRefere
   qq = p;
 
   /* *** sort the namespaces */
+  if (c->inc_ns)
+    zx_add_inc_ns(c, &pop_seen);
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->URI, "URI=\"", sizeof("URI=\"")-1);
   p = zx_attr_wo_enc(p, x->Digest, "Digest=\"", sizeof("Digest=\"")-1);
   p = zx_attr_wo_enc(p, x->DigestAlgorithm, "DigestAlgorithm=\"", sizeof("DigestAlgorithm=\"")-1);
+  p = zx_attr_wo_enc(p, x->URI, "URI=\"", sizeof("URI=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -1395,6 +1561,7 @@ char* zx_ENC_WO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyRefere
 #else
   /* root node has no end tag either */
 #endif
+  ENC_LEN_DEBUG(x, "wsp:PolicyReference", p-enc_base);
   return p;
 }
 

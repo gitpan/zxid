@@ -436,14 +436,14 @@ void zx_pmm_PMActivateItem_DEL_PMID(struct zx_pmm_PMActivateItem_s* x, int n)
 
 #endif
 
-/* FUNC(zx_pmm_PMActivateItem_GET_itemID) */
-struct zx_str* zx_pmm_PMActivateItem_GET_itemID(struct zx_pmm_PMActivateItem_s* x) { return x->itemID; }
-/* FUNC(zx_pmm_PMActivateItem_PUT_itemID) */
-void zx_pmm_PMActivateItem_PUT_itemID(struct zx_pmm_PMActivateItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_pmm_PMActivateItem_GET_at) */
 struct zx_str* zx_pmm_PMActivateItem_GET_at(struct zx_pmm_PMActivateItem_s* x) { return x->at; }
 /* FUNC(zx_pmm_PMActivateItem_PUT_at) */
 void zx_pmm_PMActivateItem_PUT_at(struct zx_pmm_PMActivateItem_s* x, struct zx_str* y) { x->at = y; }
+/* FUNC(zx_pmm_PMActivateItem_GET_itemID) */
+struct zx_str* zx_pmm_PMActivateItem_GET_itemID(struct zx_pmm_PMActivateItem_s* x) { return x->itemID; }
+/* FUNC(zx_pmm_PMActivateItem_PUT_itemID) */
+void zx_pmm_PMActivateItem_PUT_itemID(struct zx_pmm_PMActivateItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -995,14 +995,14 @@ void zx_pmm_PMDeactivateItem_DEL_PMID(struct zx_pmm_PMDeactivateItem_s* x, int n
 
 #endif
 
-/* FUNC(zx_pmm_PMDeactivateItem_GET_itemID) */
-struct zx_str* zx_pmm_PMDeactivateItem_GET_itemID(struct zx_pmm_PMDeactivateItem_s* x) { return x->itemID; }
-/* FUNC(zx_pmm_PMDeactivateItem_PUT_itemID) */
-void zx_pmm_PMDeactivateItem_PUT_itemID(struct zx_pmm_PMDeactivateItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_pmm_PMDeactivateItem_GET_at) */
 struct zx_str* zx_pmm_PMDeactivateItem_GET_at(struct zx_pmm_PMDeactivateItem_s* x) { return x->at; }
 /* FUNC(zx_pmm_PMDeactivateItem_PUT_at) */
 void zx_pmm_PMDeactivateItem_PUT_at(struct zx_pmm_PMDeactivateItem_s* x, struct zx_str* y) { x->at = y; }
+/* FUNC(zx_pmm_PMDeactivateItem_GET_itemID) */
+struct zx_str* zx_pmm_PMDeactivateItem_GET_itemID(struct zx_pmm_PMDeactivateItem_s* x) { return x->itemID; }
+/* FUNC(zx_pmm_PMDeactivateItem_PUT_itemID) */
+void zx_pmm_PMDeactivateItem_PUT_itemID(struct zx_pmm_PMDeactivateItem_s* x, struct zx_str* y) { x->itemID = y; }
 
 
 
@@ -2665,18 +2665,18 @@ void zx_pmm_PMUpdateItem_DEL_PMDescriptor(struct zx_pmm_PMUpdateItem_s* x, int n
 
 #endif
 
-/* FUNC(zx_pmm_PMUpdateItem_GET_type) */
-struct zx_str* zx_pmm_PMUpdateItem_GET_type(struct zx_pmm_PMUpdateItem_s* x) { return x->type; }
-/* FUNC(zx_pmm_PMUpdateItem_PUT_type) */
-void zx_pmm_PMUpdateItem_PUT_type(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y) { x->type = y; }
-/* FUNC(zx_pmm_PMUpdateItem_GET_itemID) */
-struct zx_str* zx_pmm_PMUpdateItem_GET_itemID(struct zx_pmm_PMUpdateItem_s* x) { return x->itemID; }
-/* FUNC(zx_pmm_PMUpdateItem_PUT_itemID) */
-void zx_pmm_PMUpdateItem_PUT_itemID(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y) { x->itemID = y; }
 /* FUNC(zx_pmm_PMUpdateItem_GET_at) */
 struct zx_str* zx_pmm_PMUpdateItem_GET_at(struct zx_pmm_PMUpdateItem_s* x) { return x->at; }
 /* FUNC(zx_pmm_PMUpdateItem_PUT_at) */
 void zx_pmm_PMUpdateItem_PUT_at(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y) { x->at = y; }
+/* FUNC(zx_pmm_PMUpdateItem_GET_itemID) */
+struct zx_str* zx_pmm_PMUpdateItem_GET_itemID(struct zx_pmm_PMUpdateItem_s* x) { return x->itemID; }
+/* FUNC(zx_pmm_PMUpdateItem_PUT_itemID) */
+void zx_pmm_PMUpdateItem_PUT_itemID(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y) { x->itemID = y; }
+/* FUNC(zx_pmm_PMUpdateItem_GET_type) */
+struct zx_str* zx_pmm_PMUpdateItem_GET_type(struct zx_pmm_PMUpdateItem_s* x) { return x->type; }
+/* FUNC(zx_pmm_PMUpdateItem_PUT_type) */
+void zx_pmm_PMUpdateItem_PUT_type(struct zx_pmm_PMUpdateItem_s* x, struct zx_str* y) { x->type = y; }
 
 
 

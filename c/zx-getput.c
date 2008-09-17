@@ -166,6 +166,274 @@ void zx_root_DEL_Assertion(struct zx_root_s* x, int n)
 
 #ifdef ZX_ENA_GETPUT
 
+/* FUNC(zx_root_NUM_NameID) */
+
+int zx_root_NUM_NameID(struct zx_root_s* x)
+{
+  struct zx_sa_NameID_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->NameID; y; ++n, y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_root_GET_NameID) */
+
+struct zx_sa_NameID_s* zx_root_GET_NameID(struct zx_root_s* x, int n)
+{
+  struct zx_sa_NameID_s* y;
+  if (!x) return 0;
+  for (y = x->NameID; n>=0 && y; --n, y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_root_POP_NameID) */
+
+struct zx_sa_NameID_s* zx_root_POP_NameID(struct zx_root_s* x)
+{
+  struct zx_sa_NameID_s* y;
+  if (!x) return 0;
+  y = x->NameID;
+  if (y)
+    x->NameID = (struct zx_sa_NameID_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_root_PUSH_NameID) */
+
+void zx_root_PUSH_NameID(struct zx_root_s* x, struct zx_sa_NameID_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->NameID->gg.g;
+  x->NameID = z;
+}
+
+/* FUNC(zx_root_REV_NameID) */
+
+void zx_root_REV_NameID(struct zx_root_s* x)
+{
+  struct zx_sa_NameID_s* nxt;
+  struct zx_sa_NameID_s* y;
+  if (!x) return;
+  y = x->NameID;
+  if (!y) return;
+  x->NameID = 0;
+  while (y) {
+    nxt = (struct zx_sa_NameID_s*)y->gg.g.n;
+    y->gg.g.n = &x->NameID->gg.g;
+    x->NameID = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_root_PUT_NameID) */
+
+void zx_root_PUT_NameID(struct zx_root_s* x, int n, struct zx_sa_NameID_s* z)
+{
+  struct zx_sa_NameID_s* y;
+  if (!x || !z) return;
+  y = x->NameID;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->NameID = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_root_ADD_NameID) */
+
+void zx_root_ADD_NameID(struct zx_root_s* x, int n, struct zx_sa_NameID_s* z)
+{
+  struct zx_sa_NameID_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->NameID->gg.g;
+    x->NameID = z;
+    return;
+  case -1:
+    y = x->NameID;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->NameID; n > 1 && y; --n, y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_root_DEL_NameID) */
+
+void zx_root_DEL_NameID(struct zx_root_s* x, int n)
+{
+  struct zx_sa_NameID_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->NameID = (struct zx_sa_NameID_s*)x->NameID->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_sa_NameID_s*)x->NameID;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->NameID; n > 1 && y->gg.g.n; --n, y = (struct zx_sa_NameID_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_root_NUM_NewID) */
+
+int zx_root_NUM_NewID(struct zx_root_s* x)
+{
+  struct zx_elem_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->NewID; y; ++n, y = (struct zx_elem_s*)y->g.n) ;
+  return n;
+}
+
+/* FUNC(zx_root_GET_NewID) */
+
+struct zx_elem_s* zx_root_GET_NewID(struct zx_root_s* x, int n)
+{
+  struct zx_elem_s* y;
+  if (!x) return 0;
+  for (y = x->NewID; n>=0 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
+  return y;
+}
+
+/* FUNC(zx_root_POP_NewID) */
+
+struct zx_elem_s* zx_root_POP_NewID(struct zx_root_s* x)
+{
+  struct zx_elem_s* y;
+  if (!x) return 0;
+  y = x->NewID;
+  if (y)
+    x->NewID = (struct zx_elem_s*)y->g.n;
+  return y;
+}
+
+/* FUNC(zx_root_PUSH_NewID) */
+
+void zx_root_PUSH_NewID(struct zx_root_s* x, struct zx_elem_s* z)
+{
+  if (!x || !z) return;
+  z->g.n = &x->NewID->g;
+  x->NewID = z;
+}
+
+/* FUNC(zx_root_REV_NewID) */
+
+void zx_root_REV_NewID(struct zx_root_s* x)
+{
+  struct zx_elem_s* nxt;
+  struct zx_elem_s* y;
+  if (!x) return;
+  y = x->NewID;
+  if (!y) return;
+  x->NewID = 0;
+  while (y) {
+    nxt = (struct zx_elem_s*)y->g.n;
+    y->g.n = &x->NewID->g;
+    x->NewID = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_root_PUT_NewID) */
+
+void zx_root_PUT_NewID(struct zx_root_s* x, int n, struct zx_elem_s* z)
+{
+  struct zx_elem_s* y;
+  if (!x || !z) return;
+  y = x->NewID;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->g.n = y->g.n;
+    x->NewID = z;
+    return;
+  default:
+    for (; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y->g.n) return;
+    z->g.n = y->g.n->n;
+    y->g.n = &z->g;
+  }
+}
+
+/* FUNC(zx_root_ADD_NewID) */
+
+void zx_root_ADD_NewID(struct zx_root_s* x, int n, struct zx_elem_s* z)
+{
+  struct zx_elem_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->g.n = &x->NewID->g;
+    x->NewID = z;
+    return;
+  case -1:
+    y = x->NewID;
+    if (!y) goto add_to_start;
+    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
+    break;
+  default:
+    for (y = x->NewID; n > 1 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y) return;
+  }
+  z->g.n = y->g.n;
+  y->g.n = &z->g;
+}
+
+/* FUNC(zx_root_DEL_NewID) */
+
+void zx_root_DEL_NewID(struct zx_root_s* x, int n)
+{
+  struct zx_elem_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->NewID = (struct zx_elem_s*)x->NewID->g.n;
+    return;
+  case -1:
+    y = (struct zx_elem_s*)x->NewID;
+    if (!y) return;
+    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
+    break;
+  default:
+    for (y = x->NewID; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y->g.n) return;
+  }
+  y->g.n = y->g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
 /* FUNC(zx_root_NUM_AuthnRequest) */
 
 int zx_root_NUM_AuthnRequest(struct zx_root_s* x)

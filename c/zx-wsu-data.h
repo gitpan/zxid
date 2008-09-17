@@ -43,16 +43,22 @@ struct zx_str* zx_EASY_ENC_WO_wsu_Created(struct zx_ctx* c, struct zx_wsu_Create
 struct zx_wsu_Created_s {
   ZX_ELEM_EXT
   zx_wsu_Created_EXT
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_wsu_Created_GET_ID(struct zx_wsu_Created_s* x);
+struct zx_str* zx_wsu_Created_GET_id(struct zx_wsu_Created_s* x);
 struct zx_str* zx_wsu_Created_GET_Id(struct zx_wsu_Created_s* x);
 
 
 
 
 
+void zx_wsu_Created_PUT_ID(struct zx_wsu_Created_s* x, struct zx_str* y);
+void zx_wsu_Created_PUT_id(struct zx_wsu_Created_s* x, struct zx_str* y);
 void zx_wsu_Created_PUT_Id(struct zx_wsu_Created_s* x, struct zx_str* y);
 
 
@@ -85,16 +91,22 @@ struct zx_str* zx_EASY_ENC_WO_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expire
 struct zx_wsu_Expires_s {
   ZX_ELEM_EXT
   zx_wsu_Expires_EXT
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_wsu_Expires_GET_ID(struct zx_wsu_Expires_s* x);
+struct zx_str* zx_wsu_Expires_GET_id(struct zx_wsu_Expires_s* x);
 struct zx_str* zx_wsu_Expires_GET_Id(struct zx_wsu_Expires_s* x);
 
 
 
 
 
+void zx_wsu_Expires_PUT_ID(struct zx_wsu_Expires_s* x, struct zx_str* y);
+void zx_wsu_Expires_PUT_id(struct zx_wsu_Expires_s* x, struct zx_str* y);
 void zx_wsu_Expires_PUT_Id(struct zx_wsu_Expires_s* x, struct zx_str* y);
 
 
@@ -129,10 +141,14 @@ struct zx_wsu_Timestamp_s {
   zx_wsu_Timestamp_EXT
   struct zx_wsu_Created_s* Created;	/* {0,1} nada */
   struct zx_wsu_Expires_s* Expires;	/* {0,1} nada */
+  struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_wsu_Timestamp_GET_ID(struct zx_wsu_Timestamp_s* x);
+struct zx_str* zx_wsu_Timestamp_GET_id(struct zx_wsu_Timestamp_s* x);
 struct zx_str* zx_wsu_Timestamp_GET_Id(struct zx_wsu_Timestamp_s* x);
 
 struct zx_wsu_Created_s* zx_wsu_Timestamp_GET_Created(struct zx_wsu_Timestamp_s* x, int n);
@@ -147,6 +163,8 @@ struct zx_wsu_Expires_s* zx_wsu_Timestamp_POP_Expires(struct zx_wsu_Timestamp_s*
 void zx_wsu_Timestamp_PUSH_Created(struct zx_wsu_Timestamp_s* x, struct zx_wsu_Created_s* y);
 void zx_wsu_Timestamp_PUSH_Expires(struct zx_wsu_Timestamp_s* x, struct zx_wsu_Expires_s* y);
 
+void zx_wsu_Timestamp_PUT_ID(struct zx_wsu_Timestamp_s* x, struct zx_str* y);
+void zx_wsu_Timestamp_PUT_id(struct zx_wsu_Timestamp_s* x, struct zx_str* y);
 void zx_wsu_Timestamp_PUT_Id(struct zx_wsu_Timestamp_s* x, struct zx_str* y);
 
 void zx_wsu_Timestamp_PUT_Created(struct zx_wsu_Timestamp_s* x, int n, struct zx_wsu_Created_s* y);

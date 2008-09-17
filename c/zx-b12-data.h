@@ -43,29 +43,29 @@ struct zx_str* zx_EASY_ENC_WO_b12_Consent(struct zx_ctx* c, struct zx_b12_Consen
 struct zx_b12_Consent_s {
   ZX_ELEM_EXT
   zx_b12_Consent_EXT
-  struct zx_str* uri;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* timestamp;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
+  struct zx_str* timestamp;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* uri;	/* {1,1} attribute xs:anyURI */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b12_Consent_GET_uri(struct zx_b12_Consent_s* x);
-struct zx_str* zx_b12_Consent_GET_timestamp(struct zx_b12_Consent_s* x);
 struct zx_str* zx_b12_Consent_GET_id(struct zx_b12_Consent_s* x);
-struct zx_str* zx_b12_Consent_GET_mustUnderstand(struct zx_b12_Consent_s* x);
+struct zx_str* zx_b12_Consent_GET_timestamp(struct zx_b12_Consent_s* x);
+struct zx_str* zx_b12_Consent_GET_uri(struct zx_b12_Consent_s* x);
 struct zx_str* zx_b12_Consent_GET_actor(struct zx_b12_Consent_s* x);
+struct zx_str* zx_b12_Consent_GET_mustUnderstand(struct zx_b12_Consent_s* x);
 
 
 
 
 
-void zx_b12_Consent_PUT_uri(struct zx_b12_Consent_s* x, struct zx_str* y);
-void zx_b12_Consent_PUT_timestamp(struct zx_b12_Consent_s* x, struct zx_str* y);
 void zx_b12_Consent_PUT_id(struct zx_b12_Consent_s* x, struct zx_str* y);
-void zx_b12_Consent_PUT_mustUnderstand(struct zx_b12_Consent_s* x, struct zx_str* y);
+void zx_b12_Consent_PUT_timestamp(struct zx_b12_Consent_s* x, struct zx_str* y);
+void zx_b12_Consent_PUT_uri(struct zx_b12_Consent_s* x, struct zx_str* y);
 void zx_b12_Consent_PUT_actor(struct zx_b12_Consent_s* x, struct zx_str* y);
+void zx_b12_Consent_PUT_mustUnderstand(struct zx_b12_Consent_s* x, struct zx_str* y);
 
 
 
@@ -97,32 +97,32 @@ struct zx_str* zx_EASY_ENC_WO_b12_Correlation(struct zx_ctx* c, struct zx_b12_Co
 struct zx_b12_Correlation_s {
   ZX_ELEM_EXT
   zx_b12_Correlation_EXT
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* messageID;	/* {1,1} attribute xs:string */
   struct zx_str* refToMessageID;	/* {0,1} attribute xs:string */
   struct zx_str* timestamp;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_b12_Correlation_GET_id(struct zx_b12_Correlation_s* x);
 struct zx_str* zx_b12_Correlation_GET_messageID(struct zx_b12_Correlation_s* x);
 struct zx_str* zx_b12_Correlation_GET_refToMessageID(struct zx_b12_Correlation_s* x);
 struct zx_str* zx_b12_Correlation_GET_timestamp(struct zx_b12_Correlation_s* x);
-struct zx_str* zx_b12_Correlation_GET_id(struct zx_b12_Correlation_s* x);
-struct zx_str* zx_b12_Correlation_GET_mustUnderstand(struct zx_b12_Correlation_s* x);
 struct zx_str* zx_b12_Correlation_GET_actor(struct zx_b12_Correlation_s* x);
+struct zx_str* zx_b12_Correlation_GET_mustUnderstand(struct zx_b12_Correlation_s* x);
 
 
 
 
 
+void zx_b12_Correlation_PUT_id(struct zx_b12_Correlation_s* x, struct zx_str* y);
 void zx_b12_Correlation_PUT_messageID(struct zx_b12_Correlation_s* x, struct zx_str* y);
 void zx_b12_Correlation_PUT_refToMessageID(struct zx_b12_Correlation_s* x, struct zx_str* y);
 void zx_b12_Correlation_PUT_timestamp(struct zx_b12_Correlation_s* x, struct zx_str* y);
-void zx_b12_Correlation_PUT_id(struct zx_b12_Correlation_s* x, struct zx_str* y);
-void zx_b12_Correlation_PUT_mustUnderstand(struct zx_b12_Correlation_s* x, struct zx_str* y);
 void zx_b12_Correlation_PUT_actor(struct zx_b12_Correlation_s* x, struct zx_str* y);
+void zx_b12_Correlation_PUT_mustUnderstand(struct zx_b12_Correlation_s* x, struct zx_str* y);
 
 
 
@@ -155,22 +155,22 @@ struct zx_b12_ProcessingContext_s {
   ZX_ELEM_EXT
   zx_b12_ProcessingContext_EXT
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_b12_ProcessingContext_GET_id(struct zx_b12_ProcessingContext_s* x);
-struct zx_str* zx_b12_ProcessingContext_GET_mustUnderstand(struct zx_b12_ProcessingContext_s* x);
 struct zx_str* zx_b12_ProcessingContext_GET_actor(struct zx_b12_ProcessingContext_s* x);
+struct zx_str* zx_b12_ProcessingContext_GET_mustUnderstand(struct zx_b12_ProcessingContext_s* x);
 
 
 
 
 
 void zx_b12_ProcessingContext_PUT_id(struct zx_b12_ProcessingContext_s* x, struct zx_str* y);
-void zx_b12_ProcessingContext_PUT_mustUnderstand(struct zx_b12_ProcessingContext_s* x, struct zx_str* y);
 void zx_b12_ProcessingContext_PUT_actor(struct zx_b12_ProcessingContext_s* x, struct zx_str* y);
+void zx_b12_ProcessingContext_PUT_mustUnderstand(struct zx_b12_ProcessingContext_s* x, struct zx_str* y);
 
 
 
@@ -202,29 +202,29 @@ struct zx_str* zx_EASY_ENC_WO_b12_Provider(struct zx_ctx* c, struct zx_b12_Provi
 struct zx_b12_Provider_s {
   ZX_ELEM_EXT
   zx_b12_Provider_EXT
-  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* affiliationID;	/* {0,1} attribute xs:anyURI */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
+  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_b12_Provider_GET_providerID(struct zx_b12_Provider_s* x);
 struct zx_str* zx_b12_Provider_GET_affiliationID(struct zx_b12_Provider_s* x);
 struct zx_str* zx_b12_Provider_GET_id(struct zx_b12_Provider_s* x);
-struct zx_str* zx_b12_Provider_GET_mustUnderstand(struct zx_b12_Provider_s* x);
+struct zx_str* zx_b12_Provider_GET_providerID(struct zx_b12_Provider_s* x);
 struct zx_str* zx_b12_Provider_GET_actor(struct zx_b12_Provider_s* x);
+struct zx_str* zx_b12_Provider_GET_mustUnderstand(struct zx_b12_Provider_s* x);
 
 
 
 
 
-void zx_b12_Provider_PUT_providerID(struct zx_b12_Provider_s* x, struct zx_str* y);
 void zx_b12_Provider_PUT_affiliationID(struct zx_b12_Provider_s* x, struct zx_str* y);
 void zx_b12_Provider_PUT_id(struct zx_b12_Provider_s* x, struct zx_str* y);
-void zx_b12_Provider_PUT_mustUnderstand(struct zx_b12_Provider_s* x, struct zx_str* y);
+void zx_b12_Provider_PUT_providerID(struct zx_b12_Provider_s* x, struct zx_str* y);
 void zx_b12_Provider_PUT_actor(struct zx_b12_Provider_s* x, struct zx_str* y);
+void zx_b12_Provider_PUT_mustUnderstand(struct zx_b12_Provider_s* x, struct zx_str* y);
 
 
 
@@ -258,15 +258,15 @@ struct zx_b12_UsageDirective_s {
   zx_b12_UsageDirective_EXT
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* ref;	/* {1,1} attribute xs:string */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_b12_UsageDirective_GET_id(struct zx_b12_UsageDirective_s* x);
 struct zx_str* zx_b12_UsageDirective_GET_ref(struct zx_b12_UsageDirective_s* x);
-struct zx_str* zx_b12_UsageDirective_GET_mustUnderstand(struct zx_b12_UsageDirective_s* x);
 struct zx_str* zx_b12_UsageDirective_GET_actor(struct zx_b12_UsageDirective_s* x);
+struct zx_str* zx_b12_UsageDirective_GET_mustUnderstand(struct zx_b12_UsageDirective_s* x);
 
 
 
@@ -274,8 +274,8 @@ struct zx_str* zx_b12_UsageDirective_GET_actor(struct zx_b12_UsageDirective_s* x
 
 void zx_b12_UsageDirective_PUT_id(struct zx_b12_UsageDirective_s* x, struct zx_str* y);
 void zx_b12_UsageDirective_PUT_ref(struct zx_b12_UsageDirective_s* x, struct zx_str* y);
-void zx_b12_UsageDirective_PUT_mustUnderstand(struct zx_b12_UsageDirective_s* x, struct zx_str* y);
 void zx_b12_UsageDirective_PUT_actor(struct zx_b12_UsageDirective_s* x, struct zx_str* y);
+void zx_b12_UsageDirective_PUT_mustUnderstand(struct zx_b12_UsageDirective_s* x, struct zx_str* y);
 
 
 

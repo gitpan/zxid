@@ -5,11 +5,13 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxbench.c,v 1.19 2007-06-19 15:17:03 sampo Exp $
+ * $Id: zxbench.c,v 1.22 2008-03-23 19:34:09 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  *
  * Test encoding and decoding SAML 2.0 assertions and other related stuff.
+ *
+ * ./zxbench -d -n 1 <t/hp-idp-post-resp.xml
  */
 
 #include <signal.h>
@@ -32,12 +34,13 @@
 #include "c/zx-data.h"
 #include "c/zx-const.h"
 #include "c/zx-ns.h"
+#include "c/zxidvers.h"
 
 int read_all_fd(int fd, char* p, int want, int* got_all);
 int write_all_fd(int fd, char* p, int pending);
 
 CU8* help =
-"zxbench  -  SAML 2.0 encoding and decoding benchmark - R" REL "\n\
+"zxbench  -  SAML 2.0 encoding and decoding benchmark - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated idenity and Single Sign-On.\n\
 Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
@@ -69,7 +72,7 @@ Usage: zxbench [options] <saml-assertion.xml >reencoded-a7n.xml\n\
 char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
-extern int debug;
+extern int zx_debug;
 int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
@@ -114,7 +117,7 @@ void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++debug;
+	++zx_debug;
 	continue;
       case 'p':  if ((*argv)[0][3]) break;
 	++debugpoll;
@@ -261,16 +264,16 @@ void opt(int* argc, char*** argv, char*** env)
 /* Called by: */
 int main(int argc, char** argv, char** env)
 {
-  struct zx_ctx ctx;
+  struct zx_str* eid;
   struct zx_root_s* r;
   struct zxsig_ref refs;
   struct zxid_entity* ent;
   struct zxid_conf* cf;
   int got_all, len_so, len_wo, res;
-  char buf[32*1024];
-  char out[32*1024];
+  char buf[256*1024];
+  char out[256*1024];
   char* p;
-  char wo_out[32*1024];
+  char wo_out[256*1024];
   char* wo_p;
   opt(&argc, &argv, &env);
 
@@ -301,43 +304,125 @@ int main(int argc, char** argv, char** env)
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
   
-  D("Decoding %d chars, n_iter(%d)\n", got_all, n_iter);
+  D("Decoding %d chars, n_iter(%d)", got_all, n_iter);
   
   for (;n_iter; --n_iter) {
-    memset(&ctx, 0, sizeof(ctx));
-    zx_prepare_dec_ctx(&ctx, zx_ns_tab, buf, buf + got_all);
-    r = zx_DEC_root(&ctx, 0, 1000);
+    //cf = zxid_new_conf("/var/zxid/");
+    cf = zxid_new_conf("/var/sfis/");
+    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got_all);
+    r = zx_DEC_root(cf->ctx, 0, 1000);
     if (!r) DIE("Decode failure");
     
-    cf = zxid_new_conf("/var/zxid/");
-    ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4" /* cxp06 */);
-    
-    refs.ref = r->Envelope->Body->ArtifactResolve->Signature->SignedInfo->Reference;
-    refs.blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResolve;
-    res = zxsig_validate(&ctx, ent->sign_cert,
-			 r->Envelope->Body->ArtifactResolve->Signature,
-			 1, &refs);
-    if (res == ZXSIG_OK) {
-      D("sig vfy ok %d", res);
-    } else {
-      ERR("sig vfy failed due to(%d)", res);
+    //ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4" /* cxp06 */);
+    //ent = zxid_get_ent_from_file(cf, "zIDxx57qGA-qwnsymUf4JD0Er2A" /* s-idp */);
+    //ent = zxid_get_ent_from_file(cf, "7S4XRMew6HHKey9j8fESiJUV-Cs" /* hp-idp */);
+    //r->Envelope->Body->ArtifactResolve
+    if (r->Envelope && r->Envelope->Body) {
+      if (r->Envelope->Body->ArtifactResponse) {
+	if (r->Envelope->Body->ArtifactResponse->Signature) {
+	  eid = r->Envelope->Body->ArtifactResponse->Issuer->gg.content;
+	  D("Found sig in Envelope/Body/ArtifactResponse eid(%.*s)", eid->len, eid->s);
+	  ent = zxid_get_ent_from_cache(cf, eid);
+	  refs.sref = r->Envelope->Body->ArtifactResponse->Signature->SignedInfo->Reference;
+	  refs.blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResponse;
+	  res = zxsig_validate(cf->ctx, ent->sign_cert,
+			       r->Envelope->Body->ArtifactResponse->Signature,
+			       1, &refs);
+	  if (res == ZXSIG_OK) {
+	    D("sig vfy ok %d", res);
+	  } else {
+	    ERR("sig vfy failed due to(%d)", res);
+	  }
+	}
+	if (r->Envelope->Body->ArtifactResponse->Response) {
+	  if (r->Envelope->Body->ArtifactResponse->Response->Assertion) {
+	    if (r->Envelope->Body->ArtifactResponse->Response->Assertion->Signature) {
+	      eid = r->Envelope->Body->ArtifactResponse->Response->Assertion->Issuer->gg.content;
+	      D("Found sig in Envelope/Body/ArtifactResponse/Response/Assertion eid(%.*s)", eid->len, eid->s);
+	      ent = zxid_get_ent_from_cache(cf, eid);
+	      refs.sref = r->Envelope->Body->ArtifactResponse->Response->Assertion->Signature->SignedInfo->Reference;
+	      refs.blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResponse->Response->Assertion;
+	      res = zxsig_validate(cf->ctx, ent->sign_cert,
+				   r->Envelope->Body->ArtifactResponse->Response->Assertion->Signature,
+				   1, &refs);
+	      if (res == ZXSIG_OK) {
+		D("sig vfy ok %d", res);
+	      } else {
+		ERR("sig vfy failed due to(%d)", res);
+	      }
+	    }
+	  }
+	}
+      }
+    } else if (r->Assertion) {
+      if (r->Assertion->Signature) {
+	eid = r->Assertion->Issuer->gg.content;
+	D("Found sig in (bare) Assertion eid(%.*s)", eid->len, eid->s);
+	ent = zxid_get_ent_from_cache(cf, eid);
+	refs.sref = r->Assertion->Signature->SignedInfo->Reference;
+	refs.blob = (struct zx_elem_s*)r->Assertion;
+	res = zxsig_validate(cf->ctx, ent->sign_cert,
+			     r->Assertion->Signature,
+			     1, &refs);
+	if (res == ZXSIG_OK) {
+	  D("sig vfy ok %d", res);
+	} else {
+	  ERR("sig vfy failed due to(%d)", res);
+	}
+      }
+    } else if (r->Response) {
+
+      if (r->Response->Signature) {
+	eid = r->Response->Issuer->gg.content;
+	D("Found sig in Response eid(%.*s)", eid->len, eid->s);
+	ent = zxid_get_ent_from_cache(cf, eid);
+	refs.sref = r->Response->Signature->SignedInfo->Reference;
+	refs.blob = (struct zx_elem_s*)r->Response;
+	res = zxsig_validate(cf->ctx, ent->sign_cert,
+			     r->Response->Signature,
+			     1, &refs);
+	if (res == ZXSIG_OK) {
+	  D("sig vfy ok %d", res);
+	} else {
+	  ERR("sig vfy failed due to(%d)", res);
+	}
+      }
+
+      if (r->Response->Assertion) {
+	if (r->Response->Assertion->Signature) {
+	  eid = r->Response->Assertion->Issuer->gg.content;
+	  D("Found sig in Response/Assertion eid(%.*s)", eid->len, eid->s);
+	  ent = zxid_get_ent_from_cache(cf, eid);
+	  refs.sref = r->Response->Assertion->Signature->SignedInfo->Reference;
+	  refs.blob = (struct zx_elem_s*)r->Response->Assertion;
+	  res = zxsig_validate(cf->ctx, ent->sign_cert,
+			       r->Response->Assertion->Signature,
+			       1, &refs);
+	  if (res == ZXSIG_OK) {
+	    D("sig vfy ok %d", res);
+	  } else {
+	    ERR("sig vfy failed due to(%d)", res);
+	  }
+	}
+      }
     }
 
-    len_so = zx_LEN_SO_root(&ctx, r);
+#if 1
+    len_so = zx_LEN_SO_root(cf->ctx, r);
     D("Enc so len %d chars", len_so);
 
-    p = zx_ENC_SO_root(&ctx, r, out);
+    p = zx_ENC_SO_root(cf->ctx, r, out);
     if (!p)
       DIE("encoding error");
 
-    len_wo = zx_LEN_WO_root(&ctx, r);
+    len_wo = zx_LEN_WO_root(cf->ctx, r);
     D("Enc wo len %d chars", len_wo);
 
-    wo_p = zx_ENC_WO_root(&ctx, r, wo_out);
+    wo_p = zx_ENC_WO_root(cf->ctx, r, wo_out);
     if (!wo_p)
       DIE("encoding error");
-
-    zx_FREE_root(&ctx, r, 0);
+#endif
+    zx_FREE_root(cf->ctx, r, 0);
   }
   printf("Re-encoded result SO:\n%.*s\n", len_so, out);
   if (p - out != len_so)

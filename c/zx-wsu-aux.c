@@ -60,6 +60,8 @@ void zx_FREE_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->Id, free_strs);
 
 
@@ -96,6 +98,8 @@ void zx_DUP_STRS_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->Id);
 
 
@@ -112,6 +116,8 @@ struct zx_wsu_Created_s* zx_DEEP_CLONE_wsu_Created(struct zx_ctx* c, struct zx_w
   x = (struct zx_wsu_Created_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wsu_Created_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->id = zx_clone_attr(c, x->id);
   x->Id = zx_clone_attr(c, x->Id);
 
 
@@ -184,6 +190,8 @@ void zx_FREE_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->Id, free_strs);
 
 
@@ -220,6 +228,8 @@ void zx_DUP_STRS_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->Id);
 
 
@@ -236,6 +246,8 @@ struct zx_wsu_Expires_s* zx_DEEP_CLONE_wsu_Expires(struct zx_ctx* c, struct zx_w
   x = (struct zx_wsu_Expires_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wsu_Expires_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->id = zx_clone_attr(c, x->id);
   x->Id = zx_clone_attr(c, x->Id);
 
 
@@ -308,6 +320,8 @@ void zx_FREE_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_free_attr(c, x->ID, free_strs);
+  zx_free_attr(c, x->id, free_strs);
   zx_free_attr(c, x->Id, free_strs);
 
   {
@@ -360,6 +374,8 @@ void zx_DUP_STRS_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  zx_dup_attr(c, x->ID);
+  zx_dup_attr(c, x->id);
   zx_dup_attr(c, x->Id);
 
   {
@@ -386,6 +402,8 @@ struct zx_wsu_Timestamp_s* zx_DEEP_CLONE_wsu_Timestamp(struct zx_ctx* c, struct 
   x = (struct zx_wsu_Timestamp_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_wsu_Timestamp_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
+  x->ID = zx_clone_attr(c, x->ID);
+  x->id = zx_clone_attr(c, x->id);
   x->Id = zx_clone_attr(c, x->Id);
 
   {

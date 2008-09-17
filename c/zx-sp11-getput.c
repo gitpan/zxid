@@ -2066,10 +2066,10 @@ void zx_sp11_Request_DEL_AssertionArtifact(struct zx_sp11_Request_s* x, int n)
 
 #endif
 
-/* FUNC(zx_sp11_Request_GET_RequestID) */
-struct zx_str* zx_sp11_Request_GET_RequestID(struct zx_sp11_Request_s* x) { return x->RequestID; }
-/* FUNC(zx_sp11_Request_PUT_RequestID) */
-void zx_sp11_Request_PUT_RequestID(struct zx_sp11_Request_s* x, struct zx_str* y) { x->RequestID = y; }
+/* FUNC(zx_sp11_Request_GET_IssueInstant) */
+struct zx_str* zx_sp11_Request_GET_IssueInstant(struct zx_sp11_Request_s* x) { return x->IssueInstant; }
+/* FUNC(zx_sp11_Request_PUT_IssueInstant) */
+void zx_sp11_Request_PUT_IssueInstant(struct zx_sp11_Request_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_sp11_Request_GET_MajorVersion) */
 struct zx_str* zx_sp11_Request_GET_MajorVersion(struct zx_sp11_Request_s* x) { return x->MajorVersion; }
 /* FUNC(zx_sp11_Request_PUT_MajorVersion) */
@@ -2078,10 +2078,10 @@ void zx_sp11_Request_PUT_MajorVersion(struct zx_sp11_Request_s* x, struct zx_str
 struct zx_str* zx_sp11_Request_GET_MinorVersion(struct zx_sp11_Request_s* x) { return x->MinorVersion; }
 /* FUNC(zx_sp11_Request_PUT_MinorVersion) */
 void zx_sp11_Request_PUT_MinorVersion(struct zx_sp11_Request_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_sp11_Request_GET_IssueInstant) */
-struct zx_str* zx_sp11_Request_GET_IssueInstant(struct zx_sp11_Request_s* x) { return x->IssueInstant; }
-/* FUNC(zx_sp11_Request_PUT_IssueInstant) */
-void zx_sp11_Request_PUT_IssueInstant(struct zx_sp11_Request_s* x, struct zx_str* y) { x->IssueInstant = y; }
+/* FUNC(zx_sp11_Request_GET_RequestID) */
+struct zx_str* zx_sp11_Request_GET_RequestID(struct zx_sp11_Request_s* x) { return x->RequestID; }
+/* FUNC(zx_sp11_Request_PUT_RequestID) */
+void zx_sp11_Request_PUT_RequestID(struct zx_sp11_Request_s* x, struct zx_str* y) { x->RequestID = y; }
 
 
 
@@ -2489,14 +2489,14 @@ void zx_sp11_Response_DEL_Assertion(struct zx_sp11_Response_s* x, int n)
 
 #endif
 
-/* FUNC(zx_sp11_Response_GET_ResponseID) */
-struct zx_str* zx_sp11_Response_GET_ResponseID(struct zx_sp11_Response_s* x) { return x->ResponseID; }
-/* FUNC(zx_sp11_Response_PUT_ResponseID) */
-void zx_sp11_Response_PUT_ResponseID(struct zx_sp11_Response_s* x, struct zx_str* y) { x->ResponseID = y; }
 /* FUNC(zx_sp11_Response_GET_InResponseTo) */
 struct zx_str* zx_sp11_Response_GET_InResponseTo(struct zx_sp11_Response_s* x) { return x->InResponseTo; }
 /* FUNC(zx_sp11_Response_PUT_InResponseTo) */
 void zx_sp11_Response_PUT_InResponseTo(struct zx_sp11_Response_s* x, struct zx_str* y) { x->InResponseTo = y; }
+/* FUNC(zx_sp11_Response_GET_IssueInstant) */
+struct zx_str* zx_sp11_Response_GET_IssueInstant(struct zx_sp11_Response_s* x) { return x->IssueInstant; }
+/* FUNC(zx_sp11_Response_PUT_IssueInstant) */
+void zx_sp11_Response_PUT_IssueInstant(struct zx_sp11_Response_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_sp11_Response_GET_MajorVersion) */
 struct zx_str* zx_sp11_Response_GET_MajorVersion(struct zx_sp11_Response_s* x) { return x->MajorVersion; }
 /* FUNC(zx_sp11_Response_PUT_MajorVersion) */
@@ -2505,14 +2505,14 @@ void zx_sp11_Response_PUT_MajorVersion(struct zx_sp11_Response_s* x, struct zx_s
 struct zx_str* zx_sp11_Response_GET_MinorVersion(struct zx_sp11_Response_s* x) { return x->MinorVersion; }
 /* FUNC(zx_sp11_Response_PUT_MinorVersion) */
 void zx_sp11_Response_PUT_MinorVersion(struct zx_sp11_Response_s* x, struct zx_str* y) { x->MinorVersion = y; }
-/* FUNC(zx_sp11_Response_GET_IssueInstant) */
-struct zx_str* zx_sp11_Response_GET_IssueInstant(struct zx_sp11_Response_s* x) { return x->IssueInstant; }
-/* FUNC(zx_sp11_Response_PUT_IssueInstant) */
-void zx_sp11_Response_PUT_IssueInstant(struct zx_sp11_Response_s* x, struct zx_str* y) { x->IssueInstant = y; }
 /* FUNC(zx_sp11_Response_GET_Recipient) */
 struct zx_str* zx_sp11_Response_GET_Recipient(struct zx_sp11_Response_s* x) { return x->Recipient; }
 /* FUNC(zx_sp11_Response_PUT_Recipient) */
 void zx_sp11_Response_PUT_Recipient(struct zx_sp11_Response_s* x, struct zx_str* y) { x->Recipient = y; }
+/* FUNC(zx_sp11_Response_GET_ResponseID) */
+struct zx_str* zx_sp11_Response_GET_ResponseID(struct zx_sp11_Response_s* x) { return x->ResponseID; }
+/* FUNC(zx_sp11_Response_PUT_ResponseID) */
+void zx_sp11_Response_PUT_ResponseID(struct zx_sp11_Response_s* x, struct zx_str* y) { x->ResponseID = y; }
 
 
 

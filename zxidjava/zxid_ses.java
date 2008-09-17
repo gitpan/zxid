@@ -57,6 +57,14 @@ public class zxid_ses {
     return zxidjniJNI.zxid_ses_nid_get(swigCPtr);
   }
 
+  public void setSesix(String value) {
+    zxidjniJNI.zxid_ses_sesix_set(swigCPtr, value);
+  }
+
+  public String getSesix() {
+    return zxidjniJNI.zxid_ses_sesix_get(swigCPtr);
+  }
+
   public void setNidfmt(char value) {
     zxidjniJNI.zxid_ses_nidfmt_set(swigCPtr, value);
   }
@@ -95,6 +103,39 @@ public class zxid_ses {
 
   public String getSso_a7n_path() {
     return zxidjniJNI.zxid_ses_sso_a7n_path_get(swigCPtr);
+  }
+
+  public void setSetcookie(String value) {
+    zxidjniJNI.zxid_ses_setcookie_set(swigCPtr, value);
+  }
+
+  public String getSetcookie() {
+    return zxidjniJNI.zxid_ses_setcookie_get(swigCPtr);
+  }
+
+  public void setCookie(String value) {
+    zxidjniJNI.zxid_ses_cookie_set(swigCPtr, value);
+  }
+
+  public String getCookie() {
+    return zxidjniJNI.zxid_ses_cookie_get(swigCPtr);
+  }
+
+  public void setRs(String value) {
+    zxidjniJNI.zxid_ses_rs_set(swigCPtr, value);
+  }
+
+  public String getRs() {
+    return zxidjniJNI.zxid_ses_rs_get(swigCPtr);
+  }
+
+  public void setNameid(SWIGTYPE_p_zx_sa_NameID_s value) {
+    zxidjniJNI.zxid_ses_nameid_set(swigCPtr, SWIGTYPE_p_zx_sa_NameID_s.getCPtr(value));
+  }
+
+  public SWIGTYPE_p_zx_sa_NameID_s getNameid() {
+    long cPtr = zxidjniJNI.zxid_ses_nameid_get(swigCPtr);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_sa_NameID_s(cPtr, false);
   }
 
   public void setA7n(SWIGTYPE_p_zx_sa_Assertion_s value) {

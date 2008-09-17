@@ -622,20 +622,20 @@ struct zx_str* zx_EASY_ENC_WO_demomed_ObjectStoreInfo(struct zx_ctx* c, struct z
 struct zx_demomed_ObjectStoreInfo_s {
   ZX_ELEM_EXT
   zx_demomed_ObjectStoreInfo_EXT
-  struct zx_str* storeRef;	/* {1,1} attribute xs:string */
   struct zx_str* objectID;	/* {1,1} attribute xs:string */
+  struct zx_str* storeRef;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_demomed_ObjectStoreInfo_GET_storeRef(struct zx_demomed_ObjectStoreInfo_s* x);
 struct zx_str* zx_demomed_ObjectStoreInfo_GET_objectID(struct zx_demomed_ObjectStoreInfo_s* x);
+struct zx_str* zx_demomed_ObjectStoreInfo_GET_storeRef(struct zx_demomed_ObjectStoreInfo_s* x);
 
 
 
 
 
-void zx_demomed_ObjectStoreInfo_PUT_storeRef(struct zx_demomed_ObjectStoreInfo_s* x, struct zx_str* y);
 void zx_demomed_ObjectStoreInfo_PUT_objectID(struct zx_demomed_ObjectStoreInfo_s* x, struct zx_str* y);
+void zx_demomed_ObjectStoreInfo_PUT_storeRef(struct zx_demomed_ObjectStoreInfo_s* x, struct zx_str* y);
 
 
 

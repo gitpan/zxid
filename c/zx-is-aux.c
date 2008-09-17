@@ -1502,8 +1502,8 @@ void zx_FREE_is_Select(struct zx_ctx* c, struct zx_is_Select_s* x, int free_strs
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->name, free_strs);
   zx_free_attr(c, x->multiple, free_strs);
+  zx_free_attr(c, x->name, free_strs);
 
   {
       struct zx_is_Help_s* e;
@@ -1558,8 +1558,8 @@ void zx_DUP_STRS_is_Select(struct zx_ctx* c, struct zx_is_Select_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->name);
   zx_dup_attr(c, x->multiple);
+  zx_dup_attr(c, x->name);
 
   {
       struct zx_is_Help_s* e;
@@ -1588,8 +1588,8 @@ struct zx_is_Select_s* zx_DEEP_CLONE_is_Select(struct zx_ctx* c, struct zx_is_Se
   x = (struct zx_is_Select_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_is_Select_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->name = zx_clone_attr(c, x->name);
   x->multiple = zx_clone_attr(c, x->multiple);
+  x->name = zx_clone_attr(c, x->name);
 
   {
       struct zx_is_Help_s* e;
@@ -1715,10 +1715,10 @@ void zx_FREE_is_Text(struct zx_ctx* c, struct zx_is_Text_s* x, int free_strs)
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->name, free_strs);
-  zx_free_attr(c, x->minChars, free_strs);
-  zx_free_attr(c, x->maxChars, free_strs);
   zx_free_attr(c, x->format, free_strs);
+  zx_free_attr(c, x->maxChars, free_strs);
+  zx_free_attr(c, x->minChars, free_strs);
+  zx_free_attr(c, x->name, free_strs);
 
   {
       struct zx_is_Help_s* e;
@@ -1765,10 +1765,10 @@ void zx_DUP_STRS_is_Text(struct zx_ctx* c, struct zx_is_Text_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->name);
-  zx_dup_attr(c, x->minChars);
-  zx_dup_attr(c, x->maxChars);
   zx_dup_attr(c, x->format);
+  zx_dup_attr(c, x->maxChars);
+  zx_dup_attr(c, x->minChars);
+  zx_dup_attr(c, x->name);
 
   {
       struct zx_is_Help_s* e;
@@ -1792,10 +1792,10 @@ struct zx_is_Text_s* zx_DEEP_CLONE_is_Text(struct zx_ctx* c, struct zx_is_Text_s
   x = (struct zx_is_Text_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_is_Text_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->name = zx_clone_attr(c, x->name);
-  x->minChars = zx_clone_attr(c, x->minChars);
-  x->maxChars = zx_clone_attr(c, x->maxChars);
   x->format = zx_clone_attr(c, x->format);
+  x->maxChars = zx_clone_attr(c, x->maxChars);
+  x->minChars = zx_clone_attr(c, x->minChars);
+  x->name = zx_clone_attr(c, x->name);
 
   {
       struct zx_is_Help_s* e;

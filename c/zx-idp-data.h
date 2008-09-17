@@ -202,23 +202,23 @@ struct zx_str* zx_EASY_ENC_WO_idp_CreatedStatusItem(struct zx_ctx* c, struct zx_
 struct zx_idp_CreatedStatusItem_s {
   ZX_ELEM_EXT
   zx_idp_CreatedStatusItem_EXT
+  struct zx_str* firstUsed;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ref;	/* {1,1} attribute xs:string */
   struct zx_str* used;	/* {1,1} attribute xs:boolean */
-  struct zx_str* firstUsed;	/* {0,1} attribute xs:dateTime */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_idp_CreatedStatusItem_GET_firstUsed(struct zx_idp_CreatedStatusItem_s* x);
 struct zx_str* zx_idp_CreatedStatusItem_GET_ref(struct zx_idp_CreatedStatusItem_s* x);
 struct zx_str* zx_idp_CreatedStatusItem_GET_used(struct zx_idp_CreatedStatusItem_s* x);
-struct zx_str* zx_idp_CreatedStatusItem_GET_firstUsed(struct zx_idp_CreatedStatusItem_s* x);
 
 
 
 
 
+void zx_idp_CreatedStatusItem_PUT_firstUsed(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y);
 void zx_idp_CreatedStatusItem_PUT_ref(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y);
 void zx_idp_CreatedStatusItem_PUT_used(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y);
-void zx_idp_CreatedStatusItem_PUT_firstUsed(struct zx_idp_CreatedStatusItem_s* x, struct zx_str* y);
 
 
 
@@ -407,13 +407,13 @@ struct zx_idp_GetAssertionResponseItem_s {
   ZX_ELEM_EXT
   zx_idp_GetAssertionResponseItem_EXT
   struct zx_idp_AssertionItem_s* AssertionItem;	/* {0,-1} nada */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* ref;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_idp_GetAssertionResponseItem_GET_ref(struct zx_idp_GetAssertionResponseItem_s* x);
 struct zx_str* zx_idp_GetAssertionResponseItem_GET_id(struct zx_idp_GetAssertionResponseItem_s* x);
+struct zx_str* zx_idp_GetAssertionResponseItem_GET_ref(struct zx_idp_GetAssertionResponseItem_s* x);
 
 struct zx_idp_AssertionItem_s* zx_idp_GetAssertionResponseItem_GET_AssertionItem(struct zx_idp_GetAssertionResponseItem_s* x, int n);
 
@@ -423,8 +423,8 @@ struct zx_idp_AssertionItem_s* zx_idp_GetAssertionResponseItem_POP_AssertionItem
 
 void zx_idp_GetAssertionResponseItem_PUSH_AssertionItem(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_idp_AssertionItem_s* y);
 
-void zx_idp_GetAssertionResponseItem_PUT_ref(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_str* y);
 void zx_idp_GetAssertionResponseItem_PUT_id(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_str* y);
+void zx_idp_GetAssertionResponseItem_PUT_ref(struct zx_idp_GetAssertionResponseItem_s* x, struct zx_str* y);
 
 void zx_idp_GetAssertionResponseItem_PUT_AssertionItem(struct zx_idp_GetAssertionResponseItem_s* x, int n, struct zx_idp_AssertionItem_s* y);
 
@@ -625,20 +625,20 @@ struct zx_str* zx_EASY_ENC_WO_idp_ProviderInfo(struct zx_ctx* c, struct zx_idp_P
 struct zx_idp_ProviderInfo_s {
   ZX_ELEM_EXT
   zx_idp_ProviderInfo_EXT
-  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* name;	/* {0,1} attribute xs:ID */
+  struct zx_str* providerID;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_idp_ProviderInfo_GET_providerID(struct zx_idp_ProviderInfo_s* x);
 struct zx_str* zx_idp_ProviderInfo_GET_name(struct zx_idp_ProviderInfo_s* x);
+struct zx_str* zx_idp_ProviderInfo_GET_providerID(struct zx_idp_ProviderInfo_s* x);
 
 
 
 
 
-void zx_idp_ProviderInfo_PUT_providerID(struct zx_idp_ProviderInfo_s* x, struct zx_str* y);
 void zx_idp_ProviderInfo_PUT_name(struct zx_idp_ProviderInfo_s* x, struct zx_str* y);
+void zx_idp_ProviderInfo_PUT_providerID(struct zx_idp_ProviderInfo_s* x, struct zx_str* y);
 
 
 
@@ -646,7 +646,7 @@ void zx_idp_ProviderInfo_PUT_name(struct zx_idp_ProviderInfo_s* x, struct zx_str
 
 #endif
 /* -------------------------- idp_SubjectRestriction -------------------------- */
-/* refby( ) */
+/* refby( zx_sa_Conditions_s ) */
 #ifndef zx_idp_SubjectRestriction_EXT
 #define zx_idp_SubjectRestriction_EXT
 #endif

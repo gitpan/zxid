@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_va_list {
+public class SWIGTYPE_p_zx_dap_Select_s {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_va_list(long cPtr, boolean futureUse) {
+  protected SWIGTYPE_p_zx_dap_Select_s(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_va_list() {
+  protected SWIGTYPE_p_zx_dap_Select_s() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_va_list obj) {
+  protected static long getCPtr(SWIGTYPE_p_zx_dap_Select_s obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

@@ -367,9 +367,9 @@ struct zx_cb_Data_s {
   struct zx_elem_s* Card;	/* {0,-1} cb:CardType */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* itemIDRef;	/* {0,1} attribute xs:string */
+  struct zx_str* nextOffset;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* notSorted;	/* {0,1} attribute Now */
   struct zx_str* remaining;	/* {0,1} attribute xs:integer */
-  struct zx_str* nextOffset;	/* {0,1} attribute xs:nonNegativeInteger */
   struct zx_str* setID;	/* {0,1} attribute xs:string */
   struct zx_str* changeFormat;	/* {0,1} attribute ChangedElements */
 };
@@ -377,9 +377,9 @@ struct zx_cb_Data_s {
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_cb_Data_GET_id(struct zx_cb_Data_s* x);
 struct zx_str* zx_cb_Data_GET_itemIDRef(struct zx_cb_Data_s* x);
+struct zx_str* zx_cb_Data_GET_nextOffset(struct zx_cb_Data_s* x);
 struct zx_str* zx_cb_Data_GET_notSorted(struct zx_cb_Data_s* x);
 struct zx_str* zx_cb_Data_GET_remaining(struct zx_cb_Data_s* x);
-struct zx_str* zx_cb_Data_GET_nextOffset(struct zx_cb_Data_s* x);
 struct zx_str* zx_cb_Data_GET_setID(struct zx_cb_Data_s* x);
 struct zx_str* zx_cb_Data_GET_changeFormat(struct zx_cb_Data_s* x);
 
@@ -393,9 +393,9 @@ void zx_cb_Data_PUSH_Card(struct zx_cb_Data_s* x, struct zx_elem_s* y);
 
 void zx_cb_Data_PUT_id(struct zx_cb_Data_s* x, struct zx_str* y);
 void zx_cb_Data_PUT_itemIDRef(struct zx_cb_Data_s* x, struct zx_str* y);
+void zx_cb_Data_PUT_nextOffset(struct zx_cb_Data_s* x, struct zx_str* y);
 void zx_cb_Data_PUT_notSorted(struct zx_cb_Data_s* x, struct zx_str* y);
 void zx_cb_Data_PUT_remaining(struct zx_cb_Data_s* x, struct zx_str* y);
-void zx_cb_Data_PUT_nextOffset(struct zx_cb_Data_s* x, struct zx_str* y);
 void zx_cb_Data_PUT_setID(struct zx_cb_Data_s* x, struct zx_str* y);
 void zx_cb_Data_PUT_changeFormat(struct zx_cb_Data_s* x, struct zx_str* y);
 
@@ -1121,17 +1121,17 @@ struct zx_cb_Notification_s {
   ZX_ELEM_EXT
   zx_cb_Notification_EXT
   struct zx_cb_ItemData_s* ItemData;	/* {0,-1} nada */
+  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
-  struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* endReason;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_cb_Notification_GET_endReason(struct zx_cb_Notification_s* x);
+struct zx_str* zx_cb_Notification_GET_expires(struct zx_cb_Notification_s* x);
 struct zx_str* zx_cb_Notification_GET_id(struct zx_cb_Notification_s* x);
 struct zx_str* zx_cb_Notification_GET_subscriptionID(struct zx_cb_Notification_s* x);
-struct zx_str* zx_cb_Notification_GET_expires(struct zx_cb_Notification_s* x);
-struct zx_str* zx_cb_Notification_GET_endReason(struct zx_cb_Notification_s* x);
 
 struct zx_cb_ItemData_s* zx_cb_Notification_GET_ItemData(struct zx_cb_Notification_s* x, int n);
 
@@ -1141,10 +1141,10 @@ struct zx_cb_ItemData_s* zx_cb_Notification_POP_ItemData(struct zx_cb_Notificati
 
 void zx_cb_Notification_PUSH_ItemData(struct zx_cb_Notification_s* x, struct zx_cb_ItemData_s* y);
 
+void zx_cb_Notification_PUT_endReason(struct zx_cb_Notification_s* x, struct zx_str* y);
+void zx_cb_Notification_PUT_expires(struct zx_cb_Notification_s* x, struct zx_str* y);
 void zx_cb_Notification_PUT_id(struct zx_cb_Notification_s* x, struct zx_str* y);
 void zx_cb_Notification_PUT_subscriptionID(struct zx_cb_Notification_s* x, struct zx_str* y);
-void zx_cb_Notification_PUT_expires(struct zx_cb_Notification_s* x, struct zx_str* y);
-void zx_cb_Notification_PUT_endReason(struct zx_cb_Notification_s* x, struct zx_str* y);
 
 void zx_cb_Notification_PUT_ItemData(struct zx_cb_Notification_s* x, int n, struct zx_cb_ItemData_s* y);
 
@@ -1657,20 +1657,20 @@ struct zx_str* zx_EASY_ENC_WO_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_
 struct zx_cb_RefItem_s {
   ZX_ELEM_EXT
   zx_cb_RefItem_EXT
-  struct zx_str* subscriptionID;	/* {0,1} attribute xs:string */
   struct zx_str* ItemIDRef;	/* {1,1} attribute xs:string */
+  struct zx_str* subscriptionID;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cb_RefItem_GET_subscriptionID(struct zx_cb_RefItem_s* x);
 struct zx_str* zx_cb_RefItem_GET_ItemIDRef(struct zx_cb_RefItem_s* x);
+struct zx_str* zx_cb_RefItem_GET_subscriptionID(struct zx_cb_RefItem_s* x);
 
 
 
 
 
-void zx_cb_RefItem_PUT_subscriptionID(struct zx_cb_RefItem_s* x, struct zx_str* y);
 void zx_cb_RefItem_PUT_ItemIDRef(struct zx_cb_RefItem_s* x, struct zx_str* y);
+void zx_cb_RefItem_PUT_subscriptionID(struct zx_cb_RefItem_s* x, struct zx_str* y);
 
 
 
@@ -1875,14 +1875,14 @@ struct zx_cb_Status_s {
   zx_cb_Status_EXT
   struct zx_cb_Status_s* Status;	/* {0,-1} nada */
   struct zx_str* code;	/* {1,1} attribute xs:QName */
-  struct zx_str* ref;	/* {0,1} attribute xs:string */
   struct zx_str* comment;	/* {0,1} attribute xs:string */
+  struct zx_str* ref;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_cb_Status_GET_code(struct zx_cb_Status_s* x);
-struct zx_str* zx_cb_Status_GET_ref(struct zx_cb_Status_s* x);
 struct zx_str* zx_cb_Status_GET_comment(struct zx_cb_Status_s* x);
+struct zx_str* zx_cb_Status_GET_ref(struct zx_cb_Status_s* x);
 
 struct zx_cb_Status_s* zx_cb_Status_GET_Status(struct zx_cb_Status_s* x, int n);
 
@@ -1893,8 +1893,8 @@ struct zx_cb_Status_s* zx_cb_Status_POP_Status(struct zx_cb_Status_s* x);
 void zx_cb_Status_PUSH_Status(struct zx_cb_Status_s* x, struct zx_cb_Status_s* y);
 
 void zx_cb_Status_PUT_code(struct zx_cb_Status_s* x, struct zx_str* y);
-void zx_cb_Status_PUT_ref(struct zx_cb_Status_s* x, struct zx_str* y);
 void zx_cb_Status_PUT_comment(struct zx_cb_Status_s* x, struct zx_str* y);
+void zx_cb_Status_PUT_ref(struct zx_cb_Status_s* x, struct zx_str* y);
 
 void zx_cb_Status_PUT_Status(struct zx_cb_Status_s* x, int n, struct zx_cb_Status_s* y);
 
@@ -1937,19 +1937,19 @@ struct zx_cb_Subscription_s {
   struct zx_elem_s* Aggregation;	/* {0,1} cb:AggregationType */
   struct zx_elem_s* Trigger;	/* {0,1} cb:TriggerType */
   struct zx_cb_Extension_s* Extension;	/* {0,-1} nada */
-  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
   struct zx_str* expires;	/* {0,1} attribute xs:dateTime */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
   struct zx_str* includeData;	/* {0,1} attribute Yes */
+  struct zx_str* starts;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* subscriptionID;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_cb_Subscription_GET_starts(struct zx_cb_Subscription_s* x);
 struct zx_str* zx_cb_Subscription_GET_expires(struct zx_cb_Subscription_s* x);
 struct zx_str* zx_cb_Subscription_GET_id(struct zx_cb_Subscription_s* x);
-struct zx_str* zx_cb_Subscription_GET_subscriptionID(struct zx_cb_Subscription_s* x);
 struct zx_str* zx_cb_Subscription_GET_includeData(struct zx_cb_Subscription_s* x);
+struct zx_str* zx_cb_Subscription_GET_starts(struct zx_cb_Subscription_s* x);
+struct zx_str* zx_cb_Subscription_GET_subscriptionID(struct zx_cb_Subscription_s* x);
 
 struct zx_cb_ItemSelection_s* zx_cb_Subscription_GET_ItemSelection(struct zx_cb_Subscription_s* x, int n);
 struct zx_cb_RefItem_s* zx_cb_Subscription_GET_RefItem(struct zx_cb_Subscription_s* x, int n);
@@ -1983,11 +1983,11 @@ void zx_cb_Subscription_PUSH_Aggregation(struct zx_cb_Subscription_s* x, struct 
 void zx_cb_Subscription_PUSH_Trigger(struct zx_cb_Subscription_s* x, struct zx_elem_s* y);
 void zx_cb_Subscription_PUSH_Extension(struct zx_cb_Subscription_s* x, struct zx_cb_Extension_s* y);
 
-void zx_cb_Subscription_PUT_starts(struct zx_cb_Subscription_s* x, struct zx_str* y);
 void zx_cb_Subscription_PUT_expires(struct zx_cb_Subscription_s* x, struct zx_str* y);
 void zx_cb_Subscription_PUT_id(struct zx_cb_Subscription_s* x, struct zx_str* y);
-void zx_cb_Subscription_PUT_subscriptionID(struct zx_cb_Subscription_s* x, struct zx_str* y);
 void zx_cb_Subscription_PUT_includeData(struct zx_cb_Subscription_s* x, struct zx_str* y);
+void zx_cb_Subscription_PUT_starts(struct zx_cb_Subscription_s* x, struct zx_str* y);
+void zx_cb_Subscription_PUT_subscriptionID(struct zx_cb_Subscription_s* x, struct zx_str* y);
 
 void zx_cb_Subscription_PUT_ItemSelection(struct zx_cb_Subscription_s* x, int n, struct zx_cb_ItemSelection_s* y);
 void zx_cb_Subscription_PUT_RefItem(struct zx_cb_Subscription_s* x, int n, struct zx_cb_RefItem_s* y);
@@ -2048,19 +2048,19 @@ struct zx_cb_UsageType_s {
   ZX_ELEM_EXT
   zx_cb_UsageType_EXT
   struct zx_str* success;	/* {0,1} attribute xs:boolean */
-  struct zx_str* id;	/* {0,1} attribute xs:string */
-  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* ACC;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ACCTime;	/* {0,1} attribute xs:dateTime */
+  struct zx_str* id;	/* {0,1} attribute xs:string */
+  struct zx_str* modificationTime;	/* {0,1} attribute xs:dateTime */
   struct zx_str* modifier;	/* {0,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_cb_UsageType_GET_success(struct zx_cb_UsageType_s* x);
-struct zx_str* zx_cb_UsageType_GET_id(struct zx_cb_UsageType_s* x);
-struct zx_str* zx_cb_UsageType_GET_modificationTime(struct zx_cb_UsageType_s* x);
 struct zx_str* zx_cb_UsageType_GET_ACC(struct zx_cb_UsageType_s* x);
 struct zx_str* zx_cb_UsageType_GET_ACCTime(struct zx_cb_UsageType_s* x);
+struct zx_str* zx_cb_UsageType_GET_id(struct zx_cb_UsageType_s* x);
+struct zx_str* zx_cb_UsageType_GET_modificationTime(struct zx_cb_UsageType_s* x);
 struct zx_str* zx_cb_UsageType_GET_modifier(struct zx_cb_UsageType_s* x);
 
 
@@ -2068,10 +2068,10 @@ struct zx_str* zx_cb_UsageType_GET_modifier(struct zx_cb_UsageType_s* x);
 
 
 void zx_cb_UsageType_PUT_success(struct zx_cb_UsageType_s* x, struct zx_str* y);
-void zx_cb_UsageType_PUT_id(struct zx_cb_UsageType_s* x, struct zx_str* y);
-void zx_cb_UsageType_PUT_modificationTime(struct zx_cb_UsageType_s* x, struct zx_str* y);
 void zx_cb_UsageType_PUT_ACC(struct zx_cb_UsageType_s* x, struct zx_str* y);
 void zx_cb_UsageType_PUT_ACCTime(struct zx_cb_UsageType_s* x, struct zx_str* y);
+void zx_cb_UsageType_PUT_id(struct zx_cb_UsageType_s* x, struct zx_str* y);
+void zx_cb_UsageType_PUT_modificationTime(struct zx_cb_UsageType_s* x, struct zx_str* y);
 void zx_cb_UsageType_PUT_modifier(struct zx_cb_UsageType_s* x, struct zx_str* y);
 
 

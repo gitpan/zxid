@@ -61,9 +61,9 @@ void zx_FREE_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, int f
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->version, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
-  zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -100,9 +100,9 @@ void zx_DUP_STRS_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->version);
-  zx_dup_attr(c, x->mustUnderstand);
-  zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -119,9 +119,9 @@ struct zx_sbf_Framework_s* zx_DEEP_CLONE_sbf_Framework(struct zx_ctx* c, struct 
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->version = zx_clone_attr(c, x->version);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
-  x->actor = zx_clone_attr(c, x->actor);
   x->Id = zx_clone_attr(c, x->Id);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;

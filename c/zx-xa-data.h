@@ -310,20 +310,20 @@ struct zx_str* zx_EASY_ENC_WO_xa_AttributeAssignment(struct zx_ctx* c, struct zx
 struct zx_xa_AttributeAssignment_s {
   ZX_ELEM_EXT
   zx_xa_AttributeAssignment_EXT
-  struct zx_str* DataType;	/* {1,1} attribute xs:anyURI */
   struct zx_str* AttributeId;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* DataType;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xa_AttributeAssignment_GET_DataType(struct zx_xa_AttributeAssignment_s* x);
 struct zx_str* zx_xa_AttributeAssignment_GET_AttributeId(struct zx_xa_AttributeAssignment_s* x);
+struct zx_str* zx_xa_AttributeAssignment_GET_DataType(struct zx_xa_AttributeAssignment_s* x);
 
 
 
 
 
-void zx_xa_AttributeAssignment_PUT_DataType(struct zx_xa_AttributeAssignment_s* x, struct zx_str* y);
 void zx_xa_AttributeAssignment_PUT_AttributeId(struct zx_xa_AttributeAssignment_s* x, struct zx_str* y);
+void zx_xa_AttributeAssignment_PUT_DataType(struct zx_xa_AttributeAssignment_s* x, struct zx_str* y);
 
 
 
@@ -355,23 +355,23 @@ struct zx_str* zx_EASY_ENC_WO_xa_AttributeSelector(struct zx_ctx* c, struct zx_x
 struct zx_xa_AttributeSelector_s {
   ZX_ELEM_EXT
   zx_xa_AttributeSelector_EXT
-  struct zx_str* RequestContextPath;	/* {1,1} attribute xs:string */
   struct zx_str* DataType;	/* {1,1} attribute xs:anyURI */
   struct zx_str* MustBePresent;	/* {0,1} attribute xs:boolean */
+  struct zx_str* RequestContextPath;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xa_AttributeSelector_GET_RequestContextPath(struct zx_xa_AttributeSelector_s* x);
 struct zx_str* zx_xa_AttributeSelector_GET_DataType(struct zx_xa_AttributeSelector_s* x);
 struct zx_str* zx_xa_AttributeSelector_GET_MustBePresent(struct zx_xa_AttributeSelector_s* x);
+struct zx_str* zx_xa_AttributeSelector_GET_RequestContextPath(struct zx_xa_AttributeSelector_s* x);
 
 
 
 
 
-void zx_xa_AttributeSelector_PUT_RequestContextPath(struct zx_xa_AttributeSelector_s* x, struct zx_str* y);
 void zx_xa_AttributeSelector_PUT_DataType(struct zx_xa_AttributeSelector_s* x, struct zx_str* y);
 void zx_xa_AttributeSelector_PUT_MustBePresent(struct zx_xa_AttributeSelector_s* x, struct zx_str* y);
+void zx_xa_AttributeSelector_PUT_RequestContextPath(struct zx_xa_AttributeSelector_s* x, struct zx_str* y);
 
 
 
@@ -851,13 +851,13 @@ struct zx_xa_Obligation_s {
   ZX_ELEM_EXT
   zx_xa_Obligation_EXT
   struct zx_xa_AttributeAssignment_s* AttributeAssignment;	/* {0,-1} nada */
-  struct zx_str* ObligationId;	/* {1,1} attribute xs:anyURI */
   struct zx_str* FulfillOn;	/* {1,1} attribute xa:EffectType */
+  struct zx_str* ObligationId;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xa_Obligation_GET_ObligationId(struct zx_xa_Obligation_s* x);
 struct zx_str* zx_xa_Obligation_GET_FulfillOn(struct zx_xa_Obligation_s* x);
+struct zx_str* zx_xa_Obligation_GET_ObligationId(struct zx_xa_Obligation_s* x);
 
 struct zx_xa_AttributeAssignment_s* zx_xa_Obligation_GET_AttributeAssignment(struct zx_xa_Obligation_s* x, int n);
 
@@ -867,8 +867,8 @@ struct zx_xa_AttributeAssignment_s* zx_xa_Obligation_POP_AttributeAssignment(str
 
 void zx_xa_Obligation_PUSH_AttributeAssignment(struct zx_xa_Obligation_s* x, struct zx_xa_AttributeAssignment_s* y);
 
-void zx_xa_Obligation_PUT_ObligationId(struct zx_xa_Obligation_s* x, struct zx_str* y);
 void zx_xa_Obligation_PUT_FulfillOn(struct zx_xa_Obligation_s* x, struct zx_str* y);
+void zx_xa_Obligation_PUT_ObligationId(struct zx_xa_Obligation_s* x, struct zx_str* y);
 
 void zx_xa_Obligation_PUT_AttributeAssignment(struct zx_xa_Obligation_s* x, int n, struct zx_xa_AttributeAssignment_s* y);
 
@@ -961,14 +961,14 @@ struct zx_xa_Policy_s {
   struct zx_xa_Rule_s* Rule;	/* {0,1} nada */
   struct zx_xa_Obligations_s* Obligations;	/* {0,1}  */
   struct zx_str* PolicyId;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
   struct zx_str* RuleCombiningAlgId;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_xa_Policy_GET_PolicyId(struct zx_xa_Policy_s* x);
-struct zx_str* zx_xa_Policy_GET_Version(struct zx_xa_Policy_s* x);
 struct zx_str* zx_xa_Policy_GET_RuleCombiningAlgId(struct zx_xa_Policy_s* x);
+struct zx_str* zx_xa_Policy_GET_Version(struct zx_xa_Policy_s* x);
 
 struct zx_elem_s* zx_xa_Policy_GET_Description(struct zx_xa_Policy_s* x, int n);
 struct zx_xa_PolicyDefaults_s* zx_xa_Policy_GET_PolicyDefaults(struct zx_xa_Policy_s* x, int n);
@@ -1007,8 +1007,8 @@ void zx_xa_Policy_PUSH_Rule(struct zx_xa_Policy_s* x, struct zx_xa_Rule_s* y);
 void zx_xa_Policy_PUSH_Obligations(struct zx_xa_Policy_s* x, struct zx_xa_Obligations_s* y);
 
 void zx_xa_Policy_PUT_PolicyId(struct zx_xa_Policy_s* x, struct zx_str* y);
-void zx_xa_Policy_PUT_Version(struct zx_xa_Policy_s* x, struct zx_str* y);
 void zx_xa_Policy_PUT_RuleCombiningAlgId(struct zx_xa_Policy_s* x, struct zx_str* y);
+void zx_xa_Policy_PUT_Version(struct zx_xa_Policy_s* x, struct zx_str* y);
 
 void zx_xa_Policy_PUT_Description(struct zx_xa_Policy_s* x, int n, struct zx_elem_s* y);
 void zx_xa_Policy_PUT_PolicyDefaults(struct zx_xa_Policy_s* x, int n, struct zx_xa_PolicyDefaults_s* y);
@@ -1171,23 +1171,23 @@ struct zx_str* zx_EASY_ENC_WO_xa_PolicyIdReference(struct zx_ctx* c, struct zx_x
 struct zx_xa_PolicyIdReference_s {
   ZX_ELEM_EXT
   zx_xa_PolicyIdReference_EXT
-  struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
   struct zx_str* EarliestVersion;	/* {0,1} attribute xa:VersionMatchType */
   struct zx_str* LatestVersion;	/* {0,1} attribute xa:VersionMatchType */
+  struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xa_PolicyIdReference_GET_Version(struct zx_xa_PolicyIdReference_s* x);
 struct zx_str* zx_xa_PolicyIdReference_GET_EarliestVersion(struct zx_xa_PolicyIdReference_s* x);
 struct zx_str* zx_xa_PolicyIdReference_GET_LatestVersion(struct zx_xa_PolicyIdReference_s* x);
+struct zx_str* zx_xa_PolicyIdReference_GET_Version(struct zx_xa_PolicyIdReference_s* x);
 
 
 
 
 
-void zx_xa_PolicyIdReference_PUT_Version(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y);
 void zx_xa_PolicyIdReference_PUT_EarliestVersion(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y);
 void zx_xa_PolicyIdReference_PUT_LatestVersion(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y);
+void zx_xa_PolicyIdReference_PUT_Version(struct zx_xa_PolicyIdReference_s* x, struct zx_str* y);
 
 
 
@@ -1230,15 +1230,15 @@ struct zx_xa_PolicySet_s {
   struct zx_xa_PolicyCombinerParameters_s* PolicyCombinerParameters;	/* {0,1} nada */
   struct zx_xa_PolicySetCombinerParameters_s* PolicySetCombinerParameters;	/* {0,1} nada */
   struct zx_xa_Obligations_s* Obligations;	/* {0,1}  */
+  struct zx_str* PolicyCombiningAlgId;	/* {1,1} attribute xs:anyURI */
   struct zx_str* PolicySetId;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
-  struct zx_str* PolicyCombiningAlgId;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
+struct zx_str* zx_xa_PolicySet_GET_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x);
 struct zx_str* zx_xa_PolicySet_GET_PolicySetId(struct zx_xa_PolicySet_s* x);
 struct zx_str* zx_xa_PolicySet_GET_Version(struct zx_xa_PolicySet_s* x);
-struct zx_str* zx_xa_PolicySet_GET_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x);
 
 struct zx_elem_s* zx_xa_PolicySet_GET_Description(struct zx_xa_PolicySet_s* x, int n);
 struct zx_xa_PolicySetDefaults_s* zx_xa_PolicySet_GET_PolicySetDefaults(struct zx_xa_PolicySet_s* x, int n);
@@ -1288,9 +1288,9 @@ void zx_xa_PolicySet_PUSH_PolicyCombinerParameters(struct zx_xa_PolicySet_s* x, 
 void zx_xa_PolicySet_PUSH_PolicySetCombinerParameters(struct zx_xa_PolicySet_s* x, struct zx_xa_PolicySetCombinerParameters_s* y);
 void zx_xa_PolicySet_PUSH_Obligations(struct zx_xa_PolicySet_s* x, struct zx_xa_Obligations_s* y);
 
+void zx_xa_PolicySet_PUT_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x, struct zx_str* y);
 void zx_xa_PolicySet_PUT_PolicySetId(struct zx_xa_PolicySet_s* x, struct zx_str* y);
 void zx_xa_PolicySet_PUT_Version(struct zx_xa_PolicySet_s* x, struct zx_str* y);
-void zx_xa_PolicySet_PUT_PolicyCombiningAlgId(struct zx_xa_PolicySet_s* x, struct zx_str* y);
 
 void zx_xa_PolicySet_PUT_Description(struct zx_xa_PolicySet_s* x, int n, struct zx_elem_s* y);
 void zx_xa_PolicySet_PUT_PolicySetDefaults(struct zx_xa_PolicySet_s* x, int n, struct zx_xa_PolicySetDefaults_s* y);
@@ -1465,23 +1465,23 @@ struct zx_str* zx_EASY_ENC_WO_xa_PolicySetIdReference(struct zx_ctx* c, struct z
 struct zx_xa_PolicySetIdReference_s {
   ZX_ELEM_EXT
   zx_xa_PolicySetIdReference_EXT
-  struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
   struct zx_str* EarliestVersion;	/* {0,1} attribute xa:VersionMatchType */
   struct zx_str* LatestVersion;	/* {0,1} attribute xa:VersionMatchType */
+  struct zx_str* Version;	/* {0,1} attribute xa:VersionType */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xa_PolicySetIdReference_GET_Version(struct zx_xa_PolicySetIdReference_s* x);
 struct zx_str* zx_xa_PolicySetIdReference_GET_EarliestVersion(struct zx_xa_PolicySetIdReference_s* x);
 struct zx_str* zx_xa_PolicySetIdReference_GET_LatestVersion(struct zx_xa_PolicySetIdReference_s* x);
+struct zx_str* zx_xa_PolicySetIdReference_GET_Version(struct zx_xa_PolicySetIdReference_s* x);
 
 
 
 
 
-void zx_xa_PolicySetIdReference_PUT_Version(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y);
 void zx_xa_PolicySetIdReference_PUT_EarliestVersion(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y);
 void zx_xa_PolicySetIdReference_PUT_LatestVersion(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y);
+void zx_xa_PolicySetIdReference_PUT_Version(struct zx_xa_PolicySetIdReference_s* x, struct zx_str* y);
 
 
 
@@ -1732,13 +1732,13 @@ struct zx_xa_Rule_s {
   struct zx_elem_s* Description;	/* {0,1} xs:string */
   struct zx_xa_Target_s* Target;	/* {0,1} nada */
   struct zx_xa_Condition_s* Condition;	/* {0,1}  */
-  struct zx_str* RuleId;	/* {1,1} attribute xs:string */
   struct zx_str* Effect;	/* {1,1} attribute xa:EffectType */
+  struct zx_str* RuleId;	/* {1,1} attribute xs:string */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_xa_Rule_GET_RuleId(struct zx_xa_Rule_s* x);
 struct zx_str* zx_xa_Rule_GET_Effect(struct zx_xa_Rule_s* x);
+struct zx_str* zx_xa_Rule_GET_RuleId(struct zx_xa_Rule_s* x);
 
 struct zx_elem_s* zx_xa_Rule_GET_Description(struct zx_xa_Rule_s* x, int n);
 struct zx_xa_Target_s* zx_xa_Rule_GET_Target(struct zx_xa_Rule_s* x, int n);
@@ -1756,8 +1756,8 @@ void zx_xa_Rule_PUSH_Description(struct zx_xa_Rule_s* x, struct zx_elem_s* y);
 void zx_xa_Rule_PUSH_Target(struct zx_xa_Rule_s* x, struct zx_xa_Target_s* y);
 void zx_xa_Rule_PUSH_Condition(struct zx_xa_Rule_s* x, struct zx_xa_Condition_s* y);
 
-void zx_xa_Rule_PUT_RuleId(struct zx_xa_Rule_s* x, struct zx_str* y);
 void zx_xa_Rule_PUT_Effect(struct zx_xa_Rule_s* x, struct zx_str* y);
+void zx_xa_Rule_PUT_RuleId(struct zx_xa_Rule_s* x, struct zx_str* y);
 
 void zx_xa_Rule_PUT_Description(struct zx_xa_Rule_s* x, int n, struct zx_elem_s* y);
 void zx_xa_Rule_PUT_Target(struct zx_xa_Rule_s* x, int n, struct zx_xa_Target_s* y);

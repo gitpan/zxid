@@ -5391,6 +5391,10 @@ void zx_gl_Data_PUT_id(struct zx_gl_Data_s* x, struct zx_str* y) { x->id = y; }
 struct zx_str* zx_gl_Data_GET_itemIDRef(struct zx_gl_Data_s* x) { return x->itemIDRef; }
 /* FUNC(zx_gl_Data_PUT_itemIDRef) */
 void zx_gl_Data_PUT_itemIDRef(struct zx_gl_Data_s* x, struct zx_str* y) { x->itemIDRef = y; }
+/* FUNC(zx_gl_Data_GET_nextOffset) */
+struct zx_str* zx_gl_Data_GET_nextOffset(struct zx_gl_Data_s* x) { return x->nextOffset; }
+/* FUNC(zx_gl_Data_PUT_nextOffset) */
+void zx_gl_Data_PUT_nextOffset(struct zx_gl_Data_s* x, struct zx_str* y) { x->nextOffset = y; }
 /* FUNC(zx_gl_Data_GET_notSorted) */
 struct zx_str* zx_gl_Data_GET_notSorted(struct zx_gl_Data_s* x) { return x->notSorted; }
 /* FUNC(zx_gl_Data_PUT_notSorted) */
@@ -5399,10 +5403,6 @@ void zx_gl_Data_PUT_notSorted(struct zx_gl_Data_s* x, struct zx_str* y) { x->not
 struct zx_str* zx_gl_Data_GET_remaining(struct zx_gl_Data_s* x) { return x->remaining; }
 /* FUNC(zx_gl_Data_PUT_remaining) */
 void zx_gl_Data_PUT_remaining(struct zx_gl_Data_s* x, struct zx_str* y) { x->remaining = y; }
-/* FUNC(zx_gl_Data_GET_nextOffset) */
-struct zx_str* zx_gl_Data_GET_nextOffset(struct zx_gl_Data_s* x) { return x->nextOffset; }
-/* FUNC(zx_gl_Data_PUT_nextOffset) */
-void zx_gl_Data_PUT_nextOffset(struct zx_gl_Data_s* x, struct zx_str* y) { x->nextOffset = y; }
 /* FUNC(zx_gl_Data_GET_setID) */
 struct zx_str* zx_gl_Data_GET_setID(struct zx_gl_Data_s* x) { return x->setID; }
 /* FUNC(zx_gl_Data_PUT_setID) */
@@ -8876,40 +8876,40 @@ void zx_gl_ItemSelection_DEL_Extension(struct zx_gl_ItemSelection_s* x, int n)
 
 
 
-/* FUNC(zx_gl_LL_GET_script) */
-struct zx_str* zx_gl_LL_GET_script(struct zx_gl_LL_s* x) { return x->script; }
-/* FUNC(zx_gl_LL_PUT_script) */
-void zx_gl_LL_PUT_script(struct zx_gl_LL_s* x, struct zx_str* y) { x->script = y; }
 /* FUNC(zx_gl_LL_GET_lang) */
 struct zx_str* zx_gl_LL_GET_lang(struct zx_gl_LL_s* x) { return x->lang; }
 /* FUNC(zx_gl_LL_PUT_lang) */
 void zx_gl_LL_PUT_lang(struct zx_gl_LL_s* x, struct zx_str* y) { x->lang = y; }
+/* FUNC(zx_gl_LL_GET_script) */
+struct zx_str* zx_gl_LL_GET_script(struct zx_gl_LL_s* x) { return x->script; }
+/* FUNC(zx_gl_LL_PUT_script) */
+void zx_gl_LL_PUT_script(struct zx_gl_LL_s* x, struct zx_str* y) { x->script = y; }
 
 
 
 
 
-/* FUNC(zx_gl_LPostalAddress_GET_script) */
-struct zx_str* zx_gl_LPostalAddress_GET_script(struct zx_gl_LPostalAddress_s* x) { return x->script; }
-/* FUNC(zx_gl_LPostalAddress_PUT_script) */
-void zx_gl_LPostalAddress_PUT_script(struct zx_gl_LPostalAddress_s* x, struct zx_str* y) { x->script = y; }
 /* FUNC(zx_gl_LPostalAddress_GET_lang) */
 struct zx_str* zx_gl_LPostalAddress_GET_lang(struct zx_gl_LPostalAddress_s* x) { return x->lang; }
 /* FUNC(zx_gl_LPostalAddress_PUT_lang) */
 void zx_gl_LPostalAddress_PUT_lang(struct zx_gl_LPostalAddress_s* x, struct zx_str* y) { x->lang = y; }
+/* FUNC(zx_gl_LPostalAddress_GET_script) */
+struct zx_str* zx_gl_LPostalAddress_GET_script(struct zx_gl_LPostalAddress_s* x) { return x->script; }
+/* FUNC(zx_gl_LPostalAddress_PUT_script) */
+void zx_gl_LPostalAddress_PUT_script(struct zx_gl_LPostalAddress_s* x, struct zx_str* y) { x->script = y; }
 
 
 
 
 
-/* FUNC(zx_gl_LSt_GET_script) */
-struct zx_str* zx_gl_LSt_GET_script(struct zx_gl_LSt_s* x) { return x->script; }
-/* FUNC(zx_gl_LSt_PUT_script) */
-void zx_gl_LSt_PUT_script(struct zx_gl_LSt_s* x, struct zx_str* y) { x->script = y; }
 /* FUNC(zx_gl_LSt_GET_lang) */
 struct zx_str* zx_gl_LSt_GET_lang(struct zx_gl_LSt_s* x) { return x->lang; }
 /* FUNC(zx_gl_LSt_PUT_lang) */
 void zx_gl_LSt_PUT_lang(struct zx_gl_LSt_s* x, struct zx_str* y) { x->lang = y; }
+/* FUNC(zx_gl_LSt_GET_script) */
+struct zx_str* zx_gl_LSt_GET_script(struct zx_gl_LSt_s* x) { return x->script; }
+/* FUNC(zx_gl_LSt_PUT_script) */
+void zx_gl_LSt_PUT_script(struct zx_gl_LSt_s* x, struct zx_str* y) { x->script = y; }
 
 
 
@@ -11846,6 +11846,14 @@ void zx_gl_Notification_DEL_ItemData(struct zx_gl_Notification_s* x, int n)
 
 #endif
 
+/* FUNC(zx_gl_Notification_GET_endReason) */
+struct zx_str* zx_gl_Notification_GET_endReason(struct zx_gl_Notification_s* x) { return x->endReason; }
+/* FUNC(zx_gl_Notification_PUT_endReason) */
+void zx_gl_Notification_PUT_endReason(struct zx_gl_Notification_s* x, struct zx_str* y) { x->endReason = y; }
+/* FUNC(zx_gl_Notification_GET_expires) */
+struct zx_str* zx_gl_Notification_GET_expires(struct zx_gl_Notification_s* x) { return x->expires; }
+/* FUNC(zx_gl_Notification_PUT_expires) */
+void zx_gl_Notification_PUT_expires(struct zx_gl_Notification_s* x, struct zx_str* y) { x->expires = y; }
 /* FUNC(zx_gl_Notification_GET_id) */
 struct zx_str* zx_gl_Notification_GET_id(struct zx_gl_Notification_s* x) { return x->id; }
 /* FUNC(zx_gl_Notification_PUT_id) */
@@ -11854,14 +11862,6 @@ void zx_gl_Notification_PUT_id(struct zx_gl_Notification_s* x, struct zx_str* y)
 struct zx_str* zx_gl_Notification_GET_subscriptionID(struct zx_gl_Notification_s* x) { return x->subscriptionID; }
 /* FUNC(zx_gl_Notification_PUT_subscriptionID) */
 void zx_gl_Notification_PUT_subscriptionID(struct zx_gl_Notification_s* x, struct zx_str* y) { x->subscriptionID = y; }
-/* FUNC(zx_gl_Notification_GET_expires) */
-struct zx_str* zx_gl_Notification_GET_expires(struct zx_gl_Notification_s* x) { return x->expires; }
-/* FUNC(zx_gl_Notification_PUT_expires) */
-void zx_gl_Notification_PUT_expires(struct zx_gl_Notification_s* x, struct zx_str* y) { x->expires = y; }
-/* FUNC(zx_gl_Notification_GET_endReason) */
-struct zx_str* zx_gl_Notification_GET_endReason(struct zx_gl_Notification_s* x) { return x->endReason; }
-/* FUNC(zx_gl_Notification_PUT_endReason) */
-void zx_gl_Notification_PUT_endReason(struct zx_gl_Notification_s* x, struct zx_str* y) { x->endReason = y; }
 
 
 
@@ -15598,14 +15598,14 @@ void zx_gl_QueryResponse_PUT_timeStamp(struct zx_gl_QueryResponse_s* x, struct z
 
 
 
-/* FUNC(zx_gl_RefItem_GET_subscriptionID) */
-struct zx_str* zx_gl_RefItem_GET_subscriptionID(struct zx_gl_RefItem_s* x) { return x->subscriptionID; }
-/* FUNC(zx_gl_RefItem_PUT_subscriptionID) */
-void zx_gl_RefItem_PUT_subscriptionID(struct zx_gl_RefItem_s* x, struct zx_str* y) { x->subscriptionID = y; }
 /* FUNC(zx_gl_RefItem_GET_ItemIDRef) */
 struct zx_str* zx_gl_RefItem_GET_ItemIDRef(struct zx_gl_RefItem_s* x) { return x->ItemIDRef; }
 /* FUNC(zx_gl_RefItem_PUT_ItemIDRef) */
 void zx_gl_RefItem_PUT_ItemIDRef(struct zx_gl_RefItem_s* x, struct zx_str* y) { x->ItemIDRef = y; }
+/* FUNC(zx_gl_RefItem_GET_subscriptionID) */
+struct zx_str* zx_gl_RefItem_GET_subscriptionID(struct zx_gl_RefItem_s* x) { return x->subscriptionID; }
+/* FUNC(zx_gl_RefItem_PUT_subscriptionID) */
+void zx_gl_RefItem_PUT_subscriptionID(struct zx_gl_RefItem_s* x, struct zx_str* y) { x->subscriptionID = y; }
 
 
 
@@ -15758,14 +15758,14 @@ void zx_gl_Status_DEL_Status(struct zx_gl_Status_s* x, int n)
 struct zx_str* zx_gl_Status_GET_code(struct zx_gl_Status_s* x) { return x->code; }
 /* FUNC(zx_gl_Status_PUT_code) */
 void zx_gl_Status_PUT_code(struct zx_gl_Status_s* x, struct zx_str* y) { x->code = y; }
-/* FUNC(zx_gl_Status_GET_ref) */
-struct zx_str* zx_gl_Status_GET_ref(struct zx_gl_Status_s* x) { return x->ref; }
-/* FUNC(zx_gl_Status_PUT_ref) */
-void zx_gl_Status_PUT_ref(struct zx_gl_Status_s* x, struct zx_str* y) { x->ref = y; }
 /* FUNC(zx_gl_Status_GET_comment) */
 struct zx_str* zx_gl_Status_GET_comment(struct zx_gl_Status_s* x) { return x->comment; }
 /* FUNC(zx_gl_Status_PUT_comment) */
 void zx_gl_Status_PUT_comment(struct zx_gl_Status_s* x, struct zx_str* y) { x->comment = y; }
+/* FUNC(zx_gl_Status_GET_ref) */
+struct zx_str* zx_gl_Status_GET_ref(struct zx_gl_Status_s* x) { return x->ref; }
+/* FUNC(zx_gl_Status_PUT_ref) */
+void zx_gl_Status_PUT_ref(struct zx_gl_Status_s* x, struct zx_str* y) { x->ref = y; }
 
 
 
@@ -16709,10 +16709,6 @@ void zx_gl_Subscription_DEL_Extension(struct zx_gl_Subscription_s* x, int n)
 
 #endif
 
-/* FUNC(zx_gl_Subscription_GET_starts) */
-struct zx_str* zx_gl_Subscription_GET_starts(struct zx_gl_Subscription_s* x) { return x->starts; }
-/* FUNC(zx_gl_Subscription_PUT_starts) */
-void zx_gl_Subscription_PUT_starts(struct zx_gl_Subscription_s* x, struct zx_str* y) { x->starts = y; }
 /* FUNC(zx_gl_Subscription_GET_expires) */
 struct zx_str* zx_gl_Subscription_GET_expires(struct zx_gl_Subscription_s* x) { return x->expires; }
 /* FUNC(zx_gl_Subscription_PUT_expires) */
@@ -16721,14 +16717,18 @@ void zx_gl_Subscription_PUT_expires(struct zx_gl_Subscription_s* x, struct zx_st
 struct zx_str* zx_gl_Subscription_GET_id(struct zx_gl_Subscription_s* x) { return x->id; }
 /* FUNC(zx_gl_Subscription_PUT_id) */
 void zx_gl_Subscription_PUT_id(struct zx_gl_Subscription_s* x, struct zx_str* y) { x->id = y; }
-/* FUNC(zx_gl_Subscription_GET_subscriptionID) */
-struct zx_str* zx_gl_Subscription_GET_subscriptionID(struct zx_gl_Subscription_s* x) { return x->subscriptionID; }
-/* FUNC(zx_gl_Subscription_PUT_subscriptionID) */
-void zx_gl_Subscription_PUT_subscriptionID(struct zx_gl_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
 /* FUNC(zx_gl_Subscription_GET_includeData) */
 struct zx_str* zx_gl_Subscription_GET_includeData(struct zx_gl_Subscription_s* x) { return x->includeData; }
 /* FUNC(zx_gl_Subscription_PUT_includeData) */
 void zx_gl_Subscription_PUT_includeData(struct zx_gl_Subscription_s* x, struct zx_str* y) { x->includeData = y; }
+/* FUNC(zx_gl_Subscription_GET_starts) */
+struct zx_str* zx_gl_Subscription_GET_starts(struct zx_gl_Subscription_s* x) { return x->starts; }
+/* FUNC(zx_gl_Subscription_PUT_starts) */
+void zx_gl_Subscription_PUT_starts(struct zx_gl_Subscription_s* x, struct zx_str* y) { x->starts = y; }
+/* FUNC(zx_gl_Subscription_GET_subscriptionID) */
+struct zx_str* zx_gl_Subscription_GET_subscriptionID(struct zx_gl_Subscription_s* x) { return x->subscriptionID; }
+/* FUNC(zx_gl_Subscription_PUT_subscriptionID) */
+void zx_gl_Subscription_PUT_subscriptionID(struct zx_gl_Subscription_s* x, struct zx_str* y) { x->subscriptionID = y; }
 
 
 

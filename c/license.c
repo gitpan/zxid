@@ -1,4 +1,5 @@
-char* license = "Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+char* license = 
+"Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 \n\
                                  Apache License\n\

@@ -168,14 +168,14 @@ void zx_wst_Authenticator_DEL_CombinedHash(struct zx_wst_Authenticator_s* x, int
 
 
 
-/* FUNC(zx_wst_BinaryExchange_GET_ValueType) */
-struct zx_str* zx_wst_BinaryExchange_GET_ValueType(struct zx_wst_BinaryExchange_s* x) { return x->ValueType; }
-/* FUNC(zx_wst_BinaryExchange_PUT_ValueType) */
-void zx_wst_BinaryExchange_PUT_ValueType(struct zx_wst_BinaryExchange_s* x, struct zx_str* y) { x->ValueType = y; }
 /* FUNC(zx_wst_BinaryExchange_GET_EncodingType) */
 struct zx_str* zx_wst_BinaryExchange_GET_EncodingType(struct zx_wst_BinaryExchange_s* x) { return x->EncodingType; }
 /* FUNC(zx_wst_BinaryExchange_PUT_EncodingType) */
 void zx_wst_BinaryExchange_PUT_EncodingType(struct zx_wst_BinaryExchange_s* x, struct zx_str* y) { x->EncodingType = y; }
+/* FUNC(zx_wst_BinaryExchange_GET_ValueType) */
+struct zx_str* zx_wst_BinaryExchange_GET_ValueType(struct zx_wst_BinaryExchange_s* x) { return x->ValueType; }
+/* FUNC(zx_wst_BinaryExchange_PUT_ValueType) */
+void zx_wst_BinaryExchange_PUT_ValueType(struct zx_wst_BinaryExchange_s* x, struct zx_str* y) { x->ValueType = y; }
 
 
 
@@ -760,22 +760,30 @@ void zx_wst_Issuer_DEL_Metadata(struct zx_wst_Issuer_s* x, int n)
 
 #endif
 
+/* FUNC(zx_wst_Issuer_GET_ID) */
+struct zx_str* zx_wst_Issuer_GET_ID(struct zx_wst_Issuer_s* x) { return x->ID; }
+/* FUNC(zx_wst_Issuer_PUT_ID) */
+void zx_wst_Issuer_PUT_ID(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->ID = y; }
+/* FUNC(zx_wst_Issuer_GET_id) */
+struct zx_str* zx_wst_Issuer_GET_id(struct zx_wst_Issuer_s* x) { return x->id; }
+/* FUNC(zx_wst_Issuer_PUT_id) */
+void zx_wst_Issuer_PUT_id(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->id = y; }
 /* FUNC(zx_wst_Issuer_GET_notOnOrAfter) */
 struct zx_str* zx_wst_Issuer_GET_notOnOrAfter(struct zx_wst_Issuer_s* x) { return x->notOnOrAfter; }
 /* FUNC(zx_wst_Issuer_PUT_notOnOrAfter) */
 void zx_wst_Issuer_PUT_notOnOrAfter(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->notOnOrAfter = y; }
-/* FUNC(zx_wst_Issuer_GET_mustUnderstand) */
-struct zx_str* zx_wst_Issuer_GET_mustUnderstand(struct zx_wst_Issuer_s* x) { return x->mustUnderstand; }
-/* FUNC(zx_wst_Issuer_PUT_mustUnderstand) */
-void zx_wst_Issuer_PUT_mustUnderstand(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->mustUnderstand = y; }
-/* FUNC(zx_wst_Issuer_GET_actor) */
-struct zx_str* zx_wst_Issuer_GET_actor(struct zx_wst_Issuer_s* x) { return x->actor; }
-/* FUNC(zx_wst_Issuer_PUT_actor) */
-void zx_wst_Issuer_PUT_actor(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->actor = y; }
 /* FUNC(zx_wst_Issuer_GET_Id) */
 struct zx_str* zx_wst_Issuer_GET_Id(struct zx_wst_Issuer_s* x) { return x->Id; }
 /* FUNC(zx_wst_Issuer_PUT_Id) */
 void zx_wst_Issuer_PUT_Id(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_wst_Issuer_GET_actor) */
+struct zx_str* zx_wst_Issuer_GET_actor(struct zx_wst_Issuer_s* x) { return x->actor; }
+/* FUNC(zx_wst_Issuer_PUT_actor) */
+void zx_wst_Issuer_PUT_actor(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_wst_Issuer_GET_mustUnderstand) */
+struct zx_str* zx_wst_Issuer_GET_mustUnderstand(struct zx_wst_Issuer_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_wst_Issuer_PUT_mustUnderstand) */
+void zx_wst_Issuer_PUT_mustUnderstand(struct zx_wst_Issuer_s* x, struct zx_str* y) { x->mustUnderstand = y; }
 
 
 

@@ -1,5 +1,5 @@
 # zxid/sg/saml-schema-assertion-2.0.sg
-# $Id: saml-schema-assertion-2.0.sg,v 1.6 2007-06-19 15:17:04 sampo Exp $
+# $Id: saml-schema-assertion-2.0.sg,v 1.8 2007-10-05 22:24:28 sampo Exp $
 #
 # N.B. This file is not a direct conversion. Instead it has been manually edited to
 # make it simpler and to facilitate code generation.
@@ -16,6 +16,8 @@ ns(a,    http://www.w3.org/2005/08/addressing)
 ns(sa11, urn:oasis:names:tc:SAML:1.0:assertion)
 ns(ff12, urn:liberty:iff:2003-08)
 ns(xasa, urn:oasis:xacml:2.0:saml:assertion:schema:os)
+ns(xsi,  http://www.w3.org/2001/XMLSchema-instance)
+ns(idp,  urn:liberty:idp:2006-12)
 
 &@IDNameQualifiers: 
   @NameQualifier?   -> %xs:string
@@ -29,8 +31,8 @@ BaseID	 -> %sa:BaseIDAbstractType
 
 NameID	 -> %sa:NameIDType
 %NameIDType:	 base(xs:string)
-  &@sa:IDNameQualifiers
   @Format?	 -> %xs:anyURI
+  &@sa:IDNameQualifiers
   @SPProvidedID? -> %xs:string
   ;
 
@@ -57,9 +59,9 @@ Assertion        -> %sa:AssertionType
   sa:AttributeStatement*
   xasa:XACMLAuthzDecisionStatement*
   xasa:XACMLPolicyStatement*
-  @Version       -> %xs:string
   @ID	         -> %xs:ID
   @IssueInstant  -> %xs:dateTime
+  @Version       -> %xs:string
   ;
 
 Subject	 -> %sa:SubjectType
@@ -82,11 +84,12 @@ SubjectConfirmation	 -> %sa:SubjectConfirmationType
 SubjectConfirmationData	 -> %sa:SubjectConfirmationDataType
 %SubjectConfirmationDataType:	 base(anyType)
   ds:KeyInfo+
+  @Address?	 -> %xs:string
+  @InResponseTo? -> %xs:NCName
   @NotBefore?	 -> %xs:dateTime
   @NotOnOrAfter? -> %xs:dateTime
   @Recipient?	 -> %xs:anyURI
-  @InResponseTo? -> %xs:NCName
-  @Address?	 -> %xs:string
+  @xsi:type?
   @any
   ;
 
@@ -100,6 +103,7 @@ Conditions	 -> %sa:ConditionsType
   sa:AudienceRestriction*
   sa:OneTimeUse*
   sa:ProxyRestriction*
+  idp:SubjectRestriction*
   @NotBefore?	 -> %xs:dateTime
   @NotOnOrAfter? -> %xs:dateTime
   ;
@@ -169,8 +173,8 @@ AuthzDecisionStatement	 -> %sa:AuthzDecisionStatementType
 %AuthzDecisionStatementType:	 base(sa:StatementAbstractType)
   sa:Action+
   sa:Evidence?
-  @Resource	 -> %xs:anyURI
   @Decision	 -> %sa:DecisionType
+  @Resource	 -> %xs:anyURI
   ;
 
 %DecisionType:	 enum( Permit Deny Indeterminate ) ;
@@ -197,9 +201,9 @@ AttributeStatement	 -> %sa:AttributeStatementType
 Attribute	 -> %sa:AttributeType
 %AttributeType:
   sa:AttributeValue*
+  @FriendlyName? -> %xs:string
   @Name	         -> %xs:string
   @NameFormat?	 -> %xs:anyURI
-  @FriendlyName? -> %xs:string
   @any
   ;
 

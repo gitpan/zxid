@@ -59,6 +59,14 @@ public class zxid_conf {
     return (cPtr == 0) ? null : new zxid_entity(cPtr, false);
   }
 
+  public void setPath_supplied(int value) {
+    zxidjniJNI.zxid_conf_path_supplied_set(swigCPtr, value);
+  }
+
+  public int getPath_supplied() {
+    return zxidjniJNI.zxid_conf_path_supplied_get(swigCPtr);
+  }
+
   public void setPath_len(int value) {
     zxidjniJNI.zxid_conf_path_len_set(swigCPtr, value);
   }
@@ -81,6 +89,14 @@ public class zxid_conf {
 
   public String getUrl() {
     return zxidjniJNI.zxid_conf_url_get(swigCPtr);
+  }
+
+  public void setNon_standard_entityid(String value) {
+    zxidjniJNI.zxid_conf_non_standard_entityid_set(swigCPtr, value);
+  }
+
+  public String getNon_standard_entityid() {
+    return zxidjniJNI.zxid_conf_non_standard_entityid_get(swigCPtr);
   }
 
   public void setCdc_url(String value) {
@@ -131,6 +147,14 @@ public class zxid_conf {
     return zxidjniJNI.zxid_conf_md_cache_last_get(swigCPtr);
   }
 
+  public void setUser_local(char value) {
+    zxidjniJNI.zxid_conf_user_local_set(swigCPtr, value);
+  }
+
+  public char getUser_local() {
+    return zxidjniJNI.zxid_conf_user_local_get(swigCPtr);
+  }
+
   public void setAuthn_req_sign(char value) {
     zxidjniJNI.zxid_conf_authn_req_sign_set(swigCPtr, value);
   }
@@ -145,6 +169,30 @@ public class zxid_conf {
 
   public char getWant_sso_a7n_signed() {
     return zxidjniJNI.zxid_conf_want_sso_a7n_signed_get(swigCPtr);
+  }
+
+  public void setSso_soap_sign(char value) {
+    zxidjniJNI.zxid_conf_sso_soap_sign_set(swigCPtr, value);
+  }
+
+  public char getSso_soap_sign() {
+    return zxidjniJNI.zxid_conf_sso_soap_sign_get(swigCPtr);
+  }
+
+  public void setSso_soap_resp_sign(char value) {
+    zxidjniJNI.zxid_conf_sso_soap_resp_sign_set(swigCPtr, value);
+  }
+
+  public char getSso_soap_resp_sign() {
+    return zxidjniJNI.zxid_conf_sso_soap_resp_sign_get(swigCPtr);
+  }
+
+  public void setNameid_enc(char value) {
+    zxidjniJNI.zxid_conf_nameid_enc_set(swigCPtr, value);
+  }
+
+  public char getNameid_enc() {
+    return zxidjniJNI.zxid_conf_nameid_enc_get(swigCPtr);
   }
 
   public void setAffiliation(String value) {
@@ -169,6 +217,22 @@ public class zxid_conf {
 
   public String getSes_arch_dir() {
     return zxidjniJNI.zxid_conf_ses_arch_dir_get(swigCPtr);
+  }
+
+  public void setSes_cookie_name(String value) {
+    zxidjniJNI.zxid_conf_ses_cookie_name_set(swigCPtr, value);
+  }
+
+  public String getSes_cookie_name() {
+    return zxidjniJNI.zxid_conf_ses_cookie_name_get(swigCPtr);
+  }
+
+  public void setIpport(String value) {
+    zxidjniJNI.zxid_conf_ipport_set(swigCPtr, value);
+  }
+
+  public String getIpport() {
+    return zxidjniJNI.zxid_conf_ipport_get(swigCPtr);
   }
 
   public void setLog_err(char value) {
@@ -235,6 +299,14 @@ public class zxid_conf {
     return zxidjniJNI.zxid_conf_log_sigfail_is_err_get(swigCPtr);
   }
 
+  public void setLog_level(char value) {
+    zxidjniJNI.zxid_conf_log_level_set(swigCPtr, value);
+  }
+
+  public char getLog_level() {
+    return zxidjniJNI.zxid_conf_log_level_get(swigCPtr);
+  }
+
   public void setSig_fatal(char value) {
     zxidjniJNI.zxid_conf_sig_fatal_set(swigCPtr, value);
   }
@@ -299,12 +371,44 @@ public class zxid_conf {
     return zxidjniJNI.zxid_conf_after_slop_get(swigCPtr);
   }
 
+  public void setTimeskew(int value) {
+    zxidjniJNI.zxid_conf_timeskew_set(swigCPtr, value);
+  }
+
+  public int getTimeskew() {
+    return zxidjniJNI.zxid_conf_timeskew_get(swigCPtr);
+  }
+
+  public void setRedir_to_content(int value) {
+    zxidjniJNI.zxid_conf_redir_to_content_set(swigCPtr, value);
+  }
+
+  public int getRedir_to_content() {
+    return zxidjniJNI.zxid_conf_redir_to_content_get(swigCPtr);
+  }
+
   public void setMax_soap_retry(int value) {
     zxidjniJNI.zxid_conf_max_soap_retry_set(swigCPtr, value);
   }
 
   public int getMax_soap_retry() {
     return zxidjniJNI.zxid_conf_max_soap_retry_get(swigCPtr);
+  }
+
+  public void setDefaultqs(String value) {
+    zxidjniJNI.zxid_conf_defaultqs_set(swigCPtr, value);
+  }
+
+  public String getDefaultqs() {
+    return zxidjniJNI.zxid_conf_defaultqs_get(swigCPtr);
+  }
+
+  public void setMod_saml_attr_prefix(String value) {
+    zxidjniJNI.zxid_conf_mod_saml_attr_prefix_set(swigCPtr, value);
+  }
+
+  public String getMod_saml_attr_prefix() {
+    return zxidjniJNI.zxid_conf_mod_saml_attr_prefix_get(swigCPtr);
   }
 
   public void setIdp_sel_start(String value) {
@@ -401,6 +505,14 @@ public class zxid_conf {
 
   public String getMgmt_end() {
     return zxidjniJNI.zxid_conf_mgmt_end_get(swigCPtr);
+  }
+
+  public void setDbg(String value) {
+    zxidjniJNI.zxid_conf_dbg_set(swigCPtr, value);
+  }
+
+  public String getDbg() {
+    return zxidjniJNI.zxid_conf_dbg_get(swigCPtr);
   }
 
   public zxid_conf() {

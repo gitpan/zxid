@@ -3914,14 +3914,14 @@ void zx_is12_Select_DEL_Item(struct zx_is12_Select_s* x, int n)
 
 #endif
 
-/* FUNC(zx_is12_Select_GET_name) */
-struct zx_str* zx_is12_Select_GET_name(struct zx_is12_Select_s* x) { return x->name; }
-/* FUNC(zx_is12_Select_PUT_name) */
-void zx_is12_Select_PUT_name(struct zx_is12_Select_s* x, struct zx_str* y) { x->name = y; }
 /* FUNC(zx_is12_Select_GET_multiple) */
 struct zx_str* zx_is12_Select_GET_multiple(struct zx_is12_Select_s* x) { return x->multiple; }
 /* FUNC(zx_is12_Select_PUT_multiple) */
 void zx_is12_Select_PUT_multiple(struct zx_is12_Select_s* x, struct zx_str* y) { x->multiple = y; }
+/* FUNC(zx_is12_Select_GET_name) */
+struct zx_str* zx_is12_Select_GET_name(struct zx_is12_Select_s* x) { return x->name; }
+/* FUNC(zx_is12_Select_PUT_name) */
+void zx_is12_Select_PUT_name(struct zx_is12_Select_s* x, struct zx_str* y) { x->name = y; }
 
 
 
@@ -4065,14 +4065,14 @@ void zx_is12_Status_DEL_Status(struct zx_is12_Status_s* x, int n)
 struct zx_str* zx_is12_Status_GET_code(struct zx_is12_Status_s* x) { return x->code; }
 /* FUNC(zx_is12_Status_PUT_code) */
 void zx_is12_Status_PUT_code(struct zx_is12_Status_s* x, struct zx_str* y) { x->code = y; }
-/* FUNC(zx_is12_Status_GET_ref) */
-struct zx_str* zx_is12_Status_GET_ref(struct zx_is12_Status_s* x) { return x->ref; }
-/* FUNC(zx_is12_Status_PUT_ref) */
-void zx_is12_Status_PUT_ref(struct zx_is12_Status_s* x, struct zx_str* y) { x->ref = y; }
 /* FUNC(zx_is12_Status_GET_comment) */
 struct zx_str* zx_is12_Status_GET_comment(struct zx_is12_Status_s* x) { return x->comment; }
 /* FUNC(zx_is12_Status_PUT_comment) */
 void zx_is12_Status_PUT_comment(struct zx_is12_Status_s* x, struct zx_str* y) { x->comment = y; }
+/* FUNC(zx_is12_Status_GET_ref) */
+struct zx_str* zx_is12_Status_GET_ref(struct zx_is12_Status_s* x) { return x->ref; }
+/* FUNC(zx_is12_Status_PUT_ref) */
+void zx_is12_Status_PUT_ref(struct zx_is12_Status_s* x, struct zx_str* y) { x->ref = y; }
 
 
 
@@ -4614,22 +4614,22 @@ void zx_is12_Text_DEL_Value(struct zx_is12_Text_s* x, int n)
 
 #endif
 
-/* FUNC(zx_is12_Text_GET_name) */
-struct zx_str* zx_is12_Text_GET_name(struct zx_is12_Text_s* x) { return x->name; }
-/* FUNC(zx_is12_Text_PUT_name) */
-void zx_is12_Text_PUT_name(struct zx_is12_Text_s* x, struct zx_str* y) { x->name = y; }
-/* FUNC(zx_is12_Text_GET_minChars) */
-struct zx_str* zx_is12_Text_GET_minChars(struct zx_is12_Text_s* x) { return x->minChars; }
-/* FUNC(zx_is12_Text_PUT_minChars) */
-void zx_is12_Text_PUT_minChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->minChars = y; }
-/* FUNC(zx_is12_Text_GET_maxChars) */
-struct zx_str* zx_is12_Text_GET_maxChars(struct zx_is12_Text_s* x) { return x->maxChars; }
-/* FUNC(zx_is12_Text_PUT_maxChars) */
-void zx_is12_Text_PUT_maxChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->maxChars = y; }
 /* FUNC(zx_is12_Text_GET_format) */
 struct zx_str* zx_is12_Text_GET_format(struct zx_is12_Text_s* x) { return x->format; }
 /* FUNC(zx_is12_Text_PUT_format) */
 void zx_is12_Text_PUT_format(struct zx_is12_Text_s* x, struct zx_str* y) { x->format = y; }
+/* FUNC(zx_is12_Text_GET_maxChars) */
+struct zx_str* zx_is12_Text_GET_maxChars(struct zx_is12_Text_s* x) { return x->maxChars; }
+/* FUNC(zx_is12_Text_PUT_maxChars) */
+void zx_is12_Text_PUT_maxChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->maxChars = y; }
+/* FUNC(zx_is12_Text_GET_minChars) */
+struct zx_str* zx_is12_Text_GET_minChars(struct zx_is12_Text_s* x) { return x->minChars; }
+/* FUNC(zx_is12_Text_PUT_minChars) */
+void zx_is12_Text_PUT_minChars(struct zx_is12_Text_s* x, struct zx_str* y) { x->minChars = y; }
+/* FUNC(zx_is12_Text_GET_name) */
+struct zx_str* zx_is12_Text_GET_name(struct zx_is12_Text_s* x) { return x->name; }
+/* FUNC(zx_is12_Text_PUT_name) */
+void zx_is12_Text_PUT_name(struct zx_is12_Text_s* x, struct zx_str* y) { x->name = y; }
 
 
 
@@ -4781,14 +4781,14 @@ void zx_is12_UserInteraction_PUT_interact(struct zx_is12_UserInteraction_s* x, s
 struct zx_str* zx_is12_UserInteraction_GET_language(struct zx_is12_UserInteraction_s* x) { return x->language; }
 /* FUNC(zx_is12_UserInteraction_PUT_language) */
 void zx_is12_UserInteraction_PUT_language(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->language = y; }
-/* FUNC(zx_is12_UserInteraction_GET_redirect) */
-struct zx_str* zx_is12_UserInteraction_GET_redirect(struct zx_is12_UserInteraction_s* x) { return x->redirect; }
-/* FUNC(zx_is12_UserInteraction_PUT_redirect) */
-void zx_is12_UserInteraction_PUT_redirect(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->redirect = y; }
 /* FUNC(zx_is12_UserInteraction_GET_maxInteractTime) */
 struct zx_str* zx_is12_UserInteraction_GET_maxInteractTime(struct zx_is12_UserInteraction_s* x) { return x->maxInteractTime; }
 /* FUNC(zx_is12_UserInteraction_PUT_maxInteractTime) */
 void zx_is12_UserInteraction_PUT_maxInteractTime(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->maxInteractTime = y; }
+/* FUNC(zx_is12_UserInteraction_GET_redirect) */
+struct zx_str* zx_is12_UserInteraction_GET_redirect(struct zx_is12_UserInteraction_s* x) { return x->redirect; }
+/* FUNC(zx_is12_UserInteraction_PUT_redirect) */
+void zx_is12_UserInteraction_PUT_redirect(struct zx_is12_UserInteraction_s* x, struct zx_str* y) { x->redirect = y; }
 /* FUNC(zx_is12_UserInteraction_GET_actor) */
 struct zx_str* zx_is12_UserInteraction_GET_actor(struct zx_is12_UserInteraction_s* x) { return x->actor; }
 /* FUNC(zx_is12_UserInteraction_PUT_actor) */

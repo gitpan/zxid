@@ -44,25 +44,25 @@ struct zx_sbf_Framework_s {
   ZX_ELEM_EXT
   zx_sbf_Framework_EXT
   struct zx_str* version;	/* {1,1} attribute xsd:string */
-  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
-  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
 #ifdef ZX_ENA_GETPUT
 struct zx_str* zx_sbf_Framework_GET_version(struct zx_sbf_Framework_s* x);
-struct zx_str* zx_sbf_Framework_GET_mustUnderstand(struct zx_sbf_Framework_s* x);
-struct zx_str* zx_sbf_Framework_GET_actor(struct zx_sbf_Framework_s* x);
 struct zx_str* zx_sbf_Framework_GET_Id(struct zx_sbf_Framework_s* x);
+struct zx_str* zx_sbf_Framework_GET_actor(struct zx_sbf_Framework_s* x);
+struct zx_str* zx_sbf_Framework_GET_mustUnderstand(struct zx_sbf_Framework_s* x);
 
 
 
 
 
 void zx_sbf_Framework_PUT_version(struct zx_sbf_Framework_s* x, struct zx_str* y);
-void zx_sbf_Framework_PUT_mustUnderstand(struct zx_sbf_Framework_s* x, struct zx_str* y);
-void zx_sbf_Framework_PUT_actor(struct zx_sbf_Framework_s* x, struct zx_str* y);
 void zx_sbf_Framework_PUT_Id(struct zx_sbf_Framework_s* x, struct zx_str* y);
+void zx_sbf_Framework_PUT_actor(struct zx_sbf_Framework_s* x, struct zx_str* y);
+void zx_sbf_Framework_PUT_mustUnderstand(struct zx_sbf_Framework_s* x, struct zx_str* y);
 
 
 

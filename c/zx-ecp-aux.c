@@ -60,8 +60,8 @@ void zx_FREE_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x, int
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -97,8 +97,8 @@ void zx_DUP_STRS_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -114,8 +114,8 @@ struct zx_ecp_RelayState_s* zx_DEEP_CLONE_ecp_RelayState(struct zx_ctx* c, struc
   x = (struct zx_ecp_RelayState_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ecp_RelayState_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -187,10 +187,10 @@ void zx_FREE_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->ProviderName, free_strs);
   zx_free_attr(c, x->IsPassive, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
+  zx_free_attr(c, x->ProviderName, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -242,10 +242,10 @@ void zx_DUP_STRS_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->ProviderName);
   zx_dup_attr(c, x->IsPassive);
-  zx_dup_attr(c, x->mustUnderstand);
+  zx_dup_attr(c, x->ProviderName);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -271,10 +271,10 @@ struct zx_ecp_Request_s* zx_DEEP_CLONE_ecp_Request(struct zx_ctx* c, struct zx_e
   x = (struct zx_ecp_Request_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_ecp_Request_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->ProviderName = zx_clone_attr(c, x->ProviderName);
   x->IsPassive = zx_clone_attr(c, x->IsPassive);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
+  x->ProviderName = zx_clone_attr(c, x->ProviderName);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
   {
       struct zx_sa_Issuer_s* e;
@@ -389,8 +389,8 @@ void zx_FREE_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x, int fre
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_free_attr(c, x->AssertionConsumerServiceURL, free_strs);
-  zx_free_attr(c, x->mustUnderstand, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -427,8 +427,8 @@ void zx_DUP_STRS_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
   zx_dup_attr(c, x->AssertionConsumerServiceURL);
-  zx_dup_attr(c, x->mustUnderstand);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -445,8 +445,8 @@ struct zx_ecp_Response_s* zx_DEEP_CLONE_ecp_Response(struct zx_ctx* c, struct zx
   /* *** deal with xmlns specifications in exc c14n way */
 
   x->AssertionConsumerServiceURL = zx_clone_attr(c, x->AssertionConsumerServiceURL);
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
   x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;

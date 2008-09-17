@@ -1146,9 +1146,9 @@ void zx_FREE_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x, int free_
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->type, free_strs);
-  zx_free_attr(c, x->href, free_strs);
   zx_free_attr(c, x->allowAdaptations, free_strs);
+  zx_free_attr(c, x->href, free_strs);
+  zx_free_attr(c, x->type, free_strs);
 
 
 
@@ -1184,9 +1184,9 @@ void zx_DUP_STRS_mm7_Content(struct zx_ctx* c, struct zx_mm7_Content_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->type);
-  zx_dup_attr(c, x->href);
   zx_dup_attr(c, x->allowAdaptations);
+  zx_dup_attr(c, x->href);
+  zx_dup_attr(c, x->type);
 
 
 }
@@ -1202,9 +1202,9 @@ struct zx_mm7_Content_s* zx_DEEP_CLONE_mm7_Content(struct zx_ctx* c, struct zx_m
   x = (struct zx_mm7_Content_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_mm7_Content_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->type = zx_clone_attr(c, x->type);
-  x->href = zx_clone_attr(c, x->href);
   x->allowAdaptations = zx_clone_attr(c, x->allowAdaptations);
+  x->href = zx_clone_attr(c, x->href);
+  x->type = zx_clone_attr(c, x->type);
 
 
   return x;
@@ -3371,8 +3371,8 @@ void zx_FREE_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x, int free_st
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->displayOnly, free_strs);
   zx_free_attr(c, x->addressCoding, free_strs);
+  zx_free_attr(c, x->displayOnly, free_strs);
   zx_free_attr(c, x->id, free_strs);
 
 
@@ -3409,8 +3409,8 @@ void zx_DUP_STRS_mm7_Number(struct zx_ctx* c, struct zx_mm7_Number_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->displayOnly);
   zx_dup_attr(c, x->addressCoding);
+  zx_dup_attr(c, x->displayOnly);
   zx_dup_attr(c, x->id);
 
 
@@ -3427,8 +3427,8 @@ struct zx_mm7_Number_s* zx_DEEP_CLONE_mm7_Number(struct zx_ctx* c, struct zx_mm7
   x = (struct zx_mm7_Number_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_mm7_Number_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->displayOnly = zx_clone_attr(c, x->displayOnly);
   x->addressCoding = zx_clone_attr(c, x->addressCoding);
+  x->displayOnly = zx_clone_attr(c, x->displayOnly);
   x->id = zx_clone_attr(c, x->id);
 
 
@@ -4336,8 +4336,8 @@ void zx_FREE_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Address_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->displayOnly, free_strs);
   zx_free_attr(c, x->addressCoding, free_strs);
+  zx_free_attr(c, x->displayOnly, free_strs);
   zx_free_attr(c, x->id, free_strs);
 
 
@@ -4374,8 +4374,8 @@ void zx_DUP_STRS_mm7_RFC2822Address(struct zx_ctx* c, struct zx_mm7_RFC2822Addre
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->displayOnly);
   zx_dup_attr(c, x->addressCoding);
+  zx_dup_attr(c, x->displayOnly);
   zx_dup_attr(c, x->id);
 
 
@@ -4392,8 +4392,8 @@ struct zx_mm7_RFC2822Address_s* zx_DEEP_CLONE_mm7_RFC2822Address(struct zx_ctx* 
   x = (struct zx_mm7_RFC2822Address_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_mm7_RFC2822Address_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->displayOnly = zx_clone_attr(c, x->displayOnly);
   x->addressCoding = zx_clone_attr(c, x->addressCoding);
+  x->displayOnly = zx_clone_attr(c, x->displayOnly);
   x->id = zx_clone_attr(c, x->id);
 
 
@@ -7128,8 +7128,8 @@ void zx_FREE_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x, int f
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->displayOnly, free_strs);
   zx_free_attr(c, x->addressCoding, free_strs);
+  zx_free_attr(c, x->displayOnly, free_strs);
   zx_free_attr(c, x->id, free_strs);
 
 
@@ -7166,8 +7166,8 @@ void zx_DUP_STRS_mm7_ShortCode(struct zx_ctx* c, struct zx_mm7_ShortCode_s* x)
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->displayOnly);
   zx_dup_attr(c, x->addressCoding);
+  zx_dup_attr(c, x->displayOnly);
   zx_dup_attr(c, x->id);
 
 
@@ -7184,8 +7184,8 @@ struct zx_mm7_ShortCode_s* zx_DEEP_CLONE_mm7_ShortCode(struct zx_ctx* c, struct 
   x = (struct zx_mm7_ShortCode_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_mm7_ShortCode_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->displayOnly = zx_clone_attr(c, x->displayOnly);
   x->addressCoding = zx_clone_attr(c, x->addressCoding);
+  x->displayOnly = zx_clone_attr(c, x->displayOnly);
   x->id = zx_clone_attr(c, x->id);
 
 
@@ -8743,9 +8743,9 @@ void zx_FREE_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID_s* 
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->mustUnderstand, free_strs);
-  zx_free_attr(c, x->encodingStyle, free_strs);
   zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->encodingStyle, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
 
 
 
@@ -8781,9 +8781,9 @@ void zx_DUP_STRS_mm7_TransactionID(struct zx_ctx* c, struct zx_mm7_TransactionID
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->mustUnderstand);
-  zx_dup_attr(c, x->encodingStyle);
   zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->encodingStyle);
+  zx_dup_attr(c, x->mustUnderstand);
 
 
 }
@@ -8799,9 +8799,9 @@ struct zx_mm7_TransactionID_s* zx_DEEP_CLONE_mm7_TransactionID(struct zx_ctx* c,
   x = (struct zx_mm7_TransactionID_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_mm7_TransactionID_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
-  x->encodingStyle = zx_clone_attr(c, x->encodingStyle);
   x->actor = zx_clone_attr(c, x->actor);
+  x->encodingStyle = zx_clone_attr(c, x->encodingStyle);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
 
   return x;
@@ -8873,8 +8873,8 @@ void zx_FREE_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabilities_s
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->UAProf, free_strs);
   zx_free_attr(c, x->TimeStamp, free_strs);
+  zx_free_attr(c, x->UAProf, free_strs);
 
 
 
@@ -8910,8 +8910,8 @@ void zx_DUP_STRS_mm7_UACapabilities(struct zx_ctx* c, struct zx_mm7_UACapabiliti
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->UAProf);
   zx_dup_attr(c, x->TimeStamp);
+  zx_dup_attr(c, x->UAProf);
 
 
 }
@@ -8927,8 +8927,8 @@ struct zx_mm7_UACapabilities_s* zx_DEEP_CLONE_mm7_UACapabilities(struct zx_ctx* 
   x = (struct zx_mm7_UACapabilities_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_mm7_UACapabilities_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->UAProf = zx_clone_attr(c, x->UAProf);
   x->TimeStamp = zx_clone_attr(c, x->TimeStamp);
+  x->UAProf = zx_clone_attr(c, x->UAProf);
 
 
   return x;

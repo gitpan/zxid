@@ -232,17 +232,17 @@ struct zx_sp11_Request_s {
   struct zx_sp11_AuthorizationDecisionQuery_s* AuthorizationDecisionQuery;	/* {0,1} nada */
   struct zx_elem_s* AssertionIDReference;	/* {1,-1} xs:NCName */
   struct zx_elem_s* AssertionArtifact;	/* {1,-1} xs:string */
-  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
+  struct zx_str* RequestID;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp11_Request_GET_RequestID(struct zx_sp11_Request_s* x);
+struct zx_str* zx_sp11_Request_GET_IssueInstant(struct zx_sp11_Request_s* x);
 struct zx_str* zx_sp11_Request_GET_MajorVersion(struct zx_sp11_Request_s* x);
 struct zx_str* zx_sp11_Request_GET_MinorVersion(struct zx_sp11_Request_s* x);
-struct zx_str* zx_sp11_Request_GET_IssueInstant(struct zx_sp11_Request_s* x);
+struct zx_str* zx_sp11_Request_GET_RequestID(struct zx_sp11_Request_s* x);
 
 struct zx_elem_s* zx_sp11_Request_GET_RespondWith(struct zx_sp11_Request_s* x, int n);
 struct zx_ds_Signature_s* zx_sp11_Request_GET_Signature(struct zx_sp11_Request_s* x, int n);
@@ -284,10 +284,10 @@ void zx_sp11_Request_PUSH_AuthorizationDecisionQuery(struct zx_sp11_Request_s* x
 void zx_sp11_Request_PUSH_AssertionIDReference(struct zx_sp11_Request_s* x, struct zx_elem_s* y);
 void zx_sp11_Request_PUSH_AssertionArtifact(struct zx_sp11_Request_s* x, struct zx_elem_s* y);
 
-void zx_sp11_Request_PUT_RequestID(struct zx_sp11_Request_s* x, struct zx_str* y);
+void zx_sp11_Request_PUT_IssueInstant(struct zx_sp11_Request_s* x, struct zx_str* y);
 void zx_sp11_Request_PUT_MajorVersion(struct zx_sp11_Request_s* x, struct zx_str* y);
 void zx_sp11_Request_PUT_MinorVersion(struct zx_sp11_Request_s* x, struct zx_str* y);
-void zx_sp11_Request_PUT_IssueInstant(struct zx_sp11_Request_s* x, struct zx_str* y);
+void zx_sp11_Request_PUT_RequestID(struct zx_sp11_Request_s* x, struct zx_str* y);
 
 void zx_sp11_Request_PUT_RespondWith(struct zx_sp11_Request_s* x, int n, struct zx_elem_s* y);
 void zx_sp11_Request_PUT_Signature(struct zx_sp11_Request_s* x, int n, struct zx_ds_Signature_s* y);
@@ -358,21 +358,21 @@ struct zx_sp11_Response_s {
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sp11_Status_s* Status;	/* {1,1} nada */
   struct zx_sa11_Assertion_s* Assertion;	/* {0,-1} nada */
-  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
   struct zx_str* InResponseTo;	/* {0,1} attribute xs:NCName */
+  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* MajorVersion;	/* {1,1} attribute xs:integer */
   struct zx_str* MinorVersion;	/* {1,1} attribute xs:integer */
-  struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Recipient;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* ResponseID;	/* {1,1} attribute xs:ID */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_sp11_Response_GET_ResponseID(struct zx_sp11_Response_s* x);
 struct zx_str* zx_sp11_Response_GET_InResponseTo(struct zx_sp11_Response_s* x);
+struct zx_str* zx_sp11_Response_GET_IssueInstant(struct zx_sp11_Response_s* x);
 struct zx_str* zx_sp11_Response_GET_MajorVersion(struct zx_sp11_Response_s* x);
 struct zx_str* zx_sp11_Response_GET_MinorVersion(struct zx_sp11_Response_s* x);
-struct zx_str* zx_sp11_Response_GET_IssueInstant(struct zx_sp11_Response_s* x);
 struct zx_str* zx_sp11_Response_GET_Recipient(struct zx_sp11_Response_s* x);
+struct zx_str* zx_sp11_Response_GET_ResponseID(struct zx_sp11_Response_s* x);
 
 struct zx_ds_Signature_s* zx_sp11_Response_GET_Signature(struct zx_sp11_Response_s* x, int n);
 struct zx_sp11_Status_s* zx_sp11_Response_GET_Status(struct zx_sp11_Response_s* x, int n);
@@ -390,12 +390,12 @@ void zx_sp11_Response_PUSH_Signature(struct zx_sp11_Response_s* x, struct zx_ds_
 void zx_sp11_Response_PUSH_Status(struct zx_sp11_Response_s* x, struct zx_sp11_Status_s* y);
 void zx_sp11_Response_PUSH_Assertion(struct zx_sp11_Response_s* x, struct zx_sa11_Assertion_s* y);
 
-void zx_sp11_Response_PUT_ResponseID(struct zx_sp11_Response_s* x, struct zx_str* y);
 void zx_sp11_Response_PUT_InResponseTo(struct zx_sp11_Response_s* x, struct zx_str* y);
+void zx_sp11_Response_PUT_IssueInstant(struct zx_sp11_Response_s* x, struct zx_str* y);
 void zx_sp11_Response_PUT_MajorVersion(struct zx_sp11_Response_s* x, struct zx_str* y);
 void zx_sp11_Response_PUT_MinorVersion(struct zx_sp11_Response_s* x, struct zx_str* y);
-void zx_sp11_Response_PUT_IssueInstant(struct zx_sp11_Response_s* x, struct zx_str* y);
 void zx_sp11_Response_PUT_Recipient(struct zx_sp11_Response_s* x, struct zx_str* y);
+void zx_sp11_Response_PUT_ResponseID(struct zx_sp11_Response_s* x, struct zx_str* y);
 
 void zx_sp11_Response_PUT_Signature(struct zx_sp11_Response_s* x, int n, struct zx_ds_Signature_s* y);
 void zx_sp11_Response_PUT_Status(struct zx_sp11_Response_s* x, int n, struct zx_sp11_Status_s* y);

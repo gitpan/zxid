@@ -1,15 +1,16 @@
 /* zxidses.c  -  Handwritten functions for SP session handling
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidses.c,v 1.10 2007/02/26 04:38:21 sampo Exp $
+ * $Id: zxidses.c,v 1.16 2008-08-07 13:06:59 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
  * 5.2.2007,  added EPR handling --Sampo
+ * 7.8.2008,  added session lookup by NameID --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
@@ -21,6 +22,7 @@
 #include <stdio.h>
 #include <dirent.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include "errmac.h"
 #include "zxid.h"
@@ -31,7 +33,7 @@
 /* ============== Sessions ============== */
 
 #define ZXID_MAX_SES (256)      /* Just the session nid and path to assertion */
-#define ZXID_MAX_A7N (32*1024)
+#define ZXID_MAX_A7N (128*1024)
 
 /* When session is loaded, we only get the reference to assertion. This
  * is to avoid parsing overhead when the assertion really is not needed.
@@ -41,8 +43,10 @@
 /* Called by:  zxid_idp_loc, zxid_ses_to_ldif, zxid_snarf_eprs_from_ses, zxid_sp_nireg_location, zxid_sp_nireg_redir, zxid_sp_nireg_soap, zxid_sp_slo_location, zxid_sp_slo_redir, zxid_sp_slo_soap */
 int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
 {
-  struct zx_str* nid;
+  struct zx_sa_EncryptedID_s* encid;
+  struct zx_str* ss;
   struct zx_root_s* r;
+  struct zx_str* subj;
   int gotall;
   if (ses->a7n || ses->a7n11 || ses->a7n12)  /* already in cache */
     return 1;
@@ -68,25 +72,49 @@ int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
   ses->a7n   = r->Assertion;
   ses->a7n11 = r->sa11_Assertion;
   ses->a7n12 = r->ff12_Assertion;
-  if (ses->a7n)
-    nid = ses->a7n->Subject->NameID->gg.content;
-  else if (ses->a7n11)
-    nid = ses->a7n11->AuthenticationStatement->Subject->NameIdentifier->gg.content;
+  if (ses->a7n && ses->a7n->Subject) {
+    ses->nameid = ses->a7n->Subject->NameID;
+    encid = ses->a7n->Subject->EncryptedID;
+    if (!ses->nameid && encid) {
+      ss = zxenc_privkey_dec(cf, encid->EncryptedData, encid->EncryptedKey);
+      zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, ss->s, ss->s + ss->len);
+      r = zx_DEC_root(cf->ctx, 0, 1);
+      if (!r) {
+	ERR("Failed to parse EncryptedID buf(%.*s)", ss->len, ss->s);
+	return 0;
+      }
+      ses->nameid = r->NameID;
+    }
+    if (ses->nameid)
+      subj = ses->nameid->gg.content;
+  } else if (ses->a7n11)
+    subj = ses->a7n11->AuthenticationStatement->Subject->NameIdentifier->gg.content;
   else if (ses->a7n12)
-    nid = ses->a7n12->AuthenticationStatement->Subject->NameIdentifier->gg.content;
+    subj = ses->a7n12->AuthenticationStatement->Subject->NameIdentifier->gg.content;
   
-  if (nid) {
+  if (subj) {
     if (ses->nid) {
-      if (memcmp(ses->nid, nid->s, nid->len)) {
+      if (memcmp(ses->nid, subj->s, subj->len)) {
 	ERR("Session sid(%s), nid(%s), SSO assertion in path(%s) had different nid(%.*s). a7n data(%.*s)",
-	    ses->sid, ses->nid, ses->sso_a7n_path, nid->len, nid->s, gotall, ses->sso_a7n_buf);
+	    ses->sid, ses->nid, ses->sso_a7n_path, subj->len, subj->s, gotall, ses->sso_a7n_buf);
       }
     } else
-      ses->nid = zx_str_to_c(cf->ctx, nid);
+      ses->nid = zx_str_to_c(cf->ctx, subj);
   } else
     ERR("Session sid(%s) SSO assertion in path(%s) did not have Name ID. a7n data(%.*s)",
 	ses->sid, ses->sso_a7n_path, gotall, ses->sso_a7n_buf);
   return 1;
+}
+
+struct zxid_entity* zxid_get_ses_idp(struct zxid_conf* cf, struct zxid_ses* ses)
+{
+  if (!zxid_get_ses_sso_a7n(cf, ses))
+    return 0;
+  if (!ses->a7n || ! ses->a7n->Issuer) {
+    ERR("Session assertion is missing Issuer (the IdP) %p", ses->a7n);
+    return 0;
+  }
+  return zxid_get_ent_ss(cf, ses->a7n->Issuer->gg.content);
 }
 
 /* Allocate memory and get session object from the filesystem */
@@ -105,7 +133,7 @@ struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
 
 /* Get simple session object from the filesystem. This just gets the nameid
  * and reference to the assertion. Use zxid_get_ses_sso_a7n() to actually
- * load the assertion, if needed. */
+ * load the assertion, if needed. Returns 1 if session gotten, 0 if fail. */
 
 /* Called by:  main, zxid_fetch_ses, zxid_simple_cf */
 int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
@@ -135,7 +163,12 @@ int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
     *p++ = 0;
     ses->sso_a7n_path = p;
   }
-  D("GOT ses(%s) nid(%s) sso_a7n_path(%s)", sid, ses->nid, STRNULLCHK(ses->sso_a7n_path));
+  p = strchr(p, '|');
+  if (p) {
+    *p++ = 0;
+    ses->sesix = p;
+  }
+  D("GOT ses(%s) nid(%s) sso_a7n_path(%s) sesix(%s)", sid, ses->nid, STRNULLCHK(ses->sso_a7n_path), STRNULLCHK(ses->sesix));
   return 1;
 }
 
@@ -146,13 +179,11 @@ int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
 int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   char dir[ZXID_MAX_BUF];
-  char* sesbuf;
-  int fd, len;
+  char* buf;
   struct zx_str* ss;
   
   if (ses->sid) {
-    fd = strlen(ses->sid);
-    if (fd != strspn(ses->sid, safe_basis_64)) {
+    if (strlen(ses->sid) != strspn(ses->sid, safe_basis_64)) {
       ERR("EVIL Session ID(%s)", ses->sid);
       return 0;
     }
@@ -169,25 +200,11 @@ int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses)
     return 0;
   }
   
-  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "put_ses", "%s" ZXID_SES_DIR "%s/.ses", cf->path, ses->sid);
-  if (fd == -1) return 0;
-  
-  sesbuf = ZX_ALLOC(cf->ctx, ZXID_MAX_SES);
-  
-  /* The new thinking is to reference the assertions from /var/zxid/log/rely/E/a7n/AID */
-  len = snprintf(sesbuf, ZXID_MAX_SES, "%s|%s", ses->nid, STRNULLCHK(ses->sso_a7n_path));
-  if (len < 0) {
-    perror("snprintf");
-    D("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", len);
-    len = 0;
-  }
-  if (write_all_fd(fd, sesbuf, len) == -1) {
-    perror("Trouble writing session.");
-    close(fd);
-    return 0;
-  }
-  ZX_FREE(cf->ctx, sesbuf);
-  close(fd);
+  buf = ZX_ALLOC(cf->ctx, ZXID_MAX_SES);
+  write_all_path_fmt("put_ses", ZXID_MAX_SES, buf,
+		     "%s" ZXID_SES_DIR "%s/.ses", cf->path, ses->sid,
+		     "%s|%s|%s", ses->nid, STRNULLCHK(ses->sso_a7n_path), ses->sesix?ses->sesix:"");
+  ZX_FREE(cf->ctx, buf);
   return 1;
 }
 
@@ -201,7 +218,7 @@ int zxid_del_ses(struct zxid_conf* cf, struct zxid_ses* ses)
   char new[ZXID_MAX_BUF];
   int len;
   if (!ses || !ses->sid) {
-    D("No session in place. %d", 0);
+    D("No session in place. %p", ses);
     return 0;
   }
   
@@ -253,6 +270,39 @@ int zxid_del_ses(struct zxid_conf* cf, struct zxid_ses* ses)
     }
   }
   return 1;
+}
+
+int zxid_find_ses(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_str* ses_ix, struct zx_str* nid)
+{
+  char buf[ZXID_MAX_BUF];
+  DIR* dir;
+  struct dirent * de;
+  
+  D("ses_ix(%.*s) nid(%.*s)", ses_ix?ses_ix->len:0, ses_ix?ses_ix->s:"", nid?nid->len:0, nid?nid->s:"");
+  
+  if (!name_from_path(buf, sizeof(buf), "%s" ZXID_SES_DIR, cf->path))
+    return 0;
+  
+  dir = opendir(buf);
+  if (!dir) {
+    perror("opendir to find session");
+    ERR("Finding session by opendir failed buf(%s)", buf);
+    return 0;
+  }
+  while (de = readdir(dir)) {
+    if (de->d_name[0] == '.' && ONE_OF_2(de->d_name[1], '.', 0))   /* skip . and .. */
+      continue;
+    if (zxid_get_ses(cf, ses, de->d_name)) {
+      if (nid && (!ses->nid || memcmp(ses->nid, nid->s, nid->len) || ses->nid[nid->len]))
+	continue;
+      if (ses_ix && (!ses->sesix || memcmp(ses->sesix, ses_ix->s, ses_ix->len) || ses->sesix[ses_ix->len]))
+	continue;
+      return 1;
+    }
+  }
+  closedir(dir);
+  memset(ses, 0, sizeof(struct zxid_ses));
+  return 0;
 }
 
 /* EOF  --  zxidses.c */
