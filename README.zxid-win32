@@ -1,6 +1,6 @@
 README.zxid-win32
 #################
-<<cvsid: $Id: README.zxid-win32,v 1.1 2007/02/01 06:35:32 sampo Exp $>>
+<<cvsid: $Id: README.zxid-win32,v 1.2 2009-08-30 15:09:26 sampo Exp $>>
 <<author: Sampo Kellomaki (sampo@symlabs.com)>>
 
 As of version 0.11, January 2007, the Windows port is experimental.

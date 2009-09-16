@@ -1,5 +1,5 @@
 README.zxid-php
-$Id: README.zxid-php,v 1.1 2006/09/16 05:59:57 sampo Exp $
+$Id: README.zxid-php,v 1.2 2009-09-07 16:13:02 sampo Exp $
 
 This is the PHP module for using libzxid. This php module is
 tightly integrated into the main ZXID project and distribution.

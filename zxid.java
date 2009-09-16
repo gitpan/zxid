@@ -1,11 +1,11 @@
 // zxid.java  -  Java CGI script that calls libzxid using JNI
-// Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+// Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 // Author: Sampo Kellomaki (sampo@iki.fi)
 // This is confidential unpublished proprietary source code of the author.
 // NO WARRANTY, not even implied warranties. Contains trade secrets.
 // Distribution prohibited unless authorized in writing.
 // Licensed under Apache License 2.0, see file COPYING.
-// $Id: zxid.java,v 1.10 2008-02-23 03:59:31 sampo Exp $
+// $Id: zxid.java,v 1.11 2009-03-27 18:40:46 sampo Exp $
 // 12.1.2007, created --Sampo
 
 import zxidjava.*;
@@ -18,6 +18,7 @@ public class zxid {
   public static void main(String argv[]) throws java.io.IOException
   {
       int ret;
+      zx_str rets;
       zxid_conf cf;
       System.err.print("Start...\n");
       
@@ -90,19 +91,19 @@ public class zxid {
 		  System.exit(0);
 	  break;
       case 'P':
-	  ret = zxidjni.sp_dispatch(cf, cgi, ses, cgi.getSaml_resp());
-	  System.err.println("saml_resp ret=" + ret);
-	  if (ret == zxidjniConstants.ZXID_REDIR_OK)
+	  rets = zxidjni.sp_dispatch(cf, cgi, ses);
+	  System.err.println("saml_resp ret=" + rets);
+	  if (rets.getS() == "O")
 	      System.exit(0);
-	  if (ret == zxidjniConstants.ZXID_SSO_OK)
+	  if (rets.getS() == "K")
 	      if (mgmt_screen(cf, cgi, ses, op) != 0)
 		  System.exit(0);
 	  break;
       case 'Q':
-	  ret = zxidjni.sp_dispatch(cf, cgi, ses, cgi.getSaml_req());
-	  if (ret == zxidjniConstants.ZXID_REDIR_OK)
+	  rets = zxidjni.sp_dispatch(cf, cgi, ses);
+	  if (rets.getS() == "O")
 	      System.exit(0);
-	  if (ret == zxidjniConstants.ZXID_SSO_OK)
+	  if (rets.getS() == "K")
 	      if (mgmt_screen(cf, cgi, ses, op) != 0)
 		  System.exit(0);
 	  break;
@@ -188,6 +189,7 @@ public class zxid {
   {
       int ret;
       String msg;
+      zx_str rets;
       System.err.print("mgmt op=" + op);
       switch (op) {
       case 'l':
@@ -211,14 +213,14 @@ public class zxid {
 	  msg = "SP Initiated defederation (SOAP).";
 	  break;
       case 'P':
-	  ret = zxidjni.sp_dispatch(cf, cgi, ses, cgi.getSaml_resp());
-	  if (ret == zxidjniConstants.ZXID_OK) return 0;
-	  if (ret == zxidjniConstants.ZXID_REDIR_OK) return 1;
+	  rets = zxidjni.sp_dispatch(cf, cgi, ses);
+	  if (rets.getS() == "O") return 0;
+	  if (rets.getS() == "K") return 1; // REDIR OK
 	  break;
       case 'Q':
-	  ret = zxidjni.sp_dispatch(cf, cgi, ses, cgi.getSaml_req());
-	  if (ret == zxidjniConstants.ZXID_OK) return 0;
-	  if (ret == zxidjniConstants.ZXID_REDIR_OK) return 1;
+	  rets = zxidjni.sp_dispatch(cf, cgi, ses);
+	  if (rets.getS() == "O") return 0;
+	  if (rets.getS() == "K") return 1; // REDIR OK
 	  break;
       }
       

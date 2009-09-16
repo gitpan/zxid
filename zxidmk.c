@@ -1,14 +1,16 @@
 /* zxidmk.c  -  Handwritten nitty-gritty functions for constructing various elems
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmk.c,v 1.13 2008-04-15 08:45:09 sampo Exp $
+ * $Id: zxidmk.c,v 1.24 2009-09-07 16:13:02 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 8.10.2007, added signing ArtifactResolve --Sampo
+ * 7.10.2008, added documentation --Sampo
+ * 24.8.2009, added XACML stuff --Sampo
  */
 
 #include "errmac.h"
@@ -19,7 +21,7 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
-/* Interpret ZXID standard form fields to construct a XML structure for AuthnRequest */
+/*() Interpret ZXID standard form fields to construct a XML structure for AuthnRequest */
 
 /* Called by:  zxid_lecp_check, zxid_start_sso_url */
 struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid_cgi* cgi)
@@ -34,7 +36,7 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid
   if (BOOL_STR_TEST(cgi->force_authn))    ar->ForceAuthn = zx_ref_str(cf->ctx, ZXID_TRUE);
   if (BOOL_STR_TEST(cgi->ispassive))      ar->IsPassive = zx_ref_str(cf->ctx, ZXID_TRUE);
   if (cgi->consent && cgi->consent[0])    ar->Consent = zx_ref_str(cf->ctx, cgi->consent);
-  D("nid_fmt(%s) allow_create=%c", cgi->nid_fmt, cgi->allow_create);
+  D("nid_fmt(%s) allow_create=%c ispassive=%c", cgi->nid_fmt, cgi->allow_create, cgi->ispassive);
   if (cgi->nid_fmt && cgi->nid_fmt[0] || cgi->affil && cgi->affil[0]
       || BOOL_STR_TEST(cgi->allow_create)) {
     ar->NameIDPolicy = zx_NEW_sp_NameIDPolicy(cf->ctx);
@@ -72,6 +74,8 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(struct zxid_conf* cf, struct zxid
   return ar;
 }
 
+/*() Make the body for the ArtifactResolve SOAP message, signing it if needed. */
+
 /* Called by:  zxid_sp_deref_art */
 struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(struct zxid_conf* cf, struct zxid_entity* idp_meta, char* artifact)
 {
@@ -95,6 +99,8 @@ struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(struct zxid_conf* cf, struct z
   return ar;
 }
 
+/*() Create SAML protocol <Status> element, given various levels of error input. */
+
 /* Called by:  zxid_OK */
 struct zx_sp_Status_s* zxid_mk_Status(struct zxid_conf* cf, char* sc1, char* sc2, char* msg)
 {
@@ -110,17 +116,45 @@ struct zx_sp_Status_s* zxid_mk_Status(struct zxid_conf* cf, char* sc1, char* sc2
   return st;
 }
 
-/* Called by:  zxid_sp_dispatch x2, zxid_sp_dispatch_location x2, zxid_sp_soap_dispatch x2 */
+/*() Create SAML <Status> element indicating success. */
+
+/* Called by:  zxid_idp_soap_dispatch, zxid_mk_saml_resp, zxid_mni_do, zxid_mni_do_ss, zxid_slo_resp_redir, zxid_sp_soap_dispatch */
 struct zx_sp_Status_s* zxid_OK(struct zxid_conf* cf)
 {
   return zxid_mk_Status(cf, SAML2_SC_SUCCESS, 0, 0);
 }
 
-/* Called by:  zxid_sp_slo_location, zxid_sp_slo_redir, zxid_sp_slo_soap */
+/*() Create EncryptedID given normal NameID and metadata of destination. Encryption
+ * will be done using encryption certificate of the receiver identified by the metadata. */
+
+/* Called by:  zxid_mk_logout, zxid_mk_mni, zxid_mk_subj */
+struct zx_sa_EncryptedID_s* zxid_mk_enc_id(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zxid_entity* meta)
+{
+  struct zx_sa_EncryptedID_s* encid = zx_NEW_sa_EncryptedID(cf->ctx);
+  struct zx_str* ss = zx_EASY_ENC_SO_sa_NameID(cf->ctx, nid);
+  encid->EncryptedData = zxenc_pubkey_enc(cf, ss, &encid->EncryptedKey, meta->enc_cert, "38");
+  zx_str_free(cf->ctx, ss);
+  return encid;
+}
+
+/*() Create EncryptedAssertion given normal A7N and metadata of destination. Encryption
+ * will be done using encryption certificate of the receiver identified by the metadata. */
+
+/* Called by:  zxid_idp_sso x4 */
+struct zx_sa_EncryptedAssertion_s* zxid_mk_enc_a7n(struct zxid_conf* cf, struct zx_sa_Assertion_s* a7n, struct zxid_entity* meta)
+{
+  struct zx_sa_EncryptedAssertion_s* enc_a7n = zx_NEW_sa_EncryptedAssertion(cf->ctx);
+  struct zx_str* ss = zx_EASY_ENC_SO_sa_Assertion(cf->ctx, a7n);
+  enc_a7n->EncryptedData = zxenc_pubkey_enc(cf, ss, &enc_a7n->EncryptedKey, meta->enc_cert, "39");
+  zx_str_free(cf->ctx, ss);
+  return enc_a7n;
+}
+
+/*() Create XML data structure for <LogoutRequest> element. Low level API. */
+
+/* Called by:  test_ibm_cert_problem_enc_dec, zxid_sp_slo_redir, zxid_sp_slo_soap */
 struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* ses_ix, struct zxid_entity* idp_meta)
 {
-  struct zx_str* ss;
-  struct zx_xenc_EncryptedKey_s* ek;
   struct zx_sp_LogoutRequest_s* r = zx_NEW_sp_LogoutRequest(cf->ctx);
   r->Issuer = zxid_my_issuer(cf);
   r->ID = zxid_mk_id(cf, "L", ZXID_ID_BITS);
@@ -128,21 +162,18 @@ struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_
   r->IssueInstant = zxid_date_time(cf, time(0));
 
   D("nameid_enc(%d) idp_meta(%p) enc_cert(%p)", cf->nameid_enc, idp_meta, idp_meta->enc_cert);
-  if (cf->nameid_enc && idp_meta) {
-    ss = zx_EASY_ENC_SO_sa_NameID(cf->ctx, nid);
-    r->EncryptedID = zx_NEW_sa_EncryptedID(cf->ctx);
-    r->EncryptedID->EncryptedData = zxenc_pubkey_enc(cf, ss, &ek, idp_meta->enc_cert, "38");
-    r->EncryptedID->EncryptedKey = ek;
-    zx_str_free(cf->ctx, ss);
-  } else {
+  if (cf->nameid_enc && idp_meta)
+    r->EncryptedID = zxid_mk_enc_id(cf, nid, idp_meta);
+  else
     r->NameID = nid;
-  }
   if (ses_ix)
     r->SessionIndex = zx_new_simple_elem(cf->ctx, ses_ix);
   return r;
 }
 
-/* Called by:  zxid_sp_dispatch, zxid_sp_dispatch_location, zxid_sp_soap_dispatch */
+/*() Create XML data structure for <LogoutResponse> element. Low level API. */
+
+/* Called by:  zxid_idp_soap_dispatch, zxid_slo_resp_redir, zxid_sp_soap_dispatch */
 struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id)
 {
   struct zx_sp_LogoutResponse_s* r = zx_NEW_sp_LogoutResponse(cf->ctx);
@@ -156,8 +187,10 @@ struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct 
   return r;
 }
 
-/* Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied). */
-/* Called by:  zxid_sp_mni_location, zxid_sp_mni_redir, zxid_sp_mni_soap */
+/*() Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied).
+ * Create XML data structure for <ManageNameIDRequest> element. Low level API. */
+
+/* Called by:  zxid_sp_mni_redir, zxid_sp_mni_soap */
 struct zx_sp_ManageNameIDRequest_s* zxid_mk_mni(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* new_nym, struct zxid_entity* idp_meta)
 {
   struct zx_str* ss;
@@ -168,11 +201,7 @@ struct zx_sp_ManageNameIDRequest_s* zxid_mk_mni(struct zxid_conf* cf, struct zx_
   r->Version = zx_ref_str(cf->ctx, SAML2_VERSION);
   r->IssueInstant = zxid_date_time(cf, time(0));
   if (cf->nameid_enc && idp_meta) {
-    ss = zx_EASY_ENC_SO_sa_NameID(cf->ctx, nid);
-    r->EncryptedID = zx_NEW_sa_EncryptedID(cf->ctx);
-    r->EncryptedID->EncryptedData = zxenc_pubkey_enc(cf, ss, &ek, idp_meta->enc_cert, "38");
-    r->EncryptedID->EncryptedKey = ek;
-    zx_str_free(cf->ctx, ss);
+    r->EncryptedID = zxid_mk_enc_id(cf, nid, idp_meta);
     if (new_nym && new_nym->len) {
       struct zx_elem_s* newid = zx_new_simple_elem(cf->ctx, new_nym);
       ss = zx_EASY_ENC_SO_simple_elem(cf->ctx, newid, "sp:NewID", sizeof("sp:NewID")-1, zx_ns_tab+zx_xmlns_ix_sp);
@@ -193,7 +222,9 @@ struct zx_sp_ManageNameIDRequest_s* zxid_mk_mni(struct zxid_conf* cf, struct zx_
   return r;
 }
 
-/* Called by:  zxid_sp_dispatch, zxid_sp_dispatch_location, zxid_sp_soap_dispatch */
+/*() Create XML data structure for <ManageNameIDResponse> element. Low level API.*/
+
+/* Called by:  zxid_mni_do, zxid_mni_do_ss */
 struct zx_sp_ManageNameIDResponse_s* zxid_mk_mni_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id)
 {
   struct zx_sp_ManageNameIDResponse_s* r = zx_NEW_sp_ManageNameIDResponse(cf->ctx);
@@ -204,6 +235,148 @@ struct zx_sp_ManageNameIDResponse_s* zxid_mk_mni_resp(struct zxid_conf* cf, stru
   if (req_id)
     r->InResponseTo = req_id;
   r->Status = st;
+  return r;
+}
+
+/* ======== IdP SSO Related ======== */
+
+/*() Constructor for Assertion */
+
+/* Called by:  zxid_idp_sso */
+struct zx_sa_Assertion_s* zxid_mk_a7n(struct zxid_conf* cf, struct zx_str* audience, struct zx_sa_Subject_s* subj, struct zx_sa_AuthnStatement_s* an_stmt, struct zx_sa_AttributeStatement_s* at_stmt, struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt)
+{
+  struct zx_sa_Assertion_s* a7n =  zx_NEW_sa_Assertion(cf->ctx);
+  a7n->Version = zx_dup_str(cf->ctx, SAML2_VERSION);
+  a7n->ID = zxid_mk_id(cf, "A", ZXID_ID_BITS);
+  a7n->Issuer = zxid_my_issuer(cf);
+  a7n->IssueInstant = zxid_date_time(cf, time(0));
+  a7n->Subject = subj;
+  a7n->Conditions = zx_NEW_sa_Conditions(cf->ctx);
+  a7n->Conditions->NotBefore = zxid_date_time(cf, time(0));
+  a7n->Conditions->NotOnOrAfter = zxid_date_time(cf, time(0) + cf->a7nttl);
+  if (audience) {
+    a7n->Conditions->AudienceRestriction = zx_NEW_sa_AudienceRestriction(cf->ctx);
+    a7n->Conditions->AudienceRestriction->Audience = zx_new_simple_elem(cf->ctx, audience);
+  }
+  a7n->AuthnStatement = an_stmt;
+  a7n->AttributeStatement = at_stmt;
+  a7n->XACMLAuthzDecisionStatement = az_stmt;
+  return a7n;
+}
+
+/*() Construct Subject, possibly with EncryptedID */
+
+/* Called by:  zxid_idp_sso */
+struct zx_sa_Subject_s* zxid_mk_subj(struct zxid_conf* cf, struct zxid_entity* sp_meta, struct zx_sa_NameID_s* nid)
+{
+  struct zx_sa_Subject_s* subj = zx_NEW_sa_Subject(cf->ctx);
+
+#if 0
+  // , struct zx_str* affil, char* fmt
+  nid = zx_NEW_sa_NameID(cf->ctx);
+  nid->Format = zx_dup_str(cf->ctx, fmt);  /* *** implement persistent */
+  nid->NameQualifier = zxid_my_entity_id(cf);
+  nid->SPNameQualifier = affil;
+  if (!strcmp(fmt, SAML2_TRANSIENT_NID_FMT)) {
+    nid->gg.content = zxid_mk_id(cf, "T", ZXID_ID_BITS);
+  } else {
+    /* *** see also zxid_get_user_nameid() */
+  }
+#endif
+
+  if (cf->nameid_enc && sp_meta)
+    subj->EncryptedID = zxid_mk_enc_id(cf, nid, sp_meta);
+  else
+    subj->NameID = nid;
+  return subj;
+}
+
+/*() Construct AuthnStatement */
+
+/* Called by:  zxid_idp_sso */
+struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(struct zxid_conf* cf, struct zxid_ses* ses)
+{
+  struct zx_sa_AuthnStatement_s* an_stmt = zx_NEW_sa_AuthnStatement(cf->ctx);
+  an_stmt->SessionIndex = zx_dup_str(cf->ctx, ses->sesix);  /* *** need noncorrelatable session index */
+  an_stmt->AuthnContext = zx_NEW_sa_AuthnContext(cf->ctx);
+  if (ses->an_ctx)
+    an_stmt->AuthnContext->AuthnContextClassRef = zx_dup_simple_elem(cf->ctx, ses->an_ctx);
+  else {
+    ERR("Session(%s) lacks AuthentCOntextClassRef. Output AuthnStatement will not satisfy all processing rules. See configuration option ISSUE_AUTHNCTX_PW.", ses->sesix);
+  }
+  return an_stmt;
+}
+
+/*() Construct SAML SAML Attribute */
+
+/* Called by:  zxid_idp_sso x4 */
+struct zx_sa_Attribute_s* zxid_mk_attribute(struct zxid_conf* cf, char* name, char* val)
+{
+  struct zx_sa_Attribute_s* r = zx_NEW_sa_Attribute(cf->ctx);
+  r->Name = zx_dup_str(cf->ctx, name);
+  r->AttributeValue = zx_NEW_sa_AttributeValue(cf->ctx);
+  r->AttributeValue->gg.content = zx_dup_str(cf->ctx, val);
+  return r;
+}
+
+/*() Construct SAML protocol Response (such as may be used to carry assertion in SSO) */
+
+/* Called by:  zxid_idp_sso x4 */
+struct zx_sp_Response_s* zxid_mk_saml_resp(struct zxid_conf* cf)
+{
+  struct zx_sp_Response_s* r = zx_NEW_sp_Response(cf->ctx);
+  r->Version = zx_dup_str(cf->ctx, SAML2_VERSION);
+  r->ID = zxid_mk_id(cf, "R", ZXID_ID_BITS);
+  r->Issuer = zxid_my_issuer(cf);
+  r->IssueInstant = zxid_date_time(cf, time(0));
+  r->Status = zxid_OK(cf);
+  return r;
+}
+
+/*() Construct XACML Response */
+
+struct zx_xac_Response_s* zxid_mk_xacml_resp(struct zxid_conf* cf, char* decision)
+{
+  struct zx_xac_Response_s* resp = zx_NEW_xac_Response(cf->ctx);
+  resp->Result = zx_NEW_xac_Result(cf->ctx);
+  resp->Result->Decision = zx_ref_simple_elem(cf->ctx, decision);
+  resp->Result->Status = zx_NEW_xac_Status(cf->ctx);
+  resp->Result->Status->StatusCode = zx_NEW_xac_StatusCode(cf->ctx);
+  resp->Result->Status->StatusCode->Value
+    = zx_ref_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  return resp;
+}
+
+struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(struct zxid_conf* cf, struct zx_xac_Attribute_s* aa, struct zx_str* atid, struct zx_str* attype, struct zx_str* atissuer, struct zx_str* atvalue)
+{
+  struct zx_xac_Attribute_s* at = zx_NEW_xac_Attribute(cf->ctx);
+  ZX_NEXT(at) = aa;
+  at->AttributeId = atid;
+  at->DataType = attype;
+  at->Issuer = atissuer;
+  //at->AttributeValue = zx_NEW_xac_AttributeValue(cf->ctx);
+  at->AttributeValue = zx_new_simple_elem(cf->ctx, atvalue);
+  return at;
+}
+
+/*() Construct XACMLAuthzDecisionQuery */
+
+struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(struct zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
+{
+  struct zx_xasp_XACMLAuthzDecisionQuery_s* r = zx_NEW_xasp_XACMLAuthzDecisionQuery(cf->ctx);
+  r->Issuer = zxid_my_issuer(cf);
+  r->ID = zxid_mk_id(cf, "R", ZXID_ID_BITS);
+  r->Version = zx_ref_str(cf->ctx, SAML2_VERSION);
+  r->IssueInstant = zxid_date_time(cf, time(0));
+  r->Request = zx_NEW_xac_Request(cf->ctx);
+  r->Request->Subject  = zx_NEW_xac_Subject(cf->ctx);
+  r->Request->Subject->Attribute = subj;
+  r->Request->Resource = zx_NEW_xac_Resource(cf->ctx);
+  r->Request->Resource->Attribute = rsrc;
+  r->Request->Action   = zx_NEW_xac_Action(cf->ctx);
+  r->Request->Action->Attribute = act;
+  r->Request->Environment = zx_NEW_xac_Environment(cf->ctx);
+  r->Request->Environment->Attribute = env;
   return r;
 }
 

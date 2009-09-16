@@ -1,6 +1,6 @@
 # zxid/sg/liberty-id-sis-gl-v1.0-14.sg
 # Slightly edited, 3.3.2007, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-id-sis-gl-v1.0-14.sg,v 1.2 2007/03/05 07:41:31 sampo Exp $
+# $Id: liberty-id-sis-gl-v1.0-14.sg,v 1.3 2009-09-05 02:23:41 sampo Exp $
 # N.B. The ID Geo Location Service is based on OMA Mobile Location Protocol (MLP)
 
 target(gl, urn:liberty:id-sis-gl:2005-07)

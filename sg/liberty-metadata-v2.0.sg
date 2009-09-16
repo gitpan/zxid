@@ -1,6 +1,6 @@
 # zxid/sg/liberty-metadata-v2.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-metadata-v2.0.sg,v 1.4 2006/09/24 04:20:42 sampo Exp $
+# $Id: liberty-metadata-v2.0.sg,v 1.5 2009-09-05 02:23:41 sampo Exp $
 #
 # N.B. Older Liberty metadata, liberty-metadata-1.0-errata-v2.0.xsd,
 # urn:liberty:metadata:2003-08, is nearly identical to this one except

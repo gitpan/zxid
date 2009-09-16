@@ -1,13 +1,14 @@
 /* zxidwsc.c  -  Handwritten nitty-gritty functions for Liberty ID-WSF Web Services Client
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidwsc.c,v 1.11 2007-10-12 13:51:47 sampo Exp $
+ * $Id: zxidwsc.c,v 1.14 2009-08-30 15:09:26 sampo Exp $
  *
- * 7.1.2007, created --Sampo
+ * 7.1.2007,  created --Sampo
+ * 7.10.2008, added documentation --Sampo
  */
 
 #include "errmac.h"
@@ -21,6 +22,9 @@
 
 #define BOOL_STR_TEST(x) ((x) && (x) != '0')
 
+/*() Try to map security mechanisms across different frame works. Low level function. */
+
+/* Called by:  zxid_wsc_call */
 int zxid_map_sec_mech(struct zx_a_EndpointReference_s* epr)
 {
   int len;
@@ -81,7 +85,7 @@ int zxid_map_sec_mech(struct zx_a_EndpointReference_s* epr)
   return 0;
 }
 
-/* zxid_wsc_call() implements the main ID-WSF web service call logic, including
+/*() zxid_wsc_call() implements the main ID-WSF web service call logic, including
  * preparation of SOAP headers, use of sec mech (e.g. preparation of wsse:Security
  * header and signing of appropriate compoments of the message), and sequencing
  * of the call. In particular, it is possible that WSP requests user interaction
@@ -91,7 +95,7 @@ int zxid_map_sec_mech(struct zx_a_EndpointReference_s* epr)
  * env (rather than Body) is taken as argument so that caller can prepare
  * additional SOAP headers at will before calling this function. */
 
-/* Called by:  main x4 */
+/* Called by:  main x15, zxid_callf, zxid_get_epr */
 struct zx_e_Envelope_s* zxid_wsc_call(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr, struct zx_e_Envelope_s* env)
 {
   int i, res, secmech;
@@ -297,6 +301,10 @@ struct zx_e_Envelope_s* zxid_wsc_call(struct zxid_conf* cf, struct zxid_ses* ses
 static char zx_env_open[]  = "<e:Envelope xmlns:e=\""zx_xmlns_e"\"><e:Header></e:Header><e:Body>";
 static char zx_env_close[] = "</e:Body></e:Envelope>";
 
+/*() Create new SOAP envelope given the format string, which should
+ * be XML as string parametrized with format specifiers. */
+
+/* Called by:  zxid_callf, zxid_new_envf */
 struct zx_e_Envelope_s* vzxid_new_envf(struct zxid_conf* cf, char* body_f, va_list ap)
 {
   va_list ap2;
@@ -342,6 +350,7 @@ struct zx_e_Envelope_s* vzxid_new_envf(struct zxid_conf* cf, char* body_f, va_li
   return env;
 }
 
+/* Called by:  main */
 struct zx_e_Envelope_s* zxid_new_envf(struct zxid_conf* cf, char* body_f, ...)
 {
   struct zx_e_Envelope_s* env;
@@ -352,6 +361,21 @@ struct zx_e_Envelope_s* zxid_new_envf(struct zxid_conf* cf, char* body_f, ...)
   return env;
 }
 
+/*(i) Make a SOAP call given XML payload for SOAP <Body> specified by the
+ * format string. This is your WSC work horse for calling almost any kind
+ * of web service. Simple and intuitive specification of XML as string. No need
+ * to build complex data structures.
+ *
+ * cf:: ZXID configuration object
+ * ses:: Session object that contains the EPR cache
+ * svctype:: URN specifying the kind of service we wish to call. Used for EPR lookup or discovery
+ * body_f:: printf(3) style format string for XML payload
+ * ...:: Additional arguments that will satisfy the format specifiers in ~body_f~
+ * return:: XML data structure for SOAP response envelope. You can walk
+ *     the response to determine if it was successful and what it returned.
+ *     The macro ZXID_CHK_STATUS() may prove helpful. */
+
+/* Called by:  main */
 struct zx_e_Envelope_s* zxid_callf(struct zxid_conf* cf, struct zxid_ses* ses, char* svctype, char* body_f, ...)
 {
   struct zx_e_Envelope_s* env;

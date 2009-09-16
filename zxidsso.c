@@ -1,22 +1,21 @@
 /* zxidsso.c  -  Handwritten functions for implementing Single Sign-On logic for SP
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidsso.c,v 1.48 2008-08-07 13:06:59 sampo Exp $
+ * $Id: zxidsso.c,v 1.62 2009-09-05 02:23:41 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 30.9.2006, added signature verification --Sampo
  * 9.10.2007, added signing SOAP requests, Destination for redirects --Sampo
  * 22.3.2008, permitted passing RelayState for SSO --Sampo
+ * 7.10.2008,  added documentation --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
 
-#include <signal.h>
-#include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,63 +36,41 @@
 
 /* ============== Generating and sending AuthnReq ============== */
 
-/* This function makes the policy decision about which profile to use. */
+/*() This function makes the policy decision about which profile to
+ * use. It is only used if there was no explicit specification in the
+ * CGI form (e.g. "Login (P)" button. Currently it's a stub that
+ * always picks the artifact profile. Eventually configuration options
+ * or cgi input can be used to determine the profile in a more
+ * sophisticated way. Often zxid_mk_authn_req() will override the
+ * return value of this function by its own inspection of the CGI
+ * variables. */
 
 /* Called by:  zxid_start_sso_url */
 int zxid_pick_sso_profile(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_entity* idp_meta)
 {
+  /* More sophisticated policy may eventually go here. */
   return ZXID_SAML2_ART;
 }
 
-/* Called by:  zxid_mk_art_deref x2, zxid_mk_authn_req, zxid_mk_logout x2, zxid_mk_logout_resp x2, zxid_mk_nireg, zxid_mk_nireg_resp, zxid_put_ses */
-struct zx_str* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits)
-{
-  char bit_buf[ZXID_ID_MAX_BITS/8];
-  char base64_buf[ZXID_ID_MAX_BITS/6 + 1];
-  char* p;
-  if (bits > ZXID_ID_MAX_BITS || bits & 0x07) {
-    ERR("Requested bits(%d) more than internal limit(%d), or bits not divisible by 8.", bits, ZXID_ID_MAX_BITS);
-    return 0;
-  }
-  zx_rand(bit_buf, bits >> 3);
-  p = base64_fancy_raw(bit_buf, bits >> 3, base64_buf, safe_basis_64, 1<<31, 0, 0, '.');
-  return zx_strf(cf->ctx, "%s%.*s", prefix?prefix:"", p-base64_buf, base64_buf);
-}
-
-/* Called by:  zxid_mk_art_deref x2, zxid_mk_authn_req, zxid_mk_logout x2, zxid_mk_logout_resp x2, zxid_mk_nireg, zxid_mk_nireg_resp */
-struct zx_str* zxid_date_time(struct zxid_conf* cf, time_t secs)
-{
-  struct tm t;
-  secs += cf->timeskew;
-  GMTIME_R(secs, t);
-#if 0
-  /*                      "2002-10-31T21:42:14.002Z" */
-  return zx_strf(cf->ctx, "%04d-%02d-%02dT%02d:%02d:%02d.002Z",
-		 t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-#else
-  /*                      "2002-10-31T21:42:14Z" */
-  return zx_strf(cf->ctx, "%04d-%02d-%02dT%02d:%02d:%02dZ",
-		 t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec);
-#endif
-}
-
+/*() Map name id format form field to SAML specified URN string. */
 /* Called by:  zxid_mk_authn_req */
 char* zxid_saml2_map_nid_fmt(char* f)
 {
   switch (f[0]) {
-  case 'n' /*'none'*/:      return "";
-  case 'p' /*'prstnt'*/:    return SAML2_PERSISTENT_NID_FMT;
-  case 't' /*'trnsnt'*/:    return SAML2_TRANSIENT_NID_FMT;
-  case 'u' /*'unspfd'*/:    return SAML2_UNSPECIFIED_NID_FMT;
-  case 'e' /*'emladr'*/:    return SAML2_EMAILADDR_NID_FMT;
-  case 'x' /*'x509sn'*/:    return SAML2_X509_NID_FMT;
-  case 'w' /*'windmn'*/:    return SAML2_WINDOMAINQN_NID_FMT;
-  case 'k' /*'kerbrs'*/:    return SAML2_KERBEROS_NID_FMT;
-  case 's' /*'saml'*/:      return SAML2_ENTITY_NID_FMT;
-  default:                  return f;
+  case 'n' /*'none'*/:   return "";
+  case 'p' /*'prstnt'*/: return SAML2_PERSISTENT_NID_FMT;
+  case 't' /*'trnsnt'*/: return SAML2_TRANSIENT_NID_FMT;
+  case 'u' /*'unspfd'*/: return SAML2_UNSPECIFIED_NID_FMT;
+  case 'e' /*'emladr'*/: return SAML2_EMAILADDR_NID_FMT;
+  case 'x' /*'x509sn'*/: return SAML2_X509_NID_FMT;
+  case 'w' /*'windmn'*/: return SAML2_WINDOMAINQN_NID_FMT;
+  case 'k' /*'kerbrs'*/: return SAML2_KERBEROS_NID_FMT;
+  case 's' /*'saml'*/:   return SAML2_ENTITY_NID_FMT;
+  default:               return f;
   }
 }
 
+/*() Map protocol binding form field to SAML specified URN string. */
 /* Called by: */
 char* zxid_saml2_map_protocol_binding(char* b)
 {
@@ -101,6 +78,7 @@ char* zxid_saml2_map_protocol_binding(char* b)
   case 'r' /*'redir'*/: return SAML2_REDIR;
   case 'a' /*'art'*/:   return SAML2_ART;
   case 'p' /*'post'*/:  return SAML2_POST;
+  case 'q' /*'qsimplesig'*/:  return SAML2_POST_SIMPLE_SIGN;
   case 's' /*'soap'*/:  return SAML2_SOAP;
   case 'e' /*'ecp'*/:
     /*case 'paos':*/  return SAML2_PAOS;
@@ -108,6 +86,25 @@ char* zxid_saml2_map_protocol_binding(char* b)
   }
 }
 
+/*() Map SAML protocol binding URN to form field. */
+/* Called by:  zxid_idp_sso x3, zxid_sp_loc_by_index_raw */
+int zxid_protocol_binding_map_saml2(struct zx_str* b)
+{
+  if (!b || !b->len || !b->s) {
+    D("No binding supplied, assume redir %d", 0);
+    return 'r';
+  }
+  if (b->len == sizeof(SAML2_REDIR)-1 && !memcmp(b->s, SAML2_REDIR, b->len)) return 'r';
+  if (b->len == sizeof(SAML2_ART)-1   && !memcmp(b->s, SAML2_ART, b->len))   return 'a';
+  if (b->len == sizeof(SAML2_POST)-1  && !memcmp(b->s, SAML2_POST, b->len))  return 'p';
+  if (b->len == sizeof(SAML2_POST_SIMPLE_SIGN)-1  && !memcmp(b->s, SAML2_POST_SIMPLE_SIGN, b->len)) return 'q';
+  if (b->len == sizeof(SAML2_SOAP)-1  && !memcmp(b->s, SAML2_SOAP, b->len))  return 's';
+  if (b->len == sizeof(SAML2_PAOS)-1  && !memcmp(b->s, SAML2_PAOS, b->len))  return 'e';
+  D("Unknown binding(%.*s) supplied, assume redir.", b->len, b->s);
+  return 'r';
+}
+
+/*() Map authentication contest class ref form field to SAML specified URN string. */
 /* Called by:  zxid_mk_authn_req */
 char* zxid_saml2_map_authn_ctx(char* c)
 {
@@ -127,6 +124,11 @@ char* zxid_saml2_map_authn_ctx(char* c)
   return c;
 }
 
+/*(i) Generate an authentication request and make a URL out of it.
+ * cf::     Used for many configuration options and memory allocation
+ * cgi::    Used to pick the desired SSO profile based on hidden fields or user input.
+ * return:: Redirect URL as zx_str. Caller should eventually free this memory.
+ */
 /* Called by:  zxid_start_sso, zxid_start_sso_location */
 struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
@@ -138,11 +140,14 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
   D("start_sso: cgi=%p cgi->eid=%p eid(%s)", cgi, cgi->eid, cgi->eid?cgi->eid:"-");
   if (!cgi->pr_ix || !cgi->eid || !cgi->eid[0]) {
     D("Either protocol index or entity ID missing %d", cgi->pr_ix);
+    cgi->err = "IdP URL Missing or incorrect";
     return 0;
   }
   idp_meta = zxid_get_ent(cf, cgi->eid);
-  if (!idp_meta)
+  if (!idp_meta) {
+    cgi->err = "IdP URL incorrect or IdP does not support fetching metadata from that URL.";
     return 0;
+  }
   switch (sso_profile_ix = zxid_pick_sso_profile(cf, cgi, idp_meta)) {
   case ZXID_SAML2_ART:
   case ZXID_SAML2_POST:
@@ -150,6 +155,7 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
     if (!idp_meta->ed->IDPSSODescriptor) {
       ERR("Entity(%s) does not have IdP SSO Descriptor (metadata problem)", cgi->eid);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No IDPSSODescriptor");
+      cgi->err = "Bad IdP metadata. Try different IdP.";
       return 0;
     }
     for (sso_svc = idp_meta->ed->IDPSSODescriptor->SingleSignOnService;
@@ -158,8 +164,9 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
       if (sso_svc->Binding && !memcmp(SAML2_REDIR, sso_svc->Binding->s, sso_svc->Binding->len))
 	break;
     if (!sso_svc) {
-      ERR("Entity(%s) does not have any IdP SSO Service with " SAML2_REDIR " binding (metadata problem)", cgi->eid);
+      ERR("IdP Entity(%s) does not have any IdP SSO Service with " SAML2_REDIR " binding (metadata problem)", cgi->eid);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No redir binding");
+      cgi->err = "Bad IdP metadata. Try different IdP.";
       return 0;
     }
     ar = zxid_mk_authn_req(cf, cgi);
@@ -169,6 +176,7 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
     break;
   default:
     NEVER("Inappropriate SSO profile: %d", sso_profile_ix);
+    cgi->err = "Inappropriate SSO profile. Bad metadata?";
     return 0;
   }
   if (cf->log_level>0)
@@ -176,7 +184,9 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
   return zxid_saml2_redir_url(cf, sso_svc->Location, ars, cgi->rs);
 }
 
-/* Called by:  main, zxid_simple_cf */
+/*() Wrapper for zxid_start_sso_url(), used in CGI scripts. */
+
+/* Called by:  main x2, zxid_simple_no_ses_cf */
 int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   struct zx_str* url = zxid_start_sso_url(cf, cgi);
@@ -186,13 +196,16 @@ int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi)
   return ZXID_REDIR_OK;
 }
 
-/* Called by:  zxid_simple_cf */
+/*() Wrapper for zxid_start_sso_url(), used when Location header needs to be passed outside.
+ * return:: Location header as zx_str. Caller should eventually free this memory. */
+
+/* Called by:  zxid_simple_no_ses_cf */
 struct zx_str* zxid_start_sso_location(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   struct zx_str* ss;
   struct zx_str* url = zxid_start_sso_url(cf, cgi);
   if (!url)
-    return 0;
+    return 0; //zx_dup_str(cf->ctx, "* ERR");
   ss = zx_strf(cf->ctx, "Location: %.*s" CRLF2, url->len, url->s);
   zx_str_free(cf->ctx, url);
   return ss;
@@ -200,7 +213,12 @@ struct zx_str* zxid_start_sso_location(struct zxid_conf* cf, struct zxid_cgi* cg
 
 /* ============== Process Response and SSO Assertion ============== */
 
-/* Called by:  main, zxid_simple_cf */
+/*(i) Dereference an artifact to obtain an assertion. This is the last
+ * step in artifact SSO profile and involved making a SOAP call to the
+ * IdP. The artifact is received in saml_art CGI field, <<see:
+ * zxid_parse_cgi()>> where SAMLart query string argument is parsed. */
+
+/* Called by:  main x2, zxid_simple_no_ses_cf */
 int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
   struct zx_md_ArtifactResolutionService_s* ar_svc;
@@ -281,12 +299,14 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
   return 0;
 }
 
-/* Called by:  zxid_sp_sso_finalize */
+/*() Map ZXSIG constant to letter for log and string message. */
+
+/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize */
 void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
 {
   switch (sigres) {
   case ZXSIG_OK:
-    D("Signature validated. %d", sigres);
+    D("Signature validated. %d", 1);
     *sigval = "O";
     *sigmsg = "Signature validated.";
     break;
@@ -342,31 +362,137 @@ void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
   }
 }
 
-/* Validate authentication statement and populate session. */
+/*(i) Validates conditions required by Liberty Alliance SAML2 conformance testing.
+ *
+ * May eventually validate additional conditions as well (this is the right place
+ * to add them). N.B. It is not an error if a condition is missing, or there
+ * is no Conditions element at all.
+ *
+ * cf::      Configuration object, used to determine time slops. Potentially
+ *     used for memory allocation via cf->ctx.
+ * cgi::     Optional CGI object. If non-NULL, sigval and sigmsg will be set.
+ * ses::     Optional session object. If non-NULL, then sigres code will be set.
+ * a7n::     Assertion whose conditions are checked.
+ * myentid:: Entity ID used for checking audience restriction. Typically from zxid_my_entity_id(cf)
+ * ourts::   Timestamp for validating NotOnOrAfter and NotBefore.
+ * err::     Result argument: Error letter (as may appear in audit log entry). The returned
+ *     string will be a constant and MUST NOT be freed by the caller.
+ * return::  0 (ZXSIG_OK) if validation was successful, otherwise a ZXSIG error code. */
 
-struct zx_str unknown_str = {{0,0,0,0,0}, 1, "?"};
+/* Called by:  zxid_sp_sso_finalize */
+int zxid_validate_conditions(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n, struct zx_str* myentid, struct timeval* ourts, char** err)
+{
+  struct zx_sa_AudienceRestriction_s* audr;
+  struct zx_elem_s* aud;
+  int secs;
 
-/* zxid_sp_sso_finalize() gets called irrespective of binding (POST, Artifact)
- * and validates the SSO a7n. Then, it creates session and optionally
- * user entry. */
-/* Return 0 for failure, otherwise some success code such as ZXID_SSO_OK */
+  if (!a7n || !a7n->Conditions) {
+    INFO("Assertion does not have Conditions. %p", a7n);
+    return ZXSIG_OK;
+  }
 
-/* Called by:  zxid_sp_dispatch, zxid_sp_dispatch_location, zxid_sp_soap_dispatch x2 */
+  if (a7n->Conditions->AudienceRestriction) {
+    myentid = zxid_my_entity_id(cf);
+    for (audr = a7n->Conditions->AudienceRestriction; audr; audr = (struct zx_sa_AudienceRestriction_s*)audr->gg.g.n)
+      for (aud = audr->Audience; aud; aud = (struct zx_elem_s*)aud->g.n)
+	if (aud->content->len == myentid->len
+	    && !memcmp(aud->content->s, myentid->s, aud->content->len)) {
+	  D("Found audience. %d", 0);
+	  goto found_audience;
+	}
+    ERR("SSO warn: AudienceRestriction wrong. %d", 0);
+    if (cgi) {
+      cgi->sigval = "V";
+      cgi->sigmsg = "This SP not included in the Assertion Audience.";
+    }
+    if (ses)
+      ses->sigres = ZXSIG_AUDIENCE;
+    if (cf->audience_fatal) {
+      *err = "P";
+      return ZXSIG_AUDIENCE;
+    }
+  } else {
+    INFO("Assertion does not have AudienceRestriction. %d", 0);
+  }
+ found_audience:
+  
+  if (a7n->Conditions->NotOnOrAfter && a7n->Conditions->NotOnOrAfter->len > 18) {
+    secs = zx_date_time_to_secs(a7n->Conditions->NotOnOrAfter->s);
+    if (secs <= ourts->tv_sec) {
+      if (secs + cf->after_slop <= ourts->tv_sec) {
+	ERR("NotOnOrAfter rejected with slop of %d. Time to expiry %ld secs", cf->after_slop, secs - ourts->tv_sec);
+	if (cgi) {
+	  cgi->sigval = "V";
+	  cgi->sigmsg = "Assertion has expired.";
+	}
+	if (ses)
+	  ses->sigres = ZXSIG_TIMEOUT;
+	if (cf->timeout_fatal) {
+	  *err = "P";
+	  return ZXSIG_TIMEOUT;
+	}
+      } else {
+	D("NotOnOrAfter accepted with slop of %d. Time to expiry %ld secs", cf->after_slop, secs - ourts->tv_sec);
+      }
+    } else {
+      D("NotOnOrAfter ok. Time to expiry %ld secs", secs - ourts->tv_sec);
+    }
+  } else {
+    INFO("Assertion does not have NotOnOrAfter. %d", 0);
+  }
+  
+  if (a7n->Conditions->NotBefore && a7n->Conditions->NotBefore->len > 18) {
+    secs = zx_date_time_to_secs(a7n->Conditions->NotBefore->s);
+    if (secs > ourts->tv_sec) {
+      if (secs - cf->before_slop > ourts->tv_sec) {
+	ERR("NotBefore rejected with slop of %d. Time to validity %ld secs", cf->after_slop, secs - ourts->tv_sec);
+	if (cgi) {
+	  cgi->sigval = "V";
+	  cgi->sigmsg = "Assertion is not valid yet (too soon).";
+	}
+	if (ses)
+	  ses->sigres = ZXSIG_TIMEOUT;
+	if (cf->timeout_fatal) {
+	  *err = "P";
+	  return ZXSIG_TIMEOUT;
+	}
+      } else {
+	D("NotBefore accepted with slop of %d. Time to validity %ld secs", cf->after_slop, secs - ourts->tv_sec);
+      }
+    } else {
+      D("NotBefore ok. Time from validity %ld secs", ourts->tv_sec - secs);
+    }
+  } else {
+    INFO("Assertion does not have NotBefore. %d", 0);
+  }
+  return ZXSIG_OK;
+}
+
+struct zx_str unknown_str = {{0,0,0,0,0}, 1, "??"};  /* Static string used as dummy value. */
+
+/*(i) zxid_sp_sso_finalize() gets called irrespective of binding (POST, Artifact)
+ * and validates the SSO a7n, including the authentication statement.
+ * Then, it creates session and optionally user entry.
+ *
+ * cf::  Configuration object, used to determine time slops, potentially memalloc via cf->ctx
+ * cgi:: CGI object. sigval and sigmsg may be set.
+ * ses:: Session object. Will be modified according to new session created from the SSO assertion.
+ * a7n:: Single Sign-On assertion
+ * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
+
+/* Called by:  main, zxid_sp_dig_sso_a7n */
 int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n)
 {
-  char* err = "S";
-  int secs;
+  char* err = "S"; /* See: RES in zxid-log.pd, section "ZXID Log Format" */
   struct timeval ourts;
   struct timeval srcts = {0,501000};
   struct zx_str* logpath;
-  struct zx_str* myentid;
   struct zx_str* issuer = &unknown_str;
   struct zx_str* subj = &unknown_str;
-  struct zx_sa_AudienceRestriction_s* audr;
-  struct zx_elem_s* aud;
+  struct zx_str* ss;
   struct zxsig_ref refs;
   struct zxid_entity* idp_meta;
-  ses->sigres = ZXSIG_NO_SIG;
+  /*ses->sigres = ZXSIG_NO_SIG; set earlier, do not overwrite */
   ses->a7n = a7n;
   ses->rs = cgi->rs;
   GETTIMEOFDAY(&ourts, 0);
@@ -375,12 +501,20 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
     ERR("SSO failed: no assertion supplied, or assertion didn't contain AuthnStatement. %p", a7n);
     goto erro;
   }
+  if (!a7n->IssueInstant || !a7n->IssueInstant->len || !a7n->IssueInstant->s || !a7n->IssueInstant->s[0]) {
+    ERR("SSO failed: assertion does not have IssueInstant or it is empty. %p", a7n->IssueInstant);
+    goto erro;
+  }
   srcts.tv_sec = zx_date_time_to_secs(a7n->IssueInstant->s);
   if (!a7n->Issuer || !a7n->Issuer->gg.content) {
     ERR("SSO failed: assertion does not have Issuer. %p", a7n->Issuer);
     goto erro;
   }
   issuer = a7n->Issuer->gg.content;
+  if (!issuer || !issuer->len || !issuer->s[0]) {
+    ERR("SSO failed: Issuer of the assertion is empty. %d", issuer->len);
+    goto erro;
+  }
 
   if (!a7n->Subject) {
     ERR("SSO failed: assertion does not have Subject. %p", a7n);
@@ -408,12 +542,16 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
   
   /* Validate signature (*** add Issuer trusted check, CA validation, etc.) */
   
-  idp_meta = zxid_get_ent_ss(cf, a7n->Issuer->gg.content);
+  idp_meta = zxid_get_ent_ss(cf, issuer);
   if (!idp_meta) {
-    ERR("Unable to find metadata for Issuer(%.*s).", a7n->Issuer->gg.content->len, a7n->Issuer->gg.content->s);
+    ERR("Unable to find metadata for Issuer(%.*s).", issuer->len, issuer->s);
     cgi->sigval = "I";
     cgi->sigmsg = "Issuer of Assertion unknown.";
     ses->sigres = ZXSIG_NO_SIG;
+    if (cf->nosig_fatal) {
+      err = "P";
+      goto erro;
+    }
   } else {
     if (a7n->Signature && a7n->Signature->SignedInfo && a7n->Signature->SignedInfo->Reference) {
       refs.sref = a7n->Signature->SignedInfo->Reference;
@@ -421,105 +559,43 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
       ses->sigres = zxsig_validate(cf->ctx, idp_meta->sign_cert, a7n->Signature, 1, &refs);
       zxid_sigres_map(ses->sigres, &cgi->sigval, &cgi->sigmsg);
     } else {
-      ERR("SSO warn: assertion not signed. Sigval(%s) %p", cgi->sigval, a7n->Signature);
-      cgi->sigval = "N";
-      cgi->sigmsg = "Assertion was not signed.";
-      ses->sigres = ZXSIG_NO_SIG;
-      if (cf->nosig_fatal) {
-	err = "P";
-	goto erro;
+      if (cf->msg_sig_ok && !ses->sigres) {
+	INFO("Assertion without signature accepted due to message level signature (SimpleSign) %d", 0);
+      } else {
+	ERR("SSO warn: assertion not signed. Sigval(%s) %p", STRNULLCHKNULL(cgi->sigval), a7n->Signature);
+	cgi->sigval = "N";
+	cgi->sigmsg = "Assertion was not signed.";
+	ses->sigres = ZXSIG_NO_SIG;
+	if (cf->nosig_fatal) {
+	  err = "P";
+	  goto erro;
+	}
       }
     }
   }
-  if (cf->sig_fatal && !ses->sigres) {
+  if (cf->sig_fatal && ses->sigres) {
+    ERR("Fail SSO due to failed signeture sigres=%d", ses->sigres);
     err = "P";
     goto erro;
   }
   
-  /* Validate Conditions */
-  
-  if (a7n->Conditions) {
-    if (a7n->Conditions->AudienceRestriction) {
-      myentid = zxid_my_entity_id(cf);
-      for (audr = a7n->Conditions->AudienceRestriction; audr; audr = (struct zx_sa_AudienceRestriction_s*)audr->gg.g.n)
-	for (aud = audr->Audience; aud; aud = (struct zx_elem_s*)aud->g.n)
-	  if (aud->content->len == myentid->len
-	      && !memcmp(aud->content->s, myentid->s, aud->content->len)) {
-	    D("Found audience. %d", 0);
-	    goto found_audience;
-	  }
-      ERR("SSO warn: AudienceRestriction wrong. %d", 0);
-      cgi->sigval = "V";
-      cgi->sigmsg = "This SP not included in the Assertion Audience.";
-      ses->sigres = ZXSIG_AUDIENCE;
-      if (cf->audience_fatal) {
-	err = "P";
-	goto erro;
-      }
-    } else {
-      D("Assertion does not have AudienceRestriction. %d", 0);
-    }
-  found_audience:
-
-    if (a7n->Conditions->NotOnOrAfter && a7n->Conditions->NotOnOrAfter->len > 18) {
-      secs = zx_date_time_to_secs(a7n->Conditions->NotOnOrAfter->s);
-      if (secs <= ourts.tv_sec) {
-	if (secs + cf->after_slop <= ourts.tv_sec) {
-	  ERR("NotOnOrAfter rejected with slop of %d. Time to expiry %ld secs", cf->after_slop, secs - ourts.tv_sec);
-	  cgi->sigval = "V";
-	  cgi->sigmsg = "Assertion has expired.";
-	  ses->sigres = ZXSIG_TIMEOUT;
-	  if (cf->timeout_fatal) {
-	    err = "P";
-	    goto erro;
-	  }
-	} else {
-	  D("NotOnOrAfter accepted with slop of %d. Time to expiry %ld secs", cf->after_slop, secs - ourts.tv_sec);
-	}
-      } else {
-	D("NotOnOrAfter ok. Time to expiry %ld secs", secs - ourts.tv_sec);
-      }
-    } else {
-      D("Assertion does not have NotOnOrAfter. %d", 0);
-    }
-
-    if (a7n->Conditions->NotBefore && a7n->Conditions->NotBefore->len > 18) {
-      secs = zx_date_time_to_secs(a7n->Conditions->NotBefore->s);
-      if (secs > ourts.tv_sec) {
-	if (secs - cf->before_slop > ourts.tv_sec) {
-	  ERR("NotBefore rejected with slop of %d. Time to validity %ld secs", cf->after_slop, secs - ourts.tv_sec);
-	  cgi->sigval = "V";
-	  cgi->sigmsg = "Assertion is not valid yet (too soon).";
-	  ses->sigres = ZXSIG_TIMEOUT;
-	  if (cf->timeout_fatal) {
-	    err = "P";
-	    goto erro;
-	  }
-	} else {
-	  D("NotBefore accepted with slop of %d. Time to validity %ld secs", cf->after_slop, secs - ourts.tv_sec);
-	}
-      } else {
-	D("NotBefore ok. Time from validity %ld secs", ourts.tv_sec - secs);
-      }
-    } else {
-      D("Assertion does not have NotBefore. %d", 0);
-    }
-  } else {
-    D("Assertion does not have Conditions. %d", 0);
-  }
+  if (zxid_validate_conditions(cf, cgi, ses, a7n, zxid_my_entity_id(cf), &ourts, &err))
+    goto erro;
   
   if (cf->log_rely_a7n) {
     DD("Logging... %d", 0);
-    logpath = zxlog_path(cf, a7n->Issuer->gg.content, a7n->ID, ZXLOG_RELY_DIR, ZXLOG_A7N_KIND, 1);
+    logpath = zxlog_path(cf, issuer, a7n->ID, ZXLOG_RELY_DIR, ZXLOG_A7N_KIND, 1);
     if (logpath) {
       ses->sso_a7n_path = zx_str_to_c(cf->ctx, logpath);
+      ss = zx_EASY_ENC_WO_sa_Assertion(cf->ctx, a7n);
       if (zxlog_dup_check(cf, logpath, "SSO assertion")) {
 	if (cf->dup_a7n_fatal) {
 	  err = "C";
+	  zxlog_blob(cf, cf->log_rely_a7n, logpath, ss, "sp_sso_finalize dup err");
 	  goto erro;
 	}
       }
-      zxlog_blob(cf, cf->log_rely_a7n, logpath, zx_EASY_ENC_WO_sa_Assertion(cf->ctx, a7n));
+      zxlog_blob(cf, cf->log_rely_a7n, logpath, ss, "sp_sso_finalize");
     }
   }
   DD("Creating session... %d", 0);
@@ -539,6 +615,38 @@ erro:
   zxlog(cf, &ourts, &srcts, 0, issuer, 0, a7n?a7n->ID:0, subj,
 	cgi->sigval, err, ses->nidfmt?"FEDSSO":"TMPSSO", ses->sesix?ses->sesix:"-", "Error.");
   return 0;
+}
+
+/*() Fake a login and generate a session. Used if SSO failure is configured to result
+ * anonymous session.
+ *
+ * cf::  Configuration object, used to determine time slops, potentially memalloc via cf->ctx
+ * cgi:: CGI object. sigval and sigmsg may be set.
+ * ses:: Session object. Will be modified according to new session created from the SSO assertion.
+ * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
+
+/* Called by:  zxid_sp_dig_sso_a7n */
+int zxid_sp_anon_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+{
+  cgi->sigval = "N";
+  cgi->sigmsg = "Anonymous login. No signature.";
+  ses->sigres = ZXSIG_NO_SIG;
+  ses->a7n = 0;
+  ses->rs = cgi->rs;
+  ses->nameid = 0;
+  ses->nid = "-";
+  ses->nidfmt = 0;
+  ses->sesix = 0;
+  
+  D("SSO FAIL: ANON_OK. Creating session... %p", ses);
+  
+  zxid_put_ses(cf, ses);
+  zxid_snarf_eprs_from_ses(cf, ses);  /* Harvest attributes and bootstrap(s) */
+  cgi->msg = "SSO Failure treated as anonymous login and session created.";
+  cgi->op = '-';  /* Make sure management screen does not try to redispatch. */
+  /*zxid_put_user(cf, ses->nameid->Format, ses->nameid->NameQualifier, ses->nameid->SPNameQualifier, ses->nameid->gg.content, 0);*/
+  zxlog(cf, 0, 0, 0, 0, 0, 0, 0, cgi->sigval, "K", "TMPSSO", "-", 0);
+  return ZXID_SSO_OK;
 }
 
 /* EOF  --  zxidsso.c */

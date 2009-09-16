@@ -1,6 +1,6 @@
 # zxid/sg/saml-schema-ecp-2.0.sg
 # Slightly edited, 7.2.2007, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-paos-v2.0.sg,v 1.3 2007/03/04 08:21:32 sampo Exp $
+# $Id: liberty-paos-v2.0.sg,v 1.4 2009-09-05 02:23:41 sampo Exp $
 
 target(paos,urn:liberty:paos:2006-08)
 ns(xs,http://www.w3.org/2001/XMLSchema)

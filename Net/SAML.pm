@@ -127,8 +127,7 @@ package Net::SAML;
 *idp_select_len = *Net::SAMLc::zxid_idp_select_len;
 *fed_mgmt_len = *Net::SAMLc::zxid_fed_mgmt_len;
 *idp_select_zxstr_cf = *Net::SAMLc::zxid_idp_select_zxstr_cf;
-*ses_to_ldif = *Net::SAMLc::zxid_ses_to_ldif;
-*simple_render_ses = *Net::SAMLc::zxid_simple_render_ses;
+*simple_ab_pep = *Net::SAMLc::zxid_simple_ab_pep;
 *simple_ses_active_cf = *Net::SAMLc::zxid_simple_ses_active_cf;
 *simple_no_ses_cf = *Net::SAMLc::zxid_simple_no_ses_cf;
 *zxsig_sign = *Net::SAMLc::zxsig_sign;
@@ -157,12 +156,16 @@ package Net::SAML;
 *load_cot_cache = *Net::SAMLc::zxid_load_cot_cache;
 *key_info = *Net::SAMLc::zxid_key_info;
 *key_desc = *Net::SAMLc::zxid_key_desc;
+*ar_desc = *Net::SAMLc::zxid_ar_desc;
+*sso_desc = *Net::SAMLc::zxid_sso_desc;
 *slo_desc = *Net::SAMLc::zxid_slo_desc;
 *mni_desc = *Net::SAMLc::zxid_mni_desc;
 *ac_desc = *Net::SAMLc::zxid_ac_desc;
+*idp_sso_desc = *Net::SAMLc::zxid_idp_sso_desc;
 *sp_sso_desc = *Net::SAMLc::zxid_sp_sso_desc;
 *sp_meta = *Net::SAMLc::zxid_sp_meta;
 *send_sp_meta = *Net::SAMLc::zxid_send_sp_meta;
+*sp_carml = *Net::SAMLc::zxid_sp_carml;
 *my_entity_id = *Net::SAMLc::zxid_my_entity_id;
 *my_cdc_url = *Net::SAMLc::zxid_my_cdc_url;
 *my_issuer = *Net::SAMLc::zxid_my_issuer;
@@ -178,6 +181,16 @@ package Net::SAML;
 *new_conf = *Net::SAMLc::zxid_new_conf;
 *parse_conf_raw = *Net::SAMLc::zxid_parse_conf_raw;
 *parse_conf = *Net::SAMLc::zxid_parse_conf;
+*mk_self_sig_cert = *Net::SAMLc::zxid_mk_self_sig_cert;
+*load_map = *Net::SAMLc::zxid_load_map;
+*load_need = *Net::SAMLc::zxid_load_need;
+*load_atsrc = *Net::SAMLc::zxid_load_atsrc;
+*new_at = *Net::SAMLc::zxid_new_at;
+*load_cstr_list = *Net::SAMLc::zxid_load_cstr_list;
+*is_needed = *Net::SAMLc::zxid_is_needed;
+*find_map = *Net::SAMLc::zxid_find_map;
+*find_cstr_list = *Net::SAMLc::zxid_find_cstr_list;
+*find_at = *Net::SAMLc::zxid_find_at;
 *parse_cgi = *Net::SAMLc::zxid_parse_cgi;
 *new_cgi = *Net::SAMLc::zxid_new_cgi;
 *get_sid_from_cookie = *Net::SAMLc::zxid_get_sid_from_cookie;
@@ -188,9 +201,20 @@ package Net::SAML;
 *get_ses_sso_a7n = *Net::SAMLc::zxid_get_ses_sso_a7n;
 *get_ses_idp = *Net::SAMLc::zxid_get_ses_idp;
 *find_ses = *Net::SAMLc::zxid_find_ses;
+*pool_to_ldif = *Net::SAMLc::zxid_pool_to_ldif;
+*pool_to_json = *Net::SAMLc::zxid_pool_to_json;
+*pool_to_qs = *Net::SAMLc::zxid_pool_to_qs;
+*ses_to_pool = *Net::SAMLc::zxid_ses_to_pool;
+*add_attr_to_pool = *Net::SAMLc::zxid_add_attr_to_pool;
+*parse_mni = *Net::SAMLc::zxid_parse_mni;
 *put_user = *Net::SAMLc::zxid_put_user;
 *get_user_nameid = *Net::SAMLc::zxid_get_user_nameid;
 *user_change_nameid = *Net::SAMLc::zxid_user_change_nameid;
+*pw_authn = *Net::SAMLc::zxid_pw_authn;
+*version = *Net::SAMLc::zxid_version;
+*version_str = *Net::SAMLc::zxid_version_str;
+*date_time = *Net::SAMLc::zxid_date_time;
+*mk_id = *Net::SAMLc::zxid_mk_id;
 *soap_call_raw = *Net::SAMLc::zxid_soap_call_raw;
 *lecp_check = *Net::SAMLc::zxid_lecp_check;
 *cdc_read = *Net::SAMLc::zxid_cdc_read;
@@ -199,52 +223,75 @@ package Net::SAML;
 *soap_call_hdr_body = *Net::SAMLc::zxid_soap_call_hdr_body;
 *soap_call_body = *Net::SAMLc::zxid_soap_call_body;
 *soap_cgi_resp_body = *Net::SAMLc::zxid_soap_cgi_resp_body;
+*post_enc = *Net::SAMLc::zxid_saml2_post_enc;
 *redir_enc = *Net::SAMLc::zxid_saml2_redir_enc;
-*redir = *Net::SAMLc::zxid_saml2_redir;
 *redir_url = *Net::SAMLc::zxid_saml2_redir_url;
-*location = *Net::SAMLc::zxid_saml2_location;
-*resp_location = *Net::SAMLc::zxid_saml2_resp_location;
+*redir = *Net::SAMLc::zxid_saml2_redir;
 *resp_redir = *Net::SAMLc::zxid_saml2_resp_redir;
 *ok = *Net::SAMLc::zxid_saml_ok;
 *decrypt_nameid = *Net::SAMLc::zxid_decrypt_nameid;
 *decrypt_newnym = *Net::SAMLc::zxid_decrypt_newnym;
+*chk_sig = *Net::SAMLc::zxid_chk_sig;
+*map_val = *Net::SAMLc::zxid_map_val;
 *idp_loc_raw = *Net::SAMLc::zxid_idp_loc_raw;
 *idp_loc = *Net::SAMLc::zxid_idp_loc;
 *idp_soap = *Net::SAMLc::zxid_idp_soap;
+*sp_loc_by_index_raw = *Net::SAMLc::zxid_sp_loc_by_index_raw;
+*sp_loc_raw = *Net::SAMLc::zxid_sp_loc_raw;
+*sp_loc = *Net::SAMLc::zxid_sp_loc;
+*sp_soap = *Net::SAMLc::zxid_sp_soap;
+*decode_redir_or_post = *Net::SAMLc::zxid_decode_redir_or_post;
+*sp_dispatch = *Net::SAMLc::zxid_sp_dispatch;
+*sp_soap_dispatch = *Net::SAMLc::zxid_sp_soap_dispatch;
+*sp_soap_parse = *Net::SAMLc::zxid_sp_soap_parse;
+*idp_dispatch = *Net::SAMLc::zxid_idp_dispatch;
+*idp_soap_dispatch = *Net::SAMLc::zxid_idp_soap_dispatch;
+*idp_soap_parse = *Net::SAMLc::zxid_idp_soap_parse;
+*add_ldif_attributes = *Net::SAMLc::zxid_add_ldif_attributes;
+*idp_sso = *Net::SAMLc::zxid_idp_sso;
 *pick_sso_profile = *Net::SAMLc::zxid_pick_sso_profile;
 *start_sso = *Net::SAMLc::zxid_start_sso;
 *start_sso_url = *Net::SAMLc::zxid_start_sso_url;
 *start_sso_location = *Net::SAMLc::zxid_start_sso_location;
 *sp_deref_art = *Net::SAMLc::zxid_sp_deref_art;
 *sp_sso_finalize = *Net::SAMLc::zxid_sp_sso_finalize;
+*sp_anon_finalize = *Net::SAMLc::zxid_sp_anon_finalize;
 *map_nid_fmt = *Net::SAMLc::zxid_saml2_map_nid_fmt;
 *map_protocol_binding = *Net::SAMLc::zxid_saml2_map_protocol_binding;
+*protocol_binding_map_saml2 = *Net::SAMLc::zxid_protocol_binding_map_saml2;
 *map_authn_ctx = *Net::SAMLc::zxid_saml2_map_authn_ctx;
-*date_time = *Net::SAMLc::zxid_date_time;
-*mk_id = *Net::SAMLc::zxid_mk_id;
 *issuer = *Net::SAMLc::zxid_issuer;
 *sigres_map = *Net::SAMLc::zxid_sigres_map;
+*validate_conditions = *Net::SAMLc::zxid_validate_conditions;
 *sp_slo_soap = *Net::SAMLc::zxid_sp_slo_soap;
 *sp_slo_redir = *Net::SAMLc::zxid_sp_slo_redir;
-*sp_slo_location = *Net::SAMLc::zxid_sp_slo_location;
-*sp_dispatch_location = *Net::SAMLc::zxid_sp_dispatch_location;
-*sp_dispatch = *Net::SAMLc::zxid_sp_dispatch;
-*sp_soap_dispatch = *Net::SAMLc::zxid_sp_soap_dispatch;
-*sp_soap_parse = *Net::SAMLc::zxid_sp_soap_parse;
+*sp_slo_do = *Net::SAMLc::zxid_sp_slo_do;
+*idp_slo_do = *Net::SAMLc::zxid_idp_slo_do;
+*slo_resp_redir = *Net::SAMLc::zxid_slo_resp_redir;
 *sp_mni_soap = *Net::SAMLc::zxid_sp_mni_soap;
 *sp_mni_redir = *Net::SAMLc::zxid_sp_mni_redir;
-*sp_mni_location = *Net::SAMLc::zxid_sp_mni_location;
 *mni_do = *Net::SAMLc::zxid_mni_do;
 *mni_do_ss = *Net::SAMLc::zxid_mni_do_ss;
+*pep_az_soap = *Net::SAMLc::zxid_pep_az_soap;
 *find_attribute = *Net::SAMLc::zxid_find_attribute;
 *mk_authn_req = *Net::SAMLc::zxid_mk_authn_req;
 *mk_art_deref = *Net::SAMLc::zxid_mk_art_deref;
 *mk_Status = *Net::SAMLc::zxid_mk_Status;
 *OK = *Net::SAMLc::zxid_OK;
+*mk_enc_id = *Net::SAMLc::zxid_mk_enc_id;
+*mk_enc_a7n = *Net::SAMLc::zxid_mk_enc_a7n;
 *mk_logout = *Net::SAMLc::zxid_mk_logout;
 *mk_logout_resp = *Net::SAMLc::zxid_mk_logout_resp;
 *mk_mni = *Net::SAMLc::zxid_mk_mni;
 *mk_mni_resp = *Net::SAMLc::zxid_mk_mni_resp;
+*mk_a7n = *Net::SAMLc::zxid_mk_a7n;
+*mk_subj = *Net::SAMLc::zxid_mk_subj;
+*mk_an_stmt = *Net::SAMLc::zxid_mk_an_stmt;
+*mk_saml_resp = *Net::SAMLc::zxid_mk_saml_resp;
+*mk_xacml_resp = *Net::SAMLc::zxid_mk_xacml_resp;
+*mk_xacml_simple_at = *Net::SAMLc::zxid_mk_xacml_simple_at;
+*mk_az = *Net::SAMLc::zxid_mk_az;
+*mk_attribute = *Net::SAMLc::zxid_mk_attribute;
 *mk_di_query = *Net::SAMLc::zxid_mk_di_query;
 *mk_addr = *Net::SAMLc::zxid_mk_addr;
 *mk_dap_select = *Net::SAMLc::zxid_mk_dap_select;
@@ -258,6 +305,8 @@ package Net::SAML;
 *wsc_call = *Net::SAMLc::zxid_wsc_call;
 *new_envf = *Net::SAMLc::zxid_new_envf;
 *callf = *Net::SAMLc::zxid_callf;
+*nice_sha1 = *Net::SAMLc::zxid_nice_sha1;
+*epr_path = *Net::SAMLc::zxid_epr_path;
 *get_epr = *Net::SAMLc::zxid_get_epr;
 *find_epr = *Net::SAMLc::zxid_find_epr;
 *cache_epr = *Net::SAMLc::zxid_cache_epr;
@@ -279,8 +328,6 @@ package Net::SAML;
 *close_file = *Net::SAMLc::close_file;
 *curl_write_data = *Net::SAMLc::zxid_curl_write_data;
 *curl_read_data = *Net::SAMLc::zxid_curl_read_data;
-*version = *Net::SAMLc::zxid_version;
-*version_str = *Net::SAMLc::zxid_version_str;
 
 ############# Class : Net::SAML::zx_ns_s ##############
 
@@ -695,6 +742,12 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_url_set = *Net::SAMLc::zxid_conf_url_set;
 *swig_non_standard_entityid_get = *Net::SAMLc::zxid_conf_non_standard_entityid_get;
 *swig_non_standard_entityid_set = *Net::SAMLc::zxid_conf_non_standard_entityid_set;
+*swig_redirect_hack_imposed_url_get = *Net::SAMLc::zxid_conf_redirect_hack_imposed_url_get;
+*swig_redirect_hack_imposed_url_set = *Net::SAMLc::zxid_conf_redirect_hack_imposed_url_set;
+*swig_redirect_hack_zxid_url_get = *Net::SAMLc::zxid_conf_redirect_hack_zxid_url_get;
+*swig_redirect_hack_zxid_url_set = *Net::SAMLc::zxid_conf_redirect_hack_zxid_url_set;
+*swig_redirect_hack_zxid_qs_get = *Net::SAMLc::zxid_conf_redirect_hack_zxid_qs_get;
+*swig_redirect_hack_zxid_qs_set = *Net::SAMLc::zxid_conf_redirect_hack_zxid_qs_set;
 *swig_cdc_url_get = *Net::SAMLc::zxid_conf_cdc_url_get;
 *swig_cdc_url_set = *Net::SAMLc::zxid_conf_cdc_url_set;
 *swig_cdc_choice_get = *Net::SAMLc::zxid_conf_cdc_choice_get;
@@ -707,8 +760,16 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_md_cache_first_set = *Net::SAMLc::zxid_conf_md_cache_first_set;
 *swig_md_cache_last_get = *Net::SAMLc::zxid_conf_md_cache_last_get;
 *swig_md_cache_last_set = *Net::SAMLc::zxid_conf_md_cache_last_set;
+*swig_auto_cert_get = *Net::SAMLc::zxid_conf_auto_cert_get;
+*swig_auto_cert_set = *Net::SAMLc::zxid_conf_auto_cert_set;
 *swig_user_local_get = *Net::SAMLc::zxid_conf_user_local_get;
 *swig_user_local_set = *Net::SAMLc::zxid_conf_user_local_set;
+*swig_idp_ena_get = *Net::SAMLc::zxid_conf_idp_ena_get;
+*swig_idp_ena_set = *Net::SAMLc::zxid_conf_idp_ena_set;
+*swig_pdp_ena_get = *Net::SAMLc::zxid_conf_pdp_ena_get;
+*swig_pdp_ena_set = *Net::SAMLc::zxid_conf_pdp_ena_set;
+*swig_want_authn_req_signed_get = *Net::SAMLc::zxid_conf_want_authn_req_signed_get;
+*swig_want_authn_req_signed_set = *Net::SAMLc::zxid_conf_want_authn_req_signed_set;
 *swig_authn_req_sign_get = *Net::SAMLc::zxid_conf_authn_req_sign_get;
 *swig_authn_req_sign_set = *Net::SAMLc::zxid_conf_authn_req_sign_set;
 *swig_want_sso_a7n_signed_get = *Net::SAMLc::zxid_conf_want_sso_a7n_signed_get;
@@ -717,8 +778,12 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_sso_soap_sign_set = *Net::SAMLc::zxid_conf_sso_soap_sign_set;
 *swig_sso_soap_resp_sign_get = *Net::SAMLc::zxid_conf_sso_soap_resp_sign_get;
 *swig_sso_soap_resp_sign_set = *Net::SAMLc::zxid_conf_sso_soap_resp_sign_set;
+*swig_sso_sign_get = *Net::SAMLc::zxid_conf_sso_sign_get;
+*swig_sso_sign_set = *Net::SAMLc::zxid_conf_sso_sign_set;
 *swig_nameid_enc_get = *Net::SAMLc::zxid_conf_nameid_enc_get;
 *swig_nameid_enc_set = *Net::SAMLc::zxid_conf_nameid_enc_set;
+*swig_post_a7n_enc_get = *Net::SAMLc::zxid_conf_post_a7n_enc_get;
+*swig_post_a7n_enc_set = *Net::SAMLc::zxid_conf_post_a7n_enc_set;
 *swig_affiliation_get = *Net::SAMLc::zxid_conf_affiliation_get;
 *swig_affiliation_set = *Net::SAMLc::zxid_conf_affiliation_set;
 *swig_nice_name_get = *Net::SAMLc::zxid_conf_nice_name_get;
@@ -743,6 +808,8 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_log_rely_msg_set = *Net::SAMLc::zxid_conf_log_rely_msg_set;
 *swig_log_err_in_act_get = *Net::SAMLc::zxid_conf_log_err_in_act_get;
 *swig_log_err_in_act_set = *Net::SAMLc::zxid_conf_log_err_in_act_set;
+*swig_log_act_in_err_get = *Net::SAMLc::zxid_conf_log_act_in_err_get;
+*swig_log_act_in_err_set = *Net::SAMLc::zxid_conf_log_act_in_err_set;
 *swig_log_sigfail_is_err_get = *Net::SAMLc::zxid_conf_log_sigfail_is_err_get;
 *swig_log_sigfail_is_err_set = *Net::SAMLc::zxid_conf_log_sigfail_is_err_set;
 *swig_log_level_get = *Net::SAMLc::zxid_conf_log_level_get;
@@ -751,6 +818,8 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_sig_fatal_set = *Net::SAMLc::zxid_conf_sig_fatal_set;
 *swig_nosig_fatal_get = *Net::SAMLc::zxid_conf_nosig_fatal_get;
 *swig_nosig_fatal_set = *Net::SAMLc::zxid_conf_nosig_fatal_set;
+*swig_msg_sig_ok_get = *Net::SAMLc::zxid_conf_msg_sig_ok_get;
+*swig_msg_sig_ok_set = *Net::SAMLc::zxid_conf_msg_sig_ok_set;
 *swig_timeout_fatal_get = *Net::SAMLc::zxid_conf_timeout_fatal_get;
 *swig_timeout_fatal_set = *Net::SAMLc::zxid_conf_timeout_fatal_set;
 *swig_audience_fatal_get = *Net::SAMLc::zxid_conf_audience_fatal_get;
@@ -759,20 +828,56 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_dup_a7n_fatal_set = *Net::SAMLc::zxid_conf_dup_a7n_fatal_set;
 *swig_dup_msg_fatal_get = *Net::SAMLc::zxid_conf_dup_msg_fatal_get;
 *swig_dup_msg_fatal_set = *Net::SAMLc::zxid_conf_dup_msg_fatal_set;
+*swig_redir_to_content_get = *Net::SAMLc::zxid_conf_redir_to_content_get;
+*swig_redir_to_content_set = *Net::SAMLc::zxid_conf_redir_to_content_set;
+*swig_remote_user_ena_get = *Net::SAMLc::zxid_conf_remote_user_ena_get;
+*swig_remote_user_ena_set = *Net::SAMLc::zxid_conf_remote_user_ena_set;
+*swig_anon_ok_get = *Net::SAMLc::zxid_conf_anon_ok_get;
+*swig_anon_ok_set = *Net::SAMLc::zxid_conf_anon_ok_set;
+*swig_required_authnctx_get = *Net::SAMLc::zxid_conf_required_authnctx_get;
+*swig_required_authnctx_set = *Net::SAMLc::zxid_conf_required_authnctx_set;
+*swig_issue_authnctx_pw_get = *Net::SAMLc::zxid_conf_issue_authnctx_pw_get;
+*swig_issue_authnctx_pw_set = *Net::SAMLc::zxid_conf_issue_authnctx_pw_set;
+*swig_idp_pref_acs_binding_get = *Net::SAMLc::zxid_conf_idp_pref_acs_binding_get;
+*swig_idp_pref_acs_binding_set = *Net::SAMLc::zxid_conf_idp_pref_acs_binding_set;
 *swig_before_slop_get = *Net::SAMLc::zxid_conf_before_slop_get;
 *swig_before_slop_set = *Net::SAMLc::zxid_conf_before_slop_set;
 *swig_after_slop_get = *Net::SAMLc::zxid_conf_after_slop_get;
 *swig_after_slop_set = *Net::SAMLc::zxid_conf_after_slop_set;
 *swig_timeskew_get = *Net::SAMLc::zxid_conf_timeskew_get;
 *swig_timeskew_set = *Net::SAMLc::zxid_conf_timeskew_set;
-*swig_redir_to_content_get = *Net::SAMLc::zxid_conf_redir_to_content_get;
-*swig_redir_to_content_set = *Net::SAMLc::zxid_conf_redir_to_content_set;
+*swig_a7nttl_get = *Net::SAMLc::zxid_conf_a7nttl_get;
+*swig_a7nttl_set = *Net::SAMLc::zxid_conf_a7nttl_set;
+*swig_pdp_url_get = *Net::SAMLc::zxid_conf_pdp_url_get;
+*swig_pdp_url_set = *Net::SAMLc::zxid_conf_pdp_url_set;
+*swig_need_get = *Net::SAMLc::zxid_conf_need_get;
+*swig_need_set = *Net::SAMLc::zxid_conf_need_set;
+*swig_want_get = *Net::SAMLc::zxid_conf_want_get;
+*swig_want_set = *Net::SAMLc::zxid_conf_want_set;
+*swig_attrsrc_get = *Net::SAMLc::zxid_conf_attrsrc_get;
+*swig_attrsrc_set = *Net::SAMLc::zxid_conf_attrsrc_set;
+*swig_inmap_get = *Net::SAMLc::zxid_conf_inmap_get;
+*swig_inmap_set = *Net::SAMLc::zxid_conf_inmap_set;
+*swig_outmap_get = *Net::SAMLc::zxid_conf_outmap_get;
+*swig_outmap_set = *Net::SAMLc::zxid_conf_outmap_set;
+*swig_pepmap_get = *Net::SAMLc::zxid_conf_pepmap_get;
+*swig_pepmap_set = *Net::SAMLc::zxid_conf_pepmap_set;
+*swig_localpdp_role_permit_get = *Net::SAMLc::zxid_conf_localpdp_role_permit_get;
+*swig_localpdp_role_permit_set = *Net::SAMLc::zxid_conf_localpdp_role_permit_set;
+*swig_localpdp_role_deny_get = *Net::SAMLc::zxid_conf_localpdp_role_deny_get;
+*swig_localpdp_role_deny_set = *Net::SAMLc::zxid_conf_localpdp_role_deny_set;
+*swig_localpdp_idpnid_permit_get = *Net::SAMLc::zxid_conf_localpdp_idpnid_permit_get;
+*swig_localpdp_idpnid_permit_set = *Net::SAMLc::zxid_conf_localpdp_idpnid_permit_set;
+*swig_localpdp_idpnid_deny_get = *Net::SAMLc::zxid_conf_localpdp_idpnid_deny_get;
+*swig_localpdp_idpnid_deny_set = *Net::SAMLc::zxid_conf_localpdp_idpnid_deny_set;
 *swig_max_soap_retry_get = *Net::SAMLc::zxid_conf_max_soap_retry_get;
 *swig_max_soap_retry_set = *Net::SAMLc::zxid_conf_max_soap_retry_set;
 *swig_defaultqs_get = *Net::SAMLc::zxid_conf_defaultqs_get;
 *swig_defaultqs_set = *Net::SAMLc::zxid_conf_defaultqs_set;
 *swig_mod_saml_attr_prefix_get = *Net::SAMLc::zxid_conf_mod_saml_attr_prefix_get;
 *swig_mod_saml_attr_prefix_set = *Net::SAMLc::zxid_conf_mod_saml_attr_prefix_set;
+*swig_idp_sel_page_get = *Net::SAMLc::zxid_conf_idp_sel_page_get;
+*swig_idp_sel_page_set = *Net::SAMLc::zxid_conf_idp_sel_page_set;
 *swig_idp_sel_start_get = *Net::SAMLc::zxid_conf_idp_sel_start_get;
 *swig_idp_sel_start_set = *Net::SAMLc::zxid_conf_idp_sel_start_set;
 *swig_idp_sel_new_idp_get = *Net::SAMLc::zxid_conf_idp_sel_new_idp_get;
@@ -787,6 +892,20 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_idp_sel_footer_set = *Net::SAMLc::zxid_conf_idp_sel_footer_set;
 *swig_idp_sel_end_get = *Net::SAMLc::zxid_conf_idp_sel_end_get;
 *swig_idp_sel_end_set = *Net::SAMLc::zxid_conf_idp_sel_end_set;
+*swig_an_page_get = *Net::SAMLc::zxid_conf_an_page_get;
+*swig_an_page_set = *Net::SAMLc::zxid_conf_an_page_set;
+*swig_an_start_get = *Net::SAMLc::zxid_conf_an_start_get;
+*swig_an_start_set = *Net::SAMLc::zxid_conf_an_start_set;
+*swig_an_our_eid_get = *Net::SAMLc::zxid_conf_an_our_eid_get;
+*swig_an_our_eid_set = *Net::SAMLc::zxid_conf_an_our_eid_set;
+*swig_an_tech_user_get = *Net::SAMLc::zxid_conf_an_tech_user_get;
+*swig_an_tech_user_set = *Net::SAMLc::zxid_conf_an_tech_user_set;
+*swig_an_tech_site_get = *Net::SAMLc::zxid_conf_an_tech_site_get;
+*swig_an_tech_site_set = *Net::SAMLc::zxid_conf_an_tech_site_set;
+*swig_an_footer_get = *Net::SAMLc::zxid_conf_an_footer_get;
+*swig_an_footer_set = *Net::SAMLc::zxid_conf_an_footer_set;
+*swig_an_end_get = *Net::SAMLc::zxid_conf_an_end_get;
+*swig_an_end_set = *Net::SAMLc::zxid_conf_an_end_set;
 *swig_mgmt_start_get = *Net::SAMLc::zxid_conf_mgmt_start_get;
 *swig_mgmt_start_set = *Net::SAMLc::zxid_conf_mgmt_start_set;
 *swig_mgmt_logout_get = *Net::SAMLc::zxid_conf_mgmt_logout_get;
@@ -854,10 +973,12 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_sid_set = *Net::SAMLc::zxid_cgi_sid_set;
 *swig_nid_get = *Net::SAMLc::zxid_cgi_nid_get;
 *swig_nid_set = *Net::SAMLc::zxid_cgi_nid_set;
-*swig_user_get = *Net::SAMLc::zxid_cgi_user_get;
-*swig_user_set = *Net::SAMLc::zxid_cgi_user_set;
+*swig_uid_get = *Net::SAMLc::zxid_cgi_uid_get;
+*swig_uid_set = *Net::SAMLc::zxid_cgi_uid_set;
 *swig_pw_get = *Net::SAMLc::zxid_cgi_pw_get;
 *swig_pw_set = *Net::SAMLc::zxid_cgi_pw_set;
+*swig_ssoreq_get = *Net::SAMLc::zxid_cgi_ssoreq_get;
+*swig_ssoreq_set = *Net::SAMLc::zxid_cgi_ssoreq_set;
 *swig_cdc_get = *Net::SAMLc::zxid_cgi_cdc_get;
 *swig_cdc_set = *Net::SAMLc::zxid_cgi_cdc_set;
 *swig_eid_get = *Net::SAMLc::zxid_cgi_eid_get;
@@ -902,6 +1023,12 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_msg_set = *Net::SAMLc::zxid_cgi_msg_set;
 *swig_dbg_get = *Net::SAMLc::zxid_cgi_dbg_get;
 *swig_dbg_set = *Net::SAMLc::zxid_cgi_dbg_set;
+*swig_zxapp_get = *Net::SAMLc::zxid_cgi_zxapp_get;
+*swig_zxapp_set = *Net::SAMLc::zxid_cgi_zxapp_set;
+*swig_zxrfr_get = *Net::SAMLc::zxid_cgi_zxrfr_get;
+*swig_zxrfr_set = *Net::SAMLc::zxid_cgi_zxrfr_set;
+*swig_ok_get = *Net::SAMLc::zxid_cgi_ok_get;
+*swig_ok_set = *Net::SAMLc::zxid_cgi_ok_set;
 *swig_idp_list_get = *Net::SAMLc::zxid_cgi_idp_list_get;
 *swig_idp_list_set = *Net::SAMLc::zxid_cgi_idp_list_set;
 sub new {
@@ -945,10 +1072,14 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_magic_set = *Net::SAMLc::zxid_ses_magic_set;
 *swig_sid_get = *Net::SAMLc::zxid_ses_sid_get;
 *swig_sid_set = *Net::SAMLc::zxid_ses_sid_set;
+*swig_uid_get = *Net::SAMLc::zxid_ses_uid_get;
+*swig_uid_set = *Net::SAMLc::zxid_ses_uid_set;
 *swig_nid_get = *Net::SAMLc::zxid_ses_nid_get;
 *swig_nid_set = *Net::SAMLc::zxid_ses_nid_set;
 *swig_sesix_get = *Net::SAMLc::zxid_ses_sesix_get;
 *swig_sesix_set = *Net::SAMLc::zxid_ses_sesix_set;
+*swig_an_ctx_get = *Net::SAMLc::zxid_ses_an_ctx_get;
+*swig_an_ctx_set = *Net::SAMLc::zxid_ses_an_ctx_set;
 *swig_nidfmt_get = *Net::SAMLc::zxid_ses_nidfmt_get;
 *swig_nidfmt_set = *Net::SAMLc::zxid_ses_nidfmt_set;
 *swig_sigres_get = *Net::SAMLc::zxid_ses_sigres_get;
@@ -977,6 +1108,8 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_sesbuf_set = *Net::SAMLc::zxid_ses_sesbuf_set;
 *swig_sso_a7n_buf_get = *Net::SAMLc::zxid_ses_sso_a7n_buf_get;
 *swig_sso_a7n_buf_set = *Net::SAMLc::zxid_ses_sso_a7n_buf_set;
+*swig_at_get = *Net::SAMLc::zxid_ses_at_get;
+*swig_at_set = *Net::SAMLc::zxid_ses_at_set;
 sub new {
     my $pkg = shift;
     my $self = Net::SAMLc::new_zxid_ses(@_);
@@ -990,6 +1123,249 @@ sub DESTROY {
     delete $ITERATORS{$self};
     if (exists $OWNER{$self}) {
         Net::SAMLc::delete_zxid_ses($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zxid_attr ##############
+
+package Net::SAML::zxid_attr;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_n_get = *Net::SAMLc::zxid_attr_n_get;
+*swig_n_set = *Net::SAMLc::zxid_attr_n_set;
+*swig_nv_get = *Net::SAMLc::zxid_attr_nv_get;
+*swig_nv_set = *Net::SAMLc::zxid_attr_nv_set;
+*swig_name_get = *Net::SAMLc::zxid_attr_name_get;
+*swig_name_set = *Net::SAMLc::zxid_attr_name_set;
+*swig_val_get = *Net::SAMLc::zxid_attr_val_get;
+*swig_val_set = *Net::SAMLc::zxid_attr_val_set;
+*swig_map_val_get = *Net::SAMLc::zxid_attr_map_val_get;
+*swig_map_val_set = *Net::SAMLc::zxid_attr_map_val_set;
+*swig_orig_get = *Net::SAMLc::zxid_attr_orig_get;
+*swig_orig_set = *Net::SAMLc::zxid_attr_orig_set;
+*swig_issuer_get = *Net::SAMLc::zxid_attr_issuer_get;
+*swig_issuer_set = *Net::SAMLc::zxid_attr_issuer_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zxid_attr(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zxid_attr($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zxid_need ##############
+
+package Net::SAML::zxid_need;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_n_get = *Net::SAMLc::zxid_need_n_get;
+*swig_n_set = *Net::SAMLc::zxid_need_n_set;
+*swig_at_get = *Net::SAMLc::zxid_need_at_get;
+*swig_at_set = *Net::SAMLc::zxid_need_at_set;
+*swig_usage_get = *Net::SAMLc::zxid_need_usage_get;
+*swig_usage_set = *Net::SAMLc::zxid_need_usage_set;
+*swig_retent_get = *Net::SAMLc::zxid_need_retent_get;
+*swig_retent_set = *Net::SAMLc::zxid_need_retent_set;
+*swig_oblig_get = *Net::SAMLc::zxid_need_oblig_get;
+*swig_oblig_set = *Net::SAMLc::zxid_need_oblig_set;
+*swig_ext_get = *Net::SAMLc::zxid_need_ext_get;
+*swig_ext_set = *Net::SAMLc::zxid_need_ext_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zxid_need(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zxid_need($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zxid_map ##############
+
+package Net::SAML::zxid_map;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_n_get = *Net::SAMLc::zxid_map_n_get;
+*swig_n_set = *Net::SAMLc::zxid_map_n_set;
+*swig_rule_get = *Net::SAMLc::zxid_map_rule_get;
+*swig_rule_set = *Net::SAMLc::zxid_map_rule_set;
+*swig_ns_get = *Net::SAMLc::zxid_map_ns_get;
+*swig_ns_set = *Net::SAMLc::zxid_map_ns_set;
+*swig_src_get = *Net::SAMLc::zxid_map_src_get;
+*swig_src_set = *Net::SAMLc::zxid_map_src_set;
+*swig_dst_get = *Net::SAMLc::zxid_map_dst_get;
+*swig_dst_set = *Net::SAMLc::zxid_map_dst_set;
+*swig_ext_get = *Net::SAMLc::zxid_map_ext_get;
+*swig_ext_set = *Net::SAMLc::zxid_map_ext_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zxid_map(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zxid_map($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zxid_cstr_list ##############
+
+package Net::SAML::zxid_cstr_list;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_n_get = *Net::SAMLc::zxid_cstr_list_n_get;
+*swig_n_set = *Net::SAMLc::zxid_cstr_list_n_set;
+*swig_s_get = *Net::SAMLc::zxid_cstr_list_s_get;
+*swig_s_set = *Net::SAMLc::zxid_cstr_list_s_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zxid_cstr_list(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zxid_cstr_list($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zxid_atsrc ##############
+
+package Net::SAML::zxid_atsrc;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_n_get = *Net::SAMLc::zxid_atsrc_n_get;
+*swig_n_set = *Net::SAMLc::zxid_atsrc_n_set;
+*swig_at_get = *Net::SAMLc::zxid_atsrc_at_get;
+*swig_at_set = *Net::SAMLc::zxid_atsrc_at_set;
+*swig_ns_get = *Net::SAMLc::zxid_atsrc_ns_get;
+*swig_ns_set = *Net::SAMLc::zxid_atsrc_ns_set;
+*swig_weight_get = *Net::SAMLc::zxid_atsrc_weight_get;
+*swig_weight_set = *Net::SAMLc::zxid_atsrc_weight_set;
+*swig_url_get = *Net::SAMLc::zxid_atsrc_url_get;
+*swig_url_set = *Net::SAMLc::zxid_atsrc_url_set;
+*swig_aapml_get = *Net::SAMLc::zxid_atsrc_aapml_get;
+*swig_aapml_set = *Net::SAMLc::zxid_atsrc_aapml_set;
+*swig_otherlim_get = *Net::SAMLc::zxid_atsrc_otherlim_get;
+*swig_otherlim_set = *Net::SAMLc::zxid_atsrc_otherlim_set;
+*swig_ext_get = *Net::SAMLc::zxid_atsrc_ext_get;
+*swig_ext_set = *Net::SAMLc::zxid_atsrc_ext_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zxid_atsrc(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zxid_atsrc($self);
         delete $OWNER{$self};
     }
 }
@@ -1188,8 +1564,25 @@ package Net::SAML;
 *CONF_MAGIC = *Net::SAMLc::ZXID_CONF_MAGIC;
 *CGI_MAGIC = *Net::SAMLc::ZXID_CGI_MAGIC;
 *SES_MAGIC = *Net::SAMLc::ZXID_SES_MAGIC;
+*MAP_RULE_RENAME = *Net::SAMLc::ZXID_MAP_RULE_RENAME;
+*MAP_RULE_DEL = *Net::SAMLc::ZXID_MAP_RULE_DEL;
+*MAP_RULE_RESET = *Net::SAMLc::ZXID_MAP_RULE_RESET;
+*MAP_RULE_FEIDEDEC = *Net::SAMLc::ZXID_MAP_RULE_FEIDEDEC;
+*MAP_RULE_FEIDEENC = *Net::SAMLc::ZXID_MAP_RULE_FEIDEENC;
+*MAP_RULE_UNSB64_INF = *Net::SAMLc::ZXID_MAP_RULE_UNSB64_INF;
+*MAP_RULE_DEF_SB64 = *Net::SAMLc::ZXID_MAP_RULE_DEF_SB64;
+*MAP_RULE_UNSB64 = *Net::SAMLc::ZXID_MAP_RULE_UNSB64;
+*MAP_RULE_SB64 = *Net::SAMLc::ZXID_MAP_RULE_SB64;
 *SES_DIR = *Net::SAMLc::ZXID_SES_DIR;
 *USER_DIR = *Net::SAMLc::ZXID_USER_DIR;
+*UID_DIR = *Net::SAMLc::ZXID_UID_DIR;
+*PEM_DIR = *Net::SAMLc::ZXID_PEM_DIR;
+*COT_DIR = *Net::SAMLc::ZXID_COT_DIR;
+*MAX_USER = *Net::SAMLc::ZXID_MAX_USER;
+*MAX_MD = *Net::SAMLc::ZXID_MAX_MD;
+*MAX_SOAP = *Net::SAMLc::ZXID_MAX_SOAP;
+*MAX_EID = *Net::SAMLc::ZXID_MAX_EID;
+*MAX_DIR = *Net::SAMLc::ZXID_MAX_DIR;
 *AUTO_EXIT = *Net::SAMLc::ZXID_AUTO_EXIT;
 *AUTO_REDIR = *Net::SAMLc::ZXID_AUTO_REDIR;
 *AUTO_SOAPC = *Net::SAMLc::ZXID_AUTO_SOAPC;
@@ -1204,6 +1597,11 @@ package Net::SAML;
 *AUTO_FORMT = *Net::SAMLc::ZXID_AUTO_FORMT;
 *AUTO_ALL = *Net::SAMLc::ZXID_AUTO_ALL;
 *AUTO_DEBUG = *Net::SAMLc::ZXID_AUTO_DEBUG;
+*AUTO_FMTQ = *Net::SAMLc::ZXID_AUTO_FMTQ;
+*AUTO_FMTJ = *Net::SAMLc::ZXID_AUTO_FMTJ;
+*SSO_SIGN_A7N = *Net::SAMLc::ZXID_SSO_SIGN_A7N;
+*SSO_SIGN_RESP = *Net::SAMLc::ZXID_SSO_SIGN_RESP;
+*SSO_SIGN_A7N_SIMPLE = *Net::SAMLc::ZXID_SSO_SIGN_A7N_SIMPLE;
 *ZXSIG_OK = *Net::SAMLc::ZXSIG_OK;
 *ZXSIG_BAD_DALGO = *Net::SAMLc::ZXSIG_BAD_DALGO;
 *ZXSIG_DIGEST_LEN = *Net::SAMLc::ZXSIG_DIGEST_LEN;
@@ -1218,10 +1616,7 @@ package Net::SAML;
 *ZXLOG_ISSUE_DIR = *Net::SAMLc::ZXLOG_ISSUE_DIR;
 *ZXLOG_A7N_KIND = *Net::SAMLc::ZXLOG_A7N_KIND;
 *ZXLOG_MSG_KIND = *Net::SAMLc::ZXLOG_MSG_KIND;
-*COT_DIR = *Net::SAMLc::ZXID_COT_DIR;
-*MAX_MD = *Net::SAMLc::ZXID_MAX_MD;
-*MAX_SOAP = *Net::SAMLc::ZXID_MAX_SOAP;
-*MAX_EID = *Net::SAMLc::ZXID_MAX_EID;
+*ZXLOG_WIR_KIND = *Net::SAMLc::ZXLOG_WIR_KIND;
 *DAP_SCOPE_BASE = *Net::SAMLc::ZXID_DAP_SCOPE_BASE;
 *DAP_SCOPE_SINGLE = *Net::SAMLc::ZXID_DAP_SCOPE_SINGLE;
 *DAP_SCOPE_SUBTREE = *Net::SAMLc::ZXID_DAP_SCOPE_SUBTREE;
@@ -1240,6 +1635,7 @@ package Net::SAML;
 *URI = *Net::SAMLc::ZXID_SAML2_URI;
 *SLO_SVC = *Net::SAMLc::ZXID_SLO_SVC;
 *MNI_SVC = *Net::SAMLc::ZXID_MNI_SVC;
+*ACS_SVC = *Net::SAMLc::ZXID_ACS_SVC;
 *SEC_MECH_NULL = *Net::SAMLc::ZXID_SEC_MECH_NULL;
 *SEC_MECH_BEARER = *Net::SAMLc::ZXID_SEC_MECH_BEARER;
 *SEC_MECH_SAML = *Net::SAMLc::ZXID_SEC_MECH_SAML;
@@ -1249,6 +1645,7 @@ package Net::SAML;
 *OK = *Net::SAMLc::ZXID_OK;
 *REDIR_OK = *Net::SAMLc::ZXID_REDIR_OK;
 *SSO_OK = *Net::SAMLc::ZXID_SSO_OK;
+*IDP_REQ = *Net::SAMLc::ZXID_IDP_REQ;
 *TRUE = *Net::SAMLc::ZXID_TRUE;
 *FALSE = *Net::SAMLc::ZXID_FALSE;
 *CRLF = *Net::SAMLc::CRLF;

@@ -1,6 +1,6 @@
 # zxid/sg/access_control-xacml-2.0-saml-protocol-schema-os.sg
 # Slightly edited, 3.3.2007, Sampo Kellomaki (sampo@iki.fi)
-# $Id: access_control-xacml-2.0-saml-protocol-schema-os.sg,v 1.1 2007/03/04 08:24:58 sampo Exp $
+# $Id: access_control-xacml-2.0-saml-protocol-schema-os.sg,v 1.2 2009-09-05 02:23:41 sampo Exp $
 
 target(xasp, urn:oasis:xacml:2.0:saml:protocol:schema:os)
 import(sa, urn:oasis:names:tc:SAML:2.0:assertion, http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=security)

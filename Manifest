@@ -1,5 +1,5 @@
 # zxid/Manifest
-# $Id: Manifest,v 1.43 2008-09-17 02:39:21 sampo Exp $
+# $Id: Manifest,v 1.57 2009-09-07 16:13:02 sampo Exp $
 # Packing list for distribution and explanation of files
 
 Manifest         - This file. Describes contents of the distribution.
@@ -7,16 +7,38 @@ Changes          - Change log and revision history
 INSTALL.zxid     - Quick installation instructions for the impatient
 README.zxid      - How to build and operate ZXID, API documentation
 README.zxid-win32  - Windows build notes (preliminary Jan 2007)
-apache.pd        - Apache specific configuration instructions
+zxid-install.pd  - Instructions for Installation from Package or Compilation
+zxid-conf.pd     - Instructions for configuration, reference to configuration options
+zxid-cot.pd      - Instructions for creating Circle-of-Trust and manipulating certificates
+zxid-simple.pd   - Documentation for ZXID Simple API
+zxid-raw.pd      - Documentation for ZXID Raw API
+zxid-wsf.pd      - Documentation for ZXID ID-WSF Support
+zxid-log.pd      - Documentation on encrypting and signing logging API and Audit trail
+mod_auth_saml.pd - Apache mod_auth_saml specific instructions
+apache.pd        - Apache compilation configuration for mod_php, mod_perl
 mediawiki-zxid.pd  - Documentation on MediaWiki integration
+zxid-java.pd     - Documentation on Java support
+zxid-perl.pd     - Documentation on Perl support
+zxid-php.pd      - Documentation on PHP support
+schemata.pd      - Document summarizing schemata and examples
+testplan.pd      - Testing plan
+zxid-faq.pd      - Frequently Asked Questions
+zxid-license.pd  - Licensing and legal terms chapter for ZXID and dependency libraries
+zxid-book.pd     - Top level file that pulls together all chapters of ZXID Book
+zxid-ref.pd      - Comprehensive list of literature references for ZXID project
+doc-end.pd       - Formatting code include for documents
+doc-inc.pd       - Navigation code include for documents
+ref-inc.pd       - Navigation code include for generated reference
 LICENSE-2.0.txt  - Apache License v2.0
 ca.crt           - Certification Authority certificate for zxid.pem
-zxid.pem         - Certificate and provatekwy combo for testing (not secure)
-favicon.ico      - A ZX/SP favicon for use in deno SPs
+zxid.pem         - Certificate and privatekey combo for testing (not secure)
+favicon.ico      - A ZX/SP favicon for use in demo SPs
 gen-consts-from-gperf-output.pl  - Used in build process
 gen-cot-links.pl - Handy tool for creating documentative symlinks in CoT directory
+gen-conf-ref.pl  - Generate configuration reference from zxidconf.h
 pulverize.pl     - A build tool for generating pulverized libraries for dead function elimination
 call-anal.pl     - Call graph analysis tool (see make callgraph)
+xml-pretty.pl    - XML Pretty Printer
 
 # Handwritten code
 
@@ -45,18 +67,24 @@ zxns.c           - Namespace manipulation functions for generated code
 zxutil.c         - Common library functions used by zx system
 zxidcgi.c        - SP specific CGI parsing (see zxid.h)
 zxidconf.c       - Configuration file and option parsing (see zxid.h)
+zxidpool.c       - Attribute pool management
 zxidses.c        - SP session creation, parsing, and destruction (see zxid.h)
 zxiduser.c       - Local user account management (see zxid.h)
 zxidecp.c        - Enhanced Client Proxy check and functionality (see zxid.h)
 zxidcdc.c        - Common Domain Cookie check (see zxid.h)
 zxidloc.c        - Service Locator: compute from metadata and input the end point to use
 zxidlib.c        - Common library functions for SSO (see zxid.h)
+zxiddec.c        - Decoding redirect and POST bindings
+zxidspx.c        - SP dispatch functions
+zxididpx.c       - IdP dispatch functions
 zxidmeta.c       - Metadata generation, parsing, and cache
 zxidcurl.c       - Glue to libcurl
 zxidmk.c         - Handwritten constructors for SSO
 zxidmni.c        - NameID Management
 zxidslo.c        - Single Logout and other management functions
-zxidsso.c        - Single Sign-On functions
+zxidpep.c        - Policy Enforcement Point functions
+zxidpsso.c       - Single Sign-On functions for IdP: Generate A7N
+zxidsso.c        - Single Sign-On functions for SP: Consume A7N
 zxida7n.c        - Functions for querying assertions
 zxidepr.c        - End Point Reference (EPR) and bootstrap handling
 zxidwsc.c        - Handwritten ID-WSF Web Services Client engine
@@ -66,6 +94,8 @@ zxidxmltool.c    - Testing tool for parsing XML
 zxbench.c        - A benchmarking tool
 zxencdectest.c   - An XML encoding and decoding testing tool
 zxidssofinalizetest.c  - Test zxid_sso_finalize()
+zxdecode.c       - SAML redirect and post message decoding tool
+zxcot.c          - CoT (Circle-of-Trust) management tool: list CoT, add metadata to CoT
 
 # Full API demos
 
@@ -90,13 +120,39 @@ zxidhlo.java     - Hello World SSO using Java JNI
 servlet/WEB-INF/web.xml  - Hello World servlet definition
 zxidhrxmlwsc.c   - Example of ID-SIS HR-XML Web Services Client
 zxidhrxmlwsp.c   - Example of ID-SIS HR-XML Web Services Provider
+zxididp.c        - A rudimentary IdP (WIP Nov 2008)
 zxidsp.c         - A slightly more configurable use of simple API
+
+# S/MIME Utility for Certificate Manipulations, Signing, and Encryption
+
+README.smime     - Tutorial on use of smime tool
+smimeutil.h
+smime-enc.c      - Encryption (assymmetric and symmetric) and signing
+smime-qry.c      - Get string representations of various certificate parameters
+smime-vfy.c      - Decryption and signature verification
+smime.c          - main() of smime command line interface
+smimemime.c      - Wrap stuff in mime entities
+smimeutil.c
+certauth.c       - Certification authority functions
+keygen.c         - Key generation functions
+logprint.h       - Logging macros
+macglue.h        - Macintosh specific kludges (very old)
+pkcs12.c         - Import and export PKCS12
+test-smime.pl    - Tests the command line tool
+test2-smime.pl   - Tests the SMIMEUtil perl module
+filex.pm         - Locking file operations (of generic utility)
+tcpcat.pm        - Send and receive data over TCP connections (like http)
+send.pl          - Send mail
+pass-password.pl - Demonstrates passing passwords securely
+hash-certs.pl    - Hash certs for SSLeay/OpenSSL type certificate directory
+smimeutil.i      - SWIG input file to generate SMIMEUtil perl module
 
 # Default Circle of Trust partner IdP's metadata
 
 default-cot/OKCy5mMaXMJUnKQ1wVJCcT00AA8  - auth-int.orange.fr
 default-cot/ZLIYSwzbSQdzIWHISwoWtdrx6JI  - auth.orange.fr
 default-cot/_CBGcFVVbIEmt5oh3jUx4GEfHLM  - idp.symdemo.com
+default-cot/s36Te-rgbzReSjVc8vDDGy89tT8  - http://idp.ssocircle.com
 
 # Module generation facilities
 
@@ -271,6 +327,14 @@ mod_auth_saml.c        - Apache auth module to SAML protect web pages
 protected/content.txt  - Test content for mod_auth_saml
 protected/saml         - Test content for mod_auth_saml
 protected/orange.cgi   - Demonstration of using Orange Personal APIs
+protected/protected.html
+pers/personalized.html
+pers/env.cgi
+intra/intranet.html
+intra/env.cgi
+strong/strong.html
+other/other.html
+idpsel.cgi             - Custom IdP selection script for the strong area.
 
 # Net::SAML module (zxid.i)
 
@@ -287,6 +351,7 @@ php/README.zxid-php
 php/php_zxid.h         - Generated
 php/zxid.php           - Generated
 php/zxid_wrap.c        - Generated
+php/zxid.ini
 
 # py_zxid.so Python extension (pyzxid.i)
 
@@ -297,7 +362,7 @@ py/zxid_wrap.c         - Generated
 # ruby_zxid.so Ruby extension (rubyzxid.i)
 
 ruby/README.zxid-ruby
-#ruby/zxid.ruby         - Generated
+#ruby/zxid.ruby        - Generated
 ruby/zxid_wrap.c       - Generated
 
 # csharp_zxid.so C# extension (csharpzxid.i)
@@ -384,6 +449,7 @@ zxidjava/SWIGTYPE_p_X509.java
 zxidjava/SWIGTYPE_p_f_p_void__void.java
 zxidjava/SWIGTYPE_p_f_p_void_size_t__p_void.java
 zxidjava/SWIGTYPE_p_f_size_t__p_void.java
+zxidjava/SWIGTYPE_p_fdtype.java
 zxidjava/SWIGTYPE_p_int.java
 zxidjava/SWIGTYPE_p_p_char.java
 zxidjava/SWIGTYPE_p_p_void.java
@@ -410,19 +476,26 @@ zxidjava/SWIGTYPE_p_zx_e_Body_s.java
 zxidjava/SWIGTYPE_p_zx_e_Envelope_s.java
 zxidjava/SWIGTYPE_p_zx_e_Header_s.java
 zxidjava/SWIGTYPE_p_zx_ff12_Assertion_s.java
+zxidjava/SWIGTYPE_p_zx_md_ArtifactResolutionService_s.java
 zxidjava/SWIGTYPE_p_zx_md_AssertionConsumerService_s.java
 zxidjava/SWIGTYPE_p_zx_md_EntityDescriptor_s.java
+zxidjava/SWIGTYPE_p_zx_md_IDPSSODescriptor_s.java
 zxidjava/SWIGTYPE_p_zx_md_KeyDescriptor_s.java
 zxidjava/SWIGTYPE_p_zx_md_ManageNameIDService_s.java
 zxidjava/SWIGTYPE_p_zx_md_SPSSODescriptor_s.java
 zxidjava/SWIGTYPE_p_zx_md_SingleLogoutService_s.java
+zxidjava/SWIGTYPE_p_zx_md_SingleSignOnService_s.java
 zxidjava/SWIGTYPE_p_zx_root_s.java
 zxidjava/SWIGTYPE_p_zx_sa11_Assertion_s.java
 zxidjava/SWIGTYPE_p_zx_sa_Assertion_s.java
+zxidjava/SWIGTYPE_p_zx_sa_AttributeStatement_s.java
 zxidjava/SWIGTYPE_p_zx_sa_Attribute_s.java
+zxidjava/SWIGTYPE_p_zx_sa_AuthnStatement_s.java
+zxidjava/SWIGTYPE_p_zx_sa_EncryptedAssertion_s.java
 zxidjava/SWIGTYPE_p_zx_sa_EncryptedID_s.java
 zxidjava/SWIGTYPE_p_zx_sa_Issuer_s.java
 zxidjava/SWIGTYPE_p_zx_sa_NameID_s.java
+zxidjava/SWIGTYPE_p_zx_sa_Subject_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ArtifactResolve_s.java
 zxidjava/SWIGTYPE_p_zx_sp_AuthnRequest_s.java
 zxidjava/SWIGTYPE_p_zx_sp_LogoutRequest_s.java
@@ -430,7 +503,9 @@ zxidjava/SWIGTYPE_p_zx_sp_LogoutResponse_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ManageNameIDRequest_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ManageNameIDResponse_s.java
 zxidjava/SWIGTYPE_p_zx_sp_NewEncryptedID_s.java
+zxidjava/SWIGTYPE_p_zx_sp_Response_s.java
 zxidjava/SWIGTYPE_p_zx_sp_Status_s.java
+zxidjava/SWIGTYPE_p_zx_xasa_XACMLAuthzDecisionStatement_s.java
 zxidjava/SWIGTYPE_p_zx_xenc_EncryptedData_s.java
 zxidjava/SWIGTYPE_p_zx_xenc_EncryptedKey_s.java
 zxidjava/zx_any_attr_s.java
@@ -451,7 +526,7 @@ zxidjava/zxidjniConstants.java
 zxidjava/zxidjniJNI.java
 zxidjava/zxsig_ref.java
 
-# Precheck
+# Precheck. These are build time tests for dependency libraries.
 
 precheck/chk-zlib.c
 precheck/chk-openssl.c

@@ -105,12 +105,12 @@ public class zxid_cgi {
     return zxidjniJNI.zxid_cgi_nid_get(swigCPtr);
   }
 
-  public void setUser(String value) {
-    zxidjniJNI.zxid_cgi_user_set(swigCPtr, value);
+  public void setUid(String value) {
+    zxidjniJNI.zxid_cgi_uid_set(swigCPtr, value);
   }
 
-  public String getUser() {
-    return zxidjniJNI.zxid_cgi_user_get(swigCPtr);
+  public String getUid() {
+    return zxidjniJNI.zxid_cgi_uid_get(swigCPtr);
   }
 
   public void setPw(String value) {
@@ -119,6 +119,14 @@ public class zxid_cgi {
 
   public String getPw() {
     return zxidjniJNI.zxid_cgi_pw_get(swigCPtr);
+  }
+
+  public void setSsoreq(String value) {
+    zxidjniJNI.zxid_cgi_ssoreq_set(swigCPtr, value);
+  }
+
+  public String getSsoreq() {
+    return zxidjniJNI.zxid_cgi_ssoreq_get(swigCPtr);
   }
 
   public void setCdc(String value) {
@@ -295,6 +303,30 @@ public class zxid_cgi {
 
   public String getDbg() {
     return zxidjniJNI.zxid_cgi_dbg_get(swigCPtr);
+  }
+
+  public void setZxapp(String value) {
+    zxidjniJNI.zxid_cgi_zxapp_set(swigCPtr, value);
+  }
+
+  public String getZxapp() {
+    return zxidjniJNI.zxid_cgi_zxapp_get(swigCPtr);
+  }
+
+  public void setZxrfr(String value) {
+    zxidjniJNI.zxid_cgi_zxrfr_set(swigCPtr, value);
+  }
+
+  public String getZxrfr() {
+    return zxidjniJNI.zxid_cgi_zxrfr_get(swigCPtr);
+  }
+
+  public void setOk(String value) {
+    zxidjniJNI.zxid_cgi_ok_set(swigCPtr, value);
+  }
+
+  public String getOk() {
+    return zxidjniJNI.zxid_cgi_ok_get(swigCPtr);
   }
 
   public void setIdp_list(zxid_entity value) {

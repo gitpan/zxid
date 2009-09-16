@@ -1,13 +1,14 @@
 /* zxidconf.h  -  Configuration of ZXID SP CGI
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidconf.h,v 1.28 2008-04-26 01:04:35 sampo Exp $
+ * $Id: zxidconf.h,v 1.46 2009-09-16 10:14:57 sampo Exp $
  *
  * 12.8.2006, created --Sampo
+ * 29.8.2009, added PDP_URL --Sampo
  *
  * Most of the configuration options can be set via configuration
  * file /var/zxid/zxid.conf or using -O command line flag(s). In
@@ -23,7 +24,8 @@
 #ifndef _zxidconf_h
 #define _zxidconf_h
 
-/* Whether configuration is entirely determined at compile time by this file
+/*(c) Compile time configuration enforcement
+ * Whether configuration is entirely determined at compile time by this file
  * or whether it is possible to use a config file or provide options on
  * command line using -O flags (such as via shell script wrapper). When zxid
  * is used as a library, it depends on application to call zxid_parse_conf().
@@ -33,20 +35,20 @@
 #define ZXID_CONF_FLAG 1     /* (compile) */
 #define ZXID_MAX_CONF  4096  /* (compile) Maximum size of conf file. */
 
-/* In following, if you renamed zxid binary, you need to change any URL ending
- * in /zxid to match the new name. */
-
-/* Where metadata cache and session files are created. Note that the directory
+/*(c) ZXID configuration and working directory path
+ * Where metadata cache and session files are created. Note that the directory
  * is not hashed: you should use a file system that scales easily to oodles
  * of small files in one directory. Say `make dir' to create the directory
  * with proper layout. If you change it here, also edit Makefile. */
 #define ZXID_PATH "/var/zxid/"
 
-/* The nice name may be used by IdP user interface to refer to the SP. It is usually
+/*(c) SP Nickname for IdP User Interface
+ * The nice name may be used by IdP user interface to refer to the SP. It is usually
  * be short human readable name or description. */
 #define ZXID_NICE_NAME "ZXID Demo SP"
 
-/* URL for most zxid operations. It must end in whatever triggers
+/*(c) Web Site URL - root of EntityID
+ * URL for most zxid operations. It must end in whatever triggers
  * the ZXID functionality in the web server. The hostname
  * and port number should match the server under which zxid CGI is accessible.
  * N.B. There is no explicit way to configure Entity ID (Provider ID) for
@@ -55,7 +57,8 @@
 #define ZXID_URL "https://sp1.zxidsp.org:8443/zxid"
 /*#define ZXID_URL "https://a-sp.liberty-iop.org:8443/zxid"*/
 
-/* The best practise is that SP Entity ID is chosen by the SP (and not
+/*(c) Override standard EntityID Construction
+ * The best practise is that SP Entity ID is chosen by the SP (and not
  * forced upon SP by IdP). In ZXID this is done by setting ZXID_URL,
  * see above. However, should you have to work with an obstinate IdP
  * that refuses to follow this best practise, you can use this option
@@ -64,17 +67,32 @@
  * value: leave as 0 so that Entity ID is formed from ZXID_URL */
 #define ZXID_NON_STANDARD_ENTITYID 0
 
-/* URL for reading Common Domain Cookie. It must end in "zxid". The hostname
+/*(c) Illadviced ACS URL Hack
+ * Sometimes an illadvised authority may impose to you Assertion
+ * Consumer Service URL, this URL happens to be different than
+ * ZXID uses, and you do not have political leverage to change
+ * these decisions. In those times you can use this hack to
+ * try to map the imposed URL to the one that works in ZXID.
+ * Normally you should register at IdP to use the ZXID default
+ * URLs (easiest way to do this is to use metadata). This
+ * only works in mod_auth_saml. */
+#define ZXID_REDIRECT_HACK_IMPOSED_URL 0
+#define ZXID_REDIRECT_HACK_ZXID_URL 0
+
+/*(c) Common Domain Cookie URL
+ * URL for reading Common Domain Cookie. It must end in "zxid". The hostname
  * and port number should match the server under which zxid CGI is accessible.
  * Specifying empty CDC_URL disables CDC check in zxid_simple() API. */
 /*#define ZXID_CDC_URL "https://sp1.zxidcommon.org:8443/zxid"*/
 /*#define ZXID_CDC_URL "https://a-sp.cot.projectliberty.org:8443/zxid"*/
 #define ZXID_CDC_URL "" /* CDC disabled */
 
-/* How to handle CDC designated IdP. See zxid.h for explanation of constants. */
+/*(c) CDC designated IdP Handling
+ * How to handle CDC designated IdP. See zxid.h for explanation of constants. */
 #define ZXID_CDC_CHOICE ZXID_CDC_CHOICE_UI_PREF
 
-/* Following four boolean configuration options control how (IdP) metadata
+/*(c) Metadata Fetching Options (Auto-CoT)
+ * Following four boolean configuration options control how (IdP) metadata
  * is obtained. The metadata can be in a cache (by default directory /var/zxid/cot)
  * or it can be fetched "on the fly" using the well known location (WKL) method.
  *
@@ -101,31 +119,68 @@
  * If you want as automatic operation as possible, set all four to 1.
  */
 
-#define ZXID_MD_FETCH 1
+#define ZXID_MD_FETCH 1               /* The Auto-CoT ena option */
 #define ZXID_MD_POPULATE_CACHE 1
 #define ZXID_MD_CACHE_FIRST 1
 #define ZXID_MD_CACHE_LAST 1
 
-/* Whether AuthnReq is signed (controls both metadata and actual behavior). */
+/*(c) Automatic Self-signed Cert Generation (Auto-Cert)
+ * If ZXID does not find one of the certificate plus private key
+ * pairs it needs to operate, it will generate automatically
+ * a selfsigned certificate and privatekey and populate it to
+ * the assigned place. The certificate will be valid for 30 years.
+ * If you do not want this to happen, you should disable this option
+ * and install the certificate-privatekey pairs manually to
+ *
+ *   /var/zxid/pem/enc-nopw-cert.pem
+ *   /var/zxid/pem/sign-nopw-cert.pem
+ *   /var/zxid/pem/logenc-nopw-cert.pem
+ *   /var/zxid/pem/logsign-nopw-cert.pem
+ *   /var/zxid/pem/ssl-nopw-cert.pem
+ *
+ * Hint: you can use same certificate-private key pair for
+ * all purposes. */
+
+#define ZXID_AUTO_CERT 1
+
+/*(c) Authentication Request Signing
+ * Whether AuthnReq is signed SP (controls both metadata and actual behavior). */
 #define ZXID_AUTHN_REQ_SIGN 1
 
-/* Whether SP insists that SSO assertiosn are signed. Affects metadata. The
- * actual insistence on signing is controleld by ZX_NOSIG_FATAL, far below.
+/*(c) Assertion Signing
+ * Whether SP insists that SSO assertions are signed. Affects metadata. The
+ * actual insistence on signing is controlled by ZXID_NOSIG_FATAL, far below.
  * Boolean. Recommended value: 1. */
 #define ZXID_WANT_SSO_A7N_SIGNED 1
 
-/* Whether SOAP messsages for ArtifactResolution, SLO, and MNI are signed. Whether
+/*(c) SOAP Message Signing
+ * Whether SOAP messages for ArtifactResolution, SLO, and MNI are signed. Whether
  * responses are signed as well. (*** doc) */
 #define ZXID_SSO_SOAP_SIGN 1
 #define ZXID_SSO_SOAP_RESP_SIGN 1
 
-/* Whether SLO and MNI requests emitted by ZXID will encrypt the
+/*(c) IdP Signing Options
+ * Which components should be signed by IdP in SSO Response and Assertion.
+ * Bit mask:
+ *   0x01  Assertion should be signed (default and highly recommended)
+ *   0x02  The surrounding Response element should be signed
+ *   0x03  Both Assertion and Response are signed. */
+#define ZXID_SSO_SIGN 0x01
+
+/*(c) NameID Encryption
+ * Whether SLO and MNI requests emitted by ZXID will encrypt the
  * NameID (on received requests ZXID accepts either plain or encrypted
  * automatically and without configuration). (*** doc) */
 
 #define ZXID_NAMEID_ENC 0x0f
 
-/* How many random bits to use in an ID. It would be useful if this was
+/*(c) Assertion Encryption in POST
+ * Whether to encrypt assertions when using POST bindings. */
+
+#define ZXID_POST_A7N_ENC 1
+
+/*(c) Bit length of identifiers, unguessability
+ * How many random bits to use in an ID. It would be useful if this was
  * such that it produces nice unpadded base64 string, i.e. multiple of 24 bits.
  * Longer IDs reduce chances of random collision (most code does not
  * check uniqueness of ID) and may increase security. For security purposes
@@ -138,10 +193,11 @@
  *       48 bits ==  6 bytes ==  8 base64 chars,
  *      120 bits == 15 bytes == 20 base64 chars,
  *      144 bits == 18 bytes == 24 base64 chars */
-#define ZXID_ID_BITS 48       /* (compile) */
+#define ZXID_ID_BITS 144      /* (compile) */
 #define ZXID_ID_MAX_BITS 168  /* used for static buffer allocation (compile) */
 
-/* Whether true randomness is obtained.
+/*(c) True randomness vs. pseudorandom source
+ * Whether true randomness is obtained.
  * 0=use OpenSSL RAND_pseudo_bytes(), which usually uses /dev/urandom
  * 1=use OpenSSL RAND_bytes(), which usually uses /dev/random
  *
@@ -152,7 +208,8 @@
  * you have hardware random number generator. */
 #define ZXID_TRUE_RAND 0  /* (compile) */
 
-/* If set to a string, indicates a file system directory to which
+/*(c) Session Archival Directory
+ * If set to a string, indicates a file system directory to which
  * dead sessions are moved (sessions are files). This directory
  * must be on the same file system as active session directory,
  * usually /var/zxid/ses, for example /var/zxid/oldses.
@@ -164,7 +221,7 @@
  * If set to 0, causes old sessions to be unlink(2)'d. */
 #define ZXID_SES_ARCH_DIR 0  /* 0=Remove dead sessions. */
 
-/* Session cookies. (*** doc)
+/*(c) Session cookies.
  * For original Netscape cookie spec see: http://curl.haxx.se/rfc/cookie_spec.html (Oct2007)
  *
  * If SES_COOKIE_NAME is nonempty string, then
@@ -177,7 +234,8 @@
 
 #define ZXID_SES_COOKIE_NAME "ZXIDSES"
 
-/* Local user account management. This is optional unless you require IdP
+/*(c) Local user account management.
+ * This is optional unless you require IdP
  * initiated ManageNameID requests to work. Local user account management
  * may be useful on its own right if your application does not yet have
  * such system. If it has, you probably want to continue to use
@@ -186,14 +244,28 @@
 
 #define ZXID_USER_LOCAL 1
 
-/* Maximum filesystem path used in /var/zxid tree. */
+/*(c) Mini IdP
+ * Whether limited IdP functionality is enabled. Affects generated metadata. */
+#define ZXID_IDP_ENA 0
+
+/*(c) Dummy PDP
+ * Whether limited PDP functionality is enabled. */
+#define ZXID_PDP_ENA 1
+
+/*(c) IdP Insitence on Signed AuthnReq
+ * Must AuthnReq be signed (controls both IdP metadata and actual behavior, i.e. the check). */
+#define ZXID_WANT_AUTHN_REQ_SIGNED 1
+
+/*() Maximum filesystem path used in /var/zxid tree. */
 #define ZXID_MAX_BUF 1024  /* (compile) */
 
-/* See README.zxid logging chapter for further explanation. Generally you
+/*(c) Logging Options
+ * See zxid-log.pd for further explanation. Generally you
  * need error and activity logs to know yourself what is going on.
  * You need the issue logs to know whether other's claims towards you are justified.
  * You need the rely logs to hold others responsible. The bits of the
  * value are as follows
+ * 0x00    Don't log.
  * 0x01    Log enable
  * 0x06    Signing options    
  *         0:: no signing (Px)
@@ -243,7 +315,7 @@
 #define ZXLOG_RELY_MSG   0x01  /* Log each received PDU to /var/zxid/log/rely/SHA1/a7n/asn */
 #else
 /* Test settings */
-#define ZXLOG_ERR        0x05
+#define ZXLOG_ERR        0x00
 #define ZXLOG_ACT        0x25
 #define ZXLOG_ISSUE_A7N  0x23
 #define ZXLOG_ISSUE_MSG  0x45
@@ -251,16 +323,18 @@
 #define ZXLOG_RELY_MSG   0x11
 #endif
 
-/* Each operation has its status code and generally those lines that indicate
+/*(c) Choice of log given Error or Action
+ * Each operation has its status code and generally those lines that indicate
  * successful status (or intermediate status like "continue" or "redirect")
  * are considered normal activity. However, you may want to consider
  * carefully whether signature failure in assertion or message disqualifies
  * an operation as "activity". One approach is to simply log everything (errors and all) to
  * activity log and rely on some log analysis software to flag the errors. */
 #define ZXLOG_ERR_IN_ACT     1  /* Log errors to /var/zxid/log/act (in addition to err) */
+#define ZXLOG_ACT_IN_ERR     1  /* Log actions to /var/zxid/log/err (in addition to act) */
 #define ZXLOG_SIGFAIL_IS_ERR 1  /* Log line with signature validation error to /var/zxid/log/err */
 
-/* Log level for activity log.
+/*(c) Log level for activity log.
  * 0 = Only essential audit relevant events are logged. Note that
  *     there is no way to turn off logging audit relevant events.
  * 1 = Audit and external interactions
@@ -268,17 +342,20 @@
  * 3 and higher: reserved for future definition and debugging */
 #define ZXLOG_LEVEL 2
 
-/* Assertion validation options. These MUST all be turned on (and assertions signed)
+/*(c) Assertion validation options.
+ * These MUST all be turned on (and assertions signed)
  * if you want to rely on assertions to hold the other party liable. */
 
-#define ZXID_SIG_FATAL      0 /* Signature validation error is fatal (prevents SSO) */
+#define ZXID_SIG_FATAL      1 /* Signature validation error is fatal (prevents SSO) */
 #define ZXID_NOSIG_FATAL    1 /* Missing signature is fatal (prevents SSO) */
+#define ZXID_MSG_SIG_OK     1 /* Message layer signature (e.g. SimpleSign) is sufficeint when assertion signature is missing. */
 #define ZXID_AUDIENCE_FATAL 1 /* Whether AudienceRestriction is checked. */
 #define ZXID_TIMEOUT_FATAL  1 /* Whether NotBefore and NotOnOrAfter are checked */
 #define ZXID_DUP_A7N_FATAL  0 /* Whether duplication of AssertionID is considered fatal. */
-#define ZXID_DUP_MSG_FATAL  0 /* Whether duplication of MessageID is considered fatal. */
+#define ZXID_DUP_MSG_FATAL  0 /* Whether duplication of MessageID or message is considered fatal. */
 
-/* Because clock sychronization amoung the servers in the CoT is unlikely
+/*(c) Time Slop
+ * Because clock sychronization amoung the servers in the CoT is unlikely
  * to be perfect, not to speak of timezone misconfigurations and the
  * dreaded officially introduced time errors (e.g. daylight "savings" time),
  * you can configure some slop in how the timeout is evaluated. For production
@@ -287,31 +364,114 @@
 #define ZXID_AFTER_SLOP     86400  /* Number of seconds after that is acceptable. */
 
 #define ZXID_TIMESKEW       0      /* Timeskew, in seconds, for timestamps we emit. */
+#define ZXID_A7NTTL         3600   /* Time To Live for IdP issued Assertions */
 
-/* Should explicit redirect to content be used (vs. internal redir). With
- * internal redirect there is one over teh wire transaction less, but
+/*(c) Redirect to Content
+ * Should explicit redirect to content be used (vs. internal redir). With
+ * internal redirect there is one over-the-wire transaction less, but
  * the URL appears as whatever was sent by the IdP. With explicit (302)
- * redirect the URL will appear as the true content URL, without SSO goo. */
-#define ZXID_REDIR_TO_CONTENT 0
+ * redirect the URL will appear as the true content URL, without the SAML SSO goo. */
+#define ZXID_REDIR_TO_CONTENT 1
 
-/* ID-WSF SOAP Call parameters */
+/*(c) ID-WSF SOAP Call parameters */
 
 #define ZXID_MAX_SOAP_RETRY 5  /* Maximum retries due, e.g., EndpointMoved */
 
-/* In mod_auth_saml the URL ending that triggers session management (e.g. SLO MNI). */
+/*(c) Session Management Trigger Suffix
+ * In mod_auth_saml the URL ending that triggers session management (e.g. SLO MNI). */
 // *** remove #define ZXID_MOD_SAML_MGMT_SUFFIX "/saml"
 
-/* In mod_auth_saml the prefix (potentially empty) for attributes brought into environment. */
+/*(c) Attribute Prefix
+ * In mod_auth_saml the prefix (potentially empty) for attributes brought into environment. */
 
 #define ZXID_MOD_SAML_ATTR_PREFIX "SAML_"
 
+/*(c) Fake Basic Auth by generating REMOTE_USER
+ * In mod_auth_saml generate REMOTE_USER subprocess environment variable. */
+
+#define ZXID_REMOTE_USER_ENA 1
+
+/*(c) Query String if None Given */
+
 #define ZXID_DEFAULTQS ""   /* Default Query String used by mod_auth_saml for protected page */
 
+/*(c) Anonymous can see protected content
+ * If ANON_OK is set and matches prefix of the local URL, SSO failure does
+ * not block protected content from being
+ * shown. While this usually is a security problem, in some circumstances
+ * you may want to show error message or nonpersonalized content from the
+ * application layer. If application checks that the SSO really happened,
+ * then there is no security problem - the responsibility is application's.
+ * Typically ANON_OK=/dir/ is used with IsPassive (fp=1) to implement personalization
+ * if user already has session, but allow the user to access page anonymously
+ * without logging in if he does not have session. */
+#define ZXID_ANON_OK 0
+
+/*(c) Required Authentication Context Class Ref.
+ * This can be used
+ * to ensure that the IdP has authenticated user sufficiently.
+ * In some cases this can trigger step-up authentication.
+ * Value should be dollar separated string of acceptable authn context
+ * class refs, e.g. ""
+ * If step-up authentication is triggered, you need to ensure the fa query
+ * string argument of the IdP selection page also requests the desired
+ * authentication contrext class reference.
+ * If not specified, then any authentication context is acceptable. */
+#define ZXID_REQUIRED_AUTHNCTX 0
+
+/*(c) IdP: Authentication Context Class Ref for Passwords
+ * What authentication context IdP issues for password authentication. The
+ * problem here is that ZXID does not know whether transport layer is TLS (assumed).
+ * If it is not, you should configure this to be
+ * "urn:oasis:names:tc:SAML:2.0:ac:classes:Password"
+ * or you can configure this according to your IdP operational policies. */
+#define ZXID_ISSUE_AUTHNCTX_PW "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
+
+/*(c) IdP preference for ACS
+ * If SP does not manifest preference regarding the binding for Assertion Consumer Service,
+ * then this IdP preference is used, unless SP metadata indicates it can not
+ * support this binding, in which case the first ACS from metadata is used. */
+#define ZXID_IDP_PREF_ACS_BINDING "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+
 /* ----------------------------------------------------------------------------- */
-/* Simple API HTML customization. These allow simple branding and customization.
+/*(c) Attribute Broker definitions */
+
+#define ZXID_NEED "idpnid,affid,role$undisclosed,log$400000$$"
+#define ZXID_WANT "*,authnctxlevel,sesid,setcookie,cookie,rs,cn$undisclosed,log$400000$$"
+#define ZXID_ATTRSRC ""
+#define ZXID_INMAP ""
+#define ZXID_OUTMAP ""
+//#define ZXID_SUPPRESS ""
+
+/* ----------------------------------------------------------------------------- */
+/*(c) Policy Decision Point (PDP) URL
+ * If this URL is set, then the indicated PDP will be consulted in
+ * the end of SSO, or whenever zxid_az() (*** name subject to change) is called. */
+#define ZXID_PDP_URL 0
+
+/*(c) XACML Attributes ns$A$rule$b$ext */
+
+#define ZXID_PEPMAP "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+
+//#define ZXID_XACML2_SUBJ  "idpnid=$idpnid&role=$role"
+//#define ZXID_XACML2_RSRC  "URL=$URL"
+//#define ZXID_XACML2_ACT   "Action=$Action"
+//#define ZXID_XACML2_ENV   "ZXID_PEPVers"
+
+/*(c) Whitelists and blacklists for the primitive local PDP. Comma separated lists. */
+
+#define ZXID_LOCALPDP_ROLE_PERMIT 0   /* Whitelist of roles (empty: anything goes) */
+#define ZXID_LOCALPDP_ROLE_DENY   "local_deny"      /* Blacklist of roles */
+#define ZXID_LOCALPDP_IDPNID_PERMIT 0 /* Whitelist of permitted users (empty: anything goes) */
+#define ZXID_LOCALPDP_IDPNID_DENY "denynid" /* Blacklist of denied users */
+
+/* ----------------------------------------------------------------------------- */
+/*(c) Simple API HTML customization.
+ * These allow simple branding and customization.
  * If these options are not enough for you, consider simply rendering your own forms. */
 
-/* Body tag for the ZXID SP generated pages. Edit this to change the colors. */
+/*(c) Body tag for the ZXID generated pages.
+ * Edit this to change the colors. */
 #define ZXID_BODY_TAG "<body bgcolor=\"#330033\" text=\"#ffaaff\" link=\"#ffddff\" vlink=\"#aa44aa\" alink=\"#ffffff\"><font face=sans>"  /* (compile) */
 
 #define ZXID_IDP_SEL_START "<title>ZXID SP SSO: Choose IdP</title>" ZXID_BODY_TAG "<h1>ZXID SP Federated SSO (user NOT logged in, no session)</h1>\n"
@@ -325,8 +485,33 @@
 #define ZXID_IDP_SEL_TECH_SITE "<input type=hidden name=fq value=\"\"><input type=hidden name=fy value=\"\"><input type=hidden name=fa value=\"\"><input type=hidden name=fm value=\"\"><input type=hidden name=fp value=0><input type=hidden name=ff value=0><!-- ZXID built-in defaults, see IDP_SEL_TECH_SITE in zxidconf.h -->"
 
 #define ZXID_IDP_SEL_FOOTER  "<hr><a href=\"http://zxid.org/\">zxid.org</a>, "
-#define ZXID_IDP_SEL_END     "<!-- EOF --->"
+#define ZXID_IDP_SEL_END     "<!-- EOF -->"
 
+/*(c) IdP Selector Page URL
+ * If the above simple customization options are not sufficient, you can
+ * provide URL to page of your own design. This page will receive as
+ * query string argument the relay state.
+ * 0 (zero) disables. */
+
+#define ZXID_IDP_SEL_PAGE 0
+
+#define ZXID_AN_START "<title>ZXID IdP: Authentication</title>" ZXID_BODY_TAG "<h1>ZXID IdP Authentication for Federated SSO (user NOT logged in, no session)</h1>\n<h3>Please authenticate yourself using one of following methods:</h3>"
+
+#define ZXID_AN_OUR_EID "Entity ID of this IdP (click on the link to fetch the IdP metadata): "
+
+#define ZXID_AN_TECH_USER "<h3>Technical options</h3><input type=checkbox name=fc value=1 checked> Create federation, NID Format: <select name=fn><option value=prstnt>Persistent<option value=trnsnt>Transient<option value=\"\">(none)</select><br>\n"
+
+#define ZXID_AN_TECH_SITE "<input type=hidden name=fq value=\"\"><input type=hidden name=fy value=\"\"><input type=hidden name=fa value=\"\"><input type=hidden name=fm value=\"\"><input type=hidden name=fp value=0><input type=hidden name=ff value=0><!-- ZXID built-in defaults, see IDP_SEL_TECH_SITE in zxidconf.h -->"
+
+#define ZXID_AN_FOOTER  "<hr><a href=\"http://zxid.org/\">zxid.org</a>, "
+#define ZXID_AN_END     "<!-- EOF -->"
+
+/*(c) Authentication Page URL
+ * If the above simple customization options are not sufficient, you can
+ * provide URL to page of your own design.
+ * 0 (zero) disables. */
+
+#define ZXID_AN_PAGE 0
 
 #define ZXID_MGMT_START "<title>ZXID SP Mgmt</title>" ZXID_BODY_TAG "<h1>ZXID SP Management (user logged in, session active)</h1>\n"
 
@@ -335,6 +520,6 @@
 #define ZXID_MGMT_DEFED "<input type=submit name=gt value=\" Defederate (R) \">\n<input type=submit name=gu value=\" Defederate (S) \">\n"
 
 #define ZXID_MGMT_FOOTER  "<hr><a href=\"http://zxid.org/\">zxid.org</a>, "
-#define ZXID_MGMT_END     "<!-- EOF --->"
+#define ZXID_MGMT_END     "<!-- EOF -->"
 
 #endif

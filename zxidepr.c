@@ -1,13 +1,14 @@
 /* zxidepr.c  -  Handwritten functions for EPR and bootstrap handling
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidepr.c,v 1.12 2008-05-30 17:39:11 lbernardo Exp $
+ * $Id: zxidepr.c,v 1.16 2009-09-05 02:23:41 sampo Exp $
  *
  * 5.2.2007, created --Sampo
+ * 7.10.2008, added documentation --Sampo
  *
  * See also: zxidsimp.c (attributes to LDIF), and zxida7n.c (general attribute querying)
  *
@@ -31,11 +32,23 @@
 #include "saml2.h"
 #include "c/zx-ns.h"
 
-/* Compute (and fold) unique EPR name according to /var/zxid/ses/SESID/SVC-SHA1 */
+/*() Compute (and fold) unique nice sha1 name according to NAME,SHA1
+ *
+ * This name format is designed to ensure unique name, while
+ * maintainting human readability. This is
+ * useful in the common case where WSC wants to call a specific type of web service.
+ *
+ * cf::  ZXID configuration object, also used for memory allocation
+ * buf:: result parameter. The buffer, which must have been allocated, will be
+ *     modified to have the path. The path will be nul terminated.
+ * buf_len:: The length of the buf (including nul termination), usually sizeof(buf)
+ * name:: Often Service name or SP Entity ID
+ * cont:: content of EPR or the SP EntityID, used to compute sha1 hash that becomes part
+ *     of the file name
+ * return:: 0 on success (the real return value is returned via ~buf~ result parameter) */
 
-/* Called by:  zxid_snarf_eprs_from_ses x2 */
-int zxid_epr_path(struct zxid_conf* cf, struct zxid_ses* ses,
-		  char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont)
+int zxid_nice_sha1(struct zxid_conf* cf, char* buf, int buf_len,
+		   struct zx_str* name, struct zx_str* cont)
 {
   char* p;
   char* q;
@@ -43,24 +56,70 @@ int zxid_epr_path(struct zxid_conf* cf, struct zxid_ses* ses,
   char sha1_cont[28];
   sha1_safe_base64(sha1_cont, cont->len, cont->s);
   sha1_cont[27] = 0;
-  len = snprintf(buf, buf_len, "%s" ZXID_SES_DIR "%s/%.*s,%s", cf->path, ses->sid, svc->len, svc->s, sha1_cont);
-  if (len < 0) {
-    perror("snprintf");
-    D("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", len);
-    if (buf && buf_len > 0)
-      buf[0] = 0;
-    return 0;
-  }
+  len = snprintf(buf, buf_len, "%.*s,%s", MAX(name->len-7,0), name->s+7, sha1_cont);
 
-  /* Sanity scan the svc part, folding dangerous chars to _. */
-  p = buf + cf->path_len + sizeof(ZXID_SES_DIR)-1 + strlen(ses->sid) + 1;
-  q = MIN(p + svc->len, buf + buf_len);
+  /* 012345678
+   * http://
+   * https://   */
+
+  /* Sanity scan the name part (svc or eid), folding dangerous chars to _. */
+  p = buf;
+  q = MIN(p + MAX(name->len-7,0), buf + buf_len);
   for (; p<q; ++p)
-    if (ONE_OF_2(*p, '/',','))
+    if (ONE_OF_6(*p, ':','/',',','?','&','='))
       *p = '_';
   return 0;
 }
 
+/*() Compute (and fold) unique EPR name according to /var/zxid/ses/SESID/SVC,SHA1
+ *
+ * This name format is designed to ensure unique name for each EPR, while
+ * also making it easy to determine the service type from the name. This is
+ * useful in the common case where WSC wants to call a specific type of web service.
+ *
+ * cf::  ZXID configuration object, also used for memory allocation
+ * dir:: Directory, such as "ses/"
+ * sid:: Session ID whose EPR cache the file is/will be located
+ * buf:: result parameter. The buffer, which must have been allocated, will be
+ *     modified to have the path. The path will be nul terminated.
+ * buf_len:: The length of the buf (including nul termination), usually sizeof(buf)
+ * svc:: Service name
+ * cont:: content of EPR, used to compute sha1 hash that becomes part of the file name
+ * return:: 0 on success (the real return value is returned via ~buf~ result parameter)
+ *
+ * N.B. This function relies on specific, ANSI documented, functioning
+ * of snprintf(3) library function. Unfortunately, it has been found that
+ * on some platforms this function only works correctly in the 'C' locale. If
+ * you suspect this to be the case, you may want to try
+ *
+ *    export LANG=C
+ *
+ * especially if you get errors about multibyte characters. */
+
+/* Called by:  zxid_cache_epr, zxid_snarf_eprs_from_ses */
+int zxid_epr_path(struct zxid_conf* cf, char* dir, char* sid,
+		  char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont)
+{
+  int len = snprintf(buf, buf_len, "%s%s%s/", cf->path, dir, sid);
+  if (len < 0) {
+    perror("snprintf");
+    ERR("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", len);
+    if (buf && buf_len > 0)
+      buf[0] = 0;
+    return 1;
+  }
+  return zxid_nice_sha1(cf, buf+len, buf_len - len, svc, cont);
+}
+
+/*() Serialize EPR data structure to XML and write it to session's EPR cache under
+ * file name that is both unique and indicates the service type.
+ *
+ * cf:: ZXID configuration object, also used for memory allocation
+ * ses:: Session object in whose EPR cache the file will be located
+ * epr:: XML data structure representing the EPR
+ * return:: 1 on success, 0 on failure */
+
+/* Called by:  main x2, zxid_get_epr, zxid_snarf_eprs_from_ses */
 int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr)
 {
   fdtype fd;
@@ -74,7 +133,7 @@ int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_Endpo
     return 0;
   }
   ss = zx_EASY_ENC_WO_a_EndpointReference(cf->ctx, epr);
-  zxid_epr_path(cf, ses, path, sizeof(path),
+  zxid_epr_path(cf, ZXID_SES_DIR, ses->sid, path, sizeof(path),
 		epr->Metadata->ServiceType->content, ss);
   //fd = open(path, O_CREAT | O_WRONLY | O_TRUNC, 0666);
   fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxid_cache_epr", "%s" ZXID_COT_DIR "%s", path, "");
@@ -89,13 +148,17 @@ int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_Endpo
   return 1;
 }
 
-/* Look into attribute statements of a SSO assertion and extract anything
+/*() Look into attribute statements of a SSO assertion and extract anything
  * that looks like EPR, storing results in the session for later reference.
+ *
+ * cf:: ZXID configuration object, also used for memory allocation
+ * ses:: Session object in whose EPR cache will be populated
+ *
  * N.B. This approach ignores the official attribute names totally. Anything
- * that looks like EPR and that is strcturally in right place will work.
+ * that looks like an EPR and that is strcturally in right place will work.
  * Typical name /var/zxid/ses/SESID/SVCTYPE,SHA1 */
 
-/* Called by:  zxid_sp_sso_finalize */
+/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize */
 void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   struct zx_sa_AttributeStatement_s* as;
@@ -120,7 +183,7 @@ void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 #if 0	    
 	    ss = zx_EASY_ENC_WO_di12_ResourceOffering(cf->ctx, av->ResourceOffering);
 	    
-	    zxid_epr_path(cf, ses, path, sizeof(path),
+	    zxid_epr_path(cf, ZXID_SES_DIR, ses->sid, path, sizeof(path),
 			  av->EndpointReference->Metadata->ServiceType->content, ss);
 	    fd = open(path, O_CREAT | O_WRONLY | O_TRUNC, 0666);
 	    if (fd == -1) {
@@ -143,12 +206,18 @@ void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 #endif
 }
 
-/* Search the EPRs cached under the session for a match. First directory is searched
+/*() Search the EPRs cached under the session for a match. First directory is searched
  * for files whose name starts by service type. These files are opened and parsed
  * as EPR and further checks are made. The nth match is returned. 1 means first.
- * Typical name: /var/zxid/ses/SESID/SVCTYPE,SHA1 */
+ * Typical name: /var/zxid/ses/SESID/SVCTYPE,SHA1
+ *
+ * cf:: ZXID configuration object, also used for memory allocation
+ * ses:: Session object in whose EPR cache the file is searched
+ * svc:: Service type (usually a URN)
+ * n:: How manieth matching instance is returned. 1 means first
+ * return:: EPR data structure on success, 0 on failure */
 
-/* Called by:  main */
+/* Called by:  main x3, zxid_get_epr x2 */
 struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid_ses* ses, char* svc, int n)
 {
   struct zx_root_s* r;
@@ -215,8 +284,17 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
   return epr;
 }
 
-/* First search epr cache, and if miss, go discover an EPR */
+/*(i) First search epr cache, and if miss, go discover an EPR over the net.
+ * This is the main work horse for WSCs wishing to call WSPs via EPR.
+ *
+ * cf:: ZXID configuration object, also used for memory allocation
+ * ses:: Session object in whose EPR cache the file will be searched
+ * svc:: Service type (usually a URN)
+ * n:: How manieth matching instance is returned. 1 means first
+ * return:: EPR data structure on success, 0 on failure (no discovery EPR in cache, or
+ *     not found by the discovery service) */
 
+/* Called by:  main x7, zxid_callf */
 struct zx_a_EndpointReference_s* zxid_get_epr(struct zxid_conf* cf, struct zxid_ses* ses, char* svc, int n)
 {
   struct zx_e_Envelope_s* env;

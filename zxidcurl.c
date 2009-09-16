@@ -1,14 +1,15 @@
 /* zxidcurl.c  -  libcurl interface for making SOAP calls and getting metadata
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidcurl.c,v 1.5 2007-10-15 21:09:18 sampo Exp $
+ * $Id: zxidcurl.c,v 1.8 2009-08-30 15:09:26 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 4.10.2007, fixed missing Content-length header found by Damien Laniel --Sampo
+ * 4.10.2008, added documentation --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  *           http://curl.haxx.se/libcurl/
@@ -35,6 +36,9 @@
 
 /* ============== CoT and Metadata of Others ============== */
 
+/*() Call back used by Curl to move received data to application buffer.
+ * Internal. Do not use directly. */
+
 /* Called by: */
 size_t zxid_curl_write_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
@@ -47,13 +51,16 @@ size_t zxid_curl_write_data(void *buffer, size_t size, size_t nmemb, void *userp
   }
   memcpy(rc->p, buffer, len);
   rc->p += len;
-  D("RECV(%.*s) %d chars", len, (char*)buffer, len);
+  if (zx_debug & CURL_INOUT) INFO("RECV(%.*s) %d chars", len, (char*)buffer, len);
 #else
   int fd = (int)userp;
   write_all_fd(fd, buffer, len);
 #endif
   return len;
 }
+
+/*() Call back used by Curl to move data from application buffer to Curl
+ * internal send buffer. Internal. Do not use directly. */
 
 /* Called by: */
 size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
@@ -64,16 +71,25 @@ size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
     len = wc->lim - wc->p;
   memcpy(buffer, wc->p, len);
   wc->p += len;
-  D("SEND(%.*s) %d chars", len, (char*)buffer, len);
+  if (zx_debug & CURL_INOUT) INFO("SEND(%.*s) %d chars", len, (char*)buffer, len);
   return len;
 }
 
-/* Called by:  opt, zxid_get_meta_ss */
+/*() Send HTTP request for metadata using Well Known Location (WKL) method
+ * and wait for response. Send the message to the server using Curl. Return
+ * the metadata as parsed XML for the entity.
+ * This call will block while the HTTP request-response is happening.
+ *
+ * cf::      ZXID configuration object, also used for memory allocation
+ * url::     Where the request will be sent, i.e. the WKL
+ * return::  XML data structure representing the entity, or 0 upon failure  */
+
+/* Called by:  opt x3, zxid_get_meta_ss */
 struct zxid_entity* zxid_get_meta(struct zxid_conf* cf, char* url)
 {
   struct zxid_entity* ent;
-  CURLcode res;
 #ifdef USE_CURL
+  CURLcode res;
 #if 1
   struct zxid_curl_ctx rc;
   char* md_buf = ZX_ALLOC(cf->ctx, ZXID_MAX_MD+1);
@@ -128,6 +144,7 @@ struct zxid_entity* zxid_get_meta(struct zxid_conf* cf, char* url)
 #endif
 }
 
+/*() Wrapper for zxid_get_meta() so you can provide the URL as ~zx_str~. */
 /* Called by:  zxid_get_ent_ss */
 struct zxid_entity* zxid_get_meta_ss(struct zxid_conf* cf, struct zx_str* url)
 {
@@ -136,7 +153,16 @@ struct zxid_entity* zxid_get_meta_ss(struct zxid_conf* cf, struct zx_str* url)
 
 /* ============== SOAP Call ============= */
 
-/* Called by:  zxid_soap_call_body */
+/*(i) Send SOAP request and wait for response. Send the message to the
+ * server using Curl. Return the parsed XML response data structure.
+ * This call will block while the HTTP request-response is happening.
+ *
+ * cf:: ZXID configuration object, also used for memory allocation
+ * url:: Where the request will be sent
+ * data:: Serialized XML data to be sent
+ * return:: XML data structure representing the response, or 0 upon failure  */
+
+/* Called by:  zxid_soap_call_envelope, zxid_soap_call_hdr_body */
 struct zx_root_s* zxid_soap_call_raw(struct zxid_conf* cf, struct zx_str* url, struct zx_str* data)
 {
 #ifdef USE_CURL
@@ -172,16 +198,26 @@ struct zx_root_s* zxid_soap_call_raw(struct zxid_conf* cf, struct zx_str* url, s
   memset(&content_type, 0, sizeof(content_type));
   content_type.data = "Content-Type: text/xml";
   memset(&SOAPaction, 0, sizeof(SOAPaction));
-  SOAPaction.data = "SOAPAction: \"\"";
+#if 1
+  SOAPaction.data = "SOAPAction: \"\"";  /* Empry SOAPAction is the ID-WSF (and SAML?) standard */
+#else
+  /* Evil stuff: some implementations, especially Apache AXIS, are very
+   * picky about SOAPAction header. */
+  //SOAPaction.data = "SOAPAction: \"http://ws.apache.org/axis2/TestPolicyPortType/authRequestRequest\"";
+  SOAPaction.data = "SOAPAction: \"authRequest\"";
+#endif
   SOAPaction.next = &content_type;    //curl_slist_append(3)
   curl_easy_setopt(cf->curl, CURLOPT_HTTPHEADER, &SOAPaction);
   
   D("------------------------ url(%.*s) ------------------------", url->len, url->s);
+  D("SOAP_CALL post(%.*s)", data->len, data->s);
   res = curl_easy_perform(cf->curl);  /* <========= Actual call, blocks. */
   ZX_FREE(cf->ctx, urli);
   rc.lim = rc.p;
   rc.p[1] = 0;
   rc.p = buf;
+
+  D("SOAP_CALL got(%s)", buf);
   
   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, rc.lim);
   r = zx_DEC_root(cf->ctx, 0, 1);

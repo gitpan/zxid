@@ -1,13 +1,14 @@
 /* zxidmkwsf.c  -  Handwritten nitty-gritty functions for constructing various elems
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmkwsf.c,v 1.8 2007-09-30 05:10:03 sampo Exp $
+ * $Id: zxidmkwsf.c,v 1.10 2008-10-08 03:56:55 sampo Exp $
  *
  * 12.1.2007, created --Sampo
+ * 7.10.2008, added documentation --Sampo
  */
 
 #include "errmac.h"
@@ -23,6 +24,8 @@
  * and the initial goal is just to make single query for single
  * service. All other complicated options and multi service queries
  * will come in later releases. */
+
+/*() Low level constructor for discovery <RequestedService>. */
 
 /* Called by:  zxid_mk_di_query */
 struct zx_di_RequestedService_s* zxid_mk_di_req_svc(struct zxid_conf* cf, int req_id, char* svc_type)
@@ -43,7 +46,9 @@ struct zx_di_RequestedService_s* zxid_mk_di_req_svc(struct zxid_conf* cf, int re
   return rs;
 }
 
-/* Called by:  main */
+/*() Low level constructor for discovery <Query>. */
+
+/* Called by:  main x3, zxid_get_epr */
 struct zx_di_Query_s* zxid_mk_di_query(struct zxid_conf* cf, char* svc_type)
 {
   struct zx_di_Query_s* q = zx_NEW_di_Query(cf->ctx);
@@ -51,6 +56,9 @@ struct zx_di_Query_s* zxid_mk_di_query(struct zxid_conf* cf, char* svc_type)
   return q;
 }
 
+/*() Low level constructor for WSA <Address>. */
+
+/* Called by:  zxid_wsc_call x2 */
 struct zx_a_Address_s* zxid_mk_addr(struct zxid_conf* cf, struct zx_str* url)
 {
   struct zx_a_Address_s* addr = zx_NEW_a_Address(cf->ctx);
@@ -60,6 +68,9 @@ struct zx_a_Address_s* zxid_mk_addr(struct zxid_conf* cf, struct zx_str* url)
 
 /* --------------- DAP: Select and QueryItem -------------- */
 
+/*() Low level constructor for <dap:Select>. */
+
+/* Called by:  main x8 */
 struct zx_dap_Select_s* zxid_mk_dap_select(struct zxid_conf* cf, char* dn, char* filter, char* attributes, int derefaliases, int scope, int sizelimit, int timelimit, int typesonly)
 {
   struct zx_dap_Select_s* sel = zx_NEW_dap_Select(cf->ctx);
@@ -74,6 +85,9 @@ struct zx_dap_Select_s* zxid_mk_dap_select(struct zxid_conf* cf, char* dn, char*
   return sel;
 }
 
+/*() Low level constructor for <dap:QueryItem>. */
+
+/* Called by:  main x6 */
 struct zx_dap_QueryItem_s* zxid_mk_dap_query_item(struct zxid_conf* cf, struct zx_dap_Select_s* sel, char* objtype, char* predef, char* sort, char* changed_since, int incl_common_attr, int offset, int count, char* setreq, char* setid, char* contingent_itemidref)
 {
   struct zx_dap_QueryItem_s* qi = zx_NEW_dap_QueryItem(cf->ctx);
@@ -114,6 +128,9 @@ struct zx_dap_QueryItem_s* zxid_mk_dap_query_item(struct zxid_conf* cf, struct z
 
 /* --------------- DAP: Test -------------- */
 
+/*() Low level constructor for <dap:TestOp>. */
+
+/* Called by:  main x2 */
 struct zx_dap_TestOp_s* zxid_mk_dap_testop(struct zxid_conf* cf, char* dn, char* filter, char* attributes, int derefaliases, int scope, int sizelimit, int timelimit, int typesonly)
 {
   struct zx_dap_TestOp_s* sel = zx_NEW_dap_TestOp(cf->ctx);
@@ -128,6 +145,9 @@ struct zx_dap_TestOp_s* zxid_mk_dap_testop(struct zxid_conf* cf, char* dn, char*
   return sel;
 }
 
+/*() Low level constructor for <dap:TestItem>. */
+
+/* Called by:  main x2 */
 struct zx_dap_TestItem_s* zxid_mk_dap_test_item(struct zxid_conf* cf, struct zx_dap_TestOp_s* top, char* objtype, char* predef)
 {
   struct zx_dap_TestItem_s* ti = zx_NEW_dap_TestItem(cf->ctx);
@@ -140,6 +160,9 @@ struct zx_dap_TestItem_s* zxid_mk_dap_test_item(struct zxid_conf* cf, struct zx_
 
 /* --------------- DAP: ResultQuery and Subscription -------------- */
 
+/*() Low level constructor for <dap:ResultQuery>. */
+
+/* Called by:  main x2 */
 struct zx_dap_ResultQuery_s* zxid_mk_dap_resquery(struct zxid_conf* cf, struct zx_dap_Select_s* sel, char* objtype, char* predef, char* sort, char* changed_since, int incl_common_attr, char* contingent_itemidref)
 {
   struct zx_dap_ResultQuery_s* qi = zx_NEW_dap_ResultQuery(cf->ctx);
@@ -173,6 +196,9 @@ struct zx_dap_ResultQuery_s* zxid_mk_dap_resquery(struct zxid_conf* cf, struct z
   return qi;
 }
 
+/*() Low level constructor for <dap:Subscription>. */
+
+/* Called by:  main x2 */
 struct zx_dap_Subscription_s* zxid_mk_dap_subscription(struct zxid_conf* cf, char* subsID, char* itemidref, struct zx_dap_ResultQuery_s* rq, char* aggreg, char* trig, char* starts, char* expires, int incl_data, char* admin_notif, char* notify_ref)
 {
   struct zx_dap_Subscription_s* subs = zx_NEW_dap_Subscription(cf->ctx);
@@ -196,6 +222,9 @@ struct zx_dap_Subscription_s* zxid_mk_dap_subscription(struct zxid_conf* cf, cha
 
 /* --------------- DAP: Query -------------- */
 
+/*() Low level constructor for <dap:Query>. */
+
+/* Called by:  main x6 */
 struct zx_dap_Query_s* zxid_mk_dap_query(struct zxid_conf* cf, struct zx_dap_TestItem_s* tis, struct zx_dap_QueryItem_s* qis, struct zx_dap_Subscription_s* subs)
 {
   struct zx_dap_Query_s* q = zx_NEW_dap_Query(cf->ctx);

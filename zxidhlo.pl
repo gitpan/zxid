@@ -5,7 +5,7 @@
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
-# $Id: zxidhlo.pl,v 1.5 2007/03/05 07:41:30 sampo Exp $
+# $Id: zxidhlo.pl,v 1.6 2009-08-30 15:09:26 sampo Exp $
 # 16.1.2007, created --Sampo
 
 use Net::SAML;

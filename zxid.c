@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxid.c,v 1.37 2008-04-17 00:52:48 sampo Exp $
+ * $Id: zxid.c,v 1.41 2009-08-25 16:22:44 sampo Exp $
  *
  * 15.4.2006, started work over Easter holiday --Sampo
  * 22.4.2006, added more options over the weekend --Sampo
@@ -17,10 +17,6 @@
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
 
-//#include <pthread.h>
-#include <signal.h>
-#include <fcntl.h>
-//#include <netdb.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -29,6 +25,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 //#include <sys/wait.h>
+//#include <pthread.h>
+#include <stdint.h>
+#include <signal.h>
+#include <fcntl.h>
+//#include <netdb.h>
 
 #ifdef USE_CURL
 #include <curl/curl.h>
@@ -93,7 +94,7 @@ char buf[32*1024];
 /* N.B. This options processing is a skeleton. In reality CGI scripts do not have
  * an opportunity to process any options. */
 
-/* Called by:  main x4 */
+/* Called by:  main x7 */
 void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   char* conf_path = 0;
@@ -329,9 +330,10 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
 /* This screen is only invoked if session is active. Zero return
  * value causes the login screen to be rendered. */
 
-/* Called by:  main x4 */
+/* Called by:  main x7 */
 int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
+  struct zx_str* ss;
   D("op(%c)", cgi->op);
   switch (cgi->op) {
   case 'l':
@@ -339,8 +341,11 @@ int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
     cgi->msg = "Local logout Ok. Session terminated.";
     return 0;  /* Simply abandon local session. Falls thru to login screen. */
   case 'r':
-    zxid_sp_slo_redir(cf, cgi, ses);
+    ss = zxid_sp_slo_redir(cf, cgi, ses);
     zxid_del_ses(cf, ses);
+    printf("%.*s", ss->len, ss->s);
+    zx_str_free(cf->ctx, ss);
+    fflush(stdout);
     return 1;  /* Redirect already happened. Do not show login screen. */
   case 's':
     zxid_sp_slo_soap(cf, cgi, ses);
@@ -348,22 +353,25 @@ int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
     cgi->msg = "SP Initiated logout (SOAP). Session terminated.";
     return 0;  /* Falls thru to login screen. */
   case 't':
-    zxid_sp_mni_redir(cf, cgi, ses, 0);
+    ss = zxid_sp_mni_redir(cf, cgi, ses, 0);
+    printf("%.*s", ss->len, ss->s);
+    zx_str_free(cf->ctx, ss);
+    fflush(stdout);
     return 1;  /* Redirect already happened. Do not show login screen. */
   case 'u':
     zxid_sp_mni_soap(cf, cgi, ses, 0);
     cgi->msg = "SP Initiated defederation (SOAP).";
     break;     /* Defederation does not have to mean SLO */
   case 'P':
-    switch (zxid_sp_dispatch(cf, cgi, ses, cgi->saml_resp)) {
-    case ZXID_OK:        return 0;
-    case ZXID_REDIR_OK:  return 1;
-    }
-    break;
   case 'Q':
-    switch (zxid_sp_dispatch(cf, cgi, ses, cgi->saml_req)) {
-    case ZXID_OK:        return 0;
-    case ZXID_REDIR_OK:  return 1;
+    ss = zxid_sp_dispatch(cf, cgi, ses);
+    switch (ss->s[0]) {
+    case 'K': return 0;
+    case 'L':
+      printf("%.*s", ss->len, ss->s);
+      zx_str_free(cf->ctx, ss);
+      fflush(stdout);
+      return 1;
     }
     break;
   }
@@ -520,19 +528,16 @@ int main(int argc, char** argv, char** env)
     }
     break;
   case 'P':
-    D("Process response(%s)", cgi.saml_resp);
-    switch (zxid_sp_dispatch(cf, &cgi, &ses, cgi.saml_resp)) {
-    case ZXID_REDIR_OK: return 0;
-    case ZXID_SSO_OK:
-      if (zxid_mgmt(cf, &cgi, &ses))
-	return 0;
-    }
-    break;
   case 'Q':
-    D("Process request(%s)", cgi.saml_req);
-    switch (zxid_sp_dispatch(cf, &cgi, &ses, cgi.saml_req)) {
-    case ZXID_REDIR_OK: return 0;
-    case ZXID_SSO_OK:
+    DD("Process response(%s)", cgi.saml_resp);
+    ss = zxid_sp_dispatch(cf, &cgi, &ses);
+    switch (ss->s[0]) {
+    case 'L':
+      printf("%.*s", ss->len, ss->s);
+      zx_str_free(cf->ctx, ss);
+      fflush(stdout);
+      return 0;
+    case 'O':
       if (zxid_mgmt(cf, &cgi, &ses))
 	return 0;
     }

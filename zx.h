@@ -1,11 +1,11 @@
 /* zx.h  -  Common definitions for zx generated code (encoders, decoders, etc.)
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zx.h,v 1.39 2008-05-26 15:28:44 sampo Exp $
+ * $Id: zx.h,v 1.41 2009-09-07 16:13:02 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 7.8.2006,  renamed from dec.h to zx.h and added comments --Sampo
@@ -110,7 +110,11 @@ struct zx_node_s {
   short err;              /* error mask */
 };
 
+#if 1
 #define ZX_NEXT(x) ((void*)((struct zx_node_s*)(x))->n)
+#else
+#define ZX_NEXT(x) ((void*)((x)->gg.g.n))
+#endif
 
 /* Simple elements, base type for complex elements. */
 
@@ -144,10 +148,10 @@ struct zx_str* zx_dup_str(struct zx_ctx* c, char* s);  /* data is new memory */
 struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, char* s);
 char* zx_alloc_sprintf(struct zx_ctx* c, int *retlen, char* f, ...);
 struct zx_str* zx_strf(struct zx_ctx* c, char* f, ...);  /* data is new memory */
-void zx_str_free(struct zx_ctx* c, struct zx_str* ss);   /* free both ss->s and ss */
+void  zx_str_free(struct zx_ctx* c, struct zx_str* ss);   /* free both ss->s and ss */
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str* ss);
-void zx_str_conv(struct zx_str* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
-int zx_str_ends_in(struct zx_str* ss, int len, char* suffix);
+void  zx_str_conv(struct zx_str* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
+int   zx_str_ends_in(struct zx_str* ss, int len, char* suffix);
 #define ZX_STR_ENDS_IN_CONST(ss, suffix) zx_str_ends_in((ss), sizeof(suffix)-1, (suffix))
 
 /* Elements that are unforeseen (errornous or extensions). */
@@ -182,7 +186,7 @@ char* zx_dup_cstr(struct zx_ctx* c, char* str);
 #define ZX_DUPALLOC(c, typ, n, o) (n) = (typ*)zx_alloc((c), sizeof(typ)); memcpy((n), (o), sizeof(typ))
 #define ZX_FREE(c, p) zx_free((c), (p))
 
-void zx_reset_ctx(struct zx_ctx* ctx);
+void  zx_reset_ctx(struct zx_ctx* ctx);
 struct zx_ctx* zx_init_ctx();   /* from malloc(3) */
 
 /* N.B. All string scanning assumes buffer is terminated with C string style nul byte. */
@@ -209,17 +213,17 @@ struct zx_tok { const char* name; const char* prefix; struct zx_ns_s* ns; };
 /*struct zx_note_s* zx_clone_any(struct zx_ctx* c, struct zx_note_s* n, int dup_strs); TBD */
 /*void zx_free_any(struct zx_ctx* c, struct zx_note_s* n, int free_strs); TBD */
 
-int zx_date_time_to_secs(char* dt);
-int write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, char* data2, const char* which, int seeky, int flag);
-int zx_report_openssl_error(const char* logkey);
+int   zx_date_time_to_secs(char* dt);
+int   write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, char* data2, const char* which, int seeky, int flag);
+int   zx_report_openssl_error(const char* logkey);
 
-void zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_any_elem_s* x, char* nam, int namlen);
+void  zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_any_elem_s* x, char* nam, int namlen);
 struct zx_ns_s* zx_locate_ns_by_prefix(struct zx_ctx* c, int len, char* prefix);
-int zx_is_ns_prefix(struct zx_ns_s* ns, int len, char* prefix);
+int   zx_is_ns_prefix(struct zx_ns_s* ns, int len, char* prefix);
 struct zx_ns_s* zx_prefix_seen(struct zx_ctx* c, int len, char* prefix);
 struct zx_ns_s* zx_prefix_seen_whine(struct zx_ctx* c, int len, char* prefix, char* logkey, int mk_dummy_ns);
 struct zx_ns_s* zx_scan_xmlns(struct zx_ctx* c);
-void zx_pop_seen(struct zx_ns_s* ns);
+void  zx_pop_seen(struct zx_ns_s* ns);
 
 /* zxcrypto.c - Glue to OpenSSL low level */
 
@@ -228,51 +232,51 @@ struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_p
 struct zx_str* zx_rsa_pub_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rsa_pkey, int pad);
 struct zx_str* zx_rsa_priv_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rsa_pkey, int pad);
 struct zx_str* zx_rsa_priv_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_pkey, int pad);
-RSA* zx_get_rsa_pub_from_cert(X509* cert, char* logkey);
-void zx_rand(char* buf, int n_bytes);
+RSA*  zx_get_rsa_pub_from_cert(X509* cert, char* logkey);
+void  zx_rand(char* buf, int n_bytes);
 
 /* Common Subexpression Elimination (CSE) for generated code. */
 
 const struct zx_tok* zx_tok_by_ns(const struct zx_tok* zt, const struct zx_tok* lim,
 				  int len, char* name, struct zx_ns_s* ns);
-int zx_len_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
+int   zx_len_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
 char* zx_enc_xmlns_if_not_seen(struct zx_ctx* c, char* p, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
-void zx_add_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
+void  zx_add_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
 char* zx_enc_seen(char* p, struct zx_ns_s* ns);
-int zx_len_so_common(struct zx_ctx* c, struct zx_elem_s* x);
-int zx_len_wo_common(struct zx_ctx* c, struct zx_elem_s* x);
+int   zx_len_so_common(struct zx_ctx* c, struct zx_elem_s* x);
+int   zx_len_wo_common(struct zx_ctx* c, struct zx_elem_s* x);
 char* zx_enc_unknown_attrs(char* p, struct zx_any_attr_s* aa);
 char* zx_enc_so_unknown_elems_and_content(struct zx_ctx* c, char* p, struct zx_elem_s* x);
 struct zx_str* zx_easy_enc_common(struct zx_ctx* c, char* p, char* buf, int len);
-int zx_attr_so_len(struct zx_str* attr, int name_size);
+int   zx_attr_so_len(struct zx_str* attr, int name_size);
 char* zx_attr_so_enc(char* p, struct zx_str* attr, char* name, int name_len);
-int zx_attr_wo_len(struct zx_str* attr, int name_size);
+int   zx_attr_wo_len(struct zx_str* attr, int name_size);
 char* zx_attr_wo_enc(char* p, struct zx_str* attr, char* name, int name_len);
-void zx_free_attr(struct zx_ctx* c, struct zx_str* attr, int free_strs);
-void zx_free_elem_common(struct zx_ctx* c, struct zx_elem_s* x, int free_strs);
-void zx_free_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, int free_strs);
+void  zx_free_attr(struct zx_ctx* c, struct zx_str* attr, int free_strs);
+void  zx_free_elem_common(struct zx_ctx* c, struct zx_elem_s* x, int free_strs);
+void  zx_free_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, int free_strs);
 
 #ifdef ZX_ENA_AUX
-void zx_dup_attr(struct zx_ctx* c, struct zx_str* attr);
+void  zx_dup_attr(struct zx_ctx* c, struct zx_str* attr);
 struct zx_str* zx_clone_attr(struct zx_ctx* c, struct zx_str* attr);
 struct zx_elem_s* zx_clone_elem_common(struct zx_ctx* c, struct zx_elem_s* x, int size, int dup_strs);
-void zx_dup_strs_common(struct zx_ctx* c, struct zx_elem_s* x);
-int zx_walk_so_unknown_attributes(struct zx_ctx* c, struct zx_elem_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
-int zx_walk_so_unknown_elems_and_content(struct zx_ctx* c, struct zx_elem_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+void  zx_dup_strs_common(struct zx_ctx* c, struct zx_elem_s* x);
+int   zx_walk_so_unknown_attributes(struct zx_ctx* c, struct zx_elem_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int   zx_walk_so_unknown_elems_and_content(struct zx_ctx* c, struct zx_elem_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
 struct zx_elem_s* zx_deep_clone_simple_elems(struct zx_ctx* c, struct zx_elem_s* x, int dup_strs);
-int zx_walk_so_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
-void zx_dup_strs_simple_elems(struct zx_ctx* c, struct zx_elem_s* se);
+int   zx_walk_so_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+void  zx_dup_strs_simple_elems(struct zx_ctx* c, struct zx_elem_s* se);
 #endif
 
-void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, char* start, char* lim);
-int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el);
-int zx_scan_pi_or_comment(struct zx_ctx* c);
+void  zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, char* start, char* lim);
+int   zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el);
+int   zx_scan_pi_or_comment(struct zx_ctx* c);
 struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, char* name, char* data, int tok, int ctx_tok);
 char* zx_dec_attr_val(struct zx_ctx* c, char** name);
-void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg);
+void  zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg);
 
-int zx_len_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);
-void zx_add_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);
+int   zx_len_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);
+void  zx_add_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);
 char* zx_enc_inc_ns(struct zx_ctx* c, char* p, struct zx_ns_s** pop_seenp);
 
 #if 0

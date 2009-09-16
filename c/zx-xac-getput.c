@@ -13,7 +13,7 @@
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
+ ** Id: getput-templ.c,v 1.8 2009-08-30 15:09:26 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -176,41 +176,41 @@ void zx_xac_Action_DEL_Attribute(struct zx_xac_Action_s* x, int n)
 
 int zx_xac_Attribute_NUM_AttributeValue(struct zx_xac_Attribute_s* x)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->AttributeValue; y; ++n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+  for (y = x->AttributeValue; y; ++n, y = (struct zx_elem_s*)y->g.n) ;
   return n;
 }
 
 /* FUNC(zx_xac_Attribute_GET_AttributeValue) */
 
-struct zx_xac_AttributeValue_s* zx_xac_Attribute_GET_AttributeValue(struct zx_xac_Attribute_s* x, int n)
+struct zx_elem_s* zx_xac_Attribute_GET_AttributeValue(struct zx_xac_Attribute_s* x, int n)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x) return 0;
-  for (y = x->AttributeValue; n>=0 && y; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+  for (y = x->AttributeValue; n>=0 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
   return y;
 }
 
 /* FUNC(zx_xac_Attribute_POP_AttributeValue) */
 
-struct zx_xac_AttributeValue_s* zx_xac_Attribute_POP_AttributeValue(struct zx_xac_Attribute_s* x)
+struct zx_elem_s* zx_xac_Attribute_POP_AttributeValue(struct zx_xac_Attribute_s* x)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x) return 0;
   y = x->AttributeValue;
   if (y)
-    x->AttributeValue = (struct zx_xac_AttributeValue_s*)y->gg.g.n;
+    x->AttributeValue = (struct zx_elem_s*)y->g.n;
   return y;
 }
 
 /* FUNC(zx_xac_Attribute_PUSH_AttributeValue) */
 
-void zx_xac_Attribute_PUSH_AttributeValue(struct zx_xac_Attribute_s* x, struct zx_xac_AttributeValue_s* z)
+void zx_xac_Attribute_PUSH_AttributeValue(struct zx_xac_Attribute_s* x, struct zx_elem_s* z)
 {
   if (!x || !z) return;
-  z->gg.g.n = &x->AttributeValue->gg.g;
+  z->g.n = &x->AttributeValue->g;
   x->AttributeValue = z;
 }
 
@@ -218,15 +218,15 @@ void zx_xac_Attribute_PUSH_AttributeValue(struct zx_xac_Attribute_s* x, struct z
 
 void zx_xac_Attribute_REV_AttributeValue(struct zx_xac_Attribute_s* x)
 {
-  struct zx_xac_AttributeValue_s* nxt;
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* nxt;
+  struct zx_elem_s* y;
   if (!x) return;
   y = x->AttributeValue;
   if (!y) return;
   x->AttributeValue = 0;
   while (y) {
-    nxt = (struct zx_xac_AttributeValue_s*)y->gg.g.n;
-    y->gg.g.n = &x->AttributeValue->gg.g;
+    nxt = (struct zx_elem_s*)y->g.n;
+    y->g.n = &x->AttributeValue->g;
     x->AttributeValue = y;
     y = nxt;
   }
@@ -234,70 +234,70 @@ void zx_xac_Attribute_REV_AttributeValue(struct zx_xac_Attribute_s* x)
 
 /* FUNC(zx_xac_Attribute_PUT_AttributeValue) */
 
-void zx_xac_Attribute_PUT_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_xac_AttributeValue_s* z)
+void zx_xac_Attribute_PUT_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_elem_s* z)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x || !z) return;
   y = x->AttributeValue;
   if (!y) return;
   switch (n) {
   case 0:
-    z->gg.g.n = y->gg.g.n;
+    z->g.n = y->g.n;
     x->AttributeValue = z;
     return;
   default:
-    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
-    if (!y->gg.g.n) return;
-    z->gg.g.n = y->gg.g.n->n;
-    y->gg.g.n = &z->gg.g;
+    for (; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y->g.n) return;
+    z->g.n = y->g.n->n;
+    y->g.n = &z->g;
   }
 }
 
 /* FUNC(zx_xac_Attribute_ADD_AttributeValue) */
 
-void zx_xac_Attribute_ADD_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_xac_AttributeValue_s* z)
+void zx_xac_Attribute_ADD_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_elem_s* z)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
   add_to_start:
-    z->gg.g.n = &x->AttributeValue->gg.g;
+    z->g.n = &x->AttributeValue->g;
     x->AttributeValue = z;
     return;
   case -1:
     y = x->AttributeValue;
     if (!y) goto add_to_start;
-    for (; y->gg.g.n; y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
     break;
   default:
-    for (y = x->AttributeValue; n > 1 && y; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+    for (y = x->AttributeValue; n > 1 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
     if (!y) return;
   }
-  z->gg.g.n = y->gg.g.n;
-  y->gg.g.n = &z->gg.g;
+  z->g.n = y->g.n;
+  y->g.n = &z->g;
 }
 
 /* FUNC(zx_xac_Attribute_DEL_AttributeValue) */
 
 void zx_xac_Attribute_DEL_AttributeValue(struct zx_xac_Attribute_s* x, int n)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->AttributeValue = (struct zx_xac_AttributeValue_s*)x->AttributeValue->gg.g.n;
+    x->AttributeValue = (struct zx_elem_s*)x->AttributeValue->g.n;
     return;
   case -1:
-    y = (struct zx_xac_AttributeValue_s*)x->AttributeValue;
+    y = (struct zx_elem_s*)x->AttributeValue;
     if (!y) return;
-    for (; y->gg.g.n; y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
     break;
   default:
-    for (y = x->AttributeValue; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
-    if (!y->gg.g.n) return;
+    for (y = x->AttributeValue; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y->g.n) return;
   }
-  y->gg.g.n = y->gg.g.n->n;
+  y->g.n = y->g.n->n;
 }
 
 #endif
@@ -314,11 +314,6 @@ void zx_xac_Attribute_PUT_DataType(struct zx_xac_Attribute_s* x, struct zx_str* 
 struct zx_str* zx_xac_Attribute_GET_Issuer(struct zx_xac_Attribute_s* x) { return x->Issuer; }
 /* FUNC(zx_xac_Attribute_PUT_Issuer) */
 void zx_xac_Attribute_PUT_Issuer(struct zx_xac_Attribute_s* x, struct zx_str* y) { x->Issuer = y; }
-
-
-
-
-
 
 
 
@@ -471,41 +466,41 @@ void zx_xac_Environment_DEL_Attribute(struct zx_xac_Environment_s* x, int n)
 
 int zx_xac_MissingAttributeDetail_NUM_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->AttributeValue; y; ++n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+  for (y = x->AttributeValue; y; ++n, y = (struct zx_elem_s*)y->g.n) ;
   return n;
 }
 
 /* FUNC(zx_xac_MissingAttributeDetail_GET_AttributeValue) */
 
-struct zx_xac_AttributeValue_s* zx_xac_MissingAttributeDetail_GET_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n)
+struct zx_elem_s* zx_xac_MissingAttributeDetail_GET_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x) return 0;
-  for (y = x->AttributeValue; n>=0 && y; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+  for (y = x->AttributeValue; n>=0 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
   return y;
 }
 
 /* FUNC(zx_xac_MissingAttributeDetail_POP_AttributeValue) */
 
-struct zx_xac_AttributeValue_s* zx_xac_MissingAttributeDetail_POP_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x)
+struct zx_elem_s* zx_xac_MissingAttributeDetail_POP_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x) return 0;
   y = x->AttributeValue;
   if (y)
-    x->AttributeValue = (struct zx_xac_AttributeValue_s*)y->gg.g.n;
+    x->AttributeValue = (struct zx_elem_s*)y->g.n;
   return y;
 }
 
 /* FUNC(zx_xac_MissingAttributeDetail_PUSH_AttributeValue) */
 
-void zx_xac_MissingAttributeDetail_PUSH_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, struct zx_xac_AttributeValue_s* z)
+void zx_xac_MissingAttributeDetail_PUSH_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, struct zx_elem_s* z)
 {
   if (!x || !z) return;
-  z->gg.g.n = &x->AttributeValue->gg.g;
+  z->g.n = &x->AttributeValue->g;
   x->AttributeValue = z;
 }
 
@@ -513,15 +508,15 @@ void zx_xac_MissingAttributeDetail_PUSH_AttributeValue(struct zx_xac_MissingAttr
 
 void zx_xac_MissingAttributeDetail_REV_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x)
 {
-  struct zx_xac_AttributeValue_s* nxt;
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* nxt;
+  struct zx_elem_s* y;
   if (!x) return;
   y = x->AttributeValue;
   if (!y) return;
   x->AttributeValue = 0;
   while (y) {
-    nxt = (struct zx_xac_AttributeValue_s*)y->gg.g.n;
-    y->gg.g.n = &x->AttributeValue->gg.g;
+    nxt = (struct zx_elem_s*)y->g.n;
+    y->g.n = &x->AttributeValue->g;
     x->AttributeValue = y;
     y = nxt;
   }
@@ -529,70 +524,70 @@ void zx_xac_MissingAttributeDetail_REV_AttributeValue(struct zx_xac_MissingAttri
 
 /* FUNC(zx_xac_MissingAttributeDetail_PUT_AttributeValue) */
 
-void zx_xac_MissingAttributeDetail_PUT_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_xac_AttributeValue_s* z)
+void zx_xac_MissingAttributeDetail_PUT_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_elem_s* z)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x || !z) return;
   y = x->AttributeValue;
   if (!y) return;
   switch (n) {
   case 0:
-    z->gg.g.n = y->gg.g.n;
+    z->g.n = y->g.n;
     x->AttributeValue = z;
     return;
   default:
-    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
-    if (!y->gg.g.n) return;
-    z->gg.g.n = y->gg.g.n->n;
-    y->gg.g.n = &z->gg.g;
+    for (; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y->g.n) return;
+    z->g.n = y->g.n->n;
+    y->g.n = &z->g;
   }
 }
 
 /* FUNC(zx_xac_MissingAttributeDetail_ADD_AttributeValue) */
 
-void zx_xac_MissingAttributeDetail_ADD_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_xac_AttributeValue_s* z)
+void zx_xac_MissingAttributeDetail_ADD_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_elem_s* z)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
   add_to_start:
-    z->gg.g.n = &x->AttributeValue->gg.g;
+    z->g.n = &x->AttributeValue->g;
     x->AttributeValue = z;
     return;
   case -1:
     y = x->AttributeValue;
     if (!y) goto add_to_start;
-    for (; y->gg.g.n; y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
     break;
   default:
-    for (y = x->AttributeValue; n > 1 && y; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+    for (y = x->AttributeValue; n > 1 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
     if (!y) return;
   }
-  z->gg.g.n = y->gg.g.n;
-  y->gg.g.n = &z->gg.g;
+  z->g.n = y->g.n;
+  y->g.n = &z->g;
 }
 
 /* FUNC(zx_xac_MissingAttributeDetail_DEL_AttributeValue) */
 
 void zx_xac_MissingAttributeDetail_DEL_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n)
 {
-  struct zx_xac_AttributeValue_s* y;
+  struct zx_elem_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->AttributeValue = (struct zx_xac_AttributeValue_s*)x->AttributeValue->gg.g.n;
+    x->AttributeValue = (struct zx_elem_s*)x->AttributeValue->g.n;
     return;
   case -1:
-    y = (struct zx_xac_AttributeValue_s*)x->AttributeValue;
+    y = (struct zx_elem_s*)x->AttributeValue;
     if (!y) return;
-    for (; y->gg.g.n; y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
+    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
     break;
   default:
-    for (y = x->AttributeValue; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_AttributeValue_s*)y->gg.g.n) ;
-    if (!y->gg.g.n) return;
+    for (y = x->AttributeValue; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
+    if (!y->g.n) return;
   }
-  y->gg.g.n = y->gg.g.n->n;
+  y->g.n = y->g.n->n;
 }
 
 #endif

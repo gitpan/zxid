@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: chk-openssl.c,v 1.1 2008-09-17 03:41:11 sampo Exp $
+ * $Id: chk-openssl.c,v 1.2 2008-09-17 18:19:20 sampo Exp $
  *
  * 16.9.2008, created --Sampo
  */

@@ -1,16 +1,18 @@
 /* zxid.h  -  Definitions for zxid CGI
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxid.h,v 1.69 2008-05-30 17:39:11 lbernardo Exp $
+ * $Id: zxid.h,v 1.88 2009-09-16 10:14:57 sampo Exp $
  *
  * 12.8.2006,  created --Sampo
  * 18.11.2006, log signing support --Sampo
  * 12.10.2007, new conf options --Sampo
  * 22.2.2008,  added path_supplied feature --Sampo
+ * 4.10.2008,  added documentation --Sampo
+ * 29.9.2009,  added PDP_URL --Sampo
  */
 
 #ifndef _zxid_h
@@ -26,14 +28,34 @@
 #include <openssl/rsa.h>
 #endif
 
-#include "c/zx-data.h"
+#include "c/zx-data.h"  /* Generated. If missing, run `make dep ENA_GEN=1' */
 #include "platform.h"
 
 #define ZXID_CONF_MAGIC 0x900dc07f
+#define ZXID_CGI_MAGIC  0x900d0c91
+#define ZXID_SES_MAGIC  0x900d05e5
+
+/*(s) The zxid_conf structure is passed, as cf argument, to nearly every
+ * function in zxid API. It is effectively used as "global" storage
+ * for ZXID, facilitating thread safe operation.  In particular, it
+ * contains the ZX context that is used for thread safe memory
+ * allocation.  However, ZXID itself does not perform any locking
+ * around zxid_conf. If you write multithreaded program and your
+ * design allows same configuration to be accessed from multiple
+ * threads (sometimes you can design your program so that this simply
+ * does not happen), then you must perform locking. Often this would
+ * mean bracketing every call to zxid API function with lock-unlock.
+ *
+ * zxid_conf also contains "cache" of the entity's own certificates
+ * and private keys. If your program handles multiple entities, you
+ * should have one zxid_conf object for each entity.
+ *
+ * Most of the other fields of zxid_conf are simply configuration
+ * options. See <<see: zxidconf.h>> for their documentation. */
 
 struct zxid_conf {
   unsigned int magic;
-  struct zx_ctx* ctx;
+  struct zx_ctx* ctx;        /* ZX parsing context. Usually used for memory allocation. */
 #ifdef USE_CURL
   CURL* curl;
 #endif
@@ -47,24 +69,33 @@ struct zxid_conf {
   X509* log_enc_cert;
   char  log_symkey[20];      /* sha1 hash of key data */
 #endif
-  struct zxid_entity* cot;   /* Metadata of CoT partners */
+  struct zxid_entity* cot;   /* Linked list of metadata for CoT partners (in-memory CoT cache) */
   int path_supplied;         /* FLAG: If config variable PATH is supplied, it may trigger reading config file from the supplied location. */
   int path_len;
   char* path;
   char* url;
   char* non_standard_entityid;
+  char* redirect_hack_imposed_url;
+  char* redirect_hack_zxid_url;
+  char* redirect_hack_zxid_qs;
   char* cdc_url;
   char  cdc_choice;
-  char  md_fetch;
+  char  md_fetch;            /* Auto-CoT */
   char  md_populate_cache;
   char  md_cache_first;
   char  md_cache_last;
+  char  auto_cert;
   char  user_local;          /* Whether local user accounts should be maintained. */
+  char  idp_ena;
+  char  pdp_ena;
+  char  want_authn_req_signed;
   char  authn_req_sign;
   char  want_sso_a7n_signed;
   char  sso_soap_sign;
   char  sso_soap_resp_sign;
+  char  sso_sign;            /* Which components should be signed in SSO Response and Assertion */
   char  nameid_enc;          /* Should NameID be encrypted in SLO and MNI requests. */
+  char  post_a7n_enc;
   char* affiliation;
   char* nice_name;           /* Human readable "nice" name. Used in AuthnReq->ProviderName */
   char* ses_arch_dir;        /* Place where dead sessions go. 0=rm */
@@ -78,24 +109,46 @@ struct zxid_conf {
   char  log_rely_a7n;
   char  log_rely_msg;
   char  log_err_in_act;      /* Log errors to action log flag (may also log to error log) */
+  char  log_act_in_err;      /* Log actions to error log flag (may also log to action log) */
   char  log_sigfail_is_err;  /* Log signature failures to error log */
   char  log_level;           /* act log level: 0=audit, 1=audit+extio, 2=audit+extio+events */
   
   char  sig_fatal;
   char  nosig_fatal;
+  char  msg_sig_ok;
   char  timeout_fatal;
   char  audience_fatal;
   char  dup_a7n_fatal;
   char  dup_msg_fatal;
+  char  redir_to_content;    /* Should explicit redirect to content be used (vs. internal redir) */
+  char  remote_user_ena;
+  char* anon_ok;
+  char** required_authnctx;  /* Array of acceptable authentication context class refs */
+  char* issue_authnctx_pw;   /* What authentication context IdP issues for password authent. */
+  char* idp_pref_acs_binding;
   int   before_slop;
   int   after_slop;
   int   timeskew;
-  int   redir_to_content;    /* Should explicit redirect to content be used (vs. internal redir) */
+  int   a7nttl;
+  char* pdp_url;             /* If non-NULL, the PEP is enabled and PDP at URL is contacted. */
 
+  struct zxid_need*  need;
+  struct zxid_need*  want;
+  struct zxid_atsrc* attrsrc;
+  struct zxid_map*   inmap;
+  struct zxid_map*   outmap;
+  struct zxid_map*   pepmap;
+
+  struct zxid_cstr_list* localpdp_role_permit;
+  struct zxid_cstr_list* localpdp_role_deny;
+  struct zxid_cstr_list* localpdp_idpnid_permit;
+  struct zxid_cstr_list* localpdp_idpnid_deny;
+  
   int   max_soap_retry;      /* How many times a ID-WSF SOAP call can be retried (update EPR) */
   char* defaultqs;
   char* mod_saml_attr_prefix;  /* Prefix for req variables in mod_auth_saml */
 
+  char* idp_sel_page;        /* URL for IdP selection Page. */
   char* idp_sel_start;       /* HTML headers, start of page, side bars */
   char* idp_sel_new_idp;     /* Auto-CoT fields */
   char* idp_sel_our_eid;     /* Our EID advice */
@@ -103,6 +156,14 @@ struct zxid_conf {
   char* idp_sel_tech_site;   /* Technical options site admin sets (hidden) */
   char* idp_sel_footer;      /* End of page stuff, after form */
   char* idp_sel_end;         /* End of page, after version string */
+
+  char* an_page;       /* URL for Authentication Page. */
+  char* an_start;      /* HTML headers, start of page, side bars */
+  char* an_our_eid;    /* Our EID advice */
+  char* an_tech_user;  /* Technical options user might choose */
+  char* an_tech_site;  /* Technical options site admin sets (hidden) */
+  char* an_footer;     /* End of page stuff, after form */
+  char* an_end;        /* End of page, after version string */
 
   char* mgmt_start;    /* HTML headers, start of page, side bars */
   char* mgmt_logout;   /* Logout buttons */
@@ -113,31 +174,32 @@ struct zxid_conf {
   char* dbg;           /* Debug message that may be shown. */
 };
 
-/* Query string, or post, is parsed into following structure. If a variable
+/*(s) Query string, or post, is parsed into following structure. If a variable
  * is not present, it will be left as NULL. Note that this structure
- * mixes fields from all forms that ZXID might display or process. */
-
-#define ZXID_CGI_MAGIC 0x900d0c91
+ * mixes fields from all forms that ZXID might display or process. ZXID ignores
+ * any field that is not explicitly foreseen here and in zxidcgi.c, i.e.
+ * there is no generic hash structure. */
 
 struct zxid_cgi {
   unsigned int magic;
-  char  op;            /* What should be done now. */
-  char  pr_ix;         /* Index to protocol profile (typically for login) */
-  char  allow_create;  /* Whether federation is permitted (allow creation of new federation) */
-  char  ispassive;     /* Whether IdP is allowed to seize user interface (e.g. ask password) */
-  char  force_authn;   /* Whether IdP SHOULD authenticate the user anew. */
+  char  op;            /* o=  What should be done now. */
+  char  pr_ix;         /* i=  Index to protocol profile (typically for login) */
+  char  allow_create;  /* fc= Is federation permitted (allow creation of new federation) */
+  char  ispassive;     /* fp= Whether IdP is allowed to seize user interface (e.g. ask password) */
+  char  force_authn;   /* ff= Whether IdP SHOULD authenticate the user anew. */
   char  enc_hint;      /* Hint: Should NID be encrypted in SLO and MNI, see also cf->nameid_enc */
   char* sid;           /* If session is already active, the session ID. */
   char* nid;           /* NameID of the user. */
-  char* user;          /* Form field for user. */
-  char* pw;            /* Form field for password. */
-  char* cdc;           /* Common Domain Cookie as returned by the CDC reader */
-  char* eid;           /* Entity ID of an IdP (typically for login) */
-  char* nid_fmt;       /* Name ID format */
-  char* affil;         /* SP NameQualifier (such as in affiliation of SPs) */
-  char* consent;       /* Whether user consented to the operation and how. */
-  char* matching_rule; /* How authn_ctx is to be matched by IdP. */
-  char* authn_ctx;     /* What kind of authentication the IdP should assert towards SP. */
+  char* uid;           /* au= Form field for user. */
+  char* pw;            /* ap= Form field for password. */
+  char* ssoreq;        /* ar= Used for conveying original AuthnReq through authn phase. */
+  char* cdc;           /* c=  Common Domain Cookie as returned by the CDC reader */
+  char* eid;           /* e=, d= Entity ID of an IdP (typically for login) */
+  char* nid_fmt;       /* fn= Name ID format */
+  char* affil;         /* fq= SP NameQualifier (such as in affiliation of SPs) */
+  char* consent;       /* fy= Whether user consented to the operation and how. */
+  char* matching_rule; /* fm= How authn_ctx is to be matched by IdP. */
+  char* authn_ctx;     /* fa= What kind of authentication the IdP should assert towards SP. */
   char* pxy_count;     /* ProxyCount for triggering IdP proxying */
   char* get_complete;  /* GetComplete URL for IdP proxying */
   char* idppxylist;    /* IDPList for IdP proxying */
@@ -148,23 +210,26 @@ struct zxid_cgi {
   char* saml_req;      /* SAMLRequest=... in redirect profile */
   char* sigalg;        /* SigAlg=... in redirect profile */
   char* sig;           /* Signature=... in redirect profile */
-  char* sigval;        /* Signature validation code (as logged) */
+  char* sigval;        /* Signature validation code (as logged, VVV in zxid-log.pd, section "Log Line Format") */
   char* sigmsg;        /* Signature validation message */
   char* err;           /* When rendering screens: used to put error message to screen. */
   char* msg;           /* When rendering screens: used to put info message to screen. */
   char* dbg;           /* When rendering screens: used to put debug message to screen. */
+  char* zxapp;         /* Deployment specific application parameter passed in some querystrings. */
+  char* zxrfr;         /* ZX Referer. Indicates to some external pages why user was redirected. */
+  char* ok;            /* Ok button in some forms */
   struct zxid_entity* idp_list;   /* IdPs from CDC */
 };
 
-/* Session is parsed into following structure. */
-
-#define ZXID_SES_MAGIC 0x900d05e5
+/*(s) Session is parsed into following structure. */
 
 struct zxid_ses {
   unsigned int magic;
   char* sid;
+  char* uid;           /* Local uid (only if local login, like in IdP) */
   char* nid;           /* String representation of NameID. See also nameid. */
   char* sesix;         /* SessionIndex */
+  char* an_ctx;        /* Authentication Context (esp in IdP. On SP look inside a7n). */
   char  nidfmt;        /* 0=tmp NameID, 1=persistent */
   char  sigres;
   char  pad2;
@@ -179,12 +244,85 @@ struct zxid_ses {
   struct zx_ff12_Assertion_s* a7n12;
   char* sesbuf;
   char* sso_a7n_buf;
+  struct zxid_attr* at; /* Attributes extracted from a7n and translated using inmap. Linked list */
 };
 
-#define ZXID_SES_DIR "ses/"
-#define ZXID_USER_DIR "user/"
+/*(s) Attribute node */
 
-/* Entity or Provider, as identified by an Entity ID or Provider ID. */
+struct zxid_attr {
+  struct zxid_attr* n;  /* Next attribute */
+  struct zxid_attr* nv; /* Next value, if multivalued */
+  char* name;
+  char* val;
+  struct zx_str* map_val;          /* Value after outmap (cached from length compute to render) */
+  struct zx_sa_Attribute_s* orig;  /* Pointer to original attribute, if any */
+  struct zx_str* issuer;           /* Issuer EntityID, if any */
+};
+
+/*(s) The need nodes are used for storing parsed NEED and WANT directives. */
+
+struct zxid_need {
+  struct zxid_need* n;
+  struct zxid_attr* at; /* List of needed/wanted attributes (with value fields empty) */
+  char* usage;          /* How do we promise to use attribute */
+  char* retent;         /* How long will we retain it */
+  char* oblig;          /* Obligations we are willing or able to honour */
+  char* ext;
+};
+
+/*(s) Attribute mapping used in INMAP, PEPMAP, and OUTMAP directives. */
+
+struct zxid_map {
+  struct zxid_map* n;
+  int   rule;
+  char* ns;   /* Namespace of the source attribute */
+  char* src;  /* Source attribute */
+  char* dst;  /* Destination attribute */
+  char* ext;
+};
+
+/*(s) Usef for maintaning whitelists and blacklists */
+
+struct zxid_cstr_list {
+  struct zxid_cstr_list* n;
+  char* s;
+};
+
+#define ZXID_MAP_RULE_RENAME     0
+#define ZXID_MAP_RULE_DEL        1  /* Filter attribute out */
+#define ZXID_MAP_RULE_RESET      2  /* Reset the map, dropping previous config. */
+#define ZXID_MAP_RULE_FEIDEDEC   3  /* Norway */
+#define ZXID_MAP_RULE_FEIDEENC   4  /* Norway */
+#define ZXID_MAP_RULE_UNSB64_INF 5  /* Decode safebase64-inflate ([RFC3548], [RFC1951]) */
+#define ZXID_MAP_RULE_DEF_SB64   6  /* Encode deflate-safebase64 ([RFC1951], [RFC3548]) */
+#define ZXID_MAP_RULE_UNSB64     7  /* NZ: Decode safebase64 ([RFC3548]) */
+#define ZXID_MAP_RULE_SB64       8  /* NZ: Encode safebase64 ([RFC3548]) */
+
+/*(s) Attribute source definition */
+
+struct zxid_atsrc {
+  struct zxid_atsrc* n;
+  struct zxid_attr* at; /* List of available attributes (with value fields empty) */
+  char* ns;             /* Namespace, typically Entity ID of the source. */
+  char* weight;
+  char* url;            /* URL or other access parameters */
+  char* aapml;
+  char* otherlim;
+  char* ext;
+};
+
+#define ZXID_SES_DIR  "ses/"
+#define ZXID_USER_DIR "user/"
+#define ZXID_UID_DIR  "uid/"
+#define ZXID_PEM_DIR  "pem/"
+#define ZXID_COT_DIR  "cot/"
+#define ZXID_MAX_USER (256)  /* Maximum size of .mni or user file */
+#define ZXID_MAX_MD   (64*1024)
+#define ZXID_MAX_SOAP (64*1024)
+#define ZXID_MAX_EID  (1024)
+#define ZXID_MAX_DIR  (4*1024)
+
+/*(s) Entity or Provider, as identified by an Entity ID or Provider ID. */
 
 struct zxid_entity {
   struct zxid_entity* n;
@@ -214,6 +352,8 @@ struct zxid_entity {
 #define ZXID_AUTO_FORMT  0x800 /* Wrap the output in <form> tag. */
 #define ZXID_AUTO_ALL    0xfff /* Enable all automatic behaviour. (4095) */
 #define ZXID_AUTO_DEBUG 0x1000 /* Enable debugging output to stderr. */
+#define ZXID_AUTO_FMTQ  0x2000 /* Output Format Query String */
+#define ZXID_AUTO_FMTJ  0x4000 /* Output Format JSON */
 
 char* zxid_simple(char* conf, char* qs, int auto_flags);
 char* zxid_idp_list(char* conf, int auto_flags);
@@ -232,15 +372,18 @@ char* zxid_idp_list_len(int conf_len, char* conf, int* res_len, int auto_flags);
 char* zxid_idp_select_len(int conf_len, char* conf, int* res_len, int auto_flags);
 char* zxid_fed_mgmt_len(int conf_len, char* conf, int* res_len, char* sid, int auto_flags);
 struct zx_str* zxid_idp_select_zxstr_cf(struct zxid_conf* cf, int auto_flags);
-struct zx_str* zxid_ses_to_ldif(struct zxid_conf* cf, struct zxid_ses* ses);
 
-char* zxid_simple_render_ses(struct zxid_conf* cf, struct zxid_ses* ses, int* res_len, int auto_flags);
+char* zxid_simple_ab_pep(struct zxid_conf* cf, struct zxid_ses* ses, int* res_len, int auto_flags);
 char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int* res_len, int auto_flags);
 char* zxid_simple_no_ses_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int* res_len, int auto_flags);
 
 /* --------------- Full API --------------- */
 
 /* Signatures */
+
+#define ZXID_SSO_SIGN_A7N  0x01
+#define ZXID_SSO_SIGN_RESP 0x02
+#define ZXID_SSO_SIGN_A7N_SIMPLE  0x04  /* N.B. Usually not as Simple Sig message sig is enough. */
 
 struct zxsig_ref {
   struct zx_ds_Reference_s* sref;  /* Reference for validation */
@@ -259,6 +402,7 @@ struct zxsig_ref {
 #define ZXSIG_NO_SIG     7  /* N No signature found. */
 #define ZXSIG_TIMEOUT    8  /* V Validity time has expired. */
 #define ZXSIG_AUDIENCE   9  /* V Assertion has wrong audience. */
+
 struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* sref, X509* cert, RSA* priv_key);
 int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, int n, struct zxsig_ref* refs);
 int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, char* d, char** sig, RSA* priv_key, char* lk);
@@ -275,18 +419,15 @@ struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(struct zxid_conf* cf, struct zx
 #define ZXLOG_ISSUE_DIR "issue/"
 #define ZXLOG_A7N_KIND  "/a7n/"
 #define ZXLOG_MSG_KIND  "/msg/"
+#define ZXLOG_WIR_KIND  "/wir/"
+
 void zxlog_write_line(struct zxid_conf* cf, char* c_path, int encflags, int n, char* logbuf);
 struct zx_str* zxlog_path(struct zxid_conf* cf, struct zx_str* entid, struct zx_str* objid, char* dir, char* kind, int create_dirs);
 int zxlog_dup_check(struct zxid_conf* cf, struct zx_str* path, char* logkey);
-int zxlog_blob(struct zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob);
+int zxlog_blob(struct zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob, char* lk);
 int zxlog(struct zxid_conf* cf, struct timeval* ourts, struct timeval* srcts, char* ipport, struct zx_str* entid, struct zx_str* msgid, struct zx_str* a7nid, struct zx_str* nid, char* sigval, char* res, char* op, char* arg, char* fmt, ...);
 
 /* zxidmeta */
-
-#define ZXID_COT_DIR "cot/"
-#define ZXID_MAX_MD (64*1024)
-#define ZXID_MAX_SOAP (64*1024)
-#define ZXID_MAX_EID (1024)
 
 struct zxid_entity* zxid_get_ent_from_file(struct zxid_conf* cf, char* sha1_name);
 struct zxid_entity* zxid_get_ent_from_cache(struct zxid_conf* cf, struct zx_str* eid);
@@ -302,12 +443,16 @@ struct zxid_entity* zxid_load_cot_cache(struct zxid_conf* cf);
 
 struct zx_ds_KeyInfo_s* zxid_key_info(struct zxid_conf* cf, X509* x);
 struct zx_md_KeyDescriptor_s* zxid_key_desc(struct zxid_conf* cf, char* use, X509* cert);
+struct zx_md_ArtifactResolutionService_s* zxid_ar_desc(struct zxid_conf* cf, char* binding, char* loc, char* resp_loc);
+struct zx_md_SingleSignOnService_s* zxid_sso_desc(struct zxid_conf* cf, char* binding, char* loc, char* resp_loc);
 struct zx_md_SingleLogoutService_s* zxid_slo_desc(struct zxid_conf* cf, char* binding, char* loc, char* resp_loc);
 struct zx_md_ManageNameIDService_s* zxid_mni_desc(struct zxid_conf* cf, char* binding, char* loc, char* resp_loc);
 struct zx_md_AssertionConsumerService_s* zxid_ac_desc(struct zxid_conf* cf, char* binding, char* loc, char* index);
+struct zx_md_IDPSSODescriptor_s* zxid_idp_sso_desc(struct zxid_conf* cf);
 struct zx_md_SPSSODescriptor_s* zxid_sp_sso_desc(struct zxid_conf* cf);
 struct zx_str* zxid_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi);
 int zxid_send_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi);
+struct zx_str* zxid_sp_carml(struct zxid_conf* cf);
 struct zx_str* zxid_my_entity_id(struct zxid_conf* cf);
 struct zx_str* zxid_my_cdc_url(struct zxid_conf* cf);
 struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf);
@@ -324,8 +469,18 @@ void  zxid_url_set(struct zxid_conf* cf, char* url);
 int   zxid_init_conf(struct zxid_conf* cf, char* conf_dir);
 struct zxid_conf* zxid_init_conf_ctx(struct zxid_conf* cf, char* zxid_path);
 struct zxid_conf* zxid_new_conf(char* zxid_path);
-int zxid_parse_conf_raw(struct zxid_conf* cf, int qs_len, char* qs);
-int zxid_parse_conf(struct zxid_conf* cf, char* qs);
+int   zxid_parse_conf_raw(struct zxid_conf* cf, int qs_len, char* qs);
+int   zxid_parse_conf(struct zxid_conf* cf, char* qs);
+int   zxid_mk_self_sig_cert(struct zxid_conf* cf, int buflen, char* buf, char* lk, char* name);
+struct zxid_map*   zxid_load_map(struct zxid_conf* cf, struct zxid_map* map, char* v);
+struct zxid_need*  zxid_load_need(struct zxid_conf* cf, struct zxid_need* need, char* v);
+struct zxid_atsrc* zxid_load_atsrc(struct zxid_conf* cf, struct zxid_atsrc* atsrc, char* v);
+struct zxid_attr*  zxid_new_at(struct zxid_conf* cf, struct zxid_attr* at, int name_len, char* name, int val_len, char* val, char* lk);
+struct zxid_cstr_list* zxid_load_cstr_list(struct zxid_conf* cf, struct zxid_cstr_list* lst, char* v);
+struct zxid_need*  zxid_is_needed(struct zxid_need* need, char* name);
+struct zxid_map*   zxid_find_map(struct zxid_map* map, char* name);
+struct zxid_cstr_list* zxid_find_cstr_list(struct zxid_cstr_list* lst, char* name);
+struct zxid_attr* zxid_find_at(struct zxid_attr* pool, char* name);
 
 /* zxidcgi */
 
@@ -343,13 +498,29 @@ int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses);
 struct zxid_entity* zxid_get_ses_idp(struct zxid_conf* cf, struct zxid_ses* ses);
 int zxid_find_ses(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_str* ses_ix, struct zx_str* nid);
 
+/* zxidpool */
+
+//struct zx_str* zxid_ses_to_ldif(struct zxid_conf* cf, struct zxid_ses* ses);
+struct zx_str* zxid_pool_to_ldif(struct zxid_conf* cf, struct zxid_attr* pool);
+struct zx_str* zxid_pool_to_json(struct zxid_conf* cf, struct zxid_attr* pool);
+struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool);
+void zxid_ses_to_pool(struct zxid_conf* cf, struct zxid_ses* ses);
+void zxid_add_attr_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, char* at_name, struct zx_str* val);
+
 /* zxiduser */
 
+struct zx_sa_NameID_s* zxid_parse_mni(struct zxid_conf* cf, char* buf, char** pmniptr);
 int zxid_put_user(struct zxid_conf* cf, struct zx_str* nidfmt, struct zx_str* idpent, struct zx_str* spqual, struct zx_str* idpnid, char* mniptr);
 struct zx_sa_NameID_s* zxid_get_user_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* oldnid);
 void zxid_user_change_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* oldnid, struct zx_str* newnym);
+int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
 
 /* zxidlib */
+
+int   zxid_version();
+char* zxid_version_str();
+struct zx_str* zxid_date_time(struct zxid_conf* cf, time_t secs);
+struct zx_str* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits); /* pseudo random ident. */
 
 struct zx_root_s* zxid_soap_call_raw(struct zxid_conf* cf, struct zx_str* url, struct zx_str* data);
 struct zx_str* zxid_lecp_check(struct zxid_conf* cf, struct zxid_cgi* cgi);
@@ -360,17 +531,19 @@ struct zx_root_s* zxid_soap_call_hdr_body(struct zxid_conf* cf, struct zx_str* u
 struct zx_root_s* zxid_soap_call_body(struct zxid_conf* cf, struct zx_str* url, struct zx_e_Body_s* body);
 int zxid_soap_cgi_resp_body(struct zxid_conf* cf, struct zx_e_Body_s* body);
 
+struct zx_str* zxid_saml2_post_enc(struct zxid_conf* cf, char* field, struct zx_str* payload, char* relay_state, int sign, struct zx_str* action_url);
 struct zx_str* zxid_saml2_redir_enc(struct zxid_conf* cf, char* cgivar, struct zx_str* pay_load, char* relay_state);
-int zxid_saml2_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
 struct zx_str* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
-struct zx_str* zxid_saml2_location(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
-
-struct zx_str* zxid_saml2_resp_location(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
-int zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
+struct zx_str* zxid_saml2_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
+struct zx_str* zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, struct zx_str* pay_load, char* relay_state);
 
 int zxid_saml_ok(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_Status_s* st, char* what);
 struct zx_sa_NameID_s* zxid_decrypt_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_sa_EncryptedID_s* encid);
 struct zx_str* zxid_decrypt_newnym(struct zxid_conf* cf, struct zx_str* newnym, struct zx_sp_NewEncryptedID_s* encid);
+
+int zxid_chk_sig(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_elem_s* elem, struct zx_ds_Signature_s* sig, struct zx_sa_Issuer_s* issue_ent, const char* lk);
+
+struct zx_str* zxid_map_val(struct zxid_conf* cf, struct zxid_map* map, struct zx_str* val);
 
 /* zxidloc */
 
@@ -378,7 +551,33 @@ struct zx_str* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
 struct zx_str* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zxid_entity* idp_meta, int svc_type, char* binding);
 struct zx_root_s* zxid_idp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zxid_entity* idp_meta, int svc_type, struct zx_e_Body_s* body);
 
-/* zxidsso */
+struct zx_str* zxid_sp_loc_by_index_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_entity* sp_meta, int svc_type,struct zx_str* ix, int* binding);
+struct zx_str* zxid_sp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_entity* sp_meta, int svc_type, char* binding, int req);
+struct zx_str* zxid_sp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zxid_entity* sp_meta, int svc_type, char* binding);
+struct zx_root_s* zxid_sp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zxid_entity* sp_meta, int svc_type, struct zx_e_Body_s* body);
+
+/* zxiddec */
+
+struct zx_root_s* zxid_decode_redir_or_post(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
+
+/* zxidspx */
+
+struct zx_str* zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
+int zxid_sp_soap_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_root_s* r);
+int zxid_sp_soap_parse(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int len, char* buf);
+
+/* zxididpx */
+
+struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
+int zxid_idp_soap_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_root_s* r);
+int zxid_idp_soap_parse(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int len, char* buf);
+
+/* zxidpsso - IdP side of SSO: generating A7N */
+
+struct zx_sa_Attribute_s* zxid_add_ldif_attributes(struct zxid_conf* cf, struct zx_sa_Attribute_s* prev, int len, char* p, char* lk);
+struct zx_str* zxid_idp_sso(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_AuthnRequest_s* ar);
+
+/* zxidsso - SP side of SSO: consuming A7N */
 
 int zxid_pick_sso_profile(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_entity* idp_met);
 int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi);
@@ -386,35 +585,36 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi);
 struct zx_str* zxid_start_sso_location(struct zxid_conf* cf, struct zxid_cgi* cgi);
 int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
 int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n);
+int zxid_sp_anon_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
 
 char* zxid_saml2_map_nid_fmt(char* f);
 char* zxid_saml2_map_protocol_binding(char* b);
+int zxid_protocol_binding_map_saml2(struct zx_str* b);
 char* zxid_saml2_map_authn_ctx(char* c);
 
-struct zx_str* zxid_date_time(struct zxid_conf* cf, time_t secs);
-struct zx_str* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits);
 struct zx_sa_Issuer_s* zxid_issuer(struct zxid_conf* cf, struct zx_str* nameid, char* affiliation);
 void zxid_sigres_map(int sigres, char** sigval, char** sigmsg);
+int zxid_validate_conditions(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n, struct zx_str* myentid, struct timeval* ourts, char** err);
 
 /* zxidslo */
 
 int zxid_sp_slo_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
-int zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
-struct zx_str* zxid_sp_slo_location(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
-
-struct zx_str* zxid_sp_dispatch_location(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, char* msg);
-int zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, char* msg);
-int zxid_sp_soap_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_root_s* r);
-int zxid_sp_soap_parse(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int len, char* buf);
+struct zx_str* zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
+int zxid_sp_slo_do(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_LogoutRequest_s* req);
+int zxid_idp_slo_do(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_LogoutRequest_s* req);
+struct zx_str* zxid_slo_resp_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_LogoutRequest_s* req);
 
 /* zxidmni */
 
 int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym);
-int zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym);
-struct zx_str* zxid_sp_mni_location(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym);
+struct zx_str* zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym);
 
-struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zx_sp_ManageNameIDRequest_s* mni);
-struct zx_str* zxid_mni_do_ss(struct zxid_conf* cf, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc);
+struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni);
+struct zx_str* zxid_mni_do_ss(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc);
+
+/* zxidpep */
+
+int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
 
 /* zxida7n */
 
@@ -427,11 +627,22 @@ struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(struct zxid_conf* cf, struct z
 
 struct zx_sp_Status_s* zxid_mk_Status(struct zxid_conf* cf, char* sc1, char* sc2, char* msg);
 struct zx_sp_Status_s* zxid_OK(struct zxid_conf* cf);
+struct zx_sa_EncryptedID_s* zxid_mk_enc_id(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zxid_entity* meta);
+struct zx_sa_EncryptedAssertion_s* zxid_mk_enc_a7n(struct zxid_conf* cf, struct zx_sa_Assertion_s* a7n, struct zxid_entity* meta);
 
 struct zx_sp_LogoutRequest_s* zxid_mk_logout(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* ses_ix, struct zxid_entity* idp);
 struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id);
 struct zx_sp_ManageNameIDRequest_s* zxid_mk_mni(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_str* new_nym, struct zxid_entity* idp);
 struct zx_sp_ManageNameIDResponse_s* zxid_mk_mni_resp(struct zxid_conf* cf, struct zx_sp_Status_s* st, struct zx_str* req_id);
+
+struct zx_sa_Assertion_s* zxid_mk_a7n(struct zxid_conf* cf, struct zx_str* audience, struct zx_sa_Subject_s* subj, struct zx_sa_AuthnStatement_s* an_stmt, struct zx_sa_AttributeStatement_s* at_stmt, struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt);
+struct zx_sa_Subject_s* zxid_mk_subj(struct zxid_conf* cf, struct zxid_entity* sp_meta, struct zx_sa_NameID_s* nid);
+struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(struct zxid_conf* cf, struct zxid_ses* ses);
+struct zx_sp_Response_s* zxid_mk_saml_resp(struct zxid_conf* cf);
+struct zx_xac_Response_s* zxid_mk_xacml_resp(struct zxid_conf* cf, char* decision);
+struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(struct zxid_conf* cf, struct zx_xac_Attribute_s* aa, struct zx_str* atid, struct zx_str* attype, struct zx_str* atissuer, struct zx_str* atvalue);
+struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(struct zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env);
+struct zx_sa_Attribute_s* zxid_mk_attribute(struct zxid_conf* cf, char* name, char* val);
 
 /* zxidmkwsf */
 
@@ -455,6 +666,12 @@ struct zx_e_Envelope_s* zxid_callf(struct zxid_conf* cf, struct zxid_ses* ses, c
 
 #define ZXID_RESP_ENV(cf, tag, status_code, status_comment) zxid_new_envf((cf), "<%s><lu:Status code=\"%s\" comment=\"%s\"></lu:Status></%s>", (tag), (status_code), (status_comment), (tag))
 
+/*() Most SOAP messages (at least in Liberty based web services) have
+ * the status field in same place, but they all have different data
+ * types. Given the similarity it is desireable to have common
+ * "function" for checking status, but due to the type problem it has
+ * to be done with a macro (dynamically typed language would make this easy). */
+
 #define ZXID_CHK_STATUS(env, field, abort_action) MB struct zx_str* ss; if (!(env)) abort_action; \
   if (!env->Body->field) { ERR("Body is missing " #field " element. %p", env); abort_action; } \
   if (!env->Body->field->Status) { ERR( #field " is missing Status. %p", env); abort_action; } \
@@ -474,6 +691,8 @@ struct zx_e_Envelope_s* zxid_callf(struct zxid_conf* cf, struct zxid_ses* ses, c
 
 /* zxidepr */
 
+int zxid_nice_sha1(struct zxid_conf* cf, char* buf, int buf_len, struct zx_str* name, struct zx_str* cont);
+int zxid_epr_path(struct zxid_conf* cf, char* dir, char* sid, char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont);
 struct zx_a_EndpointReference_s* zxid_get_epr(struct zxid_conf* cf, struct zxid_ses* ses, char* svc, int n);
 struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid_ses* ses, char* svc, int n);
 int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr);
@@ -499,11 +718,12 @@ void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses);
 #define ZXID_SAML2_PAOS  3
 #define ZXID_SAML2_SOAP  4
 #define ZXID_SAML2_POST_SIMPLE_SIGN  5
-#define ZXID_SAML2_REDIR 6
+#define ZXID_SAML2_REDIR 6   /* for function of same name, see */
 #define ZXID_SAML2_URI   7
 
 #define ZXID_SLO_SVC 1
 #define ZXID_MNI_SVC 2
+#define ZXID_ACS_SVC 3
 
 /* Broad categories of secmechs. Specific secmechs are mapped to these to abstract similarity. */
 
@@ -522,6 +742,7 @@ void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses);
 #define ZXID_OK       1  /* Don't fall thru, event fully handled. */
 #define ZXID_REDIR_OK 2  /* Don't fall thru, event fully handled. */
 #define ZXID_SSO_OK   3  /* Special case for SSO completed situation. Use as switch case. */
+#define ZXID_IDP_REQ  4  /* Used by SP dispatch to punt the message to IdP processing. */
 
 #if 1
 #define ZXID_TRUE  "1"
@@ -531,9 +752,14 @@ void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses);
 #define ZXID_FALSE "false"
 #endif
 
+/* Test XML boolean field (zx_str) for XML valid "true" values */
+#define ZXID_XML_TRUE_TEST(x) ((x) && (x)->s && (((x)->len == 1 && (x)->s[0] == '1') || ((x)->len == 4 && !memcmp((x)->s, "true", 4))))
+
 /* Define this so it results CR (0xd) and LF (0xa) on your platform. N.B. \n is not always 0xa! */
 #define CRLF "\015\012"
 #define CRLF2 CRLF CRLF
+
+#define COPYVAL(to,what,lim) MB (to) = ZX_ALLOC(cf->ctx, (lim)-(what)+1); memcpy((to), (what),  (lim)-(what)); (to)[(lim)-(what)] = 0; ME
 
 extern char std_basis_64[64];
 extern char safe_basis_64[64];
@@ -543,8 +769,8 @@ char* base64_fancy_raw(char* p, int len, char* r,
 		       char* basis_64, int line_len, int eol_len, char* eol, char eq_pad);
 char* unbase64_raw(char* p, char* lim, char* r, unsigned char* index_64);
 char* sha1_safe_base64(char* out_buf, int len, char* data);
-char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, char* in, int* out_len);
-char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, char* in, int* out_len);
+char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, char* in, int* out_len);  /* gzip */
+char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, char* in, int* out_len);  /* gunzip */
 int   zx_url_encode_len(int in_len, char* in);
 char* zx_url_encode_raw(int in_len, char* in, char* out);
 char* zx_url_encode(struct zx_ctx* c, int in_len, char* in, int* out_len);
@@ -564,9 +790,6 @@ struct zxid_curl_ctx {
 
 size_t zxid_curl_write_data(void *buffer, size_t size, size_t nmemb, void *userp);
 size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp);
-
-int zxid_version();
-char* zxid_version_str();
 
 #include <zx/zxidnoswig.h>
 

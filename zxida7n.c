@@ -1,13 +1,14 @@
 /* zxida7n.c  -  Handwritten functions for Assertion handling
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxida7n.c,v 1.2 2007/02/08 00:39:36 sampo Exp $
+ * $Id: zxida7n.c,v 1.3 2008-10-08 03:56:55 sampo Exp $
  *
  * 3.2.2007, created --Sampo
+ * 7.10.2008, added documentation --Sampo
  *
  * See also: zxidsimp.c (attributes to LDIF), and zxidepr.c
  */
@@ -20,16 +21,29 @@
 #include "saml2.h"
 #include "c/zx-ns.h"
 
-/* Look into attribute statement(s) of an assertion and scan
+/*() Look into attribute statement(s) of an assertion and scan
  * for nth occurance of named attribute. Ordering of attributes
  * is accoring to their occurance in attribute statement, or
  * more broadly according to ordering of the attribute statements
  * themselves.
+ *
  * - NULL or zero length nfmt (name format) will match any
  * - NULL or zero length name will match any
  * - NULL or zero length friendly (name) will match any
  * - minus one (-1) as either length field will cause strlen() to be done
  * - the index n is one based
+ *
+ * *Arguments*
+ *
+ * a7n:: Assertion data structure, obtained from XML parsing
+ * nfmt_len:: Length of the name format, or 0 if no matching by name format is desired
+ * nfmt:: name format to match (or 0)
+ * name_len:: Length of the attribute name, or 0 if no matching by attribute name is desired
+ * name:: attribute name to match (or 0)
+ * friendly_len:: Length of the friendly name, or 0 if no matching by friendly name is desired
+ * friendly:: friendly name to match (or 0)
+ * n:: Howmanieth instance of the matching attribute is desired. 1 means first.
+ * return:: Data structure representing the matching attribute.
  */
 
 struct zx_sa_Attribute_s* zxid_find_attribute(struct zx_sa_Assertion_s* a7n, int nfmt_len, char* nfmt, int name_len, char* name, int friendly_len, char* friendly, int n)

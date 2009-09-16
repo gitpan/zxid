@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidssofinalizetest.c,v 1.2 2008-03-23 19:34:09 sampo Exp $
+ * $Id: zxidssofinalizetest.c,v 1.5 2009-08-25 16:22:45 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  * 9.2.2007, improved to make basis of a test suite tool --Sampo
@@ -73,7 +73,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
-/* Called by:  main x4 */
+/* Called by:  main x7 */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;
@@ -276,6 +276,7 @@ int main(int argc, char** argv, char** env)
     if (!r->Assertion)
       DIE("No assertion in input");
     
+    ses->sigres = ZXSIG_NO_SIG;
     ret = zxid_sp_sso_finalize(cf, &cgi, &ses, r->Assertion);
     D("sso_finalize=%d", ret);
 

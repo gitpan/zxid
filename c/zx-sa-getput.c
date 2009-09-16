@@ -13,7 +13,7 @@
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: getput-templ.c,v 1.7 2007/03/28 20:31:54 sampo Exp $
+ ** Id: getput-templ.c,v 1.8 2009-08-30 15:09:26 sampo Exp $
  **
  ** 30.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 6.8.2006, factored from enc-templ.c to separate file --Sampo
@@ -1525,41 +1525,41 @@ void zx_sa_Assertion_DEL_Advice(struct zx_sa_Assertion_s* x, int n)
 
 int zx_sa_Assertion_NUM_Statement(struct zx_sa_Assertion_s* x)
 {
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->Statement; y; ++n, y = (struct zx_elem_s*)y->g.n) ;
+  for (y = x->Statement; y; ++n, y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
   return n;
 }
 
 /* FUNC(zx_sa_Assertion_GET_Statement) */
 
-struct zx_elem_s* zx_sa_Assertion_GET_Statement(struct zx_sa_Assertion_s* x, int n)
+struct zx_sa_Statement_s* zx_sa_Assertion_GET_Statement(struct zx_sa_Assertion_s* x, int n)
 {
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* y;
   if (!x) return 0;
-  for (y = x->Statement; n>=0 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
+  for (y = x->Statement; n>=0 && y; --n, y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
   return y;
 }
 
 /* FUNC(zx_sa_Assertion_POP_Statement) */
 
-struct zx_elem_s* zx_sa_Assertion_POP_Statement(struct zx_sa_Assertion_s* x)
+struct zx_sa_Statement_s* zx_sa_Assertion_POP_Statement(struct zx_sa_Assertion_s* x)
 {
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* y;
   if (!x) return 0;
   y = x->Statement;
   if (y)
-    x->Statement = (struct zx_elem_s*)y->g.n;
+    x->Statement = (struct zx_sa_Statement_s*)y->gg.g.n;
   return y;
 }
 
 /* FUNC(zx_sa_Assertion_PUSH_Statement) */
 
-void zx_sa_Assertion_PUSH_Statement(struct zx_sa_Assertion_s* x, struct zx_elem_s* z)
+void zx_sa_Assertion_PUSH_Statement(struct zx_sa_Assertion_s* x, struct zx_sa_Statement_s* z)
 {
   if (!x || !z) return;
-  z->g.n = &x->Statement->g;
+  z->gg.g.n = &x->Statement->gg.g;
   x->Statement = z;
 }
 
@@ -1567,15 +1567,15 @@ void zx_sa_Assertion_PUSH_Statement(struct zx_sa_Assertion_s* x, struct zx_elem_
 
 void zx_sa_Assertion_REV_Statement(struct zx_sa_Assertion_s* x)
 {
-  struct zx_elem_s* nxt;
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* nxt;
+  struct zx_sa_Statement_s* y;
   if (!x) return;
   y = x->Statement;
   if (!y) return;
   x->Statement = 0;
   while (y) {
-    nxt = (struct zx_elem_s*)y->g.n;
-    y->g.n = &x->Statement->g;
+    nxt = (struct zx_sa_Statement_s*)y->gg.g.n;
+    y->gg.g.n = &x->Statement->gg.g;
     x->Statement = y;
     y = nxt;
   }
@@ -1583,70 +1583,70 @@ void zx_sa_Assertion_REV_Statement(struct zx_sa_Assertion_s* x)
 
 /* FUNC(zx_sa_Assertion_PUT_Statement) */
 
-void zx_sa_Assertion_PUT_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_elem_s* z)
+void zx_sa_Assertion_PUT_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Statement_s* z)
 {
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* y;
   if (!x || !z) return;
   y = x->Statement;
   if (!y) return;
   switch (n) {
   case 0:
-    z->g.n = y->g.n;
+    z->gg.g.n = y->gg.g.n;
     x->Statement = z;
     return;
   default:
-    for (; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
-    if (!y->g.n) return;
-    z->g.n = y->g.n->n;
-    y->g.n = &z->g;
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
   }
 }
 
 /* FUNC(zx_sa_Assertion_ADD_Statement) */
 
-void zx_sa_Assertion_ADD_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_elem_s* z)
+void zx_sa_Assertion_ADD_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Statement_s* z)
 {
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
   add_to_start:
-    z->g.n = &x->Statement->g;
+    z->gg.g.n = &x->Statement->gg.g;
     x->Statement = z;
     return;
   case -1:
     y = x->Statement;
     if (!y) goto add_to_start;
-    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
+    for (; y->gg.g.n; y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->Statement; n > 1 && y; --n, y = (struct zx_elem_s*)y->g.n) ;
+    for (y = x->Statement; n > 1 && y; --n, y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
     if (!y) return;
   }
-  z->g.n = y->g.n;
-  y->g.n = &z->g;
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
 }
 
 /* FUNC(zx_sa_Assertion_DEL_Statement) */
 
 void zx_sa_Assertion_DEL_Statement(struct zx_sa_Assertion_s* x, int n)
 {
-  struct zx_elem_s* y;
+  struct zx_sa_Statement_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->Statement = (struct zx_elem_s*)x->Statement->g.n;
+    x->Statement = (struct zx_sa_Statement_s*)x->Statement->gg.g.n;
     return;
   case -1:
-    y = (struct zx_elem_s*)x->Statement;
+    y = (struct zx_sa_Statement_s*)x->Statement;
     if (!y) return;
-    for (; y->g.n; y = (struct zx_elem_s*)y->g.n) ;
+    for (; y->gg.g.n; y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->Statement; n > 1 && y->g.n; --n, y = (struct zx_elem_s*)y->g.n) ;
-    if (!y->g.n) return;
+    for (y = x->Statement; n > 1 && y->gg.g.n; --n, y = (struct zx_sa_Statement_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
   }
-  y->g.n = y->g.n->n;
+  y->gg.g.n = y->gg.g.n->n;
 }
 
 #endif
@@ -6522,6 +6522,149 @@ void zx_sa_ProxyRestriction_DEL_Audience(struct zx_sa_ProxyRestriction_s* x, int
 struct zx_str* zx_sa_ProxyRestriction_GET_Count(struct zx_sa_ProxyRestriction_s* x) { return x->Count; }
 /* FUNC(zx_sa_ProxyRestriction_PUT_Count) */
 void zx_sa_ProxyRestriction_PUT_Count(struct zx_sa_ProxyRestriction_s* x, struct zx_str* y) { x->Count = y; }
+
+
+
+
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_sa_Statement_NUM_Response) */
+
+int zx_sa_Statement_NUM_Response(struct zx_sa_Statement_s* x)
+{
+  struct zx_xac_Response_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Response; y; ++n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_sa_Statement_GET_Response) */
+
+struct zx_xac_Response_s* zx_sa_Statement_GET_Response(struct zx_sa_Statement_s* x, int n)
+{
+  struct zx_xac_Response_s* y;
+  if (!x) return 0;
+  for (y = x->Response; n>=0 && y; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_sa_Statement_POP_Response) */
+
+struct zx_xac_Response_s* zx_sa_Statement_POP_Response(struct zx_sa_Statement_s* x)
+{
+  struct zx_xac_Response_s* y;
+  if (!x) return 0;
+  y = x->Response;
+  if (y)
+    x->Response = (struct zx_xac_Response_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_sa_Statement_PUSH_Response) */
+
+void zx_sa_Statement_PUSH_Response(struct zx_sa_Statement_s* x, struct zx_xac_Response_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Response->gg.g;
+  x->Response = z;
+}
+
+/* FUNC(zx_sa_Statement_REV_Response) */
+
+void zx_sa_Statement_REV_Response(struct zx_sa_Statement_s* x)
+{
+  struct zx_xac_Response_s* nxt;
+  struct zx_xac_Response_s* y;
+  if (!x) return;
+  y = x->Response;
+  if (!y) return;
+  x->Response = 0;
+  while (y) {
+    nxt = (struct zx_xac_Response_s*)y->gg.g.n;
+    y->gg.g.n = &x->Response->gg.g;
+    x->Response = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_sa_Statement_PUT_Response) */
+
+void zx_sa_Statement_PUT_Response(struct zx_sa_Statement_s* x, int n, struct zx_xac_Response_s* z)
+{
+  struct zx_xac_Response_s* y;
+  if (!x || !z) return;
+  y = x->Response;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Response = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_sa_Statement_ADD_Response) */
+
+void zx_sa_Statement_ADD_Response(struct zx_sa_Statement_s* x, int n, struct zx_xac_Response_s* z)
+{
+  struct zx_xac_Response_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Response->gg.g;
+    x->Response = z;
+    return;
+  case -1:
+    y = x->Response;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Response; n > 1 && y; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_sa_Statement_DEL_Response) */
+
+void zx_sa_Statement_DEL_Response(struct zx_sa_Statement_s* x, int n)
+{
+  struct zx_xac_Response_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Response = (struct zx_xac_Response_s*)x->Response->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xac_Response_s*)x->Response;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Response; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+/* FUNC(zx_sa_Statement_GET_type) */
+struct zx_str* zx_sa_Statement_GET_type(struct zx_sa_Statement_s* x) { return x->type; }
+/* FUNC(zx_sa_Statement_PUT_type) */
+void zx_sa_Statement_PUT_type(struct zx_sa_Statement_s* x, struct zx_str* y) { x->type = y; }
 
 
 

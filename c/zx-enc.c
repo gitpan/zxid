@@ -3598,7 +3598,7 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
   case zx_sa_Advice_ELEM:
     return zx_LEN_WO_sa_Advice(c, (struct zx_sa_Advice_s*)x);
   case zx_sa_Statement_ELEM:
-    return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("Statement")-1);
+    return zx_LEN_WO_sa_Statement(c, (struct zx_sa_Statement_s*)x);
   case zx_sa_AuthnStatement_ELEM:
     return zx_LEN_WO_sa_AuthnStatement(c, (struct zx_sa_AuthnStatement_s*)x);
   case zx_sa_AuthzDecisionStatement_ELEM:
@@ -3631,6 +3631,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_sa_ProxyRestriction(c, (struct zx_sa_ProxyRestriction_s*)x);
   case zx_idp_SubjectRestriction_ELEM:
     return zx_LEN_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x);
+  case zx_xac_Response_ELEM:
+    return zx_LEN_WO_xac_Response(c, (struct zx_xac_Response_s*)x);
   case zx_sa_BaseID_ELEM:
     return zx_LEN_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x);
   case zx_sa_EncryptedID_ELEM:
@@ -3946,7 +3948,7 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
   case zx_xac_Attribute_ELEM:
     return zx_LEN_WO_xac_Attribute(c, (struct zx_xac_Attribute_s*)x);
   case zx_xac_AttributeValue_ELEM:
-    return zx_LEN_WO_xac_AttributeValue(c, (struct zx_xac_AttributeValue_s*)x);
+    return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("AttributeValue")-1);
   case zx_xac_Subject_ELEM:
     return zx_LEN_WO_xac_Subject(c, (struct zx_xac_Subject_s*)x);
   case zx_xac_Resource_ELEM:
@@ -3969,8 +3971,6 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("StatusMessage")-1);
   case zx_xac_StatusDetail_ELEM:
     return zx_LEN_WO_xac_StatusDetail(c, (struct zx_xac_StatusDetail_s*)x);
-  case zx_xac_Response_ELEM:
-    return zx_LEN_WO_xac_Response(c, (struct zx_xac_Response_s*)x);
   case zx_xac_Request_ELEM:
     return zx_LEN_WO_xac_Request(c, (struct zx_xac_Request_s*)x);
   case zx_xenc_KA_Nonce_ELEM:
@@ -6724,7 +6724,7 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
   case zx_sa_Advice_ELEM:
     return zx_ENC_WO_sa_Advice(c, (struct zx_sa_Advice_s*)x, p);
   case zx_sa_Statement_ELEM:
-    return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "Statement", sizeof("Statement")-1);
+    return zx_ENC_WO_sa_Statement(c, (struct zx_sa_Statement_s*)x, p);
   case zx_sa_AuthnStatement_ELEM:
     return zx_ENC_WO_sa_AuthnStatement(c, (struct zx_sa_AuthnStatement_s*)x, p);
   case zx_sa_AuthzDecisionStatement_ELEM:
@@ -6757,6 +6757,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_sa_ProxyRestriction(c, (struct zx_sa_ProxyRestriction_s*)x, p);
   case zx_idp_SubjectRestriction_ELEM:
     return zx_ENC_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x, p);
+  case zx_xac_Response_ELEM:
+    return zx_ENC_WO_xac_Response(c, (struct zx_xac_Response_s*)x, p);
   case zx_sa_BaseID_ELEM:
     return zx_ENC_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x, p);
   case zx_sa_EncryptedID_ELEM:
@@ -7072,7 +7074,7 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
   case zx_xac_Attribute_ELEM:
     return zx_ENC_WO_xac_Attribute(c, (struct zx_xac_Attribute_s*)x, p);
   case zx_xac_AttributeValue_ELEM:
-    return zx_ENC_WO_xac_AttributeValue(c, (struct zx_xac_AttributeValue_s*)x, p);
+    return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "AttributeValue", sizeof("AttributeValue")-1);
   case zx_xac_Subject_ELEM:
     return zx_ENC_WO_xac_Subject(c, (struct zx_xac_Subject_s*)x, p);
   case zx_xac_Resource_ELEM:
@@ -7095,8 +7097,6 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "StatusMessage", sizeof("StatusMessage")-1);
   case zx_xac_StatusDetail_ELEM:
     return zx_ENC_WO_xac_StatusDetail(c, (struct zx_xac_StatusDetail_s*)x, p);
-  case zx_xac_Response_ELEM:
-    return zx_ENC_WO_xac_Response(c, (struct zx_xac_Response_s*)x, p);
   case zx_xac_Request_ELEM:
     return zx_ENC_WO_xac_Request(c, (struct zx_xac_Request_s*)x, p);
   case zx_xenc_KA_Nonce_ELEM:

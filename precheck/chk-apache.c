@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: chk-apache.c,v 1.1 2008-09-17 03:41:11 sampo Exp $
+ * $Id: chk-apache.c,v 1.3 2008-09-18 20:27:23 sampo Exp $
  *
  * 16.9.2008, created --Sampo
  */
@@ -18,8 +18,9 @@
 
 #if 1
 #include <sys/types.h>
-#ifndef __off64_t_defined
-typedef long long off64_t;
+#if !defined(__off64_t_defined) && !defined(off64_t)
+/*typedef long long off64_t;*/
+#define off64_t long long
 #endif
 #else
 #define _LARGE_FILES 1

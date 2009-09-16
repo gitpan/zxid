@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-people-service-v1.0.sg
 # Slightly edited, 1.3.2007, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-people-service-v1.0.sg,v 1.1 2007/03/04 08:24:58 sampo Exp $
+# $Id: liberty-idwsf-people-service-v1.0.sg,v 1.2 2009-09-05 02:23:41 sampo Exp $
 
 target(ps, urn:liberty:ps:2006-08)
 import(lu,   urn:liberty:util:2006-08,liberty-idwsf-utility-v2.0.xsd)

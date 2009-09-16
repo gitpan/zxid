@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxencdectest.c,v 1.6 2008-03-23 19:34:09 sampo Exp $
+ * $Id: zxencdectest.c,v 1.8 2009-08-25 16:22:44 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  * 9.2.2007, improved to make basis of a test suite tool --Sampo
@@ -67,6 +67,7 @@ Usage: zxencdectest [options] <foo.xml >reencoded-foo.xml\n\
 
 #define DIE(reason) MB fprintf(stderr, "%s\n", reason); exit(2); ME
 
+/* Called by:  opt */
 void test_ibm_cert_problem()
 {
   int got_all, len_so;
@@ -97,6 +98,7 @@ void test_ibm_cert_problem()
   printf("r1 nid(%.*s)\n", req->NameID->gg.content->len, req->NameID->gg.content->s);
 }
 
+/* Called by:  opt */
 void test_ibm_cert_problem_enc_dec()
 {
   struct zxid_conf* cf;
@@ -141,7 +143,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
-/* Called by:  main x4 */
+/* Called by:  main x7 */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;

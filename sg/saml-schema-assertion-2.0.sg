@@ -1,11 +1,12 @@
 # zxid/sg/saml-schema-assertion-2.0.sg
-# $Id: saml-schema-assertion-2.0.sg,v 1.8 2007-10-05 22:24:28 sampo Exp $
+# $Id: saml-schema-assertion-2.0.sg,v 1.9 2009-08-25 16:22:45 sampo Exp $
 #
 # N.B. This file is not a direct conversion. Instead it has been manually edited to
 # make it simpler and to facilitate code generation.
 # 15.10.2006, extended AttributeValue schema to cater for bootstrap, Sampo Kellomaki (sampo@iki.fi)
 # 10.2.2007, added other types of assertions as potential Advice content --Sampo
-# 3.3.2007, added XACML support --Sampo
+# 3.3.2007,  added XACML support --Sampo
+# 24.8.2009, modified sa:Statement to be able to carry xac:Response --Sampo
 
 target(sa, urn:oasis:names:tc:SAML:2.0:assertion)
 ns(xs,http://www.w3.org/2001/XMLSchema)
@@ -16,6 +17,7 @@ ns(a,    http://www.w3.org/2005/08/addressing)
 ns(sa11, urn:oasis:names:tc:SAML:1.0:assertion)
 ns(ff12, urn:liberty:iff:2003-08)
 ns(xasa, urn:oasis:xacml:2.0:saml:assertion:schema:os)
+ns(xac,  urn:oasis:names:tc:xacml:2.0:context:schema:os)
 ns(xsi,  http://www.w3.org/2001/XMLSchema-instance)
 ns(idp,  urn:liberty:idp:2006-12)
 
@@ -139,7 +141,15 @@ Advice	 -> %sa:AdviceType
 
 EncryptedAssertion -> %sa:EncryptedElementType
 
-Statement	 -> %sa:StatementAbstractType
+#Statement	 -> %sa:StatementAbstractType
+
+Statement	 -> %sa:StatementType
+
+%StatementType:   base(sa:StatementAbstractType)
+  xac:Response*
+  any*  ns(##other)  processContents(lax)
+  @xsi:type? -> %xs:string
+  ;
 
 AuthnStatement	 -> %sa:AuthnStatementType
 %AuthnStatementType:	 base(sa:StatementAbstractType)

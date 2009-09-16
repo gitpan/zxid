@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * This is free software and comes with NO WARRANTY. For licensing
  * see file COPYING in the distribution directory.
- * $Id: errmac.h,v 1.16 2008-03-23 19:34:09 sampo Exp $
+ * $Id: errmac.h,v 1.22 2009-08-30 15:09:26 sampo Exp $
  *
  * 10.1.2003, added option to make ASSERT nonfatal --Sampo
  * 4.6.2003,  added STRERROR() macro --Sampo
@@ -70,6 +70,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define STRNULLCHK(s)  ((s)?(char*)(s):"")
 #define STRNULLCHKQ(s) ((s)?(char*)(s):"?")
 #define STRNULLCHKD(s) ((s)?(char*)(s):"-")
+#define STRNULLCHKNULL(s) ((s)?(char*)(s):"(null)")
 
 /* Common datatypes */
 
@@ -189,14 +190,20 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(x) ((x+3)/4*3)
 
 /* Perform URL conversion in place
- *   q = qq = buffer_where_data_is; URL_DECODE(q,qq,buf+sizeof(buf));
- * The cv pointer need not point to same buffer as old, though it can, to effectuate an in-place
- * conversion. The converted length is the difference with original cv and final cv. */
-#define URL_DECODE(old,cv,end) MB while ((old) < (end)) \
-  if ((*(old) == '%') && ((old) < ((end)-2)) && IS_HEX((old)[1]) && IS_HEX((old)[2])) \
-    { *((cv)++) = (HEX((old)[1]) << 4) | HEX((old)[2]); (old) += 3; } \
-  else if (*(old) == '+') { *((cv)++) = ' '; ++(old); } \
-  else *((cv)++) = *((old)++); ME
+ *   src = dst = buffer_where_data_is;
+ *   URL_DECODE(src,dst,buf+sizeof(buf));
+ *   *dst = 0;   // nul terminate
+ *   len = dst - buf;
+ * The dst pointer need not point to same buffer as src, though it can, to effectuate an
+ * in-place conversion. The converted length is the difference with original dst and final dst.
+ * src and dst MUST be different variables (even if they point to same place).
+ * lim is one beyond end of the src data. Resulting conversion is always shorter
+ * or equal to original. Both src and dst will be altered. Conversion is not nul terminated. */
+#define URL_DECODE(dst,src,lim) MB while ((src) < (lim)) \
+  if ((*(src) == '%') && ((src) < ((lim)-2)) && IS_HEX((src)[1]) && IS_HEX((src)[2])) \
+    { *((dst)++) = (HEX((src)[1]) << 4) | HEX((src)[2]); (src) += 3; } \
+  else if (*(src) == '+') { *((dst)++) = ' '; ++(src); } \
+  else *((dst)++) = *((src)++); ME
 
 /* Usage: you must set nodes to root prior to calling this macro, for example
  * v = s->first; REVERSE_LIST_NEXT(s->first, v, vnext);
@@ -375,7 +382,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
  * but beware that this means NO file locking will be done, possibly
  * leading to corrupt audit logs, or other files. You need to judge
  * the probability of this happening as well as the cost of clean-up. */
-#define dummy_no_flock(x)  /* no file locking where locking should be */
+#define dummy_no_flock(x,y) (0)  /* no file locking where locking should be */
 #define FLOCKEX(fd) USE_LOCK((fd), LOCK_EX)
 #define FUNLOCK(fd) USE_LOCK((fd), LOCK_UN)
 #endif
@@ -383,14 +390,19 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 /* =============== Debugging macro system =============== */
 
 #ifndef ERRMAC_INSTANCE
-#define ERRMAC_INSTANCE "\tzx"
-/*#define ERRMAC_INSTANCE "zxid"*/
-/*extern char* instance;*/
+/*#define ERRMAC_INSTANCE "\tzx"*/
+#define ERRMAC_INSTANCE zx_instance
+extern char* zx_instance;
 #endif
 
+#define ZX_DEBUG_MASK       0x0f
+#define ZXID_INOUT          0x10
+#define MOD_AUTH_SAML_INOUT 0x20
+#define CURL_INOUT          0x40   /* Back Channel */
+
 extern int zx_debug;  /* Defined in zxidlib.c */
-#define D(format,...) (void)(zx_debug && (fprintf(stderr, "t %9s:%-3d %-16s %s d " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))
-/*#define D(format,...) (void)(zx_debug && (fprintf(stderr, "t%x %9s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))*/
+#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t %10s:%-3d %-16s %s d " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))
+/*#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t%x %10s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))*/
 #define DD(format,...)  /* Documentative */
 
 int hexdmp(char* msg, char* p, int len, int max);
@@ -399,13 +411,13 @@ int hexdump(char* msg, char* p, char* lim, int max);
 #define HEXDUMP(msg, p, lim, max) (zx_debug > 1 && hexdump((msg), (p), (lim), (max)))
 #define DHEXDUMP(msg, p, lim, max) /* Disabled hex dump */
 
-#define ERR(format,...) (fprintf(stderr, "t %9s:%-3d %-16s %s E " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
-/*#define ERR(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))*/
-#define INFO(format,...) (fprintf(stderr, "t%x %9s:%-3d %-16s %s I " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
+#define ERR(format,...) (fprintf(stderr, "t %10s:%-3d %-16s %s E " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
+/*#define ERR(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))*/
+#define INFO(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s I " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
 
 #define DUMP_CORE() ASSERT(0)
 #define NEVER(explanation,val) D(explanation,(val))
-#define NEVERNEVER(explanation,val) MB D(explanation,(val)); DUMP_CORE(); ME
+#define NEVERNEVER(explanation,val) MB ERR(explanation,(val)); DUMP_CORE(); ME
 
 #define CMDLINE(x)
 
@@ -500,7 +512,7 @@ extern char* assert_msg;
 # define CHK(cond,err) MB if ((cond)) { DIE_ACTION((err)); } ME
 # define ASSERTOP(a,op,b) MB if (!((a) op (b))) { DIE_ACTION(1); } ME
 # define FAIL(x,why) MB DIE_ACTION(1); ME
-# define SANITY_CHK(cond,...) MB if (!(cond)) DSNEVER("insanity %d",0); ME
+# define SANITY_CHK(cond,...) MB if (!(cond)) NEVER("insanity %d",0); ME
 #endif
 
 /* Sometimes compiler issues bogus "variable might be uninitialized"
@@ -641,5 +653,12 @@ extern char* assert_msg;
                                  *((p)++) = ((x) >> 8) & 0xff;  \
                                  *((p)++) =  (x) & 0xff; }      \
   else { NEVER("length %d too big to encode in BERLEN\n",(x)); }; ME
+
+#define PEM_CERT_START  "-----BEGIN CERTIFICATE-----"
+#define PEM_CERT_END    "-----END CERTIFICATE-----"
+#define PEM_RSA_PRIV_KEY_START  "-----BEGIN RSA PRIVATE KEY-----"
+#define PEM_RSA_PRIV_KEY_END    "-----END RSA PRIVATE KEY-----"
+#define PEM_DSA_PRIV_KEY_START  "-----BEGIN DSA PRIVATE KEY-----"
+#define PEM_DSA_PRIV_KEY_END    "-----END DSA PRIVATE KEY-----"
 
 #endif /* errmac.h */

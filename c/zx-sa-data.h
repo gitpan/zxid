@@ -183,7 +183,7 @@ struct zx_sa_Assertion_s {
   struct zx_sa_Subject_s* Subject;	/* {0,1} nada */
   struct zx_sa_Conditions_s* Conditions;	/* {0,1} nada */
   struct zx_sa_Advice_s* Advice;	/* {0,1} nada */
-  struct zx_elem_s* Statement;	/* {0,-1} sa:StatementAbstractType */
+  struct zx_sa_Statement_s* Statement;	/* {0,-1} nada */
   struct zx_sa_AuthnStatement_s* AuthnStatement;	/* {0,-1} nada */
   struct zx_sa_AuthzDecisionStatement_s* AuthzDecisionStatement;	/* {0,-1} nada */
   struct zx_sa_AttributeStatement_s* AttributeStatement;	/* {0,-1} nada */
@@ -204,7 +204,7 @@ struct zx_ds_Signature_s* zx_sa_Assertion_GET_Signature(struct zx_sa_Assertion_s
 struct zx_sa_Subject_s* zx_sa_Assertion_GET_Subject(struct zx_sa_Assertion_s* x, int n);
 struct zx_sa_Conditions_s* zx_sa_Assertion_GET_Conditions(struct zx_sa_Assertion_s* x, int n);
 struct zx_sa_Advice_s* zx_sa_Assertion_GET_Advice(struct zx_sa_Assertion_s* x, int n);
-struct zx_elem_s* zx_sa_Assertion_GET_Statement(struct zx_sa_Assertion_s* x, int n);
+struct zx_sa_Statement_s* zx_sa_Assertion_GET_Statement(struct zx_sa_Assertion_s* x, int n);
 struct zx_sa_AuthnStatement_s* zx_sa_Assertion_GET_AuthnStatement(struct zx_sa_Assertion_s* x, int n);
 struct zx_sa_AuthzDecisionStatement_s* zx_sa_Assertion_GET_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n);
 struct zx_sa_AttributeStatement_s* zx_sa_Assertion_GET_AttributeStatement(struct zx_sa_Assertion_s* x, int n);
@@ -228,7 +228,7 @@ struct zx_ds_Signature_s* zx_sa_Assertion_POP_Signature(struct zx_sa_Assertion_s
 struct zx_sa_Subject_s* zx_sa_Assertion_POP_Subject(struct zx_sa_Assertion_s* x);
 struct zx_sa_Conditions_s* zx_sa_Assertion_POP_Conditions(struct zx_sa_Assertion_s* x);
 struct zx_sa_Advice_s* zx_sa_Assertion_POP_Advice(struct zx_sa_Assertion_s* x);
-struct zx_elem_s* zx_sa_Assertion_POP_Statement(struct zx_sa_Assertion_s* x);
+struct zx_sa_Statement_s* zx_sa_Assertion_POP_Statement(struct zx_sa_Assertion_s* x);
 struct zx_sa_AuthnStatement_s* zx_sa_Assertion_POP_AuthnStatement(struct zx_sa_Assertion_s* x);
 struct zx_sa_AuthzDecisionStatement_s* zx_sa_Assertion_POP_AuthzDecisionStatement(struct zx_sa_Assertion_s* x);
 struct zx_sa_AttributeStatement_s* zx_sa_Assertion_POP_AttributeStatement(struct zx_sa_Assertion_s* x);
@@ -240,7 +240,7 @@ void zx_sa_Assertion_PUSH_Signature(struct zx_sa_Assertion_s* x, struct zx_ds_Si
 void zx_sa_Assertion_PUSH_Subject(struct zx_sa_Assertion_s* x, struct zx_sa_Subject_s* y);
 void zx_sa_Assertion_PUSH_Conditions(struct zx_sa_Assertion_s* x, struct zx_sa_Conditions_s* y);
 void zx_sa_Assertion_PUSH_Advice(struct zx_sa_Assertion_s* x, struct zx_sa_Advice_s* y);
-void zx_sa_Assertion_PUSH_Statement(struct zx_sa_Assertion_s* x, struct zx_elem_s* y);
+void zx_sa_Assertion_PUSH_Statement(struct zx_sa_Assertion_s* x, struct zx_sa_Statement_s* y);
 void zx_sa_Assertion_PUSH_AuthnStatement(struct zx_sa_Assertion_s* x, struct zx_sa_AuthnStatement_s* y);
 void zx_sa_Assertion_PUSH_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, struct zx_sa_AuthzDecisionStatement_s* y);
 void zx_sa_Assertion_PUSH_AttributeStatement(struct zx_sa_Assertion_s* x, struct zx_sa_AttributeStatement_s* y);
@@ -256,7 +256,7 @@ void zx_sa_Assertion_PUT_Signature(struct zx_sa_Assertion_s* x, int n, struct zx
 void zx_sa_Assertion_PUT_Subject(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Subject_s* y);
 void zx_sa_Assertion_PUT_Conditions(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Conditions_s* y);
 void zx_sa_Assertion_PUT_Advice(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Advice_s* y);
-void zx_sa_Assertion_PUT_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_elem_s* y);
+void zx_sa_Assertion_PUT_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Statement_s* y);
 void zx_sa_Assertion_PUT_AuthnStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AuthnStatement_s* y);
 void zx_sa_Assertion_PUT_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AuthzDecisionStatement_s* y);
 void zx_sa_Assertion_PUT_AttributeStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AttributeStatement_s* y);
@@ -268,7 +268,7 @@ void zx_sa_Assertion_ADD_Signature(struct zx_sa_Assertion_s* x, int n, struct zx
 void zx_sa_Assertion_ADD_Subject(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Subject_s* z);
 void zx_sa_Assertion_ADD_Conditions(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Conditions_s* z);
 void zx_sa_Assertion_ADD_Advice(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Advice_s* z);
-void zx_sa_Assertion_ADD_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_elem_s* z);
+void zx_sa_Assertion_ADD_Statement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Statement_s* z);
 void zx_sa_Assertion_ADD_AuthnStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AuthnStatement_s* z);
 void zx_sa_Assertion_ADD_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AuthzDecisionStatement_s* z);
 void zx_sa_Assertion_ADD_AttributeStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AttributeStatement_s* z);
@@ -1294,6 +1294,57 @@ void zx_sa_ProxyRestriction_ADD_Audience(struct zx_sa_ProxyRestriction_s* x, int
 void zx_sa_ProxyRestriction_DEL_Audience(struct zx_sa_ProxyRestriction_s* x, int n);
 
 void zx_sa_ProxyRestriction_REV_Audience(struct zx_sa_ProxyRestriction_s* x);
+
+#endif
+/* -------------------------- sa_Statement -------------------------- */
+/* refby( zx_sa_Assertion_s ) */
+#ifndef zx_sa_Statement_EXT
+#define zx_sa_Statement_EXT
+#endif
+
+struct zx_sa_Statement_s* zx_DEC_sa_Statement(struct zx_ctx* c, struct zx_ns_s* ns);
+struct zx_sa_Statement_s* zx_NEW_sa_Statement(struct zx_ctx* c);
+void zx_FREE_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, int free_strs);
+#ifdef ZX_ENA_AUX
+struct zx_sa_Statement_s* zx_DEEP_CLONE_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, int dup_strs);
+void zx_DUP_STRS_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x);
+int zx_WALK_SO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zx_WALK_WO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+#endif
+int zx_LEN_SO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x);
+int zx_LEN_WO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x);
+char* zx_ENC_SO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, char* p);
+char* zx_ENC_WO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, char* p);
+struct zx_str* zx_EASY_ENC_SO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x);
+struct zx_str* zx_EASY_ENC_WO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x);
+
+struct zx_sa_Statement_s {
+  ZX_ELEM_EXT
+  zx_sa_Statement_EXT
+  struct zx_xac_Response_s* Response;	/* {0,-1}  */
+  struct zx_str* type;	/* {0,1} attribute xs:string */
+};
+
+#ifdef ZX_ENA_GETPUT
+struct zx_str* zx_sa_Statement_GET_type(struct zx_sa_Statement_s* x);
+
+struct zx_xac_Response_s* zx_sa_Statement_GET_Response(struct zx_sa_Statement_s* x, int n);
+
+int zx_sa_Statement_NUM_Response(struct zx_sa_Statement_s* x);
+
+struct zx_xac_Response_s* zx_sa_Statement_POP_Response(struct zx_sa_Statement_s* x);
+
+void zx_sa_Statement_PUSH_Response(struct zx_sa_Statement_s* x, struct zx_xac_Response_s* y);
+
+void zx_sa_Statement_PUT_type(struct zx_sa_Statement_s* x, struct zx_str* y);
+
+void zx_sa_Statement_PUT_Response(struct zx_sa_Statement_s* x, int n, struct zx_xac_Response_s* y);
+
+void zx_sa_Statement_ADD_Response(struct zx_sa_Statement_s* x, int n, struct zx_xac_Response_s* z);
+
+void zx_sa_Statement_DEL_Response(struct zx_sa_Statement_s* x, int n);
+
+void zx_sa_Statement_REV_Response(struct zx_sa_Statement_s* x);
 
 #endif
 /* -------------------------- sa_Subject -------------------------- */

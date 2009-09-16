@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: wsfraw.i,v 1.4 2006/11/19 06:19:40 sampo Exp $
+ * $Id: wsfraw.i,v 1.5 2009-08-30 15:09:26 sampo Exp $
  * 14.9.2006, created --Sampo
  */
 %module "Net::WSF::Raw"

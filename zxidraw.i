@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidraw.i,v 1.3 2006/11/19 06:19:40 sampo Exp $
+ * $Id: zxidraw.i,v 1.4 2009-08-30 15:09:26 sampo Exp $
  * 31.8.2006, created --Sampo
  */
 %module zxidraw

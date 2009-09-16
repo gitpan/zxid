@@ -1,8 +1,46 @@
 # zxid/Changes
-# $Id: Changes,v 1.20 2008-05-26 15:28:44 sampo Exp $
+# $Id: Changes,v 1.33 2009-09-16 10:14:57 sampo Exp $
 # Change log, minor credits, and release history
 
-zxid-0.27:: 20.5.2008
+zxid-0.33:: 9.9.2009
+    - Removed apache check from defalut make
+    - Continued refactoring README.zxid to separate documents
+    - Changed configuration file reading so that config file is (re)read
+      whenever PATH is supplied, but not if PATH is supplied in file itself.
+    - Added dummy PDP
+    - Added zxcot tool
+    - Fixed zxdecode tool and added html parsing support
+    - Added xml-pretty.pl tool
+    - Added Auto-Cert feature to generate self signed certificates on the fly
+    - Added optional HMAC chaning code to the log format
+    - Added attribute broker and PEP features
+    - Fixed relay state handling in mod_auth_saml so you land on right protected content page
+    - Added support for zxid_simple() returing JSON or Query String in addition to traditional LDIF
+    - Added preliminary and incomplete CARML support (see Identity Governance Framework - IGF)
+    - Fixed innumerous bugs in mod_auth_saml
+    - Added setting REMOTE_USER to mod_auth_saml
+zxid-0.32:: 25.3.2009
+    - Fixed Java compile
+zxid-0.31:: 15.11.2008
+    - Fixed validation of signatures in redirect binding
+    - Added logging of relied upon information in redirect binding
+    - Fixed memory leak in SLO and MNI
+    - Refactored dispatch functions so CGI and others use same code
+    - Fixed redirect binding signature validation
+zxid-0.30:: 28.9.2008
+    - Fixed some type warnings
+    - Fixed core dump in mod_auth_saml  without query string
+    - Fixed redirect hack to cope with the query string
+zxid-0.29:: 24.9.2008
+    - Fixed bug in redirect hack
+    - Added ANON_OK
+    - Added REQUIRED_AUTHNCTX
+    - Added IDP_SEL_PAGE
+    - Debugged and tested the mod_auth_saml Real World Example
+zxid-0.28:: 18.9.2008
+    - Fixed some Apache documentation issues
+    - Added redirect hack to allow mapping imposed URLs to ZXID native URLs)
+zxid-0.27:: 17.9.2008
     - Added BSDmakefile hack, suggested by Slaven Rezic (slaven at rezic.de)
     - Added NON_STANDARD_ENTITYID option
     - Added precheck to quickly check main compliation and linking problems

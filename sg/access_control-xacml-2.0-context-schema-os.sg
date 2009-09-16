@@ -1,6 +1,6 @@
 # zxid/sg/access_control-xacml-2.0-context-schema-os.sg
 # Slightly edited, 3.3.2007, Sampo Kellomaki (sampo@iki.fi)
-# $Id: access_control-xacml-2.0-context-schema-os.sg,v 1.2 2007/03/05 07:41:31 sampo Exp $
+# $Id: access_control-xacml-2.0-context-schema-os.sg,v 1.3 2009-08-25 16:22:45 sampo Exp $
 
 target(xac, urn:oasis:names:tc:xacml:2.0:context:schema:os)
 import(xa,  urn:oasis:names:tc:xacml:2.0:policy:schema:os, http://docs.oasis-open.org/xacml/access_control-xacml-2.0-policy-schema-os.xsd)
@@ -55,10 +55,11 @@ Attribute       -> %xac:AttributeType
   ;
 
 AttributeValue -> %xac:AttributeValueType
-%AttributeValueType:
-  any*  processContents(lax)
-  @any? # ns(##any)
-  ;
+#%AttributeValueType:
+#  any*  processContents(lax)
+#  @any? # ns(##any)
+#  ;
+%AttributeValueType: base(xs:string)  ;  # Sampo: we need some real world content
 
 Result -> %xac:ResultType
 %ResultType:

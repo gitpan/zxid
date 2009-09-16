@@ -1,16 +1,19 @@
 /* zxidecp.c  -  Handwritten functions for implementing Enhanced Client Proxy and SP
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidecp.c,v 1.8 2007/03/28 20:31:54 sampo Exp $
+ * $Id: zxidecp.c,v 1.10 2008-10-08 03:56:55 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
+ * 7.10.2008, added documentation --Sampo
  *
  * See: zxid_sp_soap_dispatch() in zxidslo.c for handling PAOS response
+ *
+ * If you do not know what PAOS, ECP or LECP means, you should read SAML2 Profiles specification.
  */
 
 #include <stdio.h>
@@ -22,6 +25,10 @@
 #include "saml2.h"
 
 extern char **environ;
+
+/*() Generate SOAP headers for use with PAOS carried SAML2 ECP profile AuthnRequest.
+ *
+ * If you do not know what PAOS, ECP or LECP means, you should read [SAML2bind] specification. */
 
 /* Called by:  zxid_lecp_check */
 struct zx_paos_Request_s* zxid_mk_paos_Request_hdr(struct zxid_conf* cf)
@@ -35,8 +42,13 @@ struct zx_paos_Request_s* zxid_mk_paos_Request_hdr(struct zxid_conf* cf)
   return hdr;
 }
 
-/* Build IDPList of IDPEntry(s) from the IdPs know to us at the moment (our CoT).
- * Can be used for ECP and IdP proxying. */
+/*() Build IDPList of IDPEntry(s) from the IdPs know to us at the moment (our CoT).
+ * Can be used for ECP and IdP proxying.
+ *
+ * cf:: ZXID configuration object, used to locate the CoT directory (PATH
+ *     configuration option) and for memory allocation
+ * binding:: The SSO protocol binding the qualifying IdPs MUST support, or 0 if anything goes
+ * return:: IdP list data structure or 0 on failure */
 
 /* Called by:  zxid_mk_ecp_Request_hdr */
 struct zx_sp_IDPList_s* zxid_mk_idp_list(struct zxid_conf* cf, char* binding)
@@ -75,6 +87,10 @@ struct zx_sp_IDPList_s* zxid_mk_idp_list(struct zxid_conf* cf, char* binding)
   return idp_list;
 }
 
+/*() Generate headers for use with Liberty ID-FF 1.2 LECP carried AuthnRequest.
+ *
+ * If you do not know what PAOS, ECP or LECP means, you should read [SAML2bind] specification. */
+
 /* Called by:  zxid_lecp_check */
 struct zx_ecp_Request_s* zxid_mk_ecp_Request_hdr(struct zxid_conf* cf)
 {
@@ -90,7 +106,16 @@ struct zx_ecp_Request_s* zxid_mk_ecp_Request_hdr(struct zxid_conf* cf)
 
 /* ============== LECP or ECP ============== */
 
-/* Called by:  main x2, zxid_simple_cf x2 */
+/*() Check for ECP indications in HTTP request headers and initiate
+ * PAOS based Single Sign On, i.e AuthnRequest. This is part of the
+ * SAML2 Enhanced Client Proxy profile.
+ *
+ * Limitation:: Current (2008) code only works in CGI environment due to
+ *     reliance on environment variables. (*** fixme)
+ *
+ * If you do not know what PAOS, ECP or LECP means, you should read [SAML2bind] specification. */
+
+/* Called by:  main x4, zxid_simple_no_ses_cf x2 */
 struct zx_str* zxid_lecp_check(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   struct zx_e_Envelope_s* se;

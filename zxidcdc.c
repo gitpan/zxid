@@ -1,14 +1,15 @@
 /* zxidcdc.c  -  Handwritten functions for Common Domain Cookie handling at SP
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidcdc.c,v 1.3 2007-10-23 18:26:20 sampo Exp $
+ * $Id: zxidcdc.c,v 1.5 2008-10-08 03:56:55 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
+ * 7.10.2008, added documentation --Sampo
  */
 
 #include <string.h>
@@ -21,7 +22,13 @@
 
 /* ============== CDC ============== */
 
-/* Called by:  main, zxid_simple_cf */
+/*() Read Common Domain Cookie and formulate HTTP redirection to pass it back.
+ *
+ * Limitations:: In its current form (2008) this function only works for CGI scripts. (*** fix me)
+ *
+ * The SAML CDC is a standards based method for SSO IdP discovery. */
+
+/* Called by:  main x2, zxid_simple_no_ses_cf */
 int zxid_cdc_read(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   char* p;
@@ -59,7 +66,12 @@ int zxid_cdc_read(struct zxid_conf* cf, struct zxid_cgi* cgi)
   return 0;
 }
 
-/* Called by:  main, zxid_simple_cf */
+/*() Process second part of Common Domain Cookie redirection.
+ * See zxid_cdc_read() for first part.
+ *
+ * The SAML CDC is a standards based method for SSO IdP discovery. */
+
+/* Called by:  main x2, zxid_simple_no_ses_cf */
 int zxid_cdc_check(struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   int len;

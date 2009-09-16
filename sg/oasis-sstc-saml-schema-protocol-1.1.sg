@@ -1,6 +1,6 @@
 # zxid/sg/oasis-sstc-saml-schema-protocol-1.1.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: oasis-sstc-saml-schema-protocol-1.1.sg,v 1.1 2006/09/06 00:27:38 sampo Exp $
+# $Id: oasis-sstc-saml-schema-protocol-1.1.sg,v 1.2 2009-09-05 02:23:41 sampo Exp $
 
 target(sp11, urn:oasis:names:tc:SAML:1.0:protocol)
 

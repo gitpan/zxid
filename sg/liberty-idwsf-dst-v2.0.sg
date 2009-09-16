@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-dst-v2.0.sg
 # Slightly edited, 3.3.2007, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-dst-v2.0.sg,v 1.1 2007/03/04 08:24:58 sampo Exp $
+# $Id: liberty-idwsf-dst-v2.0.sg,v 1.2 2009-09-05 02:23:41 sampo Exp $
 # N.B. This schema is meant to be included from other schemas. It is not standalone.
 
 #include(liberty-idwsf-utility-v2.0.xsd)

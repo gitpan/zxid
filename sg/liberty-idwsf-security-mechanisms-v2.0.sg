@@ -1,7 +1,7 @@
 # zxid/sg/liberty-idwsf-security-mechanisms-v2.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
 # 10.2.2007, added sa:Assertion as potential security token type --Sampo
-# $Id: liberty-idwsf-security-mechanisms-v2.0.sg,v 1.5 2007-09-28 19:57:43 sampo Exp $
+# $Id: liberty-idwsf-security-mechanisms-v2.0.sg,v 1.7 2009-08-25 16:22:45 sampo Exp $
 
 target(sec, urn:liberty:security:2006-08)
 ns(sa,     urn:oasis:names:tc:SAML:2.0:assertion)
@@ -10,13 +10,14 @@ ns(ff12,   urn:liberty:iff:2003-08)
 
 TokenPolicy	 -> %sec:TokenPolicyType
 %TokenPolicyType:
-  any?  processContents(lax)
+  any*  processContents(lax)
   @validUntil?	 -> %xs:dateTime
   @issueTo?	 -> %xs:anyURI
   @type?	 -> %xs:anyURI
   @wantDSEPR?    -> %xs:boolean
-  @any
   ;
+
+#   @any*
 
 TransitedProvider	 -> %sec:TransitedProviderType
 %TransitedProviderType:	 base(xs:anyURI)

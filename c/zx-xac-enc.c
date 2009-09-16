@@ -326,11 +326,8 @@ int zx_LEN_SO_xac_Attribute(struct zx_ctx* c, struct zx_xac_Attribute_s* x )
   int len = 0;
 #endif
   
-  {
-      struct zx_xac_AttributeValue_s* e;
-      for (e = x->AttributeValue; e; e = (struct zx_xac_AttributeValue_s*)e->gg.g.n)
-	  len += zx_LEN_SO_xac_AttributeValue(c, e);
-  }
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_SO_simple_elem(c,se, sizeof("xac:AttributeValue")-1, zx_ns_tab+zx_xmlns_ix_xac);
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -368,11 +365,8 @@ int zx_LEN_WO_xac_Attribute(struct zx_ctx* c, struct zx_xac_Attribute_s* x )
   int len = 0;
 #endif
   
-  {
-      struct zx_xac_AttributeValue_s* e;
-      for (e = x->AttributeValue; e; e = (struct zx_xac_AttributeValue_s*)e->gg.g.n)
-	  len += zx_LEN_WO_xac_AttributeValue(c, e);
-  }
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_WO_simple_elem(c, se, sizeof("AttributeValue")-1);
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -409,11 +403,8 @@ char* zx_ENC_SO_xac_Attribute(struct zx_ctx* c, struct zx_xac_Attribute_s* x, ch
   /* root node has no begin tag */
 #endif
   
-  {
-      struct zx_xac_AttributeValue_s* e;
-      for (e = x->AttributeValue; e; e = (struct zx_xac_AttributeValue_s*)e->gg.g.n)
-	  p = zx_ENC_SO_xac_AttributeValue(c, e, p);
-  }
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(c, se, p, "xac:AttributeValue", sizeof("xac:AttributeValue")-1, zx_ns_tab+zx_xmlns_ix_xac);
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
   
@@ -508,224 +499,6 @@ struct zx_str* zx_EASY_ENC_WO_xac_Attribute(struct zx_ctx* c, struct zx_xac_Attr
   len = zx_LEN_WO_xac_Attribute(c, x );
   buf = ZX_ALLOC(c, len+1);
   return zx_easy_enc_common(c, zx_ENC_WO_xac_Attribute(c, x, buf ), buf, len);
-}
-
-
-
-
-
-
-#ifdef EL_NAME
-#undef EL_NAME
-#endif
-#ifdef EL_STRUCT
-#undef EL_STRUCT
-#endif
-#ifdef EL_NS
-#undef EL_NS
-#endif
-#ifdef EL_TAG
-#undef EL_TAG
-#endif
-
-#define EL_NAME   xac_AttributeValue
-#define EL_STRUCT zx_xac_AttributeValue_s
-#define EL_NS     xac
-#define EL_TAG    AttributeValue
-
-#ifndef MAYBE_UNUSED
-#define MAYBE_UNUSED   /* May appear as unused variable, but is needed by some generated code. */
-#endif
-
-#if 0
-#define ENC_LEN_DEBUG(x,tag,len) D("x=%p tag(%s) len=%d",(x),(tag),(len))
-#define ENC_LEN_DEBUG_BASE char* enc_base = p
-#else
-#define ENC_LEN_DEBUG(x,tag,len)
-#define ENC_LEN_DEBUG_BASE
-#endif
-
-/* FUNC(zx_LEN_SO_xac_AttributeValue) */
-
-/* Compute length of an element (and its subelements). The XML attributes
- * and elements are processed in schema order. */
-
-/* Called by: */
-int zx_LEN_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x )
-{
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se MAYBE_UNUSED;
-#if 1 /* NORMALMODE */
-  /* *** in simple_elem case should output ns prefix from ns node. */
-  int len = sizeof("<xac:AttributeValue")-1 + 1 + sizeof("</xac:AttributeValue>")-1;
-  if (c->inc_ns_len)
-    len += zx_len_inc_ns(c, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_xac, &pop_seen);
-
-
-#else
-  /* root node has no begin tag */
-  int len = 0;
-#endif
-  
-
-
-  len += zx_len_so_common(c, &x->gg);
-  zx_pop_seen(pop_seen);
-  ENC_LEN_DEBUG(x, "xac:AttributeValue", len);
-  return len;
-}
-
-/* FUNC(zx_LEN_WO_xac_AttributeValue) */
-
-/* Compute length of an element (and its subelements). The XML attributes
- * and elements are processed in wire order and no assumptions
- * are made about namespace prefixes. */
-
-/* Called by: */
-int zx_LEN_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x )
-{
-  struct zx_ns_s* pop_seen = 0;
-  struct zx_elem_s* se MAYBE_UNUSED;
-#if 1 /* NORMALMODE */
-  int len = 1 + sizeof("AttributeValue")-1 + 1 + 2 + sizeof("AttributeValue")-1 + 1;
-  
-  if (x->gg.g.ns && x->gg.g.ns->prefix_len)
-    len += (x->gg.g.ns->prefix_len + 1) * 2;
-  if (c->inc_ns_len)
-    len += zx_len_inc_ns(c, &pop_seen);
-  len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-
-
-#else
-  /* root node has no begin tag */
-  int len = 0;
-#endif
-  
-
-
-  len += zx_len_wo_common(c, &x->gg); 
-  zx_pop_seen(pop_seen);
-  ENC_LEN_DEBUG(x, "xac:AttributeValue", len);
-  return len;
-}
-
-/* FUNC(zx_ENC_SO_xac_AttributeValue) */
-
-/* Render element into string. The XML attributes and elements are
- * processed in schema order. This is what you generally want for
- * rendering new data structure to a string. The wo pointers are not used. */
-
-/* Called by: */
-char* zx_ENC_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, char* p )
-{
-  struct zx_elem_s* se MAYBE_UNUSED;
-  ENC_LEN_DEBUG_BASE;
-#if 1 /* NORMALMODE */
-  struct zx_ns_s* pop_seen = 0;
-  /* *** in simple_elem case should output ns prefix from ns node. */
-  ZX_OUT_TAG(p, "<xac:AttributeValue");
-  if (c->inc_ns)
-    p = zx_enc_inc_ns(c, p, &pop_seen);
-  p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_xac, &pop_seen);
-
-
-  p = zx_enc_unknown_attrs(p, x->gg.any_attr);
-#else
-  /* root node has no begin tag */
-#endif
-  
-
-  p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
-  
-#if 1 /* NORMALMODE */
-  ZX_OUT_CLOSE_TAG(p, "</xac:AttributeValue>");
-  zx_pop_seen(pop_seen);
-#else
-  /* root node has no end tag either */
-#endif
-  ENC_LEN_DEBUG(x, "xac:AttributeValue", p-enc_base);
-  return p;
-}
-
-/* FUNC(zx_ENC_WO_xac_AttributeValue) */
-
-/* Render element into string. The XML attributes and elements are
- * processed in wire order by chasing wo pointers. This is what you want for
- * validating signatures on other people's XML documents. */
-
-/* Called by: */
-char* zx_ENC_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, char* p )
-{
-  struct zx_elem_s* kid;
-  ENC_LEN_DEBUG_BASE;
-#if 1 /* NORMALMODE */
-  struct zx_ns_s* pop_seen = 0;
-  char* q;
-  char* qq;
-  ZX_OUT_CH(p, '<');
-  q = p;
-  if (x->gg.g.ns && x->gg.g.ns->prefix_len) {
-    ZX_OUT_MEM(p, x->gg.g.ns->prefix, x->gg.g.ns->prefix_len);
-    ZX_OUT_CH(p, ':');
-  }
-  ZX_OUT_MEM(p, "AttributeValue", sizeof("AttributeValue")-1);
-  qq = p;
-
-  /* *** sort the namespaces */
-  if (c->inc_ns)
-    zx_add_inc_ns(c, &pop_seen);
-  zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
-
-  p = zx_enc_seen(p, pop_seen); 
-
-  p = zx_enc_unknown_attrs(p, x->gg.any_attr);
-#else
-  /* root node has no begin tag */
-#endif
-  
-  for (kid = x->gg.kids; kid; kid = ((struct zx_elem_s*)(kid->g.wo)))
-    p = zx_ENC_WO_any_elem(c, kid, p);
-  
-#if 1 /* NORMALMODE */
-  ZX_OUT_CH(p, '<');
-  ZX_OUT_CH(p, '/');
-  ZX_OUT_MEM(p, q, qq-q);
-  ZX_OUT_CH(p, '>');
-  zx_pop_seen(pop_seen);
-#else
-  /* root node has no end tag either */
-#endif
-  ENC_LEN_DEBUG(x, "xac:AttributeValue", p-enc_base);
-  return p;
-}
-
-/* FUNC(zx_EASY_ENC_SO_xac_AttributeValue) */
-
-/* Called by: */
-struct zx_str* zx_EASY_ENC_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x )
-{
-  int len;
-  char* buf;
-  c->ns_tab = ZX_ALLOC(c, sizeof(zx_ns_tab));
-  memcpy(c->ns_tab, zx_ns_tab, sizeof(zx_ns_tab));
-  len = zx_LEN_SO_xac_AttributeValue(c, x );
-  buf = ZX_ALLOC(c, len+1);
-  return zx_easy_enc_common(c, zx_ENC_SO_xac_AttributeValue(c, x, buf ), buf, len);
-}
-
-/* FUNC(zx_EASY_ENC_WO_xac_AttributeValue) */
-
-/* Called by: */
-struct zx_str* zx_EASY_ENC_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x )
-{
-  int len;
-  char* buf;
-  c->ns_tab = ZX_ALLOC(c, sizeof(zx_ns_tab));
-  memcpy(c->ns_tab, zx_ns_tab, sizeof(zx_ns_tab));
-  len = zx_LEN_WO_xac_AttributeValue(c, x );
-  buf = ZX_ALLOC(c, len+1);
-  return zx_easy_enc_common(c, zx_ENC_WO_xac_AttributeValue(c, x, buf ), buf, len);
 }
 
 
@@ -1022,11 +795,8 @@ int zx_LEN_SO_xac_MissingAttributeDetail(struct zx_ctx* c, struct zx_xac_Missing
   int len = 0;
 #endif
   
-  {
-      struct zx_xac_AttributeValue_s* e;
-      for (e = x->AttributeValue; e; e = (struct zx_xac_AttributeValue_s*)e->gg.g.n)
-	  len += zx_LEN_SO_xac_AttributeValue(c, e);
-  }
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_SO_simple_elem(c,se, sizeof("xac:AttributeValue")-1, zx_ns_tab+zx_xmlns_ix_xac);
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -1064,11 +834,8 @@ int zx_LEN_WO_xac_MissingAttributeDetail(struct zx_ctx* c, struct zx_xac_Missing
   int len = 0;
 #endif
   
-  {
-      struct zx_xac_AttributeValue_s* e;
-      for (e = x->AttributeValue; e; e = (struct zx_xac_AttributeValue_s*)e->gg.g.n)
-	  len += zx_LEN_WO_xac_AttributeValue(c, e);
-  }
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    len += zx_LEN_WO_simple_elem(c, se, sizeof("AttributeValue")-1);
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -1105,11 +872,8 @@ char* zx_ENC_SO_xac_MissingAttributeDetail(struct zx_ctx* c, struct zx_xac_Missi
   /* root node has no begin tag */
 #endif
   
-  {
-      struct zx_xac_AttributeValue_s* e;
-      for (e = x->AttributeValue; e; e = (struct zx_xac_AttributeValue_s*)e->gg.g.n)
-	  p = zx_ENC_SO_xac_AttributeValue(c, e, p);
-  }
+  for (se = x->AttributeValue; se; se = (struct zx_elem_s*)se->g.n)
+    p = zx_ENC_SO_simple_elem(c, se, p, "xac:AttributeValue", sizeof("xac:AttributeValue")-1, zx_ns_tab+zx_xmlns_ix_xac);
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
   

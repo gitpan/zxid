@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhrxmlwsc.c,v 1.8 2008-05-08 02:02:40 sampo Exp $
+ * $Id: zxidhrxmlwsc.c,v 1.10 2008-12-04 03:07:53 sampo Exp $
  *
  * 19.6.2007, created --Sampo
  *
@@ -53,6 +53,7 @@ struct hrxml_cgi {
   char* data;
 };
 
+/* Called by:  main */
 int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
 {
   char *p, *n, *v, *val, *name;
@@ -69,12 +70,12 @@ int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
     }
     for (; name < qs && *name <= ' '; ++name) ; /* Skip over initial whitespace before name */
     n = p = name;
-    URL_DECODE(name, p, qs);
+    URL_DECODE(p, name, qs);
     *p = 0;
     
     for (val = ++qs; *qs && *qs != '&'; ++qs) ; /* Skip over = and scan value (until '&') */
     v = p = val;
-    URL_DECODE(val, p, qs);
+    URL_DECODE(p, val, qs);
     if (*qs)
       ++qs;
     *p = 0;

@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-utility-v1.1.sg
 # Slightly edited, 14.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-utility-v1.1.sg,v 1.1 2006/09/15 01:30:09 sampo Exp $
+# $Id: liberty-idwsf-utility-v1.1.sg,v 1.2 2009-09-05 02:23:41 sampo Exp $
 
 %IDType:	 base(xs:string) ;
 %IDReferenceType:	 base(xs:string) ;

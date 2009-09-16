@@ -1,5 +1,5 @@
 #!/usr/local/bin/perl
-# $Id: test.pl,v 1.2 2006/09/06 02:33:06 sampo Exp $
+# $Id: test.pl,v 1.3 2009-09-07 16:13:02 sampo Exp $
 #use zxid;
 #print zxid_version_str();
 use Net::SAML;

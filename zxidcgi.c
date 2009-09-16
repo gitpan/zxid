@@ -1,15 +1,16 @@
 /* zxidcgi.c  -  Handwritten functions for parsing SP specific CGI options
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidcgi.c,v 1.16 2008-05-08 02:02:40 sampo Exp $
+ * $Id: zxidcgi.c,v 1.29 2009-09-05 02:23:41 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
  * 12.10.2007, added cookie scanning --Sampo
+ * 7.10.2008, added documentation --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
@@ -20,14 +21,29 @@
 #include "zxid.h"
 #include "zxidconf.h"
 
-/* ============== CGI Parsing ==============
- * N.B. This CGI parsing is very specific for needs of ZXID. It is not generic. */
+/* ============== CGI Parsing ============== */
 
-/* Called by:  main x2, zxid_new_cgi, zxid_simple_cf x3 */
+/*(i) Parse query string or form POST and detect parameters relevant for ZXID.
+ * N.B. This CGI parsing is very specific for needs of ZXID. It is not generic.
+ *
+ * cgi:: Already allocated CGI structure where results of this function
+ *     are deposited. Note that this structure is not cleared. Thus it is
+ *     possible to call zxid_parse_cgi() multiple times to accumulate
+ *     results from multiple sources, e.g. foirst for query string, and then
+ *     for form POST.
+ * qs:: CGI formatted input. Usually query string or form POST content.
+ * return:: 0 on success. Other values reserved. Usually return value is
+ *     ignored as there really is no way for this function to fail. Unrecognized
+ *     CGI arguments are simply ignored with assumption that some other processing
+ *     layer will pick them up - hence no need to flag error. */
+
+/* Called by:  chkuid x3, main x4, zxid_new_cgi, zxid_simple_cf x3, zxid_simple_idp_pw_authn */
 int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
 {
   char *p, *n, *v, *val, *name;
-  DD("qs(%s) len=%d", qs, strlen(qs));
+  DD("qs(%s) len=%d", STRNULLCHK(qs), qs?strlen(qs):-1);
+  if (!qs)
+    return 0;
   while (*qs) {
     for (; *qs == '&'; ++qs) ;                  /* Skip over & or && */
     if (!*qs) break;
@@ -40,12 +56,21 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
     }
     for (; name < qs && *name <= ' '; ++name) ; /* Skip over initial whitespace before name */
     n = p = name;
-    URL_DECODE(name, p, qs);
+    URL_DECODE(p, name, qs);
     *p = 0;
     
     for (val = ++qs; *qs && *qs != '&'; ++qs) ; /* Skip over = and scan value (until '&') */
     v = p = val;
-    URL_DECODE(val, p, qs);
+    /* SAMLRequest and Response MUT NOT be URL decoded as the URL encoding
+     * is needed for redirect binding signature validation. See also unbase64_raw()
+     * for how these fields are URL decoded at later stage. */
+    if (n[0] != 'S' && n[0] != 'R'
+	|| strcmp(n, "SAMLRequest") && strcmp(n, "SAMLResponse")
+	&& strcmp(n, "SigAlg") && strcmp(n, "Signature") && strcmp(n, "RelayState"))
+      URL_DECODE(p, val, qs);
+    else
+      p = qs;
+
     if (*qs)
       ++qs;
     *p = 0;
@@ -53,10 +78,9 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
     switch (n[0]) {
     case 'o':
       if (!n[1]) { cgi->op = v[0];    break; }
+      if (n[1] = 'k' && !n[2]) { cgi->ok = v;  break; }  /* ok button */
       goto unknown;
     case 's': cgi->sid = v;           break;
-    case 'u': cgi->user = v;          break;
-    case 'p': cgi->pw = v;            break;
     case 'c': cgi->cdc = v;           break;
       
       /* The following two entity IDs, combined with various login buttons
@@ -82,7 +106,7 @@ set_eid:
       if (n[2])
 	cgi->eid = n+2;
       cgi->op = 'L';
-      DD("cgi: login eid(%s)", cgi->eid);
+      D("cgi: login eid(%s)", cgi->eid);
       break;
     case 'i':
       /* IdP and protocol index selection popup values are like P<eid>
@@ -95,15 +119,15 @@ set_eid:
       break;
     case 'f':  /* flags and (hidden) fields found in typical SP login form */
       switch (n[1]) {
-      case 'a': cgi->authn_ctx = v;       break;
-      case 'c': cgi->allow_create = v[0]; break;
-      case 'f': cgi->force_authn = v[0];  break;
+      case 'a': cgi->authn_ctx = v;       D("authn_ctx=%s", cgi->authn_ctx); break;
+      case 'c': cgi->allow_create = v[0]; D("allow_create=%c", cgi->allow_create); break;
+      case 'f': cgi->force_authn = v[0];  D("force_authn=%c", cgi->force_authn); break;
       case 'g': cgi->get_complete = v;    break;
       case 'h': cgi->pxy_count = v;       break;
 	/*case 'i': cgi->idp_list = v;        break;*/
       case 'm': cgi->matching_rule = v;   break;
-      case 'n': cgi->nid_fmt = v;         break;
-      case 'p': cgi->ispassive = v[0];    break;
+      case 'n': cgi->nid_fmt = v;         D("nid_fmt=%s", cgi->nid_fmt); break;
+      case 'p': cgi->ispassive = v[0];    D("ispassive=%c", cgi->ispassive); break;
       case 'q': cgi->affil = v;           break;
       case 'r': cgi->rs = v;              break;
       case 'y': cgi->consent = v;         break;
@@ -118,6 +142,24 @@ set_eid:
       case 'u': cgi->op = n[1];           break;
       case 'n': cgi->newnym = v;          break;
       case 'e': cgi->enc_hint = v[0];     break;
+      }
+      break;
+    case 'a':
+      switch (n[1]) {
+      case 'l': cgi->op = n[2];           break;
+      case 'u': cgi->uid = v;             break;
+      case 'p': cgi->pw = v;              break;
+      case 'r': cgi->ssoreq = v;          break;
+      }
+      break;
+    case 'z':
+      switch (n[1]) {
+      case 'x':
+	switch (n[2]) {
+	case 'a': cgi->zxapp = v;         break;
+	case 'r': cgi->zxrfr = v;         break;
+	}
+	break;
       }
       break;
     case 'R':
@@ -139,7 +181,8 @@ set_eid:
       }
       if (!strcmp(n, "SAMLRequest")) {
 	cgi->saml_req = v;
-	cgi->op = 'Q';
+	if (!ONE_OF_2(cgi->op, 'p', 'F'))  /* Avoid redundant sigvfy and processing for IdP */
+	  cgi->op = 'Q';
 	break;
       }
       if (!strcmp(n, "SigAlg")) {
@@ -175,9 +218,19 @@ struct zxid_cgi* zxid_new_cgi(struct zxid_conf* cf, char* qs)
   return cgi;
 }
 
-/* For original Netscape cookie spec see: http://curl.haxx.se/rfc/cookie_spec.html (Oct2007) */
-/* ONE_COOKIE=aaa; ZXIDSES=S12cvd324; SOME_OTHER_COOKIE=... */
+/*() Try to extract session ID from a cookie. The extracted value, if any,
+ * will be deposited in cgi->sid. If no session ID is found, then cgi->sid
+ * is not modified. The name of the cookie is determined by configuration
+ * option ~SES_COOKIE_NAME~ (see zxidconf.h).
+ *
+ * For original Netscape cookie spec see: http://curl.haxx.se/rfc/cookie_spec.html (Oct2007)
+ *
+ * *Example*
+ *
+ *    ONE_COOKIE=aaa; ZXIDSES=S12cvd324; SOME_OTHER_COOKIE=...
+ */
 
+/* Called by:  chkuid, zxid_simple_cf */
 void zxid_get_sid_from_cookie(struct zxid_conf* cf, struct zxid_cgi* cgi, const char* cookie)
 {
   char* q;

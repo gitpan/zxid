@@ -91,7 +91,7 @@ struct zx_str* zx_EASY_ENC_WO_xac_Attribute(struct zx_ctx* c, struct zx_xac_Attr
 struct zx_xac_Attribute_s {
   ZX_ELEM_EXT
   zx_xac_Attribute_EXT
-  struct zx_xac_AttributeValue_s* AttributeValue;	/* {1,-1} nada */
+  struct zx_elem_s* AttributeValue;	/* {1,-1} xs:string */
   struct zx_str* AttributeId;	/* {1,1} attribute xs:anyURI */
   struct zx_str* DataType;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Issuer;	/* {0,1} attribute xs:string */
@@ -102,64 +102,25 @@ struct zx_str* zx_xac_Attribute_GET_AttributeId(struct zx_xac_Attribute_s* x);
 struct zx_str* zx_xac_Attribute_GET_DataType(struct zx_xac_Attribute_s* x);
 struct zx_str* zx_xac_Attribute_GET_Issuer(struct zx_xac_Attribute_s* x);
 
-struct zx_xac_AttributeValue_s* zx_xac_Attribute_GET_AttributeValue(struct zx_xac_Attribute_s* x, int n);
+struct zx_elem_s* zx_xac_Attribute_GET_AttributeValue(struct zx_xac_Attribute_s* x, int n);
 
 int zx_xac_Attribute_NUM_AttributeValue(struct zx_xac_Attribute_s* x);
 
-struct zx_xac_AttributeValue_s* zx_xac_Attribute_POP_AttributeValue(struct zx_xac_Attribute_s* x);
+struct zx_elem_s* zx_xac_Attribute_POP_AttributeValue(struct zx_xac_Attribute_s* x);
 
-void zx_xac_Attribute_PUSH_AttributeValue(struct zx_xac_Attribute_s* x, struct zx_xac_AttributeValue_s* y);
+void zx_xac_Attribute_PUSH_AttributeValue(struct zx_xac_Attribute_s* x, struct zx_elem_s* y);
 
 void zx_xac_Attribute_PUT_AttributeId(struct zx_xac_Attribute_s* x, struct zx_str* y);
 void zx_xac_Attribute_PUT_DataType(struct zx_xac_Attribute_s* x, struct zx_str* y);
 void zx_xac_Attribute_PUT_Issuer(struct zx_xac_Attribute_s* x, struct zx_str* y);
 
-void zx_xac_Attribute_PUT_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_xac_AttributeValue_s* y);
+void zx_xac_Attribute_PUT_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_elem_s* y);
 
-void zx_xac_Attribute_ADD_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_xac_AttributeValue_s* z);
+void zx_xac_Attribute_ADD_AttributeValue(struct zx_xac_Attribute_s* x, int n, struct zx_elem_s* z);
 
 void zx_xac_Attribute_DEL_AttributeValue(struct zx_xac_Attribute_s* x, int n);
 
 void zx_xac_Attribute_REV_AttributeValue(struct zx_xac_Attribute_s* x);
-
-#endif
-/* -------------------------- xac_AttributeValue -------------------------- */
-/* refby( zx_xac_Attribute_s zx_xac_MissingAttributeDetail_s ) */
-#ifndef zx_xac_AttributeValue_EXT
-#define zx_xac_AttributeValue_EXT
-#endif
-
-struct zx_xac_AttributeValue_s* zx_DEC_xac_AttributeValue(struct zx_ctx* c, struct zx_ns_s* ns);
-struct zx_xac_AttributeValue_s* zx_NEW_xac_AttributeValue(struct zx_ctx* c);
-void zx_FREE_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, int free_strs);
-#ifdef ZX_ENA_AUX
-struct zx_xac_AttributeValue_s* zx_DEEP_CLONE_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, int dup_strs);
-void zx_DUP_STRS_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x);
-int zx_WALK_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
-int zx_WALK_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
-#endif
-int zx_LEN_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x);
-int zx_LEN_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x);
-char* zx_ENC_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, char* p);
-char* zx_ENC_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x, char* p);
-struct zx_str* zx_EASY_ENC_SO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x);
-struct zx_str* zx_EASY_ENC_WO_xac_AttributeValue(struct zx_ctx* c, struct zx_xac_AttributeValue_s* x);
-
-struct zx_xac_AttributeValue_s {
-  ZX_ELEM_EXT
-  zx_xac_AttributeValue_EXT
-};
-
-#ifdef ZX_ENA_GETPUT
-
-
-
-
-
-
-
-
-
 
 #endif
 /* -------------------------- xac_Environment -------------------------- */
@@ -235,7 +196,7 @@ struct zx_str* zx_EASY_ENC_WO_xac_MissingAttributeDetail(struct zx_ctx* c, struc
 struct zx_xac_MissingAttributeDetail_s {
   ZX_ELEM_EXT
   zx_xac_MissingAttributeDetail_EXT
-  struct zx_xac_AttributeValue_s* AttributeValue;	/* {0,-1} nada */
+  struct zx_elem_s* AttributeValue;	/* {0,-1} xs:string */
   struct zx_str* AttributeId;	/* {1,1} attribute xs:anyURI */
   struct zx_str* DataType;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Issuer;	/* {0,1} attribute xs:string */
@@ -246,21 +207,21 @@ struct zx_str* zx_xac_MissingAttributeDetail_GET_AttributeId(struct zx_xac_Missi
 struct zx_str* zx_xac_MissingAttributeDetail_GET_DataType(struct zx_xac_MissingAttributeDetail_s* x);
 struct zx_str* zx_xac_MissingAttributeDetail_GET_Issuer(struct zx_xac_MissingAttributeDetail_s* x);
 
-struct zx_xac_AttributeValue_s* zx_xac_MissingAttributeDetail_GET_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n);
+struct zx_elem_s* zx_xac_MissingAttributeDetail_GET_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n);
 
 int zx_xac_MissingAttributeDetail_NUM_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x);
 
-struct zx_xac_AttributeValue_s* zx_xac_MissingAttributeDetail_POP_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x);
+struct zx_elem_s* zx_xac_MissingAttributeDetail_POP_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x);
 
-void zx_xac_MissingAttributeDetail_PUSH_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, struct zx_xac_AttributeValue_s* y);
+void zx_xac_MissingAttributeDetail_PUSH_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, struct zx_elem_s* y);
 
 void zx_xac_MissingAttributeDetail_PUT_AttributeId(struct zx_xac_MissingAttributeDetail_s* x, struct zx_str* y);
 void zx_xac_MissingAttributeDetail_PUT_DataType(struct zx_xac_MissingAttributeDetail_s* x, struct zx_str* y);
 void zx_xac_MissingAttributeDetail_PUT_Issuer(struct zx_xac_MissingAttributeDetail_s* x, struct zx_str* y);
 
-void zx_xac_MissingAttributeDetail_PUT_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_xac_AttributeValue_s* y);
+void zx_xac_MissingAttributeDetail_PUT_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_elem_s* y);
 
-void zx_xac_MissingAttributeDetail_ADD_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_xac_AttributeValue_s* z);
+void zx_xac_MissingAttributeDetail_ADD_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n, struct zx_elem_s* z);
 
 void zx_xac_MissingAttributeDetail_DEL_AttributeValue(struct zx_xac_MissingAttributeDetail_s* x, int n);
 
@@ -439,7 +400,7 @@ struct zx_xac_ResourceContent_s {
 
 #endif
 /* -------------------------- xac_Response -------------------------- */
-/* refby( zx_xasa_XACMLAuthzDecisionStatement_s ) */
+/* refby( zx_sa_Statement_s zx_xasa_XACMLAuthzDecisionStatement_s ) */
 #ifndef zx_xac_Response_EXT
 #define zx_xac_Response_EXT
 #endif

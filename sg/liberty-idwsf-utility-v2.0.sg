@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-utility-v2.0.sg
 # Slightly edited, 18.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-utility-v2.0.sg,v 1.2 2006/09/15 05:56:49 sampo Exp $
+# $Id: liberty-idwsf-utility-v2.0.sg,v 1.3 2009-09-05 02:23:41 sampo Exp $
 
 target(lu, urn:liberty:util:2006-08)
 

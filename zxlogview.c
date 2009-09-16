@@ -1,13 +1,14 @@
 /* zxlogview.c  -  Encrypted and signed log decoder
- * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxlogview.c,v 1.9 2008-04-14 04:23:58 sampo Exp $
+ * $Id: zxlogview.c,v 1.14 2009-08-30 15:09:26 sampo Exp $
  *
  * 19.11.2006, started --Sampo
+ * 29.8.2009, added hmac chaining field --Sampo
  *
  * TODO Ideas
  *
@@ -48,7 +49,7 @@
 CU8* help =
 "zxlogview  -  Decrypt logs and validate log signatures - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated idenity and Single Sign-On.\n\
-Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
@@ -77,10 +78,10 @@ char  log_symkey[20];
 
 char buf[4096];
 
-void test_mode(int* argc, char*** argv, char*** env);
+static void test_mode(int* argc, char*** argv, char*** env);
 
-/* Called by:  main x4 */
-void opt(int* argc, char*** argv, char*** env)
+/* Called by:  main x7 */
+static void opt(int* argc, char*** argv, char*** env)
 {
   int gotall;
   if (*argc <= 1) goto argerr;
@@ -204,7 +205,7 @@ void opt(int* argc, char*** argv, char*** env)
 }
 
 /* Called by:  opt */
-void test_mode(int* argc, char*** argv, char*** env)
+static void test_mode(int* argc, char*** argv, char*** env)
 {
   int gotall;
   struct zxid_conf* cf = zxid_new_conf(0);
@@ -247,7 +248,7 @@ void test_mode(int* argc, char*** argv, char*** env)
 }
 
 /* Called by:  main x3 */
-void zxlog_zsig_verify_print(struct zxid_conf* cf, int len, char* buf, char* se, char* p)
+static void zxlog_zsig_verify_print(struct zxid_conf* cf, int len, char* buf, char* se, char* p)
 {
   char sha1[20];
   char* sig;
@@ -297,6 +298,7 @@ void zxlog_zsig_verify_print(struct zxid_conf* cf, int len, char* buf, char* se,
 
 /* ============== M A I N ============== */
 
+/*(-) Control starts here */
 /* Called by: */
 int main(int argc, char** argv, char** env)
 {

@@ -49,6 +49,14 @@ public class zxid_ses {
     return zxidjniJNI.zxid_ses_sid_get(swigCPtr);
   }
 
+  public void setUid(String value) {
+    zxidjniJNI.zxid_ses_uid_set(swigCPtr, value);
+  }
+
+  public String getUid() {
+    return zxidjniJNI.zxid_ses_uid_get(swigCPtr);
+  }
+
   public void setNid(String value) {
     zxidjniJNI.zxid_ses_nid_set(swigCPtr, value);
   }
@@ -63,6 +71,14 @@ public class zxid_ses {
 
   public String getSesix() {
     return zxidjniJNI.zxid_ses_sesix_get(swigCPtr);
+  }
+
+  public void setAn_ctx(String value) {
+    zxidjniJNI.zxid_ses_an_ctx_set(swigCPtr, value);
+  }
+
+  public String getAn_ctx() {
+    return zxidjniJNI.zxid_ses_an_ctx_get(swigCPtr);
   }
 
   public void setNidfmt(char value) {
@@ -179,6 +195,15 @@ public class zxid_ses {
 
   public String getSso_a7n_buf() {
     return zxidjniJNI.zxid_ses_sso_a7n_buf_get(swigCPtr);
+  }
+
+  public void setAt(zxid_attr value) {
+    zxidjniJNI.zxid_ses_at_set(swigCPtr, zxid_attr.getCPtr(value));
+  }
+
+  public zxid_attr getAt() {
+    long cPtr = zxidjniJNI.zxid_ses_at_get(swigCPtr);
+    return (cPtr == 0) ? null : new zxid_attr(cPtr, false);
   }
 
   public zxid_ses() {

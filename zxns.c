@@ -1,17 +1,18 @@
 /* zxns.c  -  Namespace manipulation functions for generated (and other) code
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxns.c,v 1.4 2007-10-11 04:54:25 sampo Exp $
+ * $Id: zxns.c,v 1.7 2009-08-22 13:56:34 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 8.8.2006,  moved lookup functions to generated code --Sampo
  * 12.8.2006, added special scanning of xmlns to avoid backtracking elem recognition --Sampo
  * 26.8.2006, significant Common Subexpression Elimination (CSE) --Sampo
  * 30.9.2007, rework namespaces, esp. previously unknown namespaces  --Sampo
+ * 7.10.2008, added documentation --Sampo
  */
 
 #include <string.h>
@@ -36,7 +37,7 @@ void zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_any_elem_s* x, char* nam, i
   x->name_len = namlen;
 }
 
-/* Given known namespace, does the prefix refer to it, either natively or through an alias. */
+/*() Given known namespace, does the prefix refer to it, either natively or through an alias. */
 
 /* Called by: */
 int zx_is_ns_prefix(struct zx_ns_s* ns, int len, char* prefix)
@@ -52,7 +53,7 @@ int zx_is_ns_prefix(struct zx_ns_s* ns, int len, char* prefix)
   return 0;
 }
 
-/* Called by:  zx_fix_any_elem_dec, zx_init_tok_tab, zx_xmlns_decl */
+/* Called by:  zx_fix_any_elem_dec, zx_init_tok_tab, zx_prefix_seen_whine, zx_xmlns_decl, zxsig_validate */
 struct zx_ns_s* zx_locate_ns_by_prefix(struct zx_ctx* c, int len, char* prefix)
 {
   struct zx_ns_s* ns;
@@ -90,6 +91,7 @@ static struct zx_ns_s* zx_locate_ns_by_url(struct zx_ctx* c, int len, char* url)
   return 0;
 }
 
+/* Called by:  zx_prefix_seen_whine, zx_xmlns_decl */
 static struct zx_ns_s* zx_new_ns(struct zx_ctx* c, int prefix_len, char* prefix, int url_len, char* url)
 {
   struct zx_ns_s* ns = ZX_ZALLOC(c, struct zx_ns_s);
@@ -99,6 +101,10 @@ static struct zx_ns_s* zx_new_ns(struct zx_ctx* c, int prefix_len, char* prefix,
   ns->url = url;
   return ns;
 }
+
+/*() Process XML namespace declaration, trying to match it by its declared namespace URI.
+ * Should this fail, we will attempt to match by customary (at least in our opinion)
+ * namespace prefixes. If deplocate namespaces are detected, they are handled as aliases. */
 
 /* Called by:  zx_push_seen x2 */
 static struct zx_ns_s* zx_xmlns_decl(struct zx_ctx* c, int prefix_len, char* prefix, int url_len, char* url)
@@ -136,7 +142,8 @@ struct zx_ns_s* zx_prefix_seen(struct zx_ctx* c, int len, char* prefix)
   return 0;
 }
 
-/* zx_prefix_seen_whine() is a good place to detect, and add stub for, wholly unknown prefixes. */
+/*() zx_prefix_seen_whine() is a good place to detect, and add stub for,
+ * wholly unknown prefixes. */
 
 /* Called by:  TXattr_lookup, TXelem_lookup */
 struct zx_ns_s* zx_prefix_seen_whine(struct zx_ctx* c, int len, char* prefix, char* logkey, int mk_dummy_ns)
@@ -167,7 +174,7 @@ struct zx_ns_s* zx_prefix_seen_whine(struct zx_ctx* c, int len, char* prefix, ch
   return ns;
 }
 
-/* See if prefix has been seen, and in the same meaning. If not, allocate
+/*() See if prefix has been seen, and in the same meaning. If not, allocate
  * a new node and push or add it to the doubly linked list as well as to the
  * pop_seen list. Returns 0 if no addition was done (i.e. ns had been seen already). */
 
@@ -198,7 +205,7 @@ static struct zx_ns_s* zx_push_seen(struct zx_ctx* c, int prefix_len, char* pref
   return ns;
 }
 
-/* Called by:  TXDEC_ELNAME, TXENC_SO_ELNAME, TXENC_WO_ELNAME, TXLEN_SO_ELNAME, TXLEN_WO_ELNAME */
+/* Called by:  TXDEC_ELNAME, TXENC_SO_ELNAME, TXENC_WO_ELNAME, TXENC_WO_any_elem, TXLEN_SO_ELNAME, TXLEN_WO_ELNAME */
 void zx_pop_seen(struct zx_ns_s* ns)
 {
   for (; ns; ns = ns->seen_pop) {
@@ -214,7 +221,7 @@ void zx_pop_seen(struct zx_ns_s* ns)
   }
 }
 
-/* When trying to scan an element, an annoying feature of XML namespaces is that the
+/*() When trying to scan an element, an annoying feature of XML namespaces is that the
  * namespace may be declared in a xmlns attribute within the element itself. Thus
  * at the time of scanning the <ns:element part we can't know its namespace. What
  * a lousy design. In order to handle this we need to either backtrack or
@@ -288,10 +295,10 @@ struct zx_ns_s* zx_scan_xmlns(struct zx_ctx* c)
   return pop_seen;
 }
 
-/* Disambiguate token by considering its namespace.
+/*() Disambiguate token by considering its namespace.
  * See zx_attr_lookup(), zx_elem_lookup()
- * For attributes the namespaceless case is considered.
- */
+ * For attributes the namespaceless case is considered. */
+
 /* Called by:  TXattr_lookup, TXelem_lookup */
 const struct zx_tok* zx_tok_by_ns(const struct zx_tok* zt, const struct zx_tok* lim,
 				  int len, char* name, struct zx_ns_s* ns)
@@ -324,10 +331,10 @@ const struct zx_tok* zx_tok_by_ns(const struct zx_tok* zt, const struct zx_tok* 
 }
 
 #if 0
-/* N.B. Generally this function is not needed since tokens can be arranged
+/*(-) N.B. Generally this function is not needed since tokens can be arranged
  * to point to respective struct zx_ns_s at compile time using static
  * initialization. This is handled by xsd2sg.pl */
-/*if (!zx_init_tok_tab(&ctx, zx_elems, zx_elems + sizeof(zx_elems) / sizeof(struct zx_tok)))  DIE("Inconsistency between tokens and namespaces");*/
+
 /* Called by: */
 int zx_init_tok_tab(struct zx_ctx* c, struct zx_tok* tok_tab, struct zx_tok* tok_tab_lim)
 {
@@ -335,10 +342,12 @@ int zx_init_tok_tab(struct zx_ctx* c, struct zx_tok* tok_tab, struct zx_tok* tok
     if (!(tok_tab->ns = zx_locate_ns_by_prefix(c, strlen(tok_tab->prefix), (char*)tok_tab->prefix)))
       return 0;
   return 1;
+
+  /*if (!zx_init_tok_tab(&ctx, zx_elems, zx_elems + sizeof(zx_elems) / sizeof(struct zx_tok)))  DIE("Inconsistency between tokens and namespaces");*/
 }
 #endif
 
-/* Called by: */
+/* Called by:  zx_len_inc_ns */
 int zx_len_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen)
 {
   if (!ns)
@@ -349,7 +358,7 @@ int zx_len_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_
     + (ns->prefix_len ? ns->prefix_len+1 : 0) + 2 + ns->url_len + 1;
 }
 
-/* Called by: */
+/* Called by:  zx_enc_inc_ns */
 char* zx_enc_xmlns_if_not_seen(struct zx_ctx* c, char* p, struct zx_ns_s* ns, struct zx_ns_s** pop_seen)
 {
   if (!ns)
@@ -369,12 +378,12 @@ char* zx_enc_xmlns_if_not_seen(struct zx_ctx* c, char* p, struct zx_ns_s* ns, st
   return p;
 }
 
-/* For WO encoder the order of xmlns declarations is not known at compile
+/*() For WO encoder the order of xmlns declarations is not known at compile
  * time. Thus we first add them to the pop_seen list using insertion
  * sort (pop_seen is smallest and prefixes grow from there) and
  * then later render the list using zx_enc_seen(). */
 
-/* Called by: */
+/* Called by:  TXENC_WO_any_elem, zx_add_inc_ns */
 void zx_add_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen)
 {
   struct zx_ns_s* pop_seen_dummy=0;
@@ -412,7 +421,7 @@ first:
   ns->seen_pop = new_ns;
 }
 
-/* Called by:  TXENC_WO_ELNAME */
+/* Called by:  TXENC_WO_ELNAME, TXENC_WO_any_elem */
 char* zx_enc_seen(char* p, struct zx_ns_s* ns)
 {
   /* *** Consider sorting the seen */

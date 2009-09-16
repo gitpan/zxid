@@ -1,11 +1,11 @@
 /* zxidhrxmlwsp.c  -  ID-SIS HR-XML WSP
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhrxmlwsp.c,v 1.10 2008-05-08 02:02:40 sampo Exp $
+ * $Id: zxidhrxmlwsp.c,v 1.11 2009-08-22 20:35:55 sampo Exp $
  *
  * 19.6.2007, created --Sampo
  *
@@ -62,15 +62,15 @@ int main(int argc, char** argv)
   struct zx_ctx ctx;
   struct zxid_conf cfs;
   struct zxid_conf* cf;
-  struct zxid_ses sess;
-  struct zxid_ses* ses;
+  //struct zxid_ses sess;
+  //struct zxid_ses* ses;
   struct zx_root_s* r;
   struct zx_e_Envelope_s* env;
-  struct zx_a_EndpointReference_s* epr;
+  //struct zx_a_EndpointReference_s* epr;
   struct zx_str* ss;
-  char* p;
-  char* sid;
-  char* nid;
+  //char* p;
+  //char* sid;
+  //char* nid;
   char* res;
   char buf[64*1024];
   int got, fd, cl=0;

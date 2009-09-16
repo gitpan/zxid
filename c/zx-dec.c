@@ -13,7 +13,7 @@
  ** NO WARRANTY, not even implied warranties. Contains trade secrets.
  ** Distribution prohibited unless authorized in writing.
  ** Licensed under Apache License 2.0, see file COPYING.
- ** Id: dec-templ.c,v 1.29 2007-10-11 04:54:25 sampo Exp $
+ ** Id: dec-templ.c,v 1.30 2008-10-04 23:42:14 sampo Exp $
  **
  ** 28.5.2006, created, Sampo Kellomaki (sampo@iki.fi)
  ** 8.8.2006,  reworked namespace handling --Sampo
@@ -649,6 +649,7 @@ next_attr:
 
 /* FUNC(zx_known_or_unknown_elem) */
 
+/* Called by:  zx_DEC_ELNAME */
 struct zx_elem_s* zx_known_or_unknown_elem(struct zx_ctx* c, int tok, struct zx_elem_s* x, int len, char* name, struct zx_ns_s* ns)
 {
   char* p;

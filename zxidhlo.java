@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhlo.java,v 1.6 2007/02/23 05:00:29 sampo Exp $
+ * $Id: zxidhlo.java,v 1.7 2009-08-30 15:09:26 sampo Exp $
  * 12.1.2007, created --Sampo
  *
  * See also: README-zxid section 10 "zxid_simple() API"

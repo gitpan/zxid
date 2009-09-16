@@ -1,5 +1,5 @@
 README.zxid-java
-$Id: README.zxid-java,v 1.2 2007/01/12 18:17:27 sampo Exp $
+$Id: README.zxid-java,v 1.3 2009-09-07 16:13:02 sampo Exp $
 
 This is the Java JNI module for using libzxid. This JNI module is
 tightly integrated into the main ZXID project and distribution.

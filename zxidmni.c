@@ -1,13 +1,14 @@
 /* zxidmni.c  -  Handwritten functions for NameID Management logic for SP
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmni.c,v 1.4 2007-10-31 00:21:32 sampo Exp $
+ * $Id: zxidmni.c,v 1.9 2009-08-25 16:22:45 sampo Exp $
  *
  * 12.10.2007, split from zxidslo.c --Sampo
+ * 7.10.2008,  added documentation --Sampo
  */
 
 #include "errmac.h"
@@ -19,9 +20,11 @@
 #include "c/zx-data.h"
 
 /* ============== MNI / NID Mgmt / Defederation ============== */
-/* Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied). */
 
-/* Called by:  zxid_mgmt, zxid_simple_cf */
+/*() Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied),
+ * using SAML2 SOAP binding. This is the (SP) client side that contacts the IdP. */
+
+/* Called by:  zxid_mgmt, zxid_simple_ses_active_cf */
 int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
 {
   zxid_get_ses_sso_a7n(cf, ses);
@@ -66,8 +69,15 @@ int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   return 0;
 }
 
-/* Called by:  zxid_mgmt, zxid_simple_cf */
-int zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
+extern struct zx_str err_res;
+
+/*() Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied),
+ * using SAML2 HTTP redirect binding. This is the (SP) client side that contacts the IdP.
+ * Return the HTTP 302 redirect LOCATION header + CRLF2. Returns the URL as string to which
+ * the environment should cause the user (browser) to be redirected. */
+
+/* Called by:  zxid_mgmt, zxid_simple_ses_active_cf */
+struct zx_str* zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
 {
   zxid_get_ses_sso_a7n(cf, ses);
   if (ses->a7n) {
@@ -75,18 +85,18 @@ int zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
     struct zx_str* rs;
     struct zx_str* loc;
     struct zxid_entity* idp_meta;
-    
+
     if (cf->log_level>0)
       zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "MNIREDIR", ses->sid, "newnym(%.*s)", new_nym?new_nym->len:0, new_nym?new_nym->s:"");
-
+    
     idp_meta = zxid_get_ses_idp(cf, ses);
     if (!idp_meta)
-      return 0;
+      return &err_res;
 
     loc = zxid_idp_loc(cf, cgi, ses, idp_meta, ZXID_MNI_SVC, SAML2_REDIR);
     if (!loc)
-      return 0;
-    r = zxid_mk_mni(cf, zxid_get_user_nameid(cf, ses->nameid), new_nym, idp_meta);
+      return &err_res;
+    r = zxid_mk_mni(cf, zxid_get_user_nameid(cf, ses->nameid), new_nym, 0);
     r->Destination = loc;
     rs = zx_EASY_ENC_SO_sp_ManageNameIDRequest(cf->ctx, r);
     D("NIReq(%.*s)", rs->len, rs->s);
@@ -99,51 +109,21 @@ int zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
     ERR("Not implemented, ID-FF 1.2 type SAML 1.1 assetion %d", 0);
   }
   ERR("Session sid(%s) lacks SSO assertion.", ses->sid);
-  return 0;
+  return &err_res;
 }
 
-/* Return the HTTP 302 redirect LOCATION header + CRLF2 */
+/*() Process <ManageNameIDRequest>, presumably received from IdP. This is very rarely
+ * used. */
 
-/* Called by:  zxid_simple_cf */
-struct zx_str* zxid_sp_mni_location(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
-{
-  zxid_get_ses_sso_a7n(cf, ses);
-  if (ses->a7n) {
-    struct zx_sp_ManageNameIDRequest_s* r;
-    struct zx_str* rs;
-    struct zx_str* loc;
-    struct zxid_entity* idp_meta;
-
-    if (cf->log_level>0)
-      zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "MNIREDIR", ses->sid, "newnym(%.*s) loc", new_nym?new_nym->len:0, new_nym?new_nym->s:"");
-    
-    idp_meta = zxid_get_ses_idp(cf, ses);
-    if (!idp_meta)
-      return 0;
-
-    loc = zxid_idp_loc(cf, cgi, ses, idp_meta, ZXID_MNI_SVC, SAML2_REDIR);
-    if (!loc)
-      return 0;
-    r = zxid_mk_mni(cf, zxid_get_user_nameid(cf, ses->nameid), new_nym, 0);
-    r->Destination = loc;
-    rs = zx_EASY_ENC_SO_sp_ManageNameIDRequest(cf->ctx, r);
-    D("NIReq(%.*s)", rs->len, rs->s);
-    return zxid_saml2_location(cf, loc, rs, 0);
-  }
-  if (ses->a7n11) {
-    ERR("Not implemented, SAML 1.1 assetion %d", 0);
-  }
-  if (ses->a7n12) {
-    ERR("Not implemented, ID-FF 1.2 type SAML 1.1 assetion %d", 0);
-  }
-  ERR("Session sid(%s) lacks SSO assertion.", ses->sid);
-  return 0;
-}
-
-struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zx_sp_ManageNameIDRequest_s* mni)
+/* Called by:  zxid_idp_soap_dispatch, zxid_mni_do_ss, zxid_sp_soap_dispatch */
+struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni)
 {
   struct zx_sa_NameID_s* nid;
   struct zx_str* newnym;
+  
+  if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)mni, mni->Signature, mni->Issuer, "ManageNameIDRequest"))
+    return 0;
+  
   nid = zxid_decrypt_nameid(cf, mni->NameID, mni->EncryptedID);
   if (!nid || !nid->gg.content) {
     ERR("MNI failed: request does not have NameID. %p", nid);
@@ -160,11 +140,14 @@ struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zx
   return zxid_mk_mni_resp(cf, zxid_OK(cf), mni->ID);
 }
 
-struct zx_str* zxid_mni_do_ss(struct zxid_conf* cf, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc)
+/*() Wrapper for zxid_mni_do(), which see. */
+
+/* Called by:  zxid_idp_dispatch, zxid_sp_dispatch */
+struct zx_str* zxid_mni_do_ss(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc)
 {
   struct zx_sp_ManageNameIDResponse_s* res;
   res = zxid_mk_mni_resp(cf, zxid_OK(cf), mni->ID);
-  res = zxid_mni_do(cf, mni);
+  res = zxid_mni_do(cf, cgi, ses, mni);
   res->Destination = loc;
   return zx_EASY_ENC_SO_sp_ManageNameIDResponse(cf->ctx, res);
 }

@@ -1,5 +1,5 @@
 # zxid/sg/wsf-soap11.sg
-# $Id: wsf-soap11.sg,v 1.11 2007-10-05 22:24:28 sampo Exp $
+# $Id: wsf-soap11.sg,v 1.12 2009-08-25 16:22:45 sampo Exp $
 # Heavily edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
 # 26.2.2007, merged saml20-soap11.sg and di-soap11.sg to only
 #            one SOAP processor. --Sampo
@@ -12,6 +12,7 @@
 # points have been replaced with actual SAML and WSF elements.
 #
 # When you add new SOAP messages, you need to add them here, to the body.
+# See also zxid/c/zx-e-data.h, which is generated.
 
 target(e, http://schemas.xmlsoap.org/soap/envelope/)
 ns(xs,    http://www.w3.org/2001/XMLSchema)

@@ -1,16 +1,17 @@
 /* zxidses.c  -  Handwritten functions for SP session handling
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidses.c,v 1.16 2008-08-07 13:06:59 sampo Exp $
+ * $Id: zxidses.c,v 1.26 2009-09-05 02:23:41 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
  * 5.2.2007,  added EPR handling --Sampo
  * 7.8.2008,  added session lookup by NameID --Sampo
+ * 7.10.2008, added documentation --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
@@ -35,12 +36,12 @@
 #define ZXID_MAX_SES (256)      /* Just the session nid and path to assertion */
 #define ZXID_MAX_A7N (128*1024)
 
-/* When session is loaded, we only get the reference to assertion. This
+/*() When session is loaded, we only get the reference to assertion. This
  * is to avoid parsing overhead when the assertion really is not needed.
  * But when the assertion is needed, you have to call this function to load
  * it from file (under /var/zxid/log/rely/EID/a7n/AID) and parse it. */
 
-/* Called by:  zxid_idp_loc, zxid_ses_to_ldif, zxid_snarf_eprs_from_ses, zxid_sp_nireg_location, zxid_sp_nireg_redir, zxid_sp_nireg_soap, zxid_sp_slo_location, zxid_sp_slo_redir, zxid_sp_slo_soap */
+/* Called by:  zxid_get_ses_idp, zxid_idp_loc, zxid_ses_to_ldif, zxid_simple_ses_active_cf, zxid_snarf_eprs_from_ses, zxid_sp_loc, zxid_sp_mni_redir, zxid_sp_mni_soap, zxid_sp_slo_redir, zxid_sp_slo_soap */
 int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   struct zx_sa_EncryptedID_s* encid;
@@ -106,6 +107,10 @@ int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
   return 1;
 }
 
+/*() Get the IdP entity associated with the session. Generally this is figured out from
+ * the Issuer field of the SSO assertion that started the session. */
+
+/* Called by:  zxid_sp_mni_redir, zxid_sp_mni_soap, zxid_sp_slo_redir, zxid_sp_slo_soap */
 struct zxid_entity* zxid_get_ses_idp(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   if (!zxid_get_ses_sso_a7n(cf, ses))
@@ -117,7 +122,7 @@ struct zxid_entity* zxid_get_ses_idp(struct zxid_conf* cf, struct zxid_ses* ses)
   return zxid_get_ent_ss(cf, ses->a7n->Issuer->gg.content);
 }
 
-/* Allocate memory and get session object from the filesystem */
+/*() Allocate memory and get session object from the filesystem */
 
 /* Called by: */
 struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
@@ -131,17 +136,28 @@ struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
   return ses;
 }
 
-/* Get simple session object from the filesystem. This just gets the nameid
+/*() Get simple session object from the filesystem. This just gets the nameid
  * and reference to the assertion. Use zxid_get_ses_sso_a7n() to actually
  * load the assertion, if needed. Returns 1 if session gotten, 0 if fail. */
 
-/* Called by:  main, zxid_fetch_ses, zxid_simple_cf */
+/* Called by:  chkuid x2, main x6, zxid_fetch_ses, zxid_find_ses, zxid_simple_cf */
 int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
 {
   char* p;
   int gotall;
+#if 0
+  if (cf->ses_cookie_name && ses->setcookie
+      && !memcmp(cf->ses_cookie_name, ses->setcookie, strlen(cf->ses_cookie_name)))
+    p = ses->setcookie;
+  else
+    p = 0;
   memset(ses, 0, sizeof(struct zxid_ses));
   ses->magic = ZXID_SES_MAGIC;
+  ses->setcookie = p;
+#else
+  memset(ses, 0, sizeof(struct zxid_ses));
+  ses->magic = ZXID_SES_MAGIC;
+#endif
 
   gotall = strlen(sid);
   if (gotall != strspn(sid, safe_basis_64)) {
@@ -168,14 +184,28 @@ int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
     *p++ = 0;
     ses->sesix = p;
   }
-  D("GOT ses(%s) nid(%s) sso_a7n_path(%s) sesix(%s)", sid, ses->nid, STRNULLCHK(ses->sso_a7n_path), STRNULLCHK(ses->sesix));
+  p = strchr(p, '|');
+  if (p) {
+    *p++ = 0;
+    ses->an_ctx = p;
+  }
+  p = strchr(p, '|');
+  if (p) {
+    *p++ = 0;
+    ses->uid = p;
+  }
+  D("GOT ses(%s) uid(%s) nid(%s) sso_a7n_path(%s) sesix(%s) an_ctx(%s)", sid, STRNULLCHK(ses->uid), STRNULLCHK(ses->nid), STRNULLCHK(ses->sso_a7n_path), STRNULLCHK(ses->sesix), STRNULLCHK(ses->an_ctx));
   return 1;
 }
 
-/* Create new session object in file system. The assertion must have
- * been created separately. */
+/*() Create new session object in file system. The assertion must have
+ * been created separately.
+ *
+ * cf:: Configuration object
+ * ses:: Pointer to previously allocated and populated session object
+ * return:: 1 upon success, 0 on failure. */
 
-/* Called by:  zxid_sp_sso_finalize */
+/* Called by:  zxid_pw_authn, zxid_sp_anon_finalize, zxid_sp_sso_finalize */
 int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   char dir[ZXID_MAX_BUF];
@@ -196,22 +226,34 @@ int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses)
   name_from_path(dir, sizeof(dir), "%s" ZXID_SES_DIR "%s", cf->path, ses->sid);
   if (MKDIR(dir, 0777) && errno != EEXIST) {
     perror("mkdir for session");
-    ERR("Creating session directory(%s) failed", dir);
+    ERR("Creating session directory(%s) failed, euid=%d egid=%d", dir, geteuid(), getegid());
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", dir, "mkdir fail, permissions?");
     return 0;
   }
   
   buf = ZX_ALLOC(cf->ctx, ZXID_MAX_SES);
-  write_all_path_fmt("put_ses", ZXID_MAX_SES, buf,
-		     "%s" ZXID_SES_DIR "%s/.ses", cf->path, ses->sid,
-		     "%s|%s|%s", ses->nid, STRNULLCHK(ses->sso_a7n_path), ses->sesix?ses->sesix:"");
+  if (!write_all_path_fmt("put_ses", ZXID_MAX_SES, buf,
+			  "%s" ZXID_SES_DIR "%s/.ses", cf->path, ses->sid,
+			  "%s|%s|%s|%s|%s",
+			  STRNULLCHK(ses->nid),
+			  STRNULLCHK(ses->sso_a7n_path),
+			  STRNULLCHK(ses->sesix),
+			  STRNULLCHK(ses->an_ctx),
+			  STRNULLCHK(ses->uid))) {
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", ses->sid, "writing ses fail, permissions?");
+    ZX_FREE(cf->ctx, buf);
+    return 0;
+  }
   ZX_FREE(cf->ctx, buf);
   return 1;
 }
 
-/* Delete, or archive session object from file system. Assertion, if any,
- * is not deleted. */
+/*() Delete, or archive, session object from file system. Assertion, if any,
+ * is not deleted. This is called upon explicit logout events. However, in reality
+ * many sessions are simply abandoned, thus a deploying site should implement
+ * some mechanism, such as a cron(8) job to remove or archive expired sessions. */
 
-/* Called by:  zxid_mgmt x3, zxid_simple_cf x4, zxid_sp_dispatch x2, zxid_sp_dispatch_location x2, zxid_sp_soap_dispatch */
+/* Called by:  zxid_idp_dispatch, zxid_idp_slo_do, zxid_mgmt x3, zxid_simple_ses_active_cf x3, zxid_sp_dispatch, zxid_sp_slo_do */
 int zxid_del_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   char old[ZXID_MAX_BUF];
@@ -238,7 +280,8 @@ int zxid_del_ses(struct zxid_conf* cf, struct zxid_ses* ses)
       return 0;
     if (rename(old,new) == -1) {
       perror("rename to archieve session");
-      ERR("Deleting session by renaming failed old(%s) new(%s)", old, new);
+      ERR("Deleting session by renaming failed old(%s) new(%s), euid=%d egid=%d", old, new, geteuid(), getegid());
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", old, "ses arch rename, permissions?");
       return 0;
     }
   } else {
@@ -248,7 +291,8 @@ int zxid_del_ses(struct zxid_conf* cf, struct zxid_ses* ses)
     dir = opendir(old);
     if (!dir) {
       perror("opendir to delete session");
-      ERR("Deleting session by opendir failed old(%s)", old);
+      ERR("Deleting session by opendir failed old(%s), euid=%d egid=%d", old, geteuid(), getegid());
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", old, "ses del opendir, permissions?");
       return 0;
     }
     while (de = readdir(dir)) {
@@ -258,20 +302,35 @@ int zxid_del_ses(struct zxid_conf* cf, struct zxid_ses* ses)
 	return 0;
       if (unlink(new) == -1) {
 	perror("unlink to delete files in session");
-	ERR("Deleting session file(%s) by unlink failed", new);
+	ERR("Deleting session file(%s) by unlink failed, euid=%d egid=%d", new, geteuid(), getegid());
+	zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", new, "ses unlink, permissions?");
 	return 0;
       }
     }
     closedir(dir);
     if (rmdir(old) == -1) {
       perror("rmdir to delete session");
-      ERR("Deleting session by rmdir failed old(%s)", old);
+      ERR("Deleting session by rmdir failed old(%s), euid=%d egid=%d", old, geteuid(), getegid());
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", old, "ses rmdir, permissions?");
       return 0;
     }
   }
   return 1;
 }
 
+/*() Find a session object by a number of criteria.
+ *
+ * cf:: ZXID configuration object
+ * ses:: Result parameter. Must have been previously allocated. This will be modified
+ *     to match the found session.
+ * ses_ix:: Session Index, usually from SSO asserion or from SLO request. If not
+ *     supplied (i.e. 0), the ~nid~ MUST be supplied and will be used as sole basis for
+ *     deleting the session.
+ * nid:: The idp assigned Name ID associated with the session. If supplied as 0, then
+ *     ~ses_ix~ MUST be supplied and will be used to determine which session is deleted.
+ * return:: 0 unknown session or error, 1 session found successfully */
+
+/* Called by:  zxid_idp_slo_do, zxid_sp_slo_do */
 int zxid_find_ses(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_str* ses_ix, struct zx_str* nid)
 {
   char buf[ZXID_MAX_BUF];
@@ -286,7 +345,7 @@ int zxid_find_ses(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_str* ses
   dir = opendir(buf);
   if (!dir) {
     perror("opendir to find session");
-    ERR("Finding session by opendir failed buf(%s)", buf);
+    ERR("Finding session by opendir failed buf(%s), euid=%d egid=%d", buf, geteuid(), getegid());
     return 0;
   }
   while (de = readdir(dir)) {

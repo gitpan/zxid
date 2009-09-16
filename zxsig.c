@@ -1,19 +1,21 @@
 /* zxsig.c  -  Signature generation and validation
- * Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxsig.c,v 1.24 2008-04-15 08:45:09 sampo Exp $
+ * $Id: zxsig.c,v 1.27 2009-09-05 02:23:41 sampo Exp $
  *
  * 29.9.2006, created --Sampo
  * 23.9.2007, added XML ENC support --Sampo
  * 8.10.2007, added XML signing support --Sampo
+ * 4.10.2008, improved documentation --Sampo
  */
 
 #include <memory.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef USE_OPENSSL
 #include <openssl/x509.h>
@@ -30,29 +32,47 @@
 #include "zxid.h"
 #include "c/zx-data.h"   /* For the XMLDSIG code. */
 
-/*  1. Canon tag(s) to sign (done by caller), pass as sig refs
-    2. Sha1 each sig ref
-    3. Construct the Signature element
-    4. Attach signature to the element (done by caller)
+//static char*
+#define priv_key_missing_msg "Private key missing. Perhaps you have not installed one in the certificate file in the /var/zxid/pem directory (or other directory if configured, see previous error messages for file reading trouble)? Other reasons: permissions do not allow reading the key (current uid=%d gid=%d), the directory permissions do not allow reading, the private key file is empty, wrong format, or corrupt; or the private key is protected with a password (remove password prior to use with zxid). See http://zxid.org/html/zxid-cot.html for further help."
 
-   <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-     <ds:SignedInfo>
-       <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
-       <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-       <ds:Reference URI="#CREDm7unLxp2sOXQYfDR8E4F">
-         <ds:Transforms>
-           <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-           <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
-             <ec:InclusiveNamespaces
-                 xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"
-                 PrefixList="xasa"/></></>
-         <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-         <ds:DigestValue>I2wmlQu11nvfSepvzor29kAZwAo=</></></>
-     <ds:SignatureValue>
-       FK6X9qO8qZntp3CeFbA7gpG9n9rWyJWlzSXy0vKNspwMGdl8HPfOGcXEs2Ts=</></>
+/*(i) Sign, using XML-DSIG, some XML data in the ~sref~ array. The XML data is canonicalized
+ * and the signature is generated and returned. Typically the caller will then insert the
+ * signature to the original data structure and canonicalize for transport.
+ *
+ * c::        ZX context. Used for memory allocation.
+ * n::        Number of elements in the sref array
+ * sref::     An array of (reference, xml data structure) tuples that are to be signed
+ * cert::     Certificate (public key) used for signing
+ * priv_key:: Private key used for signing
+ * return::   Signature as XML data, or 0 if failure.
+ *
+ * *Steps*
+ *
+ * 1. Canon tag(s) to sign (done by caller), pass as sig refs
+ * 2. Sha1 each sig ref
+ * 3. Construct the Signature element
+ * 4. Attach signature to the element (done by caller)
+ *
+ * *Typical XML-DSIG Signature*
+ *
+ *   <ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+ *     <ds:SignedInfo>
+ *       <ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+ *       <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+ *       <ds:Reference URI="#CREDm7unLxp2sOXQYfDR8E4F">
+ *         <ds:Transforms>
+ *           <ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+ *           <ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#">
+ *             <ec:InclusiveNamespaces
+ *                 xmlns:ec="http://www.w3.org/2001/10/xml-exc-c14n#"
+ *                 PrefixList="xasa"/></></>
+ *         <ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+ *         <ds:DigestValue>I2wmlQu11nvfSepvzor29kAZwAo=</></></>
+ *     <ds:SignatureValue>
+ *       FK6X9qO8qZntp3CeFbA7gpG9n9rWyJWlzSXy0vKNspwMGdl8HPfOGcXEs2Ts=</></>
+ */
 
-*/
-
+/* Called by:  zxid_anoint_sso_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x2 */
 struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* sref, X509* cert, RSA* priv_key)
 {
   char sha1[20];
@@ -97,6 +117,10 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   SHA1(ss->s, ss->len, sha1);
   zx_str_free(c, ss);
   
+  if (!priv_key) {
+    ERR(priv_key_missing_msg, geteuid(), getegid());
+    return 0;
+  }
   siglen = RSA_size(priv_key);
   sigu = ZX_ALLOC(c, siglen);
   
@@ -115,7 +139,20 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   return sig;
 }
 
-/* Called by:  main, zxid_sp_sso_finalize */
+/*(i) Validate XML-DSIG signature over XML data found in ~sref~ array.
+ * Signature is validated agaist provided certificate, which
+ * must have been previously looked up, usually using Issuer field of message
+ * and metadata of the signing party. Trust in the certificate must have
+ * been established by other means.
+ *
+ * c::      ZX context. Used for memory allocation.
+ * cert::   Signing party's certificate (public key), typically from metadata
+ * sig::    Parsed XML-DSIG data structure
+ * n::      Number of elements in the sref array
+ * sref::   An array of (reference, xml data structure) tuples that are referenced by the signature
+ * return:: ZXSIG value. 0 (ZXSIG_OK) means success. Any other value is some soft of failure */
+
+/* Called by:  main x5, zxid_chk_sig, zxid_sp_sso_finalize */
 int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, int n, struct zxsig_ref* sref)
 {
   EVP_PKEY* evp_pkey;
@@ -259,7 +296,12 @@ vfyerr:
   return ZXSIG_VFY_FAIL;
 }
 
-/* Called by:  main, zxlog_write_line x3, zxsig_data_rsa_sha1, zxsig_validate x2, zxsig_verify_data_rsa_sha1 x3 */
+/*() Walk through the OpenSSL error stack and dump it to the stderr.
+ *
+ * logkey:: Way for caller to indicate what the OpenSSL errors are all about
+ * return:: Number of open SSL errors processed, or 0 if none. Often ignored. */
+
+/* Called by:  main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxlog_write_line, zxsig_data_rsa_sha1, zxsig_sign, zxsig_validate x2, zxsig_verify_data_rsa_sha1 x3 */
 int zx_report_openssl_error(const char* logkey)
 {
   char buf[256];
@@ -280,7 +322,17 @@ int zx_report_openssl_error(const char* logkey)
 
 /* --------------- Raw data signing and verification. These are building blocks. -------------- */
 
-/* Called by:  zxid_saml2_redir_enc, zxlog_write_line x2 */
+/*() Sign a blob of data using rsa-sha1 algorithm.
+ *
+ * c::        ZX context. Used for memory allocation.
+ * len::      Length of the raw data
+ * data::     Raw data to sign
+ * sig::      Result parameter. Raw binary signature data will be returned via this parameter.
+ * priv_key:: Private key used for signing.
+ * lk::       Log key. Used to make logs and error messages more meaningful.
+ * return::   -1 on failure. Upon success the length of the raw signature data. */
+
+/* Called by:  zxid_saml2_post_enc, zxid_saml2_redir_enc, zxlog_write_line x2 */
 int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, char* data, char** sig, RSA* priv_key, char* lk)
 {
   char sha1[20];  /* 160 bits */
@@ -289,6 +341,11 @@ int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, char* data, char** sig, RSA* 
   DD("RSA_sign(%s) data(%.*s)", lk, len, data);
   DD("RSA_sign(%s) data above %d", lk, hexdump("data: ", data, data+len, 4096));
   DD("RSA_sign(%s) sha1 above %d", lk, hexdump("sha1: ", sha1, sha1+20, 20));
+
+  if (!priv_key) {
+    ERR(priv_key_missing_msg, geteuid(), getegid());
+    return 0;
+  }
   
   len = RSA_size(priv_key);
   *sig = ZX_ALLOC(c, len);
@@ -299,7 +356,17 @@ int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, char* data, char** sig, RSA* 
   return -1;
 }
 
-/* Called by:  main, zxlog_zsig_verify_print */
+/*() Verify a signature over a blob of data using rsa-sha1 algorithm.
+ *
+ * len::      Length of the raw data
+ * data::     Raw data to sign
+ * siglen::   Length of the raw binary signature data
+ * sig::      Raw binary signature data
+ * cert::     Certificate used for signing
+ * lk::       Log key. Used to make logs and error messages more meaningful
+ * return::   ZX_SIG value. o (ZXSIG_OK) means success. Other values mean failure of some sort. */
+
+/* Called by:  main, zxid_decode_redir_or_post, zxlog_zsig_verify_print */
 int zxsig_verify_data_rsa_sha1(int len, char* data, int siglen, char* sig, X509* cert, char* lk)
 {
   int verdict;
@@ -339,6 +406,15 @@ int zxsig_verify_data_rsa_sha1(int len, char* data, int siglen, char* sig, X509*
 
 /* ------------- XML-ENC support -------------- */
 
+/*() Symmetric key decryption using XML-ENC. The encryption algorithm is
+ * auto-detected from the XML-ENC data.
+ *
+ * cf:: ZXID configuration object, used for memory allocation
+ * ed:: Encrypted data as XML data structure
+ * symkey:: Symmetric key used for decryption
+ * return:: Decrypted data as zx_str. Caller should free this memory. */
+
+/* Called by:  zxenc_privkey_dec */
 struct zx_str* zxenc_symkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedData_s* ed, struct zx_str* symkey)
 {
   struct zx_str raw;
@@ -348,11 +424,13 @@ struct zx_str* zxenc_symkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedDa
   if (!ed || !ed->CipherData || !ed->CipherData->CipherValue
       || !(ss = ed->CipherData->CipherValue->content)) {
     ERR("EncryptedData element not found or malformed %p", ed->CipherData);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "EMISS", 0, "no EncryptedData");
     return 0;
   }
   
   if (!symkey) {
     ERR("Symmetric key missing. Perhaps public key operation to recover symmetric key failed (e.g. missing private key, or private key does not match public key). Perhaps the programmer simply failed to pass correct arguments to this function. %d", 0);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "EMISS", 0, "no symkey");
     return 0;
   }
   
@@ -382,6 +460,7 @@ struct zx_str* zxenc_symkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedDa
     ss = zx_raw_cipher(cf->ctx, "AES-256-CBC", 0, symkey, raw.len-16, raw.s+16, 16, raw.s);
   } else {
     ERR("Unsupported key transformation method(%.*s)", ss->len, ss->s);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "ECRYPT", 0, "unsupported key transformation method");
     return 0;
   }
   ZX_FREE(cf->ctx, raw.s);
@@ -391,9 +470,21 @@ struct zx_str* zxenc_symkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedDa
  wrong_key_len:
   ZX_FREE(cf->ctx, raw.s);
   ERR("Wrong key length %d for algo(%.*s)", symkey->len, ss->len, ss->s);
+  zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "ECRYPT", 0, "wrong key length");
   return 0;
 }
 
+/*() Private key decryption using XML-ENC. The encryption algorithm is
+ * auto-detected from the XML-ENC data. The private key is looked up
+ * from the configuration object.
+ *
+ * cf:: ZXID configuration object, used for memory allocation
+ * ed:: Encrypted data as XML data structure
+ * ek:: Symmetric encryption key data structure. If not supplied, the EncryptedKey
+ *     element from EncryptedData is used
+ * return:: Decrypted data as zx_str. Caller should free this memory. */
+
+/* Called by:  zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_get_ses_sso_a7n, zxid_sp_dig_sso_a7n */
 struct zx_str* zxenc_privkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedData_s* ed, struct zx_xenc_EncryptedKey_s* ek)
 {
   struct zx_str raw;
@@ -405,6 +496,7 @@ struct zx_str* zxenc_privkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedD
   if (!ek || !ek->CipherData || !ek->CipherData->CipherValue
       || !(ss = ek->CipherData->CipherValue->content)) {
     ERR("EncryptedKey element not found or malformed %p", ek->CipherData);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "EMISS", 0, "EncryptedKey not found");
     return 0;
   }
   
@@ -424,6 +516,7 @@ struct zx_str* zxenc_privkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedD
     symkey = zx_rsa_priv_dec(cf->ctx, &raw, cf->enc_pkey, RSA_PKCS1_OAEP_PADDING);
   } else {
     ERR("Unsupported key transformation method(%.*s)", ss->len, ss->s);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "ECRYPT", 0, "unsupported key transformation method");
     return 0;
   }
   ZX_FREE(cf->ctx, raw.s);
@@ -433,31 +526,43 @@ struct zx_str* zxenc_privkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedD
   return ss;
 }
 
-/*
-    <sa:EncryptedID>
-      <e:EncryptedData
-          xmlns:e="http://www.w3.org/2001/04/xmlenc#"
-          Id="ED38"
-          Type="http://www.w3.org/2001/04/xmlenc#Element">
-        <e:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
-        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-          <ds:RetrievalMethod
-              Type="http://www.w3.org/2001/04/xmlenc#EncryptedKey"
-              URI="#EK38"/></>                                                  # N.B. hash
-        <e:CipherData>
-          <e:CipherValue>FWfOV7aytBE2xIMe...YTA3ImLf9JCM/vdLIMizMf1</></></>
+/*() Symmetric key encryption using XML-ENC. The encryption algorith is
+ * auto-detected from the XML-ENC data.
+ *
+ * cf:: ZXID configuration object, used for memory allocation
+ * data:: Data blob to encrypt. Typically serialized XML
+ * ed_id:: The value of the ~Id~ XML attribute of the <EncryptedData> element
+ * symkey:: Raw symmetric key used for encryption
+ * symkey_id:: The value of the ~Id~ XML attribute of the <EncryptedKey> element
+ * return:: Encrypted data as XML data structure. Caller should free this memory.
+ *
+ * *Example of XML-ENC encrypted data*
+ *
+ *   <sa:EncryptedID>
+ *     <e:EncryptedData
+ *         xmlns:e="http://www.w3.org/2001/04/xmlenc#"
+ *         Id="ED38"
+ *         Type="http://www.w3.org/2001/04/xmlenc#Element">
+ *       <e:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+ *       <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+ *         <ds:RetrievalMethod
+ *             Type="http://www.w3.org/2001/04/xmlenc#EncryptedKey"
+ *             URI="#EK38"/></>                                            # N.B. hash
+ *       <e:CipherData>
+ *         <e:CipherValue>FWfOV7aytBE2xIMe...YTA3ImLf9JCM/vdLIMizMf1</></></>
+ *
+ *     <e:EncryptedKey xmlns:e="http://www.w3.org/2001/04/xmlenc#" Id="EK38">
+ *       <e:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
+ *       <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+ *         <ds:X509Data>
+ *           <ds:X509Certificate>***</></></>
+ *       <e:CipherData>
+ *         <e:CipherValue>xf5HkmQM68t...7zRbxkqtniIVnxBHjkA=</></>
+ *       <e:ReferenceList>
+ *         <e:DataReference URI="#ED38"/></></></>                         # N.B. hash
+ */
 
-      <e:EncryptedKey xmlns:e="http://www.w3.org/2001/04/xmlenc#" Id="EK38">
-        <e:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/>
-        <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
-          <ds:X509Data>
-            <ds:X509Certificate>***</></></>
-        <e:CipherData>
-          <e:CipherValue>xf5HkmQM68t...7zRbxkqtniIVnxBHjkA=</></>
-        <e:ReferenceList>
-          <e:DataReference URI="#ED38"/></></></>                               # N.B. hash
-*/
-
+/* Called by:  zxenc_pubkey_enc */
 struct zx_xenc_EncryptedData_s* zxenc_symkey_enc(struct zxid_conf* cf, struct zx_str* data, struct zx_str* ed_id, struct zx_str* symkey, struct zx_str* symkey_id)
 {
   struct zx_str* ss;
@@ -483,6 +588,19 @@ struct zx_xenc_EncryptedData_s* zxenc_symkey_enc(struct zxid_conf* cf, struct zx
   return ed;
 }
 
+/*() Public key encryption using XML-ENC. The encryption algorith is
+ * auto-detected from the XML-ENC data.
+ *
+ * cf:: ZXID configuration object, used for memory allocation
+ * data:: Data blob to encrypt. Typically serialized XML
+ * ekp:: Result parameter. XML data structure corresponding to the <EncryptedKey>
+ *     element will be returned. This is the encrypted symmetric key (which is
+ *     pseudorandom generated inside this function)
+ * cert:: Certificate containing the public key used to encrypt the symmetric key
+ * idsuffix:: Use to generate XML ~Id~ attributes for <EncryptedKey> and <EncryptedData>
+ * return:: Encrypted data as XML data structure. Caller should free this memory. */
+
+/* Called by:  zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni */
 struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(struct zxid_conf* cf, struct zx_str* data, struct zx_xenc_EncryptedKey_s** ekp, X509* cert, char* idsuffix)
 {
   struct rsa_st* rsa_pkey;

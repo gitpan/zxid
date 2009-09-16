@@ -392,8 +392,8 @@
 #define zx_cdm_X400_ELEM	32
 #define zx_a_Address_ELEM	33
 #define zx_di_Address_ELEM	34
-#define zx_sa11_Statement_ELEM	35
-#define zx_sa_Statement_ELEM	36
+#define zx_sa_Statement_ELEM	35
+#define zx_sa11_Statement_ELEM	36
 #define zx_gl_distanceUnit_ELEM	37
 #define zx_gl_X_ELEM	38
 #define zx_hrxml_Area_ELEM	39
