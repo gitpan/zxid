@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxid.h,v 1.88 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxid.h,v 1.89 2009-10-16 13:36:33 sampo Exp $
  *
  * 12.8.2006,  created --Sampo
  * 18.11.2006, log signing support --Sampo
@@ -130,7 +130,8 @@ struct zxid_conf {
   int   after_slop;
   int   timeskew;
   int   a7nttl;
-  char* pdp_url;             /* If non-NULL, the PEP is enabled and PDP at URL is contacted. */
+  char* pdp_url;             /* If non-NULL, the inline PEP is enabled and PDP at URL is called. */
+  char* pdp_call_url;        /* PDP URL for zxid_az() API */
 
   struct zxid_need*  need;
   struct zxid_need*  want;
@@ -490,6 +491,7 @@ void zxid_get_sid_from_cookie(struct zxid_conf* cf, struct zxid_cgi* cgi, const 
 
 /* zxidses */
 
+struct zxid_ses* zxid_alloc_ses(struct zxid_conf* cf);
 struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid);
 int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid);
 int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses);
@@ -506,6 +508,7 @@ struct zx_str* zxid_pool_to_json(struct zxid_conf* cf, struct zxid_attr* pool);
 struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool);
 void zxid_ses_to_pool(struct zxid_conf* cf, struct zxid_ses* ses);
 void zxid_add_attr_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, char* at_name, struct zx_str* val);
+int zxid_add_qs_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, char* qs, int apply_map);
 
 /* zxiduser */
 
@@ -615,6 +618,9 @@ struct zx_str* zxid_mni_do_ss(struct zxid_conf* cf, struct zxid_cgi* cgi, struct
 /* zxidpep */
 
 int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses);
+int zxid_az_cf_ses(struct zxid_conf* cf, char* qs, struct zxid_ses* ses);
+int zxid_az_cf(struct zxid_conf* cf, char* qs, const char* sid);
+int zxid_az(const char* conf, const char* qs, const char* sid);
 
 /* zxida7n */
 
@@ -665,6 +671,9 @@ struct zx_e_Envelope_s* zxid_new_envf(struct zxid_conf* cf, char* body_f, ...);
 struct zx_e_Envelope_s* zxid_callf(struct zxid_conf* cf, struct zxid_ses* ses, char* svctype, char* body_f, ...);
 
 #define ZXID_RESP_ENV(cf, tag, status_code, status_comment) zxid_new_envf((cf), "<%s><lu:Status code=\"%s\" comment=\"%s\"></lu:Status></%s>", (tag), (status_code), (status_comment), (tag))
+
+struct zx_str* zxid_simple_call(struct zxid_conf* cf, struct zxid_ses* ses, char* svctype, char* url, char* env);
+struct zx_str* zxid_simple_callf(struct zxid_conf* cf, struct zxid_ses* ses, char* svctype, char* url, char* env_f, ...);
 
 /*() Most SOAP messages (at least in Liberty based web services) have
  * the status field in same place, but they all have different data

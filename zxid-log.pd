@@ -2,7 +2,7 @@
 <<else: >>ZXID Signed and Encrypted Logging Facility
 ##########################################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-log.pd,v 1.8 2009-09-07 16:13:02 sampo Exp $>>
+<<cvsid: $Id: zxid-log.pd,v 1.9 2009-10-16 13:36:33 sampo Exp $>>
 <<class: article!a4paper!!ZXID-LOG 01>>
 <<define: ZXDOC=ZXID Signed and Encrypted Logging Facility>>
 
@@ -694,7 +694,7 @@ to store users federations, bootstraps, and attributes.
    |         |
    |         +-- .di/      Directory of default discovery registrations for all
    |         |    |
-   |         |    `-- SVC,SHA1    Bootstrap for a service
+   |         |    `-- SVC,SHA1    Discovery registration for a service
    |         |
    |         `-- SP,SHA1/  One directory for each SP
    |              |

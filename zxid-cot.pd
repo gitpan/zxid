@@ -2,7 +2,7 @@
 <<else: >>Building a Circle-of-Trust Using ZXID
 #####################################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-cot.pd,v 1.3 2009-08-30 15:09:26 sampo Exp $>>
+<<cvsid: $Id: zxid-cot.pd,v 1.4 2009-10-16 13:36:33 sampo Exp $>>
 <<class: article!a4paper!!ZXID-COT 01>>
 <<define: ZXDOC=Building Circles-of-Trust using ZXID>>
 
@@ -127,8 +127,10 @@ a password if you accidentally enabled it.
 <<if: ZXIDBOOK>>
 <<else: >>
 
-97 FAQ
-======
+97 FAQ extract
+==============
+
+See zxid-faq.pd for full story.
 
 (*** These answers also appear in main FAQ in README.zxid)
 

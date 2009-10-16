@@ -2,7 +2,7 @@
 <<else: >>PHP Interface to ZXID
 #####################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-php.pd,v 1.4 2009-08-30 15:09:26 sampo Exp $>>
+<<cvsid: $Id: zxid-php.pd,v 1.5 2009-10-16 13:36:33 sampo Exp $>>
 <<class: article!a4paper!!ZXID-PHP 01>>
 <<define: ZXDOC=ZXID PHP Interface>>
 
@@ -10,6 +10,7 @@
 
 ZXID.org Identity Management toolkit implements standalone SAML 2.0 and
 Liberty ID-WSF 2.0 stacks. This document describes the PHP glue.
+
 >>
 
 <<maketoc: 1>>
@@ -40,7 +41,12 @@ The PHP integration is incomplete due to incomplete support in SWIG
 for php5. However, enough interface exists to get most high level API
 working and thus successfully run an SP.
 
-7.1 Building and Installing ZXID PHP extension
+7.1 Installing Binaries or from Package
+---------------------------------------
+
+TBD (*** WIP)
+
+7.2 Building and Installing ZXID PHP extension
 ----------------------------------------------
 
 After building main zxid distribution, say
@@ -62,13 +68,13 @@ php(1) can find the module.
 Next you need to decide whether to run under Apache mod_php
 setup (apache), or as CGI (any web server).
 
-7.1.1 Running PHP as Apache mod_php
+7.2.1 Running PHP as Apache mod_php
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See <<link:apache.html: Apache recipe>> for how
 to compile Apache to support mod_php.
 
-7.1.2 Running PHP as CGI (any web server)
+7.2.2 Running PHP as CGI (any web server)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In the CGI case you generally make sure your CGI script starts like
@@ -125,7 +131,7 @@ was redirected to stdout) and this will garble the returned web page.
 Easy fix is to disable debug output by not supplying ~ZXID_AUTO_DEBUG~.
 See section <<see: ZXID-ZXID_simpleAPI-HelloWorld-AUTOoptions>>.
 
-7.2 Programming with ZXID PHP Extension
+7.3 Programming with ZXID PHP Extension
 ---------------------------------------
 
 To use the ZXID PHP extension you must add near beginning of your script
@@ -138,7 +144,7 @@ After this, you can use the PHP interface much the same way as you
 would use the C interface. See the distributed zxid.php and
 zxidhlo.php for further usage examples.
 
-7.3 Simple API Using PHP
+7.4 Simple API Using PHP
 ------------------------
 
 (*** also in zxid-php.pd)
@@ -253,49 +259,7 @@ role using standard wire protocol - SAML 2.0.
 Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 Author: Sampo Kellomäki (sampo@iki.fi)
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-While the source distribution of ZXID does not contain
-SSLeay or OpenSSL code, if you use this code you will use OpenSSL
-library. Please give Eric Young and OpenSSL team credit (as required by
-their licenses).
-
-Binary distribution of this product includes software developed by the
-OpenSSL Project for use in the OpenSSL Toolkit
-(http://www.openssl.org/). See LICENSE.openssl for further information.
-
-Binary distribution of this product includes cryptographic software
-written by Eric Young (eay@cryptsoft.com).  Binary distribution of
-this product includes software written by Tim Hudson
-(tjh@cryptsoft.com). See LICENSE.ssleay for further information.
-
-And remember, you, and nobody else but you, are responsible for
-auditing ZXID and OpenSSL library for security problems,
-back-doors, and general suitability for your application.
-
-96.1 Dependency Library Licenses
---------------------------------
-
-ZXID strives to maintain IPR hygiene and avoid both
-non-free and GPL license contamination. All the
-dependency libraries have BSD style licenses
-
-* OpenSSL under BSDish (with "advertising" clause)
-* libcurl under BSDish
-* zlib under BSDish
-* libc available as part of the operating system
-
-Please see each library package for the exact details of their
-licenses.
+See file COPYING for complete information.
 
 <<references:
 

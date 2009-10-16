@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zx.h,v 1.41 2009-09-07 16:13:02 sampo Exp $
+ * $Id: zx.h,v 1.42 2009-10-16 13:36:33 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 7.8.2006,  renamed from dec.h to zx.h and added comments --Sampo
@@ -29,6 +29,8 @@
 #else
 #define RSA void*
 #endif
+
+/* Error Codes (low level or XML parsing) */
 
 #define ZXERR_EOF             0x0001  /* return due to EOF condition */
 #define ZXERR_MISMATCH_CLOSE  0x0002  /* mismatching close tag */
@@ -110,11 +112,9 @@ struct zx_node_s {
   short err;              /* error mask */
 };
 
-#if 1
-#define ZX_NEXT(x) ((void*)((struct zx_node_s*)(x))->n)
-#else
-#define ZX_NEXT(x) ((void*)((x)->gg.g.n))
-#endif
+//#define ZX_NEXT(x) ((void*)((struct zx_node_s*)(x))->n)
+//#define ZX_NEXT(x) ((void*)((x)->gg.g.n))
+#define ZX_NEXT(x) ((x)->gg.g.n)
 
 /* Simple elements, base type for complex elements. */
 

@@ -1,12 +1,21 @@
+README.zxid-perl
+$Id: README.zxid-perl,v 1.5 2009-10-16 13:36:33 sampo Exp $
+
 This is the perl module hierarchy for libzxid.
 
 It is included inside zxid distribution, zxid-0.x.tgz. Net::SAML and
 ZXID are further described in README.zxid and on web at zxid.org
 
+  zxid.org
+  zxid/README.zxid
+  zxid/INSTALL.zxid
+  zxid/zxid-perl.pd: Using ZXID from Perl
+  zxid/zxidhlo.pl: Example code
+
 Install
 =======
 
-* Generally you should follow the README.zxid instructions
+* Generally you should follow the INSTALL.zxid instructions
 * The perl specific part (after compiling libzxid) is more or less
 
      cd zxid/Net
@@ -55,5 +64,3 @@ Planned modules
 * Net::WSF::WSC:Raw
 
 --Sampo
-
-$Id: README.zxid-perl,v 1.4 2009-09-07 16:13:02 sampo Exp $

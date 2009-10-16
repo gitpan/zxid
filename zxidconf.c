@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidconf.c,v 1.45 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxidconf.c,v 1.46 2009-10-16 13:36:33 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
@@ -264,6 +264,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->timeskew       = ZXID_TIMESKEW;
   cf->a7nttl         = ZXID_A7NTTL;
   cf->pdp_url        = ZXID_PDP_URL;
+  cf->pdp_call_url   = ZXID_PDP_CALL_URL;
 
   cf->need           = zxid_load_need(cf, 0, ZXID_NEED);
   cf->want           = zxid_load_need(cf, 0, ZXID_WANT);
@@ -928,6 +929,7 @@ scan_end:
       }
       if (!strcmp(n, "PDP_ENA"))        { SCAN_INT(v, cf->pdp_ena); break; }
       if (!strcmp(n, "PDP_URL"))        { cf->pdp_url = v; break; }
+      if (!strcmp(n, "PDP_CALL_URL"))   { cf->pdp_call_url = v; break; }
       if (!strcmp(n, "PEPMAP"))         { cf->pepmap = zxid_load_map(cf, cf->pepmap, v); break; }
       if (!strcmp(n, "POST_A7N_ENC"))   { SCAN_INT(v, cf->post_a7n_enc); break; }
       goto badcf;

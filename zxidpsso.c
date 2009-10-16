@@ -4,7 +4,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidpsso.c,v 1.12 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxidpsso.c,v 1.13 2009-10-16 13:36:33 sampo Exp $
  *
  * 14.11.2008, created --Sampo
  * 4.9.2009,   added persistent nameid support --Sampo
@@ -136,7 +136,8 @@ static struct zx_str* zxid_anoint_sso_resp(struct zxid_conf* cf, int sign, struc
   return ss;
 }
 
-/*() Parse LDIF format and insert attributes to linked list. Return new head of the list. */
+/*() Parse LDIF format and insert attributes to linked list. Return new head of the list.
+ * *** illegal input causes corrupt pointer. For example query string input causes corruption. */
 
 struct zx_sa_Attribute_s* zxid_add_ldif_attributes(struct zxid_conf* cf, struct zx_sa_Attribute_s* prev, int len, char* p, char* lk)
 {

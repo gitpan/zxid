@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidconf.h,v 1.46 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxidconf.h,v 1.47 2009-10-16 13:36:33 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 29.8.2009, added PDP_URL --Sampo
@@ -444,10 +444,17 @@
 //#define ZXID_SUPPRESS ""
 
 /* ----------------------------------------------------------------------------- */
-/*(c) Policy Decision Point (PDP) URL
- * If this URL is set, then the indicated PDP will be consulted in
- * the end of SSO, or whenever zxid_az() (*** name subject to change) is called. */
+/*(c) Policy Decision Point (PDP) URLs
+ * If PDP_URL is set, then the indicated PDP will be consulted in
+ * the end of SSO, i.e. by zxid_simple().
+ * PDP_CALL_URL is used if zxid_az() family of functions
+ * are called. If PDP_CALL_URL is not set, but PDP_URL is
+ * set, the latter value will be used by zxid_az(). If you
+ * always want to explicitly call zxid_az() and do not want
+ * zxid_simple() to make implicit calls to PDP, just set
+ * PDP_CALL_URL and leave PDP_URL as 0. */
 #define ZXID_PDP_URL 0
+#define ZXID_PDP_CALL_URL 0
 
 /*(c) XACML Attributes ns$A$rule$b$ext */
 

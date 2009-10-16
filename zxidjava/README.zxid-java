@@ -1,9 +1,9 @@
 README.zxid-java
-$Id: README.zxid-java,v 1.3 2009-09-07 16:13:02 sampo Exp $
+$Id: README.zxid-java,v 1.4 2009-10-16 13:36:33 sampo Exp $
 
 This is the Java JNI module for using libzxid. This JNI module is
 tightly integrated into the main ZXID project and distribution.
-As the diretory name reflacts, the package name is zxidjava so
+As the diretory name reflects, the package name is zxidjava so
 you would do in your .java file:
 
   import zxidjava.*;
@@ -12,13 +12,16 @@ Please see for further information
 
   zxid.org
   zxid/README.zxid
-  zxid/zxid.java
+  zxid/INSTALL.zxid
+  zxid/zxid-java.pd: Using ZXID from Java
+  zxid/zxidhlo.java: Example code
 
 Install
 
   cd zxid-X.Y
   make dep
-  make              # creates libzxid
+  make                   # creates libzxid
   make javazxid
+  make javazxid_install
 
 --Sampo

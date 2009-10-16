@@ -1,6 +1,6 @@
 README.zxid-win32
 #################
-<<cvsid: $Id: README.zxid-win32,v 1.2 2009-08-30 15:09:26 sampo Exp $>>
+<<cvsid: $Id: README.zxid-win32,v 1.3 2009-10-16 13:36:33 sampo Exp $>>
 <<author: Sampo Kellomaki (sampo@symlabs.com)>>
 
 As of version 0.11, January 2007, the Windows port is experimental.
@@ -16,16 +16,18 @@ Right now the following has been accomplished
 *Todo*
 
 * Call zxid.dll from C# (non COM route)
-* Make zxid.dll into COM object and call it from C#
-* Test and debug that the zxid_simple() API really works
-  on WIndows.
+* Make zxid.dll into COM object and call it from C#; try
+
+    make csharpzxid TARGET=mingw
+
+* Test and debug that the zxid_simple() API really works on Windows
 
 1 Building
 ==========
 
 Current approach is to use the MinGW environment. Cross compilation
 on Linux host and MinGW target is best tested. Native compile
-with MinGW may work, but author is not able to test this compination.
+with MinGW may work, but author is not able to test this combination.
 Nobody has tried compilation using Visual C, reports welcome.
 
 Generally you would proceed as follows
@@ -38,22 +40,23 @@ or
 
 There is no make install, thus you will have to manually
 put things in right places and create /var/zxid directory
-hieararchy (What would be appropriate place for this in Windows?)
+hierarchy (what would be appropriate place for this in Windows?)
 
 ZXID depends on libcurl, openssl, and zlib. For best results
 you should compile these yourself and link them statically into
 the binaries and dll. It may be possible to use binaries
 from other sources (such as doenload sites of the respective
-projects), but this has not been tested.
+projects), but this has not been tested. Cygwin packaged
+versions of these binaries are reported to work.
 
 2 Binary distribution
 =====================
 
-I distribute an unsupported binary package. You can find
-it in http://zxid.org/zxid-REL-win32-bin.zip
+I distribute an experimental binary package. You can find
+it in http://zxid.org/zxid-0.34-win32-bin.zip (substitute release number).
 
-It was cross compile and probably works on Windows 2000. I do not have
-resources or intent to test more widely.
+It was cross compiled and probably works on Windows 2000. I do not have
+resources to test more widely.
 
 2 Calling ZXID from C#
 ======================

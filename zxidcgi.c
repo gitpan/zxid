@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidcgi.c,v 1.29 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxidcgi.c,v 1.30 2009-10-16 13:36:33 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
@@ -57,7 +57,7 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
     for (; name < qs && *name <= ' '; ++name) ; /* Skip over initial whitespace before name */
     n = p = name;
     URL_DECODE(p, name, qs);
-    *p = 0;
+    *p = 0;                                     /* Nul-term n (name) */
     
     for (val = ++qs; *qs && *qs != '&'; ++qs) ; /* Skip over = and scan value (until '&') */
     v = p = val;
@@ -73,7 +73,7 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
 
     if (*qs)
       ++qs;
-    *p = 0;
+    *p = 0;                                     /* Nul-term v (value) */
     
     switch (n[0]) {
     case 'o':

@@ -1,9 +1,19 @@
 # zxid/Changes
-# $Id: Changes,v 1.33 2009-09-16 10:14:57 sampo Exp $
+# $Id: Changes,v 1.34 2009-10-16 13:36:33 sampo Exp $
 # Change log, minor credits, and release history
 
+zxid-0.38:: 16.10.2009
+    - Added better integrated zxidsrvlet
+zxid-0.36:: 14.10.2009
+    - Added building war files (from Brian Reynolds <leitrim_94@yahoo.com>)
+    - Removed duplicate cn from Auto-Cert generated self signed certs and CSRs
+    - Fixed gcc 4.2 specific compile problem re cast as lvalue (thanks Brian)
+zxid-0.35:: 11.10.2009
+    - fixed Solaris compile problems
+zxid-0.34:: 17.9.2009
+    - Added TAS3 package targets for Java and PHP
 zxid-0.33:: 9.9.2009
-    - Removed apache check from defalut make
+    - Removed Apache check from defalut make
     - Continued refactoring README.zxid to separate documents
     - Changed configuration file reading so that config file is (re)read
       whenever PATH is supplied, but not if PATH is supplied in file itself.
@@ -12,7 +22,7 @@ zxid-0.33:: 9.9.2009
     - Fixed zxdecode tool and added html parsing support
     - Added xml-pretty.pl tool
     - Added Auto-Cert feature to generate self signed certificates on the fly
-    - Added optional HMAC chaning code to the log format
+    - Added optional HMAC chaning code to the log format (but not implementation)
     - Added attribute broker and PEP features
     - Fixed relay state handling in mod_auth_saml so you land on right protected content page
     - Added support for zxid_simple() returing JSON or Query String in addition to traditional LDIF

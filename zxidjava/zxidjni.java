@@ -677,6 +677,11 @@ public class zxidjni implements zxidjniConstants {
     zxidjniJNI.zxid_get_sid_from_cookie(zxid_conf.getCPtr(cf), zxid_cgi.getCPtr(cgi), cookie);
   }
 
+  public static zxid_ses alloc_ses(zxid_conf cf) {
+    long cPtr = zxidjniJNI.zxid_alloc_ses(zxid_conf.getCPtr(cf));
+    return (cPtr == 0) ? null : new zxid_ses(cPtr, false);
+  }
+
   public static zxid_ses fetch_ses(zxid_conf cf, String sid) {
     long cPtr = zxidjniJNI.zxid_fetch_ses(zxid_conf.getCPtr(cf), sid);
     return (cPtr == 0) ? null : new zxid_ses(cPtr, false);
@@ -728,6 +733,10 @@ public class zxidjni implements zxidjniConstants {
 
   public static void add_attr_to_pool(zxid_conf cf, zxid_ses ses, String at_name, zx_str val) {
     zxidjniJNI.zxid_add_attr_to_pool(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), at_name, zx_str.getCPtr(val));
+  }
+
+  public static int add_qs_to_pool(zxid_conf cf, zxid_ses ses, String qs, int apply_map) {
+    return zxidjniJNI.zxid_add_qs_to_pool(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), qs, apply_map);
   }
 
   public static SWIGTYPE_p_zx_sa_NameID_s parse_mni(zxid_conf cf, String buf, SWIGTYPE_p_p_char pmniptr) {
@@ -1035,6 +1044,18 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxid_pep_az_soap(zxid_conf.getCPtr(cf), zxid_cgi.getCPtr(cgi), zxid_ses.getCPtr(ses));
   }
 
+  public static int az_cf_ses(zxid_conf cf, String qs, zxid_ses ses) {
+    return zxidjniJNI.zxid_az_cf_ses(zxid_conf.getCPtr(cf), qs, zxid_ses.getCPtr(ses));
+  }
+
+  public static int az_cf(zxid_conf cf, String qs, String sid) {
+    return zxidjniJNI.zxid_az_cf(zxid_conf.getCPtr(cf), qs, sid);
+  }
+
+  public static int az(String conf, String qs, String sid) {
+    return zxidjniJNI.zxid_az(conf, qs, sid);
+  }
+
   public static SWIGTYPE_p_zx_sa_Attribute_s find_attribute(SWIGTYPE_p_zx_sa_Assertion_s a7n, int nfmt_len, String nfmt, int name_len, String name, int friendly_len, String friendly, int n) {
     long cPtr = zxidjniJNI.zxid_find_attribute(SWIGTYPE_p_zx_sa_Assertion_s.getCPtr(a7n), nfmt_len, nfmt, name_len, name, friendly_len, friendly, n);
     return (cPtr == 0) ? null : new SWIGTYPE_p_zx_sa_Attribute_s(cPtr, false);
@@ -1192,6 +1213,16 @@ public class zxidjni implements zxidjniConstants {
   public static SWIGTYPE_p_zx_e_Envelope_s callf(zxid_conf cf, zxid_ses ses, String svctype, String body_f) {
     long cPtr = zxidjniJNI.zxid_callf(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), svctype, body_f);
     return (cPtr == 0) ? null : new SWIGTYPE_p_zx_e_Envelope_s(cPtr, false);
+  }
+
+  public static zx_str simple_call(zxid_conf cf, zxid_ses ses, String svctype, String url, String env) {
+    long cPtr = zxidjniJNI.zxid_simple_call(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), svctype, url, env);
+    return (cPtr == 0) ? null : new zx_str(cPtr, false);
+  }
+
+  public static zx_str simple_callf(zxid_conf cf, zxid_ses ses, String svctype, String url, String env_f) {
+    long cPtr = zxidjniJNI.zxid_simple_callf(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), svctype, url, env_f);
+    return (cPtr == 0) ? null : new zx_str(cPtr, false);
   }
 
   public static int nice_sha1(zxid_conf cf, String buf, int buf_len, zx_str name, zx_str cont) {

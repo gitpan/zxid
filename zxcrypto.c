@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxcrypto.c,v 1.6 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxcrypto.c,v 1.7 2009-10-16 13:36:33 sampo Exp $
  *
  * 7.10.2008, added documentation --Sampo
  * 29.8.2009, added zxid_mk_self_signed_cert() --Sampo
@@ -407,13 +407,15 @@ badurl:
   ne = X509_NAME_ENTRY_create_by_NID(0, NID_organizationName, V_ASN1_T61STRING, org, strlen(org));
   X509_NAME_add_entry(ri->subject, ne, X509_NAME_entry_count(ri->subject), 0);
 
+#if 0
+  /* It seems this gives indigestion to the default CA */
   DD("keygen populate attributes %s", lk);  /* Add attributes: we really only need cn */
   
   xa = X509_ATTRIBUTE_new();
   xa->value.set = sk_ASN1_TYPE_new_null();
   /*xa->single = 1; **** this may also be set on some versions */
   xa->object=OBJ_nid2obj(NID_commonName);
-  
+
   bs = ASN1_BIT_STRING_new();
   bs->type = V_ASN1_PRINTABLESTRING;
   ASN1_STRING_set(bs, cn, strlen(cn)+1);  /* *** +1 why? Some archaic bug work-around? */
@@ -422,6 +424,7 @@ badurl:
   ASN1_TYPE_set(at, bs->type, (char*)bs);
   sk_ASN1_TYPE_push(xa->value.set, at);
   sk_X509_ATTRIBUTE_push(ri->attributes, xa);
+#endif
 
   DD("keygen request populated %s", lk);
   X509_REQ_set_pubkey(req, pkey);

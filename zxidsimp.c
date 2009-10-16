@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidsimp.c,v 1.57 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxidsimp.c,v 1.58 2009-10-16 13:36:33 sampo Exp $
  *
  * 17.1.2007, created --Sampo
  * 2.2.2007,  improved the LDIF return --Sampo
@@ -34,7 +34,7 @@
 #include "zxid.h"
 #include "zxidconf.h"
 
-/*() Convert configuration string ~conf~ to coniguration object ~cf~. */
+/*() Convert configuration string ~conf~ to configuration object ~cf~. */
 
 /* Called by:  dirconf, main x2, zxid_fed_mgmt_len, zxid_idp_list_len, zxid_idp_select_len, zxid_new_conf_to_cf, zxid_simple_len */
 int zxid_conf_to_cf_len(struct zxid_conf* cf, int conf_len, char* conf)
@@ -800,10 +800,10 @@ static char* zxid_simple_idp_show_an(struct zxid_conf* cf, struct zxid_cgi* cgi,
   }
   DD("zz saml_req(%s) rs(%s) sigalg(%s) sig(%s)", cgi->saml_req, cgi->rs, cgi->sigalg, cgi->sig);  
   ss = zx_strf(cf->ctx, "SAMLRequest=%s%s%s&SigAlg=%s&Signature=%s",
-	       cgi->saml_req,
+	       STRNULLCHK(cgi->saml_req),
 	       cgi->rs && cgi->rs[0] ? "&RelayState=" : "", cgi->rs ? cgi->rs : "",
-	       cgi->sigalg,
-	       cgi->sig);
+	       STRNULLCHK(cgi->sigalg),
+	       STRNULLCHK(cgi->sig));
   D("z input(%.*s) len=%d", ss->len, ss->s, ss->len);
   zbuf = zx_zlib_raw_deflate(cf->ctx, ss->len, ss->s, &zlen);
   if (!zbuf)
@@ -1157,17 +1157,21 @@ res_zx_str:
   return res;
 }
 
-
 /*(i) Simple handler that assumes the configuration has already been read in.
  * The memory for result is grabbed from ZX_ALLOC(), usually malloc(3)
  * and is "given" away to the caller, i.e. caller must free it. The
  * return value is LDIF of attributes in success case.
  * res_len, if non-null, will receive the length of the response.
  *
+ * The major advantage of zxid_simple_cf_ses() is that the session stays
+ * as binary object and does not need to be recreated / reparsed from
+ * filesystem representation. The object can be directly used for PEP
+ * calls (but see inline PEP call enabled by PDPURL) and WSC.
+ *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
 /* Called by:  main x3, zxid_simple_len */
-char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, int auto_flags)
+char* zxid_simple_cf_ses(struct zxid_conf* cf, int qs_len, char* qs, struct zxid_ses* ses, int* res_len, int auto_flags)
 {
   int got, ret;
   char* remote_addr;
@@ -1175,12 +1179,10 @@ char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, i
   char* buf = 0;
   char* res = 0;
   struct zxid_cgi cgi;
-  struct zxid_ses ses;
   memset(&cgi, 0, sizeof(cgi));
-  memset(&ses, 0, sizeof(ses));
   
-  if (!cf) {
-    ERR("NULL pointer. You MUST supply configuration object %x (programming error)", auto_flags);
+  if (!cf || !ses) {
+    ERR("NULL pointer. You MUST supply configuration object %p and session object %p (programming error). auto_flags=%x", cf, ses, auto_flags);
     exit(1);
   }
   
@@ -1196,7 +1198,7 @@ char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, i
   
   if (!qs) {
     qs = getenv("QUERY_STRING");
-    D("QUERY_STRING(%s)", qs);
+    D("QUERY_STRING(%s)", STRNULLCHK(qs));
     if (qs) {
       zxid_parse_cgi(&cgi, qs);
       if (ONE_OF_2(cgi.op, 'P', 'S')) {
@@ -1223,10 +1225,10 @@ char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, i
 	      got-=3; buf+=3;
 	    sp_soap:
 	      /* *** TODO: SOAP response should not be sent internally unless there is auto */
-	      ret = zxid_sp_soap_parse(cf, &cgi, &ses, got, buf);
+	      ret = zxid_sp_soap_parse(cf, &cgi, ses, got, buf);
 	      D("POST soap parse returned %d", ret);
 	      if (ret == ZXID_SSO_OK)
-		return zxid_simple_ab_pep(cf, &ses, res_len, auto_flags);
+		return zxid_simple_ab_pep(cf, ses, res_len, auto_flags);
 	      if (auto_flags & ZXID_AUTO_SOAPC || auto_flags & ZXID_AUTO_SOAPH) {
 		if (auto_flags & ZXID_AUTO_EXIT)
 		  exit(0);
@@ -1252,7 +1254,7 @@ char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, i
       ERR("IMPLEMENTATION LIMIT: Query String MUST be nul terminated len=%d", qs_len);
       exit(1);
     }
-    D("QUERY_STRING(%s)", qs);
+    D("QUERY_STRING(%s)", STRNULLCHK(qs));
     zxid_parse_cgi(&cgi, qs);
   }
   if (!cgi.op)
@@ -1262,20 +1264,33 @@ char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, i
     zxid_get_sid_from_cookie(cf, &cgi, getenv("HTTP_COOKIE"));
 
   if (cgi.sid) {
-      if (!zxid_get_ses(cf, &ses, cgi.sid)) {
+      if (!zxid_get_ses(cf, ses, cgi.sid)) {
 	D("No session(%s) active op(%c)", cgi.sid, cgi.op);
       } else
-	if (res = zxid_simple_ses_active_cf(cf, &cgi, &ses, res_len, auto_flags))
+	if (res = zxid_simple_ses_active_cf(cf, &cgi, ses, res_len, auto_flags))
 	  goto done;
   }
 
-  memset(&ses, 0, sizeof(ses));   /* No session yet! Process login form */
-  res = zxid_simple_no_ses_cf(cf, &cgi, &ses, res_len, auto_flags);
+  memset(ses, 0, sizeof(ses));   /* No session yet! Process login form */
+  res = zxid_simple_no_ses_cf(cf, &cgi, ses, res_len, auto_flags);
 
 done:
   if (buf)
     ZX_FREE(cf->ctx, buf);
   return res;
+}
+
+/*() Allocate simple session and then call simple handler. Strings
+ * are length + pointer (no C string nul termination needed).
+ * a wrapper for zxid_simple_cf().
+ *
+ * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
+
+char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, int auto_flags)
+{
+  struct zxid_ses ses;
+  memset(&ses, 0, sizeof(ses));
+  return zxid_simple_cf_ses(cf, qs_len, qs, &ses, res_len, auto_flags);
 }
 
 /*() Process simple configuration and then call simple handler. Strings

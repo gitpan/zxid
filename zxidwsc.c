@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidwsc.c,v 1.14 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxidwsc.c,v 1.15 2009-10-16 13:36:33 sampo Exp $
  *
  * 7.1.2007,  created --Sampo
  * 7.10.2008, added documentation --Sampo
@@ -85,7 +85,7 @@ int zxid_map_sec_mech(struct zx_a_EndpointReference_s* epr)
   return 0;
 }
 
-/*() zxid_wsc_call() implements the main ID-WSF web service call logic, including
+/*(i) zxid_wsc_call() implements the main low level ID-WSF web service call logic, including
  * preparation of SOAP headers, use of sec mech (e.g. preparation of wsse:Security
  * header and signing of appropriate compoments of the message), and sequencing
  * of the call. In particular, it is possible that WSP requests user interaction
@@ -93,7 +93,8 @@ int zxid_map_sec_mech(struct zx_a_EndpointReference_s* epr)
  * later call this function again to continue the web service call after interaction.
  *
  * env (rather than Body) is taken as argument so that caller can prepare
- * additional SOAP headers at will before calling this function. */
+ * additional SOAP headers at will before calling this function. This function
+ * will add Liberty ID-WSF specific SOAP headers. */
 
 /* Called by:  main x15, zxid_callf, zxid_get_epr */
 struct zx_e_Envelope_s* zxid_wsc_call(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr, struct zx_e_Envelope_s* env)
@@ -167,6 +168,7 @@ struct zx_e_Envelope_s* zxid_wsc_call(struct zxid_conf* cf, struct zxid_ses* ses
 #endif
 
 #if 0
+  /* Usually not relevant for a request. */
   env->Header->ReplyTo = zx_NEW_a_ReplyTo(cf->ctx);
   env->Header->ReplyTo->Address = zxid_mk_addr(cf, zx_strf(cf->ctx, "%s?o=P", cf->url));
   env->Header->ReplyTo->Id = zx_ref_str(cf->ctx, "REP");
@@ -191,6 +193,8 @@ struct zx_e_Envelope_s* zxid_wsc_call(struct zxid_conf* cf, struct zxid_ses* ses
 #endif
 
 #if 0
+  /* If you want this header, you should
+   * create it prior to calling zxid_wsc_call() */
   env->Header->UsageDirective = zx_NEW_b_UsageDirective(cf->ctx);
   env->Header->UsageDirective->Id = zx_ref_str(cf->ctx, "DIR");
   env->Header->UsageDirective->actor = zx_ref_str(cf->ctx, SOAP_ACTOR_NEXT);
@@ -198,7 +202,7 @@ struct zx_e_Envelope_s* zxid_wsc_call(struct zxid_conf* cf, struct zxid_ses* ses
 #endif
 
 #if 0
-  /* *** Interaction or redirection. If you want this header, you should
+  /* Interaction or redirection. If you want this header, you should
    * create it prior to calling zxid_wsc_call() */
   env->Header->UserInteraction = zx_NEW_b_UserInteraction(cf->ctx);
   env->Header->UserInteraction->Id = zx_ref_str(cf->ctx, "UIA");
@@ -382,7 +386,7 @@ struct zx_e_Envelope_s* zxid_callf(struct zxid_conf* cf, struct zxid_ses* ses, c
   struct zx_a_EndpointReference_s* epr;
   va_list ap;
   
-  epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+  epr = zxid_get_epr(cf, ses, svctype, 1);   /*zx_xmlns_idhrxml *** */
   if (!epr) {
     ERR("EPR could not be discovered for svctype(%s)", svctype);
     return 0;
@@ -393,8 +397,95 @@ struct zx_e_Envelope_s* zxid_callf(struct zxid_conf* cf, struct zxid_ses* ses, c
   env = zxid_wsc_call(cf, ses, epr, env);
   if (!env) {
     ERR("Web services call failed svctype(%s)", svctype);
+    return 0;
   }
-  return 0;
+  return env;
+}
+
+/*(i) Make a SOAP call given XML payload for SOAP <e:Envelope> or <e:Body> content,
+ * specified by the format string. See zxid_simple_call() for further description.
+
+ * cf:: ZXID configuration object, see zxid_new_conf()
+ * ses:: Session object that contains the EPR cache
+ * svctype:: URI (often the namespace URI) specifying the kind of service we
+ *     wish to call. Used for EPR lookup or discovery.
+ * url:: (Optional) If provided, this argument has to match either
+ *     the ProviderID, EntityID, or actual service end point URL.
+ * env_f:: printf(3) style format string for XML payload
+ * ...:: Additional arguments that will satisfy the format specifiers in ~body_f~
+ * return:: SOAP Envelope of the response, as a string. You can parse this
+ *     string to obtain all returned SOAP headers as well as the Body and its
+ *     content. */
+
+/* Called by:  main */
+struct zx_str* zxid_simple_callf(struct zxid_conf* cf, struct zxid_ses* ses, char* svctype, char* url, char* env_f, ...)
+{
+  struct zx_e_Envelope_s* env;
+  struct zx_a_EndpointReference_s* epr;
+  va_list ap;
+  
+  epr = zxid_get_epr(cf, ses, svctype, 1);
+  if (!epr) {
+    ERR("EPR could not be discovered for svctype(%s)", svctype);
+    return 0;
+  }
+  va_start(ap, env_f);
+  env = vzxid_new_envf(cf, env_f, ap);
+  va_end(ap);
+  env = zxid_wsc_call(cf, ses, epr, env);
+  if (!env) {
+    ERR("Web services call failed svctype(%s)", svctype);
+    return 0;
+  }
+  return env;
+}
+
+/*(i) Make a SOAP call given XML payload for SOAP <e:Envelope> or <e:Body> content,
+ * specified by the string. This is your WSC work horse for calling almost any kind
+ * of web service. Simple and intuitive specification of XML as string: no need
+ * to build complex data structures.
+ *
+ * If the string starts by "<e:Envelope", then string
+ * should be a complete SOAP envelope including <e:Header> and <e:Body> parts. This
+ * allows caller to specify custom SOAP headers, in addition to the ones
+ * that the underlying zxid_wsc_call() will add. Usually the payload service
+ * will be passed as the contents of the body. If the string starts by
+ * "<e:Body", then the <e:Envelope> and <e:Header> are automatically added. If
+ * the string starts by neither of the above (be careful to use the "e:" as
+ * namespace prefix), the it is assumed to be the payload content of the <b:Body>
+ * and the rest of the SOAP envelope is added.
+ *
+ * cf:: ZXID configuration object, see zxid_new_conf()
+ * ses:: Session object that contains the EPR cache
+ * svctype:: URI (often the namespace URI) specifying the kind of service we
+ *     wish to call. Used for EPR lookup or discovery.
+ * url:: (Optional) If provided, this argument has to match either
+ *     the ProviderID, EntityID, or actual service end point URL.
+ * env:: XML payload
+ * return:: SOAP Envelope of the response, as a string. You can parse this
+ *     string to obtain all returned SOAP headers as well as the Body and its
+ *     content. */
+
+/* Called by:  main */
+struct zx_str* zxid_simple_call(struct zxid_conf* cf, struct zxid_ses* ses, char* svctype, char* url, char* envi)
+{
+  struct zx_e_Envelope_s* env;
+  struct zx_a_EndpointReference_s* epr;
+  
+  //*** Needs thought and development
+
+  epr = zxid_get_epr(cf, ses, svctype, 1);
+  if (!epr) {
+    ERR("EPR could not be discovered for svctype(%s)", svctype);
+    return 0;
+  }
+  //env = vzxid_new_envf(cf, envi, ap);
+  env = zxid_wsc_call(cf, ses, epr, env);
+  if (!env) {
+    ERR("Web services call failed svctype(%s)", svctype);
+    return 0;
+  }
+  return env;
 }
 
 /* EOF  --  zxidwsc.c */

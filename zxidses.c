@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidses.c,v 1.26 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxidses.c,v 1.27 2009-10-16 13:36:33 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
@@ -122,12 +122,20 @@ struct zxid_entity* zxid_get_ses_idp(struct zxid_conf* cf, struct zxid_ses* ses)
   return zxid_get_ent_ss(cf, ses->a7n->Issuer->gg.content);
 }
 
+/*() Allocate memory for session object. Used with zxid_simple_cf_ses(). */
+
+/* Called by: */
+struct zxid_ses* zxid_alloc_ses(struct zxid_conf* cf)
+{
+  return ZX_ZALLOC(cf->ctx, struct zxid_ses);
+}
+
 /*() Allocate memory and get session object from the filesystem */
 
 /* Called by: */
 struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
 {
-  struct zxid_ses* ses = ZX_ZALLOC(cf->ctx, struct zxid_ses);
+  struct zxid_ses* ses = zxid_alloc_ses(cf);
   if (sid && sid[0])
     if (!zxid_get_ses(cf, ses, sid)) {
       ZX_FREE(cf->ctx, ses);

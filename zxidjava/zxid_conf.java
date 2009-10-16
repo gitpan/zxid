@@ -532,6 +532,14 @@ public class zxid_conf {
     return zxidjniJNI.zxid_conf_pdp_url_get(swigCPtr);
   }
 
+  public void setPdp_call_url(String value) {
+    zxidjniJNI.zxid_conf_pdp_call_url_set(swigCPtr, value);
+  }
+
+  public String getPdp_call_url() {
+    return zxidjniJNI.zxid_conf_pdp_call_url_get(swigCPtr);
+  }
+
   public void setNeed(zxid_need value) {
     zxidjniJNI.zxid_conf_need_set(swigCPtr, zxid_need.getCPtr(value));
   }

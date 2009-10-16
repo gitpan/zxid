@@ -47,6 +47,8 @@ int zx_debug = 0;
 int inflate_flag = 2;  /* Auto */
 int verbose = 1;
 char buf[32*1024];
+int assert_nonfatal = 0;
+char* assert_msg = "assert fired.";
 
 /* N.B. This options processing is a skeleton. In reality CGI scripts do not have
  * an opportunity to process any options. */

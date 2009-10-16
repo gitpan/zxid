@@ -2,7 +2,7 @@
 <<else: >>ZXID Simple API
 ###############
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-simple.pd,v 1.9 2009-09-07 16:13:02 sampo Exp $>>
+<<cvsid: $Id: zxid-simple.pd,v 1.10 2009-10-16 13:36:33 sampo Exp $>>
 <<class: article!a4paper!!ZXID-SIMP 01>>
 <<define: ZXDOC=ZXID Simple API>>
 
@@ -829,7 +829,7 @@ char* zxid_simple_no_ses_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, struct z
 
 >>
 
-4.9 Generating HTML for Logout button or Management Screens
+4.4 Generating HTML for Logout button or Management Screens
 -----------------------------------------------------------
 
 <<code:
@@ -837,6 +837,95 @@ char* zxid_fed_mgmt_cf(struct zxid_conf* cf, int* res_len, int sid_len, char* si
 char* zxid_fed_mgmt_len(int conf_len, char* conf, int* res_len, char* sid, int auto_flags)
 char* zxid_fed_mgmt(char* conf, char* sid, int auto_flags)
 >>
+
+4.5 Explicitly Calling PEP (which makes SOAP/XACML call to PDP)
+---------------------------------------------------------------
+
+Although a simple PEP functionality is built-in to zxid_simple() API
+through configuration options like ~PEPMAP~, ~LOCALPDP_*~ family, and
+~PDP_URL~, it is sometimes desireable to implement a Policy Enforcement
+Point at application layer where full particluars of the request or
+response are available. To assist in this, the simple API provides
+authrorization client, which we term PEP because at protocol layer it
+is a XACML PEP, which your application code can call to implement the
+protocols specifics of a PDP. However, your own code still needs to
+implement the actual enforcement or filtering logic.
+
+4.5.1 zxid_az(conf, qs, sesid)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+conf:: the configuration will need to have ~PEPMAP~ and ~PDP_URL~ options
+    set according to your situation.
+
+qs:: if supplied, any CGI variables are imported to session
+    environment as attributes (according to ~INMAP~). Format is
+    CGI Query String.
+
+sesid:: attributes are obtained from the session, if supplied (see also
+    CGI). The session ID is supplied as a string. If none is
+    supplied, then session will be entirely defined by the CGI
+    attributes.
+
+returns:: 0 if deny (for any reason, e.g. indeterminate), or 1 if permit
+
+This function calls underlying zxid_pep_az_soap() with the difference
+that it is possible to import attributes to the session via CGI string.
+
+The XACML request is constructed by applying ~PEPMAP~ configuration
+to the attributes in the session. For this to work, the ~PEPMAP~ MUST
+have ~subj~, ~rsrc~, and ~act~ stanzas and should have ~env~ stanza
+if you have environment attributes to pass. See zxid-conf.pd for
+further information and default values.
+
+*Variants*
+
+  zxid_az_cf(cf, qs, sesid)
+
+The configuration is received as binary object, usually obtained from
+zxid_conf_to_cf_len(). This avoids reparsing configuration in case
+multiple calls are made. Typically the same configuration object
+might have been used with zxid_simple_cf().
+
+  zxid_az_cf_ses(cf, qs, ses)
+
+Both configuration and session are supplied as binary objects,
+such as may have been received from zxid_conf_to_cf_len()
+and zxid_alloc_ses() as used with zxid_simple_cf_ses().
+
+*Example Pseudocode*
+
+  cf = zxid_new_conf();
+  ses = zxid_alloc_ses(cf);
+  ret = zxid_simple_cf_ses(cf, 0, $QUERY_STRING, ses, 0, 0x1800);
+  if (ret =~ /^d/) {
+    perr "SSO ok, now checking authorization";
+    if (zxid_az(cf, "", ses))
+      perr "Permit, add code to deliver application content";
+    else
+      perr "Deny, send back an error";
+  }
+
+4.5.2 zxid_pep_az_soap() - Underlying PEP Function
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The simple PEP is based on this function:
+
+  int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+
+In particular
+
+cf:: the configuration will need to have ~PEPMAP~ and ~PDP_URL~ options
+    set according to your situation.
+
+cgi:: if non-null, will resceive error and status codes
+
+ses:: all attributes are obtained from the session. You may wish
+    to add additional attributes that are not known by SSO.
+
+returns:: 0 if deny (for any reason, e.g. indeterminate), or 1 if permit
+
+The XACML request is constructed by applying ~PEPMAP~ configuration
+to the attributes in the session. 
 
 <<if: ZXIDBOOK>>
 <<else: >>

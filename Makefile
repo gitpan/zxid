@@ -5,7 +5,7 @@
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
-# $Id: Makefile,v 1.146 2009-09-16 10:14:57 sampo Exp $
+# $Id: Makefile,v 1.148 2009-10-16 13:36:33 sampo Exp $
 # 15.10.2006, refactor sources to be per namespace --Sampo
 # 19.1.2006, added new zxid_simple() / Hello World targets and JNI --Sampo
 # 26.2.2007, tweaks for the great SOAP merger, WSC support --Sampo
@@ -33,8 +33,8 @@ default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool
 
 all: seehelp precheck precheck_apache zxid zxidhlo zxididp zxidsimple zxlogview samlmod phpzxid javazxid apachezxid zxdecode zxcot smime
 
-ZXIDREL=0.33
-ZXIDVERSION=0x000033
+ZXIDREL=0.38
+ZXIDVERSION=0x000038
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -90,7 +90,7 @@ CFLAGS=-g -fpic -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-s
 #CFLAGS += -Os    # gcc-3.4.6 miscompiles with -Os on ix86
 CFLAGS += -Wall -Wno-parentheses -DMAYBE_UNUSED='__attribute__ ((unused))'
 CFLAGS += -ffunction-sections -fdata-sections
-LDFLAGS += -Wl,--gc-sections
+#LDFLAGS += -Wl,--gc-sections
 
 ###
 ### Java options (watch out javac running out of heap)
@@ -105,6 +105,7 @@ JNILIB=so
 JNI_INC=-I/usr/java/include -I/usr/java/include/linux
 # Path where HttpServlet supplied by your application server resides: find / -name servlet-api.jar
 SERVLET_PATH=../apache-tomcat-5.5.20/common/lib/servlet-api.jar
+#SERVLET_PATH=../apache-tomcat-6.0.18/lib/servlet-api.jar
 
 ### To change any of the above options, you can either supply
 ### alternate values on make command line, like `make PREFIX=/your/path'
@@ -127,7 +128,7 @@ CDEF+= -D_REENTRANT -DDEBUG
 CDEF+= -DUSE_CURL
 # Without OpenSSL signing and signature verification are not possible
 CDEF+= -DUSE_OPENSSL
-LIBS=-lpthread -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz
+LIBS+= -lpthread -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz
 #LIBS+=-ldl
 
 # Following ld flags as well as C flag -ffunction-sections are a quest to
@@ -832,6 +833,16 @@ zxidjava.jar: zxidjava/*.class
 javazxid: zxidjava/libzxidjni.$(JNILIB) zxidjava/zxidjni.class zxid.class zxidhlo.class
 
 javazxid_install: zxidjava/libzxidjni.so
+	@$(ECHO) "javazxid_install: Work in Progress. See zxid-java.pd"
+
+javazxid_war: javazxid
+	mkdir -p zxidservlet/WEB-INF/classes/zxidjava/
+	cp -f ./zxidjava/*.class ./zxidservlet/WEB-INF/classes/zxidjava/
+	cp -f ./servlet/WEB-INF/web.xml ./zxidservlet/WEB-INF/
+	cp -f zxidhlo.class zxidservlet/WEB-INF/classes/
+	cd ./zxidservlet ; $(JAR) cf ../zxidservlet.war *; cd ../
+	rm -rf zxidservlet
+	mv zxidservlet.war $(WEBAPPS_PATH)/
 
 javaclean:
 	rm -rf zxidjava/*.o zxidjava/*~ zxidjava/*.so zxidjava/*.class *.class
@@ -867,8 +878,8 @@ zxid: $(ZXID_OBJ) libzxid.a
 zxcot: zxcot.o libzxid.a
 	$(LD) $(LDFLAGS) -o $@ $< -L. -lzxid $(LIBS)
 
-zxdecode: zxdecode.o zxutil.o zxlib.o
-	$(LD) -static $(LDFLAGS) -o $@ $^ -lz
+zxdecode: zxdecode.o
+	$(LD) $(LDFLAGS) -o $@ $^ -L. -lzxid $(LIBS)
 
 zxidwsctool: $(ZXIDWSCTOOL_OBJ) libzxid.a
 	$(LD) $(LDFLAGS) -o zxidwsctool $(ZXIDWSCTOOL_OBJ) -L. -lzxid $(LIBS)
@@ -967,27 +978,53 @@ zxid.dll: libzxid.a
 ### TAS3 Project Specific Targets
 ###
 
-TAS3COMMONFILES=README.zxid-tas3 README.zxid Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay
+TAS3COMMONFILES=README.zxid-tas3 README.zxid Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay zxcot zxdecode
 
 TAS3MAS=T3-SSO-ZXID-MODAUTHSAML-$(ZXIDREL)
 
 tas3maspkg: mod_auth_saml.so
 	rm -rf $(TAS3MAS) $(TAS3MAS).zip
 	mkdir $(TAS3MAS)
-	cp Manifest.T3-SSO-ZXID-MODAUTHSAML $(TAS3MAS)/Manifest
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/'  < Manifest.T3-SSO-ZXID-MODAUTHSAML > $(TAS3MAS)/Manifest
 	cp mod_auth_saml.so $(TAS3MAS)
 	cp $(TAS3COMMONFILES) $(TAS3MAS)
 	zip -r $(TAS3MAS).zip $(TAS3MAS)
+
+TAS3PHP=T3-SSO-ZXID-PHP-$(ZXIDREL)
+
+tas3phppkg: php/php_zxid.so
+	rm -rf $(TAS3PHP) $(TAS3PHP).zip
+	mkdir $(TAS3PHP)
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' <Manifest.T3-SSO-ZXID-PHP >$(TAS3PHP)/Manifest
+	cp php/php_zxid.so php/zxid.php php/zxid.ini php/README.zxid-php $(TAS3PHP)
+	cp $(TAS3COMMONFILES) $(TAS3PHP)
+	zip -r $(TAS3PHP).zip $(TAS3PHP)
+
+TAS3JAVA=T3-SSO-ZXID-JAVA-$(ZXIDREL)
+
+tas3javapkg: zxidjava/libzxidjni.so
+	rm -rf $(TAS3JAVA) $(TAS3JAVA).zip
+	mkdir $(TAS3JAVA)
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' <Manifest.T3-SSO-ZXID-JAVA >$(TAS3JAVA)/Manifest
+	cp zxidjava/libzxidjni.so zxidjava/*.java zxidjava/*.class zxidjava/README.zxid-java $(TAS3JAVA)
+	cp $(TAS3COMMONFILES) $(TAS3JAVA)
+	zip -r $(TAS3JAVA).zip $(TAS3JAVA)
 
 TAS3IDP=T3-IDP-ZXID-$(ZXIDREL)
 
 tas3idppkg: zxididp
 	rm -rf $(TAS3IDP) $(TAS3IDP).zip
 	mkdir $(TAS3IDP)
-	cp Manifest.T3-IDP-ZXID $(TAS3IDP)/Manifest
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' < Manifest.T3-IDP-ZXID > $(TAS3IDP)/Manifest
 	cp zxididp $(TAS3IDP)
+	cp Makefile $(TAS3IDP)
 	cp $(TAS3COMMONFILES) $(TAS3IDP)
 	zip -r $(TAS3IDP).zip $(TAS3IDP)
+
+tas3rel: tas3idppkg tas3javapkg tas3phppkg tas3maspkg
+
+tas3copyrel: tas3rel
+	scp $(TAS3IDP).zip $(TAS3JAVA).zip $(TAS3PHP).zip $(TAS3MAS).zip tas3repo:
 
 ###
 ### Precheck to help analyse compilation problems
@@ -1015,6 +1052,7 @@ precheck: precheck/chk-zlib.o precheck/chk-zlib precheck/chk-openssl.o precheck/
 	@$(ECHO)
 
 precheckclean:
+	rm -f precheck/*.o
 	rm -f precheck/chk-zlib	precheck/chk-openssl precheck/chk-curl precheck/chk-apache
 
 ###
@@ -1029,10 +1067,10 @@ ZXDIR= $(ZXID_PATH)ses \
 
 dir:
 	-mkdir -p $(ZXID_PATH)
-	-for d in $(ZXDIR); do mkdir $d && chmod 02770 $d; done
-	cp default-cot/* $(ZXID_PATH)cot
+	-for d in $(ZXDIR); do mkdir $$d && chmod 02770 $$d; done
 	-mkdir $(ZXID_PATH)pem   # Our certificates and private keys (need to protect well)
 	chmod -R 02750 $(ZXID_PATH)pem
+	-cp default-cot/* $(ZXID_PATH)cot
 	@$(ECHO) "You may need to run"
 	@$(ECHO)
 	@$(ECHO) "    chown -R nobody $(ZXID_PATH)"
@@ -1118,7 +1156,7 @@ clean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean prech
 	@$(ECHO) ------------------ Making clean
 	rm -f *.o zxid zxlogview zxbench zxencdectest libzxid.a libzxid.so* sizeof zxid.stderr
 	rm -f zxidhlo zxidhlowsf zxidhrxmlwsc zxidhrxmlwsp zxidsimple zxidsp zxidwsctool
-	rm -f mod_auth_saml.so zxididp
+	rm -f mod_auth_saml.so zxididp zxdecode
 	rm -f core* *~ .*~ .\#* c/*.o c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
 
 dist: clean

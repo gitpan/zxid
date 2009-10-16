@@ -5,15 +5,13 @@
 // NO WARRANTY, not even implied warranties. Contains trade secrets.
 // Distribution prohibited unless authorized in writing.
 // Licensed under Apache License 2.0, see file COPYING.
-// $Id: zxid.java,v 1.11 2009-03-27 18:40:46 sampo Exp $
+// $Id: zxid.java,v 1.12 2009-10-16 13:36:33 sampo Exp $
 // 12.1.2007, created --Sampo
 
 import zxidjava.*;
 
 public class zxid {
-  static {
-    System.loadLibrary("zxidjni");
-  }
+  static { System.loadLibrary("zxidjni"); }
 
   public static void main(String argv[]) throws java.io.IOException
   {

@@ -345,6 +345,8 @@ class zxidjniJNI {
   public final static native int zxid_conf_a7nttl_get(long jarg1);
   public final static native void zxid_conf_pdp_url_set(long jarg1, String jarg2);
   public final static native String zxid_conf_pdp_url_get(long jarg1);
+  public final static native void zxid_conf_pdp_call_url_set(long jarg1, String jarg2);
+  public final static native String zxid_conf_pdp_call_url_get(long jarg1);
   public final static native void zxid_conf_need_set(long jarg1, long jarg2);
   public final static native long zxid_conf_need_get(long jarg1);
   public final static native void zxid_conf_want_set(long jarg1, long jarg2);
@@ -770,6 +772,7 @@ class zxidjniJNI {
   public final static native int zxid_parse_cgi(long jarg1, String jarg2);
   public final static native long zxid_new_cgi(long jarg1, String jarg2);
   public final static native void zxid_get_sid_from_cookie(long jarg1, long jarg2, String jarg3);
+  public final static native long zxid_alloc_ses(long jarg1);
   public final static native long zxid_fetch_ses(long jarg1, String jarg2);
   public final static native int zxid_get_ses(long jarg1, long jarg2, String jarg3);
   public final static native int zxid_put_ses(long jarg1, long jarg2);
@@ -782,6 +785,7 @@ class zxidjniJNI {
   public final static native long zxid_pool_to_qs(long jarg1, long jarg2);
   public final static native void zxid_ses_to_pool(long jarg1, long jarg2);
   public final static native void zxid_add_attr_to_pool(long jarg1, long jarg2, String jarg3, long jarg4);
+  public final static native int zxid_add_qs_to_pool(long jarg1, long jarg2, String jarg3, int jarg4);
   public final static native long zxid_parse_mni(long jarg1, String jarg2, long jarg3);
   public final static native int zxid_put_user(long jarg1, long jarg2, long jarg3, long jarg4, long jarg5, String jarg6);
   public final static native long zxid_get_user_nameid(long jarg1, long jarg2);
@@ -849,6 +853,9 @@ class zxidjniJNI {
   public final static native long zxid_mni_do(long jarg1, long jarg2, long jarg3, long jarg4);
   public final static native long zxid_mni_do_ss(long jarg1, long jarg2, long jarg3, long jarg4, long jarg5);
   public final static native int zxid_pep_az_soap(long jarg1, long jarg2, long jarg3);
+  public final static native int zxid_az_cf_ses(long jarg1, String jarg2, long jarg3);
+  public final static native int zxid_az_cf(long jarg1, String jarg2, String jarg3);
+  public final static native int zxid_az(String jarg1, String jarg2, String jarg3);
   public final static native long zxid_find_attribute(long jarg1, int jarg2, String jarg3, int jarg4, String jarg5, int jarg6, String jarg7, int jarg8);
   public final static native long zxid_mk_authn_req(long jarg1, long jarg2);
   public final static native long zxid_mk_art_deref(long jarg1, long jarg2, String jarg3);
@@ -881,6 +888,8 @@ class zxidjniJNI {
   public final static native long zxid_wsc_call(long jarg1, long jarg2, long jarg3, long jarg4);
   public final static native long zxid_new_envf(long jarg1, String jarg2);
   public final static native long zxid_callf(long jarg1, long jarg2, String jarg3, String jarg4);
+  public final static native long zxid_simple_call(long jarg1, long jarg2, String jarg3, String jarg4, String jarg5);
+  public final static native long zxid_simple_callf(long jarg1, long jarg2, String jarg3, String jarg4, String jarg5);
   public final static native int zxid_nice_sha1(long jarg1, String jarg2, int jarg3, long jarg4, long jarg5);
   public final static native int zxid_epr_path(long jarg1, String jarg2, String jarg3, String jarg4, int jarg5, long jarg6, long jarg7);
   public final static native long zxid_get_epr(long jarg1, long jarg2, String jarg3, int jarg4);

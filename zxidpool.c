@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidpool.c,v 1.2 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxidpool.c,v 1.3 2009-10-16 13:36:33 sampo Exp $
  *
  * 4.9.2009, forked from zxidsimp.c --Sampo
  */
@@ -508,6 +508,83 @@ void zxid_ses_to_pool(struct zxid_conf* cf, struct zxid_ses* ses)
   URL_DECODE(dst, src, lim);
   *dst = 0;
   D("RelayState(%s)", ses->at->val);
+}
+
+
+/*(i) Add Attributes from Querty String to Session attribute pool
+ * The qs argument is parsed according to the CGI Query String rules
+ * and the attributes are added to the session. If apply_map is 1, the
+ * INMAP configuration is applied. While this may seem a hassle, it
+ * allows for specification of the values as safe_base64, etc. If values
+ * are to be added verbatim, just specify 0 (all other values reserved).
+ * Returns 1 on success, 0 on failure (return value often not checked). */
+
+int zxid_add_qs_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, char* qs, int apply_map)
+{
+  char *p, *n, *v, *val, *name;
+  if (!qs || !ses)
+    return 0;
+
+  DD("qs(%s) len=%d", qs, strlen(qs));
+  while (*qs) {
+    for (; *qs == '&'; ++qs) ;                  /* Skip over & or && */
+    if (!*qs) break;
+    
+    for (name = qs; *qs && *qs != '='; ++qs) ;  /* Scan name (until '=') */
+    if (!*qs) break;
+    if (qs == name) {                           /* Key was an empty string: skip it */
+      for (; *qs && *qs != '&'; ++qs) ;         /* Scan value (until '&') *** or '?' */
+      continue;
+    }
+    for (; name < qs && *name <= ' '; ++name) ; /* Skip over initial whitespace before name */
+    n = p = name;
+    URL_DECODE(p, name, qs);
+    *p = 0;                                     /* Nul-term n (name) */
+    
+    for (val = ++qs; *qs && *qs != '&'; ++qs) ; /* Skip over = and scan value till '&' */
+    v = p = val;
+    URL_DECODE(p, val, qs);
+
+    if (*qs)
+      ++qs;
+    *p = 0;                                     /* Nul-term v (value) */
+
+    if (apply_map) {
+      zxid_add_attr_to_pool(cf, ses, n, zx_dup_str(cf->ctx, v));  
+    } else {
+      ses->at = zxid_new_at(cf, ses->at, v-n-1, n, p-v, v, "as is");
+    }
+  }
+  return 1;
+}
+
+/*(i) Given session object (see zxid_simple_cf_ses() or zxid_fetch_ses()),
+ * return n'th value (ix=0 is first) of given attribute, if any, from the
+ * session common attribute pool. If apply_map is 0, the value is returned
+ * as is. If it is 1 then OUTMAP is applied (the
+ * attribute name is in the internal namespace). Other apply_map values
+ * are reserved. */
+
+struct zx_str* zxid_get_at(struct zxid_conf* cf, struct zxid_ses* ses, char* atname, int ix, int apply_map)
+{
+  struct zxid_attr* at;
+  struct zxid_attr* av;
+  if (!cf || !ses || !atname) {
+    ERR("Missing args cf=%p ses=%p atname=%p", cf, ses, atname);
+    return 0;
+  }
+  for (at = ses->at; at; at = at->n) {
+    if (!strcmp(at->name, atname)) {
+      for (av = at; av && ix; --ix, av = av->nv) ;
+      if (av) {
+	if (apply_map) {
+	  return zx_dup_str(cf->ctx, at->val); /* *** */
+	} else
+	  return zx_dup_str(cf->ctx, at->val);
+      }
+    }
+  }
+  return 0;
 }
 
 /* EOF  --  zxidpool.c */

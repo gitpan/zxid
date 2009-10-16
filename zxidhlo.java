@@ -1,11 +1,11 @@
-/* zxidhlo.java  -  Hellow World Java/Tomcat servlet script that calls libzxid using JNI
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+/* zxidhlo.java  -  Hello World Java/Tomcat servlet script that calls libzxid using JNI
+ * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhlo.java,v 1.7 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxidhlo.java,v 1.8 2009-10-16 13:36:33 sampo Exp $
  * 12.1.2007, created --Sampo
  *
  * See also: README-zxid section 10 "zxid_simple() API"
@@ -21,7 +21,7 @@ public class zxidhlo extends HttpServlet {
     
     // CONFIG: You must have created /var/zxid directory hierarchy. See `make dir'
     // CONFIG: You must edit the URL to match your domain name and port
-    static final String conf = "PATH=/var/zxid/&URL=http://sp1.zxidsp.org:8080/zxidservlet/zxidHLO";
+    static final String conf = "URL=http://sp1.zxidsp.org:8080/zxidservlet/zxidHLO&PATH=/var/zxid/";
     
     //public static void main(String argv[]) throws java.io.IOException  {  }
     public void do_zxid(HttpServletRequest req, HttpServletResponse res, String qs)
@@ -51,6 +51,7 @@ public class zxidhlo extends HttpServlet {
 	    int x = ret.indexOf("\nsesid: ");
 	    int y = ret.indexOf('\n', x + 8);
 	    String sid = ret.substring(x + 8, y);
+	    System.err.print("Logged in. sid="+sid+"\n");
 	    res.setContentType("text/html");
 	    res.getOutputStream().print(zxidjni.fed_mgmt(conf, sid, 0xd54));
 	    break;
