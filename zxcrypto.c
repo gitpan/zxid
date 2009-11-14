@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxcrypto.c,v 1.7 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxcrypto.c,v 1.8 2009-10-18 12:39:10 sampo Exp $
  *
  * 7.10.2008, added documentation --Sampo
  * 29.8.2009, added zxid_mk_self_signed_cert() --Sampo
@@ -19,6 +19,7 @@
 
 #ifdef USE_OPENSSL
 #include <openssl/evp.h>
+#include <openssl/md5.h>
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
 #include <openssl/x509.h>
@@ -543,6 +544,118 @@ badurl:
   ERR("ZXID was compiled without USE_OPENSSL. This means self signed certificate generation facility is unavailable. Recompile ZXID. %s", lk);
   return 0;
 #endif
+}
+
+/* Adapted by Sampo from FreeBSD md5_crypt.c, which is licensed as follows
+ * ----------------------------------------------------------------------------
+ * "THE BEER-WARE LICENSE" (Revision 42):
+ * <phk@login.dknet.dk> wrote this file.  As long as you retain this notice you
+ * can do whatever you want with this stuff. If we meet some day, and you think
+ * this stuff is worth it, you can buy me a beer in return.   Poul-Henning Kamp
+ * ----------------------------------------------------------------------------
+ */
+
+extern char pw_basis_64[64];
+
+static void to64(char *s, unsigned long v, int n) {
+  while (--n >= 0) {
+    *s++ = pw_basis_64[v & 0x3f];
+    v >>= 6;
+  }
+}
+
+/*() Compute MD5-Crypt password hash (starts by $1$)
+ * 
+ * pw:: Password in plain
+ * salt:: 0-8 chars of salt. Preceding $1$ is automatically skipped. Salt ends in $ or nul.
+ * buf:: must be at least 120 chars
+ * return:: buf, nul terminated */
+
+char* zx_md5_crypt(const char* pw, const char* salt, char* buf)
+{
+  const char* magic = "$1$";    /* magic prefix to identify algo */
+  char* p;
+  const char *sp, *ep;
+  unsigned char final[16];
+  int sl, pl, i, j;
+  MD5_CTX ctx, ctx1;
+  unsigned long l;
+
+  /* Refine the Salt first */
+  sp = salt;
+  
+  /* If it starts with the magic string, then skip that */
+  if (!strncmp(sp, magic, strlen(magic)))
+    sp += strlen(magic);
+  
+  /* It stops at the first '$', max 8 chars */
+  for (ep = sp; *ep && *ep != '$' && ep < (sp + 8); ep++) ;
+  sl = ep - sp;  /* get the length of the true salt */
+  
+  MD5_Init(&ctx);
+  MD5_Update(&ctx, (unsigned const char *)pw, strlen(pw));       /* pw 1st, as it's most unknown */
+  MD5_Update(&ctx, (unsigned const char *)magic, strlen(magic)); /* Then our magic string */
+  MD5_Update(&ctx, (unsigned const char *)sp, sl);               /* Then the raw salt */
+  
+  /* Then just as many characters of the MD5(pw,salt,pw) */
+  MD5_Init(&ctx1);
+  MD5_Update(&ctx1, (unsigned const char *)pw, strlen(pw));
+  MD5_Update(&ctx1, (unsigned const char *)sp, sl);
+  MD5_Update(&ctx1, (unsigned const char *)pw, strlen(pw));
+  MD5_Final(final, &ctx1);
+  for (pl = strlen(pw); pl > 0; pl -= 16)
+    MD5_Update(&ctx, (unsigned const char *)final, pl>16 ? 16 : pl);
+
+  memset(final, 0, sizeof final); /* Don't leave anything around in vm they could use. */
+  
+  /* Then something really weird... */
+  for (j = 0, i = strlen(pw); i; i >>= 1)
+    if (i & 1)
+      MD5_Update(&ctx, (unsigned const char *)final+j, 1);
+    else
+      MD5_Update(&ctx, (unsigned const char *)pw+j, 1);
+  
+  strcpy(buf, magic);   /* Start the output string */
+  strncat(buf, sp, sl);
+  strcat(buf, "$");
+  
+  MD5_Final(final, &ctx);
+  
+  /* and now, just to make sure things don't run too fast
+   * On a 60 Mhz Pentium this takes 34 msec, so you would
+   * need 30 seconds to build a 1000 entry dictionary... */
+  for (i = 0; i < 1000; i++) {
+    MD5_Init(&ctx1);
+    if (i & 1)
+      MD5_Update(&ctx1, (unsigned const char *)pw, strlen(pw));
+    else
+      MD5_Update(&ctx1, (unsigned const char *)final, 16);
+    
+    if (i % 3)
+      MD5_Update(&ctx1, (unsigned const char *)sp, sl);
+    
+    if (i % 7)
+      MD5_Update(&ctx1, (unsigned const char *)pw, strlen(pw));
+    
+    if (i & 1)
+      MD5_Update(&ctx1, (unsigned const char *)final, 16);
+    else
+      MD5_Update(&ctx1, (unsigned const char *)pw, strlen(pw));
+    MD5_Final(final, &ctx1);
+  }
+  
+  p = buf + strlen(buf);
+
+  l = (final[0] << 16) | (final[6] << 8) | final[12];  to64(p, l, 4);  p += 4;
+  l = (final[1] << 16) | (final[7] << 8) | final[13];  to64(p, l, 4);  p += 4;
+  l = (final[2] << 16) | (final[8] << 8) | final[14];  to64(p, l, 4);  p += 4;
+  l = (final[3] << 16) | (final[9] << 8) | final[15];  to64(p, l, 4);  p += 4;
+  l = (final[4] << 16) | (final[10] << 8) | final[5];  to64(p, l, 4);  p += 4;
+  l = final[11];                                       to64(p, l, 2);  p += 2;
+  *p = '\0';
+
+  memset(final, 0, sizeof final); /* Don't leave anything around in vm they could use. */
+  return buf;
 }
 
 /* EOF  -  zxcrypto.c */

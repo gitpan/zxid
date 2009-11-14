@@ -313,6 +313,16 @@ next_attr:
             el->g.n = &x->XACMLPolicyQuery->gg.g;
             x->XACMLPolicyQuery = (struct zx_xasp_XACMLPolicyQuery_s*)el;
             break;
+          case zx_xaspcd1_XACMLAuthzDecisionQuery_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xaspcd1_XACMLAuthzDecisionQuery(c, ns);
+            el->g.n = &x->xaspcd1_XACMLAuthzDecisionQuery->gg.g;
+            x->xaspcd1_XACMLAuthzDecisionQuery = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)el;
+            break;
+          case zx_xaspcd1_XACMLPolicyQuery_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xaspcd1_XACMLPolicyQuery(c, ns);
+            el->g.n = &x->xaspcd1_XACMLPolicyQuery->gg.g;
+            x->xaspcd1_XACMLPolicyQuery = (struct zx_xaspcd1_XACMLPolicyQuery_s*)el;
+            break;
           case zx_di_Query_ELEM:
             el = (struct zx_elem_s*)zx_DEC_di_Query(c, ns);
             el->g.n = &x->Query->gg.g;

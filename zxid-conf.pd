@@ -655,7 +655,7 @@ NICE_NAME::  (default: "ZXID Demo SP")
 
 
 1.1.4 Web Site URL - root of EntityID
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 URL for most zxid operations. It must end in whatever triggers
 the ZXID functionality in the web server. The hostname
@@ -682,7 +682,7 @@ NON_STANDARD_ENTITYID::  (default: 0)
 
 
 1.1.6 Illadviced ACS URL Hack
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Sometimes an illadvised authority may impose to you Assertion
 Consumer Service URL, this URL happens to be different than
@@ -699,7 +699,7 @@ REDIRECT_HACK_ZXID_URL::  (default: 0)
 
 
 1.1.7 Common Domain Cookie URL
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 URL for reading Common Domain Cookie. It must end in "zxid". The hostname
 and port number should match the server under which zxid CGI is accessible.
@@ -717,7 +717,7 @@ CDC_CHOICE::  (default: ZXID_CDC_CHOICE_UI_PREF)
 
 
 1.1.9 Metadata Fetching Options
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Following four boolean configuration options control how (IdP) metadata
 is obtained. The metadata can be in a cache (by default directory /var/zxid/cot)
@@ -756,7 +756,7 @@ MD_CACHE_LAST::  (default: 1)
 
 
 1.1.10 Authentication Request Signing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whether AuthnReq is signed SP (controls both metadata and actual behavior). 
 
@@ -764,7 +764,7 @@ AUTHN_REQ_SIGN::  (default: 1)
 
 
 1.1.11 Assertion Signing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whether SP insists that SSO assertions are signed. Affects metadata. The
 actual insistence on signing is controlled by ZXID_NOSIG_FATAL, far below.
@@ -774,7 +774,7 @@ WANT_SSO_A7N_SIGNED::  (default: 1)
 
 
 1.1.12 SOAP Message Signing
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Whether SOAP messages for ArtifactResolution, SLO, and MNI are signed. Whether
 responses are signed as well. (*** doc) 
@@ -785,7 +785,7 @@ SSO_SOAP_RESP_SIGN::  (default: 1)
 
 
 1.1.13 IdP Signing Options
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Which components should be signed by IdP in SSO Response and Assertion.
 Bit mask:

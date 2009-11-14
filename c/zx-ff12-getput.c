@@ -1239,6 +1239,274 @@ void zx_ff12_Assertion_DEL_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, i
 
 #ifdef ZX_ENA_GETPUT
 
+/* FUNC(zx_ff12_Assertion_NUM_xasacd1_XACMLAuthzDecisionStatement) */
+
+int zx_ff12_Assertion_NUM_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->xasacd1_XACMLAuthzDecisionStatement; y; ++n, y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_ff12_Assertion_GET_xasacd1_XACMLAuthzDecisionStatement) */
+
+struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_ff12_Assertion_GET_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x, int n)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  if (!x) return 0;
+  for (y = x->xasacd1_XACMLAuthzDecisionStatement; n>=0 && y; --n, y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_ff12_Assertion_POP_xasacd1_XACMLAuthzDecisionStatement) */
+
+struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_ff12_Assertion_POP_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  if (!x) return 0;
+  y = x->xasacd1_XACMLAuthzDecisionStatement;
+  if (y)
+    x->xasacd1_XACMLAuthzDecisionStatement = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_ff12_Assertion_PUSH_xasacd1_XACMLAuthzDecisionStatement) */
+
+void zx_ff12_Assertion_PUSH_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->xasacd1_XACMLAuthzDecisionStatement->gg.g;
+  x->xasacd1_XACMLAuthzDecisionStatement = z;
+}
+
+/* FUNC(zx_ff12_Assertion_REV_xasacd1_XACMLAuthzDecisionStatement) */
+
+void zx_ff12_Assertion_REV_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* nxt;
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  if (!x) return;
+  y = x->xasacd1_XACMLAuthzDecisionStatement;
+  if (!y) return;
+  x->xasacd1_XACMLAuthzDecisionStatement = 0;
+  while (y) {
+    nxt = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n;
+    y->gg.g.n = &x->xasacd1_XACMLAuthzDecisionStatement->gg.g;
+    x->xasacd1_XACMLAuthzDecisionStatement = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_ff12_Assertion_PUT_xasacd1_XACMLAuthzDecisionStatement) */
+
+void zx_ff12_Assertion_PUT_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x, int n, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* z)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  if (!x || !z) return;
+  y = x->xasacd1_XACMLAuthzDecisionStatement;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->xasacd1_XACMLAuthzDecisionStatement = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_ff12_Assertion_ADD_xasacd1_XACMLAuthzDecisionStatement) */
+
+void zx_ff12_Assertion_ADD_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x, int n, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* z)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->xasacd1_XACMLAuthzDecisionStatement->gg.g;
+    x->xasacd1_XACMLAuthzDecisionStatement = z;
+    return;
+  case -1:
+    y = x->xasacd1_XACMLAuthzDecisionStatement;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xasacd1_XACMLAuthzDecisionStatement; n > 1 && y; --n, y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_ff12_Assertion_DEL_xasacd1_XACMLAuthzDecisionStatement) */
+
+void zx_ff12_Assertion_DEL_xasacd1_XACMLAuthzDecisionStatement(struct zx_ff12_Assertion_s* x, int n)
+{
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->xasacd1_XACMLAuthzDecisionStatement = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)x->xasacd1_XACMLAuthzDecisionStatement->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)x->xasacd1_XACMLAuthzDecisionStatement;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xasacd1_XACMLAuthzDecisionStatement; n > 1 && y->gg.g.n; --n, y = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_ff12_Assertion_NUM_xasacd1_XACMLPolicyStatement) */
+
+int zx_ff12_Assertion_NUM_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->xasacd1_XACMLPolicyStatement; y; ++n, y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_ff12_Assertion_GET_xasacd1_XACMLPolicyStatement) */
+
+struct zx_xasacd1_XACMLPolicyStatement_s* zx_ff12_Assertion_GET_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, int n)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  if (!x) return 0;
+  for (y = x->xasacd1_XACMLPolicyStatement; n>=0 && y; --n, y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_ff12_Assertion_POP_xasacd1_XACMLPolicyStatement) */
+
+struct zx_xasacd1_XACMLPolicyStatement_s* zx_ff12_Assertion_POP_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  if (!x) return 0;
+  y = x->xasacd1_XACMLPolicyStatement;
+  if (y)
+    x->xasacd1_XACMLPolicyStatement = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_ff12_Assertion_PUSH_xasacd1_XACMLPolicyStatement) */
+
+void zx_ff12_Assertion_PUSH_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, struct zx_xasacd1_XACMLPolicyStatement_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->xasacd1_XACMLPolicyStatement->gg.g;
+  x->xasacd1_XACMLPolicyStatement = z;
+}
+
+/* FUNC(zx_ff12_Assertion_REV_xasacd1_XACMLPolicyStatement) */
+
+void zx_ff12_Assertion_REV_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* nxt;
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  if (!x) return;
+  y = x->xasacd1_XACMLPolicyStatement;
+  if (!y) return;
+  x->xasacd1_XACMLPolicyStatement = 0;
+  while (y) {
+    nxt = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n;
+    y->gg.g.n = &x->xasacd1_XACMLPolicyStatement->gg.g;
+    x->xasacd1_XACMLPolicyStatement = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_ff12_Assertion_PUT_xasacd1_XACMLPolicyStatement) */
+
+void zx_ff12_Assertion_PUT_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, int n, struct zx_xasacd1_XACMLPolicyStatement_s* z)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  if (!x || !z) return;
+  y = x->xasacd1_XACMLPolicyStatement;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->xasacd1_XACMLPolicyStatement = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_ff12_Assertion_ADD_xasacd1_XACMLPolicyStatement) */
+
+void zx_ff12_Assertion_ADD_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, int n, struct zx_xasacd1_XACMLPolicyStatement_s* z)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->xasacd1_XACMLPolicyStatement->gg.g;
+    x->xasacd1_XACMLPolicyStatement = z;
+    return;
+  case -1:
+    y = x->xasacd1_XACMLPolicyStatement;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xasacd1_XACMLPolicyStatement; n > 1 && y; --n, y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_ff12_Assertion_DEL_xasacd1_XACMLPolicyStatement) */
+
+void zx_ff12_Assertion_DEL_xasacd1_XACMLPolicyStatement(struct zx_ff12_Assertion_s* x, int n)
+{
+  struct zx_xasacd1_XACMLPolicyStatement_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->xasacd1_XACMLPolicyStatement = (struct zx_xasacd1_XACMLPolicyStatement_s*)x->xasacd1_XACMLPolicyStatement->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xasacd1_XACMLPolicyStatement_s*)x->xasacd1_XACMLPolicyStatement;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xasacd1_XACMLPolicyStatement; n > 1 && y->gg.g.n; --n, y = (struct zx_xasacd1_XACMLPolicyStatement_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
 /* FUNC(zx_ff12_Assertion_NUM_Signature) */
 
 int zx_ff12_Assertion_NUM_Signature(struct zx_ff12_Assertion_s* x)

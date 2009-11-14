@@ -13,6 +13,7 @@ ns(a,    http://www.w3.org/2005/08/addressing)
 ns(sa,   urn:oasis:names:tc:SAML:2.0:assertion)
 ns(ff12, urn:liberty:iff:2003-08)
 ns(xasa, urn:oasis:xacml:2.0:saml:assertion:schema:os)
+ns(xasacd1, urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:assertion:cd-01)
 
 %DecisionType:   enum( Permit Deny Indeterminate ) ;
 AssertionIDReference -> %xs:NCName
@@ -28,6 +29,8 @@ Assertion        -> %sa11:AssertionType
   sa11:AttributeStatement*
   xasa:XACMLAuthzDecisionStatement*
   xasa:XACMLPolicyStatement*
+  xasacd1:XACMLAuthzDecisionStatement*
+  xasacd1:XACMLPolicyStatement*
   ds:Signature?
   @MajorVersion  -> %xs:integer
   @MinorVersion  -> %xs:integer

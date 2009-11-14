@@ -189,6 +189,8 @@ struct zx_sa_Assertion_s {
   struct zx_sa_AttributeStatement_s* AttributeStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLAuthzDecisionStatement_s* XACMLAuthzDecisionStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLPolicyStatement_s* XACMLPolicyStatement;	/* {0,-1} nada */
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* xasacd1_XACMLAuthzDecisionStatement;	/* {0,-1} nada */
+  struct zx_xasacd1_XACMLPolicyStatement_s* xasacd1_XACMLPolicyStatement;	/* {0,-1} nada */
   struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
   struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
   struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
@@ -210,6 +212,8 @@ struct zx_sa_AuthzDecisionStatement_s* zx_sa_Assertion_GET_AuthzDecisionStatemen
 struct zx_sa_AttributeStatement_s* zx_sa_Assertion_GET_AttributeStatement(struct zx_sa_Assertion_s* x, int n);
 struct zx_xasa_XACMLAuthzDecisionStatement_s* zx_sa_Assertion_GET_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n);
 struct zx_xasa_XACMLPolicyStatement_s* zx_sa_Assertion_GET_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n);
+struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_sa_Assertion_GET_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n);
+struct zx_xasacd1_XACMLPolicyStatement_s* zx_sa_Assertion_GET_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n);
 
 int zx_sa_Assertion_NUM_Issuer(struct zx_sa_Assertion_s* x);
 int zx_sa_Assertion_NUM_Signature(struct zx_sa_Assertion_s* x);
@@ -222,6 +226,8 @@ int zx_sa_Assertion_NUM_AuthzDecisionStatement(struct zx_sa_Assertion_s* x);
 int zx_sa_Assertion_NUM_AttributeStatement(struct zx_sa_Assertion_s* x);
 int zx_sa_Assertion_NUM_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x);
 int zx_sa_Assertion_NUM_XACMLPolicyStatement(struct zx_sa_Assertion_s* x);
+int zx_sa_Assertion_NUM_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x);
+int zx_sa_Assertion_NUM_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x);
 
 struct zx_sa_Issuer_s* zx_sa_Assertion_POP_Issuer(struct zx_sa_Assertion_s* x);
 struct zx_ds_Signature_s* zx_sa_Assertion_POP_Signature(struct zx_sa_Assertion_s* x);
@@ -234,6 +240,8 @@ struct zx_sa_AuthzDecisionStatement_s* zx_sa_Assertion_POP_AuthzDecisionStatemen
 struct zx_sa_AttributeStatement_s* zx_sa_Assertion_POP_AttributeStatement(struct zx_sa_Assertion_s* x);
 struct zx_xasa_XACMLAuthzDecisionStatement_s* zx_sa_Assertion_POP_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x);
 struct zx_xasa_XACMLPolicyStatement_s* zx_sa_Assertion_POP_XACMLPolicyStatement(struct zx_sa_Assertion_s* x);
+struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_sa_Assertion_POP_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x);
+struct zx_xasacd1_XACMLPolicyStatement_s* zx_sa_Assertion_POP_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x);
 
 void zx_sa_Assertion_PUSH_Issuer(struct zx_sa_Assertion_s* x, struct zx_sa_Issuer_s* y);
 void zx_sa_Assertion_PUSH_Signature(struct zx_sa_Assertion_s* x, struct zx_ds_Signature_s* y);
@@ -246,6 +254,8 @@ void zx_sa_Assertion_PUSH_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, st
 void zx_sa_Assertion_PUSH_AttributeStatement(struct zx_sa_Assertion_s* x, struct zx_sa_AttributeStatement_s* y);
 void zx_sa_Assertion_PUSH_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, struct zx_xasa_XACMLAuthzDecisionStatement_s* y);
 void zx_sa_Assertion_PUSH_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, struct zx_xasa_XACMLPolicyStatement_s* y);
+void zx_sa_Assertion_PUSH_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y);
+void zx_sa_Assertion_PUSH_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, struct zx_xasacd1_XACMLPolicyStatement_s* y);
 
 void zx_sa_Assertion_PUT_ID(struct zx_sa_Assertion_s* x, struct zx_str* y);
 void zx_sa_Assertion_PUT_IssueInstant(struct zx_sa_Assertion_s* x, struct zx_str* y);
@@ -262,6 +272,8 @@ void zx_sa_Assertion_PUT_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, int
 void zx_sa_Assertion_PUT_AttributeStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AttributeStatement_s* y);
 void zx_sa_Assertion_PUT_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasa_XACMLAuthzDecisionStatement_s* y);
 void zx_sa_Assertion_PUT_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasa_XACMLPolicyStatement_s* y);
+void zx_sa_Assertion_PUT_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y);
+void zx_sa_Assertion_PUT_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasacd1_XACMLPolicyStatement_s* y);
 
 void zx_sa_Assertion_ADD_Issuer(struct zx_sa_Assertion_s* x, int n, struct zx_sa_Issuer_s* z);
 void zx_sa_Assertion_ADD_Signature(struct zx_sa_Assertion_s* x, int n, struct zx_ds_Signature_s* z);
@@ -274,6 +286,8 @@ void zx_sa_Assertion_ADD_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, int
 void zx_sa_Assertion_ADD_AttributeStatement(struct zx_sa_Assertion_s* x, int n, struct zx_sa_AttributeStatement_s* z);
 void zx_sa_Assertion_ADD_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasa_XACMLAuthzDecisionStatement_s* z);
 void zx_sa_Assertion_ADD_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasa_XACMLPolicyStatement_s* z);
+void zx_sa_Assertion_ADD_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* z);
+void zx_sa_Assertion_ADD_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n, struct zx_xasacd1_XACMLPolicyStatement_s* z);
 
 void zx_sa_Assertion_DEL_Issuer(struct zx_sa_Assertion_s* x, int n);
 void zx_sa_Assertion_DEL_Signature(struct zx_sa_Assertion_s* x, int n);
@@ -286,6 +300,8 @@ void zx_sa_Assertion_DEL_AuthzDecisionStatement(struct zx_sa_Assertion_s* x, int
 void zx_sa_Assertion_DEL_AttributeStatement(struct zx_sa_Assertion_s* x, int n);
 void zx_sa_Assertion_DEL_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n);
 void zx_sa_Assertion_DEL_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n);
+void zx_sa_Assertion_DEL_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x, int n);
+void zx_sa_Assertion_DEL_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x, int n);
 
 void zx_sa_Assertion_REV_Issuer(struct zx_sa_Assertion_s* x);
 void zx_sa_Assertion_REV_Signature(struct zx_sa_Assertion_s* x);
@@ -298,6 +314,8 @@ void zx_sa_Assertion_REV_AuthzDecisionStatement(struct zx_sa_Assertion_s* x);
 void zx_sa_Assertion_REV_AttributeStatement(struct zx_sa_Assertion_s* x);
 void zx_sa_Assertion_REV_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x);
 void zx_sa_Assertion_REV_XACMLPolicyStatement(struct zx_sa_Assertion_s* x);
+void zx_sa_Assertion_REV_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa_Assertion_s* x);
+void zx_sa_Assertion_REV_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* x);
 
 #endif
 /* -------------------------- sa_Attribute -------------------------- */
@@ -1105,7 +1123,7 @@ void zx_sa_Evidence_REV_EncryptedAssertion(struct zx_sa_Evidence_s* x);
 
 #endif
 /* -------------------------- sa_Issuer -------------------------- */
-/* refby( zx_sp_ArtifactResolve_s zx_sp_SubjectQuery_s zx_sp_AuthnRequest_s zx_sp_NameIDMappingResponse_s zx_xasp_XACMLPolicyQuery_s zx_sp_NameIDMappingRequest_s zx_sa_Assertion_s zx_sp_AuthnQuery_s zx_xasp_XACMLAuthzDecisionQuery_s zx_sp_AuthzDecisionQuery_s zx_sp_AttributeQuery_s zx_sp_ManageNameIDResponse_s zx_sp_AssertionIDRequest_s zx_sp_LogoutRequest_s zx_sp_ArtifactResponse_s zx_ecp_Request_s zx_sp_LogoutResponse_s zx_sp_Response_s zx_sp_ManageNameIDRequest_s ) */
+/* refby( zx_sp_ArtifactResolve_s zx_sp_SubjectQuery_s zx_xaspcd1_XACMLPolicyQuery_s zx_sp_AuthnRequest_s zx_sp_NameIDMappingResponse_s zx_xasp_XACMLPolicyQuery_s zx_sp_NameIDMappingRequest_s zx_xaspcd1_XACMLAuthzDecisionQuery_s zx_sa_Assertion_s zx_sp_AuthnQuery_s zx_xasp_XACMLAuthzDecisionQuery_s zx_sp_AuthzDecisionQuery_s zx_sp_AttributeQuery_s zx_sp_ManageNameIDResponse_s zx_sp_AssertionIDRequest_s zx_sp_LogoutRequest_s zx_sp_ArtifactResponse_s zx_ecp_Request_s zx_sp_LogoutResponse_s zx_sp_Response_s zx_sp_ManageNameIDRequest_s ) */
 #ifndef zx_sa_Issuer_EXT
 #define zx_sa_Issuer_EXT
 #endif
@@ -1322,6 +1340,7 @@ struct zx_sa_Statement_s {
   ZX_ELEM_EXT
   zx_sa_Statement_EXT
   struct zx_xac_Response_s* Response;	/* {0,-1}  */
+  struct zx_xac_Request_s* Request;	/* {0,-1} nada */
   struct zx_str* type;	/* {0,1} attribute xs:string */
 };
 
@@ -1329,22 +1348,30 @@ struct zx_sa_Statement_s {
 struct zx_str* zx_sa_Statement_GET_type(struct zx_sa_Statement_s* x);
 
 struct zx_xac_Response_s* zx_sa_Statement_GET_Response(struct zx_sa_Statement_s* x, int n);
+struct zx_xac_Request_s* zx_sa_Statement_GET_Request(struct zx_sa_Statement_s* x, int n);
 
 int zx_sa_Statement_NUM_Response(struct zx_sa_Statement_s* x);
+int zx_sa_Statement_NUM_Request(struct zx_sa_Statement_s* x);
 
 struct zx_xac_Response_s* zx_sa_Statement_POP_Response(struct zx_sa_Statement_s* x);
+struct zx_xac_Request_s* zx_sa_Statement_POP_Request(struct zx_sa_Statement_s* x);
 
 void zx_sa_Statement_PUSH_Response(struct zx_sa_Statement_s* x, struct zx_xac_Response_s* y);
+void zx_sa_Statement_PUSH_Request(struct zx_sa_Statement_s* x, struct zx_xac_Request_s* y);
 
 void zx_sa_Statement_PUT_type(struct zx_sa_Statement_s* x, struct zx_str* y);
 
 void zx_sa_Statement_PUT_Response(struct zx_sa_Statement_s* x, int n, struct zx_xac_Response_s* y);
+void zx_sa_Statement_PUT_Request(struct zx_sa_Statement_s* x, int n, struct zx_xac_Request_s* y);
 
 void zx_sa_Statement_ADD_Response(struct zx_sa_Statement_s* x, int n, struct zx_xac_Response_s* z);
+void zx_sa_Statement_ADD_Request(struct zx_sa_Statement_s* x, int n, struct zx_xac_Request_s* z);
 
 void zx_sa_Statement_DEL_Response(struct zx_sa_Statement_s* x, int n);
+void zx_sa_Statement_DEL_Request(struct zx_sa_Statement_s* x, int n);
 
 void zx_sa_Statement_REV_Response(struct zx_sa_Statement_s* x);
+void zx_sa_Statement_REV_Request(struct zx_sa_Statement_s* x);
 
 #endif
 /* -------------------------- sa_Subject -------------------------- */

@@ -170,6 +170,7 @@ static void zxid_ins_xacml_az_stmt(struct zxid_conf* cf, struct zx_sa_Assertion_
 #if 1
   a7n->XACMLAuthzDecisionStatement = zx_NEW_xasa_XACMLAuthzDecisionStatement(cf->ctx);
   a7n->XACMLAuthzDecisionStatement->Response = zxid_mk_xacml_resp(cf, deci);
+  /* *** Add xaspcd1 and xasacd1 variants */
 #else
   a7n->Statement = zx_NEW_sa_Statement(cf->ctx);
   a7n->Statement->type = zx_ref_str(cf->ctx, "xasa:XACMLAuthzDecisionStatementType");

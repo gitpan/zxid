@@ -129,6 +129,10 @@ module. See <<link:apache.html: Apache recipe>> for how
 to compile Apache to support mod_perl. After configuration
 it should work the same as the CGI approach.
 
+<<ignore:
+[Sat Nov 14 12:13:55 2009] [error] [client 127.0.0.1] failed to resolve handler `ModPerl::Registry': Can't locate ModPerl/Registry.pm in @INC (@INC contains: /usr/local/lib/perl5/5.8.4/i686-linux /usr/local/lib/perl5/5.8.4 /usr/local/lib/perl5/site_perl/5.8.4/i686-linux /usr/local/lib/perl5/site_perl/5.8.4 /usr/local/lib/perl5/site_perl . /apps/apache/2.2.3) at (eval 2) line 3.\n
+>>
+
 6.6 Debugging Net::SAML with GDB
 --------------------------------
 

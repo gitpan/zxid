@@ -194,6 +194,10 @@ public class zxidjni implements zxidjniConstants {
     zxidjniJNI.zx_rand(buf, n_bytes);
   }
 
+  public static String zx_md5_crypt(String pw, String salt, String buf) {
+    return zxidjniJNI.zx_md5_crypt(pw, salt, buf);
+  }
+
   public static zx_tok zx_tok_by_ns(zx_tok zt, zx_tok lim, int len, String name, zx_ns_s ns) {
     long cPtr = zxidjniJNI.zx_tok_by_ns(zx_tok.getCPtr(zt), zx_tok.getCPtr(lim), len, name, zx_ns_s.getCPtr(ns));
     return (cPtr == 0) ? null : new zx_tok(cPtr, false);
@@ -1144,6 +1148,11 @@ public class zxidjni implements zxidjniConstants {
   public static SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s mk_az(zxid_conf cf, SWIGTYPE_p_zx_xac_Attribute_s subj, SWIGTYPE_p_zx_xac_Attribute_s rsrc, SWIGTYPE_p_zx_xac_Attribute_s act, SWIGTYPE_p_zx_xac_Attribute_s env) {
     long cPtr = zxidjniJNI.zxid_mk_az(zxid_conf.getCPtr(cf), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(subj), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(rsrc), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(act), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(env));
     return (cPtr == 0) ? null : new SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s(cPtr, false);
+  }
+
+  public static SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s mk_az_cd1(zxid_conf cf, SWIGTYPE_p_zx_xac_Attribute_s subj, SWIGTYPE_p_zx_xac_Attribute_s rsrc, SWIGTYPE_p_zx_xac_Attribute_s act, SWIGTYPE_p_zx_xac_Attribute_s env) {
+    long cPtr = zxidjniJNI.zxid_mk_az_cd1(zxid_conf.getCPtr(cf), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(subj), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(rsrc), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(act), SWIGTYPE_p_zx_xac_Attribute_s.getCPtr(env));
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s(cPtr, false);
   }
 
   public static SWIGTYPE_p_zx_sa_Attribute_s mk_attribute(zxid_conf cf, String name, String val) {

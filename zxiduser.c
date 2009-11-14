@@ -190,6 +190,7 @@ static char* login_failed = "Login failed. Check username and password. Make sur
  * by default using /var/zxid/uid/uid/.pw file. When filesystem
  * backend is used, for safety reasons the uid (user) component can
  * not have certain characters, such as slash (/) or sequences like "..".
+ * See also: zxpasswd.c
  *
  * return:: 0 on failure and sets cgi->err; 1 on success  */
 
@@ -197,7 +198,8 @@ static char* login_failed = "Login failed. Check username and password. Make sur
 int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
   struct zx_str* ss;
-  char pw_buf[256];
+  unsigned char pw_buf[256];
+  unsigned char pw_hash[120];
   int len;
   if (!cgi->uid || !cgi->uid[0]) {
     ERR("No uid (user's login name) supplied. %d", 0);
@@ -229,11 +231,29 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
     cgi->err = login_failed;
     return 0;
   }
-  if (strcmp(pw_buf, cgi->pw)) {
-    ERR("Bad password. uid(%s)", cgi->uid);
+
+  D("pw_buf (%s)", pw_buf);
+  if (!memcmp(pw_buf, "$1$", sizeof("$1$")-1)) {
+    zx_md5_crypt(cgi->pw, pw_buf, pw_hash);
+    D("pw_hash(%s)", pw_hash);
+    if (strcmp(pw_buf, pw_hash)) {
+      ERR("Bad password. uid(%s)", cgi->uid);
+      D("pw(%s) .pw(%s) pw_hash()", cgi->pw, pw_buf, pw_hash);
+      cgi->err = login_failed;
+      return 0;
+    }
+  } else if (ONE_OF_2(pw_buf[0], '$', '_')) {
+    ERR("Unsupported password hash. uid(%s)", cgi->uid);
     D("pw(%s) .pw(%s)", cgi->pw, pw_buf);
     cgi->err = login_failed;
     return 0;
+  } else {
+    if (strcmp(pw_buf, cgi->pw)) {
+      ERR("Bad password. uid(%s)", cgi->uid);
+      D("pw(%s) .pw(%s)", cgi->pw, pw_buf);
+      cgi->err = login_failed;
+      return 0;
+    }
   }
   memset(ses, 0, sizeof(struct zxid_ses));
   ses->magic = ZXID_SES_MAGIC;
@@ -245,8 +265,9 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
   ses->uid = cgi->uid;
   zxid_put_ses(cf, ses);
   if (cf->ses_cookie_name && *cf->ses_cookie_name) {
-    ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/; secure",
-				      cf->ses_cookie_name, ses->sid);
+    ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/%s",
+				      cf->ses_cookie_name, ses->sid,
+				      ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
     ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
 				   cf->ses_cookie_name, ses->sid);
   }

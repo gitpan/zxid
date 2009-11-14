@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidpool.c,v 1.3 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxidpool.c,v 1.4 2009-10-18 12:39:10 sampo Exp $
  *
  * 4.9.2009, forked from zxidsimp.c --Sampo
  */
@@ -305,7 +305,7 @@ struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool)
 {
   char* p;
   char* name;
-  int len = 0, name_len;
+  int len = sizeof("dn=QS1&")-1, name_len;
   struct zxid_map* map;
   struct zxid_attr* at;
   struct zxid_attr* av;
@@ -326,16 +326,18 @@ struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool)
       } else {
 	name_len = strlen(at->name);
       }
-      len += name_len + sizeof("=&")-1 + zx_url_encode_len(at->map_val->len,at->map_val->s);
+      len += name_len + sizeof("=&")-1 + zx_url_encode_len(at->map_val->len,at->map_val->s)-1;
       for (av = at->nv; av; av = av->n) {
 	av->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, av->val));
-	len += name_len + sizeof("=&")-1 + zx_url_encode_len(av->map_val->len,av->map_val->s);
+	len += name_len + sizeof("=&")-1 + zx_url_encode_len(av->map_val->len,av->map_val->s)-1;
       }
+      D("len=%d name_len=%d %s", len, name_len, at->name);
     } else {
       name_len = strlen(at->name);
-      len += name_len + sizeof("=&")-1 + (at->val?zx_url_encode_len(strlen(at->val),at->val):0);
+      len += name_len + sizeof("=&")-1 + (at->val?zx_url_encode_len(strlen(at->val),at->val):0)-1;
+      D("len=%d name_len=%d %s (nomap) url_enc_len=%d", len, name_len, at->name, (at->val?zx_url_encode_len(strlen(at->val),at->val):0));
       for (av = at->nv; av; av = av->n)
-	len += name_len + sizeof("=&")-1 + (av->val?zx_url_encode_len(strlen(av->val),av->val):0);
+	len += name_len + sizeof("=&")-1 + (av->val?zx_url_encode_len(strlen(av->val),av->val):0)-1;
     }
   }
   
@@ -343,7 +345,9 @@ struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool)
 
   ss = zx_new_len_str(cf->ctx, len);
   p = ss->s;
-
+  memcpy(p, "dn=QS1&", sizeof("dn=QS1&")-1);
+  p += sizeof("dn=QS1&")-1;
+  
   for (at = pool; at; at = at->n) {
     map = zxid_find_map(cf->outmap, at->name);
     if (map) {
@@ -386,65 +390,76 @@ struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool)
       }
     }
   }
+  D("p=%p == %p ss=%p len=%d", p, ss->s+len, ss->s, len);
+  D("p(%.*s)", len, ss->s);
   ASSERTOP(p, ==, ss->s+len);
   *p = 0;  /* Zap last & */
   return ss;
+}
+
+/*() Add values, applying NEED, WANT, and INMAP */
+
+static int zxid_add_at_values(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_sa_Attribute_s* at, char* name, struct zx_str* issuer)
+{
+  struct zx_str* ss;
+  struct zxid_map* map;
+  struct zx_sa_AttributeValue_s* av;
+  
+  /* Attribute must be needed or wanted */
+
+  if (!zxid_is_needed(cf->need, name) && !zxid_is_needed(cf->want, name)) {
+    D("attribute(%s) neither needed nor wanted", name);
+    return 0;
+  }
+  
+  map = zxid_find_map(cf->inmap, name);
+  if (map && map->rule == ZXID_MAP_RULE_DEL) {
+    D("attribute(%s) filtered out by del rule in INMAP", name);
+    return 0;
+  }
+  
+  if (map && map->dst && map->src && map->src[0] != '*') {
+    ses->at = zxid_new_at(cf, ses->at, strlen(map->dst), map->dst, 0, 0, "mapped");
+  } else {
+    ses->at = zxid_new_at(cf, ses->at, strlen(name), name, 0, 0, "as is");
+  }
+  ses->at->orig = at;
+  ses->at->issuer = issuer;
+  
+  for (av = at->AttributeValue; av; av = ZX_NEXT(av)) {
+    D("Adding value: %p", av->gg.content);
+    if (av->EndpointReference || av->ResourceOffering)
+      continue;  /* Skip bootstraps. They are handled elsewhere. */
+    if (av->gg.content) {
+      ss = zxid_map_val(cf, map, av->gg.content);
+      if (ses->at->val) {
+	D("map val(%.*s)", ss->len, ss->s);
+	ses->at->nv = zxid_new_at(cf, ses->at->nv, 0, 0, ss->len, ss->s, "multival");
+      } else {
+	D("copy val(%.*s)", ss->len, ss->s);
+	COPYVAL(ses->at->val, ss->s, ss->s+ss->len);
+      }
+    }
+  }
+  // *** check that value is not null, add empty string
+  return 1;
 }
 
 /*() Add Attribute Statements of an Assertion to pool, applying NEED, WANT, and INMAP */
 
 static void zxid_add_a7n_at_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n)
 {
-  char* name;
-  struct zx_str* ss;
-  struct zxid_map* map;
-  struct zx_sa_AttributeValue_s* av;
   struct zx_sa_Attribute_s* at;
   struct zx_sa_AttributeStatement_s* as;
   if (!a7n)
     return;
   
   for (as = a7n->AttributeStatement; as; as = ZX_NEXT(as)) {
-    for (at = as->Attribute; at; at = ZX_NEXT(at)) {
-      
-      /* Attribute must be needed or wanted */
-
-      name = zx_str_to_c(cf->ctx, at->Name);
-      if (!zxid_is_needed(cf->need, name) && !zxid_is_needed(cf->want, name)) {
-	D("attribute(%s) neither needed nor wanted", name);
-	name = zx_str_to_c(cf->ctx, at->FriendlyName);
-	if (!zxid_is_needed(cf->need, name) && !zxid_is_needed(cf->want, name)) {
-	  D("attribute fn(%s) neither needed nor wanted", name);
-	  continue;
-	}
-      }
-
-      map = zxid_find_map(cf->inmap, name);
-      if (map && map->rule == ZXID_MAP_RULE_DEL) {
-	D("attribute(%s) filtered out by del rule in INMAP", name);
-	continue;
-      }
-      
-      if (map && map->dst && map->src && map->src[0] != '*') {
-	ses->at = zxid_new_at(cf, ses->at, strlen(map->dst), map->dst, 0, 0, "mapped");
-      } else {
-	ses->at = zxid_new_at(cf, ses->at, strlen(name), name, 0, 0, "as is");
-      }
-      ses->at->orig = at;
-      ses->at->issuer = a7n->Issuer ? a7n->Issuer->gg.content : 0;
-      
-      for (av = at->AttributeValue; av; av = ZX_NEXT(av)) {
-	if (av->EndpointReference || av->ResourceOffering)
-	  continue;  /* Skip bootstraps. They are handled elsewhere. */
-	if (av->gg.content) {
-	  ss = zxid_map_val(cf, map, av->gg.content);
-	  if (ses->at->val) {
-	    ses->at->nv = zxid_new_at(cf, ses->at->nv, 0, 0, ss->len, ss->s, "multival");
-	  } else {
-	    COPYVAL(ses->at->val, ss->s, ss->s+ss->len);
-	  }
-	}
-      }
+    for (at = as->Attribute; at; at = ZX_NEXT(at)) {      
+      if (at->Name)
+	zxid_add_at_values(cf, ses, at, zx_str_to_c(cf->ctx, at->Name), a7n->Issuer ? a7n->Issuer->gg.content : 0);
+      if (at->FriendlyName)
+	zxid_add_at_values(cf, ses, at, zx_str_to_c(cf->ctx, at->FriendlyName), a7n->Issuer ? a7n->Issuer->gg.content : 0);
     }
   }
 }
@@ -498,6 +513,7 @@ void zxid_ses_to_pool(struct zxid_conf* cf, struct zxid_ses* ses)
   zxid_add_attr_to_pool(cf, ses, "authnctxlevel", accr);
 
   zxid_add_attr_to_pool(cf, ses, "idpnid",     zx_dup_str(cf->ctx, STRNULLCHKD(ses->nid)));
+  zxid_add_attr_to_pool(cf, ses, "eid",        zxid_my_entity_id(cf));
   zxid_add_attr_to_pool(cf, ses, "sesid",      zx_dup_str(cf->ctx, STRNULLCHKD(ses->sid)));
   zxid_add_attr_to_pool(cf, ses, "setcookie",  zx_dup_str(cf->ctx, STRNULLCHKD(ses->setcookie)));
   zxid_add_attr_to_pool(cf, ses, "cookie",     zx_dup_str(cf->ctx, STRNULLCHKD(ses->cookie)));
@@ -525,12 +541,13 @@ int zxid_add_qs_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, char* qs, in
   if (!qs || !ses)
     return 0;
 
-  DD("qs(%s) len=%d", qs, strlen(qs));
+  D("qs(%s) len=%d", qs, strlen(qs));
   while (*qs) {
     for (; *qs == '&'; ++qs) ;                  /* Skip over & or && */
     if (!*qs) break;
     
     for (name = qs; *qs && *qs != '='; ++qs) ;  /* Scan name (until '=') */
+    DD("HERE %d", *qs);
     if (!*qs) break;
     if (qs == name) {                           /* Key was an empty string: skip it */
       for (; *qs && *qs != '&'; ++qs) ;         /* Scan value (until '&') *** or '?' */
@@ -550,8 +567,10 @@ int zxid_add_qs_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, char* qs, in
     *p = 0;                                     /* Nul-term v (value) */
 
     if (apply_map) {
+      D("map %s=%s", n,v);
       zxid_add_attr_to_pool(cf, ses, n, zx_dup_str(cf->ctx, v));  
     } else {
+      D("asis %s=%s", n,v);
       ses->at = zxid_new_at(cf, ses->at, v-n-1, n, p-v, v, "as is");
     }
   }

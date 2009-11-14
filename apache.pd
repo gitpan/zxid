@@ -17,7 +17,7 @@ This Apache setup aims to illustrate
 
 * CGI invocation of zxid C binary
 * mod_php5 invocation of zxid.php
-* mod_perlinvocation of zxid.pl
+* mod_perl invocation of zxid.pl
 * CGI invocation of zxid.pl (alternative to mod_perl)
 * Support mod_auth_saml
 
@@ -103,12 +103,14 @@ To compile perl you would
   ./Configure -prefix=/apps/perl/5.8.8 -des -Dusethreads -Doptimize='-g' -Dusedevel
   make && make test && make install
 
-2.3 mod_perl-2.0.2
+2.3 mod_perl-2.0.4
 ------------------
 
 From http://perl.apache.org/dist/
 
 Install instructions: http://perl.apache.org/docs/2.0/user/install/install.html
+
+tar xvf /t/mod_perl-2.0.4.tar.gz
 
   perl Makefile.PL MP_APXS=/apps/apache/std/bin/apxs MP_DEBUG=1
   make
@@ -118,6 +120,10 @@ Install instructions: http://perl.apache.org/docs/2.0/user/install/install.html
   # installs stuff to perl lib directory as well as apache modules directory
 
 You can read futher at http://perl.apache.org/docs/2.0/user/intro/start_fast.html
+
+<<ignore:
+[Sat Nov 14 12:13:55 2009] [error] [client 127.0.0.1] failed to resolve handler `ModPerl::Registry': Can't locate ModPerl/Registry.pm in @INC (@INC contains: /usr/local/lib/perl5/5.8.4/i686-linux /usr/local/lib/perl5/5.8.4 /usr/local/lib/perl5/site_perl/5.8.4/i686-linux /usr/local/lib/perl5/site_perl/5.8.4 /usr/local/lib/perl5/site_perl . /apps/apache/2.2.3) at (eval 2) line 3.\n
+>>
 
 2.4 php-5.1.6
 -------------
@@ -417,6 +423,23 @@ or some other process running on the same port.
 Also make sure the execute permission is set for any CGI scripts, e.g:
 
   chmod a+x zxid.pl
+
+5 Debugging Apache Cores
+========================
+
+mod_auth_saml, mod_php, or mod_perl with Net::SAML can crash in C
+code. That can be debugged using this receipe. If using all three
+simultaneously, beware of version discrepancy: a newer module can pick
+up libzxid symbols from an older module. This leads to rather
+confusing "warning: Source file is more recent than executable."
+
+<<code:
+tail -f tmp/log.httpd &
+tail -f tmp/err-httpd &
+ulimit -c unlimited
+/apps/apache/std/bin/httpd -X    # Run Apache in single threaded debug mode
+gdb /apps/apache/std/bin/httpd /d/sampo/zxid/core
+>>
 
 <<if: ZXIDBOOK>>
 <<else: >>

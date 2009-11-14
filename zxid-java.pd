@@ -18,6 +18,13 @@ Liberty ID-WSF 2.0 stacks. This document describes the Java glue.
 1 Introduction
 ==============
 
+Most Java +Servlets+ can be SSO enabled without any additional
+programming effort. zxidsrvlet.java provides a fully packaged SSO
+component that can be added to any servlet deployment (e.g. under
+Tomcat) to provide SSO functionality just by configuring the servlet
+engine (e.g. Tomcat). The zxidappdemo.java provides an example of how
+this is done.
+
 The Java glue for ZXID was generated using swig(1), however, the swig
 interface is not a retrofit: the whole ZXID API was designed to
 be easily swiggifiable.
@@ -26,6 +33,7 @@ The main aim of the glue is supporting the easy and simple API, see
 <<link:zxid-simple.html: zxid_simple()>> for general
 reference. Only differences and language specifics are covered in this
 document.
+
 
 1.1 Other documements
 ---------------------
@@ -40,14 +48,27 @@ document.
 9.1 Installing Binaries or from Package
 ---------------------------------------
 
-TBD (*** WIP)
+Currently (2009) ZXID.org itself does not distribute relevant binaries. However,
+we may in future. You are also welcome to contribute binaries so we distribute
+them, or point people to them in this documentation.
+
+(*** WIP)
+
+9.1.1 TAS3 Distributions
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are TAS3 (http://www.tas3.eu/) deployer, you should use
+T3-SSO-ZXID-JAVA from their component pool.
 
 9.2 Building the JNI from Source
 --------------------------------
 
-After building main zxid distribution, say
+The steps are
 
-  make javazxid
+  wget http://zxid.org/zxid-0.4x.tgz  # Remember to check for latest version
+  tar xf zxid-0.40.tgz
+  cd zxid-0.40
+  make javazxid                       # Also builds libzxid and main distribution
 
 You must have set ~JNI_INC~ variable correctly in the Makefile (or in
 localconf.mk) and ~javac~ must be in path (or you must set ~JAVAC~
@@ -63,7 +84,7 @@ of Java SDK 1.5.
 >  <<tt: make javazxid ENA_GEN=1 >>
 > 
 > but this requires that you have swig(1) installed. Depending
-> on the changes it may also require xsd2sg.pl and gperf(1),
+> on the changes, it may also require xsd2sg.pl and gperf(1),
 > see "Compilation for Experts" section, above, for full
 > explanation. As of January 2007, all of the Java JNI interface
 > is swig(1) generated - there are no human authored files. However,
@@ -91,7 +112,230 @@ how to do this for the example CGI program zxid.java.
 * On Mac, it seems ~export LD_LIBRARY_PATH=zxidjava~ is not needed.
 
 
-9.2 Programming with ZXID Java API
+9.2 Java Servlet Example Using Tomcat
+-------------------------------------
+
+Consider following example +payload+ servlet (from zxidappdemo.java):
+
+<<ignore: perl -ne 'printf "%02d %s", ++$i, $_' <zxidappdemo.java >>
+
+<<code:
+01 import zxidjava.*;   // Pull in the zxidjni.az() API
+02 import java.io.*;
+03 import javax.servlet.*;
+04 import javax.servlet.http.*;
+05 
+06 public class zxidappdemo extends HttpServlet {
+07     public void doGet(HttpServletRequest req, HttpServletResponse res)
+08      throws ServletException, IOException
+09     {
+10      String fullURL = req.getRequestURI();
+11      if (req.getQueryString() != null)
+12          fullURL += "?" + req.getQueryString();
+13      System.err.print("Start ZXID App Demo GET("+fullURL+")...\n");
+14      HttpSession ses = req.getSession(false);  // Important: do not allow automatic session.
+15      if (ses == null) {                        // Instead, redirect to sso servlet.
+16          res.sendRedirect("sso?o=E&fr=" + fullURL);
+17          return;
+18      }
+19      
+20      res.setContentType("text/html");
+21      res.getOutputStream().print("<title>ZXID Demo App Protected Content</title><body><h1>ZXID Demo App Protected Content at " + fullURL + "</H1>\n");
+22 
+23      // Render logout buttons (optional)
+24 
+25      res.getOutputStream().print("[<a href=\"sso?gl=1&s="+ses.getValue("sesid")+"\">Local Logout</a> | <a href=\"sso?gr=1&s="+ses.getValue("sesid")+"\">Single Logout</a>]\n");
+26 
+27      // The SSO servlet will have done one iteration of authorization. The following
+28      // serves to illustrate, how to explicitly call a PDP from your code.
+29 
+30      if (zxidjni.az("PATH=/var/zxid/", "Action=Show", ses.getValue("sesid").toString()) == 0) {
+31          res.getOutputStream().print("<p><b>Denied.</b> Normally page would not be shown, but we show the session attributes for debugging purposes.\n");
+32          //res.setStatus(302, "Denied");
+33      } else {
+34          res.getOutputStream().print("<p>Authorized.\n");
+35      }
+36 
+37      // Render protected content page (your application starts working)
+38 
+39      res.getOutputStream().print("<pre>HttpSession dump:\n");
+40      String[] val_names = ses.getValueNames();
+41      for (int i = 0; i < val_names.length; ++i) {
+42          res.getOutputStream().print(val_names[i] + ": " + ses.getValue(val_names[i]) + "\n");
+43      }
+44      
+45      res.getOutputStream().print("</pre>");
+46     }
+47 }
+>>
+
+On lines 14-18 we check whether the servlet session is active. If it
+is, there is nothing more to do and we proceed to the application,
+on line 20. However, if the session does not exist yet, we trigger
+Single Sign-On by redirecting the user to /sso (this must match
+the configuration in servlet/WEB-INF/web.xml). A very important
+part of the redirect is supplying the +fr+ query string parameter (l.16)
+which allows the SSO servlet to redirect the user back to the
+original application after the SSO. The o=E query string parameter
+is needed as well and will trigger the IdP selection screen. Alternatively
+you could supply your own IdP selection screen.
+
+On first attempt to access the protected content, the if on l.15 will
+trigger, sending the user to the Single Sign-On. On second attempt (i.e.
+just after the SSO) the if will not fire and application can start its
+normal operation, outputting the protected content page (l.20).
+
+On line 25 we render the logout buttons. This is optional, but your
+web site user interface should include these buttons somewhere. It is
+important that the query strings for the buttons indicate the
+operation (gl=1 means local logout, gr=1 means Single Logout (SLO) and
+the session ID (s=...)  which you can obtain from the servlet session
+under name "sesid". Clicking these links will send the user to the
+SSO servlet with appropriate information to end the session. After
+logout, the user will land on IdP selection screen, where he can
+login again, if desired.
+
+On ll.30-35 we perform an optional authorization check. Usually, if
+configured, an authorization step is taken already during the SSO
+servlet phase. However, sometimes the generic authorization is
+not specific enough and the application wants to make an explicit
+authorization request to a PDP. Calling zxidjni.az() accomplishes
+just that. It is pulled in by the import statement on l.1. The
+first argument is a configuration string, which usually has just one
+argument: the ZXID directory PATH (normally "/var/zxid/"),
+but it could contain additional options such as
+
+PDP_CALL_URL:: URL of the PDP to call. Default is not to call any
+    PDP, i.e. attempting to call zxidjni.az() without this set
+    in either /var/zxid/zxid.conf configuration file or in the
+    conf string is futile.
+NEED:: Comma separated list of the attributes needed for decision.
+    If an attribute or a wild card is not listed in the NEED or WANT,
+    it is not passed to the PDP. Thus, it is not sufficient to
+    supply an attribute in query string: it is also necessary
+    to list it, or a wild card, in NEED or WANT as well as in PEPMAP.
+WANT:: Comma separated list of the attributes useful (but not needed)
+    for decision.
+PEPMAP:: How tp pass attributes from attribute pool, or the query
+    string argument, to the PDP. If attribute or wild card is not
+    listed in the PEPMAP, it is not passed to the PDP.
+
+It is important that you address NEED and PEPMAP in your configuration.
+Without them the attributes supplied in query string argument
+will not be passed on to the PDP.
+
+The second argument ("Action=Show") allows you to pass in attributes
+that were not part of the context before. Each attribute is considered
+accoring to NEED, WANT, and PEPMAP configurations and is classified
+as belonging in Subject, Resource, Action, or Environment categories.
+You would typically supply using thsi argument the specifics of
+the application dependent operation that is to be authorized.
+
+The third argument specifies the ZXID session ID, which is used to
+fetch some additional attributes.
+
+9.2.1 Configuring SSO Servlet to Tomcat
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to your own applet that redirects to the SSO servlet,
+you need to configure Tomcat to recognize both your applet and
+the SSO applet. This is typically done by editing servlet/WEB-INF/web.xml
+file (servlet/WEB-INF/web.xml in zxid source tree). Consider
+
+<<code:
+01 <web-app>
+02 
+03   <display-name>ZXID SSO Servlet Example</display-name>
+04   <description>SSO capability for other servlets.</description>
+05 
+06   <servlet>
+07     <servlet-name>zxidsrvlet</servlet-name>
+08     <servlet-class>zxidsrvlet</servlet-class>
+09   </servlet>
+10 
+11   <servlet-mapping>
+12     <servlet-name>zxidsrvlet</servlet-name>
+13     <url-pattern>/sso</url-pattern>
+14   </servlet-mapping>
+15 
+16   <servlet>
+17     <servlet-name>zxidappdemo</servlet-name>
+18     <servlet-class>zxidappdemo</servlet-class>
+19   </servlet>
+20 
+21   <servlet-mapping>
+22     <servlet-name>zxidappdemo</servlet-name>
+23     <url-pattern>/appdemo</url-pattern>
+24   </servlet-mapping>
+25 
+26 </web-app>
+>>
+
+Here lines 16-24 represent your own payload application.  The
+<servlet-name> is used to match together <servlet> and the
+<servlet-mapping> sections. <servlet-class> points to the Java class
+file that implements the servler, in this case
+zxidappdemo.class. Finally <url-pattern> specifies where in the web
+servers hierarchy the servlet will appear. Here you have to realize
+that the pattern will be prefixed by the directory path where the
+servlet lives (i.e. in our example the actual path is
+/zxidservlet/appdemo).
+
+ll.06-14 represent the SSO servlet. As can be seen, the corresponding
+class file is zxidsrvlet.class, which you will find at top level
+of the zxid distribution after compiling. The <url-pattern>
+and the servlet directory MUST match the redirection on l.16
+of the servlet code example above. If application servlet and
+the SSO servlet live in the same directory, mere local redirect
+will do the trick, as illustrated on l.16.
+
+The <url-patterm> also MUST correspond to the URL parameter in the
+/var/zxid/zxid.conf file (the URL parameter is also prefix of the
+EntityID which is also the Well Know Location (WKL) for metadata
+exchange).
+
+9.3 Running as servlet under Tomcat
+-----------------------------------
+
+ZXID distribution contains subdirectory called ~servlet~. You should
+link this into webapps directory of Tomcat servlet container
+
+  cd ~/apache-tomcat-5.5.20/webapps
+  ln -s ~/zxid-0.34/servlet zxidservlet
+
+You also need to set ~allowLinking~ flag in 
+apache-tomcat-5.5.20/conf/context.xml (the ~reloadable~
+flag avoids having to restart Tomcat if you recompile
+the .class file):
+
+  <Context allowLinking="true" reloadable="true">...
+
+The file servlet/WEB-INF/web.xml describes the example zxid
+application. The actual application lives in servlet/WEB-INF/classes
+which is actually just a symlink back to the top level of the ZXID
+distribution. Therefore the zxidhello.class file appears on the top
+level and the wrapper classes, which are scoped in ~zxidjava~ package,
+appear in zxidjava/ subdirectory. From the servlet container's
+perspective the directory appears to be
+apache-tomcat-5.5.20/webapps/zxidservlet/WEB-INF/classes/zxidjava
+
+After ~make javazxid~ and restart of Tomcat (~killall java;
+apache-tomcat-5.5.20/bin/startup.sh~), you can access the application
+using URL (defined in servlet/WEB-INF/web.xml)
+
+  make javazxid
+  export JAVA_HOME=/apps/java/j2sdk1.4.2
+  export LD_LIBRARY_PATH=~/zxid-0.34/zxidjava:$LD_LIBRARY_PATH
+  cd ~/apache-tomcat-5.5.20      # Need to be here to avoid class path problems
+  killall java; bin/startup.sh
+  tail -f ~/apache-tomcat-5.5.20/logs/catalina.out &
+  http://sp1.zxidsp.org:8080/zxidservlet/zxidHLO?o=E
+
+N.B. You should make sure sp1.zxidsp.org resolves to the machine
+where you are running Tomcat, e.g. localhost (127.0.0.1).
+
+
+9.4 Programming with ZXID Java API
 ----------------------------------
 
 For detailed usage examples of the Java interface you should study
@@ -131,9 +375,14 @@ of the zxidjni class, e.g:
 Note that the ~zxid_~ prefix is omitted in favour of the ~zxidjni~
 class name qualifier.
 
+9.4.1 Integrating SSO Directly to Your Java Servlet
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-9.3 Java Servlet Example Using Tomcat
--------------------------------------
+Although zxidsrvlet.java provides a "no programming required"
+SSO integration for Servlet, just like mod_auth_saml provides
+for Apache httpd, sometimes you will want to integrate SSO
+directly into your servlet, e.g. to avoid distributing a second
+servlet.
 
 (*** also in zxid-simple.pd)
 
@@ -192,46 +441,6 @@ Consider
   51     do_zxid(req, res, qs);
   52   }
   53 }
-
-9.4 Running as servlet under Tomcat
------------------------------------
-
-ZXID distribution contains subdirectory called ~servlet~. You should
-link this into webapps directory of Tomcat servlet container
-
-  cd ~/apache-tomcat-5.5.20/webapps
-  ln -s ~/zxid-0.34/servlet zxidservlet
-
-You also need to set ~allowLinking~ flag in 
-apache-tomcat-5.5.20/conf/context.xml (the ~reloadable~
-flag avoids having to restart Tomcat if you recompile
-the .class file):
-
-  <Context allowLinking="true" reloadable="true">...
-
-The file servlet/WEB-INF/web.xml describes the example zxid
-application. The actual application lives in servlet/WEB-INF/classes
-which is actually just a symlink back to the top level of the ZXID
-distribution. Therefore the zxidhello.class file appears on the top
-level and the wrapper classes, which are scoped in ~zxidjava~ package,
-appear in zxidjava/ subdirectory. From the servlet container's
-perspective the directory appears to be
-apache-tomcat-5.5.20/webapps/zxidservlet/WEB-INF/classes/zxidjava
-
-After ~make javazxid~ and restart of Tomcat (~killall java;
-apache-tomcat-5.5.20/bin/startup.sh~), you can access the application
-using URL (defined in servlet/WEB-INF/web.xml)
-
-  make javazxid
-  export JAVA_HOME=/apps/java/j2sdk1.4.2
-  export LD_LIBRARY_PATH=~/zxid-0.34/zxidjava:$LD_LIBRARY_PATH
-  cd ~/apache-tomcat-5.5.20      # Need to be here to avoid class path problems
-  killall java; bin/startup.sh
-  tail -f ~/apache-tomcat-5.5.20/logs/catalina.out &
-  http://sp1.zxidsp.org:8080/zxidservlet/zxidHLO?o=E
-
-N.B. You should make sure sp1.zxidsp.org resolves to the machine
-where you are running Tomcat, e.g. localhost (127.0.0.1).
 
 9.5 Known Problems and Limitations
 ----------------------------------

@@ -50,9 +50,9 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s {
   struct zx_str* Consent;	/* {0,1} attribute xs:anyURI */
   struct zx_str* Destination;	/* {0,1} attribute xs:anyURI */
   struct zx_str* ID;	/* {1,1} attribute xs:anyURI */
-  struct zx_str* InputContextOnly;	/* {0,1} attribute xs:boolean */
+  struct zx_str* InputContextOnly;	/* {0,1} attribute boolean */
   struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
-  struct zx_str* ReturnContext;	/* {0,1} attribute xs:boolean */
+  struct zx_str* ReturnContext;	/* {0,1} attribute boolean */
   struct zx_str* Version;	/* {1,1} attribute xa:VersionType */
 };
 

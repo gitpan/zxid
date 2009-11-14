@@ -175,6 +175,7 @@ class zxidjniJNI {
   public final static native long zx_rsa_priv_enc(long jarg1, long jarg2, long jarg3, int jarg4);
   public final static native long zx_get_rsa_pub_from_cert(long jarg1, String jarg2);
   public final static native void zx_rand(String jarg1, int jarg2);
+  public final static native String zx_md5_crypt(String jarg1, String jarg2, String jarg3);
   public final static native long zx_tok_by_ns(long jarg1, long jarg2, int jarg3, String jarg4, long jarg5);
   public final static native int zx_len_xmlns_if_not_seen(long jarg1, long jarg2, long jarg3);
   public final static native String zx_enc_xmlns_if_not_seen(long jarg1, String jarg2, long jarg3, long jarg4);
@@ -347,6 +348,8 @@ class zxidjniJNI {
   public final static native String zxid_conf_pdp_url_get(long jarg1);
   public final static native void zxid_conf_pdp_call_url_set(long jarg1, String jarg2);
   public final static native String zxid_conf_pdp_call_url_get(long jarg1);
+  public final static native void zxid_conf_xasp_vers_set(long jarg1, String jarg2);
+  public final static native String zxid_conf_xasp_vers_get(long jarg1);
   public final static native void zxid_conf_need_set(long jarg1, long jarg2);
   public final static native long zxid_conf_need_get(long jarg1);
   public final static native void zxid_conf_want_set(long jarg1, long jarg2);
@@ -874,6 +877,7 @@ class zxidjniJNI {
   public final static native long zxid_mk_xacml_resp(long jarg1, String jarg2);
   public final static native long zxid_mk_xacml_simple_at(long jarg1, long jarg2, long jarg3, long jarg4, long jarg5, long jarg6);
   public final static native long zxid_mk_az(long jarg1, long jarg2, long jarg3, long jarg4, long jarg5);
+  public final static native long zxid_mk_az_cd1(long jarg1, long jarg2, long jarg3, long jarg4, long jarg5);
   public final static native long zxid_mk_attribute(long jarg1, String jarg2, String jarg3);
   public final static native long zxid_mk_di_query(long jarg1, String jarg2);
   public final static native long zxid_mk_addr(long jarg1, long jarg2);
@@ -1281,6 +1285,10 @@ class zxidjniJNI {
   public final static native String zx_xmlns_xasa_get();
   public final static native int zx_xmlns_ix_xasp_get();
   public final static native String zx_xmlns_xasp_get();
+  public final static native int zx_xmlns_ix_xaspcd1_get();
+  public final static native String zx_xmlns_xaspcd1_get();
+  public final static native int zx_xmlns_ix_xasacd1_get();
+  public final static native String zx_xmlns_xasacd1_get();
   public final static native int zx_xmlns_ix_wst_get();
   public final static native String zx_xmlns_wst_get();
   public final static native int zx_xmlns_ix_wsp_get();

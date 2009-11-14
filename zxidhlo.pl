@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+# Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
@@ -7,6 +7,7 @@
 # Licensed under Apache License 2.0, see file COPYING.
 # $Id: zxidhlo.pl,v 1.6 2009-08-30 15:09:26 sampo Exp $
 # 16.1.2007, created --Sampo
+# 14.11.2009, Added zxid_az() example --Sampo
 
 use Net::SAML;
 use Data::Dumper;
@@ -16,7 +17,8 @@ undef $/;
 
 open STDERR, ">>tmp/zxid.stderr";   # Helps CGI debugging where web server eats the stderr
 
-$url = "https://sp1.zxidsp.org:8443/zxidhlo.pl";  # Edit to match your situation
+#$url = "https://sp1.zxidsp.org:8443/zxidhlo.pl";  # Edit to match your situation
+$url = "http://sp.tas3.pt:8082/zxidhlo.pl";  # Edit to match your situation
 $conf = "PATH=/var/zxid/&URL=$url";
 $cf = Net::SAML::new_conf_to_cf($conf);
 #warn "cf($cf):".Dumper($cf);
@@ -33,17 +35,24 @@ if ($op ne 'd') { die "Unknown Net::SAML::simple() res($res)"; }
 
 ($sid) = $res =~ /^sesid: (.*)$/m;
 
+if (Net::SAML::az_cf($cf, "Action=Show", $sid)) {
+    $az = "Permit.\n";
+} else {
+    $az = "<b>Deny.</b> Normally page would not be shown, but we show session attributes for debugging purposes.\n";
+}
+
 print <<HTML
 CONTENT-TYPE: text/html
 
 <title>ZXID perl HLO SP Mgmt</title>
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 <body bgcolor="#330033" text="#ffaaff" link="#ffddff" vlink="#aa44aa" alink="#ffffff"><font face=sans>
-
-<h1>ZXID SP Perl HLO Management (user logged in, session $sid active)</h1>
+$az
+<h1>ZXID SP Perl HLO Management (user logged in, session active)</h1>
+sesid: $sid
 HTML
     ;
-print Net::SAML::fed_mgmt_cf($cf, undef, -1, $sid, 0x1800);
+print Net::SAML::fed_mgmt_cf($cf, undef, -1, $sid, 0x1900);
 exit;
 
 ###

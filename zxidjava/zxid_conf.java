@@ -540,6 +540,14 @@ public class zxid_conf {
     return zxidjniJNI.zxid_conf_pdp_call_url_get(swigCPtr);
   }
 
+  public void setXasp_vers(String value) {
+    zxidjniJNI.zxid_conf_xasp_vers_set(swigCPtr, value);
+  }
+
+  public String getXasp_vers() {
+    return zxidjniJNI.zxid_conf_xasp_vers_get(swigCPtr);
+  }
+
   public void setNeed(zxid_need value) {
     zxidjniJNI.zxid_conf_need_set(swigCPtr, zxid_need.getCPtr(value));
   }

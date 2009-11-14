@@ -661,6 +661,16 @@ int zx_LEN_SO_sa_Assertion(struct zx_ctx* c, struct zx_sa_Assertion_s* x )
       for (e = x->XACMLPolicyStatement; e; e = (struct zx_xasa_XACMLPolicyStatement_s*)e->gg.g.n)
 	  len += zx_LEN_SO_xasa_XACMLPolicyStatement(c, e);
   }
+  {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      for (e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xasacd1_XACMLAuthzDecisionStatement(c, e);
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      for (e = x->xasacd1_XACMLPolicyStatement; e; e = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xasacd1_XACMLPolicyStatement(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -754,6 +764,16 @@ int zx_LEN_WO_sa_Assertion(struct zx_ctx* c, struct zx_sa_Assertion_s* x )
       for (e = x->XACMLPolicyStatement; e; e = (struct zx_xasa_XACMLPolicyStatement_s*)e->gg.g.n)
 	  len += zx_LEN_WO_xasa_XACMLPolicyStatement(c, e);
   }
+  {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      for (e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xasacd1_XACMLAuthzDecisionStatement(c, e);
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      for (e = x->xasacd1_XACMLPolicyStatement; e; e = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xasacd1_XACMLPolicyStatement(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -845,6 +865,16 @@ char* zx_ENC_SO_sa_Assertion(struct zx_ctx* c, struct zx_sa_Assertion_s* x, char
       struct zx_xasa_XACMLPolicyStatement_s* e;
       for (e = x->XACMLPolicyStatement; e; e = (struct zx_xasa_XACMLPolicyStatement_s*)e->gg.g.n)
 	  p = zx_ENC_SO_xasa_XACMLPolicyStatement(c, e, p);
+  }
+  {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      for (e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xasacd1_XACMLAuthzDecisionStatement(c, e, p);
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      for (e = x->xasacd1_XACMLPolicyStatement; e; e = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xasacd1_XACMLPolicyStatement(c, e, p);
   }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
@@ -5167,6 +5197,11 @@ int zx_LEN_SO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x )
       for (e = x->Response; e; e = (struct zx_xac_Response_s*)e->gg.g.n)
 	  len += zx_LEN_SO_xac_Response(c, e);
   }
+  {
+      struct zx_xac_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_xac_Request_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xac_Request(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -5209,6 +5244,11 @@ int zx_LEN_WO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x )
       for (e = x->Response; e; e = (struct zx_xac_Response_s*)e->gg.g.n)
 	  len += zx_LEN_WO_xac_Response(c, e);
   }
+  {
+      struct zx_xac_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_xac_Request_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xac_Request(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -5249,6 +5289,11 @@ char* zx_ENC_SO_sa_Statement(struct zx_ctx* c, struct zx_sa_Statement_s* x, char
       struct zx_xac_Response_s* e;
       for (e = x->Response; e; e = (struct zx_xac_Response_s*)e->gg.g.n)
 	  p = zx_ENC_SO_xac_Response(c, e, p);
+  }
+  {
+      struct zx_xac_Request_s* e;
+      for (e = x->Request; e; e = (struct zx_xac_Request_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xac_Request(c, e, p);
   }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);

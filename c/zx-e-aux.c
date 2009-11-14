@@ -263,6 +263,22 @@ void zx_FREE_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x, int free_strs)
       }
   }
   {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* en;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = en) {
+	  en = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n;
+	  zx_FREE_xaspcd1_XACMLAuthzDecisionQuery(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      struct zx_xaspcd1_XACMLPolicyQuery_s* en;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = en) {
+	  en = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n;
+	  zx_FREE_xaspcd1_XACMLPolicyQuery(c, e, free_strs);
+      }
+  }
+  {
       struct zx_di_Query_s* e;
       struct zx_di_Query_s* en;
       for (e = x->Query; e; e = en) {
@@ -1993,6 +2009,16 @@ void zx_DUP_STRS_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x)
 	  zx_DUP_STRS_xasp_XACMLPolicyQuery(c, e);
   }
   {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  zx_DUP_STRS_xaspcd1_XACMLAuthzDecisionQuery(c, e);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  zx_DUP_STRS_xaspcd1_XACMLPolicyQuery(c, e);
+  }
+  {
       struct zx_di_Query_s* e;
       for (e = x->Query; e; e = (struct zx_di_Query_s*)e->gg.g.n)
 	  zx_DUP_STRS_di_Query(c, e);
@@ -3309,6 +3335,32 @@ struct zx_e_Body_s* zx_DEEP_CLONE_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x
 	  en = zx_DEEP_CLONE_xasp_XACMLPolicyQuery(c, e, dup_strs);
 	  if (!enn)
 	      x->XACMLPolicyQuery = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* en;
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* enn;
+      for (enn = 0, e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xaspcd1_XACMLAuthzDecisionQuery(c, e, dup_strs);
+	  if (!enn)
+	      x->xaspcd1_XACMLAuthzDecisionQuery = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      struct zx_xaspcd1_XACMLPolicyQuery_s* en;
+      struct zx_xaspcd1_XACMLPolicyQuery_s* enn;
+      for (enn = 0, e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xaspcd1_XACMLPolicyQuery(c, e, dup_strs);
+	  if (!enn)
+	      x->xaspcd1_XACMLPolicyQuery = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -6081,6 +6133,22 @@ int zx_WALK_SO_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x, void* ctx, int (*
       struct zx_xasp_XACMLPolicyQuery_s* e;
       for (e = x->XACMLPolicyQuery; e; e = (struct zx_xasp_XACMLPolicyQuery_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_xasp_XACMLPolicyQuery(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xaspcd1_XACMLAuthzDecisionQuery(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xaspcd1_XACMLPolicyQuery(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

@@ -5,7 +5,7 @@
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
-# $Id: Makefile,v 1.148 2009-10-16 13:36:33 sampo Exp $
+# $Id: Makefile,v 1.149 2009-10-18 12:39:10 sampo Exp $
 # 15.10.2006, refactor sources to be per namespace --Sampo
 # 19.1.2006, added new zxid_simple() / Hello World targets and JNI --Sampo
 # 26.2.2007, tweaks for the great SOAP merger, WSC support --Sampo
@@ -29,12 +29,12 @@
 vpath %.c ../zxid
 vpath %.h ../zxid
 
-default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool zxlogview zxidhrxmlwsc zxidhrxmlwsp zxdecode zxcot
+default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool zxlogview zxidhrxmlwsc zxidhrxmlwsp zxdecode zxcot zxpasswd
 
-all: seehelp precheck precheck_apache zxid zxidhlo zxididp zxidsimple zxlogview samlmod phpzxid javazxid apachezxid zxdecode zxcot smime
+all: seehelp precheck precheck_apache zxid zxidhlo zxididp zxidsimple zxlogview samlmod phpzxid javazxid apachezxid zxdecode zxcot zxpasswd smime
 
-ZXIDREL=0.38
-ZXIDVERSION=0x000038
+ZXIDREL=0.40
+ZXIDVERSION=0x000040
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -455,7 +455,10 @@ ZX_SG += sg/access_control-xacml-2.0-context-schema-os.sg
 ZX_SG += sg/access_control-xacml-2.0-policy-schema-os.sg
 ZX_SG += sg/access_control-xacml-2.0-saml-assertion-schema-os.sg
 ZX_SG += sg/access_control-xacml-2.0-saml-protocol-schema-os.sg
+ZX_SG += sg/xacml-2.0-profile-saml2.0-v2-schema-protocol-cd-1.sg
+ZX_SG += sg/xacml-2.0-profile-saml2.0-v2-schema-assertion-cd-1.sg
 ZX_ROOTS += -r xasp:XACMLAuthzDecisionQuery -r xasp:XACMLPolicyQuery
+ZX_ROOTS += -r xaspcd1:XACMLAuthzDecisionQuery -r xaspcd1:XACMLPolicyQuery
 
 endif
 
@@ -484,6 +487,7 @@ ZX_GEN_H=\
  c/zx-cb-data.h   c/zx-cdm-data.h   c/zx-gl-data.h    c/zx-mm7-data.h \
  c/zx-wst-data.h  c/zx-wsp-data.h   c/zx-wsc-data.h \
  c/zx-xa-data.h   c/zx-xac-data.h   c/zx-xasa-data.h  c/zx-xasp-data.h \
+ c/zx-xasacd1-data.h  c/zx-xaspcd1-data.h \
  c/zx-dp-data.h   c/zx-pmm-data.h   c/zx-prov-data.h  c/zx-idp-data.h        c/zx-shps-data.h \
  c/zx-demomed-data.h c/zx-hrxml-data.h c/zx-idhrxml-data.h \
  c/zx-xsi-data.h  c/zx-xs-data.h    c/zx-xml-data.h
@@ -531,7 +535,9 @@ ZX_GEN_C=\
  c/zx-xa-aux.c     c/zx-xa-dec.c      c/zx-xa-enc.c      c/zx-xa-getput.c \
  c/zx-xac-aux.c    c/zx-xac-dec.c     c/zx-xac-enc.c     c/zx-xac-getput.c \
  c/zx-xasa-aux.c   c/zx-xasa-dec.c    c/zx-xasa-enc.c    c/zx-xasa-getput.c \
+ c/zx-xasacd1-aux.c   c/zx-xasacd1-dec.c    c/zx-xasacd1-enc.c    c/zx-xasacd1-getput.c \
  c/zx-xasp-aux.c   c/zx-xasp-dec.c    c/zx-xasp-enc.c    c/zx-xasp-getput.c \
+ c/zx-xaspcd1-aux.c   c/zx-xaspcd1-dec.c    c/zx-xaspcd1-enc.c    c/zx-xaspcd1-getput.c \
  c/zx-dp-aux.c     c/zx-dp-dec.c      c/zx-dp-enc.c      c/zx-dp-getput.c \
  c/zx-pmm-aux.c    c/zx-pmm-dec.c     c/zx-pmm-enc.c     c/zx-pmm-getput.c \
  c/zx-prov-aux.c   c/zx-prov-dec.c    c/zx-prov-enc.c    c/zx-prov-getput.c \
@@ -657,6 +663,8 @@ perlmod: samlmod
 
 perlzxid: samlmod
 
+perlzxid_install: samlmod_install
+
 perlclean:
 	@$(ECHO) ------------------ Making perlclean
 	rm -rf Net/blib Net/*~ Net/*.o Net/Makefile Net/Makefile.old Net/SAML.bs
@@ -697,7 +705,8 @@ phpzxid_install: php/php_zxid.so
 	@$(ECHO) Installing in `$(PHP_CONFIG) --extension-dir`
 	mkdir -p `$(PHP_CONFIG) --extension-dir`
 	cp $< `$(PHP_CONFIG) --extension-dir`
-	cp zxid.ini `$(PHP_CONFIG) --extension-dir`
+
+#cp zxid.ini `$(PHP_CONFIG) --extension-dir`
 
 phpclean:
 	rm -rf php/*.o php/*~ php/*.so
@@ -827,10 +836,16 @@ zxid.class: zxid.java zxidjava/zxidjni.class
 zxidhlo.class: zxidhlo.java zxidjava/zxidjni.class
 	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidhlo.java
 
+zxidsrvlet.class: zxidsrvlet.java zxidjava/zxidjni.class
+	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidsrvlet.java
+
+zxidappdemo.class: zxidappdemo.java zxidjava/zxidjni.class
+	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidappdemo.java
+
 zxidjava.jar: zxidjava/*.class
 	$(JAR) cf zxidjava.jar $<
 
-javazxid: zxidjava/libzxidjni.$(JNILIB) zxidjava/zxidjni.class zxid.class zxidhlo.class
+javazxid: zxidjava/libzxidjni.$(JNILIB) zxidjava/zxidjni.class zxid.class zxidhlo.class zxidsrvlet.class zxidappdemo.class
 
 javazxid_install: zxidjava/libzxidjni.so
 	@$(ECHO) "javazxid_install: Work in Progress. See zxid-java.pd"
@@ -878,7 +893,10 @@ zxid: $(ZXID_OBJ) libzxid.a
 zxcot: zxcot.o libzxid.a
 	$(LD) $(LDFLAGS) -o $@ $< -L. -lzxid $(LIBS)
 
-zxdecode: zxdecode.o
+zxdecode: zxdecode.o libzxid.a
+	$(LD) $(LDFLAGS) -o $@ $^ -L. -lzxid $(LIBS)
+
+zxpasswd: zxpasswd.o libzxid.a
 	$(LD) $(LDFLAGS) -o $@ $^ -L. -lzxid $(LIBS)
 
 zxidwsctool: $(ZXIDWSCTOOL_OBJ) libzxid.a
@@ -980,7 +998,7 @@ zxid.dll: libzxid.a
 
 TAS3COMMONFILES=README.zxid-tas3 README.zxid Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay zxcot zxdecode
 
-TAS3MAS=T3-SSO-ZXID-MODAUTHSAML-$(ZXIDREL)
+TAS3MAS=T3-SSO-ZXID-MODAUTHSAML_$(ZXIDREL)
 
 tas3maspkg: mod_auth_saml.so
 	rm -rf $(TAS3MAS) $(TAS3MAS).zip
@@ -990,7 +1008,7 @@ tas3maspkg: mod_auth_saml.so
 	cp $(TAS3COMMONFILES) $(TAS3MAS)
 	zip -r $(TAS3MAS).zip $(TAS3MAS)
 
-TAS3PHP=T3-SSO-ZXID-PHP-$(ZXIDREL)
+TAS3PHP=T3-SSO-ZXID-PHP_$(ZXIDREL)
 
 tas3phppkg: php/php_zxid.so
 	rm -rf $(TAS3PHP) $(TAS3PHP).zip
@@ -1000,7 +1018,7 @@ tas3phppkg: php/php_zxid.so
 	cp $(TAS3COMMONFILES) $(TAS3PHP)
 	zip -r $(TAS3PHP).zip $(TAS3PHP)
 
-TAS3JAVA=T3-SSO-ZXID-JAVA-$(ZXIDREL)
+TAS3JAVA=T3-SSO-ZXID-JAVA_$(ZXIDREL)
 
 tas3javapkg: zxidjava/libzxidjni.so
 	rm -rf $(TAS3JAVA) $(TAS3JAVA).zip
@@ -1010,21 +1028,31 @@ tas3javapkg: zxidjava/libzxidjni.so
 	cp $(TAS3COMMONFILES) $(TAS3JAVA)
 	zip -r $(TAS3JAVA).zip $(TAS3JAVA)
 
-TAS3IDP=T3-IDP-ZXID-$(ZXIDREL)
+TAS3IDP=T3-IDP-ZXID_$(ZXIDREL)
 
 tas3idppkg: zxididp
 	rm -rf $(TAS3IDP) $(TAS3IDP).zip
 	mkdir $(TAS3IDP)
 	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' < Manifest.T3-IDP-ZXID > $(TAS3IDP)/Manifest
-	cp zxididp $(TAS3IDP)
+	cp zxididp zxpasswd $(TAS3IDP)
 	cp Makefile $(TAS3IDP)
 	cp $(TAS3COMMONFILES) $(TAS3IDP)
 	zip -r $(TAS3IDP).zip $(TAS3IDP)
 
-tas3rel: tas3idppkg tas3javapkg tas3phppkg tas3maspkg
+TAS3SRC=T3-ZXID-SRC_$(ZXIDREL)
+
+tas3srcpkg: zxid-$(ZXIDREL).tgz
+	rm -rf $(TAS3SRC) $(TAS3SRC).zip
+	mkdir $(TAS3SRC)
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' < Manifest.T3-ZXID-SRC > $(TAS3SRC)/Manifest
+	cp zxid-$(ZXIDREL).tgz $(TAS3SRC)
+	cp README.zxid-tas3 Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay $(TAS3SRC)
+	zip -r $(TAS3SRC).zip $(TAS3SRC)
+
+tas3rel: tas3idppkg tas3javapkg tas3phppkg tas3maspkg tas3srcpkg
 
 tas3copyrel: tas3rel
-	scp $(TAS3IDP).zip $(TAS3JAVA).zip $(TAS3PHP).zip $(TAS3MAS).zip tas3repo:
+	scp $(TAS3SRC).zip $(TAS3IDP).zip $(TAS3JAVA).zip $(TAS3PHP).zip $(TAS3MAS).zip tas3repo:pool-in
 
 ###
 ### Precheck to help analyse compilation problems
@@ -1199,6 +1227,7 @@ winbindist:
 #   make zxid.dll TARGET=xmingw
 #   make winbindist
 #   make winbinrel
+# zxid.user@lists.unh.edu
 
 copydist:
 	scp zxid-$(ZXIDREL).tgz sampo@zxid.org:zxid.org
@@ -1227,8 +1256,8 @@ release:
 winbinrel:
 	scp zxid-$(ZXIDREL)-win32-bin.zip sampo@zxid.org:zxid.org
 
-indexrel:
-	scp html/index.html sampo@zxid.org:zxid.org
+indexrel: html/index.html
+	scp $< sampo@zxid.org:zxid.org
 
 relhtml:
 	scp html/* sampo@zxid.org:zxid.org/html
@@ -1277,7 +1306,7 @@ dep: $(PULVER_DEPS)
 	rm -f deps.dep
 	$(MAKE) deps.dep
 
-deps: $(ZXID_OBJ:.o=.c) zxdecode.c zxcot.c zxidhlo.c zxidsimple.c $(ZX_OBJ:.o=.c) c/saml2-const.h c/saml2md-const.h c/wsf-const.h $(PULVER_DEPS) c/zxidvers.h
+deps: $(ZXID_OBJ:.o=.c) zxdecode.c zxcot.c zxpasswd.c zxidhlo.c zxidsimple.c $(ZX_OBJ:.o=.c) c/saml2-const.h c/saml2md-const.h c/wsf-const.h $(PULVER_DEPS) c/zxidvers.h
 	@$(ECHO) ================== Making deps
 	cat pulver/c_saml2_dec_c.deps | xargs $(CC) $(CDEF) $(CDIR) -MM >>deps.dep
 	cat pulver/c_saml2_enc_c.deps | xargs $(CC) $(CDEF) $(CDIR) -MM >>deps.dep
@@ -1287,7 +1316,7 @@ deps: $(ZXID_OBJ:.o=.c) zxdecode.c zxcot.c zxidhlo.c zxidsimple.c $(ZX_OBJ:.o=.c
 	cat pulver/c_saml2md_enc_c.deps | xargs $(CC) $(CDEF) $(CDIR) -MM >>deps.dep
 	cat pulver/c_saml2md_aux_c.deps | xargs $(CC) $(CDEF) $(CDIR) -MM >>deps.dep
 	cat pulver/c_saml2md_getput_c.deps | xargs $(CC) $(CDEF) $(CDIR) -MM >>deps.dep
-	$(CC) $(CDEF) $(CDIR) -MM $(ZXID_OBJ:.o=.c) zxdecode.c zxcot.c zxidhlo.c zxidsimple.c c/saml2-const.h c/saml2md-const.h >>deps.dep
+	$(CC) $(CDEF) $(CDIR) -MM $(ZXID_OBJ:.o=.c) zxdecode.c zxcot.c zxpasswd.c zxidhlo.c zxidsimple.c c/saml2-const.h c/saml2md-const.h >>deps.dep
 
 #	$(ECHO) Deps built. $(foreach fil,$^,$(shell $(fil) >>deps.dep))
 
@@ -1295,7 +1324,7 @@ else
 
 dep: deps
 
-deps: $(ZXID_OBJ:.o=.c) $(WSF_OBJ:.o=.c) zxdecode.c zxcot.c zxidhlo.c zxidsp.c zxidsimple.c $(ZX_OBJ:.o=.c) $(ZX_GEN_H) $(ZX_GEN_C) c/zx-const.h c/zxidvers.h
+deps: $(ZXID_OBJ:.o=.c) $(WSF_OBJ:.o=.c) zxdecode.c zxcot.c zxpasswd.c zxidhlo.c zxidsp.c zxidsimple.c $(ZX_OBJ:.o=.c) $(ZX_GEN_H) $(ZX_GEN_C) c/zx-const.h c/zxidvers.h
 	$(CC) $(CDEF) $(CDIR) -MM $^ >deps.dep
 
 endif

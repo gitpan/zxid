@@ -438,6 +438,45 @@ platform issues. Please send any success reports, and receipes, my way.
 
    No confusion as far as I can see.
 
+97.3.1 No certificates appear in metadata
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Q: +I've been trying to set up ZXID's mod_auth_saml on an OS X server. The
+EntityDescriptor XML doesn't seem to contain the public x.509 cert.+
+
+A: The metadata (the URL ending in o=B) will not have certificates if
+none actually were available. Thus visualizing the metadata in
+a brower is a good way to check whether it is finding the certs. So
+it is a feature ;-)
+
+Q: +Does mod_auth_saml use the cert from /var/zxid/pem/ssl-nopw-cert.pem?+
+
+A: The certs for metadata live in files
+
+/var/zxid/pem/sign-nopw-cert.pem
+/var/zxid/pem/enc-nopw-cert.pem
+
+In more recent versions (current is 0.38, which version were you using?)
+ZXID will automatically generate self signed certs if the certs are
+not installed yet. However it may fail to write them to the filesystem
+due to permissions problem. You should check that the user as which
+Apache runs can indeed read from and write to /var/zxid/pem directory.
+
+If you want to use officially issued certificates, you will of course
+need to place them in the two files mentioned. Please note that the
+files should be concatenation of certificate and the private key. Due
+to this and the practise of not using password on the private keys
+you should pay attention to protecting these files with filesystem
+permissions - the caveat is that if you protect too well then
+even the apache process can't read them. Recommended permissions are
+
+  chown APACHEUSER /var/zxid/pem
+  chmod -R 02750 /var/zxid/pem
+
+where APACHEUSER is distribution dependent user account used to
+run the apache process. You can do `ps axu | grep httpd' to see
+what user apache runs as.
+
 97.3 Common Mistakes
 --------------------
 

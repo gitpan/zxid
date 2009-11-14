@@ -2,6 +2,22 @@
 # $Id: Changes,v 1.34 2009-10-16 13:36:33 sampo Exp $
 # Change log, minor credits, and release history
 
+To do:
+    - Limited SP local attribute authority
+    - Yubikey in zxmkpasswd
+    - shell script az
+
+zxid-0.40:: 14.11.2009
+    - Shib2 interop testing
+    - XACML cd1 support (sending policies in request)
+    - Populate both OID and FriendlyName variants of attributes from assertion
+    - Extensively tested java servlet configuration with zxidjni.az()
+    - Greatly improved zxid-java.pd documentation
+    - Fixed and tested mod_php configuration with zxid_az()
+    - Fixed and tested mod_perl configuration with Net::SAML::az()
+    - Retested mod_aut_saml
+zxid-0.39:: 5.11.2009
+    - Added zxidsrvlet and zxidappdemo
 zxid-0.38:: 16.10.2009
     - Added better integrated zxidsrvlet
 zxid-0.36:: 14.10.2009
@@ -13,7 +29,7 @@ zxid-0.35:: 11.10.2009
 zxid-0.34:: 17.9.2009
     - Added TAS3 package targets for Java and PHP
 zxid-0.33:: 9.9.2009
-    - Removed Apache check from defalut make
+    - Removed Apache check from default make
     - Continued refactoring README.zxid to separate documents
     - Changed configuration file reading so that config file is (re)read
       whenever PATH is supplied, but not if PATH is supplied in file itself.

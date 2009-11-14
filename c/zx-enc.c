@@ -243,6 +243,16 @@ int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
       for (e = x->XACMLPolicyQuery; e; e = (struct zx_xasp_XACMLPolicyQuery_s*)e->gg.g.n)
 	  len += zx_LEN_SO_xasp_XACMLPolicyQuery(c, e);
   }
+  {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xaspcd1_XACMLAuthzDecisionQuery(c, e);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xaspcd1_XACMLPolicyQuery(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -429,6 +439,16 @@ int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
       for (e = x->XACMLPolicyQuery; e; e = (struct zx_xasp_XACMLPolicyQuery_s*)e->gg.g.n)
 	  len += zx_LEN_WO_xasp_XACMLPolicyQuery(c, e);
   }
+  {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xaspcd1_XACMLAuthzDecisionQuery(c, e);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xaspcd1_XACMLPolicyQuery(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -613,6 +633,16 @@ char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
       struct zx_xasp_XACMLPolicyQuery_s* e;
       for (e = x->XACMLPolicyQuery; e; e = (struct zx_xasp_XACMLPolicyQuery_s*)e->gg.g.n)
 	  p = zx_ENC_SO_xasp_XACMLPolicyQuery(c, e, p);
+  }
+  {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xaspcd1_XACMLAuthzDecisionQuery(c, e, p);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xaspcd1_XACMLPolicyQuery(c, e, p);
   }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
@@ -1567,6 +1597,10 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_xasp_XACMLAuthzDecisionQuery(c, (struct zx_xasp_XACMLAuthzDecisionQuery_s*)x);
   case zx_xasp_XACMLPolicyQuery_ELEM:
     return zx_LEN_WO_xasp_XACMLPolicyQuery(c, (struct zx_xasp_XACMLPolicyQuery_s*)x);
+  case zx_xaspcd1_XACMLAuthzDecisionQuery_ELEM:
+    return zx_LEN_WO_xaspcd1_XACMLAuthzDecisionQuery(c, (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)x);
+  case zx_xaspcd1_XACMLPolicyQuery_ELEM:
+    return zx_LEN_WO_xaspcd1_XACMLPolicyQuery(c, (struct zx_xaspcd1_XACMLPolicyQuery_s*)x);
   case zx_di_Query_ELEM:
     return zx_LEN_WO_di_Query(c, (struct zx_di_Query_s*)x);
   case zx_di_QueryResponse_ELEM:
@@ -2053,6 +2087,10 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_xasa_XACMLAuthzDecisionStatement(c, (struct zx_xasa_XACMLAuthzDecisionStatement_s*)x);
   case zx_xasa_XACMLPolicyStatement_ELEM:
     return zx_LEN_WO_xasa_XACMLPolicyStatement(c, (struct zx_xasa_XACMLPolicyStatement_s*)x);
+  case zx_xasacd1_XACMLAuthzDecisionStatement_ELEM:
+    return zx_LEN_WO_xasacd1_XACMLAuthzDecisionStatement(c, (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)x);
+  case zx_xasacd1_XACMLPolicyStatement_ELEM:
+    return zx_LEN_WO_xasacd1_XACMLPolicyStatement(c, (struct zx_xasacd1_XACMLPolicyStatement_s*)x);
   case zx_ds_Signature_ELEM:
     return (x != c->exclude_sig) ? zx_LEN_WO_ds_Signature(c, (struct zx_ds_Signature_s*)x) : 0;
   case zx_sa11_Subject_ELEM:
@@ -3633,6 +3671,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x);
   case zx_xac_Response_ELEM:
     return zx_LEN_WO_xac_Response(c, (struct zx_xac_Response_s*)x);
+  case zx_xac_Request_ELEM:
+    return zx_LEN_WO_xac_Request(c, (struct zx_xac_Request_s*)x);
   case zx_sa_BaseID_ELEM:
     return zx_LEN_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x);
   case zx_sa_EncryptedID_ELEM:
@@ -3971,8 +4011,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("StatusMessage")-1);
   case zx_xac_StatusDetail_ELEM:
     return zx_LEN_WO_xac_StatusDetail(c, (struct zx_xac_StatusDetail_s*)x);
-  case zx_xac_Request_ELEM:
-    return zx_LEN_WO_xac_Request(c, (struct zx_xac_Request_s*)x);
+  case zx_xasacd1_ReferencedPolicies_ELEM:
+    return zx_LEN_WO_xasacd1_ReferencedPolicies(c, (struct zx_xasacd1_ReferencedPolicies_s*)x);
   case zx_xenc_KA_Nonce_ELEM:
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("KA_Nonce")-1);
   case zx_xenc_OriginatorKeyInfo_ELEM:
@@ -4693,6 +4733,10 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_xasp_XACMLAuthzDecisionQuery(c, (struct zx_xasp_XACMLAuthzDecisionQuery_s*)x, p);
   case zx_xasp_XACMLPolicyQuery_ELEM:
     return zx_ENC_WO_xasp_XACMLPolicyQuery(c, (struct zx_xasp_XACMLPolicyQuery_s*)x, p);
+  case zx_xaspcd1_XACMLAuthzDecisionQuery_ELEM:
+    return zx_ENC_WO_xaspcd1_XACMLAuthzDecisionQuery(c, (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)x, p);
+  case zx_xaspcd1_XACMLPolicyQuery_ELEM:
+    return zx_ENC_WO_xaspcd1_XACMLPolicyQuery(c, (struct zx_xaspcd1_XACMLPolicyQuery_s*)x, p);
   case zx_di_Query_ELEM:
     return zx_ENC_WO_di_Query(c, (struct zx_di_Query_s*)x, p);
   case zx_di_QueryResponse_ELEM:
@@ -5179,6 +5223,10 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_xasa_XACMLAuthzDecisionStatement(c, (struct zx_xasa_XACMLAuthzDecisionStatement_s*)x, p);
   case zx_xasa_XACMLPolicyStatement_ELEM:
     return zx_ENC_WO_xasa_XACMLPolicyStatement(c, (struct zx_xasa_XACMLPolicyStatement_s*)x, p);
+  case zx_xasacd1_XACMLAuthzDecisionStatement_ELEM:
+    return zx_ENC_WO_xasacd1_XACMLAuthzDecisionStatement(c, (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)x, p);
+  case zx_xasacd1_XACMLPolicyStatement_ELEM:
+    return zx_ENC_WO_xasacd1_XACMLPolicyStatement(c, (struct zx_xasacd1_XACMLPolicyStatement_s*)x, p);
   case zx_ds_Signature_ELEM:
     return (x != c->exclude_sig) ? zx_ENC_WO_ds_Signature(c, (struct zx_ds_Signature_s*)x, p) : p;
   case zx_sa11_Subject_ELEM:
@@ -6759,6 +6807,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x, p);
   case zx_xac_Response_ELEM:
     return zx_ENC_WO_xac_Response(c, (struct zx_xac_Response_s*)x, p);
+  case zx_xac_Request_ELEM:
+    return zx_ENC_WO_xac_Request(c, (struct zx_xac_Request_s*)x, p);
   case zx_sa_BaseID_ELEM:
     return zx_ENC_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x, p);
   case zx_sa_EncryptedID_ELEM:
@@ -7097,8 +7147,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "StatusMessage", sizeof("StatusMessage")-1);
   case zx_xac_StatusDetail_ELEM:
     return zx_ENC_WO_xac_StatusDetail(c, (struct zx_xac_StatusDetail_s*)x, p);
-  case zx_xac_Request_ELEM:
-    return zx_ENC_WO_xac_Request(c, (struct zx_xac_Request_s*)x, p);
+  case zx_xasacd1_ReferencedPolicies_ELEM:
+    return zx_ENC_WO_xasacd1_ReferencedPolicies(c, (struct zx_xasacd1_ReferencedPolicies_s*)x, p);
   case zx_xenc_KA_Nonce_ELEM:
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "KA_Nonce", sizeof("KA_Nonce")-1);
   case zx_xenc_OriginatorKeyInfo_ELEM:

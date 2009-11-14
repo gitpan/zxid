@@ -263,6 +263,16 @@ next_attr:
             el->g.n = &x->XACMLPolicyStatement->gg.g;
             x->XACMLPolicyStatement = (struct zx_xasa_XACMLPolicyStatement_s*)el;
             break;
+          case zx_xasacd1_XACMLAuthzDecisionStatement_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xasacd1_XACMLAuthzDecisionStatement(c, ns);
+            el->g.n = &x->xasacd1_XACMLAuthzDecisionStatement->gg.g;
+            x->xasacd1_XACMLAuthzDecisionStatement = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)el;
+            break;
+          case zx_xasacd1_XACMLPolicyStatement_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xasacd1_XACMLPolicyStatement(c, ns);
+            el->g.n = &x->xasacd1_XACMLPolicyStatement->gg.g;
+            x->xasacd1_XACMLPolicyStatement = (struct zx_xasacd1_XACMLPolicyStatement_s*)el;
+            break;
           case zx_ds_Signature_ELEM:
             el = (struct zx_elem_s*)zx_DEC_ds_Signature(c, ns);
             el->g.n = &x->Signature->gg.g;

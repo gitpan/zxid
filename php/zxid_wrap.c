@@ -956,21 +956,22 @@ static void SWIG_Php4_SetModule(swig_module_info *pointer) {
 #define SWIGTYPE_p_zx_xac_Response_s swig_types[71]
 #define SWIGTYPE_p_zx_xasa_XACMLAuthzDecisionStatement_s swig_types[72]
 #define SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s swig_types[73]
-#define SWIGTYPE_p_zx_xenc_EncryptedData_s swig_types[74]
-#define SWIGTYPE_p_zx_xenc_EncryptedKey_s swig_types[75]
-#define SWIGTYPE_p_zxid_atsrc swig_types[76]
-#define SWIGTYPE_p_zxid_attr swig_types[77]
-#define SWIGTYPE_p_zxid_cgi swig_types[78]
-#define SWIGTYPE_p_zxid_conf swig_types[79]
-#define SWIGTYPE_p_zxid_cstr_list swig_types[80]
-#define SWIGTYPE_p_zxid_curl_ctx swig_types[81]
-#define SWIGTYPE_p_zxid_entity swig_types[82]
-#define SWIGTYPE_p_zxid_map swig_types[83]
-#define SWIGTYPE_p_zxid_need swig_types[84]
-#define SWIGTYPE_p_zxid_ses swig_types[85]
-#define SWIGTYPE_p_zxsig_ref swig_types[86]
-static swig_type_info *swig_types[88];
-static swig_module_info swig_module = {swig_types, 87, 0, 0, 0, 0};
+#define SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s swig_types[74]
+#define SWIGTYPE_p_zx_xenc_EncryptedData_s swig_types[75]
+#define SWIGTYPE_p_zx_xenc_EncryptedKey_s swig_types[76]
+#define SWIGTYPE_p_zxid_atsrc swig_types[77]
+#define SWIGTYPE_p_zxid_attr swig_types[78]
+#define SWIGTYPE_p_zxid_cgi swig_types[79]
+#define SWIGTYPE_p_zxid_conf swig_types[80]
+#define SWIGTYPE_p_zxid_cstr_list swig_types[81]
+#define SWIGTYPE_p_zxid_curl_ctx swig_types[82]
+#define SWIGTYPE_p_zxid_entity swig_types[83]
+#define SWIGTYPE_p_zxid_map swig_types[84]
+#define SWIGTYPE_p_zxid_need swig_types[85]
+#define SWIGTYPE_p_zxid_ses swig_types[86]
+#define SWIGTYPE_p_zxsig_ref swig_types[87]
+static swig_type_info *swig_types[89];
+static swig_module_info swig_module = {swig_types, 88, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1192,6 +1193,7 @@ function_entry zxid_functions[] = {
   ZEND_NAMED_FE(zx_rsa_priv_enc,_wrap_zx_rsa_priv_enc, NULL)
   ZEND_NAMED_FE(zx_get_rsa_pub_from_cert,_wrap_zx_get_rsa_pub_from_cert, NULL)
   ZEND_NAMED_FE(zx_rand,_wrap_zx_rand, NULL)
+  ZEND_NAMED_FE(zx_md5_crypt,_wrap_zx_md5_crypt, NULL)
   ZEND_NAMED_FE(zx_tok_by_ns,_wrap_zx_tok_by_ns, NULL)
   ZEND_NAMED_FE(zx_len_xmlns_if_not_seen,_wrap_zx_len_xmlns_if_not_seen, NULL)
   ZEND_NAMED_FE(zx_enc_xmlns_if_not_seen,_wrap_zx_enc_xmlns_if_not_seen, NULL)
@@ -1344,6 +1346,8 @@ function_entry zxid_functions[] = {
   ZEND_NAMED_FE(zxid_conf_pdp_url_get,_wrap_zxid_conf_pdp_url_get, NULL)
   ZEND_NAMED_FE(zxid_conf_pdp_call_url_set,_wrap_zxid_conf_pdp_call_url_set, NULL)
   ZEND_NAMED_FE(zxid_conf_pdp_call_url_get,_wrap_zxid_conf_pdp_call_url_get, NULL)
+  ZEND_NAMED_FE(zxid_conf_xasp_vers_set,_wrap_zxid_conf_xasp_vers_set, NULL)
+  ZEND_NAMED_FE(zxid_conf_xasp_vers_get,_wrap_zxid_conf_xasp_vers_get, NULL)
   ZEND_NAMED_FE(zxid_conf_need_set,_wrap_zxid_conf_need_set, NULL)
   ZEND_NAMED_FE(zxid_conf_need_get,_wrap_zxid_conf_need_get, NULL)
   ZEND_NAMED_FE(zxid_conf_want_set,_wrap_zxid_conf_want_set, NULL)
@@ -1808,6 +1812,7 @@ function_entry zxid_functions[] = {
   ZEND_NAMED_FE(zxid_mk_xacml_resp,_wrap_zxid_mk_xacml_resp, NULL)
   ZEND_NAMED_FE(zxid_mk_xacml_simple_at,_wrap_zxid_mk_xacml_simple_at, NULL)
   ZEND_NAMED_FE(zxid_mk_az,_wrap_zxid_mk_az, NULL)
+  ZEND_NAMED_FE(zxid_mk_az_cd1,_wrap_zxid_mk_az_cd1, NULL)
   ZEND_NAMED_FE(zxid_mk_attribute,_wrap_zxid_mk_attribute, NULL)
   ZEND_NAMED_FE(zxid_mk_di_query,_wrap_zxid_mk_di_query, NULL)
   ZEND_NAMED_FE(zxid_mk_addr,_wrap_zxid_mk_addr, NULL)
@@ -1956,6 +1961,7 @@ static swig_type_info _swigt__p_zx_xac_Attribute_s = {"_p_zx_xac_Attribute_s", "
 static swig_type_info _swigt__p_zx_xac_Response_s = {"_p_zx_xac_Response_s", "struct zx_xac_Response_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_xasa_XACMLAuthzDecisionStatement_s = {"_p_zx_xasa_XACMLAuthzDecisionStatement_s", "struct zx_xasa_XACMLAuthzDecisionStatement_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_xasp_XACMLAuthzDecisionQuery_s = {"_p_zx_xasp_XACMLAuthzDecisionQuery_s", "struct zx_xasp_XACMLAuthzDecisionQuery_s *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s = {"_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s", "struct zx_xaspcd1_XACMLAuthzDecisionQuery_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_xenc_EncryptedData_s = {"_p_zx_xenc_EncryptedData_s", "struct zx_xenc_EncryptedData_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_xenc_EncryptedKey_s = {"_p_zx_xenc_EncryptedKey_s", "struct zx_xenc_EncryptedKey_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_atsrc = {"_p_zxid_atsrc", "struct zxid_atsrc *", 0, 0, (void*)0, 0};
@@ -2045,6 +2051,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_zx_xac_Response_s,
   &_swigt__p_zx_xasa_XACMLAuthzDecisionStatement_s,
   &_swigt__p_zx_xasp_XACMLAuthzDecisionQuery_s,
+  &_swigt__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s,
   &_swigt__p_zx_xenc_EncryptedData_s,
   &_swigt__p_zx_xenc_EncryptedKey_s,
   &_swigt__p_zxid_atsrc,
@@ -2134,6 +2141,7 @@ static swig_cast_info _swigc__p_zx_xac_Attribute_s[] = {  {&_swigt__p_zx_xac_Att
 static swig_cast_info _swigc__p_zx_xac_Response_s[] = {  {&_swigt__p_zx_xac_Response_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_xasa_XACMLAuthzDecisionStatement_s[] = {  {&_swigt__p_zx_xasa_XACMLAuthzDecisionStatement_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_xasp_XACMLAuthzDecisionQuery_s[] = {  {&_swigt__p_zx_xasp_XACMLAuthzDecisionQuery_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s[] = {  {&_swigt__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_xenc_EncryptedData_s[] = {  {&_swigt__p_zx_xenc_EncryptedData_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_xenc_EncryptedKey_s[] = {  {&_swigt__p_zx_xenc_EncryptedKey_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_atsrc[] = {  {&_swigt__p_zxid_atsrc, 0, 0, 0},{0, 0, 0, 0}};
@@ -2223,6 +2231,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_zx_xac_Response_s,
   _swigc__p_zx_xasa_XACMLAuthzDecisionStatement_s,
   _swigc__p_zx_xasp_XACMLAuthzDecisionQuery_s,
+  _swigc__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s,
   _swigc__p_zx_xenc_EncryptedData_s,
   _swigc__p_zx_xenc_EncryptedKey_s,
   _swigc__p_zxid_atsrc,
@@ -2316,6 +2325,7 @@ static int le_swig__p_zx_sp_AuthnRequest_s=0; /* handle for zx_ctx */
 static int le_swig__p_zx_ns_s=0; /* handle for zx_ns_s */
 static int le_swig__p_p_zx_ns_s=0; /* handle for zx_ns_s */
 static int le_swig__p_zx_xasp_XACMLAuthzDecisionQuery_s=0; /* handle for zx_ns_s */
+static int le_swig__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s=0; /* handle for zx_ns_s */
 static int le_swig__p_zx_di_Query_s=0; /* handle for zx_ns_s */
 static int le_swig__p_zx_dap_ResultQuery_s=0; /* handle for zx_ns_s */
 static int le_swig__p_zx_dap_Query_s=0; /* handle for zx_ns_s */
@@ -7546,6 +7556,50 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zx_md5_crypt) {
+  char *arg1 = (char *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *result = 0 ;
+  zval **args[3];
+  
+  SWIG_ResetError();
+  if(((ZEND_NUM_ARGS() )!= 3) || (zend_get_parameters_array_ex(3, args)!= SUCCESS)) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[0]);
+    arg1 = (char *) Z_STRVAL_PP(args[0]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+    /*@SWIG@*/;
+  }
+  result = (char *)zx_md5_crypt((char const *)arg1,(char const *)arg2,arg3);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(ErrorCode(),ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zx_tok_by_ns) {
   struct zx_tok *arg1 = (struct zx_tok *) 0 ;
   struct zx_tok *arg2 = (struct zx_tok *) 0 ;
@@ -12443,6 +12497,74 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pdp_call_url_get) {
     }
   }
   result = (char *) ((arg1)->pdp_call_url);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value,result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error(ErrorCode(),ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_xasp_vers_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(((ZEND_NUM_ARGS() )!= 2) || (zend_get_parameters_array_ex(2, args)!= SUCCESS)) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_xasp_vers_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    /*@SWIG:CONVERT_STRING_IN@*/
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    /*@SWIG@*/;
+  }
+  {
+    if (arg1->xasp_vers) free((char*)arg1->xasp_vers);
+    if (arg2) {
+      arg1->xasp_vers = (char *) malloc(strlen(arg2)+1);
+      strcpy((char*)arg1->xasp_vers,arg2);
+    } else {
+      arg1->xasp_vers = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error(ErrorCode(),ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_xasp_vers_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *result = 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(((ZEND_NUM_ARGS() )!= 1) || (zend_get_parameters_array_ex(1, args)!= SUCCESS)) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_xasp_vers_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  result = (char *) ((arg1)->xasp_vers);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -30225,6 +30347,60 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxid_mk_az_cd1) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  struct zx_xac_Attribute_s *arg2 = (struct zx_xac_Attribute_s *) 0 ;
+  struct zx_xac_Attribute_s *arg3 = (struct zx_xac_Attribute_s *) 0 ;
+  struct zx_xac_Attribute_s *arg4 = (struct zx_xac_Attribute_s *) 0 ;
+  struct zx_xac_Attribute_s *arg5 = (struct zx_xac_Attribute_s *) 0 ;
+  struct zx_xaspcd1_XACMLAuthzDecisionQuery_s *result = 0 ;
+  zval **args[5];
+  
+  SWIG_ResetError();
+  if(((ZEND_NUM_ARGS() )!= 5) || (zend_get_parameters_array_ex(5, args)!= SUCCESS)) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_mk_az_cd1. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zx_xac_Attribute_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_mk_az_cd1. Expected SWIGTYPE_p_zx_xac_Attribute_s");
+    }
+  }
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[2], (void **) &arg3, SWIGTYPE_p_zx_xac_Attribute_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 3 of zxid_mk_az_cd1. Expected SWIGTYPE_p_zx_xac_Attribute_s");
+    }
+  }
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[3], (void **) &arg4, SWIGTYPE_p_zx_xac_Attribute_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 4 of zxid_mk_az_cd1. Expected SWIGTYPE_p_zx_xac_Attribute_s");
+    }
+  }
+  {
+    /* typemap(in) SWIGTYPE * */
+    if(SWIG_ConvertPtr(*args[4], (void **) &arg5, SWIGTYPE_p_zx_xac_Attribute_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 5 of zxid_mk_az_cd1. Expected SWIGTYPE_p_zx_xac_Attribute_s");
+    }
+  }
+  result = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s *)zxid_mk_az_cd1(arg1,arg2,arg3,arg4,arg5);
+  {
+    SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s, 0);
+  }
+  return;
+fail:
+  zend_error(ErrorCode(),ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_mk_attribute) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -32894,6 +33070,10 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_xasp_XACMLAuthzDecisionQuery_s) {
   /* bah! No destructor for this simple type!! */
 }
 /* NEW Destructor style */
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s) {
+  /* bah! No destructor for this simple type!! */
+}
+/* NEW Destructor style */
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_di_Query_s) {
   /* bah! No destructor for this simple type!! */
 }
@@ -33329,6 +33509,8 @@ le_swig__p_p_zx_ns_s=zend_register_list_destructors_ex(_wrap_destroy_p_p_zx_ns_s
 SWIG_TypeClientData(SWIGTYPE_p_p_zx_ns_s,&le_swig__p_p_zx_ns_s);
 le_swig__p_zx_xasp_XACMLAuthzDecisionQuery_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_xasp_XACMLAuthzDecisionQuery_s,NULL,(char *)(SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s,&le_swig__p_zx_xasp_XACMLAuthzDecisionQuery_s);
+le_swig__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s,NULL,(char *)(SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s,&le_swig__p_zx_xaspcd1_XACMLAuthzDecisionQuery_s);
 le_swig__p_zx_di_Query_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_di_Query_s,NULL,(char *)(SWIGTYPE_p_zx_di_Query_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_di_Query_s,&le_swig__p_zx_di_Query_s);
 le_swig__p_zx_dap_ResultQuery_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_dap_ResultQuery_s,NULL,(char *)(SWIGTYPE_p_zx_dap_ResultQuery_s->name),module_number);

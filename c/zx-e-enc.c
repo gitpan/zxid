@@ -217,6 +217,16 @@ int zx_LEN_SO_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x )
 	  len += zx_LEN_SO_xasp_XACMLPolicyQuery(c, e);
   }
   {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xaspcd1_XACMLAuthzDecisionQuery(c, e);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xaspcd1_XACMLPolicyQuery(c, e);
+  }
+  {
       struct zx_di_Query_s* e;
       for (e = x->Query; e; e = (struct zx_di_Query_s*)e->gg.g.n)
 	  len += zx_LEN_SO_di_Query(c, e);
@@ -1359,6 +1369,16 @@ int zx_LEN_WO_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x )
 	  len += zx_LEN_WO_xasp_XACMLPolicyQuery(c, e);
   }
   {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xaspcd1_XACMLAuthzDecisionQuery(c, e);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xaspcd1_XACMLPolicyQuery(c, e);
+  }
+  {
       struct zx_di_Query_s* e;
       for (e = x->Query; e; e = (struct zx_di_Query_s*)e->gg.g.n)
 	  len += zx_LEN_WO_di_Query(c, e);
@@ -2498,6 +2518,16 @@ char* zx_ENC_SO_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x, char* p )
       struct zx_xasp_XACMLPolicyQuery_s* e;
       for (e = x->XACMLPolicyQuery; e; e = (struct zx_xasp_XACMLPolicyQuery_s*)e->gg.g.n)
 	  p = zx_ENC_SO_xasp_XACMLPolicyQuery(c, e, p);
+  }
+  {
+      struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* e;
+      for (e = x->xaspcd1_XACMLAuthzDecisionQuery; e; e = (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xaspcd1_XACMLAuthzDecisionQuery(c, e, p);
+  }
+  {
+      struct zx_xaspcd1_XACMLPolicyQuery_s* e;
+      for (e = x->xaspcd1_XACMLPolicyQuery; e; e = (struct zx_xaspcd1_XACMLPolicyQuery_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xaspcd1_XACMLPolicyQuery(c, e, p);
   }
   {
       struct zx_di_Query_s* e;

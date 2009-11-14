@@ -452,6 +452,10 @@ public interface zxidjniConstants {
   public final static String zx_xmlns_xasa = zxidjniJNI.zx_xmlns_xasa_get();
   public final static int zx_xmlns_ix_xasp = zxidjniJNI.zx_xmlns_ix_xasp_get();
   public final static String zx_xmlns_xasp = zxidjniJNI.zx_xmlns_xasp_get();
+  public final static int zx_xmlns_ix_xaspcd1 = zxidjniJNI.zx_xmlns_ix_xaspcd1_get();
+  public final static String zx_xmlns_xaspcd1 = zxidjniJNI.zx_xmlns_xaspcd1_get();
+  public final static int zx_xmlns_ix_xasacd1 = zxidjniJNI.zx_xmlns_ix_xasacd1_get();
+  public final static String zx_xmlns_xasacd1 = zxidjniJNI.zx_xmlns_xasacd1_get();
   public final static int zx_xmlns_ix_wst = zxidjniJNI.zx_xmlns_ix_wst_get();
   public final static String zx_xmlns_wst = zxidjniJNI.zx_xmlns_wst_get();
   public final static int zx_xmlns_ix_wsp = zxidjniJNI.zx_xmlns_ix_wsp_get();

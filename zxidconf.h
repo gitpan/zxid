@@ -456,6 +456,10 @@
 #define ZXID_PDP_URL 0
 #define ZXID_PDP_CALL_URL 0
 
+/*(c) Which version of XACML to speak */
+
+#define ZXID_XASP_VERS "2.0"
+
 /*(c) XACML Attributes ns$A$rule$b$ext */
 
 #define ZXID_PEPMAP "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"

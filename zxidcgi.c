@@ -61,7 +61,7 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
     
     for (val = ++qs; *qs && *qs != '&'; ++qs) ; /* Skip over = and scan value (until '&') */
     v = p = val;
-    /* SAMLRequest and Response MUT NOT be URL decoded as the URL encoding
+    /* SAMLRequest and Response MUST NOT be URL decoded as the URL encoding
      * is needed for redirect binding signature validation. See also unbase64_raw()
      * for how these fields are URL decoded at later stage. */
     if (n[0] != 'S' && n[0] != 'R'

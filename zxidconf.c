@@ -265,6 +265,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->a7nttl         = ZXID_A7NTTL;
   cf->pdp_url        = ZXID_PDP_URL;
   cf->pdp_call_url   = ZXID_PDP_CALL_URL;
+  cf->xasp_vers      = ZXID_XASP_VERS;
 
   cf->need           = zxid_load_need(cf, 0, ZXID_NEED);
   cf->want           = zxid_load_need(cf, 0, ZXID_WANT);
@@ -402,7 +403,7 @@ struct zxid_attr* zxid_new_at(struct zxid_conf* cf, struct zxid_attr* at, int na
   COPYVAL(at->name, name, name+name_len);
   if (val)
     COPYVAL(at->val, val, val+val_len);
-  D("%s:\tATTR name(%.*s) val(%.*s)", lk, name_len, name, val_len, STRNULLCHK(val));
+  DD("%s:\tATTR name(%.*s) val(%.*s)", lk, name_len, name, val_len, STRNULLCHK(val));
   return aa;
 }
 
@@ -489,7 +490,7 @@ struct zxid_map* zxid_load_map(struct zxid_conf* cf, struct zxid_map* map, char*
     COPYVAL(mm->dst, b,   ext-1);
     COPYVAL(mm->ext, ext, p);
 
-    D("map ns(%s) src(%s) rule=%d dst(%s) ext(%s)", mm->ns, mm->src, mm->rule, mm->dst, mm->ext);
+    DD("map ns(%s) src(%s) rule=%d dst(%s) ext(%s)", mm->ns, mm->src, mm->rule, mm->dst, mm->ext);
     if (!*p) break;
     ++p;
   }
@@ -567,7 +568,7 @@ struct zxid_need* zxid_load_need(struct zxid_conf* cf, struct zxid_need* need, c
     COPYVAL(nn->oblig,  oblig,  ext-1);
     COPYVAL(nn->ext,    ext,    p);
 
-    D("need attrs(%.*s) usage(%s) retent(%s) oblig(%s) ext(%s)", usage-attrs-1, attrs, nn->usage, nn->retent, nn->oblig, nn->ext);
+    DD("need attrs(%.*s) usage(%s) retent(%s) oblig(%s) ext(%s)", usage-attrs-1, attrs, nn->usage, nn->retent, nn->oblig, nn->ext);
 
     for (a = attrs; ; a += len+1) {
       len = strcspn(a, ",$");
@@ -986,6 +987,9 @@ scan_end:
       if (!strcmp(n, "WANT"))           { cf->want = zxid_load_need(cf, cf->want, v); break; }
       if (!strcmp(n, "WANT_SSO_A7N_SIGNED"))   { SCAN_INT(v, cf->want_sso_a7n_signed); break; }
       if (!strcmp(n, "WANT_AUTHN_REQ_SIGNED")) { SCAN_INT(v, cf->want_authn_req_signed); break; }
+      goto badcf;
+    case 'X':  /* XASP_VERS */
+      if (!strcmp(n, "XASP_VERS"))      { cf->xasp_vers = v; break; }
       goto badcf;
     default:
     badcf:

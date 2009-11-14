@@ -928,7 +928,7 @@ void zx_xa_Obligations_REV_Obligation(struct zx_xa_Obligations_s* x);
 
 #endif
 /* -------------------------- xa_Policy -------------------------- */
-/* refby( zx_xasa_XACMLPolicyStatement_s zx_xa_PolicySet_s ) */
+/* refby( zx_xasacd1_ReferencedPolicies_s zx_xasacd1_XACMLPolicyStatement_s zx_xaspcd1_XACMLAuthzDecisionQuery_s zx_xasa_XACMLPolicyStatement_s zx_xa_PolicySet_s ) */
 #ifndef zx_xa_Policy_EXT
 #define zx_xa_Policy_EXT
 #endif
@@ -1147,7 +1147,7 @@ void zx_xa_PolicyDefaults_REV_XPathVersion(struct zx_xa_PolicyDefaults_s* x);
 
 #endif
 /* -------------------------- xa_PolicyIdReference -------------------------- */
-/* refby( zx_xasp_XACMLPolicyQuery_s zx_xa_PolicySet_s ) */
+/* refby( zx_xaspcd1_XACMLPolicyQuery_s zx_xasp_XACMLPolicyQuery_s zx_xa_PolicySet_s ) */
 #ifndef zx_xa_PolicyIdReference_EXT
 #define zx_xa_PolicyIdReference_EXT
 #endif
@@ -1195,7 +1195,7 @@ void zx_xa_PolicyIdReference_PUT_Version(struct zx_xa_PolicyIdReference_s* x, st
 
 #endif
 /* -------------------------- xa_PolicySet -------------------------- */
-/* refby( zx_xasa_XACMLPolicyStatement_s zx_xa_PolicySet_s ) */
+/* refby( zx_xasacd1_ReferencedPolicies_s zx_xasacd1_XACMLPolicyStatement_s zx_xaspcd1_XACMLAuthzDecisionQuery_s zx_xasa_XACMLPolicyStatement_s zx_xa_PolicySet_s ) */
 #ifndef zx_xa_PolicySet_EXT
 #define zx_xa_PolicySet_EXT
 #endif
@@ -1441,7 +1441,7 @@ void zx_xa_PolicySetDefaults_REV_XPathVersion(struct zx_xa_PolicySetDefaults_s* 
 
 #endif
 /* -------------------------- xa_PolicySetIdReference -------------------------- */
-/* refby( zx_xasp_XACMLPolicyQuery_s zx_xa_PolicySet_s ) */
+/* refby( zx_xaspcd1_XACMLPolicyQuery_s zx_xasp_XACMLPolicyQuery_s zx_xa_PolicySet_s ) */
 #ifndef zx_xa_PolicySetIdReference_EXT
 #define zx_xa_PolicySetIdReference_EXT
 #endif
@@ -2047,7 +2047,7 @@ void zx_xa_Subjects_REV_Subject(struct zx_xa_Subjects_s* x);
 
 #endif
 /* -------------------------- xa_Target -------------------------- */
-/* refby( zx_xa_Rule_s zx_xa_Policy_s zx_xasp_XACMLPolicyQuery_s zx_xa_PolicySet_s ) */
+/* refby( zx_xa_Rule_s zx_xa_Policy_s zx_xaspcd1_XACMLPolicyQuery_s zx_xasp_XACMLPolicyQuery_s zx_xa_PolicySet_s ) */
 #ifndef zx_xa_Target_EXT
 #define zx_xa_Target_EXT
 #endif

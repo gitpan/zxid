@@ -104,7 +104,8 @@ script in an existing web server. See later chapters for more details.
 This software depends on the following packages:
 
 1. zlib from zlib.net. Generally whatever comes with your distro is sufficient.
-2. openssl-0.9.8d or later. See www.openssl.org. Generally openssl libraries
+2. openssl-0.9.8l (earlier versions contain a man-in-the-middle security vulnearability)
+   or later. See www.openssl.org. Generally openssl libraries
    distributed with most Linux distros are sufficient.<<footnote: It is
    possible to compile without OpenSSL, e.g. for space constrained embedded
    system, but this has serious security implications.>>

@@ -291,6 +291,8 @@ struct zx_str* zxid_saml2_post_enc(struct zxid_conf* cf, char* field, struct zx_
   *p = 0;
   ASSERTOP(p-url, <=, alloc_len);  /* Check sig did not overrun its fixed size alloc SIG_SIZE */  
 
+  /* Se o JavaScript não esta enablado, por favor clique aqui para finalizar a transacção. */
+
   payload = zx_strf(cf->ctx, "<title>ZXID POST Profile</title>"
 "<body bgcolor=white OnLoad=\"document.forms[0].submit()\">"
 "<h1>ZXID POST Profile POST</h1>"
@@ -298,7 +300,7 @@ struct zx_str* zxid_saml2_post_enc(struct zxid_conf* cf, char* field, struct zx_
 "<input type=hidden name=%s value=\"%s\"><br>\n"
 "%s%s%s"  /* rs */
 "%s%s%s"  /* sigalg & sig */
-"<input type=submit name=ok value=\" If JavaScript is not on, please click here to complete the transaction / Se o JavaScript não esta enablado, por favor clique aqui para finalizar a transacção. \">"
+"<input type=submit name=ok value=\" If JavaScript is not on, please click here to complete the transaction \">"
 "</form>",
 		    action_url->len, action_url->s,
 		    field, url,

@@ -2,7 +2,7 @@
  * $Id$ */
 #include "c/zx-ns.h"
 
-struct zx_ns_s zx_ns_tab[56] = {
+struct zx_ns_s zx_ns_tab[58] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("ds")-1, "ds", sizeof("http://www.w3.org/2000/09/xmldsig#")-1, "http://www.w3.org/2000/09/xmldsig#"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("xenc")-1, "xenc", sizeof("http://www.w3.org/2001/04/xmlenc#")-1, "http://www.w3.org/2001/04/xmlenc#"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("exca")-1, "exca", sizeof("http://www.w3.org/2001/10/xml-exc-c14n#")-1, "http://www.w3.org/2001/10/xml-exc-c14n#"  },
@@ -55,6 +55,8 @@ struct zx_ns_s zx_ns_tab[56] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("xa")-1, "xa", sizeof("urn:oasis:names:tc:xacml:2.0:policy:schema:os")-1, "urn:oasis:names:tc:xacml:2.0:policy:schema:os"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("xasa")-1, "xasa", sizeof("urn:oasis:xacml:2.0:saml:assertion:schema:os")-1, "urn:oasis:xacml:2.0:saml:assertion:schema:os"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("xasp")-1, "xasp", sizeof("urn:oasis:xacml:2.0:saml:protocol:schema:os")-1, "urn:oasis:xacml:2.0:saml:protocol:schema:os"  },
+{ 0, 0, 0, 0, 0, 0, 0, sizeof("xaspcd1")-1, "xaspcd1", sizeof("urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol:cd-01")-1, "urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol:cd-01"  },
+{ 0, 0, 0, 0, 0, 0, 0, sizeof("xasacd1")-1, "xasacd1", sizeof("urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:assertion:cd-01")-1, "urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:assertion:cd-01"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("wst")-1, "wst", sizeof("http://docs.oasis-open.org/ws-sx/ws-trust/200512/")-1, "http://docs.oasis-open.org/ws-sx/ws-trust/200512/"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("wsp")-1, "wsp", sizeof("http://schemas.xmlsoap.org/ws/2004/09/policy")-1, "http://schemas.xmlsoap.org/ws/2004/09/policy"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("wsc")-1, "wsc", sizeof("http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512")-1, "http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512"  },

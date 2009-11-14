@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxutil.c,v 1.48 2009-09-07 16:13:02 sampo Exp $
+ * $Id: zxutil.c,v 1.49 2009-10-18 12:39:10 sampo Exp $
  *
  * 15.4.2006, created over Easter holiday --Sampo
  * 7.10.2008, added documentation --Sampo
@@ -174,7 +174,7 @@ int read_all(int maxlen, char* buf, const char* logkey, char* name_fmt, ...)
   va_start(ap, name_fmt);
   fd = vopen_fd_from_path(O_RDONLY, 0, logkey, name_fmt, ap);
   va_end(ap);
-  if (fd == BADFD) return 0;
+  if (fd == BADFD) { if (buf) buf[0] = 0; return 0; }
   if (read_all_fd(fd, buf, maxlen, &gotall) == -1) {
     perror("Trouble reading.");
     D("read error lk(%s)", logkey);
@@ -187,7 +187,7 @@ int read_all(int maxlen, char* buf, const char* logkey, char* name_fmt, ...)
   return gotall;
 }
 
-/*() Low level function that Keeps writing data to a file descriptor unil
+/*() Low level function that keeps writing data to a file descriptor unil
  * everything is written. It may block in the process. */
 
 /* Called by:  main x4, write2_or_append_lock_c_path x4, write_all_path_fmt, zxid_cache_epr, zxid_curl_write_data, zxid_send_sp_meta x2, zxid_snarf_eprs_from_ses, zxid_write_ent_to_cache */
@@ -213,18 +213,16 @@ int write_all_fd(fdtype fd, char* p, int pending)
   return 1;
 }
 
-/*() Write all data to a file at the formatted path. Return 1 on success, 0 on fail. */
+/*() Write all data to a file at the formatted path. The buf is used for formatting
+ * data. The path_fmt can have up to two %s specifiers, which will be satisfied
+ * by prepath and postpath. Return 1 on success, 0 on fail. */
 
 /* Called by:  zxid_put_ses, zxid_put_user */
 int write_all_path_fmt(char* logkey, int len, char* buf, char* path_fmt, char* prepath, char* postpath, char* data_fmt, ...)
 {
   va_list ap;
   fdtype fd;
-#ifdef MINGW
   fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, logkey, path_fmt, prepath, postpath);
-#else
-  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, logkey, path_fmt, prepath, postpath);
-#endif
   DD("write_all_path_fmt(%s, %x)", logkey, fd);
   if (fd == BADFD) return 0;
   
@@ -385,11 +383,13 @@ int hexdmp(char* msg, char* p, int len, int max) {
  */
 
 /* Base64 std, RFC3548, defines also safe base64, the form that does not need URL encoding
- * and is also otherwise more filesystem safe (i.e. / is not used). */
+ * and is also otherwise more filesystem safe (i.e. / is not used). The pw_basis
+ * is used by md5_crypt() and other password hashing schemes. */
 
 #define MAX_LINE  76 /* size of encoded lines */
 char std_basis_64[64]  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; /*=*/
 char safe_basis_64[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"; /*=*/
+char pw_basis_64[64]   = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 /*() Raw version. Can use any encoding table and arbitrary line length.
  * Known bug: line_len is not fully respected on last line - it can
@@ -689,7 +689,8 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, char* in, int* out_len)
 #endif
 
 /*() Compute length of the URL encoded string. The encoding is done
- * to characters listed in URL_BAD() macro in zxutil.c. */
+ * to characters listed in URL_BAD() macro in zxutil.c.
+ * return: Required buffer size, including nul term. Subtract 1 for string length. */
 
 /* Called by:  zx_url_encode, zxid_saml2_redir_enc x2 */
 int zx_url_encode_len(int in_len, char* in)

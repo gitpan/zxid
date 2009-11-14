@@ -5,7 +5,7 @@
 #define _zx__ns_h
 #include "zx.h"
 
-extern struct zx_ns_s zx_ns_tab[56];
+extern struct zx_ns_s zx_ns_tab[58];
 
 #define zx_xmlns_ix_ds 0
 #define zx_xmlns_ds    "http://www.w3.org/2000/09/xmldsig#"
@@ -111,11 +111,15 @@ extern struct zx_ns_s zx_ns_tab[56];
 #define zx_xmlns_xasa    "urn:oasis:xacml:2.0:saml:assertion:schema:os"
 #define zx_xmlns_ix_xasp 51
 #define zx_xmlns_xasp    "urn:oasis:xacml:2.0:saml:protocol:schema:os"
-#define zx_xmlns_ix_wst 52
+#define zx_xmlns_ix_xaspcd1 52
+#define zx_xmlns_xaspcd1    "urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol:cd-01"
+#define zx_xmlns_ix_xasacd1 53
+#define zx_xmlns_xasacd1    "urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:assertion:cd-01"
+#define zx_xmlns_ix_wst 54
 #define zx_xmlns_wst    "http://docs.oasis-open.org/ws-sx/ws-trust/200512/"
-#define zx_xmlns_ix_wsp 53
+#define zx_xmlns_ix_wsp 55
 #define zx_xmlns_wsp    "http://schemas.xmlsoap.org/ws/2004/09/policy"
-#define zx_xmlns_ix_wsc 54
+#define zx_xmlns_ix_wsc 56
 #define zx_xmlns_wsc    "http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512"
 
 

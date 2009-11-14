@@ -132,6 +132,7 @@ struct zxid_conf {
   int   a7nttl;
   char* pdp_url;             /* If non-NULL, the inline PEP is enabled and PDP at URL is called. */
   char* pdp_call_url;        /* PDP URL for zxid_az() API */
+  char* xasp_vers;
 
   struct zxid_need*  need;
   struct zxid_need*  want;
@@ -648,6 +649,7 @@ struct zx_sp_Response_s* zxid_mk_saml_resp(struct zxid_conf* cf);
 struct zx_xac_Response_s* zxid_mk_xacml_resp(struct zxid_conf* cf, char* decision);
 struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(struct zxid_conf* cf, struct zx_xac_Attribute_s* aa, struct zx_str* atid, struct zx_str* attype, struct zx_str* atissuer, struct zx_str* atvalue);
 struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(struct zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env);
+struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zxid_mk_az_cd1(struct zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env);
 struct zx_sa_Attribute_s* zxid_mk_attribute(struct zxid_conf* cf, char* name, char* val);
 
 /* zxidmkwsf */

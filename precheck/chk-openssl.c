@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: chk-openssl.c,v 1.2 2008-09-17 18:19:20 sampo Exp $
+ * $Id: chk-openssl.c,v 1.3 2009-10-18 12:39:10 sampo Exp $
  *
  * 16.9.2008, created --Sampo
  */
@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 {
   SSL_library_init();  /* in -lssl */
   ERR_clear_error();   /* in -lcrypto */
-  printf("  -- OpenSSL version from opensslv.h: %s, crypto.h: %x\n",
+  printf("  -- OpenSSL version from opensslv.h: %s, crypto.h: %lx\n",
 	 OPENSSL_VERSION_TEXT, SSLEAY_VERSION_NUMBER);
   printf("  -- from SSLeay_version(): %s\n", SSLeay_version(SSLEAY_VERSION));
   return 0;

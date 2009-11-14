@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zx.h,v 1.42 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zx.h,v 1.43 2009-10-18 12:39:10 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 7.8.2006,  renamed from dec.h to zx.h and added comments --Sampo
@@ -234,6 +234,7 @@ struct zx_str* zx_rsa_priv_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* r
 struct zx_str* zx_rsa_priv_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_pkey, int pad);
 RSA*  zx_get_rsa_pub_from_cert(X509* cert, char* logkey);
 void  zx_rand(char* buf, int n_bytes);
+char* zx_md5_crypt(const char* pw, const char* salt, char* buf);
 
 /* Common Subexpression Elimination (CSE) for generated code. */
 

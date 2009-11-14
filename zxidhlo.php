@@ -1,20 +1,22 @@
 <?
 # zxid/zxidhlo.php  -  Hello World SAML SP role in PHP using zxid extension
 #
-# Copyright (c) 2007-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+# Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
 # NO WARRANTY, not even implied warranties. Contains trade secrets.
 # Distribution prohibited unless authorized in writing.
 # Licensed under Apache License 2.0, see file COPYING.
 # $Id: zxidhlo.php,v 1.9 2008-05-26 15:28:44 sampo Exp $
-# 16.1.2007, created --Sampo
-# 25.5.2008, fixed to work against 0.27, fixed port number to 5443 --Sampo
+# 16.1.2007,  created --Sampo
+# 25.5.2008,  fixed to work against 0.27, fixed port number to 5443 --Sampo
+# 14.11.2009, Added zxid_az() example --Sampo
 
 dl("php_zxid.so");  # These three lines can go to initialization: they only need to run once
 # CONFIG: You must have created /var/zxid directory hierarchy. See `make dir'
 # CONFIG: You must edit the URL to match your domain name and port
-$conf = "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:5443/zxidhlo.php";
+#$conf = "URL=https://sp1.zxidsp.org:5443/zxidhlo.php&PATH=/var/zxid/";
+$conf = "PATH=/var/zxid/&URL=http://sp.tas3.pt:8082/zxidhlo.php";
 $cf = zxid_new_conf_to_cf($conf);
 ?>
 <?
@@ -34,10 +36,10 @@ case '<': header('Content-type: text/xml'); echo $res; exit;  # Metadata or SOAP
 case 'n': exit;   # Already handled
 case 'e':
 ?>
-<title>Please Login Using IdP</title>
+<title>ZXID PHP Demo Please Login Using IdP</title>
 <body bgcolor="#330033" text="#ffaaff" link="#ffddff"
  vlink="#aa44aa" alink="#ffffff"><font face=sans>
-<h1>Please Login Using IdP</h1>
+<h1>ZXID PHP Demo Please Login Using IdP</h1>
 <?=zxid_idp_select_cf($cf, null, 0x1900)?>
 <hr>zxidhlo.php, <a href="http://zxid.org/">zxid.org</a>
 <?
@@ -53,9 +55,20 @@ foreach (split("\n", $res) as $line) {
     $attr[$a[0]] = $a[1];
 }
 ?>
-<title>Protected content, logged in</title>
+<title>ZXID PHP Demo Protected content, logged in</title>
 <body bgcolor="#330033" text="#ffaaff" link="#ffddff"
  vlink="#aa44aa" alink="#ffffff"><font face=sans>
-<h1>Protected content, logged in as <?=$attr['cn']?>, session(<?=$attr['sesid']?>)</h1>
+<?
+
+# Optional: Perform additional authorization step
+# (n.b. zxid_simple() can be configured to make az automatically)
+
+if (zxid_az_cf($cf, "Action=Show", $attr['sesid'])) {
+    echo "Permit.\n";
+} else {
+    echo "<b>Deny.</b> Normally page would not be shown, but we show session attributes for debugging purposes.\n";
+}
+?>
+<h1>ZXID PHP Demo Protected content, logged in as <?=$attr['cn']?>, session(<?=$attr['sesid']?>)</h1>
 <?=zxid_fed_mgmt_cf($cf, null, -1, $attr['sesid'], 0x1900)?>
 <hr>zxidhlo.php, <a href="http://zxid.org/">zxid.org</a>

@@ -4,7 +4,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxcot.c,v 1.1 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxcot.c,v 1.2 2009-10-18 12:39:10 sampo Exp $
  *
  * 27.8.2009, created --Sampo
  */
@@ -54,9 +54,6 @@ char buf[ZXID_MAX_MD+1];
 char* mdurl = 0;
 char* entid = 0;
 char* cotdir = ZXID_PATH ZXID_COT_DIR;
-
-/* N.B. This options processing is a skeleton. In reality CGI scripts do not have
- * an opportunity to process any options. */
 
 /* Called by:  main x7 */
 static void opt(int* argc, char*** argv, char*** env)

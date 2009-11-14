@@ -4,7 +4,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxdecode.c,v 1.5 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxdecode.c,v 1.6 2009-10-18 12:39:10 sampo Exp $
  *
  * 25.11.2008, created --Sampo
  */
@@ -49,9 +49,6 @@ int verbose = 1;
 char buf[32*1024];
 int assert_nonfatal = 0;
 char* assert_msg = "assert fired.";
-
-/* N.B. This options processing is a skeleton. In reality CGI scripts do not have
- * an opportunity to process any options. */
 
 /* Called by:  main x7 */
 static void opt(int* argc, char*** argv, char*** env)

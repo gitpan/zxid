@@ -62,7 +62,9 @@
 #include "c/zx-xa-data.h"
 #include "c/zx-xac-data.h"
 #include "c/zx-xasa-data.h"
+#include "c/zx-xasacd1-data.h"
 #include "c/zx-xasp-data.h"
+#include "c/zx-xaspcd1-data.h"
 #include "c/zx-xenc-data.h"
 #include "c/zx-xml-data.h"
 #include "c/zx-xs-data.h"
@@ -139,6 +141,8 @@ struct zx_root_s {
   struct zx_hrxml_Candidate_s* Candidate;	/* {0,-1} root */
   struct zx_xasp_XACMLAuthzDecisionQuery_s* XACMLAuthzDecisionQuery;	/* {0,-1} root */
   struct zx_xasp_XACMLPolicyQuery_s* XACMLPolicyQuery;	/* {0,-1} root */
+  struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* xaspcd1_XACMLAuthzDecisionQuery;	/* {0,-1} root */
+  struct zx_xaspcd1_XACMLPolicyQuery_s* xaspcd1_XACMLPolicyQuery;	/* {0,-1} root */
 };
 
 #ifdef ZX_ENA_GETPUT
@@ -176,6 +180,8 @@ struct zx_a_EndpointReference_s* zx_root_GET_EndpointReference(struct zx_root_s*
 struct zx_hrxml_Candidate_s* zx_root_GET_Candidate(struct zx_root_s* x, int n);
 struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_GET_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
 struct zx_xasp_XACMLPolicyQuery_s* zx_root_GET_XACMLPolicyQuery(struct zx_root_s* x, int n);
+struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zx_root_GET_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
+struct zx_xaspcd1_XACMLPolicyQuery_s* zx_root_GET_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x, int n);
 
 int zx_root_NUM_Assertion(struct zx_root_s* x);
 int zx_root_NUM_NameID(struct zx_root_s* x);
@@ -210,6 +216,8 @@ int zx_root_NUM_EndpointReference(struct zx_root_s* x);
 int zx_root_NUM_Candidate(struct zx_root_s* x);
 int zx_root_NUM_XACMLAuthzDecisionQuery(struct zx_root_s* x);
 int zx_root_NUM_XACMLPolicyQuery(struct zx_root_s* x);
+int zx_root_NUM_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x);
+int zx_root_NUM_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x);
 
 struct zx_sa_Assertion_s* zx_root_POP_Assertion(struct zx_root_s* x);
 struct zx_sa_NameID_s* zx_root_POP_NameID(struct zx_root_s* x);
@@ -244,6 +252,8 @@ struct zx_a_EndpointReference_s* zx_root_POP_EndpointReference(struct zx_root_s*
 struct zx_hrxml_Candidate_s* zx_root_POP_Candidate(struct zx_root_s* x);
 struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_root_POP_XACMLAuthzDecisionQuery(struct zx_root_s* x);
 struct zx_xasp_XACMLPolicyQuery_s* zx_root_POP_XACMLPolicyQuery(struct zx_root_s* x);
+struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zx_root_POP_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x);
+struct zx_xaspcd1_XACMLPolicyQuery_s* zx_root_POP_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x);
 
 void zx_root_PUSH_Assertion(struct zx_root_s* x, struct zx_sa_Assertion_s* y);
 void zx_root_PUSH_NameID(struct zx_root_s* x, struct zx_sa_NameID_s* y);
@@ -278,6 +288,8 @@ void zx_root_PUSH_EndpointReference(struct zx_root_s* x, struct zx_a_EndpointRef
 void zx_root_PUSH_Candidate(struct zx_root_s* x, struct zx_hrxml_Candidate_s* y);
 void zx_root_PUSH_XACMLAuthzDecisionQuery(struct zx_root_s* x, struct zx_xasp_XACMLAuthzDecisionQuery_s* y);
 void zx_root_PUSH_XACMLPolicyQuery(struct zx_root_s* x, struct zx_xasp_XACMLPolicyQuery_s* y);
+void zx_root_PUSH_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* y);
+void zx_root_PUSH_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x, struct zx_xaspcd1_XACMLPolicyQuery_s* y);
 
 
 void zx_root_PUT_Assertion(struct zx_root_s* x, int n, struct zx_sa_Assertion_s* y);
@@ -313,6 +325,8 @@ void zx_root_PUT_EndpointReference(struct zx_root_s* x, int n, struct zx_a_Endpo
 void zx_root_PUT_Candidate(struct zx_root_s* x, int n, struct zx_hrxml_Candidate_s* y);
 void zx_root_PUT_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLAuthzDecisionQuery_s* y);
 void zx_root_PUT_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* y);
+void zx_root_PUT_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* y);
+void zx_root_PUT_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xaspcd1_XACMLPolicyQuery_s* y);
 
 void zx_root_ADD_Assertion(struct zx_root_s* x, int n, struct zx_sa_Assertion_s* z);
 void zx_root_ADD_NameID(struct zx_root_s* x, int n, struct zx_sa_NameID_s* z);
@@ -347,6 +361,8 @@ void zx_root_ADD_EndpointReference(struct zx_root_s* x, int n, struct zx_a_Endpo
 void zx_root_ADD_Candidate(struct zx_root_s* x, int n, struct zx_hrxml_Candidate_s* z);
 void zx_root_ADD_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLAuthzDecisionQuery_s* z);
 void zx_root_ADD_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* z);
+void zx_root_ADD_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* z);
+void zx_root_ADD_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x, int n, struct zx_xaspcd1_XACMLPolicyQuery_s* z);
 
 void zx_root_DEL_Assertion(struct zx_root_s* x, int n);
 void zx_root_DEL_NameID(struct zx_root_s* x, int n);
@@ -381,6 +397,8 @@ void zx_root_DEL_EndpointReference(struct zx_root_s* x, int n);
 void zx_root_DEL_Candidate(struct zx_root_s* x, int n);
 void zx_root_DEL_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
 void zx_root_DEL_XACMLPolicyQuery(struct zx_root_s* x, int n);
+void zx_root_DEL_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x, int n);
+void zx_root_DEL_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x, int n);
 
 void zx_root_REV_Assertion(struct zx_root_s* x);
 void zx_root_REV_NameID(struct zx_root_s* x);
@@ -415,6 +433,8 @@ void zx_root_REV_EndpointReference(struct zx_root_s* x);
 void zx_root_REV_Candidate(struct zx_root_s* x);
 void zx_root_REV_XACMLAuthzDecisionQuery(struct zx_root_s* x);
 void zx_root_REV_XACMLPolicyQuery(struct zx_root_s* x);
+void zx_root_REV_xaspcd1_XACMLAuthzDecisionQuery(struct zx_root_s* x);
+void zx_root_REV_xaspcd1_XACMLPolicyQuery(struct zx_root_s* x);
 
 #endif
 int zx_LEN_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, int simplelen, struct zx_ns_s* ns);

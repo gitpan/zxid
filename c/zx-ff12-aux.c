@@ -133,6 +133,22 @@ void zx_FREE_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x, int
       }
   }
   {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* en;
+      for (e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = en) {
+	  en = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n;
+	  zx_FREE_xasacd1_XACMLAuthzDecisionStatement(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      struct zx_xasacd1_XACMLPolicyStatement_s* en;
+      for (e = x->xasacd1_XACMLPolicyStatement; e; e = en) {
+	  en = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n;
+	  zx_FREE_xasacd1_XACMLPolicyStatement(c, e, free_strs);
+      }
+  }
+  {
       struct zx_ds_Signature_s* e;
       struct zx_ds_Signature_s* en;
       for (e = x->Signature; e; e = en) {
@@ -221,6 +237,16 @@ void zx_DUP_STRS_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x)
       struct zx_xasa_XACMLPolicyStatement_s* e;
       for (e = x->XACMLPolicyStatement; e; e = (struct zx_xasa_XACMLPolicyStatement_s*)e->gg.g.n)
 	  zx_DUP_STRS_xasa_XACMLPolicyStatement(c, e);
+  }
+  {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      for (e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n)
+	  zx_DUP_STRS_xasacd1_XACMLAuthzDecisionStatement(c, e);
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      for (e = x->xasacd1_XACMLPolicyStatement; e; e = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n)
+	  zx_DUP_STRS_xasacd1_XACMLPolicyStatement(c, e);
   }
   {
       struct zx_ds_Signature_s* e;
@@ -354,6 +380,32 @@ struct zx_ff12_Assertion_s* zx_DEEP_CLONE_ff12_Assertion(struct zx_ctx* c, struc
       }
   }
   {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* en;
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* enn;
+      for (enn = 0, e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xasacd1_XACMLAuthzDecisionStatement(c, e, dup_strs);
+	  if (!enn)
+	      x->xasacd1_XACMLAuthzDecisionStatement = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      struct zx_xasacd1_XACMLPolicyStatement_s* en;
+      struct zx_xasacd1_XACMLPolicyStatement_s* enn;
+      for (enn = 0, e = x->xasacd1_XACMLPolicyStatement; e; e = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xasacd1_XACMLPolicyStatement(c, e, dup_strs);
+	  if (!enn)
+	      x->xasacd1_XACMLPolicyStatement = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
       struct zx_ds_Signature_s* e;
       struct zx_ds_Signature_s* en;
       struct zx_ds_Signature_s* enn;
@@ -451,6 +503,22 @@ int zx_WALK_SO_ff12_Assertion(struct zx_ctx* c, struct zx_ff12_Assertion_s* x, v
       struct zx_xasa_XACMLPolicyStatement_s* e;
       for (e = x->XACMLPolicyStatement; e; e = (struct zx_xasa_XACMLPolicyStatement_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_xasa_XACMLPolicyStatement(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_xasacd1_XACMLAuthzDecisionStatement_s* e;
+      for (e = x->xasacd1_XACMLAuthzDecisionStatement; e; e = (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xasacd1_XACMLAuthzDecisionStatement(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_xasacd1_XACMLPolicyStatement_s* e;
+      for (e = x->xasacd1_XACMLPolicyStatement; e; e = (struct zx_xasacd1_XACMLPolicyStatement_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xasacd1_XACMLPolicyStatement(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

@@ -1,5 +1,5 @@
 # zxid/Manifest
-# $Id: Manifest,v 1.58 2009-10-16 13:36:33 sampo Exp $
+# $Id: Manifest,v 1.59 2009-10-18 12:39:10 sampo Exp $
 # Packing list for distribution and explanation of files
 
 Manifest         - This file. Describes contents of the distribution.
@@ -96,6 +96,7 @@ zxencdectest.c   - An XML encoding and decoding testing tool
 zxidssofinalizetest.c  - Test zxid_sso_finalize()
 zxdecode.c       - SAML redirect and post message decoding tool
 zxcot.c          - CoT (Circle-of-Trust) management tool: list CoT, add metadata to CoT
+zxpasswd.c       - Password creation and user management tool
 
 # Full API demos
 
@@ -117,7 +118,9 @@ zxidhlocgi.php   - Hello World SSO as a PHP script to run as stand alone CGI scr
 zxidhlo.pl       - Hello World SSO as a PHP script
 zxidhlo-java.sh  - Script to set Java environment
 zxidhlo.java     - Hello World SSO using Java JNI
-servlet/WEB-INF/web.xml  - Hello World servlet definition
+zxidsrvlet.java  - SSO helper servlet. Just configure this into Tomcat to get SSO
+zxidappdemo.java - Demonstration of using zxidsrvlet to achive SSO
+servlet/WEB-INF/web.xml  - Hello World servlet definitions
 zxidhrxmlwsc.c   - Example of ID-SIS HR-XML Web Services Client
 zxidhrxmlwsp.c   - Example of ID-SIS HR-XML Web Services Provider
 zxididp.c        - A rudimentary IdP (WIP Nov 2008)
@@ -220,6 +223,8 @@ sg/access_control-xacml-2.0-context-schema-os.sg
 sg/access_control-xacml-2.0-policy-schema-os.sg
 sg/access_control-xacml-2.0-saml-assertion-schema-os.sg
 sg/access_control-xacml-2.0-saml-protocol-schema-os.sg
+sg/xacml-2.0-profile-saml2.0-v2-schema-protocol-cd-1.sg
+sg/xacml-2.0-profile-saml2.0-v2-schema-assertion-cd-1.sg
 sg/ws-trust-1.3.sg
 sg/ws-policy.sg
 sg/ws-secureconversation-1.3.sg
@@ -291,6 +296,8 @@ c/zx-xa-data.h;    c/zx-xa-aux.c;    c/zx-xa-dec.c;    c/zx-xa-enc.c;    c/zx-xa
 c/zx-xac-data.h;   c/zx-xac-aux.c;   c/zx-xac-dec.c;   c/zx-xac-enc.c;   c/zx-xac-getput.c
 c/zx-xasa-data.h;  c/zx-xasa-aux.c;  c/zx-xasa-dec.c;  c/zx-xasa-enc.c;  c/zx-xasa-getput.c
 c/zx-xasp-data.h;  c/zx-xasp-aux.c;  c/zx-xasp-dec.c;  c/zx-xasp-enc.c;  c/zx-xasp-getput.c
+c/zx-xasacd1-data.h;  c/zx-xasacd1-aux.c;  c/zx-xasacd1-dec.c;  c/zx-xasacd1-enc.c;  c/zx-xasacd1-getput.c
+c/zx-xaspcd1-data.h;  c/zx-xaspcd1-aux.c;  c/zx-xaspcd1-dec.c;  c/zx-xaspcd1-enc.c;  c/zx-xaspcd1-getput.c
 c/zx-wst-data.h;   c/zx-wst-aux.c;   c/zx-wst-dec.c;   c/zx-wst-enc.c;   c/zx-wst-getput.c
 c/zx-wsp-data.h;   c/zx-wsp-aux.c;   c/zx-wsp-dec.c;   c/zx-wsp-enc.c;   c/zx-wsp-getput.c
 c/zx-wsc-data.h;   c/zx-wsc-aux.c;   c/zx-wsc-dec.c;   c/zx-wsc-enc.c;   c/zx-wsc-getput.c
@@ -509,6 +516,8 @@ zxidjava/SWIGTYPE_p_zx_xac_Attribute_s.java
 zxidjava/SWIGTYPE_p_zx_xac_Response_s.java
 zxidjava/SWIGTYPE_p_zx_xasa_XACMLAuthzDecisionStatement_s.java
 zxidjava/SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s.java
+zxidjava/SWIGTYPE_p_zx_xasacd1_XACMLAuthzDecisionStatement_s.java
+zxidjava/SWIGTYPE_p_zx_xaspcd1_XACMLAuthzDecisionQuery_s.java
 zxidjava/SWIGTYPE_p_zx_xenc_EncryptedData_s.java
 zxidjava/SWIGTYPE_p_zx_xenc_EncryptedKey_s.java
 zxidjava/zx_any_attr_s.java

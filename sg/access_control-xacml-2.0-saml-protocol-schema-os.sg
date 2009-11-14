@@ -3,7 +3,6 @@
 # $Id: access_control-xacml-2.0-saml-protocol-schema-os.sg,v 1.2 2009-09-05 02:23:41 sampo Exp $
 
 target(xasp, urn:oasis:xacml:2.0:saml:protocol:schema:os)
-import(sa, urn:oasis:names:tc:SAML:2.0:assertion, http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=security)
 import(sp, urn:oasis:names:tc:SAML:2.0:protocol, http://www.oasis-open.org/committees/tc_home.php?wg_abbrev=security)
 import(xac, urn:oasis:names:tc:xacml:2.0:context:schema:os, http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-context-schema-os.xsd)
 import(xa, urn:oasis:names:tc:xacml:2.0:policy:schema:os, http://docs.oasis-open.org/xacml/2.0/access_control-xacml-2.0-policy-schema-os.xsd)

@@ -2,7 +2,7 @@
 <<else: >>ZXID Simple API
 ###############
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-simple.pd,v 1.10 2009-10-16 13:36:33 sampo Exp $>>
+<<cvsid: $Id: zxid-simple.pd,v 1.11 2009-10-18 12:39:10 sampo Exp $>>
 <<class: article!a4paper!!ZXID-SIMP 01>>
 <<define: ZXDOC=ZXID Simple API>>
 
@@ -120,16 +120,17 @@ What happens here:
 
    The ~dn~ line will always be the first. All other lines may appear
    in any order. String representation of LDIF was chosen
-   as it is easy to parse in most programming languages.<<footnote:
-   Some people have advocated JSON representation and it indeed seems
-   reasonable. But there is no compelling argument why it would be better
-   than LDIF. It clearly is better for JavaScript programs, but it is
-   more complicated for most other scripting languages. Keep the feedback coming.>>
+   as it is easy to parse in most programming languages.
+
+<<ignore: Some people have advocated JSON representation and it indeed seems
+reasonable. But there is no compelling argument why it would be better
+than LDIF. It clearly is better for JavaScript programs, but it is
+more complicated for most other scripting languages. Keep the feedback coming.>>
 
 2.1.1 Configuration Options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(*** THis section also appears in zxid-conf.pd)
+(*** This section also appears in zxid-conf.pd)
 
 The zxid_simple() can be configured in the following ways (later
 ways can override earlier ones).
@@ -373,7 +374,7 @@ d:: Indication that SSO has been completed or that there
     logout and defederate buttons), you can call
     zxid_fed_mgmt().
 
-Open curly ("{"):: SSO completerd, if JSON output was
+Open curly ("{"):: SSO completed, if JSON output was
     chosen. Processing should be same as for "d".
 
 z:: Authorization failure. Application MUST NOT display

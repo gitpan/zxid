@@ -28,6 +28,7 @@ ns(im,    urn:liberty:ims:2006-08)
 ns(as,    urn:liberty:sa:2006-08)
 ns(wsse,  http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd)
 ns(xasp,  urn:oasis:xacml:2.0:saml:protocol:schema:os)
+ns(xaspcd1, urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol:cd-01)
 ns(mm7,   http://www.3gpp.org/ftp/Specs/archive/23_series/23.140/schema/REL-6-MM7-1-4)
 ns(cb,    urn:liberty:id-sis-cb:2004-10)
 ns(gl,    urn:liberty:id-sis-gl:2005-07)
@@ -115,6 +116,8 @@ Body -> %e:Body
   ff12:NameIdentifierMappingResponse?
   xasp:XACMLAuthzDecisionQuery?
   xasp:XACMLPolicyQuery?
+  xaspcd1:XACMLAuthzDecisionQuery?
+  xaspcd1:XACMLPolicyQuery?
   di:Query?
   di:QueryResponse?
   di12:Query?

@@ -55,7 +55,9 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   struct zx_e_Body_s* body;
   struct zx_str* loc;
   struct zx_sp_Response_s* resp;
+  struct zx_sa_Statement_s* stmt;
   struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt;
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* az_stmt_cd1;
   struct zx_elem_s* decision;
 
   if (cf->log_level>0)
@@ -148,16 +150,31 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
 #endif
 
   body = zx_NEW_e_Body(cf->ctx);
-  body->XACMLAuthzDecisionQuery = zxid_mk_az(cf, subj, rsrc, act, env);
-  if (cf->sso_soap_sign) {
-    refs.id = body->XACMLAuthzDecisionQuery->ID;
-    refs.canon = zx_EASY_ENC_SO_xasp_XACMLAuthzDecisionQuery(cf->ctx, body->XACMLAuthzDecisionQuery);
-    if (!cf->sign_cert) // Lazy load cert and private key
-      cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
-    if (!cf->sign_pkey)
-      cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
-    body->XACMLAuthzDecisionQuery->Signature = zxsig_sign(cf->ctx, 1, &refs, cf->sign_cert, cf->sign_pkey);
-    zx_str_free(cf->ctx, refs.canon);
+  if (!strcmp(cf->xasp_vers, "2.0-cd1")) {
+    body->xaspcd1_XACMLAuthzDecisionQuery = zxid_mk_az_cd1(cf, subj, rsrc, act, env);
+    if (cf->sso_soap_sign) {
+      refs.id = body->xaspcd1_XACMLAuthzDecisionQuery->ID;
+      refs.canon = zx_EASY_ENC_SO_xaspcd1_XACMLAuthzDecisionQuery(cf->ctx, body->xaspcd1_XACMLAuthzDecisionQuery);
+
+      if (!cf->sign_cert) // Lazy load cert and private key
+	cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
+      if (!cf->sign_pkey)
+	cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
+      body->xaspcd1_XACMLAuthzDecisionQuery->Signature = zxsig_sign(cf->ctx, 1, &refs, cf->sign_cert, cf->sign_pkey);
+      zx_str_free(cf->ctx, refs.canon);
+    }
+  } else {
+    body->XACMLAuthzDecisionQuery = zxid_mk_az(cf, subj, rsrc, act, env);
+    if (cf->sso_soap_sign) {
+      refs.id = body->XACMLAuthzDecisionQuery->ID;
+      refs.canon = zx_EASY_ENC_SO_xasp_XACMLAuthzDecisionQuery(cf->ctx, body->XACMLAuthzDecisionQuery);
+      if (!cf->sign_cert) // Lazy load cert and private key
+	cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
+      if (!cf->sign_pkey)
+	cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
+      body->XACMLAuthzDecisionQuery->Signature = zxsig_sign(cf->ctx, 1, &refs, cf->sign_cert, cf->sign_pkey);
+      zx_str_free(cf->ctx, refs.canon);
+    }
   }
 
 #if 0
@@ -196,6 +213,24 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
       return 1;
     }
   }
+  az_stmt_cd1 = resp->Assertion->XACMLAuthzDecisionStatement;
+  if (az_stmt_cd1 && az_stmt_cd1->Response && az_stmt_cd1->Response->Result) {
+    decision = az_stmt_cd1->Response->Result->Decision;
+    if (decision && decision->content->len == sizeof("Permit")-1
+	&& !memcmp(decision->content->s, "Permit", sizeof("Permit")-1)) {
+      D("Permit cd1 %d", 1);
+      return 1;
+    }
+  }
+  stmt = resp->Assertion->Statement;
+  if (stmt && stmt->Response && stmt->Response->Result) {  /* Response here is xac:Response */
+    decision = stmt->Response->Result->Decision;
+    if (decision && decision->content->len == sizeof("Permit")-1
+	&& !memcmp(decision->content->s, "Permit", sizeof("Permit")-1)) {
+      D("Permit stmt %d", 1);
+      return 1;
+    }
+  }
   /*if (resp->Assertion->AuthzDecisionStatement) {  }*/
   D("Deny %d",0);
   return 0;
@@ -207,7 +242,8 @@ int zxid_az_cf_ses(struct zxid_conf* cf, char* qs, struct zxid_ses* ses)
 {
   struct zxid_cgi cgi;
   memset(&cgi, 0 , sizeof(struct zxid_cgi));
-  zxid_parse_cgi(&cgi, qs);
+  zxid_parse_cgi(&cgi, "");
+  DD("qs(%s) ses=%p", STRNULLCHKD(qs), ses);
   if (qs && ses)
     zxid_add_qs_to_pool(cf, ses, qs, 1);
   return zxid_pep_az_soap(cf, &cgi, ses);

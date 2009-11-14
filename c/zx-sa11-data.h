@@ -169,6 +169,8 @@ struct zx_sa11_Assertion_s {
   struct zx_sa11_AttributeStatement_s* AttributeStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLAuthzDecisionStatement_s* XACMLAuthzDecisionStatement;	/* {0,-1} nada */
   struct zx_xasa_XACMLPolicyStatement_s* XACMLPolicyStatement;	/* {0,-1} nada */
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* xasacd1_XACMLAuthzDecisionStatement;	/* {0,-1} nada */
+  struct zx_xasacd1_XACMLPolicyStatement_s* xasacd1_XACMLPolicyStatement;	/* {0,-1} nada */
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_str* AssertionID;	/* {1,1} attribute xs:ID */
   struct zx_str* IssueInstant;	/* {1,1} attribute xs:dateTime */
@@ -193,6 +195,8 @@ struct zx_sa11_AuthorizationDecisionStatement_s* zx_sa11_Assertion_GET_Authoriza
 struct zx_sa11_AttributeStatement_s* zx_sa11_Assertion_GET_AttributeStatement(struct zx_sa11_Assertion_s* x, int n);
 struct zx_xasa_XACMLAuthzDecisionStatement_s* zx_sa11_Assertion_GET_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n);
 struct zx_xasa_XACMLPolicyStatement_s* zx_sa11_Assertion_GET_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n);
+struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_sa11_Assertion_GET_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n);
+struct zx_xasacd1_XACMLPolicyStatement_s* zx_sa11_Assertion_GET_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n);
 struct zx_ds_Signature_s* zx_sa11_Assertion_GET_Signature(struct zx_sa11_Assertion_s* x, int n);
 
 int zx_sa11_Assertion_NUM_Conditions(struct zx_sa11_Assertion_s* x);
@@ -204,6 +208,8 @@ int zx_sa11_Assertion_NUM_AuthorizationDecisionStatement(struct zx_sa11_Assertio
 int zx_sa11_Assertion_NUM_AttributeStatement(struct zx_sa11_Assertion_s* x);
 int zx_sa11_Assertion_NUM_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x);
 int zx_sa11_Assertion_NUM_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x);
+int zx_sa11_Assertion_NUM_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x);
+int zx_sa11_Assertion_NUM_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x);
 int zx_sa11_Assertion_NUM_Signature(struct zx_sa11_Assertion_s* x);
 
 struct zx_sa11_Conditions_s* zx_sa11_Assertion_POP_Conditions(struct zx_sa11_Assertion_s* x);
@@ -215,6 +221,8 @@ struct zx_sa11_AuthorizationDecisionStatement_s* zx_sa11_Assertion_POP_Authoriza
 struct zx_sa11_AttributeStatement_s* zx_sa11_Assertion_POP_AttributeStatement(struct zx_sa11_Assertion_s* x);
 struct zx_xasa_XACMLAuthzDecisionStatement_s* zx_sa11_Assertion_POP_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x);
 struct zx_xasa_XACMLPolicyStatement_s* zx_sa11_Assertion_POP_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x);
+struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_sa11_Assertion_POP_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x);
+struct zx_xasacd1_XACMLPolicyStatement_s* zx_sa11_Assertion_POP_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x);
 struct zx_ds_Signature_s* zx_sa11_Assertion_POP_Signature(struct zx_sa11_Assertion_s* x);
 
 void zx_sa11_Assertion_PUSH_Conditions(struct zx_sa11_Assertion_s* x, struct zx_sa11_Conditions_s* y);
@@ -226,6 +234,8 @@ void zx_sa11_Assertion_PUSH_AuthorizationDecisionStatement(struct zx_sa11_Assert
 void zx_sa11_Assertion_PUSH_AttributeStatement(struct zx_sa11_Assertion_s* x, struct zx_sa11_AttributeStatement_s* y);
 void zx_sa11_Assertion_PUSH_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, struct zx_xasa_XACMLAuthzDecisionStatement_s* y);
 void zx_sa11_Assertion_PUSH_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, struct zx_xasa_XACMLPolicyStatement_s* y);
+void zx_sa11_Assertion_PUSH_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y);
+void zx_sa11_Assertion_PUSH_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, struct zx_xasacd1_XACMLPolicyStatement_s* y);
 void zx_sa11_Assertion_PUSH_Signature(struct zx_sa11_Assertion_s* x, struct zx_ds_Signature_s* y);
 
 void zx_sa11_Assertion_PUT_AssertionID(struct zx_sa11_Assertion_s* x, struct zx_str* y);
@@ -243,6 +253,8 @@ void zx_sa11_Assertion_PUT_AuthorizationDecisionStatement(struct zx_sa11_Asserti
 void zx_sa11_Assertion_PUT_AttributeStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_sa11_AttributeStatement_s* y);
 void zx_sa11_Assertion_PUT_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasa_XACMLAuthzDecisionStatement_s* y);
 void zx_sa11_Assertion_PUT_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasa_XACMLPolicyStatement_s* y);
+void zx_sa11_Assertion_PUT_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* y);
+void zx_sa11_Assertion_PUT_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasacd1_XACMLPolicyStatement_s* y);
 void zx_sa11_Assertion_PUT_Signature(struct zx_sa11_Assertion_s* x, int n, struct zx_ds_Signature_s* y);
 
 void zx_sa11_Assertion_ADD_Conditions(struct zx_sa11_Assertion_s* x, int n, struct zx_sa11_Conditions_s* z);
@@ -254,6 +266,8 @@ void zx_sa11_Assertion_ADD_AuthorizationDecisionStatement(struct zx_sa11_Asserti
 void zx_sa11_Assertion_ADD_AttributeStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_sa11_AttributeStatement_s* z);
 void zx_sa11_Assertion_ADD_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasa_XACMLAuthzDecisionStatement_s* z);
 void zx_sa11_Assertion_ADD_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasa_XACMLPolicyStatement_s* z);
+void zx_sa11_Assertion_ADD_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* z);
+void zx_sa11_Assertion_ADD_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n, struct zx_xasacd1_XACMLPolicyStatement_s* z);
 void zx_sa11_Assertion_ADD_Signature(struct zx_sa11_Assertion_s* x, int n, struct zx_ds_Signature_s* z);
 
 void zx_sa11_Assertion_DEL_Conditions(struct zx_sa11_Assertion_s* x, int n);
@@ -265,6 +279,8 @@ void zx_sa11_Assertion_DEL_AuthorizationDecisionStatement(struct zx_sa11_Asserti
 void zx_sa11_Assertion_DEL_AttributeStatement(struct zx_sa11_Assertion_s* x, int n);
 void zx_sa11_Assertion_DEL_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n);
 void zx_sa11_Assertion_DEL_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n);
+void zx_sa11_Assertion_DEL_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x, int n);
+void zx_sa11_Assertion_DEL_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x, int n);
 void zx_sa11_Assertion_DEL_Signature(struct zx_sa11_Assertion_s* x, int n);
 
 void zx_sa11_Assertion_REV_Conditions(struct zx_sa11_Assertion_s* x);
@@ -276,6 +292,8 @@ void zx_sa11_Assertion_REV_AuthorizationDecisionStatement(struct zx_sa11_Asserti
 void zx_sa11_Assertion_REV_AttributeStatement(struct zx_sa11_Assertion_s* x);
 void zx_sa11_Assertion_REV_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x);
 void zx_sa11_Assertion_REV_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x);
+void zx_sa11_Assertion_REV_xasacd1_XACMLAuthzDecisionStatement(struct zx_sa11_Assertion_s* x);
+void zx_sa11_Assertion_REV_xasacd1_XACMLPolicyStatement(struct zx_sa11_Assertion_s* x);
 void zx_sa11_Assertion_REV_Signature(struct zx_sa11_Assertion_s* x);
 
 #endif

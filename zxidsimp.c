@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidsimp.c,v 1.58 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxidsimp.c,v 1.59 2009-10-18 12:39:10 sampo Exp $
  *
  * 17.1.2007, created --Sampo
  * 2.2.2007,  improved the LDIF return --Sampo
@@ -94,7 +94,7 @@ struct zxid_conf* zxid_new_conf_to_cf(char* conf)
   struct zxid_conf* cf = malloc(sizeof(struct zxid_conf));  /* *** direct use of malloc */
   if (!cf) {
     ERR("out-of-memory %d", sizeof(struct zxid_conf));
-    exit(1);
+    exit(1); /* *** perhaps too severe! */
   }
   cf = memset(cf, 0, sizeof(struct zxid_conf));
   zxid_conf_to_cf_len(cf, -1, conf);
@@ -122,7 +122,7 @@ char* zxid_fed_mgmt_cf(struct zxid_conf* cf, int* res_len, int sid_len, char* si
   if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 1);
 
   if (cf->log_level>1)
-    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "MGMT", 0, "sid(%.*s)", sid_len, sid);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "MGMT", 0, "sid(%.*s)", sid_len, STRNULLCHK(sid));
   
   if ((auto_flags & ZXID_AUTO_FORMT) && (auto_flags & ZXID_AUTO_FORMF))
     ss = zx_strf(cf->ctx,
@@ -137,7 +137,7 @@ char* zxid_fed_mgmt_cf(struct zxid_conf* cf, int* res_len, int sid_len, char* si
 		 "</form>%s%s%s%s",
 		 cf->mgmt_start,
 		 cf->url,
-		 slen, sid,
+		 slen, STRNULLCHK(sid),
 		 cf->mgmt_logout, cf->mgmt_defed,
 		 cf->mgmt_footer, zxid_version_str(), STRNULLCHK(cf->dbg), cf->mgmt_end);
   else if (auto_flags & ZXID_AUTO_FORMT)
@@ -151,13 +151,13 @@ char* zxid_fed_mgmt_cf(struct zxid_conf* cf, int* res_len, int sid_len, char* si
 		 "%s%s\n"
 		 "</form>",
 		 cf->url,
-		 slen, sid,
+		 slen, STRNULLCHK(sid),
 		 cf->mgmt_logout, cf->mgmt_defed);
   else if (auto_flags & ZXID_AUTO_FORMF)
     ss = zx_strf(cf->ctx,
 		 "<input type=hidden name=s value=\"%.*s\">"
 		 "%s%s\n",
-		 slen, sid,
+		 slen, STRNULLCHK(sid),
 		 cf->mgmt_logout, cf->mgmt_defed);
   else
     ss = zx_dup_str(cf->ctx, "");
@@ -425,6 +425,8 @@ char* zxid_idp_list(char* conf, int auto_flags) {
   return zxid_idp_list_len(-1, conf, 0, auto_flags);
 }
 
+#define FLDCHK(x,y) (x && x->y ? x->y : "")
+
 /*(i) Render entire IdP selection screen. You may use this code, possibly adjusted
  * by some configuration options (see zxidconf.h), or you may choose to develop
  * your own IdP selection screen from scratch.
@@ -438,10 +440,9 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(struct zxid_conf* cf, struct zxid_cg
   struct zx_str* ss;
   char* idp_list;
 
-  DD("HERE %p %p", cf, cf->idp_sel_our_eid);
   if (cf->idp_sel_our_eid && cf->idp_sel_our_eid[0])
     eid = zxid_my_entity_id(cf);
-  DD("HERE %p", eid);
+  D("HERE %p e(%s) m(%s) d(%s)", eid, FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg));
   idp_list = zxid_idp_list_cf_cgi(cf, cgi, 0, auto_flags);
   if (cf->log_level>1)
     zxlog(cf, 0,0,0,0,0,0,0, "N", "W", "IDPSEL", 0, 0);
@@ -463,12 +464,12 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(struct zxid_conf* cf, struct zxid_cg
 		 "</form>%s%s%s",
 		 cf->idp_sel_start,
 		 cf->url,
-		 cgi->err ? cgi->err : "", cgi->msg ? cgi->msg : "", cgi->dbg ? cgi->dbg : "",
+		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
 		 cf->idp_sel_our_eid, eid?eid->len:0, eid?eid->s:"", eid?eid->len:0, eid?eid->s:"",
 		 idp_list,
 		 cf->idp_sel_tech_user, cf->idp_sel_tech_site,
-		 (cgi&&cgi->rs)?cgi->rs:"",
+		 FLDCHK(cgi, rs),
 		 cf->idp_sel_footer, zxid_version_str(), cf->idp_sel_end);
     DD("HERE(%d) ss(%.*s)", ss->len, ss->len, ss->s);
   } else if (auto_flags & ZXID_AUTO_FORMT) {
@@ -486,12 +487,12 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(struct zxid_conf* cf, struct zxid_cg
 		 "<input type=hidden name=fr value=\"%s\">\n"
 		 "</form>",
 		 cf->url,
-		 cgi->err ? cgi->err : "", cgi->msg ? cgi->msg : "", cgi->dbg ? cgi->dbg : "",
+		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
 		 cf->idp_sel_our_eid, eid?eid->len:0, eid?eid->s:"", eid?eid->len:0, eid?eid->s:"",
 		 idp_list,
 		 cf->idp_sel_tech_user, cf->idp_sel_tech_site,
-		 (cgi&&cgi->rs)?cgi->rs:"");
+		 FLDCHK(cgi, rs));
   } else if (auto_flags & ZXID_AUTO_FORMF) {
     ss = zx_strf(cf->ctx,
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
@@ -500,12 +501,12 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(struct zxid_conf* cf, struct zxid_cg
 		 "%s"    /* IdP List */
 		 "%s%s"
 		 "<input type=hidden name=fr value=\"%s\">\n",
-		 cgi->err ? cgi->err : "", cgi->msg ? cgi->msg : "", cgi->dbg ? cgi->dbg : "",
+		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
 		 cf->idp_sel_our_eid, eid?eid->len:0, eid?eid->s:"", eid?eid->len:0, eid?eid->s:"",
 		 idp_list,
 		 cf->idp_sel_tech_user, cf->idp_sel_tech_site,
-		 (cgi&&cgi->rs)?cgi->rs:"");
+		 FLDCHK(cgi, rs));
   } else
     ss = zx_dup_str(cf->ctx, "");
 #if 0
@@ -646,7 +647,7 @@ char* zxid_simple_ab_pep(struct zxid_conf* cf, struct zxid_ses* ses, int* res_le
 /* ------------ zxid_simple() ------------ */
 
 /*() Deal with the various methods of shipping the page, including CGI stdout, or
- * as string with or without headers, as indicated by the auto_flag. THe
+ * as string with or without headers, as indicated by the auto_flag. The
  * page is in ss. */
 
 /* Called by:  zxid_simple_idp_show_an, zxid_simple_show_idp_sel, zxid_simple_show_meta */
@@ -683,8 +684,10 @@ static char* zxid_simple_show_page(struct zxid_conf* cf, struct zx_str* ss, int 
     ZX_FREE(cf->ctx, ss2);
     return res;
   }
-  D("e(%.*s)", ss->len, ss->s);
-  zx_str_free(cf->ctx, ss);
+  /* Do not output anything (both c and h 0). Effectively the generated page is thrown away. */
+  D("e(%.*s) cm=%x hm=%x af=%x rets(%s)", ss?ss->len:-1, ss?ss->s:"", c_mask, h_mask, auto_flags, rets);
+  if (ss)
+    zx_str_free(cf->ctx, ss);
   if (res_len)
     *res_len = 1;
   return zx_dup_cstr(cf->ctx, rets);   /* Neither H nor C */
@@ -727,7 +730,9 @@ static char* zxid_simple_show_idp_sel(struct zxid_conf* cf, struct zxid_cgi* cgi
     D("idp_sel_page(%s) rs(%s)", cf->idp_sel_page, STRNULLCHK(cgi->rs));
     return zxid_simple_redir_page(cf, cf->idp_sel_page, cgi->rs, res_len, auto_flags);
   }
-  ss = zxid_idp_select_zxstr_cf_cgi(cf, cgi, auto_flags);
+  ss = auto_flags & (ZXID_AUTO_LOGINC | ZXID_AUTO_LOGINH)
+    ? zxid_idp_select_zxstr_cf_cgi(cf, cgi, auto_flags)
+    : 0;
   DD("idp_select: ret(%s)", ss?ss->len:1, ss?ss->s:"?");
   return zxid_simple_show_page(cf, ss, ZXID_AUTO_LOGINC, ZXID_AUTO_LOGINH,
 			       "e", "text/html", res_len, auto_flags);
@@ -1101,8 +1106,9 @@ char* zxid_simple_no_ses_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, struct z
 show_protected_content_setcookie:
       D("show_protected_content_setcookie: (%s)", cf->ses_cookie_name);
       if (cf->ses_cookie_name && *cf->ses_cookie_name) {
-	ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/; secure",
-					  cf->ses_cookie_name, ses->sid);
+	ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/%s",
+					  cf->ses_cookie_name, ses->sid,
+					  ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
 	ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
 				       cf->ses_cookie_name, ses->sid);
       }
@@ -1160,13 +1166,22 @@ res_zx_str:
 /*(i) Simple handler that assumes the configuration has already been read in.
  * The memory for result is grabbed from ZX_ALLOC(), usually malloc(3)
  * and is "given" away to the caller, i.e. caller must free it. The
- * return value is LDIF of attributes in success case.
+ * return value is LDIF (or JSON or query string, if configured)
+ * of attributes in success case.
  * res_len, if non-null, will receive the length of the response.
  *
  * The major advantage of zxid_simple_cf_ses() is that the session stays
  * as binary object and does not need to be recreated / reparsed from
  * filesystem representation. The object can be directly used for PEP
  * calls (but see inline PEP call enabled by PDPURL) and WSC.
+ *
+ * cf:: Configuration object
+ * qs_len:: Length of the query string. -1 = use strlen()
+ * qs:: Query string (or POST content)
+ * ses:: Session object
+ * res_len:: Result parameter. If non-null, will be set to the length of the returned string
+ * auto_flags:: Automation flags, see zxid-simple.pd for documentation
+ * return:: String representing protocol action or SSO attributes
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
@@ -1283,6 +1298,13 @@ done:
 /*() Allocate simple session and then call simple handler. Strings
  * are length + pointer (no C string nul termination needed).
  * a wrapper for zxid_simple_cf().
+ *
+ * cf:: Configuration object
+ * qs_len:: Length of the query string. -1 = use strlen()
+ * qs:: Query string (or POST content)
+ * res_len:: Result parameter. If non-null, will be set to the length of the returned string
+ * auto_flags:: Automation flags, see zxid-simple.pd for documentation
+ * return:: String representing protocol action or SSO attributes
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
