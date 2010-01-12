@@ -1988,7 +1988,7 @@ struct zx_prov_PMRegisterDescriptorResponseItem_s {
   ZX_ELEM_EXT
   zx_prov_PMRegisterDescriptorResponseItem_EXT
   struct zx_prov_ProvisioningHandle_s* ProvisioningHandle;	/* {1,1} nada */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT

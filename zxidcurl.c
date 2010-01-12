@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidcurl.c,v 1.8 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxidcurl.c,v 1.9 2009-11-24 23:53:40 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 4.10.2007, fixed missing Content-length header found by Damien Laniel --Sampo
@@ -84,7 +84,7 @@ size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
  * url::     Where the request will be sent, i.e. the WKL
  * return::  XML data structure representing the entity, or 0 upon failure  */
 
-/* Called by:  opt x3, zxid_get_meta_ss */
+/* Called by:  main, opt x3, zxid_get_meta_ss */
 struct zxid_entity* zxid_get_meta(struct zxid_conf* cf, char* url)
 {
   struct zxid_entity* ent;
@@ -210,7 +210,7 @@ struct zx_root_s* zxid_soap_call_raw(struct zxid_conf* cf, struct zx_str* url, s
   curl_easy_setopt(cf->curl, CURLOPT_HTTPHEADER, &SOAPaction);
   
   D("------------------------ url(%.*s) ------------------------", url->len, url->s);
-  D("SOAP_CALL post(%.*s)", data->len, data->s);
+  D("SOAP_CALL post(%.*s) len=%d", data->len, data->s, data->len);
   res = curl_easy_perform(cf->curl);  /* <========= Actual call, blocks. */
   ZX_FREE(cf->ctx, urli);
   rc.lim = rc.p;

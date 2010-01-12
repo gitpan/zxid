@@ -106,7 +106,7 @@ SMIME_VERSION "\n"
  * for quick and dirty now.
  */
 
-/* Called by:  built_ins1 x3, get_passwd, main x22, mk_multipart, read_file */
+/* Called by:  get_passwd, main x22, mk_multipart, read_file */
 static int slurp(FILE* fd, char** pb)
 {
   int n = 0;
@@ -130,7 +130,7 @@ static int slurp(FILE* fd, char** pb)
   return n;  /* returns file length */
 }
 
-/* Called by:  built_ins1, main x12, write_file */
+/* Called by:  main x12, write_file */
 static int barf(FILE* fd, char* b, int len)
 {
   int n = 0;
@@ -269,7 +269,7 @@ static char* mk_multipart (int ac, char* av[]) {
 
 /* ===== M A I N ===== */
 
-/* Called by:  dsproxy_bootstrap */
+/* Called by: */
 int main(int ac, char* av[]) {
   av++; ac--;
 

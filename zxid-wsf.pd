@@ -2,7 +2,7 @@
 <<else: >>ZXID ID-WSF API
 ###############
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-wsf.pd,v 1.3 2009-08-25 16:22:44 sampo Exp $>>
+<<cvsid: $Id: zxid-wsf.pd,v 1.4 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-WSF 01>>
 <<define: ZXDOC=ZXID Id-WSF API>>
 
@@ -24,8 +24,8 @@ Here we describe the general philosophy of the ZXID ID-WSF
 APIs. Some function level documentation is available from
 <<link:../ref/html/index.html: Function reference>>.
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 
@@ -96,7 +96,7 @@ response.
   09 sid = strstr(res, "sesid: ");
   10 zxid_get_ses(cf, &sess, sid);
 
-  11 env = zxid_callf(cf, &sess, zx_xmlns_idhrxml,
+  11 env = zxid_callf(cf, &sess, 0,0,0, zx_xmlns_idhrxml,
   12         "<idhrxml:Modify>"
   13           "<idhrxml:ModifyItem>"
   14             "<idhrxml:Select>%s</idhrxml:Select>"
@@ -113,7 +113,7 @@ session and EPR cache.
 13.2.1 zxid_callf() - Make SOAP call with specified body
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  env = zxid_callf(cf, ses, svctype, fmt, ...)
+  env = zxid_callf(cf, ses, svctype, url, di_opt, az_cred, fmt, ...)
 
 zxid_callf() first creates the body of the SOAP call
 by expanding the format string (which may involve additional
@@ -138,12 +138,24 @@ cf:: Configuration object, see zxid_new_conf_to_cf()
 ses:: Session object, used to locate EPRs, see zxid_get_ses()
 svctype:: Service type and namespace that is applicable
     to the body. This is one of the constants from c/zx-ns.h
+url:: (Optional) If provided, this argument has to match either
+    the ProviderID, EntityID, or actual service endpoint URL.
+di_opt:: (Optional) Additional discovery options for selecting the
+    service, query string format
+az_cred:: (Optional) Additional authorization credentials or
+    attributes, query string format. These credentials will be populated
+    to the attribute pool in addition to the ones obtained from SSO and
+    other sources. Then a PDP is called to get an authorization decision
+    (as well as obligations we pledge to support). See also PEPMAP
+    configuration option. This implementes generalized (application
+    independent) Requestor Out and Requestor In PEPs. To implement
+    application dependent PEP features you should call zxid_az() directly.
 fmt:: printf style format string that is used to describe
     the body of the call as a string. If fmt contains
     format specifiers, then additional arguments
     are used to expand these.
 
-Return value:: SOAP envelope structure.
+Return value:: SOAP envelope as a string.
 
 > N.B. Although the request body is formulated as a string,
 > you can only use XML constructs whose schema is known to

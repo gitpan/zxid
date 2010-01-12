@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidxmltool.c,v 1.4 2009-08-25 16:22:45 sampo Exp $
+ * $Id: zxidxmltool.c,v 1.5 2009-11-24 23:53:40 sampo Exp $
  *
  * 29.9.2007, started --Sampo
  */
@@ -81,7 +81,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 char buf[256*1024];
 
-/* Called by:  main x7 */
+/* Called by:  main x9 */
 void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   char* conf_path = 0;

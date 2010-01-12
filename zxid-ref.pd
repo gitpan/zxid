@@ -30,6 +30,10 @@
 
 [Shibboleth] http://shibboleth.internet2.edu/shibboleth-documents.html
 
+[Hardt09] Dick Hardt and Yaron Goland: "Simple Web Token (SWT)", Version 0.9.5.1, Microsoft, Nov. 4, 2009 (SWT-v0.9.5.1.pdf)
+
+[Tom09] Allen Tom, et al.: "OAuth Web Resource Authorization Profiles (OAuth WRAP)", Version 0.9.7.2, Google, Microsoft, and Yahoo, Nov. 5, 2009 (WRAP-v0.9.7.2.pdf)
+
 [XMLENC] "XML Encryption Syntax and Processing", W3C Recommendation, 10.12.2002, http://www.w3.org/TR/xmlenc-core
 
 [XMLDSIG] "XML-Signature Syntax and Processing", W3C Recommendation, 12.2.2002, http://www.w3.org/TR/xmldsig-core, RFC3275

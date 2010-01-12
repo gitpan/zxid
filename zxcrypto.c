@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxcrypto.c,v 1.8 2009-10-18 12:39:10 sampo Exp $
+ * $Id: zxcrypto.c,v 1.10 2009-11-24 23:53:40 sampo Exp $
  *
  * 7.10.2008, added documentation --Sampo
  * 29.8.2009, added zxid_mk_self_signed_cert() --Sampo
@@ -64,6 +64,7 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, char* algo, int encflag,
   int outlen, tmplen, alloclen;
   const EVP_CIPHER* evp_cipher;
   EVP_CIPHER_CTX ctx;
+  OpenSSL_add_all_algorithms();
   EVP_CIPHER_CTX_init(&ctx);
   evp_cipher = EVP_get_cipherbyname(algo);
   if (!evp_cipher) {
@@ -283,7 +284,7 @@ RSA* zx_get_rsa_pub_from_cert(X509* cert, char* logkey)
  * available. If you want to use /dev/random, which may block, you need
  * to recompile with ZXID_TRUE_RAND set to true. */
 
-/* Called by:  zxenc_pubkey_enc, zxid_mk_id, zxlog_alloc_zbuf, zxlog_write_line */
+/* Called by:  main, zxenc_pubkey_enc, zxid_mk_id, zxid_mk_self_sig_cert, zxlog_alloc_zbuf, zxlog_write_line x2 */
 void zx_rand(char* buf, int n_bytes)
 {
 #ifdef USE_OPENSSL
@@ -310,6 +311,7 @@ void zx_rand(char* buf, int n_bytes)
  *
  * See also: keygen() in keygen.c */
 
+/* Called by:  zxid_read_cert, zxid_read_private_key */
 int zxid_mk_self_sig_cert(struct zxid_conf* cf, int buflen, char* buf, char* lk, char* name)
 {
 #ifdef USE_OPENSSL
@@ -329,9 +331,6 @@ int zxid_mk_self_sig_cert(struct zxid_conf* cf, int buflen, char* buf, char* lk,
   RSA*      rsa;
   X509_EXTENSION*  ext;
   X509_NAME_ENTRY* ne;
-  X509_ATTRIBUTE*  xa;
-  ASN1_BIT_STRING* bs;
-  ASN1_TYPE* at;
   char      org[512];
   char      cn[256];
 
@@ -409,6 +408,10 @@ badurl:
   X509_NAME_add_entry(ri->subject, ne, X509_NAME_entry_count(ri->subject), 0);
 
 #if 0
+  X509_ATTRIBUTE*  xa;
+  ASN1_BIT_STRING* bs;
+  ASN1_TYPE* at;
+
   /* It seems this gives indigestion to the default CA */
   DD("keygen populate attributes %s", lk);  /* Add attributes: we really only need cn */
   
@@ -557,6 +560,7 @@ badurl:
 
 extern char pw_basis_64[64];
 
+/* Called by:  zx_md5_crypt x6 */
 static void to64(char *s, unsigned long v, int n) {
   while (--n >= 0) {
     *s++ = pw_basis_64[v & 0x3f];
@@ -571,6 +575,7 @@ static void to64(char *s, unsigned long v, int n) {
  * buf:: must be at least 120 chars
  * return:: buf, nul terminated */
 
+/* Called by:  main x2, zxid_pw_authn */
 char* zx_md5_crypt(const char* pw, const char* salt, char* buf)
 {
   const char* magic = "$1$";    /* magic prefix to identify algo */

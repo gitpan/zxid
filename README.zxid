@@ -1,7 +1,7 @@
 README.zxid
 ###########
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: README.zxid,v 1.123 2009-10-18 12:39:10 sampo Exp $>>
+<<cvsid: $Id: README.zxid,v 1.125 2009-11-24 23:53:40 sampo Exp $>>
 <<class: article!a4paper!!ZXID 23>>
 
 <<abstract:
@@ -94,6 +94,7 @@ you should read.
 * <<link:zxid-java.html: javazxid>>: Using ZXID from Java
 * <<link:zxid-perl.html: Net::SAML>>: Using ZXID from Perl
 * <<link:zxid-php.html: php_zxid>>: Using ZXID from PHP
+* <<link:zxid-idp.html: IdP>>: Configuring zxididp
 * <<link:zxid-faq.html: FAQ>>: Frequently Asked Questions
 * <<link:../README.smime: README.smime>>: Crypto and Cert Tutorial
 
@@ -112,7 +113,7 @@ Goals of ZXID project include
 * SOAP 1.1 support (done)
 * SAML 2.0 compliance
   - SP role (done)
-  - IdP role
+  - IdP role (done)
 * Liberty ID-FF 1.2 support
   - SP
   - IdP
@@ -125,8 +126,9 @@ Goals of ZXID project include
 * Liberty ID-WSF 2.0 support
   - Discovery bootstrap (done)
   - Discovery WSC (done)
+  - Discovery WSP (done)
   - ID-DAP WSC (done)
-  - ID-DAP WSP
+  - ID-DAP WSP (alpha)
 
 <<table: ZXID Platform Support
 Platform        Native     Cross Compile    Notes
@@ -146,15 +148,17 @@ ID-DAP                Beta
 ID-HR-XML             Beta
 Contact Book          Alpha
 People Service        Alpha
-Discovery             Yes
-Web Services (ID-WSF) Yes
-SSO                   0.17  0.17     0.17    Plan   0.17        Plan   0.17
+Discovery             0.41
+Web Services (ID-WSF) 0.41
+Authorization (XACML) 0.40  yes      0.40    Plan   0.40        0.40
+SSO                   0.17  0.17     0.17    Plan   0.17        0.40   0.17
 >>
 
 <<table: ZXID Enabled Application Packages
 Application    Language      Notes
 ============== ============= =====================================================
 DokuWiki       PHP           Patch available, in process of submitting to DokuWiki authors
+Mahara         PHP           4Q2009
 >>
 
 <<ignore: table: ZXID Enabled Application Packages
@@ -224,6 +228,7 @@ sa     urn:oasis:names:tc:SAML:2.0:assertion          SAML 2.0
 sp     urn:oasis:names:tc:SAML:2.0:protocol
 md     urn:oasis:names:tc:SAML:2.0:metadata
 ecp    urn:oasis:names:tc:SAML:2.0:profiles:SSO:ecp
+shibmd urn:mace:shibboleth:metadata:1.0               Shibboleth 2.0 Metadata extensions
 paos   urn:liberty:paos:2006-08
 sa11   urn:oasis:names:tc:SAML:1.0:assertion          SAML 1.1
 sp11   urn:oasis:names:tc:SAML:1.0:protocol
@@ -264,6 +269,14 @@ xac    urn:oasis:names:tc:xacml:2.0:context:schema:os
 xasp   urn:oasis:xacml:2.0:saml:protocol:schema:os
 xasa   urn:oasis:xacml:2.0:saml:assertion:schema:os
 
+xaspcd1
+urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol:cd-01
+Committee draft with extensions for passing policies as input
+
+xasacd1
+urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:assertion:cd-01
+Committee draft with extentsions
+
 wst
 http://docs.oasis-open.org/ws-sx/ws-trust/200512/
 WS-Trust 1.3 CD-01
@@ -290,11 +303,16 @@ xs     http://www.w3.org/2001/XMLSchema               Namespace only, no code
 
 igf0   urn:LibertyAlliance:igf:0.3:core               Early draft 01, WIP
 carml0 urn:LibertyAlliance:igf:0.3:carml              Early draft 03, WIP
+tas3   http://tas3.eu/tas3/200911/                    TAS3 Credentials passing
+
+tas3sol
+http://tas3.eu/tas3sol/200911/
+TAS3 Simple Obligations Language
 >>
 
 
-96 License
-==========
+96 Copyright, License, Notices, and Acknowledgements
+====================================================
 
 Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 Author: Sampo Kellomäki (sampo@iki.fi)
@@ -338,7 +356,7 @@ back-doors, and general suitability for your application.
 
 ZXID strives to maintain IPR hygiene and avoid both
 non-free and GPL license contamination. All the
-dependency libraries have BSD style licenses
+dependency libraries have, and shall have, BSD style licenses
 
 * OpenSSL under BSDish (with "advertising" clause)
 * libcurl under BSDish
@@ -348,43 +366,176 @@ dependency libraries have BSD style licenses
 Please see each library package for the exact details of their
 licenses.
 
-Contains libyubikey
+96.1.1 Yubikey
+~~~~~~~~~~~~~~
 
- * Written by Simon Josefsson <simon@josefsson.org>.
- * Copyright (c) 2006, 2007, 2008, 2009 Yubico AB
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *    * Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *
- *    * Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following
- *      disclaimer in the documentation and/or other materials provided
- *      with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+Contains libyubikey components which are subject to following
+notice:
+
+> Written by Simon Josefsson <simon@josefsson.org>.
+> Copyright (c) 2006, 2007, 2008, 2009 Yubico AB
+> All rights reserved.
+>
+> Redistribution and use in source and binary forms, with or without
+> modification, are permitted provided that the following conditions are
+> met:
+>
+>   > Redistributions of source code must retain the above copyright
+>      notice, this list of conditions and the following disclaimer.
+>
+>   > Redistributions in binary form must reproduce the above
+>      copyright notice, this list of conditions and the following
+>      disclaimer in the documentation and/or other materials provided
+>      with the distribution.
+>
+> THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+> "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+> LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+> A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+> OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+> SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+> LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+> DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+> THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+> (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+> OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+96.1.2 OpenSSL
+~~~~~~~~~~~~~~
+
+The source distribution references, but does not contain, OpenSSL. The
+binary distributions may incorporate or dynamically link to OpenSSL,
+which is subject to the following terms and conditions:
+
+> Copyright (c) 1998-2005 The OpenSSL Project.  All rights reserved.
+> 
+> Redistribution and use in source and binary forms, with or without
+> modification, are permitted provided that the following conditions
+> are met:
+> 
+> 1. Redistributions of source code must retain the above copyright
+>    notice, this list of conditions and the following disclaimer. 
+> 
+> 2. Redistributions in binary form must reproduce the above copyright
+>    notice, this list of conditions and the following disclaimer in
+>    the documentation and/or other materials provided with the
+>    distribution.
+> 
+> 3. All advertising materials mentioning features or use of this
+>    software must display the following acknowledgment:
+>    "This product includes software developed by the OpenSSL Project
+>    for use in the OpenSSL Toolkit. (http://www.openssl.org/)"
+> 
+> 4. The names "OpenSSL Toolkit" and "OpenSSL Project" must not be used
+>    to endorse or promote products derived from this software without
+>    prior written permission. For written permission, please contact
+>    openssl-core@openssl.org.
+> 
+> 5. Products derived from this software may not be called "OpenSSL"
+>    nor may "OpenSSL" appear in their names without prior written
+>    permission of the OpenSSL Project.
+> 
+> 6. Redistributions of any form whatsoever must retain the following
+>    acknowledgment:
+>    "This product includes software developed by the OpenSSL Project
+>    for use in the OpenSSL Toolkit (http://www.openssl.org/)"
+> 
+> THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+> EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+> IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+> PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+> ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+> SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+> NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+> LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+> HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+> STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+> ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+> OF THE POSSIBILITY OF SUCH DAMAGE.
+> ====================================================================
+> 
+> This product includes cryptographic software written by Eric Young
+> (eay@cryptsoft.com).  This product includes software written by Tim
+> Hudson (tjh@cryptsoft.com).
+
+96.1.3 SSLeay
+~~~~~~~~~~~~~
+
+The source distribution references, but does not contain, OpenSSL
+which contains SSLeay. The binary distributions may incorporate or
+dynamically link to OpenSSL containing SSLeay, which is subject to the
+following terms and conditions:
+
+> Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
+> All rights reserved.
+> 
+> This package is an SSL implementation written
+> by Eric Young (eay@cryptsoft.com).
+> The implementation was written so as to conform with Netscape's SSL.
+> 
+> This library is free for commercial and non-commercial use as long as
+> the following conditions are adhered to.  The following conditions
+> apply to all code found in this distribution, be it the RC4, RSA,
+> lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+> included with this distribution is covered by the same copyright terms
+> except that the holder is Tim Hudson (tjh@cryptsoft.com).
+> 
+> Copyright remains Eric Young's, and as such any Copyright notices in
+> the code are not to be removed.
+> If this package is used in a product, Eric Young should be given
+> attribution as the author of the parts of the library used.
+> This can be in the form of a textual message at program startup or
+> in documentation (online or textual) provided with the package.
+> 
+> Redistribution and use in source and binary forms, with or without
+> modification, are permitted provided that the following conditions
+> are met:
+> 
+> 1. Redistributions of source code must retain the copyright
+>    notice, this list of conditions and the following disclaimer.
+> 2. Redistributions in binary form must reproduce the above copyright
+>    notice, this list of conditions and the following disclaimer in
+>    the documentation and/or other materials provided with the
+>    distribution.
+> 3. All advertising materials mentioning features or use of this
+>    software must display the following acknowledgement:
+>    "This product includes cryptographic software written by
+>     Eric Young (eay@cryptsoft.com)"
+>    
+>    The word 'cryptographic' can be left out if the routines from the
+>    library being used are not cryptographic related :-).
+> 4. If you include any Windows specific code (or a derivative thereof)
+>    from the apps directory (application code) you must include an
+>    acknowledgement:
+>    "This product includes software written by Tim Hudson 
+>    (tjh@cryptsoft.com)"
+> 
+> THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+> ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+> IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR 
+> PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS
+> BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, 
+> OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+> OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR 
+> BUSINESS INTERRUPTION)
+> HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+> STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+> IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+> POSSIBILITY OF SUCH DAMAGE.
+> 
+> The license and distribution terms for any publicly available
+> version or derivative of this code cannot be changed.  i.e. this
+> code cannot simply be copied and put under another distribution
+> license [including the GNU Public License.]
 
 96.2 Specification IPR
 ----------------------
 
-ZXID is based on open SAML and Liberty specifications. The parties
-that have developed these specifications, including Symlabs, have made
-Royalty Free (RF) licensing commitment. Please ask OASIS and Liberty
-Alliance for the specifics of their IPR policies and IPR disclosures.
+ZXID is based on open SAML, Liberty, and TAS3 specifications. The
+parties that have developed these specifications, including Symlabs,
+have made Royalty Free (RF) licensing commitment. Please ask OASIS,
+Liberty Alliance, and TAS3 project for the specifics of their IPR
+policies and IPR disclosures.
 
 Some protocols, such as WS-Trust and WS-Federation enjoy Microsoft's
 pledge<<footnote: If you have a reference to where this pledge can be
@@ -430,8 +581,8 @@ XML related
 7. Unknown prefix and URI, used
 8. Known NS (prefix or URI), unknown element
 
-14 Integration of Other Libraries with ZXID
-===========================================
+14 Integration of Other Implementations with ZXID
+=================================================
 
 14.1 Conor Cahill's C++ Library for ID-WSF
 ------------------------------------------
@@ -501,6 +652,18 @@ you can mix ZXID SP with OpenSSO IdP).
 Thus, the ZXID to OpenSSO integration reduces to each one acting in its
 role using standard wire protocol - SAML 2.0.
 
+14.4 University of Kent's PERMIS PDP
+------------------------------------
+
+University of Kent is a supplier of PERMIS XACML PDP software. ZXID has been
+interoperated and found compatible on wire with PERMIS as of Nov. 2009.
+However, not integration at library or API level has been attempted.
+
+14.5 Shibboleth 2
+-----------------
+
+Shibboleth 2, a SAML 2.0 based IdP, has been interoperated with ZXID SP
+code as of Nov. 2009.
 
 99 Appendix: Schema Grammars
 ============================

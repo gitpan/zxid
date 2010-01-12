@@ -106,8 +106,10 @@ struct zx_is12_Confirm_s* zx_DEC_is12_Confirm(struct zx_ctx* c, struct zx_ns_s* 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_name_ATTR:
@@ -170,7 +172,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -183,8 +185,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -234,7 +238,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -279,8 +283,10 @@ struct zx_is12_EncryptedResourceID_s* zx_DEC_is12_EncryptedResourceID(struct zx_
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
@@ -337,7 +343,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -350,8 +356,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -391,7 +399,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -436,8 +444,10 @@ struct zx_is12_Extension_s* zx_DEC_is12_Extension(struct zx_ctx* c, struct zx_ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
@@ -494,7 +504,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -507,8 +517,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -538,7 +550,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -583,8 +595,10 @@ struct zx_is12_Help_s* zx_DEC_is12_Help(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_label_ATTR:
@@ -659,7 +673,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -672,8 +686,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -703,7 +719,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -748,8 +764,10 @@ struct zx_is12_Inquiry_s* zx_DEC_is12_Inquiry(struct zx_ctx* c, struct zx_ns_s* 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_id_ATTR:
@@ -818,7 +836,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -831,8 +849,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -882,7 +902,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -927,8 +947,10 @@ struct zx_is12_InteractionRequest_s* zx_DEC_is12_InteractionRequest(struct zx_ct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_id_ATTR:
@@ -1009,7 +1031,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -1022,8 +1044,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -1063,7 +1087,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -1108,8 +1132,10 @@ struct zx_is12_InteractionResponse_s* zx_DEC_is12_InteractionResponse(struct zx_
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
@@ -1166,7 +1192,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -1179,8 +1205,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -1225,7 +1253,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -1270,8 +1298,10 @@ struct zx_is12_InteractionService_s* zx_DEC_is12_InteractionService(struct zx_ct
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_entryID_ATTR:
@@ -1334,7 +1364,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -1347,8 +1377,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -1403,7 +1435,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -1448,8 +1480,10 @@ struct zx_is12_InteractionStatement_s* zx_DEC_is12_InteractionStatement(struct z
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
 
@@ -1506,7 +1540,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -1519,8 +1553,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -1560,7 +1596,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -1605,8 +1641,10 @@ struct zx_is12_Item_s* zx_DEC_is12_Item(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_label_ATTR:
@@ -1675,7 +1713,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -1688,8 +1726,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -1724,7 +1764,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -1769,8 +1809,10 @@ struct zx_is12_Parameter_s* zx_DEC_is12_Parameter(struct zx_ctx* c, struct zx_ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_name_ATTR:
@@ -1839,7 +1881,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -1852,8 +1894,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -1883,7 +1927,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -1928,8 +1972,10 @@ struct zx_is12_RedirectRequest_s* zx_DEC_is12_RedirectRequest(struct zx_ctx* c, 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_redirectURL_ATTR:
@@ -1992,7 +2038,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -2005,8 +2051,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -2036,7 +2084,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -2081,8 +2129,10 @@ struct zx_is12_ResourceID_s* zx_DEC_is12_ResourceID(struct zx_ctx* c, struct zx_
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_id_ATTR:
@@ -2145,7 +2195,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -2158,8 +2208,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -2189,7 +2241,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -2234,8 +2286,10 @@ struct zx_is12_Select_s* zx_DEC_is12_Select(struct zx_ctx* c, struct zx_ns_s* ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_multiple_ATTR:
@@ -2304,7 +2358,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -2317,8 +2371,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -2373,7 +2429,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -2418,8 +2474,10 @@ struct zx_is12_Status_s* zx_DEC_is12_Status(struct zx_ctx* c, struct zx_ns_s* ns
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_code_ATTR:
@@ -2494,7 +2552,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -2507,8 +2565,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -2543,7 +2603,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -2588,8 +2648,10 @@ struct zx_is12_Text_s* zx_DEC_is12_Text(struct zx_ctx* c, struct zx_ns_s* ns )
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_format_ATTR:
@@ -2670,7 +2732,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -2683,8 +2745,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -2734,7 +2798,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 
@@ -2779,8 +2843,10 @@ struct zx_is12_UserInteraction_s* zx_DEC_is12_UserInteraction(struct zx_ctx* c, 
     ZX_SKIP_WS(c,x);
     if (ONE_OF_2(*c->p, '>', '/'))
       break;
-    if (!(data = zx_dec_attr_val(c, &name)))
-      return 0;
+    if (!(data = zx_dec_attr_val(c, &name))) {
+      D("Decoding attr_val failed %p", c->p);
+      return x;
+    }
     tok = zx_attr_lookup(c, name, data-2, &ns);
     switch (tok) {
     case zx_id_ATTR:
@@ -2879,7 +2945,7 @@ next_attr:
 #endif
 	{
 	  ERR("Mismatching close tag(%.*s) tok=%d context=%d", c->p-name, name, tok, x->gg.g.tok);
-	  zx_xml_parse_err(c, '-', __FUNCTION__, "Mismatching close tag");
+	  zx_xml_parse_err(c, '-', (const char*)__FUNCTION__, "Mismatching close tag");
 	  ZX_DEC_TAG_MISMATCH_CLOSE(x->gg.g);
 	  ++c->p;
 	  return x;
@@ -2892,8 +2958,10 @@ next_attr:
 	if (A_Z_a_z_(*c->p)) {
 	  name = c->p;
 	  for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;
-	  if (!c->p)
-	    return 0;
+	  if (!*c->p) {
+	    D("Incomplete %s", name);
+	    return x;
+	  }
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
@@ -2928,7 +2996,7 @@ next_attr:
   return x;
 
  look_for_not_found:
-  zx_xml_parse_err(c, '>', __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, '>', (const char*)__FUNCTION__, "char not found");
   return x;
 }
 

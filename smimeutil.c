@@ -117,7 +117,7 @@ int smime_init(const char* random_file, const char* randomness, int randlen)
 
 /* Initialize a memory BIO to have certain content */
 
-/* Called by:  encrypt1, extract_certificate, extract_request, get_pkcs7_from_pem, load_PKCS12, main, open_private_key, smime_base64, smime_pkcs12_to_pem_generic, smime_sign_engine, smime_verify_signature */
+/* Called by:  encrypt1, extract_certificate, extract_request, get_pkcs7_from_pem, load_PKCS12, open_private_key, smime_base64, smime_pkcs12_to_pem_generic, smime_sign_engine, smime_verify_signature */
 BIO* set_read_BIO_from_buf(const char* buf, int len)
 {
   BIO* rbio;  
@@ -176,7 +176,7 @@ int password_callback(char* buf, int buf_size, int x /*not used*/, void* passwor
 
 /* Get private key from buffer full of encrypted stuff */
 
-/* Called by:  ds_priv_decrypt_rsa, ds_sign_dsa_sha1, ds_sign_rsa_sha1, smime_ca, smime_clear_sign, smime_decrypt, smime_sign */
+/* Called by:  smime_ca, smime_clear_sign, smime_decrypt, smime_sign */
 EVP_PKEY* open_private_key(const char* privatekey_pem, const char* password)
 {
   EVP_PKEY* pkey = NULL;
@@ -228,7 +228,7 @@ err:
 
 /* Extract a certificate from pem encoding */
 
-/* Called by:  ds_pub_encrypt_rsa, ds_verify_dsa_sha1, ds_verify_rsa_sha1, smime_ca, smime_clear_sign, smime_decrypt, smime_encrypt, smime_get_cert_info, smime_get_cert_names, smime_sign, smime_verify_cert x2, smime_verify_signature */
+/* Called by:  smime_ca, smime_clear_sign, smime_decrypt, smime_encrypt, smime_get_cert_info, smime_get_cert_names, smime_sign, smime_verify_cert x2, smime_verify_signature */
 X509* extract_certificate(const char* cert_pem)
 {
   X509* x509 = NULL;

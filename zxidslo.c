@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidslo.c,v 1.41 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxidslo.c,v 1.42 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006,  created --Sampo
  * 12.10.2007, tweaked for signing SLO and MNI --Sampo
@@ -74,8 +74,6 @@ int zxid_sp_slo_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   return 0;
 }
 
-extern struct zx_str err_res;
-
 /*(i) Send Single Logout to IdP using redirect binding. This function
  * generates the URL encapsulating the request. You need to pass this
  * URL to the appropriate function in your environment to provoke
@@ -85,7 +83,7 @@ extern struct zx_str err_res;
  * cgi:: Data parsed from POST or query string. Provides parameters to determine
  *     details of the SLO request
  * ses:: Session object. Used to determine session index (~ses_ix~) and name id, among others
- * return:: location string if successful. err_res upon failure. */
+ * return:: location string if successful. "* ERR" upon failure. */
 
 /* Called by:  zxid_mgmt, zxid_simple_ses_active_cf */
 struct zx_str* zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
@@ -104,11 +102,11 @@ struct zx_str* zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, str
     
     idp_meta = zxid_get_ses_idp(cf, ses);
     if (!idp_meta)
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
 
     loc = zxid_idp_loc(cf, cgi, ses, idp_meta, ZXID_SLO_SVC, SAML2_REDIR);
     if (!loc)
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     r = zxid_mk_logout(cf, zxid_get_user_nameid(cf, ses->nameid), ses_ix, idp_meta);
     r->Destination = loc;
     rs = zx_EASY_ENC_SO_sp_LogoutRequest(cf->ctx, r);
@@ -122,7 +120,7 @@ struct zx_str* zxid_sp_slo_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, str
     ERR("Not implemented, ID-FF 1.2 type SAML 1.1 assetion %d", 0);
   }
   ERR("Session sid(%s) lacks SSO assertion.", ses->sid);
-  return &err_res;
+  return zx_dup_str(cf->ctx, "* ERR");
 }
 
 /*() Generate SLO Response, SP or IdP variant. The actual session invalidation must be
@@ -142,7 +140,7 @@ struct zx_str* zxid_slo_resp_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, s
   if (!loc)
     loc = zxid_sp_loc_raw(cf, cgi, meta, ZXID_SLO_SVC, SAML2_REDIR, 0);
   if (!loc)
-    return &err_res;  /* *** consider sending error page */
+    return zx_dup_str(cf->ctx, "* ERR");  /* *** consider sending error page */
 
   zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "SLORESREDIR", 0, "");
 

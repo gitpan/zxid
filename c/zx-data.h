@@ -50,10 +50,13 @@
 #include "c/zx-sbf-data.h"
 #include "c/zx-sec-data.h"
 #include "c/zx-sec12-data.h"
+#include "c/zx-shibmd-data.h"
 #include "c/zx-shps-data.h"
 #include "c/zx-sp-data.h"
 #include "c/zx-sp11-data.h"
 #include "c/zx-subs-data.h"
+#include "c/zx-tas3-data.h"
+#include "c/zx-tas3sol-data.h"
 #include "c/zx-wsc-data.h"
 #include "c/zx-wsp-data.h"
 #include "c/zx-wsse-data.h"
@@ -118,6 +121,8 @@ struct zx_root_s {
   struct zx_sp_ManageNameIDRequest_s* ManageNameIDRequest;	/* {0,-1} root */
   struct zx_sp_ManageNameIDResponse_s* ManageNameIDResponse;	/* {0,-1} root */
   struct zx_e_Envelope_s* Envelope;	/* {0,-1} root */
+  struct zx_e_Header_s* Header;	/* {0,-1} root */
+  struct zx_e_Body_s* Body;	/* {0,-1} root */
   struct zx_md_EntityDescriptor_s* EntityDescriptor;	/* {0,-1} root */
   struct zx_md_EntitiesDescriptor_s* EntitiesDescriptor;	/* {0,-1} root */
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,-1} root */
@@ -157,6 +162,8 @@ struct zx_sp_LogoutResponse_s* zx_root_GET_LogoutResponse(struct zx_root_s* x, i
 struct zx_sp_ManageNameIDRequest_s* zx_root_GET_ManageNameIDRequest(struct zx_root_s* x, int n);
 struct zx_sp_ManageNameIDResponse_s* zx_root_GET_ManageNameIDResponse(struct zx_root_s* x, int n);
 struct zx_e_Envelope_s* zx_root_GET_Envelope(struct zx_root_s* x, int n);
+struct zx_e_Header_s* zx_root_GET_Header(struct zx_root_s* x, int n);
+struct zx_e_Body_s* zx_root_GET_Body(struct zx_root_s* x, int n);
 struct zx_md_EntityDescriptor_s* zx_root_GET_EntityDescriptor(struct zx_root_s* x, int n);
 struct zx_md_EntitiesDescriptor_s* zx_root_GET_EntitiesDescriptor(struct zx_root_s* x, int n);
 struct zx_sa11_Assertion_s* zx_root_GET_sa11_Assertion(struct zx_root_s* x, int n);
@@ -193,6 +200,8 @@ int zx_root_NUM_LogoutResponse(struct zx_root_s* x);
 int zx_root_NUM_ManageNameIDRequest(struct zx_root_s* x);
 int zx_root_NUM_ManageNameIDResponse(struct zx_root_s* x);
 int zx_root_NUM_Envelope(struct zx_root_s* x);
+int zx_root_NUM_Header(struct zx_root_s* x);
+int zx_root_NUM_Body(struct zx_root_s* x);
 int zx_root_NUM_EntityDescriptor(struct zx_root_s* x);
 int zx_root_NUM_EntitiesDescriptor(struct zx_root_s* x);
 int zx_root_NUM_sa11_Assertion(struct zx_root_s* x);
@@ -229,6 +238,8 @@ struct zx_sp_LogoutResponse_s* zx_root_POP_LogoutResponse(struct zx_root_s* x);
 struct zx_sp_ManageNameIDRequest_s* zx_root_POP_ManageNameIDRequest(struct zx_root_s* x);
 struct zx_sp_ManageNameIDResponse_s* zx_root_POP_ManageNameIDResponse(struct zx_root_s* x);
 struct zx_e_Envelope_s* zx_root_POP_Envelope(struct zx_root_s* x);
+struct zx_e_Header_s* zx_root_POP_Header(struct zx_root_s* x);
+struct zx_e_Body_s* zx_root_POP_Body(struct zx_root_s* x);
 struct zx_md_EntityDescriptor_s* zx_root_POP_EntityDescriptor(struct zx_root_s* x);
 struct zx_md_EntitiesDescriptor_s* zx_root_POP_EntitiesDescriptor(struct zx_root_s* x);
 struct zx_sa11_Assertion_s* zx_root_POP_sa11_Assertion(struct zx_root_s* x);
@@ -265,6 +276,8 @@ void zx_root_PUSH_LogoutResponse(struct zx_root_s* x, struct zx_sp_LogoutRespons
 void zx_root_PUSH_ManageNameIDRequest(struct zx_root_s* x, struct zx_sp_ManageNameIDRequest_s* y);
 void zx_root_PUSH_ManageNameIDResponse(struct zx_root_s* x, struct zx_sp_ManageNameIDResponse_s* y);
 void zx_root_PUSH_Envelope(struct zx_root_s* x, struct zx_e_Envelope_s* y);
+void zx_root_PUSH_Header(struct zx_root_s* x, struct zx_e_Header_s* y);
+void zx_root_PUSH_Body(struct zx_root_s* x, struct zx_e_Body_s* y);
 void zx_root_PUSH_EntityDescriptor(struct zx_root_s* x, struct zx_md_EntityDescriptor_s* y);
 void zx_root_PUSH_EntitiesDescriptor(struct zx_root_s* x, struct zx_md_EntitiesDescriptor_s* y);
 void zx_root_PUSH_sa11_Assertion(struct zx_root_s* x, struct zx_sa11_Assertion_s* y);
@@ -302,6 +315,8 @@ void zx_root_PUT_LogoutResponse(struct zx_root_s* x, int n, struct zx_sp_LogoutR
 void zx_root_PUT_ManageNameIDRequest(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDRequest_s* y);
 void zx_root_PUT_ManageNameIDResponse(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDResponse_s* y);
 void zx_root_PUT_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* y);
+void zx_root_PUT_Header(struct zx_root_s* x, int n, struct zx_e_Header_s* y);
+void zx_root_PUT_Body(struct zx_root_s* x, int n, struct zx_e_Body_s* y);
 void zx_root_PUT_EntityDescriptor(struct zx_root_s* x, int n, struct zx_md_EntityDescriptor_s* y);
 void zx_root_PUT_EntitiesDescriptor(struct zx_root_s* x, int n, struct zx_md_EntitiesDescriptor_s* y);
 void zx_root_PUT_sa11_Assertion(struct zx_root_s* x, int n, struct zx_sa11_Assertion_s* y);
@@ -338,6 +353,8 @@ void zx_root_ADD_LogoutResponse(struct zx_root_s* x, int n, struct zx_sp_LogoutR
 void zx_root_ADD_ManageNameIDRequest(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDRequest_s* z);
 void zx_root_ADD_ManageNameIDResponse(struct zx_root_s* x, int n, struct zx_sp_ManageNameIDResponse_s* z);
 void zx_root_ADD_Envelope(struct zx_root_s* x, int n, struct zx_e_Envelope_s* z);
+void zx_root_ADD_Header(struct zx_root_s* x, int n, struct zx_e_Header_s* z);
+void zx_root_ADD_Body(struct zx_root_s* x, int n, struct zx_e_Body_s* z);
 void zx_root_ADD_EntityDescriptor(struct zx_root_s* x, int n, struct zx_md_EntityDescriptor_s* z);
 void zx_root_ADD_EntitiesDescriptor(struct zx_root_s* x, int n, struct zx_md_EntitiesDescriptor_s* z);
 void zx_root_ADD_sa11_Assertion(struct zx_root_s* x, int n, struct zx_sa11_Assertion_s* z);
@@ -374,6 +391,8 @@ void zx_root_DEL_LogoutResponse(struct zx_root_s* x, int n);
 void zx_root_DEL_ManageNameIDRequest(struct zx_root_s* x, int n);
 void zx_root_DEL_ManageNameIDResponse(struct zx_root_s* x, int n);
 void zx_root_DEL_Envelope(struct zx_root_s* x, int n);
+void zx_root_DEL_Header(struct zx_root_s* x, int n);
+void zx_root_DEL_Body(struct zx_root_s* x, int n);
 void zx_root_DEL_EntityDescriptor(struct zx_root_s* x, int n);
 void zx_root_DEL_EntitiesDescriptor(struct zx_root_s* x, int n);
 void zx_root_DEL_sa11_Assertion(struct zx_root_s* x, int n);
@@ -410,6 +429,8 @@ void zx_root_REV_LogoutResponse(struct zx_root_s* x);
 void zx_root_REV_ManageNameIDRequest(struct zx_root_s* x);
 void zx_root_REV_ManageNameIDResponse(struct zx_root_s* x);
 void zx_root_REV_Envelope(struct zx_root_s* x);
+void zx_root_REV_Header(struct zx_root_s* x);
+void zx_root_REV_Body(struct zx_root_s* x);
 void zx_root_REV_EntityDescriptor(struct zx_root_s* x);
 void zx_root_REV_EntitiesDescriptor(struct zx_root_s* x);
 void zx_root_REV_sa11_Assertion(struct zx_root_s* x);

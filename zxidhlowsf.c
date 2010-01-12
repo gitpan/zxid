@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhlowsf.c,v 1.15 2008-04-14 04:23:58 sampo Exp $
+ * $Id: zxidhlowsf.c,v 1.16 2010-01-08 02:10:09 sampo Exp $
  *
  * 25.1.2007, created --Sampo
  *
@@ -116,8 +116,8 @@ int main(int argc, char** argv)
   env = zx_NEW_e_Envelope(cf->ctx);
   env->Header = zx_NEW_e_Header(cf->ctx);
   env->Body = zx_NEW_e_Body(cf->ctx);
-  env->Body->Query = zxid_mk_di_query(cf, XMLNS_DAP);
-  epr = zxid_find_epr(cf, ses, XMLNS_DISCO_2_0, 1);
+  env->Body->Query = zxid_mk_di_query(cf, XMLNS_DAP, 0,0,0);
+  epr = zxid_find_epr(cf, ses, XMLNS_DISCO_2_0, 0,0,0, 1);
   env = zxid_wsc_call(cf, ses, epr, env);
 
 #if 0

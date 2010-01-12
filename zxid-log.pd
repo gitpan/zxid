@@ -2,7 +2,7 @@
 <<else: >>ZXID Signed and Encrypted Logging Facility
 ##########################################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-log.pd,v 1.9 2009-10-16 13:36:33 sampo Exp $>>
+<<cvsid: $Id: zxid-log.pd,v 1.11 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-LOG 01>>
 <<define: ZXDOC=ZXID Signed and Encrypted Logging Facility>>
 
@@ -28,8 +28,8 @@ logging system has also some tactical uses, such as detecting duplicate
 messages and assertions - within validity period, they are detected
 by checking if corrseponding blob log already exists.
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 
@@ -139,7 +139,7 @@ Please consider following layout of the log directory:
         |
         +-- rely/
         |    |
-        |    +-- SHA1NAME/   Evidence from entity is kept in directory name after entity ID
+        |    +-- SHA1NAME/   Evidence from entity is kept in directory named after entity ID
         |    |    |
         |    |    +-- a7n/   Assertions from 3rd parties, named by AssertionID
         |    |    +-- msg/   Messages of any type from 3rd parties, named by MessageID or sha1
@@ -272,11 +272,11 @@ RES:: Result of the operation.
 
 OP:: The documented operation
 
-    FEDNEW:: Federation and SSO request succeeded, new federation was created.
+    FEDNEW:: New federation was created (usually due to SSO or discovery).
     FEDSSO:: SP SSO using federated ID was performed
-    TMPSSO:: SP SSO using temporary NameID was performed
+    TMPSSO:: SP SSO using transient NameID was performed
     IFSSO::  IdP SSO using federated ID was issued
-    ITSSO::  IdP SSO using temporary NameID was issued
+    ITSSO::  IdP SSO using transient NameID was issued
     SLO::    Single Logout was completed
     DEFED::  Defederation was performed
     BADCF::  Server configuration (/var/zxid/zxid.conf) is bad
@@ -287,9 +287,15 @@ OP:: The documented operation
     EMISS::  Missing element (in otherwise correct XML)
     EFILE::  File missing, wrong permissions, corrupt content. Install errors.
     ECRYPT:: Crypto or signature error, usually due to corrupt or wrong key.
+    EDUP::   Duplicate message. Suspect replay attack.
     ERR::    Other error
 
     For WSP the OP is the command verb that was exercised.
+
+    FEDDI::  Discovery: Issue of EPR with assertion using federated NameID
+    TMPDI::  Discovery: Issue of EPR with assertion using transient NameID
+    VALID::  Message was validated OK and accepted for processing. See zxid_wsp_validate()
+    DECOR::  Message was decorated and issued, see zxid_wsp_decorate()
 
     For WSC the OP is the command verb preceded by capital C, e.g. "CQuery".
 
@@ -327,6 +333,8 @@ OP:: The documented operation
     AUTHN::    Authentication
     SSOA7N::   Issuance of SSO Assertion
     SSORESP::  Issuance of SSO response
+    DIA7N::    Issuance of Discovery Assertion
+    DIRESP::   Issuance of Discovery response
 
     KEYGEN::   Auto-Cert generation of a self-signed certificate
 
@@ -670,6 +678,11 @@ to store users federations, bootstraps, and attributes.
    |    +-- JOE/  Local user has directory whose name is the login uid
    |    |    |
    |    |    +-- .pw       User's local password
+   |    |    +-- .yk       User's yubikey shared aes128 secret in hex
+   |    |    +-- .ykspent/ Cache of already used One TIme Passwords
+   |    |    |    |
+   |    |    |    `-- OTP  File name is the spent Yubikey ticket (w/o uid)
+   |    |    |    
    |    |    +-- .bs/      Directory of bootstraps to be included
    |    |    |    |
    |    |    |    +-- .at         Attributes to be included in each SSO
@@ -677,7 +690,7 @@ to store users federations, bootstraps, and attributes.
    |    |    |
    |    |    +-- .di/     Directory of discovery registrations for user
    |    |    |    |
-   |    |    |    `-- SVC,SHA1    Discovery registration for a service
+   |    |    |    `-- SVC,SHA1    Discovery asso registration for a service
    |    |    |
    |    |    `-- SP,SHA1/  One directory for each SP user is federated with
    |    |         |
@@ -694,7 +707,7 @@ to store users federations, bootstraps, and attributes.
    |         |
    |         +-- .di/      Directory of default discovery registrations for all
    |         |    |
-   |         |    `-- SVC,SHA1    Discovery registration for a service
+   |         |    `-- SVC,SHA1    Generic Discovery asso registration
    |         |
    |         `-- SP,SHA1/  One directory for each SP
    |              |
@@ -703,7 +716,13 @@ to store users federations, bootstraps, and attributes.
    |
    +-- idpnid/       Index of federated NameIDs, to map to uid
    |    |
-   |    +-- NID      Content of the file is uid         
+   |    `-- SVC,SHA1    Bootstrap to be included for this SP
+   |         |
+   |         `-- NID    Content of the file is uid
+   |
+   +-- idpdimd/
+   |    |
+   |    `-- SVC,SHA1    Discovery MD registration for a service
    |
    `-- idplog/       Log files, pid files, and the like
 
@@ -720,6 +739,31 @@ the first instance is used and others ignored. However, in
 a future version, we expect to support multivalued attributes.
 
 The order for attaching bootstrap attributes is similar.
+
+Yubikey support works by using the initial part of the ticket (passed
+in as user field) as uid and the latter as the ticket proper. The uid
+part is used to locate correct directory. Mapping from yubikey modhex
+to real UID is done by creating a symlink. The AES128 shared (between
+yubikey token and IdP) key is kept in the .yk file. As this is not a
+password has, but rather directly the shared secret, it requires
+rigorous approach to the filesystem security. The fact that .pw and
+.yk are separate files caters for the possibility of user
+authenticating either by yubikey or by password. By default yubikey
+is one factor authentication (in fairly secure and very convenient
+form). If two factor authentication is desired, the password component
+should be prefixed to the UID component, i.e. first user types PIN
+and then presses yubikey to add UID and ticket.
+
+TLS Client Certificate authentication of users has not been
+implemented yet, but in any case would be mainly implemented by
+configuration of web server to request such certificate and verify
+it. By the time zxid gets called, the client cert authentication will
+already have happened. HTTP Basic authentication works in similar way
+and we make no attempt to cater for it, although it can be used of
+configured separately (in the traditional way).
+
+zxpasswd(8) is a user provisioning tool that allows creation of
+new accounts as well as manipulation of .pw and .yk files.
 
 <<if: ZXIDBOOK>>
 <<else: >>

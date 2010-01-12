@@ -5,7 +5,7 @@
 // NO WARRANTY, not even implied warranties. Contains trade secrets.
 // Distribution prohibited unless authorized in writing.
 // Licensed under Apache License 2.0, see file COPYING.
-// $Id: zxid.java,v 1.12 2009-10-16 13:36:33 sampo Exp $
+// $Id: zxid.java,v 1.13 2009-11-29 12:23:06 sampo Exp $
 // 12.1.2007, created --Sampo
 
 import zxidjava.*;
@@ -89,6 +89,7 @@ public class zxid {
 		  System.exit(0);
 	  break;
       case 'P':
+	  // *** broken with newer swig generated -noproxy code
 	  rets = zxidjni.sp_dispatch(cf, cgi, ses);
 	  System.err.println("saml_resp ret=" + rets);
 	  if (rets.getS() == "O")

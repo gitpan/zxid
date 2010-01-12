@@ -85,7 +85,7 @@ struct zx_str* zx_EASY_ENC_WO_dp_Response(struct zx_ctx* c, struct zx_dp_Respons
 struct zx_dp_Response_s {
   ZX_ELEM_EXT
   zx_dp_Response_EXT
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT

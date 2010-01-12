@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmeta.c,v 1.57 2009-09-07 16:13:02 sampo Exp $
+ * $Id: zxidmeta.c,v 1.59 2009-11-24 23:53:40 sampo Exp $
  *
  * 12.8.2006,  created --Sampo
  * 12.10.2007, mild refactoring to process keys for xenc as well. --Sampo
@@ -62,7 +62,7 @@ static void zxid_process_keys(struct zxid_conf* cf, struct zxid_entity* ent,
     pp = ZX_ALLOC(cf->ctx, SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(e-p));
     e = unbase64_raw(p, e, pp, zx_std_index_64);
     x = 0;  /* Forces d2i_X509() to alloc the memory. */
-    if (!d2i_X509(&x, (const unsigned char**)&pp, e-pp) || !x) {
+    if (!d2i_X509(&x, (const unsigned char**)&pp /* *** compile warning */, e-pp) || !x) {
       ERR("DER decoding of X509 certificate for %s failed. use(%.*s)", logkey, kd->use->len, kd->use->s);
       D("Extracted %s base64 form of cert(%.*s)", logkey, len, p);
       return;
@@ -97,7 +97,7 @@ static void zxid_process_keys(struct zxid_conf* cf, struct zxid_entity* ent,
  * lim:: End of the metadata buffer
  * return:: Entity data structure composed from the metadata. */
 
-/* Called by:  zxid_get_ent_from_file, zxid_get_meta */
+/* Called by:  main x3, zxid_get_ent_from_file, zxid_get_meta */
 struct zxid_entity* zxid_parse_meta(struct zxid_conf* cf, char** md, char* lim)
 {
   struct zxid_entity* ent;
@@ -164,7 +164,7 @@ int zxid_write_ent_to_cache(struct zxid_conf* cf, struct zxid_entity* ent)
     return 0;
   write_all_fd(fd, ss->s, ss->len);
   zx_str_free(cf->ctx, ss);
-  close_file(fd, __FUNCTION__);
+  close_file(fd, (const char*)__FUNCTION__);
   return 1;
 }
 
@@ -201,10 +201,10 @@ struct zxid_entity* zxid_get_ent_from_file(struct zxid_conf* cf, char* sha1_name
   if (n == -1) {
     perror("read metadata");
     D("Failed to read metadata for sha1_name(%s)", sha1_name);
-    close_file(fd, __FUNCTION__);
+    close_file(fd, (const char*)__FUNCTION__);
     return 0;
   }
-  close_file(fd, __FUNCTION__);
+  close_file(fd, (const char*)__FUNCTION__);
   
   p = md_buf;
   ent = zxid_parse_meta(cf, &p, md_buf+got);
@@ -245,7 +245,7 @@ struct zxid_entity* zxid_get_ent_from_cache(struct zxid_conf* cf, struct zx_str*
  * eid:: Entity ID whose metadata is desired
  * return:: Entity data structure, including the metadata */
 
-/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_get_ent, zxid_get_ses_idp, zxid_idp_dispatch, zxid_idp_sso, zxid_slo_resp_redir, zxid_sp_dispatch, zxid_sp_sso_finalize */
+/* Called by:  zxid_add_fed_tok_to_epr, zxid_chk_sig, zxid_decode_redir_or_post, zxid_get_ent, zxid_get_ses_idp, zxid_idp_dispatch, zxid_idp_sso, zxid_slo_resp_redir, zxid_sp_dispatch, zxid_sp_sso_finalize */
 struct zxid_entity* zxid_get_ent_ss(struct zxid_conf* cf, struct zx_str* eid)
 {
   struct zxid_entity* ent;
@@ -610,9 +610,9 @@ struct zx_md_SPSSODescriptor_s* zxid_sp_sso_desc(struct zxid_conf* cf)
 /* Called by:  zxid_sp_meta */
 struct zx_md_IDPSSODescriptor_s* zxid_idp_sso_desc(struct zxid_conf* cf)
 {
-  struct zx_md_ArtifactResolutionService_s* z5;
+  /*struct zx_md_ArtifactResolutionService_s* z5;*/
   struct zx_elem_s* ze;
-  struct zx_md_ManageNameIDService_s* z3;
+  /*struct zx_md_ManageNameIDService_s* z3;*/
   struct zx_md_SingleLogoutService_s* z2;
   struct zx_md_SingleSignOnService_s* z4;
   struct zx_md_KeyDescriptor_s* zk;
@@ -689,7 +689,7 @@ struct zx_md_IDPSSODescriptor_s* zxid_idp_sso_desc(struct zxid_conf* cf)
  * cf:: ZXID configuration object, used to compute EntityID and also for memory allocation
  * return:: Entity ID as zx_str */
 
-/* Called by:  main x2, zxid_an_page_cf, zxid_idp_select_zxstr_cf_cgi, zxid_mk_ecp_Request_hdr, zxid_mk_subj, zxid_my_issuer, zxid_sp_meta, zxid_sp_sso_finalize, zxid_validate_conditions, zxid_wsc_call */
+/* Called by:  main x2, zxid_an_page_cf, zxid_check_fed, zxid_di_query, zxid_idp_select_zxstr_cf_cgi, zxid_mk_ecp_Request_hdr, zxid_mk_subj, zxid_my_issuer, zxid_ses_to_pool, zxid_show_conf, zxid_sp_meta, zxid_sp_sso_finalize, zxid_validate_conditions, zxid_wsc_call */
 struct zx_str* zxid_my_entity_id(struct zxid_conf* cf)
 {
   if (cf->non_standard_entityid) {
@@ -727,7 +727,7 @@ struct zx_sa_Issuer_s* zxid_issuer(struct zxid_conf* cf, struct zx_str* nameid, 
 /*() Generate Issuer value for our entity. Issuer is often same as Entity ID, but sometimes
  * it will be affiliation ID. */
 
-/* Called by:  zxid_mk_a7n, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_ecp_Request_hdr, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp */
+/* Called by:  zxid_mk_a7n, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_az, zxid_mk_az_cd1, zxid_mk_ecp_Request_hdr, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp */
 struct zx_sa_Issuer_s* zxid_my_issuer(struct zxid_conf* cf) {
   return zxid_issuer(cf, zxid_my_entity_id(cf), cf->affiliation);
 }
@@ -772,6 +772,7 @@ int zxid_send_sp_meta(struct zxid_conf* cf, struct zxid_cgi* cgi)
 
 /*() Generate our SP CARML and return it as a string. */
 
+/* Called by:  zxid_simple_show_carml */
 struct zx_str* zxid_sp_carml(struct zxid_conf* cf)
 {
   if (cf->log_level>0)
@@ -783,7 +784,7 @@ struct zx_str* zxid_sp_carml(struct zxid_conf* cf)
 "<carml:ClientAttrReq"
 " AppName=\"ZXID SP\""
 " Description=\"ZXID SP Attribute Needs and Wants\""
-" xmlns:carml=\"urn:igf:client:0.9:carml\""
+" xmlns:carml=\"urn:igf:client:0.9:carml\">"
 "<carml:DataDefs>"
 
 "  <carml:Attributes>"

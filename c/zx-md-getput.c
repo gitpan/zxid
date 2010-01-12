@@ -6900,6 +6900,274 @@ void zx_md_EntityDescriptor_PUT_validUntil(struct zx_md_EntityDescriptor_s* x, s
 
 
 
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_md_Extensions_NUM_Scope) */
+
+int zx_md_Extensions_NUM_Scope(struct zx_md_Extensions_s* x)
+{
+  struct zx_shibmd_Scope_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Scope; y; ++n, y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_md_Extensions_GET_Scope) */
+
+struct zx_shibmd_Scope_s* zx_md_Extensions_GET_Scope(struct zx_md_Extensions_s* x, int n)
+{
+  struct zx_shibmd_Scope_s* y;
+  if (!x) return 0;
+  for (y = x->Scope; n>=0 && y; --n, y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_md_Extensions_POP_Scope) */
+
+struct zx_shibmd_Scope_s* zx_md_Extensions_POP_Scope(struct zx_md_Extensions_s* x)
+{
+  struct zx_shibmd_Scope_s* y;
+  if (!x) return 0;
+  y = x->Scope;
+  if (y)
+    x->Scope = (struct zx_shibmd_Scope_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_md_Extensions_PUSH_Scope) */
+
+void zx_md_Extensions_PUSH_Scope(struct zx_md_Extensions_s* x, struct zx_shibmd_Scope_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Scope->gg.g;
+  x->Scope = z;
+}
+
+/* FUNC(zx_md_Extensions_REV_Scope) */
+
+void zx_md_Extensions_REV_Scope(struct zx_md_Extensions_s* x)
+{
+  struct zx_shibmd_Scope_s* nxt;
+  struct zx_shibmd_Scope_s* y;
+  if (!x) return;
+  y = x->Scope;
+  if (!y) return;
+  x->Scope = 0;
+  while (y) {
+    nxt = (struct zx_shibmd_Scope_s*)y->gg.g.n;
+    y->gg.g.n = &x->Scope->gg.g;
+    x->Scope = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_md_Extensions_PUT_Scope) */
+
+void zx_md_Extensions_PUT_Scope(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_Scope_s* z)
+{
+  struct zx_shibmd_Scope_s* y;
+  if (!x || !z) return;
+  y = x->Scope;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Scope = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_md_Extensions_ADD_Scope) */
+
+void zx_md_Extensions_ADD_Scope(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_Scope_s* z)
+{
+  struct zx_shibmd_Scope_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Scope->gg.g;
+    x->Scope = z;
+    return;
+  case -1:
+    y = x->Scope;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Scope; n > 1 && y; --n, y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_md_Extensions_DEL_Scope) */
+
+void zx_md_Extensions_DEL_Scope(struct zx_md_Extensions_s* x, int n)
+{
+  struct zx_shibmd_Scope_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Scope = (struct zx_shibmd_Scope_s*)x->Scope->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_shibmd_Scope_s*)x->Scope;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Scope; n > 1 && y->gg.g.n; --n, y = (struct zx_shibmd_Scope_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_md_Extensions_NUM_KeyAuthority) */
+
+int zx_md_Extensions_NUM_KeyAuthority(struct zx_md_Extensions_s* x)
+{
+  struct zx_shibmd_KeyAuthority_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->KeyAuthority; y; ++n, y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_md_Extensions_GET_KeyAuthority) */
+
+struct zx_shibmd_KeyAuthority_s* zx_md_Extensions_GET_KeyAuthority(struct zx_md_Extensions_s* x, int n)
+{
+  struct zx_shibmd_KeyAuthority_s* y;
+  if (!x) return 0;
+  for (y = x->KeyAuthority; n>=0 && y; --n, y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_md_Extensions_POP_KeyAuthority) */
+
+struct zx_shibmd_KeyAuthority_s* zx_md_Extensions_POP_KeyAuthority(struct zx_md_Extensions_s* x)
+{
+  struct zx_shibmd_KeyAuthority_s* y;
+  if (!x) return 0;
+  y = x->KeyAuthority;
+  if (y)
+    x->KeyAuthority = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_md_Extensions_PUSH_KeyAuthority) */
+
+void zx_md_Extensions_PUSH_KeyAuthority(struct zx_md_Extensions_s* x, struct zx_shibmd_KeyAuthority_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->KeyAuthority->gg.g;
+  x->KeyAuthority = z;
+}
+
+/* FUNC(zx_md_Extensions_REV_KeyAuthority) */
+
+void zx_md_Extensions_REV_KeyAuthority(struct zx_md_Extensions_s* x)
+{
+  struct zx_shibmd_KeyAuthority_s* nxt;
+  struct zx_shibmd_KeyAuthority_s* y;
+  if (!x) return;
+  y = x->KeyAuthority;
+  if (!y) return;
+  x->KeyAuthority = 0;
+  while (y) {
+    nxt = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n;
+    y->gg.g.n = &x->KeyAuthority->gg.g;
+    x->KeyAuthority = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_md_Extensions_PUT_KeyAuthority) */
+
+void zx_md_Extensions_PUT_KeyAuthority(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_KeyAuthority_s* z)
+{
+  struct zx_shibmd_KeyAuthority_s* y;
+  if (!x || !z) return;
+  y = x->KeyAuthority;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->KeyAuthority = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_md_Extensions_ADD_KeyAuthority) */
+
+void zx_md_Extensions_ADD_KeyAuthority(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_KeyAuthority_s* z)
+{
+  struct zx_shibmd_KeyAuthority_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->KeyAuthority->gg.g;
+    x->KeyAuthority = z;
+    return;
+  case -1:
+    y = x->KeyAuthority;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->KeyAuthority; n > 1 && y; --n, y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_md_Extensions_DEL_KeyAuthority) */
+
+void zx_md_Extensions_DEL_KeyAuthority(struct zx_md_Extensions_s* x, int n)
+{
+  struct zx_shibmd_KeyAuthority_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->KeyAuthority = (struct zx_shibmd_KeyAuthority_s*)x->KeyAuthority->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_shibmd_KeyAuthority_s*)x->KeyAuthority;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->KeyAuthority; n > 1 && y->gg.g.n; --n, y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
 
 
 

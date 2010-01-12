@@ -1,9 +1,10 @@
 # zxid/sg/wsf-soap11.sg
-# $Id: wsf-soap11.sg,v 1.12 2009-08-25 16:22:45 sampo Exp $
+# $Id: wsf-soap11.sg,v 1.15 2010-01-08 02:10:09 sampo Exp $
 # Heavily edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
 # 26.2.2007, merged saml20-soap11.sg and di-soap11.sg to only
 #            one SOAP processor. --Sampo
 # 3.3.2007, added XACML support --Sampo
+# 22.11.2009, added TAS3 support --Sampo
 #
 # Mega SOAP processor for Web Services and SSO Frameworks
 #
@@ -39,6 +40,7 @@ ns(shps,  urn:liberty:shps:2006-12)
 ns(idp,   urn:liberty:idp:2006-12)
 ns(idhrxml, urn:id-sis-idhrxml:2007-06:dst-2.1)
 ns(demomed, urn:x-demo:me:2006-01)
+ns(tas3,  http://tas3.eu/tas3/200911/)
 
 Envelope -> %e:Envelope
 %Envelope:
@@ -84,6 +86,8 @@ Header -> %e:Header
   b12:UsageDirective?
   mm7:TransactionID?
   wsse:Security?
+  tas3:Credentials?
+  tas3:ESLPolicies?
   @id? -> %xs:ID
   any*
   @any?

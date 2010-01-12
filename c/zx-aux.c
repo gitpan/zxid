@@ -134,6 +134,22 @@ void zx_FREE_root(struct zx_ctx* c, struct zx_root_s* x, int free_strs)
       }
   }
   {
+      struct zx_e_Header_s* e;
+      struct zx_e_Header_s* en;
+      for (e = x->Header; e; e = en) {
+	  en = (struct zx_e_Header_s*)e->gg.g.n;
+	  zx_FREE_e_Header(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_e_Body_s* e;
+      struct zx_e_Body_s* en;
+      for (e = x->Body; e; e = en) {
+	  en = (struct zx_e_Body_s*)e->gg.g.n;
+	  zx_FREE_e_Body(c, e, free_strs);
+      }
+  }
+  {
       struct zx_md_EntityDescriptor_s* e;
       struct zx_md_EntityDescriptor_s* en;
       for (e = x->EntityDescriptor; e; e = en) {
@@ -415,6 +431,16 @@ void zx_DUP_STRS_root(struct zx_ctx* c, struct zx_root_s* x)
 	  zx_DUP_STRS_e_Envelope(c, e);
   }
   {
+      struct zx_e_Header_s* e;
+      for (e = x->Header; e; e = (struct zx_e_Header_s*)e->gg.g.n)
+	  zx_DUP_STRS_e_Header(c, e);
+  }
+  {
+      struct zx_e_Body_s* e;
+      for (e = x->Body; e; e = (struct zx_e_Body_s*)e->gg.g.n)
+	  zx_DUP_STRS_e_Body(c, e);
+  }
+  {
       struct zx_md_EntityDescriptor_s* e;
       for (e = x->EntityDescriptor; e; e = (struct zx_md_EntityDescriptor_s*)e->gg.g.n)
 	  zx_DUP_STRS_md_EntityDescriptor(c, e);
@@ -667,6 +693,32 @@ struct zx_root_s* zx_DEEP_CLONE_root(struct zx_ctx* c, struct zx_root_s* x, int 
 	  en = zx_DEEP_CLONE_e_Envelope(c, e, dup_strs);
 	  if (!enn)
 	      x->Envelope = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_e_Header_s* e;
+      struct zx_e_Header_s* en;
+      struct zx_e_Header_s* enn;
+      for (enn = 0, e = x->Header; e; e = (struct zx_e_Header_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_e_Header(c, e, dup_strs);
+	  if (!enn)
+	      x->Header = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_e_Body_s* e;
+      struct zx_e_Body_s* en;
+      struct zx_e_Body_s* enn;
+      for (enn = 0, e = x->Body; e; e = (struct zx_e_Body_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_e_Body(c, e, dup_strs);
+	  if (!enn)
+	      x->Body = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -1090,6 +1142,22 @@ int zx_WALK_SO_root(struct zx_ctx* c, struct zx_root_s* x, void* ctx, int (*call
       struct zx_e_Envelope_s* e;
       for (e = x->Envelope; e; e = (struct zx_e_Envelope_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_e_Envelope(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_e_Header_s* e;
+      for (e = x->Header; e; e = (struct zx_e_Header_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_e_Header(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_e_Body_s* e;
+      for (e = x->Body; e; e = (struct zx_e_Body_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_e_Body(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

@@ -318,6 +318,7 @@ struct zx_wsse_Security_s {
   zx_wsse_Security_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
   struct zx_sa_Assertion_s* Assertion;	/* {0,1} nada */
+  struct zx_sa_EncryptedAssertion_s* EncryptedAssertion;	/* {0,1} nada */
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,1} nada */
   struct zx_ff12_Assertion_s* ff12_Assertion;	/* {0,1} nada */
   struct zx_wsse_BinarySecurityToken_s* BinarySecurityToken;	/* {0,1} nada */
@@ -335,6 +336,7 @@ struct zx_str* zx_wsse_Security_GET_mustUnderstand(struct zx_wsse_Security_s* x)
 
 struct zx_ds_Signature_s* zx_wsse_Security_GET_Signature(struct zx_wsse_Security_s* x, int n);
 struct zx_sa_Assertion_s* zx_wsse_Security_GET_Assertion(struct zx_wsse_Security_s* x, int n);
+struct zx_sa_EncryptedAssertion_s* zx_wsse_Security_GET_EncryptedAssertion(struct zx_wsse_Security_s* x, int n);
 struct zx_sa11_Assertion_s* zx_wsse_Security_GET_sa11_Assertion(struct zx_wsse_Security_s* x, int n);
 struct zx_ff12_Assertion_s* zx_wsse_Security_GET_ff12_Assertion(struct zx_wsse_Security_s* x, int n);
 struct zx_wsse_BinarySecurityToken_s* zx_wsse_Security_GET_BinarySecurityToken(struct zx_wsse_Security_s* x, int n);
@@ -343,6 +345,7 @@ struct zx_wsu_Timestamp_s* zx_wsse_Security_GET_Timestamp(struct zx_wsse_Securit
 
 int zx_wsse_Security_NUM_Signature(struct zx_wsse_Security_s* x);
 int zx_wsse_Security_NUM_Assertion(struct zx_wsse_Security_s* x);
+int zx_wsse_Security_NUM_EncryptedAssertion(struct zx_wsse_Security_s* x);
 int zx_wsse_Security_NUM_sa11_Assertion(struct zx_wsse_Security_s* x);
 int zx_wsse_Security_NUM_ff12_Assertion(struct zx_wsse_Security_s* x);
 int zx_wsse_Security_NUM_BinarySecurityToken(struct zx_wsse_Security_s* x);
@@ -351,6 +354,7 @@ int zx_wsse_Security_NUM_Timestamp(struct zx_wsse_Security_s* x);
 
 struct zx_ds_Signature_s* zx_wsse_Security_POP_Signature(struct zx_wsse_Security_s* x);
 struct zx_sa_Assertion_s* zx_wsse_Security_POP_Assertion(struct zx_wsse_Security_s* x);
+struct zx_sa_EncryptedAssertion_s* zx_wsse_Security_POP_EncryptedAssertion(struct zx_wsse_Security_s* x);
 struct zx_sa11_Assertion_s* zx_wsse_Security_POP_sa11_Assertion(struct zx_wsse_Security_s* x);
 struct zx_ff12_Assertion_s* zx_wsse_Security_POP_ff12_Assertion(struct zx_wsse_Security_s* x);
 struct zx_wsse_BinarySecurityToken_s* zx_wsse_Security_POP_BinarySecurityToken(struct zx_wsse_Security_s* x);
@@ -359,6 +363,7 @@ struct zx_wsu_Timestamp_s* zx_wsse_Security_POP_Timestamp(struct zx_wsse_Securit
 
 void zx_wsse_Security_PUSH_Signature(struct zx_wsse_Security_s* x, struct zx_ds_Signature_s* y);
 void zx_wsse_Security_PUSH_Assertion(struct zx_wsse_Security_s* x, struct zx_sa_Assertion_s* y);
+void zx_wsse_Security_PUSH_EncryptedAssertion(struct zx_wsse_Security_s* x, struct zx_sa_EncryptedAssertion_s* y);
 void zx_wsse_Security_PUSH_sa11_Assertion(struct zx_wsse_Security_s* x, struct zx_sa11_Assertion_s* y);
 void zx_wsse_Security_PUSH_ff12_Assertion(struct zx_wsse_Security_s* x, struct zx_ff12_Assertion_s* y);
 void zx_wsse_Security_PUSH_BinarySecurityToken(struct zx_wsse_Security_s* x, struct zx_wsse_BinarySecurityToken_s* y);
@@ -371,6 +376,7 @@ void zx_wsse_Security_PUT_mustUnderstand(struct zx_wsse_Security_s* x, struct zx
 
 void zx_wsse_Security_PUT_Signature(struct zx_wsse_Security_s* x, int n, struct zx_ds_Signature_s* y);
 void zx_wsse_Security_PUT_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_sa_Assertion_s* y);
+void zx_wsse_Security_PUT_EncryptedAssertion(struct zx_wsse_Security_s* x, int n, struct zx_sa_EncryptedAssertion_s* y);
 void zx_wsse_Security_PUT_sa11_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_sa11_Assertion_s* y);
 void zx_wsse_Security_PUT_ff12_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_ff12_Assertion_s* y);
 void zx_wsse_Security_PUT_BinarySecurityToken(struct zx_wsse_Security_s* x, int n, struct zx_wsse_BinarySecurityToken_s* y);
@@ -379,6 +385,7 @@ void zx_wsse_Security_PUT_Timestamp(struct zx_wsse_Security_s* x, int n, struct 
 
 void zx_wsse_Security_ADD_Signature(struct zx_wsse_Security_s* x, int n, struct zx_ds_Signature_s* z);
 void zx_wsse_Security_ADD_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_sa_Assertion_s* z);
+void zx_wsse_Security_ADD_EncryptedAssertion(struct zx_wsse_Security_s* x, int n, struct zx_sa_EncryptedAssertion_s* z);
 void zx_wsse_Security_ADD_sa11_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_sa11_Assertion_s* z);
 void zx_wsse_Security_ADD_ff12_Assertion(struct zx_wsse_Security_s* x, int n, struct zx_ff12_Assertion_s* z);
 void zx_wsse_Security_ADD_BinarySecurityToken(struct zx_wsse_Security_s* x, int n, struct zx_wsse_BinarySecurityToken_s* z);
@@ -387,6 +394,7 @@ void zx_wsse_Security_ADD_Timestamp(struct zx_wsse_Security_s* x, int n, struct 
 
 void zx_wsse_Security_DEL_Signature(struct zx_wsse_Security_s* x, int n);
 void zx_wsse_Security_DEL_Assertion(struct zx_wsse_Security_s* x, int n);
+void zx_wsse_Security_DEL_EncryptedAssertion(struct zx_wsse_Security_s* x, int n);
 void zx_wsse_Security_DEL_sa11_Assertion(struct zx_wsse_Security_s* x, int n);
 void zx_wsse_Security_DEL_ff12_Assertion(struct zx_wsse_Security_s* x, int n);
 void zx_wsse_Security_DEL_BinarySecurityToken(struct zx_wsse_Security_s* x, int n);
@@ -395,6 +403,7 @@ void zx_wsse_Security_DEL_Timestamp(struct zx_wsse_Security_s* x, int n);
 
 void zx_wsse_Security_REV_Signature(struct zx_wsse_Security_s* x);
 void zx_wsse_Security_REV_Assertion(struct zx_wsse_Security_s* x);
+void zx_wsse_Security_REV_EncryptedAssertion(struct zx_wsse_Security_s* x);
 void zx_wsse_Security_REV_sa11_Assertion(struct zx_wsse_Security_s* x);
 void zx_wsse_Security_REV_ff12_Assertion(struct zx_wsse_Security_s* x);
 void zx_wsse_Security_REV_BinarySecurityToken(struct zx_wsse_Security_s* x);

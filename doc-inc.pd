@@ -1,5 +1,5 @@
 <<ignore: A list for referencing all of documentation. Include in each file.
-$Id: doc-inc.pd,v 1.4 2009-10-16 13:36:33 sampo Exp $
+$Id: doc-inc.pd,v 1.5 2009-11-20 20:27:13 sampo Exp $
 >>
 
 * <<link:mod_auth_saml.html: mod_auth_saml>> Apache
@@ -19,6 +19,7 @@ $Id: doc-inc.pd,v 1.4 2009-10-16 13:36:33 sampo Exp $
 * <<link:zxid-java.html: javazxid>>: Using ZXID from Java
 * <<link:zxid-perl.html: Net::SAML>>: Using ZXID from Perl
 * <<link:zxid-php.html: php_zxid>>: Using ZXID from PHP
+* <<link:zxid-idp.html: zxididp>>: Using ZXID IdP and Discovery
 * <<link:../README.smime: README.smime>>: Crypto and Cert Tutorial
 * <<link:zxid-faq.html: FAQ>>: Frequently Asked Questions
 * <<link:README.zxid.html: README.zxid>>: ZXID project overview

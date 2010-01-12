@@ -4332,6 +4332,16 @@ int zx_LEN_SO_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x )
       for (e = x->Security; e; e = (struct zx_wsse_Security_s*)e->gg.g.n)
 	  len += zx_LEN_SO_wsse_Security(c, e);
   }
+  {
+      struct zx_tas3_Credentials_s* e;
+      for (e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n)
+	  len += zx_LEN_SO_tas3_Credentials(c, e);
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      for (e = x->ESLPolicies; e; e = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n)
+	  len += zx_LEN_SO_tas3_ESLPolicies(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -4532,6 +4542,16 @@ int zx_LEN_WO_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x )
       for (e = x->Security; e; e = (struct zx_wsse_Security_s*)e->gg.g.n)
 	  len += zx_LEN_WO_wsse_Security(c, e);
   }
+  {
+      struct zx_tas3_Credentials_s* e;
+      for (e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n)
+	  len += zx_LEN_WO_tas3_Credentials(c, e);
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      for (e = x->ESLPolicies; e; e = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n)
+	  len += zx_LEN_WO_tas3_ESLPolicies(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -4730,6 +4750,16 @@ char* zx_ENC_SO_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x, char* p )
       struct zx_wsse_Security_s* e;
       for (e = x->Security; e; e = (struct zx_wsse_Security_s*)e->gg.g.n)
 	  p = zx_ENC_SO_wsse_Security(c, e, p);
+  }
+  {
+      struct zx_tas3_Credentials_s* e;
+      for (e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n)
+	  p = zx_ENC_SO_tas3_Credentials(c, e, p);
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      for (e = x->ESLPolicies; e; e = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n)
+	  p = zx_ENC_SO_tas3_ESLPolicies(c, e, p);
   }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);

@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: wsf.h,v 1.7 2007-06-19 16:05:03 sampo Exp $
+ * $Id: wsf.h,v 1.8 2009-11-24 23:53:40 sampo Exp $
  *
  * 26.12.2006, created --Sampo
  */
@@ -37,13 +37,14 @@
 /* Discovery */
 
 #define WSF11_DI_RO "DiscoveryResourceOffering"               /* Name of bootstrap attribute */
-#define WSF20_DI_RO "urn:liberty:disco:2005-11:DiscoveryEPR"
+#define WSF20_DI_RO "urn:liberty:disco:2006-08:DiscoveryEPR"
 
 #define IMPLIED_RSC        "urn:liberty:isf:implied-resource"
 #define XMLNS_DISCO_1_1    "urn:liberty:disco:2003-08"
 #define XMLNS_DISCO_EXT    "urn:liberty:disco:2004-04"
 #define XMLNS_DISCO_2_0    "urn:liberty:disco:2006-08"
 //#define XMLNS_DISCO_2_0    "urn:liberty:disco:2005-11"
+//#define WSF20_DI_RO "urn:liberty:disco:2005-11:DiscoveryEPR"
 #define XMLNS_SBF          "urn:liberty:sb"
 #define ACT_QUE            "urn:liberty:disco:2006-08:Query"
 #define ACT_QUE_RES        "urn:liberty:disco:2006-08:QueryResponse"
@@ -172,6 +173,7 @@
 #define SB_EPUPD_COMP  "urn:liberty:sb:2006-08:EndpointUpdate:Complete"
 #define SB_EPUPD_PART  "urn:liberty:sb:2006-08:EndpointUpdate:Partial"
 #define SB_EPUPD_NOCH  "urn:liberty:sb:2006-08:EndpointUpdate:NoChange"
+#define A_ANON         "http://www.w3.org/2005/03/addressing/role/anonymous"
 
 /* Misc */
 

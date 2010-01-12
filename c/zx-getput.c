@@ -1372,6 +1372,274 @@ void zx_root_DEL_Envelope(struct zx_root_s* x, int n)
 
 #ifdef ZX_ENA_GETPUT
 
+/* FUNC(zx_root_NUM_Header) */
+
+int zx_root_NUM_Header(struct zx_root_s* x)
+{
+  struct zx_e_Header_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Header; y; ++n, y = (struct zx_e_Header_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_root_GET_Header) */
+
+struct zx_e_Header_s* zx_root_GET_Header(struct zx_root_s* x, int n)
+{
+  struct zx_e_Header_s* y;
+  if (!x) return 0;
+  for (y = x->Header; n>=0 && y; --n, y = (struct zx_e_Header_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_root_POP_Header) */
+
+struct zx_e_Header_s* zx_root_POP_Header(struct zx_root_s* x)
+{
+  struct zx_e_Header_s* y;
+  if (!x) return 0;
+  y = x->Header;
+  if (y)
+    x->Header = (struct zx_e_Header_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_root_PUSH_Header) */
+
+void zx_root_PUSH_Header(struct zx_root_s* x, struct zx_e_Header_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Header->gg.g;
+  x->Header = z;
+}
+
+/* FUNC(zx_root_REV_Header) */
+
+void zx_root_REV_Header(struct zx_root_s* x)
+{
+  struct zx_e_Header_s* nxt;
+  struct zx_e_Header_s* y;
+  if (!x) return;
+  y = x->Header;
+  if (!y) return;
+  x->Header = 0;
+  while (y) {
+    nxt = (struct zx_e_Header_s*)y->gg.g.n;
+    y->gg.g.n = &x->Header->gg.g;
+    x->Header = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_root_PUT_Header) */
+
+void zx_root_PUT_Header(struct zx_root_s* x, int n, struct zx_e_Header_s* z)
+{
+  struct zx_e_Header_s* y;
+  if (!x || !z) return;
+  y = x->Header;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Header = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Header_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_root_ADD_Header) */
+
+void zx_root_ADD_Header(struct zx_root_s* x, int n, struct zx_e_Header_s* z)
+{
+  struct zx_e_Header_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Header->gg.g;
+    x->Header = z;
+    return;
+  case -1:
+    y = x->Header;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_e_Header_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Header; n > 1 && y; --n, y = (struct zx_e_Header_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_root_DEL_Header) */
+
+void zx_root_DEL_Header(struct zx_root_s* x, int n)
+{
+  struct zx_e_Header_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Header = (struct zx_e_Header_s*)x->Header->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_e_Header_s*)x->Header;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_e_Header_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Header; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Header_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_root_NUM_Body) */
+
+int zx_root_NUM_Body(struct zx_root_s* x)
+{
+  struct zx_e_Body_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Body; y; ++n, y = (struct zx_e_Body_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_root_GET_Body) */
+
+struct zx_e_Body_s* zx_root_GET_Body(struct zx_root_s* x, int n)
+{
+  struct zx_e_Body_s* y;
+  if (!x) return 0;
+  for (y = x->Body; n>=0 && y; --n, y = (struct zx_e_Body_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_root_POP_Body) */
+
+struct zx_e_Body_s* zx_root_POP_Body(struct zx_root_s* x)
+{
+  struct zx_e_Body_s* y;
+  if (!x) return 0;
+  y = x->Body;
+  if (y)
+    x->Body = (struct zx_e_Body_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_root_PUSH_Body) */
+
+void zx_root_PUSH_Body(struct zx_root_s* x, struct zx_e_Body_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Body->gg.g;
+  x->Body = z;
+}
+
+/* FUNC(zx_root_REV_Body) */
+
+void zx_root_REV_Body(struct zx_root_s* x)
+{
+  struct zx_e_Body_s* nxt;
+  struct zx_e_Body_s* y;
+  if (!x) return;
+  y = x->Body;
+  if (!y) return;
+  x->Body = 0;
+  while (y) {
+    nxt = (struct zx_e_Body_s*)y->gg.g.n;
+    y->gg.g.n = &x->Body->gg.g;
+    x->Body = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_root_PUT_Body) */
+
+void zx_root_PUT_Body(struct zx_root_s* x, int n, struct zx_e_Body_s* z)
+{
+  struct zx_e_Body_s* y;
+  if (!x || !z) return;
+  y = x->Body;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Body = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Body_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_root_ADD_Body) */
+
+void zx_root_ADD_Body(struct zx_root_s* x, int n, struct zx_e_Body_s* z)
+{
+  struct zx_e_Body_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Body->gg.g;
+    x->Body = z;
+    return;
+  case -1:
+    y = x->Body;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_e_Body_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Body; n > 1 && y; --n, y = (struct zx_e_Body_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_root_DEL_Body) */
+
+void zx_root_DEL_Body(struct zx_root_s* x, int n)
+{
+  struct zx_e_Body_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Body = (struct zx_e_Body_s*)x->Body->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_e_Body_s*)x->Body;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_e_Body_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Body; n > 1 && y->gg.g.n; --n, y = (struct zx_e_Body_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
 /* FUNC(zx_root_NUM_EntityDescriptor) */
 
 int zx_root_NUM_EntityDescriptor(struct zx_root_s* x)

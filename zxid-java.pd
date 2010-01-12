@@ -2,7 +2,7 @@
 <<else: >>Java JNI Interface to ZXID
 ##########################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-java.pd,v 1.5 2009-10-16 13:36:33 sampo Exp $>>
+<<cvsid: $Id: zxid-java.pd,v 1.7 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-JAVA 01>>
 <<define: ZXDOC=ZXID Java Interface>>
 
@@ -35,8 +35,8 @@ reference. Only differences and language specifics are covered in this
 document.
 
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 
@@ -335,7 +335,15 @@ N.B. You should make sure sp1.zxidsp.org resolves to the machine
 where you are running Tomcat, e.g. localhost (127.0.0.1).
 
 
-9.4 Programming with ZXID Java API
+9.4 Using ZXID with AXIS2
+-------------------------
+
+ axis2-1.4.1-war.zip
+ zxidservlet/META-INF/module.xml
+ /d/sampo/apache-tomcat-5.5.20/webapps/axis2/WEB-INF/services/META-INF/services.xml
+ /d/sampo/apache-tomcat-5.5.20/webapps/axis2/WEB-INF/conf/axis2.xml
+
+9.5 Programming with ZXID Java API
 ----------------------------------
 
 For detailed usage examples of the Java interface you should study
@@ -375,7 +383,7 @@ of the zxidjni class, e.g:
 Note that the ~zxid_~ prefix is omitted in favour of the ~zxidjni~
 class name qualifier.
 
-9.4.1 Integrating SSO Directly to Your Java Servlet
+9.5.1 Integrating SSO Directly to Your Java Servlet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Although zxidsrvlet.java provides a "no programming required"
@@ -442,7 +450,7 @@ Consider
   52   }
   53 }
 
-9.5 Known Problems and Limitations
+9.6 Known Problems and Limitations
 ----------------------------------
 
 The zx_str type is generally NOT nul terminated. We try to
@@ -464,10 +472,10 @@ generated interface would make Java believe that the char* one past
 end of string is a C string in its own right. Thus the only
 safe one to call is the EASY_ENC_SO variant.
 
-9.6 Troubleshooting class loader
+9.7 Troubleshooting class loader
 --------------------------------
 
-9.6.1 Symlinks
+9.7.1 Symlinks
 ~~~~~~~~~~~~~~
 
 If you get
@@ -486,7 +494,7 @@ If you get
 
 Then you forgot to turn on the symlinks (see ~allowLinking~, above).
 
-9.6.2 Class Path
+9.7.2 Class Path
 ~~~~~~~~~~~~~~~~
 
 If you get
@@ -529,7 +537,7 @@ If you get
 Then the problem is with class path. Apparently running the startup.sh script from anywhere
 else than top level of Tomcat distribution produces the above error.
 
-9.6.3 LD_LIBRARY_PATH
+9.7.3 LD_LIBRARY_PATH
 ~~~~~~~~~~~~~~~~~~~~~
 
 If you get
@@ -574,7 +582,7 @@ or place libzxidjni.so in $CATALINA_HOME/shared/lib. Note that the
 library name really is libzxidjni.so despite the misleading exception
 suggesting just "zxidjni".
 
-9.6.4 Native Library Already Loaded
+9.7.4 Native Library Already Loaded
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you get
@@ -602,13 +610,13 @@ If you get
 
 Then ... ? Currently it seems you have to restart Tomcat.
 
-9.7 Logging and Debugging Tips
+9.8 Logging and Debugging Tips
 ------------------------------
 
 In case you add debug prints, the stderr (System.err) output
 appears to go by default to apache-tomcat-5.5.20/logs/catalina.out
 
-9.8 Debugging libzxidjni.so under jdb and gdb
+9.9 Debugging libzxidjni.so under jdb and gdb
 ---------------------------------------------
 
 Debugging the JNI C code would appear to require running java or jdb
@@ -769,6 +777,19 @@ Exception in thread "main" java.lang.UnsatisfiedLinkError: _zxid_new_conf
         at zxidjava.zxidjni.new_conf(zxidjni.java:586)
         at zxid.main(zxid.java:24)
 
+
+
+97.2 Passing Java Session between Servlets
+------------------------------------------
+
+At Java session level session can only be shared within same servlet
+container. So limited sharing of data between servlets is possible.
+
+However, to cross the servlet container boundary, currently only
+method is to pass the ZXID level session ID and then recreate the
+session from persistent storage using ZXID APIs. Cumbersome, but
+doable. Effectively you would repeat the work done on ll.61-66 of
+zxidsrvlet.java.
 
 <<references:
 

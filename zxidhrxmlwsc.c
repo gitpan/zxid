@@ -1,11 +1,11 @@
 /* zxidhrxmlwsc.c  -  ID-SIS HR-XML WSC
- * Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhrxmlwsc.c,v 1.10 2008-12-04 03:07:53 sampo Exp $
+ * $Id: zxidhrxmlwsc.c,v 1.12 2009-11-29 12:23:06 sampo Exp $
  *
  * 19.6.2007, created --Sampo
  *
@@ -32,7 +32,7 @@
 char* help =
 "zxidhrxmlwsc  -  SAML 2.0 SP + WSC CGI - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated idenity and Sinlg Sign-On.\n\
-Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
@@ -101,13 +101,8 @@ int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
 
 /* ============== M A I N ============== */
 
-#if 1
 #define ZXIDHLO "zxidhrxmlwsc"
-#define CONF "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:8443/" ZXIDHLO
-#else
-#define ZXIDHLO "zxidhrxmlwsc"
-#define CONF "PATH=/var/zxid/&URL=https://sampo:8443/" ZXIDHLO
-#endif
+#define CONF "PATH=/var/zxid/"
 
 /* Called by: */
 int main(int argc, char** argv)
@@ -130,6 +125,7 @@ int main(int argc, char** argv)
   char* qs;
   char* qs2;
   char buf[64*1024];
+  char urlbuf[256];
   int got, cl=0;
 
   qs = getenv("CONTENT_LENGTH");
@@ -170,6 +166,26 @@ int main(int argc, char** argv)
 #else
   cf = zxid_new_conf_to_cf(CONF);
 #endif
+  
+  /* Dynamic construction of URL configuration parameter */
+
+#if 0  
+#define PROTO_STR "https://"
+#else
+#define PROTO_STR "http://"
+#endif
+
+  strcpy(urlbuf, PROTO_STR);
+  p = urlbuf + sizeof(PROTO_STR)-1;
+  res = getenv("HTTP_HOST");
+  strcpy(p, res);
+  p+=strlen(res);
+  res = getenv("SCRIPT_NAME");
+  strcpy(p, res);
+  p+=strlen(res);
+  if (p > urlbuf + sizeof(urlbuf))
+    exit(1);
+  zxid_url_set(cf, urlbuf);
 
   res = zxid_simple_cf(cf, cl, qs2, 0, 0x1fff);
   switch (res[0]) {
@@ -202,16 +218,19 @@ int main(int argc, char** argv)
   ses = &sess;
   zxid_get_ses(cf, ses, sid);
 
-  DD("HERE cgi.op=%d qs(%s)", cgi.op, qs);
+  D("HERE cgi.op=%d qs(%s) sid(%s)", cgi.op, qs, sid);
   
   switch (cgi.op) {
 
   case HRXMLOP_CREATE:
-    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+    D("Here %p", 0);
+    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 0, 0, 0, 1);
     if (!epr) {
       ERR("EPR could not be discovered %d", 0);
       break;
     }
+    D("Here %p", epr);
+
     env = zx_NEW_e_Envelope(cf->ctx);
     env->Header = zx_NEW_e_Header(cf->ctx);
     env->Body = zx_NEW_e_Body(cf->ctx);
@@ -230,11 +249,13 @@ int main(int argc, char** argv)
     }
     env->Body->idhrxml_Create->CreateItem->NewData->Candidate = r->Candidate;
     
+    D("Here %p", epr);
     env = zxid_wsc_call(cf, ses, epr, env);
     if (!env) {
       ERR("Web services call failed %p", env);
       break;
     }
+    D("Here %p", epr);
     if (!env->Body->idhrxml_CreateResponse) {
       ERR("There was no result %p", env->Body);
       break;
@@ -245,10 +266,11 @@ int main(int argc, char** argv)
       hrxml_resp = "Create Failed.";
       D("Non OK status(%.*s)", env->Body->idhrxml_CreateResponse->Status->code->len, env->Body->idhrxml_CreateResponse->Status->code->s);
     }
+    D("Here %p", epr);
     break;
 
   case HRXMLOP_QUERY:
-    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 0, 0, 0, 1);
     if (!epr) {
       ERR("EPR could not be discovered %d", 0);
       break;
@@ -290,18 +312,19 @@ int main(int argc, char** argv)
     break;
 
   case HRXMLOP_MODIFY:
-    env = zxid_callf(cf, ses, zx_xmlns_idhrxml, "<idhrxml:Modify><idhrxml:ModifyItem><idhrxml:Select>%s</idhrxml:Select><idhrxml:NewData>%s</idhrxml:NewData></idhrxml:ModifyItem></idhrxml:Modify>", cgi.select, cgi.data);
-    ZXID_CHK_STATUS(env, idhrxml_ModifyResponse, hrxml_resp = "Modify failed"; break);
-    hrxml_resp = "Modify OK";
+    ss = zxid_callf(cf, ses, zx_xmlns_idhrxml, 0, 0, 0, "<idhrxml:Modify><idhrxml:ModifyItem><idhrxml:Select>%s</idhrxml:Select><idhrxml:NewData>%s</idhrxml:NewData></idhrxml:ModifyItem></idhrxml:Modify>", cgi.select, cgi.data);
+    //ZXID_CHK_STATUS(env, idhrxml_ModifyResponse, hrxml_resp = "Modify failed"; break);
+    //hrxml_resp = "Modify OK";
+    hrxml_resp = ss->s;
     break;
 
   case HRXMLOP_DELETE:
-    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 1);
+    epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 0, 0, 0, 1);
     if (!epr) {
       ERR("EPR could not be discovered %d", 0);
       break;
     }
-    env = zxid_new_envf(cf, "<idhrxml:Delete><idhrxml:DeleteItem><idhrxml:Select>%s</idhrxml:Select></idhrxml:DeleteItem></idhrxml:Delete>", cgi.select);
+    //env = zxid_new_envf(cf, "<idhrxml:Delete><idhrxml:DeleteItem><idhrxml:Select>%s</idhrxml:Select></idhrxml:DeleteItem></idhrxml:Delete>", cgi.select);
     env = zxid_wsc_call(cf, ses, epr, env);
     D("HERE env=%p", env);
     if (!env) {

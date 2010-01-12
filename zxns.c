@@ -270,7 +270,7 @@ struct zx_ns_s* zx_scan_xmlns(struct zx_ctx* c)
 	zx_push_seen(c, prefix_len, prefix, url_len, url, &pop_seen);
 	goto next;
       default:
-	zx_xml_parse_err(c, p[5], __FUNCTION__, "Illformed attributes. Bad char");
+	zx_xml_parse_err(c, p[5], (const char*)__FUNCTION__, "Illformed attributes. Bad char");
 	return pop_seen;
       }
     }
@@ -291,7 +291,7 @@ struct zx_ns_s* zx_scan_xmlns(struct zx_ctx* c)
   return pop_seen;
 
  look_for_not_found:
-  zx_xml_parse_err(c, quote, __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, quote, (const char*)__FUNCTION__, "char not found");
   return pop_seen;
 }
 

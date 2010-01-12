@@ -2,7 +2,7 @@
 <<else: >>Configuring ZXID 
 ################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-conf.pd,v 1.8 2009-09-16 10:14:57 sampo Exp $>>
+<<cvsid: $Id: zxid-conf.pd,v 1.11 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID Conf 02>>
 <<define: ZXDOC=ZXID Configuration>>
 
@@ -22,6 +22,8 @@ of ZXID.
 ZXID, out-of-box, needs very little configuration. Generally you
 only need to decide the URL of your web site.
 
+> Tip: You can view current configuration by supplying URL suffix o=d
+
 Compile time configuration, based on Makefile and zxidconf.h is
 explained in separate
 document <<link:zxid-install.html: ZXID Compilation and Installation>>.
@@ -37,8 +39,8 @@ file as explained in <<link:../mod_auth_saml/mod_auth_saml.html: mod_auth_saml>>
 You should remember that some of the configuration will happen in the
 web server level, see your web server's configuration reference, e.g. httpd.conf
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 

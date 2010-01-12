@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidhrxmlwsp.c,v 1.11 2009-08-22 20:35:55 sampo Exp $
+ * $Id: zxidhrxmlwsp.c,v 1.14 2009-11-29 12:23:06 sampo Exp $
  *
  * 19.6.2007, created --Sampo
  *
@@ -32,7 +32,7 @@
 char* help =
 "zxidhrxmlwsp  -  SAML 2.0 WSP CGI - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated identity and Single Sign-On.\n\
-Copyright (c) 2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
+Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
@@ -42,19 +42,10 @@ Usage: zxidhrxmlwsp [options]   (when used as CGI, no options can be supplied)\n
   -h               This help message\n\
   --               End of options\n";
 
-int open_fd_from_path(int flags, int mode, char* logkey, char* name_fmt, ...);
-int read_all_fd(int fd, char* p, int want, int* got_all);
-int write_all_fd(int fd, char* p, int pending);
-
 /* ============== M A I N ============== */
 
-#if 1
 #define ZXIDHLO "zxidhrxmlwsp"
-#define CONF "PATH=/var/zxid/&URL=https://sp1.zxidsp.org:8444/" ZXIDHLO
-#else
-#define ZXIDHLO "zxidhrxmlwsp"
-#define CONF "PATH=/var/zxid/&URL=https://sampo:8444/" ZXIDHLO
-#endif
+#define CONF "PATH=/var/zxid/"
 
 /* Called by: */
 int main(int argc, char** argv)
@@ -62,20 +53,22 @@ int main(int argc, char** argv)
   struct zx_ctx ctx;
   struct zxid_conf cfs;
   struct zxid_conf* cf;
-  //struct zxid_ses sess;
-  //struct zxid_ses* ses;
+  struct zxid_ses sess;
+  struct zxid_ses* ses = &sess;
   struct zx_root_s* r;
-  struct zx_e_Envelope_s* env;
+  //struct zx_e_Envelope_s* env;
   //struct zx_a_EndpointReference_s* epr;
   struct zx_str* ss;
-  //char* p;
   //char* sid;
-  //char* nid;
+  char* nid;
+  char* p;
   char* res;
-  char buf[64*1024];
+  char buf[256*1024];  /* *** should figure the size dynamically */
+  char urlbuf[256];
   int got, fd, cl=0;
   char* qs;
   char* qs2;
+  memset(ses, 0, sizeof(struct zxid_ses));
   
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */
@@ -118,6 +111,30 @@ int main(int argc, char** argv)
   cf = zxid_new_conf_to_cf(CONF);
 #endif
 
+  /* Dynamic construction of URL configuration parameter */
+
+#if 0  
+#define PROTO_STR "https://"
+#else
+#define PROTO_STR "http://"
+#endif
+
+  strcpy(urlbuf, PROTO_STR);
+  p = urlbuf + sizeof(PROTO_STR)-1;
+  res = getenv("HTTP_HOST");
+  if (res) {
+    strcpy(p, res);
+    p+=strlen(res);
+  }
+  res = getenv("SCRIPT_NAME");
+  if (res) {
+    strcpy(p, res);
+    p+=strlen(res);
+  }
+  if (p > urlbuf + sizeof(urlbuf))
+    exit(1);
+  zxid_url_set(cf, urlbuf);
+
   //if (!memcmp(qs+cl-4, "?o=B", 4)) {
   if (!memcmp(qs, "o=B", 3)) {
     D("Metadata qs(%s)", qs);
@@ -132,6 +149,13 @@ int main(int argc, char** argv)
     ERR("Not a metadata qs(%s)",qs);
     exit(1);
   }
+
+  nid = zxid_wsp_validate(cf, ses, 0, buf);
+  if (!nid) {
+    ERR("Request validation failed buf(%.*s)", got, buf);
+    exit(1);
+  }
+  D("target nid(%s)", nid);
     
   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, qs2, qs2+cl);
   r = zx_DEC_root(cf->ctx, 0, 1);
@@ -159,8 +183,12 @@ int main(int argc, char** argv)
     
     if (!r->Envelope->Body->idhrxml_Create->CreateItem->NewData->Candidate) {
       ERR("No Candidate found buf(%.*s)", got, buf);
+#if 0
       env = ZXID_RESP_ENV(cf, "idhrxml:CreateResponse", "Fail", "NewData does not contain Candidate element.");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+      ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:CreateResponse><lu:Status code=\"Fail\" comment=\"NewData does not contain Candidate element.\"></lu:Status></idhrxml:CreateResponse>");
+#endif
       printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
@@ -170,12 +198,16 @@ int main(int argc, char** argv)
 
     fd = open_fd_from_path(O_CREAT|O_WRONLY|O_TRUNC, 0666, "create", "%shrxml/cv.xml", cf->path);
     write_all_fd(fd, ss->s, ss->len);
-    close_file(fd, __FUNCTION__);
-    
+    close_file(fd, (const char*)__FUNCTION__);
+
+#if 0
     env = ZXID_RESP_ENV(cf, "idhrxml:CreateResponse", "OK", "Fine");
     D("HERE(%p)", env);
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
     D("HERE(%p)", ss);
+#else
+    ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:CreateResponse><lu:Status code=\"OK\" comment=\"Fine\"></lu:Status></idhrxml:CreateResponse>");
+#endif
     printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     D("ss(%.*s)", ss->len, ss->s);
     return 0;
@@ -200,8 +232,12 @@ int main(int argc, char** argv)
     got = read_all(sizeof(buf), buf, "query", "%shrxml/cv.xml", cf->path);
     if (got < 1) {
       ERR("Reading hrxml/cv.xml resulted in error or the file was empty. ret=%d", got);
+#if 0
       env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "Fail", "Empty or no data");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+      ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:QueryResponse><lu:Status code=\"Fail\" comment=\"Empty or no data\"></lu:Status></idhrxml:QueryResponse>");
+#endif
       printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
@@ -210,19 +246,29 @@ int main(int argc, char** argv)
     r = zx_DEC_root(cf->ctx, 0, 1);
     if (!r->Candidate) {
       ERR("No hrxml:Candidate tag found in cv.xml(%s)", buf);
+#if 0
       env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "Fail", "No Candidate in data");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+      ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:QueryResponse><lu:Status code=\"Fail\" comment=\"No Candidate in data.\"></lu:Status></idhrxml:QueryResponse>");
+#endif
       printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
 
+#if 0
     env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "OK", "Fine");
     env->Body->idhrxml_QueryResponse->Data = zx_NEW_idhrxml_Data(cf->ctx);
     env->Body->idhrxml_QueryResponse->Data->Candidate = r->Candidate;
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+    ss = zxid_wsp_decoratef(cf, ses, 0, "<idhrxml:QueryResponse><lu:Status code=\"OK\" comment=\"Fine\"></lu:Status><idhrxml:Data><idhrxml:Candidate>%s</idhrxml:Candidate></idhrxml:Data></idhrxml:QueryResponse>", buf);
+#endif
     printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     return 0;
-  }  
+  }
+
+  // Modify
 
   if (r->Envelope->Body->idhrxml_Modify) {
     D("Modify %d",0);
@@ -245,8 +291,12 @@ int main(int argc, char** argv)
     
     if (!r->Envelope->Body->idhrxml_Modify->ModifyItem->NewData->Candidate) {
       ERR("No Candidate found buf(%.*s)", got, buf);
+#if 0
       env = ZXID_RESP_ENV(cf, "idhrxml:ModifyResponse", "Fail", "NewData does not contain Candidate element.");
       ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+      ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:ModifyResponse><lu:Status code=\"Fail\" comment=\"No Candidate in data.\"></lu:Status></idhrxml:ModifyResponse>");
+#endif
       printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
       return 0;
     }
@@ -256,14 +306,20 @@ int main(int argc, char** argv)
 
     fd = open_fd_from_path(O_CREAT|O_WRONLY|O_TRUNC, 0666, "modify", "%shrxml/cv.xml", cf->path);
     write_all_fd(fd, ss->s, ss->len);
-    close_file(fd, __FUNCTION__);
+    close_file(fd, (const char*)__FUNCTION__);
 
+#if 0
     env = ZXID_RESP_ENV(cf, "idhrxml:ModifyResponse", "OK", "Fine");
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+    ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:ModifyResponse><lu:Status code=\"OK\" comment=\"Fine\"></lu:Status></idhrxml:ModifyResponse>");
+#endif
     D("ss(%.*s)", ss->len, ss->s);
     printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     return 0;
   }  
+
+  // Delete
 
   if (r->Envelope->Body->idhrxml_Delete) {
     D("Delete %d",0);
@@ -282,8 +338,12 @@ int main(int argc, char** argv)
     got = name_from_path(buf, sizeof(buf), "%shrxml/cv.xml", cf->path);
     unlink(buf);
 
+#if 0
     env = ZXID_RESP_ENV(cf, "idhrxml:DeleteResponse", "OK", "Fine");
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+#else
+    ss = zxid_wsp_decorate(cf, ses, 0, "<idhrxml:DeleteResponse><lu:Status code=\"OK\" comment=\"Fine\"></lu:Status></idhrxml:DeleteResponse>");
+#endif
     D("ss(%.*s)", ss->len, ss->s);
     printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     return 0;

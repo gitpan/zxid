@@ -19,7 +19,7 @@
 #endif
 
 /* -------------------------- ff12_Assertion -------------------------- */
-/* refby( zx_wsse_Security_s zx_b_TargetIdentity_s zx_sa11_Advice_s zx_sec_Token_s zx_sa_Advice_s ) */
+/* refby( zx_wsse_Security_s zx_b_TargetIdentity_s zx_sa11_Advice_s zx_sec_Token_s zx_tas3_Credentials_s zx_sa_Advice_s ) */
 #ifndef zx_ff12_Assertion_EXT
 #define zx_ff12_Assertion_EXT
 #endif

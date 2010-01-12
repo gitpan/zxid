@@ -203,7 +203,7 @@ struct zx_idp_CreatedStatusItem_s {
   ZX_ELEM_EXT
   zx_idp_CreatedStatusItem_EXT
   struct zx_str* firstUsed;	/* {0,1} attribute xs:dateTime */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
   struct zx_str* used;	/* {1,1} attribute xs:boolean */
 };
 
@@ -408,7 +408,7 @@ struct zx_idp_GetAssertionResponseItem_s {
   zx_idp_GetAssertionResponseItem_EXT
   struct zx_idp_AssertionItem_s* AssertionItem;	/* {0,-1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT

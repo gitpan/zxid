@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zx.h,v 1.43 2009-10-18 12:39:10 sampo Exp $
+ * $Id: zx.h,v 1.45 2009-11-29 12:23:06 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 7.8.2006,  renamed from dec.h to zx.h and added comments --Sampo
@@ -28,6 +28,10 @@
 #include <openssl/rsa.h>
 #else
 #define RSA void*
+#endif
+
+#ifndef const
+#define const  /* const causes swig java to break */
 #endif
 
 /* Error Codes (low level or XML parsing) */
@@ -80,7 +84,7 @@ struct zx_ns_s {
 /* Context tracks the input and namespaces. It is also passed to memory allocator. */
 
 struct zx_ctx {
-  char* base;
+  char* base;  /* C# keyword :-( */
   char* p;     /* Current scan pointer */
   char* lim;
   struct zx_ns_s* ns_tab;      /* Array, such as zx_ns_tab, see zx_prepare_dec_ctx() */
@@ -128,10 +132,10 @@ struct zx_elem_s {
 };
 
 struct zx_elem_s* zx_new_simple_elem(struct zx_ctx* c, struct zx_str* ss);
-struct zx_elem_s* zx_ref_len_simple_elem(struct zx_ctx* c, int len, char* s);
-struct zx_elem_s* zx_ref_simple_elem(struct zx_ctx* c, char* s);
-struct zx_elem_s* zx_dup_len_simple_elem(struct zx_ctx* c, int len, char* s);
-struct zx_elem_s* zx_dup_simple_elem(struct zx_ctx* c, char* s);
+struct zx_elem_s* zx_ref_len_simple_elem(struct zx_ctx* c, int len, const char* s);
+struct zx_elem_s* zx_ref_simple_elem(struct zx_ctx* c, const char* s);
+struct zx_elem_s* zx_dup_len_simple_elem(struct zx_ctx* c, int len, const char* s);
+struct zx_elem_s* zx_dup_simple_elem(struct zx_ctx* c, const char* s);
 
 /* All attributes are represented as a string, as follows. */
 
@@ -141,17 +145,17 @@ struct zx_str {
   char* s;
 };
 
-struct zx_str* zx_ref_str(struct zx_ctx* c, char* s);  /* ref points to underlying data */
-struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, char* s);
+struct zx_str* zx_ref_str(struct zx_ctx* c, const char* s);  /* ref points to underlying data */
+struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, const char* s);
 struct zx_str* zx_new_len_str(struct zx_ctx* c, int len);
-struct zx_str* zx_dup_str(struct zx_ctx* c, char* s);  /* data is new memory */
-struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, char* s);
-char* zx_alloc_sprintf(struct zx_ctx* c, int *retlen, char* f, ...);
-struct zx_str* zx_strf(struct zx_ctx* c, char* f, ...);  /* data is new memory */
+struct zx_str* zx_dup_str(struct zx_ctx* c, const char* s);  /* data is new memory */
+struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, const char* s);
+char* zx_alloc_sprintf(struct zx_ctx* c, int* retlen, const char* f, ...);
+struct zx_str* zx_strf(struct zx_ctx* c, const char* f, ...);  /* data is new memory */
 void  zx_str_free(struct zx_ctx* c, struct zx_str* ss);   /* free both ss->s and ss */
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str* ss);
 void  zx_str_conv(struct zx_str* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
-int   zx_str_ends_in(struct zx_str* ss, int len, char* suffix);
+int   zx_str_ends_in(struct zx_str* ss, int len, const char* suffix);
 #define ZX_STR_ENDS_IN_CONST(ss, suffix) zx_str_ends_in((ss), sizeof(suffix)-1, (suffix))
 
 /* Elements that are unforeseen (errornous or extensions). */
@@ -176,11 +180,11 @@ struct zx_any_attr_s {
 
 #define ZX_ELEM_EXT struct zx_elem_s gg;
 
-char* zx_memmem(char* haystack, int haystack_len, char* needle, int needle_len);
+char* zx_memmem(const char* haystack, int haystack_len, const char* needle, int needle_len);
 void* zx_alloc(struct zx_ctx* c, int size);
 void* zx_zalloc(struct zx_ctx* c, int size);
 void* zx_free(struct zx_ctx* c, void* p);
-char* zx_dup_cstr(struct zx_ctx* c, char* str);
+char* zx_dup_cstr(struct zx_ctx* c, const char* str);
 #define ZX_ALLOC(c, size) zx_alloc((c), (size))
 #define ZX_ZALLOC(c, typ) ((typ*)zx_zalloc((c), sizeof(typ)))
 #define ZX_DUPALLOC(c, typ, n, o) (n) = (typ*)zx_alloc((c), sizeof(typ)); memcpy((n), (o), sizeof(typ))
@@ -214,7 +218,7 @@ struct zx_tok { const char* name; const char* prefix; struct zx_ns_s* ns; };
 /*void zx_free_any(struct zx_ctx* c, struct zx_note_s* n, int free_strs); TBD */
 
 int   zx_date_time_to_secs(char* dt);
-int   write2_or_append_lock_c_path(char* c_path, int len1, char* data1, int len2, char* data2, const char* which, int seeky, int flag);
+int   write2_or_append_lock_c_path(const char* c_path, int len1, const char* data1, int len2, const char* data2, const char* which, int seeky, int flag);
 int   zx_report_openssl_error(const char* logkey);
 
 void  zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_any_elem_s* x, char* nam, int namlen);

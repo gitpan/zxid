@@ -1,11 +1,11 @@
 /* zxlib.c  -  Utility functions for generated (and other) code
- * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxlib.c,v 1.40 2009-08-25 16:22:45 sampo Exp $
+ * $Id: zxlib.c,v 1.41 2009-11-24 23:53:40 sampo Exp $
  *
  * 28.5.2006, created --Sampo
  * 8.8.2006,  moved lookup functions to generated code --Sampo
@@ -31,12 +31,12 @@
 /*() ZX implementation of memmem(3) for platforms that do not have this. */
 
 /* Called by:  zxid_map_sec_mech x3 */
-char* zx_memmem(char* haystack, int haystack_len, char* needle, int needle_len)
+char* zx_memmem(const char* haystack, int haystack_len, const char* needle, int needle_len)
 {
-  char* lim = haystack + haystack_len - needle_len;
+  const char* lim = haystack + haystack_len - needle_len;
   for (; haystack < lim; ++haystack)
     if (!memcmp(haystack, needle, needle_len))
-      return haystack;
+      return (char*)haystack; /* discards const qualifier, but is right if haystack was modifiable, as often is the case. */
   return 0;
 }
 
@@ -92,8 +92,8 @@ void* zx_free(struct zx_ctx* c, void* p)
 
 /*() ZX verion of strdup(). */
 
-/* Called by:  chkuid x2, zxid_fed_mgmt_cf, zxid_simple_cf x2, zxid_simple_no_ses_cf, zxid_simple_redir_page, zxid_simple_ses_active_cf, zxid_simple_show_page x2 */
-char* zx_dup_cstr(struct zx_ctx* c, char* str)
+/* Called by:  chkuid x2, zxid_fed_mgmt_cf, zxid_simple_cf_ses x2, zxid_simple_no_ses_cf, zxid_simple_redir_page, zxid_simple_ses_active_cf, zxid_simple_show_page x2 */
+char* zx_dup_cstr(struct zx_ctx* c, const char* str)
 {
   int len = strlen(str);
   char* s = ZX_ALLOC(c, len+1);
@@ -103,7 +103,7 @@ char* zx_dup_cstr(struct zx_ctx* c, char* str)
 
 /*() Convert zx_str to C string. The ZX context will provide the memory. */
 
-/* Called by:  zxid_get_meta_ss, zxid_get_ses_sso_a7n, zxid_idp_sso, zxid_soap_call_raw, zxid_sp_sso_finalize x3 */
+/* Called by:  zxid_add_a7n_at_to_pool x2, zxid_get_meta_ss, zxid_get_ses_sso_a7n, zxid_idp_sso, zxid_soap_call_raw, zxid_sp_sso_finalize x3 */
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str* ss)
 {
   char* p = ZX_ALLOC(c, ss->len+1);
@@ -129,7 +129,7 @@ void zx_str_conv(struct zx_str* ss, int* out_len, char** out_s)  /* SWIG typemap
 
 /*() Free both the zx_str node and the underlying string data */
 
-/* Called by:  main, zxenc_privkey_dec, zxenc_pubkey_enc, zxenc_symkey_enc, zxid_anoint_sso_a7n x5, zxid_anoint_sso_resp x4, zxid_cache_epr, zxid_decode_redir_or_post, zxid_fed_mgmt_cf x3, zxid_get_user_nameid, zxid_idp_dispatch x2, zxid_idp_list_cf_cgi x3, zxid_idp_soap, zxid_idp_soap_dispatch x2, zxid_idp_sso x4, zxid_lecp_check, zxid_mgmt x3, zxid_mk_art_deref, zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni, zxid_put_user, zxid_saml2_post_enc x2, zxid_saml2_redir, zxid_saml2_redir_enc x2, zxid_saml2_redir_url, zxid_saml2_resp_redir, zxid_send_sp_meta, zxid_simple_idp_show_an, zxid_simple_no_ses_cf x3, zxid_simple_ses_active_cf, zxid_simple_show_page x3, zxid_slo_resp_redir, zxid_snarf_eprs_from_ses, zxid_soap_call_envelope, zxid_soap_call_hdr_body, zxid_sp_dispatch x2, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap, zxid_sp_soap_dispatch x2, zxid_start_sso_location, zxid_user_change_nameid, zxid_write_ent_to_cache, zxsig_sign */
+/* Called by:  main x3, zxenc_privkey_dec, zxenc_pubkey_enc, zxenc_symkey_enc, zxid_anoint_a7n x5, zxid_anoint_sso_resp x4, zxid_cache_epr, zxid_decode_redir_or_post, zxid_fed_mgmt_cf x3, zxid_get_user_nameid, zxid_idp_dispatch x2, zxid_idp_list_cf_cgi x3, zxid_idp_soap, zxid_idp_soap_dispatch x2, zxid_idp_sso x4, zxid_lecp_check, zxid_mgmt x3, zxid_mk_art_deref, zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni, zxid_pep_az_soap x2, zxid_put_user, zxid_saml2_post_enc x2, zxid_saml2_redir, zxid_saml2_redir_enc x2, zxid_saml2_redir_url, zxid_saml2_resp_redir, zxid_send_sp_meta, zxid_simple_idp_show_an, zxid_simple_no_ses_cf x3, zxid_simple_ses_active_cf, zxid_simple_show_page x3, zxid_slo_resp_redir, zxid_snarf_eprs_from_ses, zxid_soap_call_envelope, zxid_soap_call_hdr_body, zxid_sp_dispatch x2, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap, zxid_sp_soap_dispatch x5, zxid_start_sso_location, zxid_user_change_nameid, zxid_write_ent_to_cache, zxsig_sign */
 void zx_str_free(struct zx_ctx* c, struct zx_str* ss)
 {
   if (ss->s)
@@ -139,8 +139,8 @@ void zx_str_free(struct zx_ctx* c, struct zx_str* ss)
 
 /*() Construct zx_str from length and raw string data, which will be referenced, not copied. */
 
-/* Called by:  zx_easy_enc_common, zx_ref_len_simple_elem, zx_ref_str, zx_strf, zxid_mk_idp_list, zxid_saml2_redir_enc x2, zxlog_path */
-struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, char* s)
+/* Called by:  zx_easy_enc_common, zx_ref_len_simple_elem, zx_ref_str, zx_strf, zxid_callf, zxid_mk_idp_list, zxid_saml2_redir_enc x2, zxlog_path */
+struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, const char* s)
 {
   struct zx_str* ss = ZX_ZALLOC(c, struct zx_str);
   ss->s = s;  /* ref points to underlying data */
@@ -150,8 +150,8 @@ struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, char* s)
 
 /*() Construct zx_str from C string, which will be referenced, not copied. */
 
-/* Called by:  test_ibm_cert_problem_enc_dec x3, zxenc_pubkey_enc, zxenc_symkey_enc x3, zxid_ac_desc x2, zxid_ar_desc, zxid_get_user_nameid x4, zxid_idp_sso_desc x2, zxid_issuer, zxid_key_desc x2, zxid_mk_Status x2, zxid_mk_art_deref, zxid_mk_authn_req x10, zxid_mk_dap_query, zxid_mk_dap_query_item x8, zxid_mk_dap_resquery x6, zxid_mk_dap_select x2, zxid_mk_dap_subscription x7, zxid_mk_dap_test_item x2, zxid_mk_dap_testop x2, zxid_mk_di_req_svc x2, zxid_mk_ecp_Request_hdr x2, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_paos_Request_hdr x3, zxid_mni_desc, zxid_simple_ses_active_cf x2, zxid_slo_desc, zxid_sp_sso_desc x3, zxid_sso_desc, zxid_wsc_call x48, zxsig_sign x5 */
-struct zx_str* zx_ref_str(struct zx_ctx* c, char* s)
+/* Called by:  pool2apache x2, test_ibm_cert_problem_enc_dec x3, zxenc_pubkey_enc, zxenc_symkey_enc x3, zxid_ac_desc x2, zxid_ar_desc, zxid_check_fed, zxid_idp_sso_desc x2, zxid_ins_xacml_az_stmt, zxid_issuer, zxid_key_desc x2, zxid_mk_Status x2, zxid_mk_art_deref, zxid_mk_authn_req x10, zxid_mk_az, zxid_mk_az_cd1, zxid_mk_dap_query, zxid_mk_dap_query_item x8, zxid_mk_dap_resquery x6, zxid_mk_dap_select x2, zxid_mk_dap_subscription x7, zxid_mk_dap_test_item x2, zxid_mk_dap_testop x2, zxid_mk_di_req_svc x2, zxid_mk_ecp_Request_hdr x2, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_paos_Request_hdr x3, zxid_mk_xacml_resp, zxid_mni_desc, zxid_parse_mni x4, zxid_pep_az_soap x10, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2, zxid_simple_ses_active_cf x2, zxid_slo_desc, zxid_sp_sso_desc x3, zxid_sso_desc, zxid_wsc_call x51, zxsig_sign x5 */
+struct zx_str* zx_ref_str(struct zx_ctx* c, const char* s)
 {
   if (!s)
     return 0;
@@ -160,7 +160,7 @@ struct zx_str* zx_ref_str(struct zx_ctx* c, char* s)
 
 /*() Newly allocated string (node and data) of specified length, but uninitialized */
 
-/* Called by:  zx_EVP_CIPHER_key_length, zx_dup_len_str, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxenc_pubkey_enc, zxenc_symkey_enc, zxsig_sign x2 */
+/* Called by:  zx_EVP_CIPHER_key_length, zx_dup_len_str, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxenc_pubkey_enc, zxenc_symkey_enc, zxid_map_val x5, zxid_pool_to_json, zxid_pool_to_ldif, zxid_pool_to_qs, zxsig_sign x2 */
 struct zx_str* zx_new_len_str(struct zx_ctx* c, int len)
 {
   struct zx_str* ss = ZX_ZALLOC(c, struct zx_str);
@@ -173,7 +173,7 @@ struct zx_str* zx_new_len_str(struct zx_ctx* c, int len)
 /*() Construct zx_str by duplication of raw string data of given length. */
 
 /* Called by:  zx_dup_len_simple_elem, zx_dup_str */
-struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, char* s)
+struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, const char* s)
 {
   struct zx_str* ss = zx_new_len_str(c, len);
   memcpy(ss->s, s, len);
@@ -182,16 +182,16 @@ struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, char* s)
 
 /*() Construct zx_str by duplication of C string. */
 
-/* Called by:  zxid_an_page_cf, zxid_anoint_sso_a7n, zxid_anoint_sso_resp x3, zxid_fed_mgmt_cf, zxid_idp_list_cf_cgi x2, zxid_idp_select_zxstr_cf_cgi, zxid_idp_sso x2, zxid_mk_a7n, zxid_mk_an_stmt, zxid_mk_authn_req, zxid_mk_saml_resp, zxid_mk_subj */
-struct zx_str* zx_dup_str(struct zx_ctx* c, char* s)
+/* Called by:  zxid_add_attr_to_pool, zxid_add_fed_tok_to_epr x2, zxid_add_qs_to_pool, zxid_an_page_cf, zxid_anoint_a7n, zxid_anoint_sso_resp x3, zxid_fed_mgmt_cf, zxid_get_at x2, zxid_idp_list_cf_cgi x2, zxid_idp_select_zxstr_cf_cgi, zxid_idp_sso x4, zxid_map_val, zxid_mk_a7n, zxid_mk_an_stmt, zxid_mk_attribute x2, zxid_mk_authn_req, zxid_mk_lu_Status x3, zxid_mk_saml_resp, zxid_mk_subj, zxid_pep_az_soap x11, zxid_ses_to_pool x5, zxid_show_conf x3, zxid_show_cstr_list, zxid_show_map, zxid_show_need x2, zxid_simple_ab_pep x3, zxid_start_sso_location */
+struct zx_str* zx_dup_str(struct zx_ctx* c, const char* s)
 {
   return zx_dup_len_str(c, strlen(s), s);
 }
 
 /*() vasprintf(3) implementation that will grab its memory from ZX memory allocator. */
 
-/* Called by:  zx_alloc_sprintf, zx_strf */
-char* zx_alloc_vasprintf(struct zx_ctx* c, int *retlen, char* f, va_list ap) /* data is new memory */
+/* Called by:  zx_alloc_sprintf, zx_strf, zxid_callf */
+char* zx_alloc_vasprintf(struct zx_ctx* c, int* retlen, const char* f, va_list ap) /* data is new memory */
 {
   va_list ap2;
   int len;
@@ -218,8 +218,8 @@ char* zx_alloc_vasprintf(struct zx_ctx* c, int *retlen, char* f, va_list ap) /* 
 
 /*() sprintf(3) implementation that will grab its memory from ZX memory allocator. */
 
-/* Called by:  zxid_pw_authn x2, zxid_simple_no_ses_cf x2 */
-char* zx_alloc_sprintf(struct zx_ctx* c, int *retlen, char* f, ...)  /* data is new memory */
+/* Called by:  zxid_call x2, zxid_pw_authn x2, zxid_simple_no_ses_cf x2 */
+char* zx_alloc_sprintf(struct zx_ctx* c, int* retlen, const char* f, ...)  /* data is new memory */
 {
   char* ret;
   va_list ap;
@@ -231,8 +231,8 @@ char* zx_alloc_sprintf(struct zx_ctx* c, int *retlen, char* f, ...)  /* data is 
 
 /*(i) Construct zx_str given sprintf(3) format and grabbing memory from ZX memory allocator. */
 
-/* Called by:  chkuid, zx_prefix_seen_whine, zxenc_pubkey_enc x3, zxenc_symkey_enc, zxid_ac_desc, zxid_an_page_cf x3, zxid_ar_desc x2, zxid_date_time x2, zxid_decode_redir_or_post x5, zxid_fed_mgmt_cf x4, zxid_get_user_nameid, zxid_idp_list_cf_cgi x4, zxid_idp_select_zxstr_cf_cgi x3, zxid_idp_sso x3, zxid_idp_sso_desc, zxid_lecp_check, zxid_mk_dap_query_item x2, zxid_mk_dap_select x4, zxid_mk_dap_testop x4, zxid_mk_di_req_svc, zxid_mk_id, zxid_mk_paos_Request_hdr, zxid_mni_desc x2, zxid_my_cdc_url, zxid_my_entity_id x2, zxid_put_user, zxid_saml2_post_enc, zxid_saml2_redir, zxid_saml2_redir_url, zxid_saml2_resp_redir, zxid_saml_ok, zxid_ses_to_ldif, zxid_simple_idp_show_an x2, zxid_simple_no_ses_cf, zxid_simple_redir_page, zxid_simple_show_page, zxid_slo_desc x2, zxid_sp_sso_desc, zxid_sso_desc x2, zxid_start_sso_location, zxid_user_change_nameid, zxid_wsc_call x3, zxsig_sign */
-struct zx_str* zx_strf(struct zx_ctx* c, char* f, ...)  /* data is new memory */
+/* Called by:  chkuid, zx_prefix_seen_whine, zxenc_pubkey_enc x3, zxenc_symkey_enc, zxid_ac_desc, zxid_an_page_cf x3, zxid_ar_desc x2, zxid_date_time x2, zxid_decode_redir_or_post x5, zxid_fed_mgmt_cf x4, zxid_get_user_nameid, zxid_idp_list_cf_cgi x4, zxid_idp_select_zxstr_cf_cgi x3, zxid_idp_sso x3, zxid_idp_sso_desc, zxid_lecp_check, zxid_mk_dap_query_item x2, zxid_mk_dap_select x4, zxid_mk_dap_testop x4, zxid_mk_di_req_svc, zxid_mk_id, zxid_mk_paos_Request_hdr, zxid_mni_desc x2, zxid_my_cdc_url, zxid_my_entity_id x2, zxid_put_user, zxid_saml2_post_enc, zxid_saml2_redir, zxid_saml2_redir_url, zxid_saml2_resp_redir, zxid_saml_ok, zxid_show_conf x5, zxid_show_cstr_list, zxid_show_map, zxid_show_need x2, zxid_simple_idp_show_an x2, zxid_simple_no_ses_cf, zxid_simple_redir_page, zxid_simple_show_page, zxid_slo_desc x2, zxid_sp_carml, zxid_sp_sso_desc, zxid_sso_desc x2, zxid_start_sso_location, zxid_user_change_nameid, zxid_wsc_call x3, zxsig_sign */
+struct zx_str* zx_strf(struct zx_ctx* c, const char* f, ...)  /* data is new memory */
 {
   va_list ap;
   int len;
@@ -246,14 +246,14 @@ struct zx_str* zx_strf(struct zx_ctx* c, char* f, ...)  /* data is new memory */
 /*() Check if string ends in suffix */
 
 /* Called by: */
-int zx_str_ends_in(struct zx_str* ss, int len, char* suffix)
+int zx_str_ends_in(struct zx_str* ss, int len, const char* suffix)
 {
   return !memcmp(ss->s + ss->len - len, suffix, len);
 }
 
 /*() Construct new simple element from zx_str by referencing, not copying, it. */
 
-/* Called by:  main x2, zx_dup_len_simple_elem, zx_ref_len_simple_elem, zxenc_pubkey_enc, zxenc_symkey_enc, zxid_mk_a7n, zxid_mk_logout, zxid_mk_mni x4, zxsig_sign */
+/* Called by:  main x2, zx_dup_len_simple_elem, zx_ref_len_simple_elem, zxenc_pubkey_enc, zxenc_symkey_enc, zxid_mk_a7n, zxid_mk_logout, zxid_mk_mni x4, zxid_mk_xacml_simple_at, zxsig_sign */
 struct zx_elem_s* zx_new_simple_elem(struct zx_ctx* c, struct zx_str* ss)
 {
   struct zx_elem_s* el;
@@ -265,27 +265,27 @@ struct zx_elem_s* zx_new_simple_elem(struct zx_ctx* c, struct zx_str* ss)
 /*() Construct new simple element by referencing, not copying, raw string data of given length. */
 
 /* Called by:  zx_ref_simple_elem, zxid_key_desc, zxid_key_info */
-struct zx_elem_s* zx_ref_len_simple_elem(struct zx_ctx* c, int len, char* s)
+struct zx_elem_s* zx_ref_len_simple_elem(struct zx_ctx* c, int len, const char* s)
 {
   return zx_new_simple_elem(c, zx_ref_len_str(c, len, s));
 }
 
 /*() Construct new simple element by referencing, not copying, C string. */
 
-/* Called by:  main, zxid_idp_sso_desc x2, zxid_mk_Status, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_dap_query_item x4, zxid_mk_dap_resquery x4, zxid_mk_dap_select x2, zxid_mk_dap_subscription x2, zxid_mk_dap_testop x2, zxid_mk_di_req_svc x3, zxid_sp_sso_desc x2 */
-struct zx_elem_s* zx_ref_simple_elem(struct zx_ctx* c, char* s)
+/* Called by:  main, zxid_idp_sso_desc x2, zxid_mk_Status, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_dap_query_item x4, zxid_mk_dap_resquery x4, zxid_mk_dap_select x2, zxid_mk_dap_subscription x2, zxid_mk_dap_testop x2, zxid_mk_di_req_svc x6, zxid_mk_xacml_resp, zxid_sp_sso_desc x2 */
+struct zx_elem_s* zx_ref_simple_elem(struct zx_ctx* c, const char* s)
 {
   return zx_ref_len_simple_elem(c, strlen(s), s);
 }
 
 /* Called by:  zx_dup_simple_elem */
-struct zx_elem_s* zx_dup_len_simple_elem(struct zx_ctx* c, int len, char* s)
+struct zx_elem_s* zx_dup_len_simple_elem(struct zx_ctx* c, int len, const char* s)
 {
   return zx_new_simple_elem(c, zx_dup_len_str(c, len, s));
 }
 
 /* Called by:  zxid_mk_an_stmt */
-struct zx_elem_s* zx_dup_simple_elem(struct zx_ctx* c, char* s)
+struct zx_elem_s* zx_dup_simple_elem(struct zx_ctx* c, const char* s)
 {
   return zx_dup_len_simple_elem(c, strlen(s), s);
 }
@@ -746,7 +746,7 @@ char* zx_enc_so_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, char* p, ch
 }
 #endif
 
-/* Called by:  main x6, test_ibm_cert_problem, vzxid_new_envf, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_find_epr, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_soap_call_raw, zxid_sp_dig_sso_a7n, zxid_sp_soap_parse */
+/* Called by:  main x7, test_ibm_cert_problem, zxid_call, zxid_dec_a7n, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_di_query, zxid_find_epr, zxid_gen_bootstraps, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_soap_call_raw, zxid_sp_soap_parse */
 void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, char* start, char* lim)
 {
   c->guard_seen_n.seen_n = &c->guard_seen_p;
@@ -773,7 +773,7 @@ int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
   return 1;
 
  look_for_not_found:
-  /*zx_xml_parse_err(c, '<', __FUNCTION__, "look for not found");  -- Causes bogus warning in end of buffer. */
+  /*zx_xml_parse_err(c, '<', (const char*)__FUNCTION__, "look for not found");  -- Causes bogus warning in end of buffer. */
   return 0;
 }
 
@@ -820,7 +820,7 @@ int zx_scan_pi_or_comment(struct zx_ctx* c)
   }
   return 1;
  look_for_not_found:
-  zx_xml_parse_err(c, quote, __FUNCTION__, "look for not found");
+  zx_xml_parse_err(c, quote, (const char*)__FUNCTION__, "look for not found");
   return 1;
 }
 
@@ -857,7 +857,7 @@ char* zx_dec_attr_val(struct zx_ctx* c, char** name)
   
   ++c->p;
   if (!ONE_OF_2(*c->p, '"', '\'')) {
-    zx_xml_parse_err(c, *c->p, __FUNCTION__, "Did not find expected quote char (single or double), saw");
+    zx_xml_parse_err(c, *c->p, (const char*)__FUNCTION__, "Did not find expected quote char (single or double), saw");
     return 0;
   }
   quote = *c->p;
@@ -867,12 +867,13 @@ char* zx_dec_attr_val(struct zx_ctx* c, char** name)
   ZX_LOOK_FOR(c, quote);
   return data;
  look_for_not_found:
-  zx_xml_parse_err(c, quote, __FUNCTION__, "char not found");
+  zx_xml_parse_err(c, quote, (const char*)__FUNCTION__, "char not found");
   return 0;
 }
 
 /* Called by:  TXDEC_ELNAME x2, zx_dec_attr_val x2, zx_scan_pi_or_comment, zx_scan_xmlns x2 */
-void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg) {
+void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg)
+{
   char* errloc = MAX(c->p - 20, c->base);
   ERR("%s: %s: char(%c) pos=%d (%.*s)", func, msg, quote,
       c->p - c->base, MIN(c->lim - errloc, 40), errloc);

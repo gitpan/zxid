@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidses.c,v 1.27 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxidses.c,v 1.30 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "errmac.h"
+#include "platform.h"
 #include "zxid.h"
 #include "zxidconf.h"
 #include "saml2.h"
@@ -41,7 +42,7 @@
  * But when the assertion is needed, you have to call this function to load
  * it from file (under /var/zxid/log/rely/EID/a7n/AID) and parse it. */
 
-/* Called by:  zxid_get_ses_idp, zxid_idp_loc, zxid_ses_to_ldif, zxid_simple_ses_active_cf, zxid_snarf_eprs_from_ses, zxid_sp_loc, zxid_sp_mni_redir, zxid_sp_mni_soap, zxid_sp_slo_redir, zxid_sp_slo_soap */
+/* Called by:  zxid_get_ses_idp, zxid_idp_loc, zxid_ses_to_pool, zxid_simple_ses_active_cf, zxid_snarf_eprs_from_ses, zxid_sp_loc, zxid_sp_mni_redir, zxid_sp_mni_soap, zxid_sp_slo_redir, zxid_sp_slo_soap */
 int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   struct zx_sa_EncryptedID_s* encid;
@@ -52,7 +53,7 @@ int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
   if (ses->a7n || ses->a7n11 || ses->a7n12)  /* already in cache */
     return 1;
   if (!ses->sso_a7n_path) {
-    D("Session object does not have any SSO assertion sid(%s)", ses->sid);
+    D("Session object does not have any SSO assertion sid(%s)", STRNULLCHK(ses->sid));
     return 0;
   }
   ses->sso_a7n_buf = ZX_ALLOC(cf->ctx, ZXID_MAX_A7N);
@@ -66,7 +67,7 @@ int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
   r = zx_DEC_root(cf->ctx, 0, 1);
   if (!r) {
     ERR("Failed to decode the sso assertion of session sid(%s) from  path(%s), a7n data(%.*s)",
-	ses->sid, ses->sso_a7n_path, gotall, ses->sso_a7n_buf);
+	STRNULLCHK(ses->sid), ses->sso_a7n_path, gotall, ses->sso_a7n_buf);
     return 0;
   }
   
@@ -97,13 +98,13 @@ int zxid_get_ses_sso_a7n(struct zxid_conf* cf, struct zxid_ses* ses)
     if (ses->nid) {
       if (memcmp(ses->nid, subj->s, subj->len)) {
 	ERR("Session sid(%s), nid(%s), SSO assertion in path(%s) had different nid(%.*s). a7n data(%.*s)",
-	    ses->sid, ses->nid, ses->sso_a7n_path, subj->len, subj->s, gotall, ses->sso_a7n_buf);
+	    STRNULLCHK(ses->sid), ses->nid, ses->sso_a7n_path, subj->len, subj->s, gotall, ses->sso_a7n_buf);
       }
     } else
       ses->nid = zx_str_to_c(cf->ctx, subj);
   } else
     ERR("Session sid(%s) SSO assertion in path(%s) did not have Name ID. a7n data(%.*s)",
-	ses->sid, ses->sso_a7n_path, gotall, ses->sso_a7n_buf);
+	STRNULLCHK(ses->sid), ses->sso_a7n_path, gotall, ses->sso_a7n_buf);
   return 1;
 }
 
@@ -124,7 +125,7 @@ struct zxid_entity* zxid_get_ses_idp(struct zxid_conf* cf, struct zxid_ses* ses)
 
 /*() Allocate memory for session object. Used with zxid_simple_cf_ses(). */
 
-/* Called by: */
+/* Called by:  zxid_fetch_ses */
 struct zxid_ses* zxid_alloc_ses(struct zxid_conf* cf)
 {
   return ZX_ZALLOC(cf->ctx, struct zxid_ses);
@@ -133,7 +134,7 @@ struct zxid_ses* zxid_alloc_ses(struct zxid_conf* cf)
 /*() Allocate memory and get session object from the filesystem */
 
 /* Called by: */
-struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
+struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, const char* sid)
 {
   struct zxid_ses* ses = zxid_alloc_ses(cf);
   if (sid && sid[0])
@@ -148,8 +149,8 @@ struct zxid_ses* zxid_fetch_ses(struct zxid_conf* cf, char* sid)
  * and reference to the assertion. Use zxid_get_ses_sso_a7n() to actually
  * load the assertion, if needed. Returns 1 if session gotten, 0 if fail. */
 
-/* Called by:  chkuid x2, main x6, zxid_fetch_ses, zxid_find_ses, zxid_simple_cf */
-int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
+/* Called by:  chkuid x2, main x6, zxid_az_cf, zxid_fetch_ses, zxid_find_ses, zxid_simple_cf_ses */
+int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, const char* sid)
 {
   char* p;
   int gotall;
@@ -177,10 +178,10 @@ int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
   gotall = read_all(ZXID_MAX_SES-1, ses->sesbuf, "get_ses", "%s" ZXID_SES_DIR "%s/.ses", cf->path, sid);
   if (!gotall)
     return 0;
-  DD("ses(%.*s) len=%d", gotall, ses->sesbuf, gotall);
+  D("ses(%.*s) len=%d sid(%s) sesptr=%p", gotall, ses->sesbuf, gotall, sid, ses);
   ses->sesbuf[gotall] = 0;
   DD("ses(%s)", ses->sesbuf);
-  ses->sid = sid;
+  ses->sid = zx_dup_cstr(cf->ctx, sid);
   ses->nid = ses->sesbuf;
   p = strchr(ses->sesbuf, '|');
   if (p) {
@@ -202,7 +203,7 @@ int zxid_get_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* sid)
     *p++ = 0;
     ses->uid = p;
   }
-  D("GOT ses(%s) uid(%s) nid(%s) sso_a7n_path(%s) sesix(%s) an_ctx(%s)", sid, STRNULLCHK(ses->uid), STRNULLCHK(ses->nid), STRNULLCHK(ses->sso_a7n_path), STRNULLCHK(ses->sesix), STRNULLCHK(ses->an_ctx));
+  D("GOT sesdir(%s" ZXID_SES_DIR "%s) uid(%s) nid(%s) sso_a7n_path(%s) sesix(%s) an_ctx(%s)", cf->path, ses->sid, STRNULLCHK(ses->uid), STRNULLCHK(ses->nid), STRNULLCHK(ses->sso_a7n_path), STRNULLCHK(ses->sesix), STRNULLCHK(ses->an_ctx));
   return 1;
 }
 
@@ -253,6 +254,7 @@ int zxid_put_ses(struct zxid_conf* cf, struct zxid_ses* ses)
     return 0;
   }
   ZX_FREE(cf->ctx, buf);
+  D("SESSION CREATED sid(%s)", STRNULLCHK(ses->sid));
   return 1;
 }
 

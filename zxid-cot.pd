@@ -2,7 +2,7 @@
 <<else: >>Building a Circle-of-Trust Using ZXID
 #####################################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-cot.pd,v 1.4 2009-10-16 13:36:33 sampo Exp $>>
+<<cvsid: $Id: zxid-cot.pd,v 1.6 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-COT 01>>
 <<define: ZXDOC=Building Circles-of-Trust using ZXID>>
 
@@ -19,7 +19,7 @@ Liberty ID-WSF 2.0 stacks. This document explains creating CoT.
 ==============
 
 ZXID, out of box, starts with default URL (Entity ID), metadata for
-couple of test servers, and demo sertificates already configured. The
+couple of test servers, and demo certificates already configured. The
 Auto-CoT feature that automatically adds IdPs to the Circle-of-Trust
 is enabled.
 
@@ -35,8 +35,11 @@ help getting it all right.
 (One day I hope this documentation is so good that no consultant
 is needed. Right now this is just a place holder.)
 
-1.1 Other documements
----------------------
+If you are setting up zxididp, see zxid-idp.pd for more specific
+instructions.
+
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 

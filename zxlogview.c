@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxlogview.c,v 1.14 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxlogview.c,v 1.15 2009-11-24 23:53:40 sampo Exp $
  *
  * 19.11.2006, started --Sampo
  * 29.8.2009, added hmac chaining field --Sampo
@@ -80,7 +80,7 @@ char buf[4096];
 
 static void test_mode(int* argc, char*** argv, char*** env);
 
-/* Called by:  main x7 */
+/* Called by:  main x9 */
 static void opt(int* argc, char*** argv, char*** env)
 {
   int gotall;

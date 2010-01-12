@@ -2,7 +2,7 @@
 <<else: >>Net::SAML - Perl Interface to ZXID
 ##################################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-perl.pd,v 1.4 2009-10-16 13:36:33 sampo Exp $>>
+<<cvsid: $Id: zxid-perl.pd,v 1.6 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-PERL 01>>
 <<define: ZXDOC=Net::SAML - ZXID Perl Interface>>
 
@@ -28,8 +28,8 @@ The main aim of the glue is supporting the easy and simple API, see
 reference. Only differences and language specifics are covered in this
 document.
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 

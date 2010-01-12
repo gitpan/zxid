@@ -1,12 +1,46 @@
 # zxid/Changes
-# $Id: Changes,v 1.34 2009-10-16 13:36:33 sampo Exp $
+# $Id: Changes,v 1.39 2010-01-08 02:10:09 sampo Exp $
 # Change log, minor credits, and release history
+
+Usual suspects: zxid.user@lists.unh.edu
 
 To do:
     - Limited SP local attribute authority
-    - Yubikey in zxmkpasswd
     - shell script az
-
+    - shell script wsc using authentication service
+    - Add Trust and Privacy Negotiation capability to discovery
+    - Add Az calls to zxid_wsp_validate() and zxid_wsp_decorate()
+    - Do proper signature validation in zxid_wsp_validate()
+zxid-0.45:: 7.1.2010
+    - Fixed error handling when unable to decrypt an assertion
+    - Fixed mod_auth_saml redirect_to_content when no relay state
+    - Do proper signing in zxid_wsf_call() and zxid_wsp_decorate()
+zxid-0.44:: 16.12.2009
+    - Fixed transient always on bug
+    - Fixed memory free bug in case where defederation is not supported
+zxid-0.43:: 29.11.2009
+    - Fix PHP support for zxid_wsp_validate() and zxid_wsp_decorate()
+    - Renamed hexdec to zx_hexdec to avoid risking conflicts
+zxid-0.42:: 22.11.2009
+    - Added service file name computator: zxcot -n -b <epr.xml
+    - Expose assertion path
+    - zxid_call() reengineering
+    - Added support for urn:mace:shibboleth:metadata:1.0
+    - Added support for TAS3 Credentials and Simple Obligations Language (SOL)
+    - Added zxid_wsp_validate() and zxid_wsp_decorate()
+    - zxidhrxmlwsc and zxidhrxmlwsp tested to work
+zxid-0.41:: 20.11.2009
+    - Yubikey support in zxiduser.c and zxpasswd
+    - config dump screen (o=d)
+    - OpenSSL_add_all_algorithms() fix from Stefan @ Koblenz
+    - di_Query support
+    - ID-WSF 2.0 AuthnSvc support
+    - Bootstrap support, improved
+    - SAML2 IdP support with attributes and bootstraps
+    - zxid-idp.pd documentation
+    - Added 403 Denied error response to SSO servlet (zxidsrvlet.java)
+    - Various bug fixes to zxididp and zxidjava
+    - First winbin release in long time (zxid-0.41-win32-bin.zip)
 zxid-0.40:: 14.11.2009
     - Shib2 interop testing
     - XACML cd1 support (sending policies in request)
@@ -15,7 +49,7 @@ zxid-0.40:: 14.11.2009
     - Greatly improved zxid-java.pd documentation
     - Fixed and tested mod_php configuration with zxid_az()
     - Fixed and tested mod_perl configuration with Net::SAML::az()
-    - Retested mod_aut_saml
+    - Retested mod_auth_saml
 zxid-0.39:: 5.11.2009
     - Added zxidsrvlet and zxidappdemo
 zxid-0.38:: 16.10.2009

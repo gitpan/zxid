@@ -1,6 +1,6 @@
 # zxid/sg/wss-secext-1.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: wss-secext-1.0.sg,v 1.5 2009-09-05 02:23:41 sampo Exp $
+# $Id: wss-secext-1.0.sg,v 1.6 2009-11-20 20:27:13 sampo Exp $
 
 target(wsse, http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd)
 import(wsu,  http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd,wss-util-1.0.xsd)
@@ -71,6 +71,7 @@ ns(xs,   http://www.w3.org/2001/XMLSchema)
 %SecurityHeaderType:
   ds:Signature?
   sa:Assertion?
+  sa:EncryptedAssertion?
   sa11:Assertion?
   ff12:Assertion?
   #sec:Token?  assertion is used directly

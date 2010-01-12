@@ -559,7 +559,7 @@ struct zx_str* zx_EASY_ENC_WO_shps_InvokeResponseItem(struct zx_ctx* c, struct z
 struct zx_shps_InvokeResponseItem_s {
   ZX_ELEM_EXT
   zx_shps_InvokeResponseItem_EXT
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
@@ -888,7 +888,7 @@ struct zx_shps_ProxyInvokeResponseItem_s {
   zx_shps_ProxyInvokeResponseItem_EXT
   struct zx_elem_s* ServiceHandle;	/* {1,1} xs:anyURI */
   struct zx_elem_s* ResponseHeaders;	/* {0,1} xs:any */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
@@ -1262,7 +1262,7 @@ struct zx_shps_RegisterResponseItem_s {
   ZX_ELEM_EXT
   zx_shps_RegisterResponseItem_EXT
   struct zx_elem_s* ServiceHandle;	/* {1,1} xs:anyURI */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT

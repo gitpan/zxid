@@ -7,7 +7,7 @@
 
 <<fi: >>
 
-<<ignore: $Id: zxid-faq.pd,v 1.2 2009-10-16 13:36:33 sampo Exp $ >>
+<<ignore: $Id: zxid-faq.pd,v 1.6 2010-01-08 02:10:09 sampo Exp $ >>
 
 97.1 Compilation Problems
 -------------------------
@@ -477,7 +477,36 @@ where APACHEUSER is distribution dependent user account used to
 run the apache process. You can do `ps axu | grep httpd' to see
 what user apache runs as.
 
-97.3 Common Mistakes
+97.3.2 Skipping IdP Selection: Hardwiring the IdP
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+> I was hoping that you could answer a question for me about mod_auth_saml. 
+> I have it installed on CentOS5 with Apache and every request to our
+> protected URL does bring up the IDP selection screen.  Since we only want
+> customers to use the sole IDP we have configured, we'd like to
+> automatically redirect to the IDP instead of having the users's click a
+> login button.
+>
+> Is there a setting for zxid.conf or Apache that I need to set so it will
+> always redirect to the sole IDP if a session needs to be created without
+> presenting that IDP selection screen?
+
+This in fact is possible. It is a bit convoluted (and not documented)
+in that it effectively works by simulating submission of the
+IdP selection screen, with the form fields and all. This is done
+by setting DEFAULT_QS configuration option. For example, following
+
+ ZXIDConf "DEFAULTQS=l0https://idp.tas3.eu/zxididp%25%33%66o%25%33%3dB=1%26fc=1%26fn=prstnt"
+
+would simulate clicking login button for idp.tas3.eu. Note the URL
+escaping that needs to be applied: %25%33%66 is decoded by the
+configuration layer to mean "%3f", which is how at query string
+layer the question mark needs to be escaped. The %26 means
+ampersand that separates the arguments at querystring layer. It
+is encoded only once. Hope this is not too confusing.
+
+
+97.4 Common Mistakes
 --------------------
 
 1.  When I try accessing https://sp1.zxidsp.org:8443/zxidtest.sh nothing happens!
@@ -1176,6 +1205,17 @@ different decoding engines.
     see above. Downside is that the payload can't really be
     binary, unless you base64 encode twice.
 
+97.14 Non-obvious ID-WSF
+------------------------
+
+1.  Should you include Sender SOAP header? Conor says usually
+    not. But how do you then know SOAP request issuer? Perhaps
+    from some field of the signature?
+
+2.  In case bearer token is <EncryptedAssertion>, how is
+    env->Header->Security->SecurityTokenReference->KeyIdentifier
+    populated (normally it would be populated from Assertion->ID)?
+
 97.14 Best Practises
 --------------------
 
@@ -1225,6 +1265,25 @@ For one InfoCard aware IdP, please see: http://www.cdatazone.org/index.php?/arch
 1. Register at the IdP site (e.g. https://www.ctindustries.net/icard/index.php)
 2. Download the card ("Retrieve Managed Card" link (savea as "cdatamanaged.crd" by default).
 3. Install the card to DigitalMe
+
+97.15.3 Yubikey Support
+~~~~~~~~~~~~~~~~~~~~~~~
+
+ZXID supports the yubikey USB One Time Password (OTP) tokens from yubico.com.
+The token should be personalized such that the prefix of the ticket is the
+UID and the remainder is the ticket proper. The AES128 shared secret in hex is
+populated in UID/.yk directory. See also zxid-log.pd for description.
+
+You would typically plan the user names, taking in account the yubikey modhex 
+restrictions, and then use ykpersonalize to create thephysical tokens. At the
+same time you would generate and record the AES128 shared secrets to the .yk
+files (and inside the yubikey USB tokens themselves, of course).
+
+The contents of the .yk file is 32 hexadecimal digits (ascii 0-9a-f)
+representing 128 bits of key information.
+
+The value is not hashed, salted, or nonced, so it needs to be carefully
+protected by the filesystem permissions.
 
 97.15.9 Legal
 ~~~~~~~~~~~~~

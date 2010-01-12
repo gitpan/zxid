@@ -4,7 +4,7 @@
  * Copyright (c) 2001-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * This is free software and comes with NO WARRANTY. For licensing
  * see file COPYING in the distribution directory.
- * $Id: errmac.h,v 1.22 2009-08-30 15:09:26 sampo Exp $
+ * $Id: errmac.h,v 1.24 2009-11-29 12:23:06 sampo Exp $
  *
  * 10.1.2003, added option to make ASSERT nonfatal --Sampo
  * 4.6.2003,  added STRERROR() macro --Sampo
@@ -392,7 +392,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #ifndef ERRMAC_INSTANCE
 /*#define ERRMAC_INSTANCE "\tzx"*/
 #define ERRMAC_INSTANCE zx_instance
-extern char* zx_instance;
+extern char zx_instance[64];
 #endif
 
 #define ZX_DEBUG_MASK       0x0f
@@ -400,20 +400,28 @@ extern char* zx_instance;
 #define MOD_AUTH_SAML_INOUT 0x20
 #define CURL_INOUT          0x40   /* Back Channel */
 
-extern int zx_debug;  /* Defined in zxidlib.c */
-#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t %10s:%-3d %-16s %s d " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))
+extern int zx_debug;         /* Defined in zxidlib.c */
+extern char zx_indent[256];  /* Defined in zxidlib.c. *** Locking issues? */
+#if 1
+#define D_INDENT(s) strncat(zx_indent, (s), sizeof(zx_indent)-1)
+#define D_DEDENT(s) (zx_indent[MAX(0, strlen(zx_indent)-sizeof(s)+1)] = 0)
+#else
+#define D_INDENT(s) /* no locking issues */
+#define D_DEDENT(s)
+#endif
+#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t %10s:%-3d %-16s %s d %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr)))
 /*#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t%x %10s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))*/
 #define DD(format,...)  /* Documentative */
+
+#define ERR(format,...) (fprintf(stderr, "t %10s:%-3d %-16s %s E %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))
+/*#define ERR(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))*/
+#define INFO(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s I %s" format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))
 
 int hexdmp(char* msg, char* p, int len, int max);
 int hexdump(char* msg, char* p, char* lim, int max);
 
 #define HEXDUMP(msg, p, lim, max) (zx_debug > 1 && hexdump((msg), (p), (lim), (max)))
 #define DHEXDUMP(msg, p, lim, max) /* Disabled hex dump */
-
-#define ERR(format,...) (fprintf(stderr, "t %10s:%-3d %-16s %s E " format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
-/*#define ERR(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))*/
-#define INFO(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s I " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))
 
 #define DUMP_CORE() ASSERT(0)
 #define NEVER(explanation,val) D(explanation,(val))

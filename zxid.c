@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxid.c,v 1.41 2009-08-25 16:22:44 sampo Exp $
+ * $Id: zxid.c,v 1.42 2009-11-24 23:53:40 sampo Exp $
  *
  * 15.4.2006, started work over Easter holiday --Sampo
  * 22.4.2006, added more options over the weekend --Sampo
@@ -94,7 +94,7 @@ char buf[32*1024];
 /* N.B. This options processing is a skeleton. In reality CGI scripts do not have
  * an opportunity to process any options. */
 
-/* Called by:  main x7 */
+/* Called by:  main x9 */
 void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid_cgi* cgi)
 {
   char* conf_path = 0;

@@ -4,7 +4,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxididpx.c,v 1.8 2009-08-25 16:22:44 sampo Exp $
+ * $Id: zxididpx.c,v 1.10 2010-01-08 02:10:09 sampo Exp $
  *
  * 14.11.2008,  created --Sampo
  *
@@ -21,17 +21,12 @@
 
 /* ============== Dispatch incoming requests and responses ============== */
 
-extern struct zx_str O_res;
-extern struct zx_str K_res;
-extern struct zx_str M_res;
-extern struct zx_str err_res;
-
 /*() Dispatch redirect and post binding requests.
  *
  * return:: a string (such as Location: header) and let the caller output it. */
 
 /* Called by:  zxid_simple_ses_active_cf */
-struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int chk_dup)
 {
   struct zx_sp_LogoutRequest_s* req;
   struct zxid_entity* sp_meta;
@@ -41,9 +36,9 @@ struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, str
   struct zx_root_s* r;
   ses->sigres = ZXSIG_NO_SIG;
 
-  r = zxid_decode_redir_or_post(cf, cgi, ses);
+  r = zxid_decode_redir_or_post(cf, cgi, ses, chk_dup);
   if (!r)
-    return &err_res;
+    return zx_dup_str(cf->ctx, "* ERR");
 
   if (r->AuthnRequest)
     return zxid_idp_sso(cf, cgi, ses, r->AuthnRequest);
@@ -52,10 +47,10 @@ struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, str
     D("IdP SLO %d", 0);
     if (cf->idp_ena) {  /* *** Kludgy check */
       if (!zxid_idp_slo_do(cf, cgi, ses, req))
-	return &err_res;
+	return zx_dup_str(cf->ctx, "* ERR");
     } else {
       if (!zxid_sp_slo_do(cf, cgi, ses, req))
-	return &err_res;
+	return zx_dup_str(cf->ctx, "* ERR");
     }
     /* *** Need to do much more to log out all other SPs of the session. */
     return zxid_slo_resp_redir(cf, cgi, req);
@@ -63,10 +58,10 @@ struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, str
   
   if (r->LogoutResponse) {
     if (!zxid_saml_ok(cf, cgi, r->LogoutResponse->Status, "SLO resp"))
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     cgi->msg = "Logout Response OK. Logged out.";
     zxid_del_ses(cf, ses);
-    return &K_res;  /* Prevent mgmt screen from displaying, show login screen. */
+    return zx_dup_str(cf->ctx, "K"); /* Prevent mgmt screen from displaying, show login screen. */
   }
 
   if (r->ManageNameIDRequest) {
@@ -84,16 +79,16 @@ struct zx_str* zxid_idp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, str
   if (r->ManageNameIDResponse) {
     if (!zxid_saml_ok(cf, cgi, r->ManageNameIDResponse->Status, "MNI resp")) {
       ERR("MNI Response indicates failure. %d", 0);
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     }
     cgi->msg = "Manage NameID Response OK.";
-    return &M_res; /* Defederation does not have to mean SLO, show mgmt screen. */
+    return zx_dup_str(cf->ctx, "M"); /* Defederation doesn't have to mean SLO, show mgmt screen. */
   }
-  
+
   if (cf->log_level > 0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "IDPDISP", 0, "sid(%s) unknown req or resp (loc)", ses->sid);
   ERR("Unknown request or response %p", r);
-  return &err_res;
+  return zx_dup_str(cf->ctx, "* ERR");
 }
 
 #if 0

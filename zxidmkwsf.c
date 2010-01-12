@@ -1,14 +1,15 @@
 /* zxidmkwsf.c  -  Handwritten nitty-gritty functions for constructing various elems
- * Copyright (c) 2007-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
+ * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmkwsf.c,v 1.10 2008-10-08 03:56:55 sampo Exp $
+ * $Id: zxidmkwsf.c,v 1.12 2009-11-24 23:53:40 sampo Exp $
  *
  * 12.1.2007, created --Sampo
  * 7.10.2008, added documentation --Sampo
+ * 15.11.2009, added ID-WSF <lu:Status> --Sampo
  */
 
 #include "errmac.h"
@@ -25,34 +26,59 @@
  * service. All other complicated options and multi service queries
  * will come in later releases. */
 
-/*() Low level constructor for discovery <RequestedService>. */
+/*() Create ID-WSF protocol <lu:Status> element, given various levels of error input. */
+
+/* Called by:  zxid_di_query x4, zxid_idp_as_do x3, zxid_mk_lu_Status */
+struct zx_lu_Status_s* zxid_mk_lu_Status(struct zxid_conf* cf, char* sc1, char* sc2, char* msg, char* ref)
+{
+  struct zx_lu_Status_s* st = zx_NEW_lu_Status(cf->ctx);
+  st->code = zx_dup_str(cf->ctx, sc1);
+  if (msg)
+    st->comment = zx_dup_str(cf->ctx, msg);
+  if (ref)
+    st->ref = zx_dup_str(cf->ctx, ref);
+  if (sc2)
+    st->Status = zxid_mk_lu_Status(cf, sc2, 0, 0, 0);
+  return st;
+}
+
+/*() Low level constructor for discovery <di:RequestedService>. */
 
 /* Called by:  zxid_mk_di_query */
-struct zx_di_RequestedService_s* zxid_mk_di_req_svc(struct zxid_conf* cf, int req_id, char* svc_type)
+static struct zx_di_RequestedService_s* zxid_mk_di_req_svc(struct zxid_conf* cf, int req_id, const char* svc_type, const char* url, const char* di_opt, const char* action)
 {
   struct zx_di_RequestedService_s* rs = zx_NEW_di_RequestedService(cf->ctx);
 #if 0
   rs->reqID = zx_strf(cf->ctx, "RS%x", req_id);
   rs->resultType = zx_ref_str(cf->ctx, "all");  /* OPTIONAL: "best", "only-one" */
-  rs->FrameWork = zx_NEW_di_Framework(cf->ctx);
-  rs->FrameWork->version = zx_ref_str(cf->ctx, "XXX");  /* Request specific framework, omit=any */
-  rs->Action;
-  rs->Options;
   rs->SecurityMechID = zx_ref_simple_elem(cf->ctx, WSF20_SEC_MECH_TLS_BEARER);
   rs->SecurityMechID = zx_ref_simple_elem(cf->ctx, WSF20_SEC_MECH_TLS_SAML2);
 #endif
+  rs->Framework = zx_NEW_di_Framework(cf->ctx);
+  rs->Framework->version = zx_ref_str(cf->ctx, "2.0");  /* Request specific framework, omit=any */
   if (svc_type)
     rs->ServiceType = zx_ref_simple_elem(cf->ctx, svc_type);
+  if (url)
+    rs->ProviderID = zx_ref_simple_elem(cf->ctx, url);
+  if (di_opt) {
+    rs->Options = zx_NEW_di_Options(cf->ctx);
+    /* N.B: We adopt here a simplification that there can only be one option, but it
+     * can be fully generic URI, including a query string. If it is desireable to
+     * support additional options, dollar ($) could be used as a separator. */
+    rs->Options->Option = zx_ref_simple_elem(cf->ctx, di_opt);
+  }
+  if (action)
+    rs->Action = zx_ref_simple_elem(cf->ctx, action);
   return rs;
 }
 
-/*() Low level constructor for discovery <Query>. */
+/*() Low level constructor for discovery <di:Query>. */
 
 /* Called by:  main x3, zxid_get_epr */
-struct zx_di_Query_s* zxid_mk_di_query(struct zxid_conf* cf, char* svc_type)
+struct zx_di_Query_s* zxid_mk_di_query(struct zxid_conf* cf, const char* svc_type, const char* url, const char* di_opt, const char* action)
 {
   struct zx_di_Query_s* q = zx_NEW_di_Query(cf->ctx);
-  q->RequestedService = zxid_mk_di_req_svc(cf, 1, svc_type);
+  q->RequestedService = zxid_mk_di_req_svc(cf, 1, svc_type, url, di_opt, action);
   return q;
 }
 

@@ -5,13 +5,14 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidspx.c,v 1.10 2009-09-07 16:13:02 sampo Exp $
+ * $Id: zxidspx.c,v 1.14 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006,  created --Sampo
  * 12.10.2007, tweaked for signing SLO and MNI --Sampo
  * 14.4.2008,  added SimpleSign --Sampo
  * 7.10.2008,  added documentation --Sampo
  * 22.8.2009,  added XACML dummy PDP support --Sampo
+ * 15.11.2009, added discovery service Query --Sampo
  *
  * See also zxid/sg/wsf-soap11.sg and zxid/c/zx-e-data.h, which is generated.
  */
@@ -27,44 +28,49 @@
 /* ============== Dispatch incoming requests and responses ============== */
 
 /*() Extract an assertion, decrypting EncryptedAssertion if needed. */
-/* Called by:  zxid_idp_soap_dispatch, zxid_sp_dispatch, zxid_sp_soap_dispatch x2 */
-static int zxid_sp_dig_sso_a7n(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_Response_s* resp)
+
+/* Called by:  zxid_sp_dig_sso_a7n, zxid_sp_soap_dispatch */
+struct zx_sa_Assertion_s* zxid_dec_a7n(struct zxid_conf* cf, struct zx_sa_Assertion_s* a7n, struct zx_sa_EncryptedAssertion_s* enca7n)
 {
-  struct zx_sa_Assertion_s* a7n;
-  struct zx_sa_EncryptedAssertion_s* enca7n;
   struct zx_str* ss;
   struct zx_root_s* r;
-
-  if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)resp, resp->Signature, resp->Issuer, "Response"))
-    return 0;
   
-  a7n = resp->Assertion;
-  enca7n = resp->EncryptedAssertion;
   if (!a7n && enca7n) {
     ss = zxenc_privkey_dec(cf, enca7n->EncryptedData, enca7n->EncryptedKey);
+    if (!ss || !ss->s || !ss->len) {
+      return 0;
+    }
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, ss->s, ss->s + ss->len);
     r = zx_DEC_root(cf->ctx, 0, 1);
     if (!r) {
       ERR("Failed to parse EncryptedAssertion buf(%.*s)", ss->len, ss->s);
-      zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "BADXML", 0, "sid(%s) bad EncryptedAssertion", ses->sid);
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "BADXML", 0, "bad EncryptedAssertion");
       return 0;
     }
     a7n = r->Assertion;
   }
+  return a7n;
+}
+
+/*() Extract an assertion from Request, decrypting EncryptedAssertion if needed, and perform SSO */
+
+/* Called by:  zxid_idp_soap_dispatch, zxid_sp_dispatch, zxid_sp_soap_dispatch x3 */
+static int zxid_sp_dig_sso_a7n(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_Response_s* resp)
+{
+  struct zx_sa_Assertion_s* a7n;
+
+  if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)resp, resp->Signature, resp->Issuer, "Response"))
+    return 0;
+  
+  a7n = zxid_dec_a7n(cf, resp->Assertion, resp->EncryptedAssertion);
   if (a7n)
     return zxid_sp_sso_finalize(cf, cgi, ses, a7n);
-  if (cf->anon_ok && cgi->rs && !memcmp(cf->anon_ok, cgi->rs, strlen(cf->anon_ok)))  /* Prefix match */
+  if (cf->anon_ok && cgi->rs && !strcmp(cf->anon_ok, cgi->rs))  /* Prefix match */
     return zxid_sp_anon_finalize(cf, cgi, ses);
   ERR("No Assertion found and not anon_ok in SAML Response %d", 0);
   zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "ERR", 0, "sid(%s) No assertion", ses->sid);
   return 0;
 }
-
-struct zx_str O_res = { {0,0,0,0,0}, 1, "O" };
-struct zx_str K_res = { {0,0,0,0,0}, 1, "K" };
-struct zx_str M_res = { {0,0,0,0,0}, 1, "M" };   /* Show Mgmt Screen */
-struct zx_str I_req = { {0,0,0,0,0}, 1, "I" };   /* IdP Request. Punt. */
-struct zx_str err_res = { {0,0,0,0,0}, 5, "* ERR" };
 
 /*() Dispatch redirct or post binding requests (and sometimes responses).
  *
@@ -88,48 +94,48 @@ struct zx_str* zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
   int ret;
 
   ses->sigres = ZXSIG_NO_SIG;
-  r = zxid_decode_redir_or_post(cf, cgi, ses);
+  r = zxid_decode_redir_or_post(cf, cgi, ses, 1);
   if (!r)
-    return &err_res;
+    return zx_dup_str(cf->ctx, "* ERR");
 
   if (r->Response) {
     if (!zxid_saml_ok(cf, cgi, r->Response->Status, "SAMLresp"))
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     ret = zxid_sp_dig_sso_a7n(cf, cgi, ses, r->Response);
     D("ret=%d", ret);
     switch (ret) {
-    case ZXID_OK: return &K_res;
-    case ZXID_SSO_OK: return &O_res;
-    case ZXID_FAIL:  D("*** FAIL, should send back to IdP select %d", 0);
+    case ZXID_OK:     return zx_dup_str(cf->ctx, "K");
+    case ZXID_SSO_OK: return zx_dup_str(cf->ctx, "O");
+    case ZXID_FAIL:   D("*** FAIL, should send back to IdP select %d", 0);
     }
-    return &M_res;
+    return zx_dup_str(cf->ctx, "M");
   }
   
   if (req = r->LogoutRequest) {
     if (cf->idp_ena) {  /* *** Kludgy check */
       D("IdP SLO %d", 0);
       if (!zxid_idp_slo_do(cf, cgi, ses, req))
-	return &err_res;
+	return zx_dup_str(cf->ctx, "* ERR");
     } else {
       if (!zxid_sp_slo_do(cf, cgi, ses, req))
-	return &err_res;
+	return zx_dup_str(cf->ctx, "* ERR");
     }
     return zxid_slo_resp_redir(cf, cgi, req);    
   }
   
   if (r->LogoutResponse) {
     if (!zxid_saml_ok(cf, cgi, r->LogoutResponse->Status, "SLO resp"))
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     cgi->msg = "Logout Response OK. Logged out.";
     zxid_del_ses(cf, ses);
-    return &K_res;  /* Prevent mgmt screen from displaying, show login screen. */
+    return zx_dup_str(cf->ctx, "K"); /* Prevent mgmt screen from displaying, show login screen. */
   }
 
   if (r->ManageNameIDRequest) {
     idp_meta = zxid_get_ent_ss(cf, r->ManageNameIDRequest->Issuer->gg.content);
     loc = zxid_idp_loc_raw(cf, cgi, idp_meta, ZXID_MNI_SVC, SAML2_REDIR, 0);
     if (!loc)
-      return &err_res;  /* *** consider sending error page */
+      return zx_dup_str(cf->ctx, "* ERR");  /* *** consider sending error page */
     ss = zxid_mni_do_ss(cf, cgi, ses, r->ManageNameIDRequest, loc);
     ss2 = zxid_saml2_resp_redir(cf, loc, ss, cgi->rs);
     zx_str_free(cf->ctx, loc);
@@ -140,25 +146,26 @@ struct zx_str* zxid_sp_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
   if (r->ManageNameIDResponse) {
     if (!zxid_saml_ok(cf, cgi, r->ManageNameIDResponse->Status, "MNI resp")) {
       ERR("MNI Response indicates failure. %d", 0);
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     }
     cgi->msg = "Manage NameID Response OK.";
-    return &M_res; /* Defederation does not have to mean SLO, show mgmt screen. */
+    return zx_dup_str(cf->ctx, "M"); /* Defederation doesn't have to mean SLO, show mgmt screen. */
   }
   
   if (r->AuthnRequest) {
     D("AuthnRequest %d", 0);
-    return &I_req;
+    return zx_dup_str(cf->ctx, "I");
   }
   
   if (cf->log_level > 0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "SPDISP", 0, "sid(%s) unknown req or resp", STRNULLCHK(ses->sid));
   ERR("Unknown request or response %p", r);
-  return &err_res;
+  return zx_dup_str(cf->ctx, "* ERR");
 }
 
 /*() Create Authorization Decision */
 
+/* Called by:  zxid_xacml_az_do x2 */
 static void zxid_ins_xacml_az_stmt(struct zxid_conf* cf, struct zx_sa_Assertion_s* a7n, char* deci)
 {
   /* Two ways of doing assertion with XACMLAuthzDecisionStatement:
@@ -204,7 +211,7 @@ static struct zx_sp_Response_s* zxid_xacml_az_do(struct zxid_conf* cf, struct zx
   a7n = zxid_mk_a7n(cf, affil, 0, 0, 0, 0);
 
   if (azq->Request && azq->Request->Subject) {
-    for (xac_at = azq->Request->Subject->Attribute; xac_at; xac_at = ZX_NEXT(xac_at)) {
+    for (xac_at = azq->Request->Subject->Attribute; xac_at; xac_at = (struct zx_xac_Attribute_s*)ZX_NEXT(xac_at)) {
       if (xac_at->AttributeId->len == sizeof("role")-1
 	  && !memcmp(xac_at->AttributeId->s, "role", sizeof("role")-1)) {
 	if (xac_at->AttributeValue && xac_at->AttributeValue->content
@@ -294,12 +301,63 @@ int zxid_sp_soap_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxi
     return zxid_soap_cgi_resp_body(cf, body);
   }
 
+  if (1 /*cf->as_ena*/) {
+    if (r->Envelope->Body->SASLRequest) {
+      struct zx_as_SASLResponse_s* res;
+      res = zxid_idp_as_do(cf, r->Envelope->Body->SASLRequest);
+      body = zx_NEW_e_Body(cf->ctx);
+      body->SASLResponse = res;
+ #if 0
+      if (cf->sso_soap_resp_sign) {
+	refs.id = res->ID;
+	refs.canon = zx_EASY_ENC_SO_as_SASLResponse(cf->ctx, res);
+	if (!cf->sign_cert) // Lazy load cert and private key
+	  cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
+	if (!cf->sign_pkey)
+	  cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
+	res->Signature = zxsig_sign(cf->ctx, 1, &refs, cf->sign_cert, cf->sign_pkey);
+	zx_str_free(cf->ctx, refs.canon);
+      }
+#endif
+      return zxid_soap_cgi_resp_body(cf, body);
+    }
+  }
+  
   if (cf->idp_ena) {
     if (r->Envelope->Body->ArtifactResolve) {
       D("*** ArtifactResolve not implemented yet %d",0);
       //if (!zxid_saml_ok(cf, cgi, r->Envelope->Body->ArtifactResponse->Status, "ArtResp"))
       //  return 0;
       //return zxid_sp_dig_sso_a7n(cf, cgi, ses, r->Envelope->Body->ArtifactResponse->Response);
+    }
+
+    if (r->Envelope->Body->Query) { /* Discovery 2.0 Query */
+      struct zx_sa_Assertion_s* a7n;
+      struct zx_di_QueryResponse_s* di_resp;
+
+      if (!r->Envelope->Header || !r->Envelope->Header->Security) {
+	goto malformed;
+      }
+
+      a7n = zxid_dec_a7n(cf, r->Envelope->Header->Security->Assertion,
+			 r->Envelope->Header->Security->EncryptedAssertion);
+      di_resp = zxid_di_query(cf, a7n, r->Envelope->Body->Query);
+      body = zx_NEW_e_Body(cf->ctx);
+      body->QueryResponse = di_resp;
+#if 0
+      // *** should really sign the Body, putting sig in wsse:Security header
+      if (cf->sso_soap_resp_sign) {
+	refs.id = di_resp->ID;
+	refs.canon = zx_EASY_ENC_SO_e_Body(cf->ctx, body);
+	if (!cf->sign_cert) // Lazy load cert and private key
+	  cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
+	if (!cf->sign_pkey)
+	  cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
+	res->Signature = zxsig_sign(cf->ctx, 1, &refs, cf->sign_cert, cf->sign_pkey);
+	zx_str_free(cf->ctx, refs.canon);
+      }
+#endif
+      return zxid_soap_cgi_resp_body(cf, body);
     }
   }
   
@@ -329,11 +387,16 @@ int zxid_sp_soap_dispatch(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxi
   if (cf->log_level > 0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "SPDISP", 0, "sid(%s) unknown soap req", STRNULLCHK(ses->sid));
   return 0;
+ malformed:
+  ERR("Malformed soap request %p", r);
+  if (cf->log_level > 0)
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "SPDISP", 0, "sid(%s) malformed soap req", STRNULLCHK(ses->sid));
+  return 0;
 }
 
 /*() Return 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
-/* Called by:  chkuid, main x6, zxid_simple_cf */
+/* Called by:  chkuid, main x6, zxid_simple_cf_ses */
 int zxid_sp_soap_parse(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int len, char* buf)
 {
   struct zx_root_s* r;

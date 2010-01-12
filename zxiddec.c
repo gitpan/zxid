@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxiddec.c,v 1.9 2009-08-25 16:22:44 sampo Exp $
+ * $Id: zxiddec.c,v 1.10 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006,  created --Sampo
  * 12.10.2007, tweaked for signing SLO and MNI --Sampo
@@ -54,7 +54,7 @@ static struct zx_sa_Issuer_s* zxid_extract_issuer(struct zxid_conf* cf, struct z
  * performs the opposite operation. */
 
 /* Called by:  zxid_idp_dispatch, zxid_sp_dispatch */
-struct zx_root_s* zxid_decode_redir_or_post(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+struct zx_root_s* zxid_decode_redir_or_post(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int chk_dup)
 {
   struct zx_sa_Issuer_s* issuer = 0;
   struct zxid_entity* meta;
@@ -135,10 +135,12 @@ log_msg:
       id_ss.s = id_buf;
       logpath = zxlog_path(cf, issuer->gg.content, &id_ss, ZXLOG_RELY_DIR, ZXLOG_WIR_KIND, 1);
       if (logpath) {
-	if (zxlog_dup_check(cf, logpath, "Redirect or POST assertion (unsigned)")) {
-	  if (cf->dup_msg_fatal) {
-	    cgi->err = "C Duplicate message";
-	    r = 0;
+	if (chk_dup) {
+	  if (zxlog_dup_check(cf, logpath, "Redirect or POST assertion (unsigned)")) {
+	    if (cf->dup_msg_fatal) {
+	      cgi->err = "C Duplicate message";
+	      r = 0;
+	    }
 	  }
 	}
 	id_ss.len = len;

@@ -154,7 +154,7 @@ void zx_sa_Advice_REV_ff12_Assertion(struct zx_sa_Advice_s* x);
 
 #endif
 /* -------------------------- sa_Assertion -------------------------- */
-/* refby( zx_gl_Credential_s zx_wsse_Security_s zx_cb_Credential_s zx_b_TargetIdentity_s zx_sa11_Advice_s zx_sa_Evidence_s zx_sec_Token_s zx_idp_AssertionItem_s zx_sa_Advice_s zx_sp_Response_s ) */
+/* refby( zx_gl_Credential_s zx_wsse_Security_s zx_cb_Credential_s zx_b_TargetIdentity_s zx_sa11_Advice_s zx_sa_Evidence_s zx_sec_Token_s zx_tas3_Credentials_s zx_idp_AssertionItem_s zx_sa_Advice_s zx_sp_Response_s ) */
 #ifndef zx_sa_Assertion_EXT
 #define zx_sa_Assertion_EXT
 #endif
@@ -319,7 +319,7 @@ void zx_sa_Assertion_REV_xasacd1_XACMLPolicyStatement(struct zx_sa_Assertion_s* 
 
 #endif
 /* -------------------------- sa_Attribute -------------------------- */
-/* refby( zx_sa_AttributeStatement_s zx_sp_AttributeQuery_s zx_md_AttributeAuthorityDescriptor_s zx_md_IDPSSODescriptor_s ) */
+/* refby( zx_sa_AttributeStatement_s zx_tas3_Credentials_s zx_sp_AttributeQuery_s zx_md_AttributeAuthorityDescriptor_s zx_md_IDPSSODescriptor_s ) */
 #ifndef zx_sa_Attribute_EXT
 #define zx_sa_Attribute_EXT
 #endif
@@ -877,7 +877,7 @@ void zx_sa_Conditions_REV_SubjectRestriction(struct zx_sa_Conditions_s* x);
 
 #endif
 /* -------------------------- sa_EncryptedAssertion -------------------------- */
-/* refby( zx_sa_Evidence_s zx_sec_Token_s zx_sa_Advice_s zx_sp_Response_s ) */
+/* refby( zx_wsse_Security_s zx_sa_Evidence_s zx_sec_Token_s zx_tas3_Credentials_s zx_sa_Advice_s zx_sp_Response_s ) */
 #ifndef zx_sa_EncryptedAssertion_EXT
 #define zx_sa_EncryptedAssertion_EXT
 #endif
@@ -934,7 +934,7 @@ void zx_sa_EncryptedAssertion_REV_EncryptedKey(struct zx_sa_EncryptedAssertion_s
 
 #endif
 /* -------------------------- sa_EncryptedAttribute -------------------------- */
-/* refby( zx_sa_AttributeStatement_s ) */
+/* refby( zx_sa_AttributeStatement_s zx_tas3_Credentials_s ) */
 #ifndef zx_sa_EncryptedAttribute_EXT
 #define zx_sa_EncryptedAttribute_EXT
 #endif

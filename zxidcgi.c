@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidcgi.c,v 1.30 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxidcgi.c,v 1.33 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
@@ -37,7 +37,7 @@
  *     CGI arguments are simply ignored with assumption that some other processing
  *     layer will pick them up - hence no need to flag error. */
 
-/* Called by:  chkuid x3, main x4, zxid_new_cgi, zxid_simple_cf x3, zxid_simple_idp_pw_authn */
+/* Called by:  chkuid x3, main x4, zxid_az_cf_ses, zxid_new_cgi, zxid_simple_cf_ses x3, zxid_simple_idp_pw_authn */
 int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
 {
   char *p, *n, *v, *val, *name;
@@ -181,7 +181,7 @@ set_eid:
       }
       if (!strcmp(n, "SAMLRequest")) {
 	cgi->saml_req = v;
-	if (!ONE_OF_2(cgi->op, 'p', 'F'))  /* Avoid redundant sigvfy and processing for IdP */
+	if (!ONE_OF_3(cgi->op, 'p', 'F', 'R'))  /* Avoid redundant sigvfy and processing for IdP */
 	  cgi->op = 'Q';
 	break;
       }
@@ -230,7 +230,7 @@ struct zxid_cgi* zxid_new_cgi(struct zxid_conf* cf, char* qs)
  *    ONE_COOKIE=aaa; ZXIDSES=S12cvd324; SOME_OTHER_COOKIE=...
  */
 
-/* Called by:  chkuid, zxid_simple_cf */
+/* Called by:  chkuid, zxid_simple_cf_ses */
 void zxid_get_sid_from_cookie(struct zxid_conf* cf, struct zxid_cgi* cgi, const char* cookie)
 {
   char* q;

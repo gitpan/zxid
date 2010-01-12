@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxencdectest.c,v 1.8 2009-08-25 16:22:44 sampo Exp $
+ * $Id: zxencdectest.c,v 1.9 2009-11-24 23:53:40 sampo Exp $
  *
  * 1.7.2006, started --Sampo
  * 9.2.2007, improved to make basis of a test suite tool --Sampo
@@ -143,7 +143,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
-/* Called by:  main x7 */
+/* Called by:  main x9 */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;

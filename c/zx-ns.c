@@ -2,7 +2,7 @@
  * $Id$ */
 #include "c/zx-ns.h"
 
-struct zx_ns_s zx_ns_tab[58] = {
+struct zx_ns_s zx_ns_tab[61] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("ds")-1, "ds", sizeof("http://www.w3.org/2000/09/xmldsig#")-1, "http://www.w3.org/2000/09/xmldsig#"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("xenc")-1, "xenc", sizeof("http://www.w3.org/2001/04/xmlenc#")-1, "http://www.w3.org/2001/04/xmlenc#"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("exca")-1, "exca", sizeof("http://www.w3.org/2001/10/xml-exc-c14n#")-1, "http://www.w3.org/2001/10/xml-exc-c14n#"  },
@@ -12,6 +12,7 @@ struct zx_ns_s zx_ns_tab[58] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("paos")-1, "paos", sizeof("urn:liberty:paos:2006-08")-1, "urn:liberty:paos:2006-08"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("e")-1, "e", sizeof("http://schemas.xmlsoap.org/soap/envelope/")-1, "http://schemas.xmlsoap.org/soap/envelope/"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("md")-1, "md", sizeof("urn:oasis:names:tc:SAML:2.0:metadata")-1, "urn:oasis:names:tc:SAML:2.0:metadata"  },
+{ 0, 0, 0, 0, 0, 0, 0, sizeof("shibmd")-1, "shibmd", sizeof("urn:mace:shibboleth:metadata:1.0")-1, "urn:mace:shibboleth:metadata:1.0"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("sp11")-1, "sp11", sizeof("urn:oasis:names:tc:SAML:1.0:protocol")-1, "urn:oasis:names:tc:SAML:1.0:protocol"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("sa11")-1, "sa11", sizeof("urn:oasis:names:tc:SAML:1.0:assertion")-1, "urn:oasis:names:tc:SAML:1.0:assertion"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("ff12")-1, "ff12", sizeof("urn:liberty:iff:2003-08")-1, "urn:liberty:iff:2003-08"  },
@@ -60,6 +61,8 @@ struct zx_ns_s zx_ns_tab[58] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("wst")-1, "wst", sizeof("http://docs.oasis-open.org/ws-sx/ws-trust/200512/")-1, "http://docs.oasis-open.org/ws-sx/ws-trust/200512/"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("wsp")-1, "wsp", sizeof("http://schemas.xmlsoap.org/ws/2004/09/policy")-1, "http://schemas.xmlsoap.org/ws/2004/09/policy"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("wsc")-1, "wsc", sizeof("http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512")-1, "http://docs.oasis-open.org/ws-sx/ws-secureconversation/200512"  },
+{ 0, 0, 0, 0, 0, 0, 0, sizeof("tas3")-1, "tas3", sizeof("http://tas3.eu/tas3/200911/")-1, "http://tas3.eu/tas3/200911/"  },
+{ 0, 0, 0, 0, 0, 0, 0, sizeof("tas3sol")-1, "tas3sol", sizeof("http://tas3.eu/tas3sol/200911/")-1, "http://tas3.eu/tas3sol/200911/"  },
 
   { 0,0,0,0,0,0,0, 0,0,0,0 }  /* Trailer element serves at runtime to hold list of unrecognized namespaces. */
 };

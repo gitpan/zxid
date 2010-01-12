@@ -67,7 +67,7 @@ void zx_xac_Action_REV_Attribute(struct zx_xac_Action_s* x);
 
 #endif
 /* -------------------------- xac_Attribute -------------------------- */
-/* refby( zx_xac_Subject_s zx_xac_Resource_s zx_xac_Environment_s zx_xac_Action_s ) */
+/* refby( zx_xac_Subject_s zx_tas3_Credentials_s zx_xac_Resource_s zx_xac_Environment_s zx_xac_Action_s ) */
 #ifndef zx_xac_Attribute_EXT
 #define zx_xac_Attribute_EXT
 #endif

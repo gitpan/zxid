@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxsig.c,v 1.27 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxsig.c,v 1.29 2010-01-08 02:10:09 sampo Exp $
  *
  * 29.9.2006, created --Sampo
  * 23.9.2007, added XML ENC support --Sampo
@@ -28,6 +28,7 @@
 #endif
 
 #include "errmac.h"
+#include "platform.h"
 #include "zx.h"
 #include "zxid.h"
 #include "c/zx-data.h"   /* For the XMLDSIG code. */
@@ -72,7 +73,7 @@
  *       FK6X9qO8qZntp3CeFbA7gpG9n9rWyJWlzSXy0vKNspwMGdl8HPfOGcXEs2Ts=</></>
  */
 
-/* Called by:  zxid_anoint_sso_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x2 */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_pep_az_soap x2, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x5 */
 struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* sref, X509* cert, RSA* priv_key)
 {
   char sha1[20];
@@ -301,7 +302,7 @@ vfyerr:
  * logkey:: Way for caller to indicate what the OpenSSL errors are all about
  * return:: Number of open SSL errors processed, or 0 if none. Often ignored. */
 
-/* Called by:  main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxlog_write_line, zxsig_data_rsa_sha1, zxsig_sign, zxsig_validate x2, zxsig_verify_data_rsa_sha1 x3 */
+/* Called by:  main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxid_mk_self_sig_cert x4, zxlog_write_line, zxsig_data_rsa_sha1, zxsig_sign, zxsig_validate x2, zxsig_verify_data_rsa_sha1 x3 */
 int zx_report_openssl_error(const char* logkey)
 {
   char buf[256];
@@ -310,7 +311,7 @@ int zx_report_openssl_error(const char* logkey)
   const char* data;
   int flags, line, n_err = 0;
   buf[0] = 0;
-  while ((err = ERR_get_error_line_data(&file, &line, &data, &flags))) {
+  while ((err = ERR_get_error_line_data((const char**)&file, &line, (const char**)&data, &flags))) {
     ERR_error_string_n(err, buf, sizeof(buf));
     buf[sizeof(buf)-1] = 0;
     ERR("%s: OpenSSL error(%lu) %s (%s:%d): %s %x", logkey, err,
@@ -333,7 +334,7 @@ int zx_report_openssl_error(const char* logkey)
  * return::   -1 on failure. Upon success the length of the raw signature data. */
 
 /* Called by:  zxid_saml2_post_enc, zxid_saml2_redir_enc, zxlog_write_line x2 */
-int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, char* data, char** sig, RSA* priv_key, char* lk)
+int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, const char* data, char** sig, RSA* priv_key, const char* lk)
 {
   char sha1[20];  /* 160 bits */
   SHA1(data, len, sha1);
@@ -484,7 +485,7 @@ struct zx_str* zxenc_symkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedDa
  *     element from EncryptedData is used
  * return:: Decrypted data as zx_str. Caller should free this memory. */
 
-/* Called by:  zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_get_ses_sso_a7n, zxid_sp_dig_sso_a7n */
+/* Called by:  zxid_dec_a7n, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_get_ses_sso_a7n */
 struct zx_str* zxenc_privkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedData_s* ed, struct zx_xenc_EncryptedKey_s* ek)
 {
   struct zx_str raw;
@@ -520,10 +521,12 @@ struct zx_str* zxenc_privkey_dec(struct zxid_conf* cf, struct zx_xenc_EncryptedD
     return 0;
   }
   ZX_FREE(cf->ctx, raw.s);
-  ss = zxenc_symkey_dec(cf, ed, symkey);
-  if (symkey)
+  if (symkey) {
+    ss = zxenc_symkey_dec(cf, ed, symkey);
     zx_str_free(cf->ctx, symkey);
-  return ss;
+    return ss;
+  } else
+    return 0;
 }
 
 /*() Symmetric key encryption using XML-ENC. The encryption algorith is

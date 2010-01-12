@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidloc.c,v 1.11 2009-08-25 16:22:44 sampo Exp $
+ * $Id: zxidloc.c,v 1.13 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, split from zxidlib.c --Sampo
@@ -22,7 +22,7 @@
 #include "saml2.h"
 #include "c/zx-data.h"
 
-/*static struct zx_str err_res = { {0,0,0,0,0}, 42, "ERR-metadata-does-not-have-url-for-binding" };*/
+/* err_res = "ERR-metadata-does-not-have-url-for-binding";*/
 
 /* ============== IdP Service Locator ============= */
 
@@ -133,7 +133,7 @@ struct zx_str* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct z
  * body:: XML data structure for the SOAP call <Body> element payload
  * return:: XML data structure for Body element of the SOAP call response. */
 
-/* Called by:  zxid_sp_mni_soap, zxid_sp_slo_soap */
+/* Called by:  zxid_pep_az_soap, zxid_sp_mni_soap, zxid_sp_slo_soap */
 struct zx_root_s* zxid_idp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses,
 				struct zxid_entity* idp_meta, int svc_type, struct zx_e_Body_s* body)
 {

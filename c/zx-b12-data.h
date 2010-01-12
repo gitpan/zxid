@@ -257,7 +257,7 @@ struct zx_b12_UsageDirective_s {
   ZX_ELEM_EXT
   zx_b12_UsageDirective_EXT
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };

@@ -2,7 +2,7 @@
 <<else: >>ZXID Low Level ("Raw") API
 ##########################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-raw.pd,v 1.4 2009-08-25 16:22:44 sampo Exp $>>
+<<cvsid: $Id: zxid-raw.pd,v 1.5 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-RAW 01>>
 <<define: ZXDOC=ZXID Raw API>>
 
@@ -30,8 +30,8 @@ and not have to program at all.
 
 Happy hacking!
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 

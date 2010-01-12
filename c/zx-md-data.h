@@ -86,7 +86,7 @@ struct zx_md_AffiliationDescriptor_s {
   ZX_ELEM_EXT
   zx_md_AffiliationDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_elem_s* AffiliateMember;	/* {1,-1} xs:anyURI */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
@@ -335,7 +335,7 @@ struct zx_md_AttributeAuthorityDescriptor_s {
   ZX_ELEM_EXT
   zx_md_AttributeAuthorityDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_md_Organization_s* Organization;	/* {0,1} nada */
   struct zx_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
@@ -605,7 +605,7 @@ struct zx_md_AuthnAuthorityDescriptor_s {
   ZX_ELEM_EXT
   zx_md_AuthnAuthorityDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_md_Organization_s* Organization;	/* {0,1} nada */
   struct zx_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
@@ -838,7 +838,7 @@ struct zx_str* zx_EASY_ENC_WO_md_ContactPerson(struct zx_ctx* c, struct zx_md_Co
 struct zx_md_ContactPerson_s {
   ZX_ELEM_EXT
   zx_md_ContactPerson_EXT
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_elem_s* Company;	/* {0,1} xs:string */
   struct zx_elem_s* GivenName;	/* {0,1} xs:string */
   struct zx_elem_s* SurName;	/* {0,1} xs:string */
@@ -995,7 +995,7 @@ struct zx_md_EntitiesDescriptor_s {
   ZX_ELEM_EXT
   zx_md_EntitiesDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_EntityDescriptor_s* EntityDescriptor;	/* {0,-1} nada */
   struct zx_md_EntitiesDescriptor_s* EntitiesDescriptor;	/* {0,-1} nada */
   struct zx_str* ID;	/* {0,1} attribute xs:anyURI */
@@ -1082,7 +1082,7 @@ struct zx_md_EntityDescriptor_s {
   ZX_ELEM_EXT
   zx_md_EntityDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_RoleDescriptor_s* RoleDescriptor;	/* {0,-1} nada */
   struct zx_md_IDPSSODescriptor_s* IDPSSODescriptor;	/* {0,-1} nada */
   struct zx_md_SPSSODescriptor_s* SPSSODescriptor;	/* {0,-1} nada */
@@ -1240,18 +1240,36 @@ struct zx_str* zx_EASY_ENC_WO_md_Extensions(struct zx_ctx* c, struct zx_md_Exten
 struct zx_md_Extensions_s {
   ZX_ELEM_EXT
   zx_md_Extensions_EXT
+  struct zx_shibmd_Scope_s* Scope;	/* {0,-1} nada */
+  struct zx_shibmd_KeyAuthority_s* KeyAuthority;	/* {0,-1} nada */
 };
 
 #ifdef ZX_ENA_GETPUT
 
+struct zx_shibmd_Scope_s* zx_md_Extensions_GET_Scope(struct zx_md_Extensions_s* x, int n);
+struct zx_shibmd_KeyAuthority_s* zx_md_Extensions_GET_KeyAuthority(struct zx_md_Extensions_s* x, int n);
+
+int zx_md_Extensions_NUM_Scope(struct zx_md_Extensions_s* x);
+int zx_md_Extensions_NUM_KeyAuthority(struct zx_md_Extensions_s* x);
+
+struct zx_shibmd_Scope_s* zx_md_Extensions_POP_Scope(struct zx_md_Extensions_s* x);
+struct zx_shibmd_KeyAuthority_s* zx_md_Extensions_POP_KeyAuthority(struct zx_md_Extensions_s* x);
+
+void zx_md_Extensions_PUSH_Scope(struct zx_md_Extensions_s* x, struct zx_shibmd_Scope_s* y);
+void zx_md_Extensions_PUSH_KeyAuthority(struct zx_md_Extensions_s* x, struct zx_shibmd_KeyAuthority_s* y);
 
 
+void zx_md_Extensions_PUT_Scope(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_Scope_s* y);
+void zx_md_Extensions_PUT_KeyAuthority(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_KeyAuthority_s* y);
 
+void zx_md_Extensions_ADD_Scope(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_Scope_s* z);
+void zx_md_Extensions_ADD_KeyAuthority(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_KeyAuthority_s* z);
 
+void zx_md_Extensions_DEL_Scope(struct zx_md_Extensions_s* x, int n);
+void zx_md_Extensions_DEL_KeyAuthority(struct zx_md_Extensions_s* x, int n);
 
-
-
-
+void zx_md_Extensions_REV_Scope(struct zx_md_Extensions_s* x);
+void zx_md_Extensions_REV_KeyAuthority(struct zx_md_Extensions_s* x);
 
 #endif
 /* -------------------------- md_IDPSSODescriptor -------------------------- */
@@ -1280,7 +1298,7 @@ struct zx_md_IDPSSODescriptor_s {
   ZX_ELEM_EXT
   zx_md_IDPSSODescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_md_Organization_s* Organization;	/* {0,1} nada */
   struct zx_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
@@ -1630,7 +1648,7 @@ struct zx_str* zx_EASY_ENC_WO_md_Organization(struct zx_ctx* c, struct zx_md_Org
 struct zx_md_Organization_s {
   ZX_ELEM_EXT
   zx_md_Organization_EXT
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_OrganizationName_s* OrganizationName;	/* {1,-1} nada */
   struct zx_md_OrganizationDisplayName_s* OrganizationDisplayName;	/* {1,-1} nada */
   struct zx_md_OrganizationURL_s* OrganizationURL;	/* {1,-1} nada */
@@ -1832,7 +1850,7 @@ struct zx_md_PDPDescriptor_s {
   ZX_ELEM_EXT
   zx_md_PDPDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_md_Organization_s* Organization;	/* {0,1} nada */
   struct zx_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
@@ -2018,7 +2036,7 @@ struct zx_md_RoleDescriptor_s {
   ZX_ELEM_EXT
   zx_md_RoleDescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_md_Organization_s* Organization;	/* {0,1} nada */
   struct zx_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */
@@ -2117,7 +2135,7 @@ struct zx_md_SPSSODescriptor_s {
   ZX_ELEM_EXT
   zx_md_SPSSODescriptor_EXT
   struct zx_ds_Signature_s* Signature;	/* {0,1} nada */
-  struct zx_md_Extensions_s* Extensions;	/* {0,1}  */
+  struct zx_md_Extensions_s* Extensions;	/* {0,1} nada */
   struct zx_md_KeyDescriptor_s* KeyDescriptor;	/* {0,-1} nada */
   struct zx_md_Organization_s* Organization;	/* {0,1} nada */
   struct zx_md_ContactPerson_s* ContactPerson;	/* {0,-1} nada */

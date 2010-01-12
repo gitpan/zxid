@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidappdemo.java,v 1.1 2009-10-18 12:39:10 sampo Exp $
+ * $Id: zxidappdemo.java,v 1.4 2009-11-29 12:23:06 sampo Exp $
  * 16.10.2009, created --Sampo
  *
  * This servlet plays the role of "payload" servlet in ZXID SSO servlet
@@ -13,9 +13,9 @@
  * 1.  Detect that there is no session and redirect to zxidsrvlet; and
  * 7.  Access to protected resource, with attributes already populated
  *     to the HttpSession (JSESSION)
- * 9.  Making a web service call by directly calling zxid_call() (*** TODO)
+ * 9.  Making a web service call by directly calling zxid_call()
  *
- * See also: zxid-java.pd
+ * See also: zxid-java.pd, zxidwspdemo.java for server side
  */
 
 import zxidjava.*;   // Pull in the zxidjni.az() API
@@ -24,6 +24,15 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class zxidappdemo extends HttpServlet {
+    static final String conf = "URL=http://sp1.zxidsp.org:8080/sso&PATH=/var/zxid/";
+    static zxidjava.zxid_conf cf;
+    static {
+	// CONFIG: You must have created /var/zxid directory hierarchy. See `make dir'
+	// CONFIG: You must create edit the URL to match your domain name and port
+	System.loadLibrary("zxidjni");
+	cf = zxidjni.new_conf_to_cf(conf);
+	zxidjni.set_opt(cf, 1, 1);
+    }
     public void doGet(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException
     {
@@ -47,7 +56,7 @@ public class zxidappdemo extends HttpServlet {
 	// The SSO servlet will have done one iteration of authorization. The following
 	// serves to illustrate, how to explicitly call a PDP from your code.
 
-	if (zxidjni.az("PATH=/var/zxid/", "Action=Show", ses.getValue("sesid").toString()) == 0) {
+	if (zxidjni.az_cf(cf, "Action=Show", ses.getValue("sesid").toString()) == 0) {
 	    res.getOutputStream().print("<p><b>Denied.</b> Normally page would not be shown, but we show the session attributes for debugging purposes.\n");
 	    //res.setStatus(302, "Denied");
 	} else {
@@ -61,8 +70,32 @@ public class zxidappdemo extends HttpServlet {
 	for (int i = 0; i < val_names.length; ++i) {
 	    res.getOutputStream().print(val_names[i] + ": " + ses.getValue(val_names[i]) + "\n");
 	}
-	
 	res.getOutputStream().print("</pre>");
+
+	// Demo web service call to zxidhrxmlwsp
+
+	String ret;
+	String sid = ses.getValue("sesid").toString();
+	res.getOutputStream().print("<p>Output from idhrxml web service call sid("+sid+"):<br>\n<textarea cols=80 rows=20>");
+	ret = zxidjni.call(cf, zxidjni.fetch_ses(cf, sid),
+			   zxidjni.zx_xmlns_idhrxml, null, null, null,
+			   "<idhrxml:Query>" +
+			     "<idhrxml:QueryItem>" +
+			       "<idhrxml:Select></idhrxml:Select>" +
+			     "</idhrxml:QueryItem>" +
+			   "</idhrxml:Query>");
+
+	res.getOutputStream().print(ret);
+	res.getOutputStream().print("</textarea>");
+
+	// Demo another web service call, this time the service by zxidwspdemo.java
+
+	res.getOutputStream().print("<p>Output from foobar web service call:<br>\n<textarea cols=80 rows=20>");
+	ret = zxidjni.call(cf, zxidjni.fetch_ses(cf, sid), "urn:x-foobar", null, null, null,
+			   "<foobar>Do it!</foobar>");
+
+	res.getOutputStream().print(ret);
+	res.getOutputStream().print("</textarea>");
     }
 }
 

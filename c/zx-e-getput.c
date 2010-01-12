@@ -35294,6 +35294,274 @@ void zx_e_Header_DEL_Security(struct zx_e_Header_s* x, int n)
 
 #endif
 
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_e_Header_NUM_Credentials) */
+
+int zx_e_Header_NUM_Credentials(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_Credentials_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Credentials; y; ++n, y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_e_Header_GET_Credentials) */
+
+struct zx_tas3_Credentials_s* zx_e_Header_GET_Credentials(struct zx_e_Header_s* x, int n)
+{
+  struct zx_tas3_Credentials_s* y;
+  if (!x) return 0;
+  for (y = x->Credentials; n>=0 && y; --n, y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_e_Header_POP_Credentials) */
+
+struct zx_tas3_Credentials_s* zx_e_Header_POP_Credentials(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_Credentials_s* y;
+  if (!x) return 0;
+  y = x->Credentials;
+  if (y)
+    x->Credentials = (struct zx_tas3_Credentials_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_e_Header_PUSH_Credentials) */
+
+void zx_e_Header_PUSH_Credentials(struct zx_e_Header_s* x, struct zx_tas3_Credentials_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Credentials->gg.g;
+  x->Credentials = z;
+}
+
+/* FUNC(zx_e_Header_REV_Credentials) */
+
+void zx_e_Header_REV_Credentials(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_Credentials_s* nxt;
+  struct zx_tas3_Credentials_s* y;
+  if (!x) return;
+  y = x->Credentials;
+  if (!y) return;
+  x->Credentials = 0;
+  while (y) {
+    nxt = (struct zx_tas3_Credentials_s*)y->gg.g.n;
+    y->gg.g.n = &x->Credentials->gg.g;
+    x->Credentials = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_e_Header_PUT_Credentials) */
+
+void zx_e_Header_PUT_Credentials(struct zx_e_Header_s* x, int n, struct zx_tas3_Credentials_s* z)
+{
+  struct zx_tas3_Credentials_s* y;
+  if (!x || !z) return;
+  y = x->Credentials;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Credentials = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_e_Header_ADD_Credentials) */
+
+void zx_e_Header_ADD_Credentials(struct zx_e_Header_s* x, int n, struct zx_tas3_Credentials_s* z)
+{
+  struct zx_tas3_Credentials_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Credentials->gg.g;
+    x->Credentials = z;
+    return;
+  case -1:
+    y = x->Credentials;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Credentials; n > 1 && y; --n, y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_e_Header_DEL_Credentials) */
+
+void zx_e_Header_DEL_Credentials(struct zx_e_Header_s* x, int n)
+{
+  struct zx_tas3_Credentials_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Credentials = (struct zx_tas3_Credentials_s*)x->Credentials->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_tas3_Credentials_s*)x->Credentials;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Credentials; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3_Credentials_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_e_Header_NUM_ESLPolicies) */
+
+int zx_e_Header_NUM_ESLPolicies(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_ESLPolicies_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->ESLPolicies; y; ++n, y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_e_Header_GET_ESLPolicies) */
+
+struct zx_tas3_ESLPolicies_s* zx_e_Header_GET_ESLPolicies(struct zx_e_Header_s* x, int n)
+{
+  struct zx_tas3_ESLPolicies_s* y;
+  if (!x) return 0;
+  for (y = x->ESLPolicies; n>=0 && y; --n, y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_e_Header_POP_ESLPolicies) */
+
+struct zx_tas3_ESLPolicies_s* zx_e_Header_POP_ESLPolicies(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_ESLPolicies_s* y;
+  if (!x) return 0;
+  y = x->ESLPolicies;
+  if (y)
+    x->ESLPolicies = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_e_Header_PUSH_ESLPolicies) */
+
+void zx_e_Header_PUSH_ESLPolicies(struct zx_e_Header_s* x, struct zx_tas3_ESLPolicies_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->ESLPolicies->gg.g;
+  x->ESLPolicies = z;
+}
+
+/* FUNC(zx_e_Header_REV_ESLPolicies) */
+
+void zx_e_Header_REV_ESLPolicies(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_ESLPolicies_s* nxt;
+  struct zx_tas3_ESLPolicies_s* y;
+  if (!x) return;
+  y = x->ESLPolicies;
+  if (!y) return;
+  x->ESLPolicies = 0;
+  while (y) {
+    nxt = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n;
+    y->gg.g.n = &x->ESLPolicies->gg.g;
+    x->ESLPolicies = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_e_Header_PUT_ESLPolicies) */
+
+void zx_e_Header_PUT_ESLPolicies(struct zx_e_Header_s* x, int n, struct zx_tas3_ESLPolicies_s* z)
+{
+  struct zx_tas3_ESLPolicies_s* y;
+  if (!x || !z) return;
+  y = x->ESLPolicies;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->ESLPolicies = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_e_Header_ADD_ESLPolicies) */
+
+void zx_e_Header_ADD_ESLPolicies(struct zx_e_Header_s* x, int n, struct zx_tas3_ESLPolicies_s* z)
+{
+  struct zx_tas3_ESLPolicies_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->ESLPolicies->gg.g;
+    x->ESLPolicies = z;
+    return;
+  case -1:
+    y = x->ESLPolicies;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->ESLPolicies; n > 1 && y; --n, y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_e_Header_DEL_ESLPolicies) */
+
+void zx_e_Header_DEL_ESLPolicies(struct zx_e_Header_s* x, int n)
+{
+  struct zx_tas3_ESLPolicies_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->ESLPolicies = (struct zx_tas3_ESLPolicies_s*)x->ESLPolicies->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_tas3_ESLPolicies_s*)x->ESLPolicies;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->ESLPolicies; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3_ESLPolicies_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
 /* FUNC(zx_e_Header_GET_id) */
 struct zx_str* zx_e_Header_GET_id(struct zx_e_Header_s* x) { return x->id; }
 /* FUNC(zx_e_Header_PUT_id) */

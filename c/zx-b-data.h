@@ -772,8 +772,10 @@ struct zx_str* zx_EASY_ENC_WO_b_UsageDirective(struct zx_ctx* c, struct zx_b_Usa
 struct zx_b_UsageDirective_s {
   ZX_ELEM_EXT
   zx_b_UsageDirective_EXT
+  struct zx_tas3sol_Obligations_s* Obligations;	/* {0,1} nada */
+  struct zx_tas3sol_Dict_s* Dict;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* ref;	/* {1,1} attribute xs:string */
+  struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
   struct zx_str* Id;	/* {0,1} attribute xs:ID */
   struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
   struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
@@ -786,9 +788,17 @@ struct zx_str* zx_b_UsageDirective_GET_Id(struct zx_b_UsageDirective_s* x);
 struct zx_str* zx_b_UsageDirective_GET_actor(struct zx_b_UsageDirective_s* x);
 struct zx_str* zx_b_UsageDirective_GET_mustUnderstand(struct zx_b_UsageDirective_s* x);
 
+struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_GET_Obligations(struct zx_b_UsageDirective_s* x, int n);
+struct zx_tas3sol_Dict_s* zx_b_UsageDirective_GET_Dict(struct zx_b_UsageDirective_s* x, int n);
 
+int zx_b_UsageDirective_NUM_Obligations(struct zx_b_UsageDirective_s* x);
+int zx_b_UsageDirective_NUM_Dict(struct zx_b_UsageDirective_s* x);
 
+struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_POP_Obligations(struct zx_b_UsageDirective_s* x);
+struct zx_tas3sol_Dict_s* zx_b_UsageDirective_POP_Dict(struct zx_b_UsageDirective_s* x);
 
+void zx_b_UsageDirective_PUSH_Obligations(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Obligations_s* y);
+void zx_b_UsageDirective_PUSH_Dict(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Dict_s* y);
 
 void zx_b_UsageDirective_PUT_id(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 void zx_b_UsageDirective_PUT_ref(struct zx_b_UsageDirective_s* x, struct zx_str* y);
@@ -796,9 +806,17 @@ void zx_b_UsageDirective_PUT_Id(struct zx_b_UsageDirective_s* x, struct zx_str* 
 void zx_b_UsageDirective_PUT_actor(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 void zx_b_UsageDirective_PUT_mustUnderstand(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 
+void zx_b_UsageDirective_PUT_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* y);
+void zx_b_UsageDirective_PUT_Dict(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Dict_s* y);
 
+void zx_b_UsageDirective_ADD_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* z);
+void zx_b_UsageDirective_ADD_Dict(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Dict_s* z);
 
+void zx_b_UsageDirective_DEL_Obligations(struct zx_b_UsageDirective_s* x, int n);
+void zx_b_UsageDirective_DEL_Dict(struct zx_b_UsageDirective_s* x, int n);
 
+void zx_b_UsageDirective_REV_Obligations(struct zx_b_UsageDirective_s* x);
+void zx_b_UsageDirective_REV_Dict(struct zx_b_UsageDirective_s* x);
 
 #endif
 /* -------------------------- b_UserInteraction -------------------------- */

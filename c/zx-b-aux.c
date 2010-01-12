@@ -2019,6 +2019,22 @@ void zx_FREE_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x,
   zx_free_attr(c, x->actor, free_strs);
   zx_free_attr(c, x->mustUnderstand, free_strs);
 
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      struct zx_tas3sol_Obligations_s* en;
+      for (e = x->Obligations; e; e = en) {
+	  en = (struct zx_tas3sol_Obligations_s*)e->gg.g.n;
+	  zx_FREE_tas3sol_Obligations(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      struct zx_tas3sol_Dict_s* en;
+      for (e = x->Dict; e; e = en) {
+	  en = (struct zx_tas3sol_Dict_s*)e->gg.g.n;
+	  zx_FREE_tas3sol_Dict(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -2059,6 +2075,16 @@ void zx_DUP_STRS_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s
   zx_dup_attr(c, x->actor);
   zx_dup_attr(c, x->mustUnderstand);
 
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
+	  zx_DUP_STRS_tas3sol_Obligations(c, e);
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      for (e = x->Dict; e; e = (struct zx_tas3sol_Dict_s*)e->gg.g.n)
+	  zx_DUP_STRS_tas3sol_Dict(c, e);
+  }
 
 }
 
@@ -2079,6 +2105,32 @@ struct zx_b_UsageDirective_s* zx_DEEP_CLONE_b_UsageDirective(struct zx_ctx* c, s
   x->actor = zx_clone_attr(c, x->actor);
   x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      struct zx_tas3sol_Obligations_s* en;
+      struct zx_tas3sol_Obligations_s* enn;
+      for (enn = 0, e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_tas3sol_Obligations(c, e, dup_strs);
+	  if (!enn)
+	      x->Obligations = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      struct zx_tas3sol_Dict_s* en;
+      struct zx_tas3sol_Dict_s* enn;
+      for (enn = 0, e = x->Dict; e; e = (struct zx_tas3sol_Dict_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_tas3sol_Dict(c, e, dup_strs);
+	  if (!enn)
+	      x->Dict = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -2101,6 +2153,22 @@ int zx_WALK_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* 
   if (ret)
     return ret;
 
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_tas3sol_Obligations(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      for (e = x->Dict; e; e = (struct zx_tas3sol_Dict_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_tas3sol_Dict(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
 
   
   return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);

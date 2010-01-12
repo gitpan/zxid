@@ -1,11 +1,12 @@
 /* mod_auth_saml.c  -  Handwritten functions for Apache mod_auth_saml module
+ * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2008-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing or as licensed below.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: mod_auth_saml.c,v 1.16 2009-09-16 10:14:57 sampo Exp $
+ * $Id: mod_auth_saml.c,v 1.17 2010-01-08 02:10:09 sampo Exp $
  *
  * 1.2.2008,  created --Sampo
  * 22.2.2008, distilled to much more compact version --Sampo
@@ -31,6 +32,7 @@
 #include <zx/errmac.h>
 #include <zx/zxid.h>
 #include <zx/zxidconf.h>
+#include <zx/c/zxidvers.h>
 
 #include "ap_config.h"
 #include "ap_compat.h"
@@ -126,7 +128,7 @@ static int pool2apache(struct zxid_conf* cf, request_rec* r, struct zxid_attr* p
     else if (!strcmp(at->name, "cookie"))    cookie = at->val;
   }
 
-  if (rs && rs[0] != '-') {
+  if (rs && rs[0] && rs[0] != '-') {
     if (strcmp(r->uri, rs)) {  /* Different, need external or internal redirect */
       D("redirect(%s) redir_to_content=%d", rs, cf->redir_to_content);
       //r->uri = apr_pstrdup(r->pool, val);
@@ -272,7 +274,7 @@ static int chkuid(request_rec* r)
   memset(&cgi, 0, sizeof(struct zxid_cgi));
   memset(&ses, 0, sizeof(struct zxid_ses));
 
-  D("START req=%p uri(%s) args(%s)", r, r?STRNULLCHK(r->uri):"", r?STRNULLCHK(r->args):"");
+  D("START %s req=%p uri(%s) args(%s)", ZXID_REL, r, r?STRNULLCHK(r->uri):"", r?STRNULLCHK(r->args):"");
   
   if (r->main) {  /* subreq can't come from net: always auth. */
     D("sub ok %d", OK);

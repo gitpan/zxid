@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidlib.c,v 1.69 2009-09-16 10:14:57 sampo Exp $
+ * $Id: zxidlib.c,v 1.73 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 16.1.2007, factored out ses, conf, cgi, ecp, cdc, and loc --Sampo
@@ -25,8 +25,9 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
-int zx_debug = 0;   /* declared in errmac.h */
-char* zx_instance = "\tzx";   /* declared in errmac.h */
+int zx_debug = 0;              /* declared in errmac.h */
+char zx_indent[256] = "";      /* declared in errmac.h */
+char zx_instance[64] = "\tzx"; /* declared in errmac.h */
 int assert_nonfatal = 0;
 char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately trying to dump core.\nSorry for the inconvenience. If no core appears, try `ulimit -c unlimited'\n";
 int trace = 0;
@@ -60,7 +61,7 @@ char* zxid_version_str()
  *     bits should be multiple of 24 (3 bytes expands to 4 safe base64 chars)
  * return:: The identifier as zx_str. Caller should eventually free this memory.
  */
-/* Called by:  zxid_mk_a7n, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_dap_query_item, zxid_mk_dap_resquery, zxid_mk_dap_subscription, zxid_mk_dap_test_item, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp, zxid_mk_subj, zxid_put_ses, zxid_pw_authn, zxid_wsc_call */
+/* Called by:  zxid_add_fed_tok_to_epr x2, zxid_check_fed, zxid_di_query, zxid_idp_sso x2, zxid_mk_a7n, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_az, zxid_mk_az_cd1, zxid_mk_dap_query_item, zxid_mk_dap_resquery, zxid_mk_dap_subscription, zxid_mk_dap_test_item, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp, zxid_mk_subj, zxid_put_ses, zxid_pw_authn, zxid_wsc_call */
 struct zx_str* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits)
 {
   char bit_buf[ZXID_ID_MAX_BITS/8];
@@ -81,7 +82,7 @@ struct zx_str* zxid_mk_id(struct zxid_conf* cf, char* prefix, int bits)
  * without milliseconds form. Some other softwares are buggy and fail to
  * accept the without milliseconds form. You can change the format at compile time.
  */
-/* Called by:  zxid_mk_a7n x3, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp, zxid_wsc_call */
+/* Called by:  zxid_mk_a7n x3, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_az, zxid_mk_az_cd1, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp, zxid_wsc_call */
 struct zx_str* zxid_date_time(struct zxid_conf* cf, time_t secs)
 {
   struct tm t;
@@ -117,6 +118,7 @@ struct zx_root_s* zxid_soap_call_envelope(struct zxid_conf* cf, struct zx_str* u
   struct zx_root_s* r;
   struct zx_str* ss;
   ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+  DD("ss(%.*s) len=%d", ss->len, ss->s, ss->len);
   r = zxid_soap_call_raw(cf, url, ss);
   zx_str_free(cf->ctx, ss);
   return r;
@@ -134,7 +136,7 @@ struct zx_root_s* zxid_soap_call_envelope(struct zxid_conf* cf, struct zx_str* u
  * body::   XML data structure representing the SOAP body
  * return:: XML data structure representing the response  */
 
-/* Called by:  zxid_soap_call_body */
+/* Called by:  zxid_pep_az_soap, zxid_soap_call_body */
 struct zx_root_s* zxid_soap_call_hdr_body(struct zxid_conf* cf, struct zx_str* url, struct zx_e_Header_s* hdr, struct zx_e_Body_s* body)
 {
   struct zx_root_s* r;
@@ -173,7 +175,7 @@ struct zx_root_s* zxid_soap_call_body(struct zxid_conf* cf, struct zx_str* url, 
  * body::   XML data structure representing the request
  * return:: 0 if fail, ZXID_REDIR_OK if success. */
 
-/* Called by:  zxid_idp_soap_dispatch x2, zxid_sp_soap_dispatch x2 */
+/* Called by:  zxid_idp_soap_dispatch x2, zxid_sp_soap_dispatch x5 */
 int zxid_soap_cgi_resp_body(struct zxid_conf* cf, struct zx_e_Body_s* body)
 {
   struct zx_e_Envelope_s* env = zx_NEW_e_Envelope(cf->ctx);
@@ -450,8 +452,6 @@ struct zx_str* zxid_saml2_redir_url(struct zxid_conf* cf, struct zx_str* loc, st
   return ss;
 }
 
-extern struct zx_str err_res;
-
 /*() SAMLRequest. Return the HTTP 302 redirect LOCATION header + CRLF2. You need to pass this to
  * some application layer facility to effectuate the actual redirect.
  * Wrapper for zxid_saml2_redir_enc(). This is different from zxid_saml2_redir_url()
@@ -470,7 +470,7 @@ struct zx_str* zxid_saml2_redir(struct zxid_conf* cf, struct zx_str* loc, struct
   struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLRequest=", pay_load, relay_state);
   if (!loc || !rse) {
     ERR("Redirection location URL missing. rse(%.*s) %p", rse?rse->len:0, rse?STRNULLCHK(rse->s):"", rse);
-    return &err_res;
+    return zx_dup_str(cf->ctx, "* ERR");
   }
   ss = zx_strf(cf->ctx, (memchr(loc->s, '?', loc->len)
 			 ? "Location: %.*s&%.*s" CRLF2
@@ -497,7 +497,7 @@ struct zx_str* zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, s
   struct zx_str* rse = zxid_saml2_redir_enc(cf, "SAMLResponse=", pay_load, relay_state);
   if (!loc || !rse) {
     ERR("Redirection location(%.*s) URL missing or redirect encoding(%.*s) failed.", loc?loc->len:0, loc?loc->s:"", rse?rse->len:0, rse?rse->s:"");
-    return &err_res;
+    return zx_dup_str(cf->ctx, "* ERR");
   }
   ss = zx_strf(cf->ctx, (memchr(loc->s, '?', loc->len)
 			 ? "Location: %.*s&%.*s" CRLF2
@@ -516,7 +516,7 @@ struct zx_str* zxid_saml2_resp_redir(struct zxid_conf* cf, struct zx_str* loc, s
  * what::   Explanatory string used in error and log messages
  * return:: 1 of SAML message is OK, 0 if message is not OK. */
 
-/* Called by:  zxid_idp_dispatch x2, zxid_idp_soap_dispatch, zxid_sp_dispatch x3, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x2 */
+/* Called by:  zxid_idp_dispatch x2, zxid_idp_soap_dispatch, zxid_pep_az_soap, zxid_sp_dispatch x3, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x3 */
 int zxid_saml_ok(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_Status_s* st, char* what)
 {
   struct zx_str* ss;
@@ -568,7 +568,7 @@ int zxid_saml_ok(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx_sp_Status
  *     structure is decrypted and its contents returned as the Name ID
  * return:: XML data structure corresponding to (possibly decrypted) Name ID */
 
-/* Called by:  test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, zxid_idp_slo_do, zxid_mni_do, zxid_sp_slo_do, zxid_sp_sso_finalize */
+/* Called by:  test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, zxid_di_query, zxid_idp_slo_do, zxid_mni_do, zxid_sp_slo_do, zxid_sp_sso_finalize */
 struct zx_sa_NameID_s* zxid_decrypt_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* nid, struct zx_sa_EncryptedID_s* encid)
 {
   struct zx_str* ss;
@@ -645,7 +645,7 @@ struct zx_str* zxid_decrypt_newnym(struct zxid_conf* cf, struct zx_str* newnym, 
  * See also: Signature validation codes VVV in zxid-log.pd, section "ZXID Log Format".
  */
 
-/* Called by:  zxid_idp_slo_do, zxid_mni_do, zxid_sp_dig_sso_a7n, zxid_sp_slo_do */
+/* Called by:  zxid_idp_slo_do, zxid_mni_do, zxid_sp_dig_sso_a7n, zxid_sp_slo_do, zxid_xacml_az_do */
 int zxid_chk_sig(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_elem_s* elem, struct zx_ds_Signature_s* sig, struct zx_sa_Issuer_s* issue_ent, const char* lk)
 {
   struct zx_str* issuer = 0;
@@ -705,6 +705,7 @@ erro:
 
 /*() Transform content according to map. The returned zx_str will be nul terminated. */
 
+/* Called by:  pool2apache x2, zxid_add_at_values, zxid_pep_az_soap x2, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
 struct zx_str* zxid_map_val(struct zxid_conf* cf, struct zxid_map* map, struct zx_str* val)
 {
   struct zx_str* ss = val;

@@ -1876,7 +1876,7 @@ struct zx_cb_Status_s {
   struct zx_cb_Status_s* Status;	/* {0,-1} nada */
   struct zx_str* code;	/* {1,1} attribute xs:QName */
   struct zx_str* comment;	/* {0,1} attribute xs:string */
-  struct zx_str* ref;	/* {0,1} attribute xs:string */
+  struct zx_str* ref;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT

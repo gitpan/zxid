@@ -1,5 +1,5 @@
 # zxid/sg/saml-schema-assertion-2.0.sg
-# $Id: saml-schema-assertion-2.0.sg,v 1.9 2009-08-25 16:22:45 sampo Exp $
+# $Id: saml-schema-assertion-2.0.sg,v 1.10 2009-11-14 22:44:43 sampo Exp $
 #
 # N.B. This file is not a direct conversion. Instead it has been manually edited to
 # make it simpler and to facilitate code generation.

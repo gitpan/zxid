@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidsrvlet.java,v 1.1 2009-10-18 12:39:10 sampo Exp $
+ * $Id: zxidsrvlet.java,v 1.3 2009-11-20 20:27:13 sampo Exp $
  * 12.1.2007, created --Sampo
  * 16.10.2009, refined from zxidhlo example to truly useful servlet that populates session --Sampo
  *
@@ -53,14 +53,41 @@ public class zxidsrvlet extends HttpServlet {
 	    res.setContentLength(ret.length());
 	    res.getOutputStream().print(ret);
 	    break;
+        case 'z': /* Authorization denied case (if PDP_URL was configured) */
+	    System.err.print("Deny (z)\n");
+	    res.sendError(403, "Denied. Authorization to rs("+req.getParameter("RelayState")+") was refused by a PDP.");
+	    return;
 	case 'd': /* Logged in case (both LDIF and QS will start by "dn") */
 	    HttpSession ses = req.getSession(true);
 	    String[] avs = ret.split("&");
 	    for (int i = 0; i < avs.length; ++i) {
-		ses.putValue(avs[i].split("=")[0], URLDecoder.decode(avs[i].split("=")[1]));
+		String av[] = avs[i].split("=");
+		ses.putValue(av[0], URLDecoder.decode(av.length > 1 ? av[1] : ""));
 	    }
+
+	    /* Make sure cookie is visible to other servlets on the same server.
+	     * Alternately you could add emptySessionPath="true" to tomcat conf/server.xml */
+	    Cookie[] cookies = req.getCookies();
+	    if (cookies != null) {
+		for (int i = 0; i < cookies.length; i++) {
+		    if (cookies[i].getName().equals("JSESSIONID")) {  // MUST match cookie name
+			cookies[i].setPath("/");
+			break;
+		    }
+		}
+	    }
+
 	    System.err.print("Logged in. jses("+ses.getId()+") rs("+ses.getValue("rs")+")\n");
-	    res.sendRedirect(URLDecoder.decode(ses.getValue("rs").toString()));
+	    String rs = URLDecoder.decode(ses.getValue("rs").toString());
+	    if (rs != null && rs.length() > 0 && rs.charAt(rs.length()-1) != '-')
+		res.sendRedirect(rs);
+
+	    /* Redirect was not viable. Just show the management screen. */
+	    
+	    ret = zxidjni.fed_mgmt_cf(cf, null, -1, ses.getValue("sesid").toString(), 0x3d54);
+	    res.setContentType("text/html");
+	    res.setContentLength(ret.length());
+	    res.getOutputStream().print(ret);
 	    break;
 	default:
 	    System.err.print("Unknown zxid_simple() response("+ret+").\n");

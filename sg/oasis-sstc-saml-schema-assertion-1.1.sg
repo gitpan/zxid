@@ -3,7 +3,7 @@
 # 15.10.2006, extended AttributeValue schema to cater for bootstraps --Sampo
 # 10.2.2007, added other types of assertions as potential Advice content --Sampo
 # 3.3.2007, added XACML support --Sampo
-# $Id: oasis-sstc-saml-schema-assertion-1.1.sg,v 1.5 2009-09-05 02:23:41 sampo Exp $
+# $Id: oasis-sstc-saml-schema-assertion-1.1.sg,v 1.6 2009-11-14 22:44:43 sampo Exp $
 
 target(sa11, urn:oasis:names:tc:SAML:1.0:assertion)
 ns(xs,http://www.w3.org/2001/XMLSchema)

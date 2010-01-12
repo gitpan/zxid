@@ -4239,6 +4239,16 @@ int zx_LEN_SO_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x )
   int len = 0;
 #endif
   
+  {
+      struct zx_shibmd_Scope_s* e;
+      for (e = x->Scope; e; e = (struct zx_shibmd_Scope_s*)e->gg.g.n)
+	  len += zx_LEN_SO_shibmd_Scope(c, e);
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n)
+	  len += zx_LEN_SO_shibmd_KeyAuthority(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -4273,6 +4283,16 @@ int zx_LEN_WO_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x )
   int len = 0;
 #endif
   
+  {
+      struct zx_shibmd_Scope_s* e;
+      for (e = x->Scope; e; e = (struct zx_shibmd_Scope_s*)e->gg.g.n)
+	  len += zx_LEN_WO_shibmd_Scope(c, e);
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n)
+	  len += zx_LEN_WO_shibmd_KeyAuthority(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -4306,6 +4326,16 @@ char* zx_ENC_SO_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x, ch
   /* root node has no begin tag */
 #endif
   
+  {
+      struct zx_shibmd_Scope_s* e;
+      for (e = x->Scope; e; e = (struct zx_shibmd_Scope_s*)e->gg.g.n)
+	  p = zx_ENC_SO_shibmd_Scope(c, e, p);
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n)
+	  p = zx_ENC_SO_shibmd_KeyAuthority(c, e, p);
+  }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
   

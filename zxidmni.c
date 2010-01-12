@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmni.c,v 1.9 2009-08-25 16:22:45 sampo Exp $
+ * $Id: zxidmni.c,v 1.10 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.10.2007, split from zxidslo.c --Sampo
  * 7.10.2008,  added documentation --Sampo
@@ -69,8 +69,6 @@ int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   return 0;
 }
 
-extern struct zx_str err_res;
-
 /*() Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied),
  * using SAML2 HTTP redirect binding. This is the (SP) client side that contacts the IdP.
  * Return the HTTP 302 redirect LOCATION header + CRLF2. Returns the URL as string to which
@@ -91,11 +89,11 @@ struct zx_str* zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, str
     
     idp_meta = zxid_get_ses_idp(cf, ses);
     if (!idp_meta)
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
 
     loc = zxid_idp_loc(cf, cgi, ses, idp_meta, ZXID_MNI_SVC, SAML2_REDIR);
     if (!loc)
-      return &err_res;
+      return zx_dup_str(cf->ctx, "* ERR");
     r = zxid_mk_mni(cf, zxid_get_user_nameid(cf, ses->nameid), new_nym, 0);
     r->Destination = loc;
     rs = zx_EASY_ENC_SO_sp_ManageNameIDRequest(cf->ctx, r);
@@ -109,7 +107,7 @@ struct zx_str* zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, str
     ERR("Not implemented, ID-FF 1.2 type SAML 1.1 assetion %d", 0);
   }
   ERR("Session sid(%s) lacks SSO assertion.", ses->sid);
-  return &err_res;
+  return zx_dup_str(cf->ctx, "* ERR");
 }
 
 /*() Process <ManageNameIDRequest>, presumably received from IdP. This is very rarely

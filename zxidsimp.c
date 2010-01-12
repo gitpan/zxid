@@ -1,11 +1,12 @@
 /* zxidsimp.c  -  Handwritten zxid_simple() API
+ * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidsimp.c,v 1.59 2009-10-18 12:39:10 sampo Exp $
+ * $Id: zxidsimp.c,v 1.64 2010-01-08 02:10:09 sampo Exp $
  *
  * 17.1.2007, created --Sampo
  * 2.2.2007,  improved the LDIF return --Sampo
@@ -33,11 +34,12 @@
 #include "zx.h"
 #include "zxid.h"
 #include "zxidconf.h"
+#include "c/zxidvers.h"
 
 /*() Convert configuration string ~conf~ to configuration object ~cf~. */
 
-/* Called by:  dirconf, main x2, zxid_fed_mgmt_len, zxid_idp_list_len, zxid_idp_select_len, zxid_new_conf_to_cf, zxid_simple_len */
-int zxid_conf_to_cf_len(struct zxid_conf* cf, int conf_len, char* conf)
+/* Called by:  dirconf, main x2, zxid_az, zxid_fed_mgmt_len, zxid_idp_list_len, zxid_idp_select_len, zxid_new_conf_to_cf, zxid_simple_len */
+int zxid_conf_to_cf_len(struct zxid_conf* cf, int conf_len, const char* conf)
 {
 #if 1
   if (!cf->ctx) {
@@ -86,10 +88,14 @@ int zxid_conf_to_cf_len(struct zxid_conf* cf, int conf_len, char* conf)
   return 0;
 }
 
-/*() Create new ZXID configuration object. */
+/*() Create new ZXID configuration object given configuration string and
+ * possibly configuration file.
+ *
+ * conf::   Configuration service
+ * return:: Configuration object */
 
 /* Called by:  main x7 */
-struct zxid_conf* zxid_new_conf_to_cf(char* conf)
+struct zxid_conf* zxid_new_conf_to_cf(const char* conf)
 {
   struct zxid_conf* cf = malloc(sizeof(struct zxid_conf));  /* *** direct use of malloc */
   if (!cf) {
@@ -220,6 +226,8 @@ char* zxid_fed_mgmt(char* conf, char* sid, int auto_flags) {
 
 /* ------------ zxid_an_page() ------------ */
 
+#define YUBI_MINI "<a href=\"http://yubico.com\"><img src=\"yubiright_16x16.gif\" width=16 height=16 border=0></a>"
+
 /*() Generate IdP Authentication Page.
  *
  * Either outputs the authencitcation screen to stdout or returns
@@ -256,7 +264,7 @@ struct zx_str* zxid_an_page_cf(struct zxid_conf* cf, char* ssoreq, struct zxid_c
 		 "<form method=get action=\"%s\">\n"
 #endif
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
-		 "1. User: <input name=au> Password: <input type=password name=ap>"
+		 "1. User (or yubikey " YUBI_MINI "): <input name=au> Password: <input type=password name=ap>"
 		 " <input type=submit name=alp value=\" Login to IdP \"><br>\n"
 		 "%s<a href=\"%.*s\">%.*s</a><br>\n"
 		 "%s%s\n"
@@ -280,7 +288,7 @@ struct zx_str* zxid_an_page_cf(struct zxid_conf* cf, char* ssoreq, struct zxid_c
 		 "<form method=get action=\"%s\">\n"
 #endif
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
-		 "1. User: <input name=au> Password: <input type=password name=ap>"
+		 "1. User (or yubikey " YUBI_MINI "): <input name=au> Password: <input type=password name=ap>"
 		 " <input type=submit name=alp value=\" Login to IdP \"><br>\n"
 		 "%s<a href=\"%.*s\">%.*s</a><br>\n"
 		 "%s%s\n"
@@ -296,7 +304,7 @@ struct zx_str* zxid_an_page_cf(struct zxid_conf* cf, char* ssoreq, struct zxid_c
   } else if (auto_flags & ZXID_AUTO_FORMF) {
     ss = zx_strf(cf->ctx,
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
-		 "1. User: <input name=au> Password: <input type=password name=ap>"
+		 "1. User (or yubikey " YUBI_MINI "): <input name=au> Password: <input type=password name=ap>"
 		 " <input type=submit name=alp value=\" Login to IdP \"><br>\n"
 		 "%s<a href=\"%.*s\">%.*s</a><br>\n"
 		 "%s%s\n"
@@ -554,6 +562,7 @@ char* zxid_idp_select(char* conf, int auto_flags) {
 /*() Local Policy Decision Point - decide on role and idpnid.
  * Return: 0 for Deny and 1 for Permit.  */
 
+/* Called by:  zxid_simple_ab_pep */
 static int zxid_localpdp(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   struct zxid_attr* at;
@@ -605,24 +614,27 @@ static int zxid_localpdp(struct zxid_conf* cf, struct zxid_ses* ses)
 /*(i) Postprocessing of SSO: Attribute Broker handles attributes and PEP/PDP
  * decide on authorization. */
 
-/* Called by:  chkuid, zxid_simple_cf, zxid_simple_no_ses_cf x2, zxid_simple_ses_active_cf */
+/* Called by:  chkuid, zxid_simple_cf_ses, zxid_simple_no_ses_cf x2, zxid_simple_ses_active_cf */
 char* zxid_simple_ab_pep(struct zxid_conf* cf, struct zxid_ses* ses, int* res_len, int auto_flags)
 {
   char* res;
   struct zx_str* ss;
+  D_INDENT("ab_pep: ");
   DD("ab_pep %d", 0);
   zxid_ses_to_pool(cf, ses);  /* Process SSO a7n, applying NEED, WANT, and INMAP */
 
   if (!zxid_localpdp(cf, ses)) {
     D("Deny by local PDP %d",0);
+    D_DEDENT("ab_pep: ");
     return "z";
   }
 
   if (cf->pdp_url) {
     //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
     //zxid_add_attr_to_pool(cf, ses, "URL", zx_dup_str(cf->ctx, ses->rs));
-    if (!zxid_pep_az_soap(cf, 0, ses)) {
+    if (!zxid_pep_az_soap(cf, 0, ses, cf->pdp_url)) {
       D("Deny %d", 0);
+      D_DEDENT("ab_pep: ");
       return "z";
     }
   }
@@ -641,6 +653,7 @@ char* zxid_simple_ab_pep(struct zxid_conf* cf, struct zxid_ses* ses, int* res_le
   if (res_len)
     *res_len = ss->len;
   ZX_FREE(cf->ctx, ss);
+  D_DEDENT("ab_pep: ");
   return res;
 }
 
@@ -650,7 +663,7 @@ char* zxid_simple_ab_pep(struct zxid_conf* cf, struct zxid_ses* ses, int* res_le
  * as string with or without headers, as indicated by the auto_flag. The
  * page is in ss. */
 
-/* Called by:  zxid_simple_idp_show_an, zxid_simple_show_idp_sel, zxid_simple_show_meta */
+/* Called by:  zxid_simple_idp_show_an, zxid_simple_show_carml, zxid_simple_show_conf, zxid_simple_show_idp_sel, zxid_simple_show_meta */
 static char* zxid_simple_show_page(struct zxid_conf* cf, struct zx_str* ss, int c_mask, int h_mask, char* rets, char* cont_type, int* res_len, int auto_flags)
 {
   char* res;
@@ -759,6 +772,16 @@ static char* zxid_simple_show_carml(struct zxid_conf* cf, struct zxid_cgi* cgi, 
   struct zx_str* carml = zxid_sp_carml(cf);
   return zxid_simple_show_page(cf, carml, ZXID_AUTO_METAC, ZXID_AUTO_METAH,
 			       "c", "text/xml", res_len, auto_flags);
+}
+
+/*() Dump internal info and configuration. Corresponds to "o=d" query string. */
+
+/* Called by:  zxid_simple_no_ses_cf, zxid_simple_ses_active_cf */
+static char* zxid_simple_show_conf(struct zxid_conf* cf, struct zxid_cgi* cgi, int* res_len, int auto_flags)
+{
+  struct zx_str* ss = zxid_show_conf(cf);
+  return zxid_simple_show_page(cf, ss, ZXID_AUTO_METAC, ZXID_AUTO_METAH,
+			       "c", "text/html", res_len, auto_flags);
 }
 
 /* ----------- IdP Screens ----------- */
@@ -885,7 +908,7 @@ static char* zxid_simple_idp_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  chkuid x2, zxid_simple_cf, zxid_simple_idp_an_ok_do_rest */
+/* Called by:  chkuid x2, zxid_simple_cf_ses, zxid_simple_idp_an_ok_do_rest */
 char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int* res_len, int auto_flags)
 {
   struct zx_str* accr;
@@ -906,11 +929,13 @@ char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
    * u = nireg soap   (form gu)
    * v = Az soap      (form gv)
    * c = CARML for the SP
+   * d = Dump internal data, including config; debug screen
    * m = Show management screen
    * n = Just check session (used for checking session for protected content pages)
    * p = Password Login (IdP form submit alp= with au= and ap=)
    * P = POST response. HTTP POST in general
    * Q = POST request
+   * R = POST request to IdP
    * S = SOAP (POST) request
    * B = Metadata
    *
@@ -929,7 +954,7 @@ char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
   
   if (cgi->enc_hint)
     cf->nameid_enc = cgi->enc_hint != '0';
-  D("session(%s) active op(%c)", cgi->sid, cgi->op);
+  D("op(%c) session(%s) active", cgi->op, cgi->sid);
   DD("session(%s) active op(%c) saml_req(%s)", cgi->sid, cgi->op, STRNULLCHK(cgi->saml_req));
   switch (cgi->op) {
   case 'l':
@@ -955,7 +980,7 @@ char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
     cgi->msg = "SP Initiated defederation (SOAP).";
     break;     /* Defederation does not have to mean SLO */
   case 'v':
-    zxid_pep_az_soap(cf, cgi, ses);
+    zxid_pep_az_soap(cf, cgi, ses, cf->pdp_call_url?cf->pdp_call_url:cf->pdp_url);
     cgi->msg = "PEP-to-PDP Authorization call (SOAP).";
     break;     /* Defederation does not have to mean SLO */
   case 'm':
@@ -976,9 +1001,12 @@ char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
     }
     D("Q ss(%.*s) (fall thru)", ss->len, ss->s);
     break;
+  case 'R':
+    cgi->op = 'F';
+    /* Fall thru */
   case 'F': /*  IdP: Return SSO A7N after successful An; no ses case, generate IdP ui */
   idp:
-    ss = zxid_idp_dispatch(cf, cgi, ses);  /* N.B. The original request is in cgi->saml_req */
+    ss = zxid_idp_dispatch(cf, cgi, ses, 1);  /* N.B. The original request is in cgi->saml_req */
     switch (ss->s[0]) {
     case 'K': return zxid_simple_show_idp_sel(cf, cgi, res_len, auto_flags);
     case 'C': /* Content-type:  -- i.e. ship page or XML out */
@@ -996,6 +1024,7 @@ char* zxid_simple_ses_active_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
     /* *** */
     break;
   case 'c':    return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
+  case 'd':    return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
   case 'B':    return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
   case 'n': break;
   }
@@ -1040,7 +1069,7 @@ res_zx_str:
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  chkuid, zxid_simple_cf */
+/* Called by:  chkuid, zxid_simple_cf_ses */
 char* zxid_simple_no_ses_cf(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, int* res_len, int auto_flags)
 {
   char* res = 0;
@@ -1139,7 +1168,11 @@ show_protected_content_setcookie:
     D("Q err (fall thru) %d", 0);
     break;
   case 'c':    return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
+  case 'd':    return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
   case 'B':    return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
+  case 'R':
+    cgi->op = 'F';
+    /* Fall thru */
   case 'F':
 idp:           return zxid_simple_idp_show_an(cf, cgi, res_len, auto_flags);
   case 'p':    return zxid_simple_idp_pw_authn(cf, cgi, res_len, auto_flags);
@@ -1185,7 +1218,7 @@ res_zx_str:
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  main x3, zxid_simple_len */
+/* Called by:  zxid_simple_cf */
 char* zxid_simple_cf_ses(struct zxid_conf* cf, int qs_len, char* qs, struct zxid_ses* ses, int* res_len, int auto_flags)
 {
   int got, ret;
@@ -1213,10 +1246,10 @@ char* zxid_simple_cf_ses(struct zxid_conf* cf, int qs_len, char* qs, struct zxid
   
   if (!qs) {
     qs = getenv("QUERY_STRING");
-    D("QUERY_STRING(%s)", STRNULLCHK(qs));
+    D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
     if (qs) {
       zxid_parse_cgi(&cgi, qs);
-      if (ONE_OF_2(cgi.op, 'P', 'S')) {
+      if (ONE_OF_3(cgi.op, 'P', 'R', 'S')) {
 	cont_len = getenv("CONTENT_LENGTH");
 	if (cont_len) {
 	  sscanf(cont_len, "%d", &got);
@@ -1269,7 +1302,7 @@ char* zxid_simple_cf_ses(struct zxid_conf* cf, int qs_len, char* qs, struct zxid
       ERR("IMPLEMENTATION LIMIT: Query String MUST be nul terminated len=%d", qs_len);
       exit(1);
     }
-    D("QUERY_STRING(%s)", STRNULLCHK(qs));
+    D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
     zxid_parse_cgi(&cgi, qs);
   }
   if (!cgi.op)
@@ -1308,6 +1341,7 @@ done:
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
+/* Called by:  main x3, zxid_simple_len */
 char* zxid_simple_cf(struct zxid_conf* cf, int qs_len, char* qs, int* res_len, int auto_flags)
 {
   struct zxid_ses ses;

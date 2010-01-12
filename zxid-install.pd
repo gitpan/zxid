@@ -2,7 +2,7 @@
 <<else: >>Installing ZXID (from package or source)
 ###########################################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-install.pd,v 1.2 2009-08-30 15:09:26 sampo Exp $>>
+<<cvsid: $Id: zxid-install.pd,v 1.4 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-COMP 01>>
 <<define: ZXDOC=Compiling and Installing ZXID>>
 
@@ -46,8 +46,8 @@ When you are ready to deploy your own services, you should check
 configuration instructions in <<link:zxid-conf.html: ZXID Configuration
 Reference>>.
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 

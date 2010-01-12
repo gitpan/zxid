@@ -1,6 +1,6 @@
 # zxid/sg/liberty-idwsf-soap-binding-v2.0.sg
 # Slightly edited, 5.9.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: liberty-idwsf-soap-binding-v2.0.sg,v 1.7 2007-09-30 05:10:03 sampo Exp $
+# $Id: liberty-idwsf-soap-binding-v2.0.sg,v 1.8 2009-11-24 23:53:40 sampo Exp $
 
 target(b,    urn:liberty:sb:2006-08)
 import(sp,   urn:oasis:names:tc:SAML:2.0:protocol)
@@ -11,6 +11,7 @@ import(e,    http://schemas.xmlsoap.org/soap/envelope/)
 import(sa11, urn:oasis:names:tc:SAML:1.0:assertion)
 import(sa,   urn:oasis:names:tc:SAML:2.0:assertion)
 import(ff12, urn:liberty:iff:2003-08)
+import(tas3sol, http://tas3.eu/tas3sol/200911/)
 
 &@hdr:
   @wsu:Id?
@@ -81,6 +82,8 @@ Consent	 -> %b:ConsentType
 
 UsageDirective	 -> %b:UsageDirectiveType
 %UsageDirectiveType:
+  tas3sol:Obligations?
+  tas3sol:Dict?
   any+  ns(##other)  processContents(lax)
   @ref	 -> %xs:IDREF
   &@b:hdr        # Added by Sampo

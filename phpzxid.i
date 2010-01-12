@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: phpzxid.i,v 1.7 2009-08-30 15:09:26 sampo Exp $
+ * $Id: phpzxid.i,v 1.8 2009-11-29 12:23:06 sampo Exp $
  * 31.8.2006, created --Sampo
  */
 %module "zxid"
@@ -33,7 +33,8 @@
 //}
 
 %typemap (out) struct zx_str* {
-  ZVAL_STRINGL($result, $1->s, $1->len, 1);
+  if ($1)
+       ZVAL_STRINGL($result, $1->s, $1->len, 1);
   /* Do not free underlying zx_str because they are usually returned by reference. */
 }
 

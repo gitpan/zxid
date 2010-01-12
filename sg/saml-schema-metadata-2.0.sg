@@ -1,6 +1,7 @@
 # zxid/sg/saml-schema-metadata-2.0.sh .sg
 # Slightly edited, 27.5.2006, Sampo Kellomaki (sampo@iki.fi)
-# $Id: saml-schema-metadata-2.0.sg,v 1.3 2007-10-09 16:56:13 sampo Exp $
+# 22.11.2009, added shib metadata support --Sampo
+# $Id: saml-schema-metadata-2.0.sg,v 1.4 2009-11-24 23:53:40 sampo Exp $
 
 target(md,urn:oasis:names:tc:SAML:2.0:metadata)
 import(ds,http://www.w3.org/2000/09/xmldsig#,http://www.w3.org/TR/2002/REC-xmldsig-core-20020212/xmldsig-core-schema.xsd)
@@ -9,6 +10,7 @@ import(sa,urn:oasis:names:tc:SAML:2.0:assertion,saml-schema-assertion-2.0.xsd)
 # import(xml,http://www.w3.org/XML/1998/namespace,http://www.w3.org/2001/xml.xsd)
 ns(xs,  http://www.w3.org/2001/XMLSchema)
 ns(xml, http://www.w3.org/XML/1998/namespace)
+ns(shibmd, urn:mace:shibboleth:metadata:1.0)
 
 %entityIDType:	 base(xs:anyURI) ;
 
@@ -24,6 +26,8 @@ ns(xml, http://www.w3.org/XML/1998/namespace)
 
 Extensions	 -> %md:ExtensionsType
 %ExtensionsType:
+  shibmd:Scope*
+  shibmd:KeyAuthority*
   any+
   ;
 

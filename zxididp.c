@@ -1,13 +1,15 @@
 /* zxididp.c  -  CGI binary for SAML 2 IdP
- * Copyright (c) 2008-2009 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2008-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxididp.c,v 1.6 2009-08-30 15:09:26 sampo Exp $
+ * $Id: zxididp.c,v 1.9 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.11.2008, created --Sampo
  * 24.8.2009,  perfected for TAS3 workshop --Sampo
+ *
+ * See zxid_idp_dispatch() in zxididpx.c for most interesting parts of IdP implementation.
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  *           README-zxid, section 10 "zxid_simple() API"
@@ -30,7 +32,7 @@
 char* help =
 "zxididp  -  SAML 2.0 IdP CGI - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated identity and Single Sign-On.\n\
-Copyright (c) 2008-2009 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
+Copyright (c) 2008-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well-researched bug reports to the author. Home: zxid.org\n\
@@ -64,7 +66,7 @@ int main(int argc, char** argv)
     if (open("/var/tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
       exit(2);
   }
-  fprintf(stderr, "=================== Running zxididp ===================\n");
+  fprintf(stderr, "=================== Running zxididp %s ===================\n", ZXID_REL);
   //fprintf(stderr, "p(%s)\n", p);
 #endif
 
@@ -73,7 +75,7 @@ int main(int argc, char** argv)
     exit(1);
   }
   
-  zx_instance = "\tzxidp";
+  strncpy(zx_instance, "\tzxidp", sizeof(zx_instance));
   //zx_debug = 1;
   res = zxid_simple(CONF, 0, 0x1fff);  /* 0xfff == full CGI automation */
   switch (res[0]) {

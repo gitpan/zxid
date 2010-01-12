@@ -1501,6 +1501,11 @@ int zx_LEN_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
 	  len += zx_LEN_SO_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  len += zx_LEN_SO_sa11_Assertion(c, e);
@@ -1580,6 +1585,11 @@ int zx_LEN_WO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x )
 	  len += zx_LEN_WO_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  len += zx_LEN_WO_sa11_Assertion(c, e);
@@ -1654,6 +1664,11 @@ char* zx_ENC_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, ch
       struct zx_sa_Assertion_s* e;
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
 	  p = zx_ENC_SO_sa_Assertion(c, e, p);
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa_EncryptedAssertion(c, e, p);
   }
   {
       struct zx_sa11_Assertion_s* e;

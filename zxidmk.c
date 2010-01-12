@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidmk.c,v 1.24 2009-09-07 16:13:02 sampo Exp $
+ * $Id: zxidmk.c,v 1.27 2009-11-24 23:53:40 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 8.10.2007, added signing ArtifactResolve --Sampo
@@ -140,7 +140,7 @@ struct zx_sa_EncryptedID_s* zxid_mk_enc_id(struct zxid_conf* cf, struct zx_sa_Na
 /*() Create EncryptedAssertion given normal A7N and metadata of destination. Encryption
  * will be done using encryption certificate of the receiver identified by the metadata. */
 
-/* Called by:  zxid_idp_sso x4 */
+/* Called by:  zxid_add_fed_tok_to_epr, zxid_idp_sso x4 */
 struct zx_sa_EncryptedAssertion_s* zxid_mk_enc_a7n(struct zxid_conf* cf, struct zx_sa_Assertion_s* a7n, struct zxid_entity* meta)
 {
   struct zx_sa_EncryptedAssertion_s* enc_a7n = zx_NEW_sa_EncryptedAssertion(cf->ctx);
@@ -242,7 +242,7 @@ struct zx_sp_ManageNameIDResponse_s* zxid_mk_mni_resp(struct zxid_conf* cf, stru
 
 /*() Constructor for Assertion */
 
-/* Called by:  zxid_idp_sso */
+/* Called by:  zxid_mk_user_a7n_to_sp, zxid_xacml_az_do x2 */
 struct zx_sa_Assertion_s* zxid_mk_a7n(struct zxid_conf* cf, struct zx_str* audience, struct zx_sa_Subject_s* subj, struct zx_sa_AuthnStatement_s* an_stmt, struct zx_sa_AttributeStatement_s* at_stmt, struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt)
 {
   struct zx_sa_Assertion_s* a7n =  zx_NEW_sa_Assertion(cf->ctx);
@@ -266,7 +266,7 @@ struct zx_sa_Assertion_s* zxid_mk_a7n(struct zxid_conf* cf, struct zx_str* audie
 
 /*() Construct Subject, possibly with EncryptedID */
 
-/* Called by:  zxid_idp_sso */
+/* Called by:  zxid_mk_user_a7n_to_sp, zxid_xacml_az_do */
 struct zx_sa_Subject_s* zxid_mk_subj(struct zxid_conf* cf, struct zxid_entity* sp_meta, struct zx_sa_NameID_s* nid)
 {
   struct zx_sa_Subject_s* subj = zx_NEW_sa_Subject(cf->ctx);
@@ -284,16 +284,21 @@ struct zx_sa_Subject_s* zxid_mk_subj(struct zxid_conf* cf, struct zxid_entity* s
   }
 #endif
 
-  if (cf->nameid_enc && sp_meta)
-    subj->EncryptedID = zxid_mk_enc_id(cf, nid, sp_meta);
-  else
+  if (cf->nameid_enc) {
+    if (sp_meta)
+      subj->EncryptedID = zxid_mk_enc_id(cf, nid, sp_meta);
+    else {
+      ERR("NameID encryption confugred, but no metadata supplied. Defaulting to unencrypted NameID %d", 0);
+      subj->NameID = nid;
+    }
+  } else
     subj->NameID = nid;
   return subj;
 }
 
 /*() Construct AuthnStatement */
 
-/* Called by:  zxid_idp_sso */
+/* Called by:  zxid_mk_user_a7n_to_sp */
 struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(struct zxid_conf* cf, struct zxid_ses* ses)
 {
   struct zx_sa_AuthnStatement_s* an_stmt = zx_NEW_sa_AuthnStatement(cf->ctx);
@@ -309,19 +314,20 @@ struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(struct zxid_conf* cf, struct zxid
 
 /*() Construct SAML SAML Attribute */
 
-/* Called by:  zxid_idp_sso x4 */
+/* Called by:  zxid_add_ldif_attributes, zxid_gen_bootstraps, zxid_mk_user_a7n_to_sp */
 struct zx_sa_Attribute_s* zxid_mk_attribute(struct zxid_conf* cf, char* name, char* val)
 {
   struct zx_sa_Attribute_s* r = zx_NEW_sa_Attribute(cf->ctx);
   r->Name = zx_dup_str(cf->ctx, name);
   r->AttributeValue = zx_NEW_sa_AttributeValue(cf->ctx);
-  r->AttributeValue->gg.content = zx_dup_str(cf->ctx, val);
+  if (val)
+    r->AttributeValue->gg.content = zx_dup_str(cf->ctx, val);
   return r;
 }
 
 /*() Construct SAML protocol Response (such as may be used to carry assertion in SSO) */
 
-/* Called by:  zxid_idp_sso x4 */
+/* Called by:  zxid_idp_sso x4, zxid_xacml_az_do x2 */
 struct zx_sp_Response_s* zxid_mk_saml_resp(struct zxid_conf* cf)
 {
   struct zx_sp_Response_s* r = zx_NEW_sp_Response(cf->ctx);
@@ -335,6 +341,7 @@ struct zx_sp_Response_s* zxid_mk_saml_resp(struct zxid_conf* cf)
 
 /*() Construct XACML Response */
 
+/* Called by:  zxid_ins_xacml_az_stmt x2 */
 struct zx_xac_Response_s* zxid_mk_xacml_resp(struct zxid_conf* cf, char* decision)
 {
   struct zx_xac_Response_s* resp = zx_NEW_xac_Response(cf->ctx);
@@ -347,10 +354,11 @@ struct zx_xac_Response_s* zxid_mk_xacml_resp(struct zxid_conf* cf, char* decisio
   return resp;
 }
 
+/* Called by:  zxid_pep_az_soap x3 */
 struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(struct zxid_conf* cf, struct zx_xac_Attribute_s* aa, struct zx_str* atid, struct zx_str* attype, struct zx_str* atissuer, struct zx_str* atvalue)
 {
   struct zx_xac_Attribute_s* at = zx_NEW_xac_Attribute(cf->ctx);
-  ZX_NEXT(at) = aa;
+  ZX_NEXT(at) = (void*)aa;
   at->AttributeId = atid;
   at->DataType = attype;
   at->Issuer = atissuer;
@@ -361,6 +369,7 @@ struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(struct zxid_conf* cf, struct 
 
 /*() Construct XACMLAuthzDecisionQuery */
 
+/* Called by:  zxid_pep_az_soap */
 struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(struct zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
 {
   struct zx_xasp_XACMLAuthzDecisionQuery_s* r = zx_NEW_xasp_XACMLAuthzDecisionQuery(cf->ctx);
@@ -382,6 +391,7 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(struct zxid_conf* cf, struc
 
 /*() Construct XACMLAuthzDecisionQuery according to Commitee Draft 1 */
 
+/* Called by:  zxid_pep_az_soap */
 struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zxid_mk_az_cd1(struct zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
 {
   struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* r = zx_NEW_xaspcd1_XACMLAuthzDecisionQuery(cf->ctx);

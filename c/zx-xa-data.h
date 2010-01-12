@@ -826,7 +826,7 @@ void zx_xa_Function_PUT_FunctionId(struct zx_xa_Function_s* x, struct zx_str* y)
 
 #endif
 /* -------------------------- xa_Obligation -------------------------- */
-/* refby( zx_xa_Obligations_s ) */
+/* refby( zx_tas3_ESLApply_s zx_xa_Obligations_s ) */
 #ifndef zx_xa_Obligation_EXT
 #define zx_xa_Obligation_EXT
 #endif

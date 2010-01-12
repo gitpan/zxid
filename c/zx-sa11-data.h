@@ -136,7 +136,7 @@ void zx_sa11_Advice_REV_sa_Assertion(struct zx_sa11_Advice_s* x);
 
 #endif
 /* -------------------------- sa11_Assertion -------------------------- */
-/* refby( zx_wsse_Security_s zx_b_TargetIdentity_s zx_sa11_Advice_s zx_sa11_Evidence_s zx_sec_Token_s zx_sp11_Response_s zx_ff12_AuthnResponse_s zx_sa_Advice_s ) */
+/* refby( zx_wsse_Security_s zx_b_TargetIdentity_s zx_sa11_Advice_s zx_sa11_Evidence_s zx_sec_Token_s zx_tas3_Credentials_s zx_sp11_Response_s zx_ff12_AuthnResponse_s zx_sa_Advice_s ) */
 #ifndef zx_sa11_Assertion_EXT
 #define zx_sa11_Assertion_EXT
 #endif

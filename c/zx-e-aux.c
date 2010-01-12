@@ -8403,6 +8403,22 @@ void zx_FREE_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x, int free_strs)
 	  zx_FREE_wsse_Security(c, e, free_strs);
       }
   }
+  {
+      struct zx_tas3_Credentials_s* e;
+      struct zx_tas3_Credentials_s* en;
+      for (e = x->Credentials; e; e = en) {
+	  en = (struct zx_tas3_Credentials_s*)e->gg.g.n;
+	  zx_FREE_tas3_Credentials(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      struct zx_tas3_ESLPolicies_s* en;
+      for (e = x->ESLPolicies; e; e = en) {
+	  en = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n;
+	  zx_FREE_tas3_ESLPolicies(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -8603,6 +8619,16 @@ void zx_DUP_STRS_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x)
       struct zx_wsse_Security_s* e;
       for (e = x->Security; e; e = (struct zx_wsse_Security_s*)e->gg.g.n)
 	  zx_DUP_STRS_wsse_Security(c, e);
+  }
+  {
+      struct zx_tas3_Credentials_s* e;
+      for (e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n)
+	  zx_DUP_STRS_tas3_Credentials(c, e);
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      for (e = x->ESLPolicies; e; e = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n)
+	  zx_DUP_STRS_tas3_ESLPolicies(c, e);
   }
 
 }
@@ -9049,6 +9075,32 @@ struct zx_e_Header_s* zx_DEEP_CLONE_e_Header(struct zx_ctx* c, struct zx_e_Heade
 	  enn = en;
       }
   }
+  {
+      struct zx_tas3_Credentials_s* e;
+      struct zx_tas3_Credentials_s* en;
+      struct zx_tas3_Credentials_s* enn;
+      for (enn = 0, e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_tas3_Credentials(c, e, dup_strs);
+	  if (!enn)
+	      x->Credentials = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      struct zx_tas3_ESLPolicies_s* en;
+      struct zx_tas3_ESLPolicies_s* enn;
+      for (enn = 0, e = x->ESLPolicies; e; e = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_tas3_ESLPolicies(c, e, dup_strs);
+	  if (!enn)
+	      x->ESLPolicies = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -9331,6 +9383,22 @@ int zx_WALK_SO_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x, void* ctx, in
       struct zx_wsse_Security_s* e;
       for (e = x->Security; e; e = (struct zx_wsse_Security_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_wsse_Security(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_tas3_Credentials_s* e;
+      for (e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_tas3_Credentials(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_tas3_ESLPolicies_s* e;
+      for (e = x->ESLPolicies; e; e = (struct zx_tas3_ESLPolicies_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_tas3_ESLPolicies(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

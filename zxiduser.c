@@ -5,10 +5,11 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxiduser.c,v 1.14 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxiduser.c,v 1.18 2009-11-29 12:23:06 sampo Exp $
  *
  * 12.10.2007, created --Sampo
  * 7.10.2008,  added documentation --Sampo
+ * 14.11.2009, added yubikey (yubico.com) support --Sampo
  */
 
 #include <sys/types.h>
@@ -23,9 +24,11 @@
 #include "errmac.h"
 #include "zxid.h"
 #include "zxidconf.h"
+#include "yubikey.h"   /* from libyubikey-1.5 */
 
 /*() Parse a line from .mni and form a NameID, unless there is mniptr */
 
+/* Called by:  zxid_check_fed, zxid_get_user_nameid */
 struct zx_sa_NameID_s* zxid_parse_mni(struct zxid_conf* cf, char* buf, char** pmniptr)
 {
   struct zx_sa_NameID_s* nameid;
@@ -101,7 +104,7 @@ struct zx_sa_NameID_s* zxid_get_user_nameid(struct zxid_conf* cf, struct zx_sa_N
   mniptr = sha1_name;
 
   while (--iter && mniptr && *mniptr) {
-    read_all(ZXID_MAX_USER, buf, __FUNCTION__, "%s" ZXID_USER_DIR "%s/.mni", cf->path, mniptr);
+    read_all(ZXID_MAX_USER, buf, (const char*)__FUNCTION__, "%s" ZXID_USER_DIR "%s/.mni", cf->path, mniptr);
     nameid = zxid_parse_mni(cf, buf, &mniptr);
     if (nameid)
       return nameid;
@@ -179,6 +182,7 @@ int zxid_put_user(struct zxid_conf* cf, struct zx_str* nidfmt, struct zx_str* id
 		     idpnid->len, idpnid->s,
 		     STRNULLCHK(mniptr));
   ZX_FREE(cf->ctx, buf);
+  D("PUT USER idpnid(%.*s)", idpnid->len, idpnid->s);
   return 1;
 }
 
@@ -194,67 +198,117 @@ static char* login_failed = "Login failed. Check username and password. Make sur
  *
  * return:: 0 on failure and sets cgi->err; 1 on success  */
 
-/* Called by:  zxid_simple_idp_pw_authn, zxid_simple_idp_show_an */
+/* Called by:  zxid_idp_as_do, zxid_simple_idp_pw_authn, zxid_simple_idp_show_an */
 int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
   struct zx_str* ss;
+  unsigned char buf[ZXID_MAX_BUF];
   unsigned char pw_buf[256];
   unsigned char pw_hash[120];
+  yubikey_token_st yktok;
   int len;
+
   if (!cgi->uid || !cgi->uid[0]) {
     ERR("No uid (user's login name) supplied. %d", 0);
     cgi->err = login_failed;
     D("no user name pw(%s)", STRNULLCHK(cgi->pw));
     return 0;
   }
-  if (!cgi->pw || !cgi->pw[0]) {
-    ERR("No password supplied. uid(%s)", cgi->uid);
-    cgi->err = login_failed;
-    return 0;
-  }
-  
-  /* *** Add here support for other authentication backends */
 
   /* Check for filesystem unsafe characters. (*** Is this list complete?) */
   if (strstr(cgi->uid, "..") || strchr(cgi->uid, '/')
       || strchr(cgi->uid, '\\') || strchr(cgi->uid, '~')) {
     ERR("uid(%s) is not filesystem safe", cgi->uid);
-    D("pw(%s)", cgi->pw);
-    cgi->err = login_failed;
-    return 0;
-  }
-  len = read_all(sizeof(pw_buf), pw_buf, "pw_authn",
-		 "%s" ZXID_UID_DIR "%s/.pw", cf->path, cgi->uid);
-  if (len < 1) {
-    ERR("No account found for uid(%s) or account does not have .pw file.", cgi->uid);
-    D("pw(%s)", cgi->pw);
+    D("pw(%s)", STRNULLCHK(cgi->pw));
     cgi->err = login_failed;
     return 0;
   }
 
-  D("pw_buf (%s)", pw_buf);
-  if (!memcmp(pw_buf, "$1$", sizeof("$1$")-1)) {
-    zx_md5_crypt(cgi->pw, pw_buf, pw_hash);
-    D("pw_hash(%s)", pw_hash);
-    if (strcmp(pw_buf, pw_hash)) {
-      ERR("Bad password. uid(%s)", cgi->uid);
-      D("pw(%s) .pw(%s) pw_hash()", cgi->pw, pw_buf, pw_hash);
+  len = strlen(cgi->uid);
+  if (len > 32) {  /* Yubikey */
+    strcpy(pw_hash, cgi->uid + len - 32);
+    cgi->uid[len - 32] = 0;
+    D("yubikey user(%s) ticket(%s)", cgi->uid, pw_hash);
+
+    snprintf(buf, sizeof(buf)-1, "%suid/%s", cf->path, cgi->uid);
+    buf[sizeof(buf)-1] = 0;
+    len = read_all(sizeof(pw_buf), pw_buf, "ykspent", "%s/.ykspent/%s", buf, pw_hash);
+    if (len) {
+      ERR("The One Time Password has already been spent. ticket(%s%s) buf(%.*s)", cgi->uid, pw_hash, len, pw_buf);
       cgi->err = login_failed;
       return 0;
     }
-  } else if (ONE_OF_2(pw_buf[0], '$', '_')) {
-    ERR("Unsupported password hash. uid(%s)", cgi->uid);
-    D("pw(%s) .pw(%s)", cgi->pw, pw_buf);
-    cgi->err = login_failed;
-    return 0;
+    if (!write_all_path_fmt("ykspent", sizeof(pw_buf), pw_buf, "%s/.ykspent/%s", buf, pw_hash, "1"))
+      return 0;
+    
+    len = read_all(sizeof(pw_buf), pw_buf, "ykaes", "%s/.yk", buf);
+    D("buf    (%s) got=%d", pw_buf, len);
+    if (len < 32) {
+      ERR("User's %s/.yk file must contain aes128 key as 32 hexadecimal characters. Too few characters %d ticket(%s)", cgi->uid, len, pw_hash);
+      cgi->err = login_failed;
+      return 0;
+    }
+    if (len > 32) {
+      INFO("User's %s/.yk file must contain aes128 key as 32 hexadecimal characters. Too many characters %d ticket(%s). Truncating.", cgi->uid, len, pw_hash);
+      len = 32;
+      pw_buf[len] = 0;
+    }
+    zx_hexdec(pw_buf, pw_buf, len, hex_trans);
+    memset (&yktok, 0, sizeof(yktok));
+    zx_hexdec((void *)&yktok, pw_hash, 32, ykmodhex_trans);
+    yubikey_aes_decrypt((void *)&yktok, pw_buf);
+    D("internal uid %02x %02x %02x %02x %02x %02x counter=%d 0x%x timestamp=%d (hi=%x lo=%x) use=%d 0x%x rnd=0x%x crc=0x%x", yktok.uid[0], yktok.uid[1], yktok.uid[2], yktok.uid[3], yktok.uid[4], yktok.uid[5], yktok.ctr, yktok.ctr, (yktok.tstph << 16) | yktok.tstpl, yktok.tstph, yktok.tstpl, yktok.use, yktok.use, yktok.rnd, yktok.crc);
+    
+    if (!yubikey_crc_ok_p((unsigned char*)&yktok)) {
+      D("yubikey ticket validation failure %d", 0);
+      cgi->err = login_failed;
+      return 0;
+    }
   } else {
-    if (strcmp(pw_buf, cgi->pw)) {
-      ERR("Bad password. uid(%s)", cgi->uid);
+    if (!cgi->pw || !cgi->pw[0]) {
+      ERR("No password supplied. uid(%s)", cgi->uid);
+      cgi->err = login_failed;
+      return 0;
+    }
+  
+    /* *** Add here support for other authentication backends */
+
+    len = read_all(sizeof(pw_buf), pw_buf, "pw_authn",
+		   "%s" ZXID_UID_DIR "%s/.pw", cf->path, cgi->uid);
+    if (len < 1) {
+      ERR("No account found for uid(%s) or account does not have .pw file.", cgi->uid);
+      D("pw(%s)", cgi->pw);
+      cgi->err = login_failed;
+      return 0;
+    }
+    
+    D("pw_buf (%s)", pw_buf);
+    if (!memcmp(pw_buf, "$1$", sizeof("$1$")-1)) {
+      zx_md5_crypt(cgi->pw, pw_buf, pw_hash);
+      D("pw_hash(%s)", pw_hash);
+      if (strcmp(pw_buf, pw_hash)) {
+	ERR("Bad password. uid(%s)", cgi->uid);
+	D("pw(%s) .pw(%s) pw_hash(%s)", cgi->pw, pw_buf, pw_hash);
+	cgi->err = login_failed;
+	return 0;
+      }
+    } else if (ONE_OF_2(pw_buf[0], '$', '_')) {
+      ERR("Unsupported password hash. uid(%s)", cgi->uid);
       D("pw(%s) .pw(%s)", cgi->pw, pw_buf);
       cgi->err = login_failed;
       return 0;
+    } else {
+      if (strcmp(pw_buf, cgi->pw)) {
+	ERR("Bad password. uid(%s)", cgi->uid);
+	D("pw(%s) .pw(%s)", cgi->pw, pw_buf);
+	cgi->err = login_failed;
+	return 0;
+      }
     }
   }
+
+  /* Successful login. Establish session. */
+
   memset(ses, 0, sizeof(struct zxid_ses));
   ses->magic = ZXID_SES_MAGIC;
   ses->an_ctx = cf->issue_authnctx_pw;  /* *** Should also depend on how user was registered */
@@ -272,7 +326,7 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
 				   cf->ses_cookie_name, ses->sid);
   }
   cgi->sid = ses->sid;
-  INFO("Local login successful. uid(%s) sid(%s)", cgi->uid, cgi->sid);
+  INFO("LOCAL LOGIN SUCCESSFUL. uid(%s) sid(%s)", cgi->uid, cgi->sid);
   return 1;
 }
 

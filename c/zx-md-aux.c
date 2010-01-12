@@ -3405,6 +3405,22 @@ void zx_FREE_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x, int f
   /* *** deal with xmlns specifications in exc c14n way */
 
 
+  {
+      struct zx_shibmd_Scope_s* e;
+      struct zx_shibmd_Scope_s* en;
+      for (e = x->Scope; e; e = en) {
+	  en = (struct zx_shibmd_Scope_s*)e->gg.g.n;
+	  zx_FREE_shibmd_Scope(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      struct zx_shibmd_KeyAuthority_s* en;
+      for (e = x->KeyAuthority; e; e = en) {
+	  en = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n;
+	  zx_FREE_shibmd_KeyAuthority(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -3440,6 +3456,16 @@ void zx_DUP_STRS_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
 
+  {
+      struct zx_shibmd_Scope_s* e;
+      for (e = x->Scope; e; e = (struct zx_shibmd_Scope_s*)e->gg.g.n)
+	  zx_DUP_STRS_shibmd_Scope(c, e);
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n)
+	  zx_DUP_STRS_shibmd_KeyAuthority(c, e);
+  }
 
 }
 
@@ -3455,6 +3481,32 @@ struct zx_md_Extensions_s* zx_DEEP_CLONE_md_Extensions(struct zx_ctx* c, struct 
   /* *** deal with xmlns specifications in exc c14n way */
 
 
+  {
+      struct zx_shibmd_Scope_s* e;
+      struct zx_shibmd_Scope_s* en;
+      struct zx_shibmd_Scope_s* enn;
+      for (enn = 0, e = x->Scope; e; e = (struct zx_shibmd_Scope_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_shibmd_Scope(c, e, dup_strs);
+	  if (!enn)
+	      x->Scope = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      struct zx_shibmd_KeyAuthority_s* en;
+      struct zx_shibmd_KeyAuthority_s* enn;
+      for (enn = 0, e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_shibmd_KeyAuthority(c, e, dup_strs);
+	  if (!enn)
+	      x->KeyAuthority = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -3477,6 +3529,22 @@ int zx_WALK_SO_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x, voi
   if (ret)
     return ret;
 
+  {
+      struct zx_shibmd_Scope_s* e;
+      for (e = x->Scope; e; e = (struct zx_shibmd_Scope_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_shibmd_Scope(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_shibmd_KeyAuthority_s* e;
+      for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_shibmd_KeyAuthority(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
 
   
   return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);

@@ -2192,6 +2192,274 @@ void zx_b_Timeout_PUT_mustUnderstand(struct zx_b_Timeout_s* x, struct zx_str* y)
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_b_UsageDirective_NUM_Obligations) */
+
+int zx_b_UsageDirective_NUM_Obligations(struct zx_b_UsageDirective_s* x)
+{
+  struct zx_tas3sol_Obligations_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Obligations; y; ++n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_b_UsageDirective_GET_Obligations) */
+
+struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_GET_Obligations(struct zx_b_UsageDirective_s* x, int n)
+{
+  struct zx_tas3sol_Obligations_s* y;
+  if (!x) return 0;
+  for (y = x->Obligations; n>=0 && y; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_b_UsageDirective_POP_Obligations) */
+
+struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_POP_Obligations(struct zx_b_UsageDirective_s* x)
+{
+  struct zx_tas3sol_Obligations_s* y;
+  if (!x) return 0;
+  y = x->Obligations;
+  if (y)
+    x->Obligations = (struct zx_tas3sol_Obligations_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_b_UsageDirective_PUSH_Obligations) */
+
+void zx_b_UsageDirective_PUSH_Obligations(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Obligations_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Obligations->gg.g;
+  x->Obligations = z;
+}
+
+/* FUNC(zx_b_UsageDirective_REV_Obligations) */
+
+void zx_b_UsageDirective_REV_Obligations(struct zx_b_UsageDirective_s* x)
+{
+  struct zx_tas3sol_Obligations_s* nxt;
+  struct zx_tas3sol_Obligations_s* y;
+  if (!x) return;
+  y = x->Obligations;
+  if (!y) return;
+  x->Obligations = 0;
+  while (y) {
+    nxt = (struct zx_tas3sol_Obligations_s*)y->gg.g.n;
+    y->gg.g.n = &x->Obligations->gg.g;
+    x->Obligations = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_b_UsageDirective_PUT_Obligations) */
+
+void zx_b_UsageDirective_PUT_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* z)
+{
+  struct zx_tas3sol_Obligations_s* y;
+  if (!x || !z) return;
+  y = x->Obligations;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Obligations = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_b_UsageDirective_ADD_Obligations) */
+
+void zx_b_UsageDirective_ADD_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* z)
+{
+  struct zx_tas3sol_Obligations_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Obligations->gg.g;
+    x->Obligations = z;
+    return;
+  case -1:
+    y = x->Obligations;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Obligations; n > 1 && y; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_b_UsageDirective_DEL_Obligations) */
+
+void zx_b_UsageDirective_DEL_Obligations(struct zx_b_UsageDirective_s* x, int n)
+{
+  struct zx_tas3sol_Obligations_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Obligations = (struct zx_tas3sol_Obligations_s*)x->Obligations->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_tas3sol_Obligations_s*)x->Obligations;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Obligations; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_b_UsageDirective_NUM_Dict) */
+
+int zx_b_UsageDirective_NUM_Dict(struct zx_b_UsageDirective_s* x)
+{
+  struct zx_tas3sol_Dict_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Dict; y; ++n, y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_b_UsageDirective_GET_Dict) */
+
+struct zx_tas3sol_Dict_s* zx_b_UsageDirective_GET_Dict(struct zx_b_UsageDirective_s* x, int n)
+{
+  struct zx_tas3sol_Dict_s* y;
+  if (!x) return 0;
+  for (y = x->Dict; n>=0 && y; --n, y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_b_UsageDirective_POP_Dict) */
+
+struct zx_tas3sol_Dict_s* zx_b_UsageDirective_POP_Dict(struct zx_b_UsageDirective_s* x)
+{
+  struct zx_tas3sol_Dict_s* y;
+  if (!x) return 0;
+  y = x->Dict;
+  if (y)
+    x->Dict = (struct zx_tas3sol_Dict_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_b_UsageDirective_PUSH_Dict) */
+
+void zx_b_UsageDirective_PUSH_Dict(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Dict_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Dict->gg.g;
+  x->Dict = z;
+}
+
+/* FUNC(zx_b_UsageDirective_REV_Dict) */
+
+void zx_b_UsageDirective_REV_Dict(struct zx_b_UsageDirective_s* x)
+{
+  struct zx_tas3sol_Dict_s* nxt;
+  struct zx_tas3sol_Dict_s* y;
+  if (!x) return;
+  y = x->Dict;
+  if (!y) return;
+  x->Dict = 0;
+  while (y) {
+    nxt = (struct zx_tas3sol_Dict_s*)y->gg.g.n;
+    y->gg.g.n = &x->Dict->gg.g;
+    x->Dict = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_b_UsageDirective_PUT_Dict) */
+
+void zx_b_UsageDirective_PUT_Dict(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Dict_s* z)
+{
+  struct zx_tas3sol_Dict_s* y;
+  if (!x || !z) return;
+  y = x->Dict;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Dict = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_b_UsageDirective_ADD_Dict) */
+
+void zx_b_UsageDirective_ADD_Dict(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Dict_s* z)
+{
+  struct zx_tas3sol_Dict_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Dict->gg.g;
+    x->Dict = z;
+    return;
+  case -1:
+    y = x->Dict;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Dict; n > 1 && y; --n, y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_b_UsageDirective_DEL_Dict) */
+
+void zx_b_UsageDirective_DEL_Dict(struct zx_b_UsageDirective_s* x, int n)
+{
+  struct zx_tas3sol_Dict_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Dict = (struct zx_tas3sol_Dict_s*)x->Dict->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_tas3sol_Dict_s*)x->Dict;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Dict; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3sol_Dict_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
 /* FUNC(zx_b_UsageDirective_GET_id) */
 struct zx_str* zx_b_UsageDirective_GET_id(struct zx_b_UsageDirective_s* x) { return x->id; }
 /* FUNC(zx_b_UsageDirective_PUT_id) */

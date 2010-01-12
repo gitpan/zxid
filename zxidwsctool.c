@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidwsctool.c,v 1.8 2008-04-14 04:23:58 sampo Exp $
+ * $Id: zxidwsctool.c,v 1.10 2010-01-08 02:10:09 sampo Exp $
  *
  * 25.1.2007, created --Sampo
  *
@@ -41,7 +41,7 @@ Usage: zxidwsctool [options] sesid svc\n\
   sesid            Session ID referring to a directory in /var/zxid/ses\n\
                    Use zxidhlo to do SSO and then cut and paste from there.\n\
   svc              Service type or abbreviation (di = discovery 2.0, dap = ID-DAP)\n\
-  -d               Increade debug prints\n\
+  -d               Increase debug prints\n\
   -s               Simple API\n\
   -h               This help message\n\
   --               End of options\n";
@@ -107,8 +107,8 @@ int main(int argc, char** argv)
     env = zx_NEW_e_Envelope(cf->ctx);
     env->Header = zx_NEW_e_Header(cf->ctx);
     env->Body = zx_NEW_e_Body(cf->ctx);
-    env->Body->Query = zxid_mk_di_query(cf, svc);
-    epr = zxid_find_epr(cf, ses, XMLNS_DISCO_2_0, 1);
+    env->Body->Query = zxid_mk_di_query(cf, svc, 0,0,0);
+    epr = zxid_find_epr(cf, ses, XMLNS_DISCO_2_0, 0,0,0, 1);
     env = zxid_wsc_call(cf, ses, epr, env);
     if (env->Body->QueryResponse)
       for (epr = env->Body->QueryResponse->EndpointReference; epr; epr = ZX_NEXT(epr))
@@ -116,7 +116,7 @@ int main(int argc, char** argv)
     
   } else if (!strcmp(svc, XMLNS_DAP)) {
 
-    epr = zxid_get_epr(cf, ses, XMLNS_DAP, 1);
+    epr = zxid_get_epr(cf, ses, XMLNS_DAP, 0,0,0, 1);
     if (epr) {
       env = zx_NEW_e_Envelope(cf->ctx);
       env->Header = zx_NEW_e_Header(cf->ctx);
@@ -238,7 +238,7 @@ int main(int argc, char** argv)
     struct zx_demomed_ObjectData_s* objdata;
     struct zx_demomed_ObjectData_s* first_objdata;
 
-    epr = zxid_get_epr(cf, ses, zx_xmlns_demomed, 1);
+    epr = zxid_get_epr(cf, ses, zx_xmlns_demomed, 0,0,0, 1);
     if (epr) {
       
       /* Get list of media objects. */

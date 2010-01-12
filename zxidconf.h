@@ -1,14 +1,16 @@
 /* zxidconf.h  -  Configuration of ZXID SP CGI
+ * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidconf.h,v 1.47 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxidconf.h,v 1.51 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 29.8.2009, added PDP_URL --Sampo
+ * 7.1.2010,  added WSC and WSP signing options --Sampo
  *
  * Most of the configuration options can be set via configuration
  * file /var/zxid/zxid.conf or using -O command line flag(s). In
@@ -34,6 +36,7 @@
 #define ZXID_CONF_FILE 1     /* (compile) */
 #define ZXID_CONF_FLAG 1     /* (compile) */
 #define ZXID_MAX_CONF  4096  /* (compile) Maximum size of conf file. */
+#define ZXID_SHOW_CONF 1     /* Whether configuration is viewable from url o=d */
 
 /*(c) ZXID configuration and working directory path
  * Where metadata cache and session files are created. Note that the directory
@@ -119,18 +122,18 @@
  * If you want as automatic operation as possible, set all four to 1.
  */
 
-#define ZXID_MD_FETCH 1               /* The Auto-CoT ena option */
+#define ZXID_MD_FETCH          1   /* The Auto-CoT ena option */
 #define ZXID_MD_POPULATE_CACHE 1
-#define ZXID_MD_CACHE_FIRST 1
-#define ZXID_MD_CACHE_LAST 1
+#define ZXID_MD_CACHE_FIRST    1
+#define ZXID_MD_CACHE_LAST     1
 
 /*(c) Automatic Self-signed Cert Generation (Auto-Cert)
  * If ZXID does not find one of the certificate plus private key
  * pairs it needs to operate, it will generate automatically
- * a selfsigned certificate and privatekey and populate it to
+ * a self-signed certificate and private key and populate it to
  * the assigned place. The certificate will be valid for 30 years.
  * If you do not want this to happen, you should disable this option
- * and install the certificate-privatekey pairs manually to
+ * and install the certificate - private key pairs manually to
  *
  *   /var/zxid/pem/enc-nopw-cert.pem
  *   /var/zxid/pem/sign-nopw-cert.pem
@@ -138,8 +141,8 @@
  *   /var/zxid/pem/logsign-nopw-cert.pem
  *   /var/zxid/pem/ssl-nopw-cert.pem
  *
- * Hint: you can use same certificate-private key pair for
- * all purposes. */
+ * Hint: you can use same certificate - private key pair for
+ * all purposes. Just copy the file. */
 
 #define ZXID_AUTO_CERT 1
 
@@ -153,7 +156,7 @@
  * Boolean. Recommended value: 1. */
 #define ZXID_WANT_SSO_A7N_SIGNED 1
 
-/*(c) SOAP Message Signing
+/*(c) SSO SOAP Message Signing
  * Whether SOAP messages for ArtifactResolution, SLO, and MNI are signed. Whether
  * responses are signed as well. (*** doc) */
 #define ZXID_SSO_SOAP_SIGN 1
@@ -178,6 +181,33 @@
  * Whether to encrypt assertions when using POST bindings. */
 
 #define ZXID_POST_A7N_ENC 1
+
+/*(c) Controls whether new fedarations can be created during discovery. */
+#define ZXID_DI_ALLOW_CREATE '1'
+
+/*(c) Controls the default NameID Format for discovery: p=persistent, t=transient */
+#define ZXID_DI_NID_FMT 'p'
+
+/*(c) Controls whether assertions emitted by discovery are encrypted.
+ * It is highly recommended to encrypt the assertions to avoid man-in-the-middle
+ * attacks. */
+#define ZXID_DI_A7N_ENC 1
+
+/*(c) WSC Signing Options
+ * Which components of a web service request should be signed by WSC
+ * Bit mask:
+ *   0x01  SOAP Headers
+ *   0x02  SOAP Body
+ *   0x03  Both Headers and Body are signed. */
+#define ZXID_WSC_SIGN 0x03
+
+/*(c) WSP Signing Options
+ * Which components of a web service response should be signed by WSP
+ * Bit mask:
+ *   0x01  SOAP Headers
+ *   0x02  SOAP Body
+ *   0x03  Both Headers and Body are signed. */
+#define ZXID_WSP_SIGN 0x03
 
 /*(c) Bit length of identifiers, unguessability
  * How many random bits to use in an ID. It would be useful if this was
@@ -259,6 +289,9 @@
 /*() Maximum filesystem path used in /var/zxid tree. */
 #define ZXID_MAX_BUF 1024  /* (compile) */
 
+/*() Maximum EPR size */
+#define ZXID_MAX_EPR (64*1024) /* (compile) */
+
 /*(c) Logging Options
  * See zxid-log.pd for further explanation. Generally you
  * need error and activity logs to know yourself what is going on.
@@ -312,7 +345,7 @@
 #define ZXLOG_ISSUE_A7N  0x01  /* Log each issued assertion to /var/zxid/log/issue/SHA1/a7n/asn */
 #define ZXLOG_ISSUE_MSG  0x01  /* Log each issued PDU to /var/zxid/log/issue/SHA1/msg/asn */
 #define ZXLOG_RELY_A7N   0x01  /* Log each received assertion to /var/zxid/log/rely/SHA1/a7n/asn */
-#define ZXLOG_RELY_MSG   0x01  /* Log each received PDU to /var/zxid/log/rely/SHA1/a7n/asn */
+#define ZXLOG_RELY_MSG   0x01  /* Log each received PDU to /var/zxid/log/rely/SHA1/msg/MSGID */
 #else
 /* Test settings */
 #define ZXLOG_ERR        0x00
@@ -351,8 +384,13 @@
 #define ZXID_MSG_SIG_OK     1 /* Message layer signature (e.g. SimpleSign) is sufficeint when assertion signature is missing. */
 #define ZXID_AUDIENCE_FATAL 1 /* Whether AudienceRestriction is checked. */
 #define ZXID_TIMEOUT_FATAL  1 /* Whether NotBefore and NotOnOrAfter are checked */
-#define ZXID_DUP_A7N_FATAL  0 /* Whether duplication of AssertionID is considered fatal. */
-#define ZXID_DUP_MSG_FATAL  0 /* Whether duplication of MessageID or message is considered fatal. */
+#define ZXID_DUP_A7N_FATAL  1 /* Whether duplication of AssertionID is considered fatal. */
+#define ZXID_DUP_MSG_FATAL  1 /* Whether duplication of MessageID or message is considered fatal. */
+
+/*(c) Web service request and response validation options. For the token
+ * in the request, the assertion validation options apply. */
+#define ZXID_WSP_NOSIG_FATAL 1 /* Missing Security/Signature is fatal. */
+#define ZXID_NOTIMESTAMP_FATAL 1 /* Missing Security/Timestamp is fatal. */
 
 /*(c) Time Slop
  * Because clock sychronization amoung the servers in the CoT is unlikely
@@ -506,7 +544,7 @@
 
 #define ZXID_IDP_SEL_PAGE 0
 
-#define ZXID_AN_START "<title>ZXID IdP: Authentication</title>" ZXID_BODY_TAG "<h1>ZXID IdP Authentication for Federated SSO (user NOT logged in, no session)</h1>\n<h3>Please authenticate yourself using one of following methods:</h3>"
+#define ZXID_AN_START "<title>ZXID IdP: Authentication</title>" ZXID_BODY_TAG "<h1>ZXID IdP Authentication for Federated SSO (user NOT logged in, no session)</h1>\n<h3>Please authenticate yourself using one of the following methods:</h3>"
 
 #define ZXID_AN_OUR_EID "Entity ID of this IdP (click on the link to fetch the IdP metadata): "
 

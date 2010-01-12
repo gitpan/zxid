@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidpep.c,v 1.5 2009-10-16 13:36:33 sampo Exp $
+ * $Id: zxidpep.c,v 1.10 2010-01-08 02:10:09 sampo Exp $
  *
  * 24.8.2009, created --Sampo
  * 10.10.2009, added zxid_az() family --Sampo
@@ -19,6 +19,12 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
+#if 0
+#define XS_STRING "xs:string"
+#else
+#define XS_STRING "http://www.w3.org/2001/XMLSchema#string"
+#endif
+
 /* ============== Policy Enforcement Point, Authorization Decision Query ============== */
 
 /*(i) Call Policy Decision Point (PDP) to obtain an authorization decision
@@ -28,7 +34,7 @@
  *
  * cf:: the configuration will need to have ~PEPMAP~ and ~PDP_URL~ options
  *     set according to your situation.
- * cgi:: if non-null, will resceive error and status codes
+ * cgi:: if non-null, will receive error and status codes
  * ses:: all attributes are obtained from the session. You may wish
  *     to add additional attributes that are not known by SSO.
  * returns:: 0 on deny (for any reason, e.g. indeterminate), or 1 if permit
@@ -36,8 +42,8 @@
  * For simpler API, see zxid_az() family of functions.
  */
 
-/* Called by:  zxid_simple_ses_active_cf */
-int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+/* Called by:  zxid_az_cf_ses, zxid_simple_ab_pep, zxid_simple_ses_active_cf */
+int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, const char* pdp_url)
 {
   struct zxid_map* map;
   struct zxid_attr* at;
@@ -63,6 +69,11 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   if (cf->log_level>0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses&&ses->nameid?ses->nameid->gg.content:0, "N", "W", "AZSOAP", ses?ses->sid:0, " ");
   
+  if (!pdp_url) {
+    ERR("No PDP_URL or PDP_CALL_URL set. Deny. %d", 0);
+    return 0;
+  }
+
   for (at = ses?ses->at:0; at; at = at->n) {
     map = zxid_find_map(cf->pepmap, at->name);
     if (map) {
@@ -79,19 +90,19 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
       }
       xac_at = zxid_mk_xacml_simple_at(cf, 0,
 				       zx_dup_str(cf->ctx, name),
-				       zx_dup_str(cf->ctx, "xs:string"),
+				       zx_dup_str(cf->ctx, XS_STRING),
 				       at->issuer, at->map_val);
       if (map->ns && *map->ns) {
 	if (!strcmp(map->ns, "subj")) {
-	  ZX_NEXT(xac_at) = subj;
+	  ZX_NEXT(xac_at) = (void*)subj;
 	  subj = xac_at;
 	} else if (!strcmp(map->ns, "rsrc")) {
-	  ZX_NEXT(xac_at) = rsrc;
+	  ZX_NEXT(xac_at) = (void*)rsrc;
 	  rsrc = xac_at;
 	} else if (!strcmp(map->ns, "act")) {
-	  act = xac_at;
+	  act = xac_at;  /* there can be only one */
 	} else if (!strcmp(map->ns, "env")) {
-	  ZX_NEXT(xac_at) = env;
+	  ZX_NEXT(xac_at) = (void*)env;
 	  env = xac_at;
 	} else {
 	  ERR("PEPMAP unknown ns(%s). Valid values are subj, rsrc, act, and env.", map->ns);
@@ -104,19 +115,19 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
 	av->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, av->val));
 	xac_at = zxid_mk_xacml_simple_at(cf, 0,
 					 zx_dup_str(cf->ctx, name),
-					 zx_dup_str(cf->ctx, "xs:string"),
+					 zx_dup_str(cf->ctx, XS_STRING),
 					 at->issuer, at->map_val);
 	if (map->ns && *map->ns) {
 	  if (!strcmp(map->ns, "subj")) {
-	    ZX_NEXT(xac_at) = subj;
+	    ZX_NEXT(xac_at) = (void*)subj;
 	    subj = xac_at;
 	  } else if (!strcmp(map->ns, "rsrc")) {
-	    ZX_NEXT(xac_at) = rsrc;
+	    ZX_NEXT(xac_at) = (void*)rsrc;
 	    rsrc = xac_at;
 	  } else if (!strcmp(map->ns, "act")) {
 	    ERR("PEPMAP: Only one XACML action attribute allowed %d", 0);
 	  } else if (!strcmp(map->ns, "env")) {
-	    ZX_NEXT(xac_at) = env;
+	    ZX_NEXT(xac_at) = (void*)env;
 	    env = xac_at;
 	  } else {
 	    ERR("PEPMAP unknown ns(%s). Valid values are subj, rsrc, act, and env.", map->ns);
@@ -133,7 +144,7 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   if (!act) {
     act = zxid_mk_xacml_simple_at(cf, 0,
 	     zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:action:action-id"),
-	     zx_dup_str(cf->ctx, "xs:string"),
+	     zx_dup_str(cf->ctx, XS_STRING),
 	     0,
 	     zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:action:implied-action"));
   }
@@ -141,7 +152,10 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
 #if 0
   hdr = zx_NEW_e_Header(cf->ctx);
   hdr->Action = zx_NEW_a_Action(cf->ctx);
-  hdr->Action->gg.content = zx_dup_str(cf->ctx, "authRequest");
+  //hdr->Action->gg.content = zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:2.0:profile:saml2.0:v2:schema:protocol:cd-01");
+  hdr->Action->gg.content = zx_dup_str(cf->ctx, "urn:oasis:xacml:2.0:saml:protocol:schema:os");
+
+  //hdr->Action->gg.content = zx_dup_str(cf->ctx, "SAML2XACMLAuthzRequest");
   //hdr->Action->gg.content = zx_dup_str(cf->ctx, "http://ws.apache.org/axis2/TestPolicyPortType/authRequestRequest");
   hdr->Action->actor = zx_ref_str(cf->ctx, SOAP_ACTOR_NEXT);
   hdr->Action->mustUnderstand = zx_ref_str(cf->ctx, ZXID_TRUE);
@@ -187,7 +201,7 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
   //loc = zx_ref_str(cf->ctx, "http://192.168.1.66:1104/axis2/services/TestPolicy.PERMISAuthzServerHttpEndpoint/");
   //loc = zx_ref_str(cf->ctx, "http://192.168.1.27:1104/axis2/services/TestPolicy.PERMISAuthzServerHttpSoap12Endpoint/");
 #else
-  loc = zx_ref_str(cf->ctx, cf->pdp_url);
+  loc = zx_ref_str(cf->ctx, pdp_url);
 #endif
   r = zxid_soap_call_hdr_body(cf, loc, hdr, body);
   //r = zxid_idp_soap(cf, cgi, ses, idp_meta, ZXID_MNI_SVC, body);
@@ -213,7 +227,7 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
       return 1;
     }
   }
-  az_stmt_cd1 = resp->Assertion->XACMLAuthzDecisionStatement;
+  az_stmt_cd1 = resp->Assertion->xasacd1_XACMLAuthzDecisionStatement;
   if (az_stmt_cd1 && az_stmt_cd1->Response && az_stmt_cd1->Response->Result) {
     decision = az_stmt_cd1->Response->Result->Decision;
     if (decision && decision->content->len == sizeof("Permit")-1
@@ -238,18 +252,42 @@ int zxid_pep_az_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
 
 /*int zxid_az_cf_cgi_ses(struct zxid_conf* cf,  struct zxid_cgi* cgi, struct zxid_ses* ses);*/
 
-int zxid_az_cf_ses(struct zxid_conf* cf, char* qs, struct zxid_ses* ses)
+/*() See zxid_call_cf() for documentation. Only difference is that the session is
+ * accepted as data structure instead of a session id. */
+
+/* Called by:  zxid_az_cf */
+int zxid_az_cf_ses(struct zxid_conf* cf, const char* qs, struct zxid_ses* ses)
 {
+  int ret;
   struct zxid_cgi cgi;
+  D_INDENT("az: ");
   memset(&cgi, 0 , sizeof(struct zxid_cgi));
   zxid_parse_cgi(&cgi, "");
   DD("qs(%s) ses=%p", STRNULLCHKD(qs), ses);
   if (qs && ses)
-    zxid_add_qs_to_pool(cf, ses, qs, 1);
-  return zxid_pep_az_soap(cf, &cgi, ses);
+    zxid_add_qs_to_pool(cf, ses, zx_dup_cstr(cf->ctx, qs), 1);
+  ret =  zxid_pep_az_soap(cf, &cgi, ses, cf->pdp_call_url?cf->pdp_call_url:cf->pdp_url);
+  D_DEDENT("az: ");
+  return ret;
 }
 
-int zxid_az_cf(struct zxid_conf* cf, char* qs, const char* sid)
+/*(i) Call Policy Decision Point (PDP) to obtain an authorization decision
+ * about a contemplated action on a resource. The attributes from the session
+ * pool, as filtered by ~PEPMAP~ are fed to the PDP as inputs
+ * for the decision.
+ *
+ * cf:: the configuration will need to have ~PEPMAP~ and ~PDP_URL~ options
+ *     set according to your situation.
+ * qs:: if non-null, will resceive error and status codes
+ * ses:: all attributes are obtained from the session. You may wish
+ *     to add additional attributes that are not known by SSO.
+ * returns:: 0 on deny (for any reason, e.g. indeterminate), or 1 if permit
+ *
+ * For simpler API, see zxid_az() family of functions.
+ */
+
+/* Called by:  zxid_az */
+int zxid_az_cf(struct zxid_conf* cf, const char* qs, const char* sid)
 {
   struct zxid_ses ses;
   memset(&ses, 0 , sizeof(struct zxid_ses));
@@ -258,6 +296,10 @@ int zxid_az_cf(struct zxid_conf* cf, char* qs, const char* sid)
   return zxid_az_cf_ses(cf, qs, &ses);
 }
 
+/*() See zxid_az_cf() for description. Only difference is that the configuration
+ * is accepted as a string instead of an object. */
+
+/* Called by: */
 int zxid_az(const char* conf, const char* qs, const char* sid)
 {
   struct zx_ctx ctx;

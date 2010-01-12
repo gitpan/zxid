@@ -205,7 +205,7 @@ void zx_ds_DigestMethod_PUT_Algorithm(struct zx_ds_DigestMethod_s* x, struct zx_
 
 #endif
 /* -------------------------- ds_KeyInfo -------------------------- */
-/* refby( zx_ds_Signature_s zx_xenc_EncryptedData_s zx_is12_InteractionRequest_s zx_m20_KeyDescriptor_s zx_sa11_SubjectConfirmation_s zx_is_InteractionRequest_s zx_md_KeyDescriptor_s zx_xenc_EncryptedKey_s zx_sa_SubjectConfirmationData_s ) */
+/* refby( zx_ds_Signature_s zx_xenc_EncryptedData_s zx_is12_InteractionRequest_s zx_m20_KeyDescriptor_s zx_sa11_SubjectConfirmation_s zx_is_InteractionRequest_s zx_md_KeyDescriptor_s zx_xenc_EncryptedKey_s zx_sa_SubjectConfirmationData_s zx_shibmd_KeyAuthority_s ) */
 #ifndef zx_ds_KeyInfo_EXT
 #define zx_ds_KeyInfo_EXT
 #endif

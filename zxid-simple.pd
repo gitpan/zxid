@@ -2,7 +2,7 @@
 <<else: >>ZXID Simple API
 ###############
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
-<<cvsid: $Id: zxid-simple.pd,v 1.11 2009-10-18 12:39:10 sampo Exp $>>
+<<cvsid: $Id: zxid-simple.pd,v 1.12 2010-01-08 02:10:09 sampo Exp $>>
 <<class: article!a4paper!!ZXID-SIMP 01>>
 <<define: ZXDOC=ZXID Simple API>>
 
@@ -34,8 +34,8 @@ at the Apache module <<link:../mod_auth_saml/mod_auth_saml.html: mod_auth_saml>>
 which will, in 80% of the cases, give all the benefits with the minimal
 effort of just configuring your web server.
 
-1.1 Other documements
----------------------
+1.1 Other documents
+-------------------
 
 <<doc-inc.pd>>
 
@@ -355,7 +355,7 @@ c:: Indication that the application should send SP
     if you did not set ZXID_AUTO_META.
 
 e:: Indication that the application should display the
-    login page. Application may use zxid_idp_list()
+    IdP selection page. Application may use zxid_idp_list()
     to render the IdP selection area. This res is only returned
     if you did not set ZXID_AUTO_CONTENT.
 
@@ -380,7 +380,7 @@ Open curly ("{"):: SSO completed, if JSON output was
 z:: Authorization failure. Application MUST NOT display
     protected content. Instead, it should offer user
     interface where the user can understand what happened
-    and possibly gain extra credentials needed.
+    and possibly gain the extra credentials needed.
 
 Asterisk ("*"):: Although any unknown letter should be
     interpreted as an error, we follow convention

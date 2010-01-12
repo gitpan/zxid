@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxlog.c,v 1.30 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxlog.c,v 1.32 2009-11-24 23:53:40 sampo Exp $
  *
  * 18.11.2006, created --Sampo
  * 10.10.2007, added ipport --Sampo
@@ -85,8 +85,8 @@ static char* zxlog_alloc_zbuf(struct zxid_conf* cf, int *zlen, char* zbuf, int l
 * logbuf:: The data that should be logged
 */
 
-/* Called by:  test_mode x12, zxlog x2 */
-void zxlog_write_line(struct zxid_conf* cf, char* c_path, int encflags, int n, char* logbuf)
+/* Called by:  test_mode x12 */
+void zxlog_write_line(struct zxid_conf* cf, char* c_path, int encflags, int n, const char* logbuf)
 {
   struct rsa_st* rsa_pkey;
   struct aes_key_st aes_key;
@@ -272,16 +272,16 @@ void zxlog_write_line(struct zxid_conf* cf, char* c_path, int encflags, int n, c
 int zxlog(struct zxid_conf* cf,   /* 1 */
 	  struct timeval* ourts,  /* 2 null allowed, will use current time */
 	  struct timeval* srcts,  /* 3 null allowed, willnuse start of unix epoch + 501 usec */
-	  char* ipport,           /* 4 null allowed, -:- or cf->ipport if not given */
+	  const char* ipport,     /* 4 null allowed, -:- or cf->ipport if not given */
 	  struct zx_str* entid,   /* 5 null allowed, - if not given */
 	  struct zx_str* msgid,   /* 6 null allowed, - if not given */
 	  struct zx_str* a7nid,   /* 7 null allowed, - if not given */
 	  struct zx_str* nid,     /* 8 null allowed, - if not given */
-	  char* sigval,           /* 9 null allowed, - if not given */
-	  char* res,              /* 10 */
-	  char* op,               /* 11 */
-	  char* arg,              /* 12 null allowed, - if not given */
-	  char* fmt, ...)         /* 13 null allowed as format, ends the line w/o further ado */
+	  const char* sigval,     /* 9 null allowed, - if not given */
+	  const char* res,        /* 10 */
+	  const char* op,         /* 11 */
+	  const char* arg,        /* 12 null allowed, - if not given */
+	  const char* fmt, ...)   /* 13 null allowed as format, ends the line w/o further ado */
 {
   int n;
   char* p;
@@ -407,12 +407,12 @@ int zxlog(struct zxid_conf* cf,   /* 1 */
  *     is to write a file to the computed path. Usually 0 if the intent is to read.
  * return:: The path, as zx_str or 0 if failure */
 
-/* Called by:  zxid_anoint_sso_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_sso_finalize */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_sso_finalize */
 struct zx_str* zxlog_path(struct zxid_conf* cf,
 			  struct zx_str* entid,  /* issuer or target entity ID */
 			  struct zx_str* objid,  /* AssertionID or MessageID */
-			  char* dir,             /* rely/ or issue/ */
-			  char* kind,            /* /a7n/ or /msg/ */
+			  const char* dir,       /* rely/ or issue/ */
+			  const char* kind,      /* /a7n/ or /msg/ */
 			  int create_dirs)
 {
   struct stat st;
@@ -421,6 +421,13 @@ struct zx_str* zxlog_path(struct zxid_conf* cf,
   int len = cf->path_len + sizeof("log/")-1 + dir_len + 27 + kind_len + 27;
   char* s = ZX_ALLOC(cf->ctx, len+1);
   char* p;
+
+  if (!entid) {
+    ERR("No EntityID supplied %d", 0);
+    ZX_FREE(cf->ctx, s);
+    return 0;
+  }
+
   memcpy(s, cf->path, cf->path_len);
   p = s + cf->path_len;
   memcpy(p, "log/", sizeof("log/"));
@@ -497,8 +504,8 @@ struct zx_str* zxlog_path(struct zxid_conf* cf,
  * return::  0 if no duplicate (success), 1 if duplicate (failure)
  */
 
-/* Called by:  zxid_anoint_sso_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_sso_finalize */
-int zxlog_dup_check(struct zxid_conf* cf, struct zx_str* path, char* logkey)
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_sso_finalize */
+int zxlog_dup_check(struct zxid_conf* cf, struct zx_str* path, const char* logkey)
 {
   struct stat st;
   /* We need a c path, but get zx_str. However, the zx_str will come from zxlog_path()
@@ -506,6 +513,7 @@ int zxlog_dup_check(struct zxid_conf* cf, struct zx_str* path, char* logkey)
   ASSERTOP(path->s[path->len], ==, 0);
   if (!stat(path->s, &st)) {
     ERR("Duplicate %s path(%.*s)", logkey, path->len, path->s);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "EDUP", path->s, "%s", logkey);
     return 1;
   }
   return 0;
@@ -539,8 +547,8 @@ int zxlog_dup_check(struct zxid_conf* cf, struct zx_str* path, char* logkey)
  * captures both the original and the duplicate assertion (the logging is an append),
  * which may have forensic value. */
 
-/* Called by:  zxid_anoint_sso_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_sp_sso_finalize x2 */
-int zxlog_blob(struct zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob, char* lk)
+/* Called by:  zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_sp_sso_finalize x2 */
+int zxlog_blob(struct zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob, const char* lk)
 {
   if (!logflag || !blob)
     return 0;

@@ -3,7 +3,7 @@
 #############################
 <<author: Sampo Kellomäki (sampo@iki.fi)>>
 <<class: article!a4paper!!ZXID Apache 01>>
-<<cvsid: $Id: apache.pd,v 1.21 2009-09-16 10:14:57 sampo Exp $>>
+<<cvsid: $Id: apache.pd,v 1.22 2009-11-14 22:44:43 sampo Exp $>>
 
 While I am not a guru in Apache set ups and others will do this much
 better, not to speak of the official documentation, I still find that

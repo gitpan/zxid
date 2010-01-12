@@ -846,6 +846,14 @@ void zx_FREE_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, int f
       }
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      struct zx_sa_EncryptedAssertion_s* en;
+      for (e = x->EncryptedAssertion; e; e = en) {
+	  en = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n;
+	  zx_FREE_sa_EncryptedAssertion(c, e, free_strs);
+      }
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       struct zx_sa11_Assertion_s* en;
       for (e = x->sa11_Assertion; e; e = en) {
@@ -934,6 +942,11 @@ void zx_DUP_STRS_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x)
 	  zx_DUP_STRS_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  zx_DUP_STRS_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  zx_DUP_STRS_sa11_Assertion(c, e);
@@ -997,6 +1010,19 @@ struct zx_wsse_Security_s* zx_DEEP_CLONE_wsse_Security(struct zx_ctx* c, struct 
 	  en = zx_DEEP_CLONE_sa_Assertion(c, e, dup_strs);
 	  if (!enn)
 	      x->Assertion = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      struct zx_sa_EncryptedAssertion_s* en;
+      struct zx_sa_EncryptedAssertion_s* enn;
+      for (enn = 0, e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_sa_EncryptedAssertion(c, e, dup_strs);
+	  if (!enn)
+	      x->EncryptedAssertion = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -1101,6 +1127,14 @@ int zx_WALK_SO_wsse_Security(struct zx_ctx* c, struct zx_wsse_Security_s* x, voi
       struct zx_sa_Assertion_s* e;
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_sa_Assertion(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_sa_EncryptedAssertion(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

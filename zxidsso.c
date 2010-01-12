@@ -5,7 +5,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxidsso.c,v 1.62 2009-09-05 02:23:41 sampo Exp $
+ * $Id: zxidsso.c,v 1.64 2010-01-08 02:10:09 sampo Exp $
  *
  * 12.8.2006, created --Sampo
  * 30.9.2006, added signature verification --Sampo
@@ -137,15 +137,18 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
   struct zx_str* ars;
   int sso_profile_ix;
   struct zxid_entity* idp_meta;
+  D_INDENT("start_sso: ");
   D("start_sso: cgi=%p cgi->eid=%p eid(%s)", cgi, cgi->eid, cgi->eid?cgi->eid:"-");
   if (!cgi->pr_ix || !cgi->eid || !cgi->eid[0]) {
     D("Either protocol index or entity ID missing %d", cgi->pr_ix);
     cgi->err = "IdP URL Missing or incorrect";
+    D_DEDENT("start_sso: ");
     return 0;
   }
   idp_meta = zxid_get_ent(cf, cgi->eid);
   if (!idp_meta) {
     cgi->err = "IdP URL incorrect or IdP does not support fetching metadata from that URL.";
+    D_DEDENT("start_sso: ");
     return 0;
   }
   switch (sso_profile_ix = zxid_pick_sso_profile(cf, cgi, idp_meta)) {
@@ -156,6 +159,7 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
       ERR("Entity(%s) does not have IdP SSO Descriptor (metadata problem)", cgi->eid);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No IDPSSODescriptor");
       cgi->err = "Bad IdP metadata. Try different IdP.";
+      D_DEDENT("start_sso: ");
       return 0;
     }
     for (sso_svc = idp_meta->ed->IDPSSODescriptor->SingleSignOnService;
@@ -167,6 +171,7 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
       ERR("IdP Entity(%s) does not have any IdP SSO Service with " SAML2_REDIR " binding (metadata problem)", cgi->eid);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No redir binding");
       cgi->err = "Bad IdP metadata. Try different IdP.";
+      D_DEDENT("start_sso: ");
       return 0;
     }
     ar = zxid_mk_authn_req(cf, cgi);
@@ -177,11 +182,14 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
   default:
     NEVER("Inappropriate SSO profile: %d", sso_profile_ix);
     cgi->err = "Inappropriate SSO profile. Bad metadata?";
+    D_DEDENT("start_sso: ");
     return 0;
   }
   if (cf->log_level>0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "ANREDIR", cgi->eid, 0);
-  return zxid_saml2_redir_url(cf, sso_svc->Location, ars, cgi->rs);
+  ars = zxid_saml2_redir_url(cf, sso_svc->Location, ars, cgi->rs);
+  D_DEDENT("start_sso: ");
+  return ars;
 }
 
 /*() Wrapper for zxid_start_sso_url(), used in CGI scripts. */
@@ -231,12 +239,14 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
   /*char* msg_handle;*/
   char* p;
   char buf[64];
+  D_INDENT("deref: ");
   len = strlen(cgi->saml_art);
   if (cf->log_level > 0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "ART", cgi->saml_art, 0);
   if (len-7 >= sizeof(buf)*4/3) {
     ERR("SAMLart(%s), %d chars, too long. Max(%d) chars.", cgi->saml_art, len, sizeof(buf)*4/3+6);
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "ERR", cgi->saml_art, "Artifact too long");
+    D_DEDENT("deref: ");
     return 0;
   }
   p = unbase64_raw(cgi->saml_art, cgi->saml_art + len, buf, zx_std_index_64);
@@ -260,6 +270,7 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
   idp_meta = zxid_get_ent_by_succinct_id(cf, raw_succinct_id);
   if (!idp_meta) {
     ERR("Unable to dereference SAMLart(%s). Can not find metadata for IdP.", cgi->saml_art);
+    D_DEDENT("deref: ");
     return 0;
   }
   
@@ -271,6 +282,7 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
     if (!idp_meta->ed->IDPSSODescriptor) {
       ERR("Entity(%.*s) does not have IdP SSO Descriptor (metadata problem)", idp_meta->eid_len, idp_meta->eid);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No IDPSSODescriptor eid(%.*)", idp_meta->eid_len, idp_meta->eid);
+      D_DEDENT("deref: ");
       return 0;
     }
     for (ar_svc = idp_meta->ed->IDPSSODescriptor->ArtifactResolutionService;
@@ -283,19 +295,23 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
     if (!ar_svc) {
       ERR("Entity(%.*s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding and index(%s) (metadata problem)", idp_meta->eid_len, idp_meta->eid, end_pt_ix);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No Artifact Resolution Svc eid(%.*) ep_ix(%s)", idp_meta->eid_len, idp_meta->eid, end_pt_ix);
+      D_DEDENT("deref: ");
       return 0;
     }
     
     body = zx_NEW_e_Body(cf->ctx);
     body->ArtifactResolve = zxid_mk_art_deref(cf, idp_meta, cgi->saml_art);
     r = zxid_soap_call_body(cf, ar_svc->Location, body);
-    return zxid_sp_soap_dispatch(cf, cgi, ses, r);
+    len =  zxid_sp_soap_dispatch(cf, cgi, ses, r);
+    D_DEDENT("deref: ");
+    return len;
   default: goto badart;
   }
   
  badart:
   ERR("Bad SAMLart type code 0x%02x 0x%02x", buf[0], buf[1]);
   zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "ERR", 0, "Bad SAMLart type code 0x%02x 0x%02x", buf[0], buf[1]);
+  D_DEDENT("deref: ");
   return 0;
 }
 
@@ -380,7 +396,7 @@ void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
  * return::  0 (ZXSIG_OK) if validation was successful, otherwise a ZXSIG error code. */
 
 /* Called by:  zxid_sp_sso_finalize */
-int zxid_validate_conditions(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n, struct zx_str* myentid, struct timeval* ourts, char** err)
+int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n, struct zx_str* myentid, struct timeval* ourts, char** err)
 {
   struct zx_sa_AudienceRestriction_s* audr;
   struct zx_elem_s* aud;
@@ -497,6 +513,8 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
   ses->rs = cgi->rs;
   GETTIMEOFDAY(&ourts, 0);
   
+  D_INDENT("ssof: ");
+
   if (!a7n || !a7n->AuthnStatement) {
     ERR("SSO failed: no assertion supplied, or assertion didn't contain AuthnStatement. %p", a7n);
     goto erro;
@@ -510,6 +528,9 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
     ERR("SSO failed: assertion does not have Issuer. %p", a7n->Issuer);
     goto erro;
   }
+  
+  /* See zxid_wsp_validate() for similar code. *** consider factoring out commonality */
+  
   issuer = a7n->Issuer->gg.content;
   if (!issuer || !issuer->len || !issuer->s[0]) {
     ERR("SSO failed: Issuer of the assertion is empty. %d", issuer->len);
@@ -528,13 +549,13 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
   }
   
   subj = ses->nameid->gg.content;
-  ses->nid = zx_str_to_c(cf->ctx, subj);
+  ses->nid = ses->tgt = zx_str_to_c(cf->ctx, subj);
   if (ses->nameid->Format && !memcmp(ses->nameid->Format->s, SAML2_TRANSIENT_NID_FMT, ses->nameid->Format->len)) {
-    ses->nidfmt = 0;
+    ses->nidfmt = ses->tgtfmt = 0;
   } else {
-    ses->nidfmt = 1;  /* anything nontransient may be a federation */
+    ses->nidfmt = ses->tgtfmt = 1;  /* anything nontransient may be a federation */
   }
-
+  
   if (a7n->AuthnStatement->SessionIndex)
     ses->sesix = zx_str_to_c(cf->ctx, a7n->AuthnStatement->SessionIndex);
   
@@ -574,19 +595,19 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
     }
   }
   if (cf->sig_fatal && ses->sigres) {
-    ERR("Fail SSO due to failed signeture sigres=%d", ses->sigres);
+    ERR("Fail SSO due to failed signature sigres=%d", ses->sigres);
     err = "P";
     goto erro;
   }
   
-  if (zxid_validate_conditions(cf, cgi, ses, a7n, zxid_my_entity_id(cf), &ourts, &err))
+  if (zxid_validate_cond(cf, cgi, ses, a7n, zxid_my_entity_id(cf), &ourts, &err))
     goto erro;
   
   if (cf->log_rely_a7n) {
     DD("Logging... %d", 0);
     logpath = zxlog_path(cf, issuer, a7n->ID, ZXLOG_RELY_DIR, ZXLOG_A7N_KIND, 1);
     if (logpath) {
-      ses->sso_a7n_path = zx_str_to_c(cf->ctx, logpath);
+      ses->sso_a7n_path = ses->tgt_a7n_path = zx_str_to_c(cf->ctx, logpath);
       ss = zx_EASY_ENC_WO_sa_Assertion(cf->ctx, a7n);
       if (zxlog_dup_check(cf, logpath, "SSO assertion")) {
 	if (cf->dup_a7n_fatal) {
@@ -607,6 +628,7 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
   DD("Logging... %d", 0);
   zxlog(cf, &ourts, &srcts, 0, issuer, 0, a7n->ID, subj,
 	cgi->sigval, "K", ses->nidfmt?"FEDSSO":"TMPSSO", ses->sesix?ses->sesix:"-", 0);
+  D_DEDENT("ssof: ");
   return ZXID_SSO_OK;
 
 erro:
@@ -614,6 +636,7 @@ erro:
   cgi->msg = "SSO failed. This could be due to signature, timeout, etc., technical failures, or by policy.";
   zxlog(cf, &ourts, &srcts, 0, issuer, 0, a7n?a7n->ID:0, subj,
 	cgi->sigval, err, ses->nidfmt?"FEDSSO":"TMPSSO", ses->sesix?ses->sesix:"-", "Error.");
+  D_DEDENT("ssof: ");
   return 0;
 }
 
@@ -628,6 +651,7 @@ erro:
 /* Called by:  zxid_sp_dig_sso_a7n */
 int zxid_sp_anon_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 {
+  D_INDENT("anoan_ssof: ");
   cgi->sigval = "N";
   cgi->sigmsg = "Anonymous login. No signature.";
   ses->sigres = ZXSIG_NO_SIG;
@@ -646,6 +670,7 @@ int zxid_sp_anon_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxi
   cgi->op = '-';  /* Make sure management screen does not try to redispatch. */
   /*zxid_put_user(cf, ses->nameid->Format, ses->nameid->NameQualifier, ses->nameid->SPNameQualifier, ses->nameid->gg.content, 0);*/
   zxlog(cf, 0, 0, 0, 0, 0, 0, 0, cgi->sigval, "K", "TMPSSO", "-", 0);
+  D_DEDENT("anon_ssof: ");
   return ZXID_SSO_OK;
 }
 

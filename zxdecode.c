@@ -4,7 +4,7 @@
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
- * $Id: zxdecode.c,v 1.6 2009-10-18 12:39:10 sampo Exp $
+ * $Id: zxdecode.c,v 1.8 2009-11-29 12:23:06 sampo Exp $
  *
  * 25.11.2008, created --Sampo
  */
@@ -42,15 +42,16 @@ Usage: zxdecode [options] <message >decoded\n\
   -h               This help message\n\
   --               End of options\n";
 
-char* zx_instance = "\tzxdec";
+char zx_instance[64] = "\tzxdec";
 int zx_debug = 0;
+char zx_indent[256] = "";
 int inflate_flag = 2;  /* Auto */
 int verbose = 1;
 char buf[32*1024];
 int assert_nonfatal = 0;
 char* assert_msg = "assert fired.";
 
-/* Called by:  main x7 */
+/* Called by:  main x9 */
 static void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) return;
@@ -129,7 +130,7 @@ static void opt(int* argc, char*** argv, char*** env)
   }
 }
 
-/* Called by:  main x3 */
+/* Called by:  main x4 */
 static void decode(char* msg, char* q)
 {
   int msglen, len;

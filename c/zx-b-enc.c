@@ -3150,6 +3150,16 @@ int zx_LEN_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x
   int len = 0;
 #endif
   
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
+	  len += zx_LEN_SO_tas3sol_Obligations(c, e);
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      for (e = x->Dict; e; e = (struct zx_tas3sol_Dict_s*)e->gg.g.n)
+	  len += zx_LEN_SO_tas3sol_Dict(c, e);
+  }
 
 
   len += zx_len_so_common(c, &x->gg);
@@ -3195,6 +3205,16 @@ int zx_LEN_WO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x
   int len = 0;
 #endif
   
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
+	  len += zx_LEN_WO_tas3sol_Obligations(c, e);
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      for (e = x->Dict; e; e = (struct zx_tas3sol_Dict_s*)e->gg.g.n)
+	  len += zx_LEN_WO_tas3sol_Dict(c, e);
+  }
 
 
   len += zx_len_wo_common(c, &x->gg); 
@@ -3237,6 +3257,16 @@ char* zx_ENC_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s*
   /* root node has no begin tag */
 #endif
   
+  {
+      struct zx_tas3sol_Obligations_s* e;
+      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
+	  p = zx_ENC_SO_tas3sol_Obligations(c, e, p);
+  }
+  {
+      struct zx_tas3sol_Dict_s* e;
+      for (e = x->Dict; e; e = (struct zx_tas3sol_Dict_s*)e->gg.g.n)
+	  p = zx_ENC_SO_tas3sol_Dict(c, e, p);
+  }
 
   p = zx_enc_so_unknown_elems_and_content(c, p, &x->gg);
   

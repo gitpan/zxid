@@ -48,7 +48,7 @@ struct zx_sec_Token_s {
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,1} nada */
   struct zx_ff12_Assertion_s* ff12_Assertion;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
-  struct zx_str* ref;	/* {0,1} attribute xs:string */
+  struct zx_str* ref;	/* {0,1} attribute xs:anyURI */
   struct zx_str* usage;	/* {0,1} attribute xs:anyURI */
 };
 
