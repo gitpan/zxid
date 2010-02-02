@@ -238,6 +238,11 @@ struct zx_str* zxid_wsp_decorate(struct zxid_conf* cf, struct zxid_ses* ses, con
   struct zx_e_Envelope_s* env;
 
   D_INDENT("decor: ");
+  if (!memcmp(enve, "<?xml ", sizeof("<?xml ")-1)) {  /* Ignore common, but unnecessary decl. */
+    for (enve += sizeof("<?xml "); *enve && !(enve[0] == '?' && enve[1] == '>'); ++enve) ;
+    if (*enve)
+      enve += 2;
+  }
   if (memcmp(enve, "<e:Envelope", sizeof("<e:Envelope")-1)) {
     if (memcmp(enve, "<e:Body", sizeof("<e:Body")-1)) {
       /* Must be just payload */
@@ -320,8 +325,11 @@ struct zx_str* zxid_wsp_decoratef(struct zxid_conf* cf, struct zxid_ses* ses, co
 /* Called by: */
 char* zxid_wsp_validate(struct zxid_conf* cf, struct zxid_ses* ses, const char* az_cred, const char* enve)
 {
+  int n_refs = 0;
+  struct zxsig_ref refs[ZXID_N_WSF_SIGNED_HEADERS];
   struct timeval srcts = {0,501000};
   struct zx_root_s* r;
+  struct zxid_entity* wsc_meta;
   struct zx_e_Envelope_s* env;
   struct zx_wsse_Security_s* sec;
   //struct zx_sa_Assertion_s* a7n;
@@ -329,6 +337,7 @@ char* zxid_wsp_validate(struct zxid_conf* cf, struct zxid_ses* ses, const char* 
   struct zx_str* subj = 0; //&unknown_str;
   struct zx_str* logpath;
   struct zx_str  ss;
+  struct zxid_cgi cgi;
 
   D_INDENT("valid: ");
   
@@ -384,11 +393,40 @@ char* zxid_wsp_validate(struct zxid_conf* cf, struct zxid_ses* ses, const char* 
     }
   }
 
-#if 0
-  if (!zxid_chk_sig(cf, &cgi, ses, (struct zx_elem_s*)req, env->Header->Security->Signature, issuer, "request")) {
-    D_DEDENT("valid: ");
+  /* Validate message signature (*** add Issuer trusted check, CA validation, etc.) */
+  
+  wsc_meta = zxid_get_ent_ss(cf, issuer);
+  if (!wsc_meta) {
+    ERR("Unable to find metadata for Sender(%.*s).", issuer->len, issuer->s);
     return 0;
+    //cgi->sigval = "I";
+    //cgi->sigmsg = "Issuer of Assertion unknown.";
+    //ses->sigres = ZXSIG_NO_SIG;
+    //if (cf->nosig_fatal) {  err = "P";  goto erro; }
   }
+
+#if 0
+    n_refs = zxid_add_header_refs(cf, n_refs, env->Header);
+
+    if (a7n->Signature && a7n->Signature->SignedInfo && a7n->Signature->SignedInfo->Reference) {
+      refs.sref = a7n->Signature->SignedInfo->Reference;
+      refs.blob = (struct zx_elem_s*)a7n;
+      ses->sigres = zxsig_validate(cf->ctx, idp_meta->sign_cert, a7n->Signature, 1, &refs);
+      zxid_sigres_map(ses->sigres, &cgi->sigval, &cgi->sigmsg);
+    } else {
+      if (cf->msg_sig_ok && !ses->sigres) {
+	INFO("Assertion without signature accepted due to message level signature (SimpleSign) %d", 0);
+      } else {
+	ERR("SSO warn: assertion not signed. Sigval(%s) %p", STRNULLCHKNULL(cgi->sigval), a7n->Signature);
+	cgi->sigval = "N";
+	cgi->sigmsg = "Assertion was not signed.";
+	ses->sigres = ZXSIG_NO_SIG;
+	if (cf->nosig_fatal) {
+	  err = "P";
+	  goto erro;
+	}
+      }
+    }
 #endif
 
   if (sec->Timestamp && sec->Timestamp->Created && sec->Timestamp->Created->gg.content

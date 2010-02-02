@@ -7,6 +7,7 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** dec-templ.c  -  XML decoder template, used in code generation
+ ** Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
@@ -195,7 +196,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -259,6 +262,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -361,7 +368,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -420,6 +429,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -534,7 +547,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -588,6 +603,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -690,7 +709,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -744,6 +765,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -846,7 +871,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -905,6 +932,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -1019,7 +1050,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -1073,6 +1106,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -1175,7 +1212,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -1229,6 +1268,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -1331,7 +1374,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -1390,6 +1435,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -1498,7 +1547,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -1552,6 +1603,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -1654,7 +1709,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -1708,6 +1765,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -1828,7 +1889,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -1902,6 +1965,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2004,7 +2071,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2058,6 +2127,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2160,7 +2233,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2214,6 +2289,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2316,7 +2395,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2370,6 +2451,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2472,7 +2557,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2526,6 +2613,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2628,7 +2719,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2682,6 +2775,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2784,7 +2881,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2843,6 +2942,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -2945,7 +3048,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -2999,6 +3104,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -3101,7 +3210,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -3155,6 +3266,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -3257,7 +3372,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -3311,6 +3428,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -3413,7 +3534,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -3472,6 +3595,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -3580,7 +3707,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -3629,6 +3758,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -3731,7 +3864,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -3815,6 +3950,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -3917,7 +4056,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -3981,6 +4122,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -4083,7 +4228,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -4142,6 +4289,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -4256,7 +4407,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -4315,6 +4468,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -4417,7 +4574,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -4471,6 +4630,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -4573,7 +4736,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -4632,6 +4797,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -4734,7 +4903,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -4793,6 +4964,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -4895,7 +5070,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -4949,6 +5126,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -5051,7 +5232,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -5110,6 +5293,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -5218,7 +5405,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -5267,6 +5456,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -5369,7 +5562,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -5423,6 +5618,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -5531,7 +5730,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -5585,6 +5786,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -5687,7 +5892,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -5746,6 +5953,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -5854,7 +6065,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -5908,6 +6121,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6010,7 +6227,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -6064,6 +6283,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6166,7 +6389,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -6220,6 +6445,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6322,7 +6551,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -6381,6 +6612,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6483,7 +6718,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -6542,6 +6779,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6662,7 +6903,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -6716,6 +6959,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6818,7 +7065,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -6872,6 +7121,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -6980,7 +7233,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -7039,6 +7294,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -7147,7 +7406,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -7201,6 +7462,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -7309,7 +7574,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -7373,6 +7640,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -7511,7 +7782,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -7575,6 +7848,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -7683,7 +7960,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -7732,6 +8011,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -7834,7 +8117,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -7888,6 +8173,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -7996,7 +8285,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -8055,6 +8346,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 
@@ -8157,7 +8452,9 @@ next_attr:
 	name = c->p;
 	ZX_LOOK_FOR(c,'>');
 #if defined(DEC_WRONG_ELEM)
-	if (c->p-name != namlen || memcmp(name, nam, namlen))
+	if (x->gg.g.ns->prefix_len
+	    ?(c->p - name - x->gg.g.ns->prefix_len - 1 != namlen || memcmp(name+x->gg.g.ns->prefix_len+1, nam, namlen))
+	    :(c->p-name != namlen || memcmp(name, nam, namlen)))
 #else
 	tok = zx_elem_lookup(c, name, c->p, &ns);
 	if (tok != x->gg.g.tok)
@@ -8211,6 +8508,10 @@ next_attr:
  out:
   iternode = x->gg.kids;
   REVERSE_LIST_NEXT(x->gg.kids, iternode, g.wo);
+  iternode = (struct zx_elem_s*)(x->gg.any_elem);
+  REVERSE_LIST_NEXT(x->gg.any_elem, iternode, g.n);
+  ss = (struct zx_str*)(x->gg.any_attr);
+  REVERSE_LIST_NEXT(x->gg.any_attr, ss, g.n);
   ZX_END_DEC_EXT(x);
   return x;
 

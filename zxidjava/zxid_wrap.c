@@ -4429,6 +4429,32 @@ SWIGEXPORT jchar JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1idp_1ena_1get(JNIE
 }
 
 
+SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1as_1ena_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jchar jarg2) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  arg2 = (char)jarg2; 
+  if (arg1) (arg1)->as_ena = arg2;
+}
+
+
+SWIGEXPORT jchar JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1as_1ena_1get(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  jchar jresult = 0 ;
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  result = (char) ((arg1)->as_ena);
+  jresult = (jchar)result; 
+  return jresult;
+}
+
+
 SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1pdp_1ena_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jchar jarg2) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char arg2 ;
@@ -6169,6 +6195,32 @@ SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1localpdp_1idpnid_1
   arg1 = *(struct zxid_conf **)&jarg1; 
   result = (struct zxid_cstr_list *) ((arg1)->localpdp_idpnid_deny);
   *(struct zxid_cstr_list **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1bootstrap_1level_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jint jarg2) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  int arg2 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  arg2 = (int)jarg2; 
+  if (arg1) (arg1)->bootstrap_level = arg2;
+}
+
+
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1conf_1bootstrap_1level_1get(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  jint jresult = 0 ;
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  result = (int) ((arg1)->bootstrap_level);
+  jresult = (jint)result; 
   return jresult;
 }
 
@@ -10713,25 +10765,49 @@ SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1MAX_1USER_1get(JNIEnv *je
 }
 
 
-SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1MAX_1MD_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1INIT_1MD_1BUF_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
-  result = (int) (64*1024);
+  result = (int) (8*1024-1);
   jresult = (jint)result; 
   return jresult;
 }
 
 
-SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1MAX_1SOAP_1get(JNIEnv *jenv, jclass jcls) {
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1INIT_1SOAP_1BUF_1get(JNIEnv *jenv, jclass jcls) {
   jint jresult = 0 ;
   int result;
   
   (void)jenv;
   (void)jcls;
-  result = (int) (64*1024);
+  result = (int) (8*1024-1);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1INIT_1EPR_1BUF_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (int) (32*1024);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1MAX_1CURL_1BUF_1get(JNIEnv *jenv, jclass jcls) {
+  jint jresult = 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (int) (10*1024*1024-1);
   jresult = (jint)result; 
   return jresult;
 }
@@ -13873,17 +13949,17 @@ SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1find_1ses(JNIEnv *jenv, j
 }
 
 
-SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1pool_1to_1ldif(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1ses_1to_1ldif(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
   jstring jresult = 0 ;
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  struct zxid_attr *arg2 = (struct zxid_attr *) 0 ;
+  struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
   struct zx_str *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = *(struct zxid_conf **)&jarg1; 
-  arg2 = *(struct zxid_attr **)&jarg2; 
-  result = (struct zx_str *)zxid_pool_to_ldif(arg1,arg2);
+  arg2 = *(struct zxid_ses **)&jarg2; 
+  result = (struct zx_str *)zxid_ses_to_ldif(arg1,arg2);
   {
     // Unfortunately Java does not provide NewStringUTF() that would explicitly
     // take length field - they insist on nul termination instead. Sigh.
@@ -13905,17 +13981,17 @@ SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1pool_1to_1ldif(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1pool_1to_1json(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1ses_1to_1json(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
   jstring jresult = 0 ;
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  struct zxid_attr *arg2 = (struct zxid_attr *) 0 ;
+  struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
   struct zx_str *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = *(struct zxid_conf **)&jarg1; 
-  arg2 = *(struct zxid_attr **)&jarg2; 
-  result = (struct zx_str *)zxid_pool_to_json(arg1,arg2);
+  arg2 = *(struct zxid_ses **)&jarg2; 
+  result = (struct zx_str *)zxid_ses_to_json(arg1,arg2);
   {
     // Unfortunately Java does not provide NewStringUTF() that would explicitly
     // take length field - they insist on nul termination instead. Sigh.
@@ -13937,17 +14013,17 @@ SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1pool_1to_1json(JNIEnv 
 }
 
 
-SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1pool_1to_1qs(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
+SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1ses_1to_1qs(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
   jstring jresult = 0 ;
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  struct zxid_attr *arg2 = (struct zxid_attr *) 0 ;
+  struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
   struct zx_str *result = 0 ;
   
   (void)jenv;
   (void)jcls;
   arg1 = *(struct zxid_conf **)&jarg1; 
-  arg2 = *(struct zxid_attr **)&jarg2; 
-  result = (struct zx_str *)zxid_pool_to_qs(arg1,arg2);
+  arg2 = *(struct zxid_ses **)&jarg2; 
+  result = (struct zx_str *)zxid_ses_to_qs(arg1,arg2);
   {
     // Unfortunately Java does not provide NewStringUTF() that would explicitly
     // take length field - they insist on nul termination instead. Sigh.
@@ -13981,7 +14057,7 @@ SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1ses_1to_1pool(JNIEnv *jen
 }
 
 
-SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1attr_1to_1pool(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4) {
+SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1attr_1to_1ses(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -13997,12 +14073,12 @@ SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1attr_1to_1pool(JNIEn
     if (!arg3) return ;
   }
   arg4 = *(struct zx_str **)&jarg4; 
-  zxid_add_attr_to_pool(arg1,arg2,arg3,arg4);
+  zxid_add_attr_to_ses(arg1,arg2,arg3,arg4);
   if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, ( char *)arg3);
 }
 
 
-SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1qs_1to_1pool(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jint jarg4) {
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1qs_1to_1ses(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jint jarg4) {
   jint jresult = 0 ;
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
@@ -14020,7 +14096,7 @@ SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1qs_1to_1pool(JNIEnv 
     if (!arg3) return 0;
   }
   arg4 = (int)jarg4; 
-  result = (int)zxid_add_qs_to_pool(arg1,arg2,arg3,arg4);
+  result = (int)zxid_add_qs_to_ses(arg1,arg2,arg3,arg4);
   jresult = (jint)result; 
   if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, ( char *)arg3);
   return jresult;
@@ -15272,12 +15348,13 @@ SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1ldif_1attrs(JNIEnv 
 }
 
 
-SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1gen_1boots(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jlong jarg4) {
+SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1gen_1boots(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2, jstring jarg3, jlong jarg4, jint jarg5) {
   jlong jresult = 0 ;
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
   struct zx_sa_Attribute_s *arg4 = (struct zx_sa_Attribute_s *) 0 ;
+  int arg5 ;
   struct zx_sa_Attribute_s *result = 0 ;
   
   (void)jenv;
@@ -15294,7 +15371,8 @@ SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1gen_1boots(JNIEnv *jenv,
     if (!arg3) return 0;
   }
   arg4 = *(struct zx_sa_Attribute_s **)&jarg4; 
-  result = (struct zx_sa_Attribute_s *)zxid_gen_boots(arg1,arg2,arg3,arg4);
+  arg5 = (int)jarg5; 
+  result = (struct zx_sa_Attribute_s *)zxid_gen_boots(arg1,arg2,arg3,arg4,arg5);
   *(struct zx_sa_Attribute_s **)&jresult = result; 
   if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, ( char *)arg2);
   if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, ( char *)arg3);
@@ -15376,11 +15454,12 @@ SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1check_1fed(JNIEnv *jenv,
 }
 
 
-SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1fed_1tok_1to_1epr(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3) {
+SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1fed_1tok_1to_1epr(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jint jarg4) {
   jstring jresult = 0 ;
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   struct zx_a_EndpointReference_s *arg2 = (struct zx_a_EndpointReference_s *) 0 ;
   char *arg3 = (char *) 0 ;
+  int arg4 ;
   char *result = 0 ;
   
   (void)jenv;
@@ -15392,7 +15471,8 @@ SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1add_1fed_1tok_1to_1epr
     arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
     if (!arg3) return 0;
   }
-  result = (char *)zxid_add_fed_tok_to_epr(arg1,arg2,arg3);
+  arg4 = (int)jarg4; 
+  result = (char *)zxid_add_fed_tok_to_epr(arg1,arg2,arg3,arg4);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, ( char *)result);
   if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, ( char *)arg3);
   return jresult;
@@ -15735,6 +15815,56 @@ SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1validate_1cond(JNIEnv *je
   arg7 = *(char ***)&jarg7; 
   result = (int)zxid_validate_cond(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
   jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1as_1call_1ses(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jlong jarg3, jlong jarg4) {
+  jint jresult = 0 ;
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  struct zxid_entity *arg2 = (struct zxid_entity *) 0 ;
+  struct zxid_cgi *arg3 = (struct zxid_cgi *) 0 ;
+  struct zxid_ses *arg4 = (struct zxid_ses *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  arg2 = *(struct zxid_entity **)&jarg2; 
+  arg3 = *(struct zxid_cgi **)&jarg3; 
+  arg4 = *(struct zxid_ses **)&jarg4; 
+  result = (int)zxid_as_call_ses(arg1,arg2,arg3,arg4);
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_zxidjava_zxidjniJNI_zxid_1as_1call(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jstring jarg3, jstring jarg4) {
+  jlong jresult = 0 ;
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  struct zxid_entity *arg2 = (struct zxid_entity *) 0 ;
+  char *arg3 = (char *) 0 ;
+  char *arg4 = (char *) 0 ;
+  struct zxid_ses *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  arg2 = *(struct zxid_entity **)&jarg2; 
+  arg3 = 0;
+  if (jarg3) {
+    arg3 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg3, 0);
+    if (!arg3) return 0;
+  }
+  arg4 = 0;
+  if (jarg4) {
+    arg4 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg4, 0);
+    if (!arg4) return 0;
+  }
+  result = (struct zxid_ses *)zxid_as_call(arg1,arg2,arg3,arg4);
+  *(struct zxid_ses **)&jresult = result; 
+  if (arg3) (*jenv)->ReleaseStringUTFChars(jenv, jarg3, ( char *)arg3);
+  if (arg4) (*jenv)->ReleaseStringUTFChars(jenv, jarg4, ( char *)arg4);
   return jresult;
 }
 
@@ -17517,6 +17647,20 @@ SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_zxid_1cache_1epr(JNIEnv *jenv, 
 }
 
 
+SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1snarf_1eprs(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2, jlong jarg3) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
+  struct zx_a_EndpointReference_s *arg3 = (struct zx_a_EndpointReference_s *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_conf **)&jarg1; 
+  arg2 = *(struct zxid_ses **)&jarg2; 
+  arg3 = *(struct zx_a_EndpointReference_s **)&jarg3; 
+  zxid_snarf_eprs(arg1,arg2,arg3);
+}
+
+
 SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1snarf_1eprs_1from_1ses(JNIEnv *jenv, jclass jcls, jlong jarg1, jlong jarg2) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
@@ -18690,6 +18834,44 @@ SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1curl_1ctx_1p_1get(JNIE
   (void)jcls;
   arg1 = *(struct zxid_curl_ctx **)&jarg1; 
   result = (char *) ((arg1)->p);
+  if (result) jresult = (*jenv)->NewStringUTF(jenv, ( char *)result);
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_zxidjava_zxidjniJNI_zxid_1curl_1ctx_1buf_1set(JNIEnv *jenv, jclass jcls, jlong jarg1, jstring jarg2) {
+  struct zxid_curl_ctx *arg1 = (struct zxid_curl_ctx *) 0 ;
+  char *arg2 = (char *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_curl_ctx **)&jarg1; 
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)(*jenv)->GetStringUTFChars(jenv, jarg2, 0);
+    if (!arg2) return ;
+  }
+  {
+    if (arg2) {
+      arg1->buf = (char *) malloc(strlen(( char *)arg2)+1);
+      strcpy((char *)arg1->buf, ( char *)arg2);
+    } else {
+      arg1->buf = 0;
+    }
+  }
+  if (arg2) (*jenv)->ReleaseStringUTFChars(jenv, jarg2, ( char *)arg2);
+}
+
+
+SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_zxid_1curl_1ctx_1buf_1get(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  jstring jresult = 0 ;
+  struct zxid_curl_ctx *arg1 = (struct zxid_curl_ctx *) 0 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(struct zxid_curl_ctx **)&jarg1; 
+  result = (char *) ((arg1)->buf);
   if (result) jresult = (*jenv)->NewStringUTF(jenv, ( char *)result);
   return jresult;
 }
@@ -21381,7 +21563,7 @@ SWIGEXPORT jint JNICALL Java_zxidjava_zxidjniJNI_ZXID_1VERSION_1get(JNIEnv *jenv
   
   (void)jenv;
   (void)jcls;
-  result = (int) 0x000045;
+  result = (int) 0x000049;
   jresult = (jint)result; 
   return jresult;
 }
@@ -21393,7 +21575,7 @@ SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_ZXID_1REL_1get(JNIEnv *jenv,
   
   (void)jenv;
   (void)jcls;
-  result = (char *) "0.45";
+  result = (char *) "0.49";
   if (result) jresult = (*jenv)->NewStringUTF(jenv, ( char *)result);
   return jresult;
 }
@@ -21405,7 +21587,7 @@ SWIGEXPORT jstring JNICALL Java_zxidjava_zxidjniJNI_ZXID_1COMPILE_1DATE_1get(JNI
   
   (void)jenv;
   (void)jcls;
-  result = (char *) "1263219532";
+  result = (char *) "1265077802";
   if (result) jresult = (*jenv)->NewStringUTF(jenv, ( char *)result);
   return jresult;
 }

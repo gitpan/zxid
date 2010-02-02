@@ -240,6 +240,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->di_allow_create = ZXID_DI_ALLOW_CREATE;
   cf->di_nid_fmt   = ZXID_DI_NID_FMT;
   cf->di_a7n_enc   = ZXID_DI_A7N_ENC;
+  cf->bootstrap_level = ZXID_BOOTSTRAP_LEVEL;
   cf->show_conf    = ZXID_SHOW_CONF;
 #ifdef USE_OPENSSL
   if (zxid_path) {
@@ -266,6 +267,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->ses_cookie_name   = ZXID_SES_COOKIE_NAME;
   cf->user_local        = ZXID_USER_LOCAL;
   cf->idp_ena           = ZXID_IDP_ENA;
+  cf->as_ena            = ZXID_AS_ENA;
   cf->pdp_ena           = ZXID_PDP_ENA;
 
   cf->log_level = ZXLOG_LEVEL;
@@ -886,9 +888,11 @@ scan_end:
       if (!strcmp(n, "AN_PAGE"))      { cf->an_page = v; break; }
       if (!strcmp(n, "ATTRSRC"))      { cf->attrsrc = zxid_load_atsrc(cf, cf->attrsrc, v); break; }
       if (!strcmp(n, "A7NTTL"))       { SCAN_INT(v, cf->a7nttl); break; }
+      if (!strcmp(n, "AS_ENA"))       { SCAN_INT(v, cf->as_ena); break; }
       goto badcf;
     case 'B':  /* BEFORE_SLOP */
-      if (!strcmp(n, "BEFORE_SLOP"))  { SCAN_INT(v, cf->before_slop); break; }
+      if (!strcmp(n, "BEFORE_SLOP"))     { SCAN_INT(v, cf->before_slop); break; }
+      if (!strcmp(n, "BOOTSTRAP_LEVEL")) { SCAN_INT(v, cf->bootstrap_level); break; }
       goto badcf;
     case 'C':  /* CDC_URL, CDC_CHOICE */
       if (!strcmp(n, "CDC_URL"))      { cf->cdc_url = v; break; }
@@ -1228,11 +1232,14 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "SSO_SOAP_SIGN=%d\n"
 "SSO_SOAP_RESP_SIGN=%d\n"
 "SSO_SIGN=%x\n"
+"WSC_SIGN=%x\n"
+"WSP_SIGN=%x\n"
 "NAMEID_ENC=%x\n"
 "POST_A7N_ENC=%d\n"
 "DI_ALLOW_CREATE=%d\n"
 "DI_NID_FMT=%d\n"
 "DI_A7N_ENC=%d\n"
+"BOOTSTRAP_LEVEL=%d\n"
 "SHOW_CONF=%x\n"
 "#ZXID_ID_BITS=%d (compile)\n"
 "#ZXID_ID_MAX_BITS=%d (compile)\n"
@@ -1242,6 +1249,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "IPPORT=%s\n"
 "USER_LOCAL=%d\n"
 "IDP_ENA=%d\n"
+"AS_ENA=%d\n"
 "PDP_ENA=%d\n"
 "#ZXID_MAX_BUF=%d (compile)\n"
 
@@ -1263,6 +1271,8 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "AUDIENCE_FATAL=%d\n"
 "DUP_A7N_FATAL=%d\n"
 "DUP_MSG_FATAL=%d\n"
+"WSP_NOSIG_FATAL=%d\n"
+"NOTIMESTAMP_FATAL=%d\n"
 "REDIR_TO_CONTENT=%d\n"
 "REMOTE_USER_ENA=%d\n"
 "MAX_SOAP_RETRY=%d\n"
@@ -1351,11 +1361,14 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 cf->sso_soap_sign,
 		 cf->sso_soap_resp_sign,
 		 cf->sso_sign,
+		 cf->wsc_sign,
+		 cf->wsp_sign,
 		 cf->nameid_enc,
 		 cf->post_a7n_enc,
 		 cf->di_allow_create,
 		 cf->di_nid_fmt,
 		 cf->di_a7n_enc,
+		 cf->bootstrap_level,
 		 cf->show_conf,
 		 ZXID_ID_BITS,
 		 ZXID_ID_MAX_BITS,
@@ -1365,6 +1378,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 STRNULLCHK(cf->ipport),
 		 cf->user_local,
 		 cf->idp_ena,
+		 cf->as_ena,
 		 cf->pdp_ena,
 		 ZXID_MAX_BUF,
 
@@ -1386,6 +1400,8 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 cf->audience_fatal,
 		 cf->dup_a7n_fatal,
 		 cf->dup_msg_fatal,
+		 cf->wsp_nosig_fatal,
+		 cf->notimestamp_fatal,
 		 cf->redir_to_content,
 		 cf->remote_user_ena,
 		 cf->max_soap_retry,

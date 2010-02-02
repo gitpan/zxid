@@ -210,7 +210,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
  * The nodes argument is "iterator". The reveresed list is left in root. */
 #define REVERSE_LIST_NEXT(root,nodes,nxt) MB (root) = 0; \
   while (nodes) { void* n = (nodes)->nxt; (nodes)->nxt = (void*)(root); \
-    (root) = (nodes); (nodes) = n;  } ME
+    (root) = (void*)(nodes); (nodes) = n;  } ME
 
 #define REVERSE_LIST(root,nodes) REVERSE_LIST_NEXT((root),(nodes),next)
 
@@ -409,7 +409,7 @@ extern char zx_indent[256];  /* Defined in zxidlib.c. *** Locking issues? */
 #define D_INDENT(s) /* no locking issues */
 #define D_DEDENT(s)
 #endif
-#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t %10s:%-3d %-16s %s d %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr)))
+#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t %10s:%-3d %-16s %s d %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, ## __VA_ARGS__), fflush(stderr)))
 /*#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t%x %10s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))*/
 #define DD(format,...)  /* Documentative */
 

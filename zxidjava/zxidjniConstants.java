@@ -62,8 +62,10 @@ public interface zxidjniConstants {
   public final static String ZXID_COT_DIR = zxidjniJNI.ZXID_COT_DIR_get();
   public final static String ZXID_DIMD_DIR = zxidjniJNI.ZXID_DIMD_DIR_get();
   public final static int ZXID_MAX_USER = zxidjniJNI.ZXID_MAX_USER_get();
-  public final static int ZXID_MAX_MD = zxidjniJNI.ZXID_MAX_MD_get();
-  public final static int ZXID_MAX_SOAP = zxidjniJNI.ZXID_MAX_SOAP_get();
+  public final static int ZXID_INIT_MD_BUF = zxidjniJNI.ZXID_INIT_MD_BUF_get();
+  public final static int ZXID_INIT_SOAP_BUF = zxidjniJNI.ZXID_INIT_SOAP_BUF_get();
+  public final static int ZXID_INIT_EPR_BUF = zxidjniJNI.ZXID_INIT_EPR_BUF_get();
+  public final static int ZXID_MAX_CURL_BUF = zxidjniJNI.ZXID_MAX_CURL_BUF_get();
   public final static int ZXID_MAX_EID = zxidjniJNI.ZXID_MAX_EID_get();
   public final static int ZXID_MAX_DIR = zxidjniJNI.ZXID_MAX_DIR_get();
   public final static int ZXID_AUTO_EXIT = zxidjniJNI.ZXID_AUTO_EXIT_get();

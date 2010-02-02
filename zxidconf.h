@@ -105,8 +105,8 @@
  *     to fetch the meta data xml files from well known location URLs (or other
  *     URLs if you know better).
  *
- * ZXID_MD_POPULATE_CACHE:: controls whether ZXID will write
- *     the metadata to the cache. This requires ZXID_MD_FETCH to be enabled
+ * ZXID_MD_POPULATE_CACHE:: controls whether ZXID will write the metadata to
+ *     the on-disk cache. This requires ZXID_MD_FETCH to be enabled
  *     and the file system permissions of the cache directory (e.g. /var/zxid/cot)
  *     to allow writing.
  *
@@ -193,6 +193,15 @@
  * attacks. */
 #define ZXID_DI_A7N_ENC 1
 
+/*(c) Control how many levels of bootstraps are added to assertions. Normally
+ * only first level is added, i.e. all available bootstraps are embedded in
+ * the assertion are , but the assertions of the embedded bootstraps only
+ * get discovery bootstrap. 2 would cause the assertions of the first order
+ * boostraps to have further bootstraps embedded, etc. Since bootstrap
+ * generation tends to be expensive and wasteful, you should use discovery
+ * instead and leave BOOTSTRAP_LEVEL set to 1. */
+#define ZXID_BOOTSTRAP_LEVEL 1
+
 /*(c) WSC Signing Options
  * Which components of a web service request should be signed by WSC
  * Bit mask:
@@ -278,6 +287,13 @@
  * Whether limited IdP functionality is enabled. Affects generated metadata. */
 #define ZXID_IDP_ENA 0
 
+/*(c) Mini IdP
+ * Whether limited Authentication Service functionality is enabled.
+ * Please note that the AuthenticationService impmenetation at present (2010)
+ * is incomplete and fails to properly authenticate and authorize the caller,
+ * i.e. anyone who knows a username and password can call it. */
+#define ZXID_AS_ENA 0
+
 /*(c) Dummy PDP
  * Whether limited PDP functionality is enabled. */
 #define ZXID_PDP_ENA 1
@@ -288,9 +304,6 @@
 
 /*() Maximum filesystem path used in /var/zxid tree. */
 #define ZXID_MAX_BUF 1024  /* (compile) */
-
-/*() Maximum EPR size */
-#define ZXID_MAX_EPR (64*1024) /* (compile) */
 
 /*(c) Logging Options
  * See zxid-log.pd for further explanation. Generally you

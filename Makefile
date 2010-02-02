@@ -1,4 +1,5 @@
 # zxid/Makefile  -  How to build ZXID
+# Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
 # Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
@@ -30,12 +31,12 @@
 vpath %.c ../zxid
 vpath %.h ../zxid
 
-default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool zxlogview zxidhrxmlwsc zxidhrxmlwsp zxdecode zxcot zxpasswd
+default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool zxlogview zxidhrxmlwsc zxidhrxmlwsp zxdecode zxcot zxpasswd zxcall
 
-all: seehelp precheck precheck_apache zxid zxidhlo zxididp zxidsimple zxlogview samlmod phpzxid javazxid apachezxid zxdecode zxcot zxpasswd smime
+all: seehelp precheck precheck_apache zxid zxidhlo zxididp zxidsimple zxlogview samlmod phpzxid javazxid apachezxid zxdecode zxcot zxpasswd zxcall smime
 
-ZXIDREL=0.45
-ZXIDVERSION=0x000045
+ZXIDVERSION=0x000049
+ZXIDREL=0.49
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -619,6 +620,10 @@ genwrap: gen zxidjava/zxid_wrap.c Net/SAML_wrap.c php/zxid_wrap.c py/zxid_wrap.c
 
 endif
 
+updatevers:
+	rm -f c/zxidvers.h
+	$(MAKE) c/zxidvers.h ENA_GEN=1
+
 ###
 ###  Perl Modules
 ###
@@ -935,6 +940,9 @@ zxdecode: zxdecode.o libzxid.a
 
 zxpasswd: zxpasswd.o libzxid.a
 	$(LD) $(LDFLAGS) -o $@ $^ -L. -lzxid $(LIBS)
+
+zxcall: zxcall.o libzxid.a
+	$(LD) $(LDFLAGS) -o $@ $< -L. -lzxid $(LIBS)
 
 zxidwsctool: $(ZXIDWSCTOOL_OBJ) libzxid.a
 	$(LD) $(LDFLAGS) -o zxidwsctool $(ZXIDWSCTOOL_OBJ) -L. -lzxid $(LIBS)

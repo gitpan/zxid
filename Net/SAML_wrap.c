@@ -10177,6 +10177,71 @@ XS(_wrap_zxid_conf_idp_ena_get) {
 }
 
 
+XS(_wrap_zxid_conf_as_ena_set) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    char arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    char val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: zxid_conf_as_ena_set(self,as_ena);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_conf_as_ena_set" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    ecode2 = SWIG_AsVal_char SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "zxid_conf_as_ena_set" "', argument " "2"" of type '" "char""'");
+    } 
+    arg2 = (char)(val2);
+    if (arg1) (arg1)->as_ena = arg2;
+    ST(argvi) = sv_newmortal();
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_conf_as_ena_get) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    char result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: zxid_conf_as_ena_get(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_conf_as_ena_get" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    result = (char) ((arg1)->as_ena);
+    ST(argvi) = SWIG_From_char  SWIG_PERL_CALL_ARGS_1((char)(result)); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_zxid_conf_pdp_ena_set) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
@@ -14275,6 +14340,71 @@ XS(_wrap_zxid_conf_localpdp_idpnid_deny_get) {
     arg1 = (struct zxid_conf *)(argp1);
     result = (struct zxid_cstr_list *) ((arg1)->localpdp_idpnid_deny);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zxid_cstr_list, 0 | SWIG_SHADOW); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_conf_bootstrap_level_set) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    int arg2 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int val2 ;
+    int ecode2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: zxid_conf_bootstrap_level_set(self,bootstrap_level);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_conf_bootstrap_level_set" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    ecode2 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(1), &val2);
+    if (!SWIG_IsOK(ecode2)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "zxid_conf_bootstrap_level_set" "', argument " "2"" of type '" "int""'");
+    } 
+    arg2 = (int)(val2);
+    if (arg1) (arg1)->bootstrap_level = arg2;
+    ST(argvi) = sv_newmortal();
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_conf_bootstrap_level_get) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    int result;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: zxid_conf_bootstrap_level_get(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_conf_bootstrap_level_get" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    result = (int) ((arg1)->bootstrap_level);
+    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     
     XSRETURN(argvi);
   fail:
@@ -28605,10 +28735,10 @@ XS(_wrap_zxid_find_ses) {
 }
 
 
-XS(_wrap_zxid_pool_to_ldif) {
+XS(_wrap_zxid_ses_to_ldif) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-    struct zxid_attr *arg2 = (struct zxid_attr *) 0 ;
+    struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     void *argp2 = 0 ;
@@ -28618,19 +28748,19 @@ XS(_wrap_zxid_pool_to_ldif) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: zxid_pool_to_ldif(cf,pool);");
+      SWIG_croak("Usage: zxid_ses_to_ldif(cf,ses);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_pool_to_ldif" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_ses_to_ldif" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
     }
     arg1 = (struct zxid_conf *)(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_attr, 0 |  0 );
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_ses, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_pool_to_ldif" "', argument " "2"" of type '" "struct zxid_attr *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_ses_to_ldif" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
     }
-    arg2 = (struct zxid_attr *)(argp2);
-    result = (struct zx_str *)zxid_pool_to_ldif(arg1,arg2);
+    arg2 = (struct zxid_ses *)(argp2);
+    result = (struct zx_str *)zxid_ses_to_ldif(arg1,arg2);
     {
       if (argvi >= items) {
         EXTEND(sp,1);
@@ -28650,10 +28780,10 @@ XS(_wrap_zxid_pool_to_ldif) {
 }
 
 
-XS(_wrap_zxid_pool_to_json) {
+XS(_wrap_zxid_ses_to_json) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-    struct zxid_attr *arg2 = (struct zxid_attr *) 0 ;
+    struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     void *argp2 = 0 ;
@@ -28663,19 +28793,19 @@ XS(_wrap_zxid_pool_to_json) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: zxid_pool_to_json(cf,pool);");
+      SWIG_croak("Usage: zxid_ses_to_json(cf,ses);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_pool_to_json" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_ses_to_json" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
     }
     arg1 = (struct zxid_conf *)(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_attr, 0 |  0 );
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_ses, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_pool_to_json" "', argument " "2"" of type '" "struct zxid_attr *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_ses_to_json" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
     }
-    arg2 = (struct zxid_attr *)(argp2);
-    result = (struct zx_str *)zxid_pool_to_json(arg1,arg2);
+    arg2 = (struct zxid_ses *)(argp2);
+    result = (struct zx_str *)zxid_ses_to_json(arg1,arg2);
     {
       if (argvi >= items) {
         EXTEND(sp,1);
@@ -28695,10 +28825,10 @@ XS(_wrap_zxid_pool_to_json) {
 }
 
 
-XS(_wrap_zxid_pool_to_qs) {
+XS(_wrap_zxid_ses_to_qs) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-    struct zxid_attr *arg2 = (struct zxid_attr *) 0 ;
+    struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     void *argp2 = 0 ;
@@ -28708,19 +28838,19 @@ XS(_wrap_zxid_pool_to_qs) {
     dXSARGS;
     
     if ((items < 2) || (items > 2)) {
-      SWIG_croak("Usage: zxid_pool_to_qs(cf,pool);");
+      SWIG_croak("Usage: zxid_ses_to_qs(cf,ses);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_pool_to_qs" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_ses_to_qs" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
     }
     arg1 = (struct zxid_conf *)(argp1);
-    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_attr, 0 |  0 );
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_ses, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_pool_to_qs" "', argument " "2"" of type '" "struct zxid_attr *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_ses_to_qs" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
     }
-    arg2 = (struct zxid_attr *)(argp2);
-    result = (struct zx_str *)zxid_pool_to_qs(arg1,arg2);
+    arg2 = (struct zxid_ses *)(argp2);
+    result = (struct zx_str *)zxid_ses_to_qs(arg1,arg2);
     {
       if (argvi >= items) {
         EXTEND(sp,1);
@@ -28777,7 +28907,7 @@ XS(_wrap_zxid_ses_to_pool) {
 }
 
 
-XS(_wrap_zxid_add_attr_to_pool) {
+XS(_wrap_zxid_add_attr_to_ses) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
     struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
@@ -28796,29 +28926,29 @@ XS(_wrap_zxid_add_attr_to_pool) {
     dXSARGS;
     
     if ((items < 4) || (items > 4)) {
-      SWIG_croak("Usage: zxid_add_attr_to_pool(cf,ses,at_name,val);");
+      SWIG_croak("Usage: zxid_add_attr_to_ses(cf,ses,at_name,val);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_add_attr_to_pool" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_add_attr_to_ses" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
     }
     arg1 = (struct zxid_conf *)(argp1);
     res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_ses, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_add_attr_to_pool" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_add_attr_to_ses" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
     }
     arg2 = (struct zxid_ses *)(argp2);
     res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_add_attr_to_pool" "', argument " "3"" of type '" "char *""'");
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_add_attr_to_ses" "', argument " "3"" of type '" "char *""'");
     }
     arg3 = (char *)(buf3);
     res4 = SWIG_ConvertPtr(ST(3), &argp4,SWIGTYPE_p_zx_str, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
-      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "zxid_add_attr_to_pool" "', argument " "4"" of type '" "struct zx_str *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "zxid_add_attr_to_ses" "', argument " "4"" of type '" "struct zx_str *""'"); 
     }
     arg4 = (struct zx_str *)(argp4);
-    zxid_add_attr_to_pool(arg1,arg2,arg3,arg4);
+    zxid_add_attr_to_ses(arg1,arg2,arg3,arg4);
     ST(argvi) = sv_newmortal();
     
     
@@ -28835,7 +28965,7 @@ XS(_wrap_zxid_add_attr_to_pool) {
 }
 
 
-XS(_wrap_zxid_add_qs_to_pool) {
+XS(_wrap_zxid_add_qs_to_ses) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
     struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
@@ -28855,29 +28985,29 @@ XS(_wrap_zxid_add_qs_to_pool) {
     dXSARGS;
     
     if ((items < 4) || (items > 4)) {
-      SWIG_croak("Usage: zxid_add_qs_to_pool(cf,ses,qs,apply_map);");
+      SWIG_croak("Usage: zxid_add_qs_to_ses(cf,ses,qs,apply_map);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
-      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_add_qs_to_pool" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_add_qs_to_ses" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
     }
     arg1 = (struct zxid_conf *)(argp1);
     res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_ses, 0 |  0 );
     if (!SWIG_IsOK(res2)) {
-      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_add_qs_to_pool" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_add_qs_to_ses" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
     }
     arg2 = (struct zxid_ses *)(argp2);
     res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
     if (!SWIG_IsOK(res3)) {
-      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_add_qs_to_pool" "', argument " "3"" of type '" "char *""'");
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_add_qs_to_ses" "', argument " "3"" of type '" "char *""'");
     }
     arg3 = (char *)(buf3);
     ecode4 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(3), &val4);
     if (!SWIG_IsOK(ecode4)) {
-      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "zxid_add_qs_to_pool" "', argument " "4"" of type '" "int""'");
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "zxid_add_qs_to_ses" "', argument " "4"" of type '" "int""'");
     } 
     arg4 = (int)(val4);
-    result = (int)zxid_add_qs_to_pool(arg1,arg2,arg3,arg4);
+    result = (int)zxid_add_qs_to_ses(arg1,arg2,arg3,arg4);
     ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
     
     
@@ -31525,6 +31655,7 @@ XS(_wrap_zxid_gen_boots) {
     char *arg2 = (char *) 0 ;
     char *arg3 = (char *) 0 ;
     struct zx_sa_Attribute_s *arg4 = (struct zx_sa_Attribute_s *) 0 ;
+    int arg5 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     int res2 ;
@@ -31535,12 +31666,14 @@ XS(_wrap_zxid_gen_boots) {
     int alloc3 = 0 ;
     void *argp4 = 0 ;
     int res4 = 0 ;
+    int val5 ;
+    int ecode5 = 0 ;
     int argvi = 0;
     struct zx_sa_Attribute_s *result = 0 ;
     dXSARGS;
     
-    if ((items < 4) || (items > 4)) {
-      SWIG_croak("Usage: zxid_gen_boots(cf,uid,path,bootstraps);");
+    if ((items < 5) || (items > 5)) {
+      SWIG_croak("Usage: zxid_gen_boots(cf,uid,path,bootstraps,add_bs_lvl);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -31562,17 +31695,24 @@ XS(_wrap_zxid_gen_boots) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "zxid_gen_boots" "', argument " "4"" of type '" "struct zx_sa_Attribute_s *""'"); 
     }
     arg4 = (struct zx_sa_Attribute_s *)(argp4);
-    result = (struct zx_sa_Attribute_s *)zxid_gen_boots(arg1,arg2,arg3,arg4);
+    ecode5 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(4), &val5);
+    if (!SWIG_IsOK(ecode5)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "zxid_gen_boots" "', argument " "5"" of type '" "int""'");
+    } 
+    arg5 = (int)(val5);
+    result = (struct zx_sa_Attribute_s *)zxid_gen_boots(arg1,arg2,arg3,arg4,arg5);
     ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zx_sa_Attribute_s, 0 | 0); argvi++ ;
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    
     
     XSRETURN(argvi);
   fail:
     
     if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    
     
     SWIG_croak_null();
   }
@@ -31609,7 +31749,7 @@ XS(_wrap_zxid_mk_user_a7n_to_sp) {
     dXSARGS;
     
     if ((items < 7) || (items > 7)) {
-      SWIG_croak("Usage: zxid_mk_user_a7n_to_sp(cf,ses,uid,nameid,sp_meta,sp_name_buf,add_bs);");
+      SWIG_croak("Usage: zxid_mk_user_a7n_to_sp(cf,ses,uid,nameid,sp_meta,sp_name_buf,add_bs_lvl);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -31774,6 +31914,7 @@ XS(_wrap_zxid_add_fed_tok_to_epr) {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
     struct zx_a_EndpointReference_s *arg2 = (struct zx_a_EndpointReference_s *) 0 ;
     char *arg3 = (char *) 0 ;
+    int arg4 ;
     void *argp1 = 0 ;
     int res1 = 0 ;
     void *argp2 = 0 ;
@@ -31781,12 +31922,14 @@ XS(_wrap_zxid_add_fed_tok_to_epr) {
     int res3 ;
     char *buf3 = 0 ;
     int alloc3 = 0 ;
+    int val4 ;
+    int ecode4 = 0 ;
     int argvi = 0;
     char *result = 0 ;
     dXSARGS;
     
-    if ((items < 3) || (items > 3)) {
-      SWIG_croak("Usage: zxid_add_fed_tok_to_epr(cf,epr,uid);");
+    if ((items < 4) || (items > 4)) {
+      SWIG_croak("Usage: zxid_add_fed_tok_to_epr(cf,epr,uid,add_bs_lvl);");
     }
     res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
     if (!SWIG_IsOK(res1)) {
@@ -31803,16 +31946,23 @@ XS(_wrap_zxid_add_fed_tok_to_epr) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_add_fed_tok_to_epr" "', argument " "3"" of type '" "char *""'");
     }
     arg3 = (char *)(buf3);
-    result = (char *)zxid_add_fed_tok_to_epr(arg1,arg2,arg3);
+    ecode4 = SWIG_AsVal_int SWIG_PERL_CALL_ARGS_2(ST(3), &val4);
+    if (!SWIG_IsOK(ecode4)) {
+      SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "zxid_add_fed_tok_to_epr" "', argument " "4"" of type '" "int""'");
+    } 
+    arg4 = (int)(val4);
+    result = (char *)zxid_add_fed_tok_to_epr(arg1,arg2,arg3,arg4);
     ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
     
     
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    
     XSRETURN(argvi);
   fail:
     
     
     if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    
     SWIG_croak_null();
   }
 }
@@ -32545,6 +32695,124 @@ XS(_wrap_zxid_validate_cond) {
     
     
     
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_as_call_ses) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    struct zxid_entity *arg2 = (struct zxid_entity *) 0 ;
+    struct zxid_cgi *arg3 = (struct zxid_cgi *) 0 ;
+    struct zxid_ses *arg4 = (struct zxid_ses *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    void *argp3 = 0 ;
+    int res3 = 0 ;
+    void *argp4 = 0 ;
+    int res4 = 0 ;
+    int argvi = 0;
+    int result;
+    dXSARGS;
+    
+    if ((items < 4) || (items > 4)) {
+      SWIG_croak("Usage: zxid_as_call_ses(cf,idp_meta,cgi,ses);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_as_call_ses" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_entity, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_as_call_ses" "', argument " "2"" of type '" "struct zxid_entity *""'"); 
+    }
+    arg2 = (struct zxid_entity *)(argp2);
+    res3 = SWIG_ConvertPtr(ST(2), &argp3,SWIGTYPE_p_zxid_cgi, 0 |  0 );
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_as_call_ses" "', argument " "3"" of type '" "struct zxid_cgi *""'"); 
+    }
+    arg3 = (struct zxid_cgi *)(argp3);
+    res4 = SWIG_ConvertPtr(ST(3), &argp4,SWIGTYPE_p_zxid_ses, 0 |  0 );
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "zxid_as_call_ses" "', argument " "4"" of type '" "struct zxid_ses *""'"); 
+    }
+    arg4 = (struct zxid_ses *)(argp4);
+    result = (int)zxid_as_call_ses(arg1,arg2,arg3,arg4);
+    ST(argvi) = SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)(result)); argvi++ ;
+    
+    
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_as_call) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    struct zxid_entity *arg2 = (struct zxid_entity *) 0 ;
+    char *arg3 = (char *) 0 ;
+    char *arg4 = (char *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    int res3 ;
+    char *buf3 = 0 ;
+    int alloc3 = 0 ;
+    int res4 ;
+    char *buf4 = 0 ;
+    int alloc4 = 0 ;
+    int argvi = 0;
+    struct zxid_ses *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 4) || (items > 4)) {
+      SWIG_croak("Usage: zxid_as_call(cf,idp_meta,user,pw);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_as_call" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_entity, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_as_call" "', argument " "2"" of type '" "struct zxid_entity *""'"); 
+    }
+    arg2 = (struct zxid_entity *)(argp2);
+    res3 = SWIG_AsCharPtrAndSize(ST(2), &buf3, NULL, &alloc3);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_as_call" "', argument " "3"" of type '" "char *""'");
+    }
+    arg3 = (char *)(buf3);
+    res4 = SWIG_AsCharPtrAndSize(ST(3), &buf4, NULL, &alloc4);
+    if (!SWIG_IsOK(res4)) {
+      SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "zxid_as_call" "', argument " "4"" of type '" "char *""'");
+    }
+    arg4 = (char *)(buf4);
+    result = (struct zxid_ses *)zxid_as_call(arg1,arg2,arg3,arg4);
+    ST(argvi) = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_zxid_ses, 0 | SWIG_SHADOW); argvi++ ;
+    
+    
+    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
+    XSRETURN(argvi);
+  fail:
+    
+    
+    if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+    if (alloc4 == SWIG_NEWOBJ) free((char*)buf4);
     SWIG_croak_null();
   }
 }
@@ -36380,6 +36648,53 @@ XS(_wrap_zxid_cache_epr) {
 }
 
 
+XS(_wrap_zxid_snarf_eprs) {
+  {
+    struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+    struct zxid_ses *arg2 = (struct zxid_ses *) 0 ;
+    struct zx_a_EndpointReference_s *arg3 = (struct zx_a_EndpointReference_s *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    void *argp2 = 0 ;
+    int res2 = 0 ;
+    void *argp3 = 0 ;
+    int res3 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 3) || (items > 3)) {
+      SWIG_croak("Usage: zxid_snarf_eprs(cf,ses,epr);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_conf, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_snarf_eprs" "', argument " "1"" of type '" "struct zxid_conf *""'"); 
+    }
+    arg1 = (struct zxid_conf *)(argp1);
+    res2 = SWIG_ConvertPtr(ST(1), &argp2,SWIGTYPE_p_zxid_ses, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_snarf_eprs" "', argument " "2"" of type '" "struct zxid_ses *""'"); 
+    }
+    arg2 = (struct zxid_ses *)(argp2);
+    res3 = SWIG_ConvertPtr(ST(2), &argp3,SWIGTYPE_p_zx_a_EndpointReference_s, 0 |  0 );
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "zxid_snarf_eprs" "', argument " "3"" of type '" "struct zx_a_EndpointReference_s *""'"); 
+    }
+    arg3 = (struct zx_a_EndpointReference_s *)(argp3);
+    zxid_snarf_eprs(arg1,arg2,arg3);
+    ST(argvi) = sv_newmortal();
+    
+    
+    
+    XSRETURN(argvi);
+  fail:
+    
+    
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_zxid_snarf_eprs_from_ses) {
   {
     struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
@@ -37594,6 +37909,78 @@ XS(_wrap_zxid_curl_ctx_p_get) {
 }
 
 
+XS(_wrap_zxid_curl_ctx_buf_set) {
+  {
+    struct zxid_curl_ctx *arg1 = (struct zxid_curl_ctx *) 0 ;
+    char *arg2 = (char *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int res2 ;
+    char *buf2 = 0 ;
+    int alloc2 = 0 ;
+    int argvi = 0;
+    dXSARGS;
+    
+    if ((items < 2) || (items > 2)) {
+      SWIG_croak("Usage: zxid_curl_ctx_buf_set(self,buf);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_curl_ctx, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_curl_ctx_buf_set" "', argument " "1"" of type '" "struct zxid_curl_ctx *""'"); 
+    }
+    arg1 = (struct zxid_curl_ctx *)(argp1);
+    res2 = SWIG_AsCharPtrAndSize(ST(1), &buf2, NULL, &alloc2);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "zxid_curl_ctx_buf_set" "', argument " "2"" of type '" "char *""'");
+    }
+    arg2 = (char *)(buf2);
+    if (arg1->buf) free((char*)arg1->buf);
+    if (arg2) {
+      size_t size = strlen((const char *)(arg2)) + 1;
+      arg1->buf = (char *)(char *)memcpy((char *)malloc((size)*sizeof(char)), (const char *)(arg2), sizeof(char)*(size));
+    } else {
+      arg1->buf = 0;
+    }
+    ST(argvi) = sv_newmortal();
+    
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    XSRETURN(argvi);
+  fail:
+    
+    if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+    SWIG_croak_null();
+  }
+}
+
+
+XS(_wrap_zxid_curl_ctx_buf_get) {
+  {
+    struct zxid_curl_ctx *arg1 = (struct zxid_curl_ctx *) 0 ;
+    void *argp1 = 0 ;
+    int res1 = 0 ;
+    int argvi = 0;
+    char *result = 0 ;
+    dXSARGS;
+    
+    if ((items < 1) || (items > 1)) {
+      SWIG_croak("Usage: zxid_curl_ctx_buf_get(self);");
+    }
+    res1 = SWIG_ConvertPtr(ST(0), &argp1,SWIGTYPE_p_zxid_curl_ctx, 0 |  0 );
+    if (!SWIG_IsOK(res1)) {
+      SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "zxid_curl_ctx_buf_get" "', argument " "1"" of type '" "struct zxid_curl_ctx *""'"); 
+    }
+    arg1 = (struct zxid_curl_ctx *)(argp1);
+    result = (char *) ((arg1)->buf);
+    ST(argvi) = SWIG_FromCharPtr((const char *)result); argvi++ ;
+    
+    XSRETURN(argvi);
+  fail:
+    
+    SWIG_croak_null();
+  }
+}
+
+
 XS(_wrap_zxid_curl_ctx_lim_set) {
   {
     struct zxid_curl_ctx *arg1 = (struct zxid_curl_ctx *) 0 ;
@@ -38437,6 +38824,8 @@ static swig_command_info swig_commands[] = {
 {"Net::SAMLc::zxid_conf_user_local_get", _wrap_zxid_conf_user_local_get},
 {"Net::SAMLc::zxid_conf_idp_ena_set", _wrap_zxid_conf_idp_ena_set},
 {"Net::SAMLc::zxid_conf_idp_ena_get", _wrap_zxid_conf_idp_ena_get},
+{"Net::SAMLc::zxid_conf_as_ena_set", _wrap_zxid_conf_as_ena_set},
+{"Net::SAMLc::zxid_conf_as_ena_get", _wrap_zxid_conf_as_ena_get},
 {"Net::SAMLc::zxid_conf_pdp_ena_set", _wrap_zxid_conf_pdp_ena_set},
 {"Net::SAMLc::zxid_conf_pdp_ena_get", _wrap_zxid_conf_pdp_ena_get},
 {"Net::SAMLc::zxid_conf_authn_req_sign_set", _wrap_zxid_conf_authn_req_sign_set},
@@ -38561,6 +38950,8 @@ static swig_command_info swig_commands[] = {
 {"Net::SAMLc::zxid_conf_localpdp_idpnid_permit_get", _wrap_zxid_conf_localpdp_idpnid_permit_get},
 {"Net::SAMLc::zxid_conf_localpdp_idpnid_deny_set", _wrap_zxid_conf_localpdp_idpnid_deny_set},
 {"Net::SAMLc::zxid_conf_localpdp_idpnid_deny_get", _wrap_zxid_conf_localpdp_idpnid_deny_get},
+{"Net::SAMLc::zxid_conf_bootstrap_level_set", _wrap_zxid_conf_bootstrap_level_set},
+{"Net::SAMLc::zxid_conf_bootstrap_level_get", _wrap_zxid_conf_bootstrap_level_get},
 {"Net::SAMLc::zxid_conf_max_soap_retry_set", _wrap_zxid_conf_max_soap_retry_set},
 {"Net::SAMLc::zxid_conf_max_soap_retry_get", _wrap_zxid_conf_max_soap_retry_get},
 {"Net::SAMLc::zxid_conf_defaultqs_set", _wrap_zxid_conf_defaultqs_set},
@@ -38939,12 +39330,12 @@ static swig_command_info swig_commands[] = {
 {"Net::SAMLc::zxid_get_ses_sso_a7n", _wrap_zxid_get_ses_sso_a7n},
 {"Net::SAMLc::zxid_get_ses_idp", _wrap_zxid_get_ses_idp},
 {"Net::SAMLc::zxid_find_ses", _wrap_zxid_find_ses},
-{"Net::SAMLc::zxid_pool_to_ldif", _wrap_zxid_pool_to_ldif},
-{"Net::SAMLc::zxid_pool_to_json", _wrap_zxid_pool_to_json},
-{"Net::SAMLc::zxid_pool_to_qs", _wrap_zxid_pool_to_qs},
+{"Net::SAMLc::zxid_ses_to_ldif", _wrap_zxid_ses_to_ldif},
+{"Net::SAMLc::zxid_ses_to_json", _wrap_zxid_ses_to_json},
+{"Net::SAMLc::zxid_ses_to_qs", _wrap_zxid_ses_to_qs},
 {"Net::SAMLc::zxid_ses_to_pool", _wrap_zxid_ses_to_pool},
-{"Net::SAMLc::zxid_add_attr_to_pool", _wrap_zxid_add_attr_to_pool},
-{"Net::SAMLc::zxid_add_qs_to_pool", _wrap_zxid_add_qs_to_pool},
+{"Net::SAMLc::zxid_add_attr_to_ses", _wrap_zxid_add_attr_to_ses},
+{"Net::SAMLc::zxid_add_qs_to_ses", _wrap_zxid_add_qs_to_ses},
 {"Net::SAMLc::zxid_parse_mni", _wrap_zxid_parse_mni},
 {"Net::SAMLc::zxid_put_user", _wrap_zxid_put_user},
 {"Net::SAMLc::zxid_get_user_nameid", _wrap_zxid_get_user_nameid},
@@ -39009,6 +39400,8 @@ static swig_command_info swig_commands[] = {
 {"Net::SAMLc::zxid_issuer", _wrap_zxid_issuer},
 {"Net::SAMLc::zxid_sigres_map", _wrap_zxid_sigres_map},
 {"Net::SAMLc::zxid_validate_cond", _wrap_zxid_validate_cond},
+{"Net::SAMLc::zxid_as_call_ses", _wrap_zxid_as_call_ses},
+{"Net::SAMLc::zxid_as_call", _wrap_zxid_as_call},
 {"Net::SAMLc::zxid_sp_slo_soap", _wrap_zxid_sp_slo_soap},
 {"Net::SAMLc::zxid_sp_slo_redir", _wrap_zxid_sp_slo_redir},
 {"Net::SAMLc::zxid_sp_slo_do", _wrap_zxid_sp_slo_do},
@@ -39068,6 +39461,7 @@ static swig_command_info swig_commands[] = {
 {"Net::SAMLc::zxid_get_epr", _wrap_zxid_get_epr},
 {"Net::SAMLc::zxid_find_epr", _wrap_zxid_find_epr},
 {"Net::SAMLc::zxid_cache_epr", _wrap_zxid_cache_epr},
+{"Net::SAMLc::zxid_snarf_eprs", _wrap_zxid_snarf_eprs},
 {"Net::SAMLc::zxid_snarf_eprs_from_ses", _wrap_zxid_snarf_eprs_from_ses},
 {"Net::SAMLc::zxid_get_epr_address", _wrap_zxid_get_epr_address},
 {"Net::SAMLc::zxid_get_epr_entid", _wrap_zxid_get_epr_entid},
@@ -39090,6 +39484,8 @@ static swig_command_info swig_commands[] = {
 {"Net::SAMLc::close_file", _wrap_close_file},
 {"Net::SAMLc::zxid_curl_ctx_p_set", _wrap_zxid_curl_ctx_p_set},
 {"Net::SAMLc::zxid_curl_ctx_p_get", _wrap_zxid_curl_ctx_p_get},
+{"Net::SAMLc::zxid_curl_ctx_buf_set", _wrap_zxid_curl_ctx_buf_set},
+{"Net::SAMLc::zxid_curl_ctx_buf_get", _wrap_zxid_curl_ctx_buf_get},
 {"Net::SAMLc::zxid_curl_ctx_lim_set", _wrap_zxid_curl_ctx_lim_set},
 {"Net::SAMLc::zxid_curl_ctx_lim_get", _wrap_zxid_curl_ctx_lim_get},
 {"Net::SAMLc::new_zxid_curl_ctx", _wrap_new_zxid_curl_ctx},
@@ -39672,13 +40068,23 @@ XS(SWIG_init) {
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
   /*@SWIG:/apps/share/swig/1.3.40/perl5/perltypemaps.swg,65,%set_constant@*/ do {
-    SV *sv = get_sv((char*) SWIG_prefix "ZXID_MAX_MD", TRUE | 0x2 | GV_ADDMULTI);
-    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((64*1024))));
+    SV *sv = get_sv((char*) SWIG_prefix "ZXID_INIT_MD_BUF", TRUE | 0x2 | GV_ADDMULTI);
+    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((8*1024-1))));
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
   /*@SWIG:/apps/share/swig/1.3.40/perl5/perltypemaps.swg,65,%set_constant@*/ do {
-    SV *sv = get_sv((char*) SWIG_prefix "ZXID_MAX_SOAP", TRUE | 0x2 | GV_ADDMULTI);
-    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((64*1024))));
+    SV *sv = get_sv((char*) SWIG_prefix "ZXID_INIT_SOAP_BUF", TRUE | 0x2 | GV_ADDMULTI);
+    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((8*1024-1))));
+    SvREADONLY_on(sv);
+  } while(0) /*@SWIG@*/;
+  /*@SWIG:/apps/share/swig/1.3.40/perl5/perltypemaps.swg,65,%set_constant@*/ do {
+    SV *sv = get_sv((char*) SWIG_prefix "ZXID_INIT_EPR_BUF", TRUE | 0x2 | GV_ADDMULTI);
+    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((32*1024))));
+    SvREADONLY_on(sv);
+  } while(0) /*@SWIG@*/;
+  /*@SWIG:/apps/share/swig/1.3.40/perl5/perltypemaps.swg,65,%set_constant@*/ do {
+    SV *sv = get_sv((char*) SWIG_prefix "ZXID_MAX_CURL_BUF", TRUE | 0x2 | GV_ADDMULTI);
+    sv_setsv(sv, SWIG_From_int  SWIG_PERL_CALL_ARGS_1((int)((10*1024*1024-1))));
     SvREADONLY_on(sv);
   } while(0) /*@SWIG@*/;
   /*@SWIG:/apps/share/swig/1.3.40/perl5/perltypemaps.swg,65,%set_constant@*/ do {
