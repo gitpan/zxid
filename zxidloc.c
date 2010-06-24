@@ -32,15 +32,15 @@
  * request. See zxid_idp_loc() for full description. */
 
 /* Called by:  zxid_idp_loc x3, zxid_slo_resp_redir, zxid_sp_dispatch */
-struct zx_str* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
-				struct zxid_entity* idp_meta, int svc_type, char* binding, int req)
+struct zx_str* zxid_idp_loc_raw(zxid_conf* cf, zxid_cgi* cgi,
+				zxid_entity* idp_meta, int svc_type, char* binding, int req)
 {
   struct zx_str* loc;
   struct zx_md_SingleLogoutService_s* slo_svc;
   struct zx_md_ManageNameIDService_s* mni_svc;
   
-  if (!idp_meta->ed->IDPSSODescriptor) {
-    ERR("Entity(%.*s) does not have IdP SSO Descriptor (metadata problem)", idp_meta->eid_len, idp_meta->eid);
+  if (!idp_meta || !idp_meta->eid || !idp_meta->ed->IDPSSODescriptor) {
+    ERR("Entity(%s) does not have IdP SSO Descriptor (metadata problem)", idp_meta?STRNULLCHKQ(idp_meta->eid):"-");
     return 0;
   }
 
@@ -75,7 +75,7 @@ struct zx_str* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
     return loc;
   }
 
-  ERR("IdP Entity(%.*s) does not have any %d service with binding(%s) (metadata problem)", idp_meta->eid_len, idp_meta->eid, svc_type, binding);
+  ERR("IdP Entity(%s) does not have any %d service with binding(%s) (metadata problem)", idp_meta->eid, svc_type, binding);
   return 0;
 }
 
@@ -101,8 +101,8 @@ struct zx_str* zxid_idp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
  * this function. */
 
 /* Called by:  zxid_idp_soap, zxid_sp_mni_redir, zxid_sp_slo_redir */
-struct zx_str* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses,
-			    struct zxid_entity* idp_meta, int svc_type, char* binding)
+struct zx_str* zxid_idp_loc(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses,
+			    zxid_entity* idp_meta, int svc_type, char* binding)
 {
   zxid_get_ses_sso_a7n(cf, ses);
   
@@ -134,8 +134,8 @@ struct zx_str* zxid_idp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct z
  * return:: XML data structure for Body element of the SOAP call response. */
 
 /* Called by:  zxid_pep_az_soap, zxid_sp_mni_soap, zxid_sp_slo_soap */
-struct zx_root_s* zxid_idp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses,
-				struct zxid_entity* idp_meta, int svc_type, struct zx_e_Body_s* body)
+struct zx_root_s* zxid_idp_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses,
+				zxid_entity* idp_meta, int svc_type, struct zx_e_Body_s* body)
 {
   struct zx_root_s* r;
   struct zx_str* loc = zxid_idp_loc(cf, cgi, ses, idp_meta, svc_type, SAML2_SOAP);
@@ -151,15 +151,15 @@ struct zx_root_s* zxid_idp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, stru
 /* *** figure out a way to leverage commonality. */
 
 /* Called by:  zxid_idp_sso */
-struct zx_str* zxid_sp_loc_by_index_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
-					struct zxid_entity* sp_meta, int svc_type,
+struct zx_str* zxid_sp_loc_by_index_raw(zxid_conf* cf, zxid_cgi* cgi,
+					zxid_entity* sp_meta, int svc_type,
 					struct zx_str* ix, int* binding)
 {
   struct zx_str* loc;
   struct zx_md_AssertionConsumerService_s* acs_svc;
   
-  if (!sp_meta->ed->SPSSODescriptor) {
-    ERR("Entity(%.*s) does not have SP SSO Descriptor (metadata problem)", sp_meta->eid_len, sp_meta->eid);
+  if (!sp_meta || !sp_meta->eid || !sp_meta->ed->SPSSODescriptor) {
+    ERR("Entity(%s) does not have SP SSO Descriptor (metadata problem)", sp_meta?STRNULLCHKQ(sp_meta->eid):"-");
     return 0;
   }
 
@@ -181,7 +181,7 @@ struct zx_str* zxid_sp_loc_by_index_raw(struct zxid_conf* cf, struct zxid_cgi* c
     return loc;
   }
 
-  ERR("SP Entity(%.*s) does not have any %d service with index(%.*s) (metadata problem)", sp_meta->eid_len, sp_meta->eid, svc_type, ix->len, ix->s);
+  ERR("SP Entity(%s) does not have any %d service with index(%.*s) (metadata problem)", sp_meta->eid, svc_type, ix->len, ix->s);
   *binding = 0;
   return 0;
 }
@@ -193,19 +193,19 @@ struct zx_str* zxid_sp_loc_by_index_raw(struct zxid_conf* cf, struct zxid_cgi* c
  * return:: URL for the protocol end point, or 0 on failure */
 
 /* Called by:  zxid_idp_dispatch, zxid_idp_sso x2, zxid_slo_resp_redir, zxid_sp_loc x3 */
-struct zx_str* zxid_sp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
-				struct zxid_entity* sp_meta, int svc_type, char* binding, int req)
+struct zx_str* zxid_sp_loc_raw(zxid_conf* cf, zxid_cgi* cgi,
+				zxid_entity* sp_meta, int svc_type, char* binding, int req)
 {
   struct zx_str* loc;
   struct zx_md_SingleLogoutService_s* slo_svc;
   struct zx_md_ManageNameIDService_s* mni_svc;
   struct zx_md_AssertionConsumerService_s* acs_svc;
   
-  if (!sp_meta->ed->SPSSODescriptor) {
-    ERR("Entity(%.*s) does not have SP SSO Descriptor (metadata problem)", sp_meta->eid_len, sp_meta->eid);
+  if (!sp_meta || !sp_meta->eid || !sp_meta->ed->SPSSODescriptor) {
+    ERR("Entity(%s) does not have SP SSO Descriptor (metadata problem)", sp_meta?STRNULLCHKQ(sp_meta->eid):"-");
     return 0;
   }
-
+  
   switch (svc_type) {
   case ZXID_SLO_SVC:
     for (slo_svc = sp_meta->ed->SPSSODescriptor->SingleLogoutService;
@@ -251,7 +251,7 @@ struct zx_str* zxid_sp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
     return loc;
   }
 
-  ERR("SP Entity(%.*s) does not have any %d service with binding(%s) (metadata problem)", sp_meta->eid_len, sp_meta->eid, svc_type, binding);
+  ERR("SP Entity(%s) does not have any %d service with binding(%s) (metadata problem)", sp_meta->eid, svc_type, binding);
   return 0;
 }
 
@@ -277,8 +277,8 @@ struct zx_str* zxid_sp_loc_raw(struct zxid_conf* cf, struct zxid_cgi* cgi,
  * this function. */
 
 /* Called by:  zxid_sp_soap */
-struct zx_str* zxid_sp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses,
-			    struct zxid_entity* sp_meta, int svc_type, char* binding)
+struct zx_str* zxid_sp_loc(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses,
+			    zxid_entity* sp_meta, int svc_type, char* binding)
 {
   zxid_get_ses_sso_a7n(cf, ses);
   
@@ -310,8 +310,8 @@ struct zx_str* zxid_sp_loc(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zx
  * return:: XML data structure for Body element of the SOAP call response. */
 
 /* Called by: */
-struct zx_root_s* zxid_sp_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses,
-				struct zxid_entity* sp_meta, int svc_type, struct zx_e_Body_s* body)
+struct zx_root_s* zxid_sp_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses,
+			       zxid_entity* sp_meta, int svc_type, struct zx_e_Body_s* body)
 {
   struct zx_root_s* r;
   struct zx_str* loc = zxid_sp_loc(cf, cgi, ses, sp_meta, svc_type, SAML2_SOAP);

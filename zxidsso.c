@@ -49,7 +49,7 @@
  * variables. */
 
 /* Called by:  zxid_start_sso_url */
-int zxid_pick_sso_profile(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_entity* idp_meta)
+int zxid_pick_sso_profile(zxid_conf* cf, zxid_cgi* cgi, zxid_entity* idp_meta)
 {
   /* More sophisticated policy may eventually go here. */
   return ZXID_SAML2_ART;
@@ -133,13 +133,13 @@ char* zxid_saml2_map_authn_ctx(char* c)
  * return:: Redirect URL as zx_str. Caller should eventually free this memory.
  */
 /* Called by:  zxid_start_sso, zxid_start_sso_location */
-struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
+struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
 {
   struct zx_md_SingleSignOnService_s* sso_svc;
   struct zx_sp_AuthnRequest_s* ar;
   struct zx_str* ars;
   int sso_profile_ix;
-  struct zxid_entity* idp_meta;
+  zxid_entity* idp_meta;
   D_INDENT("start_sso: ");
   D("start_sso: cgi=%p cgi->eid=%p eid(%s)", cgi, cgi->eid, cgi->eid?cgi->eid:"-");
   if (!cgi->pr_ix || !cgi->eid || !cgi->eid[0]) {
@@ -198,7 +198,7 @@ struct zx_str* zxid_start_sso_url(struct zxid_conf* cf, struct zxid_cgi* cgi)
 /*() Wrapper for zxid_start_sso_url(), used in CGI scripts. */
 
 /* Called by:  main x2, zxid_simple_no_ses_cf */
-int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi)
+int zxid_start_sso(zxid_conf* cf, zxid_cgi* cgi)
 {
   struct zx_str* url = zxid_start_sso_url(cf, cgi);
   if (!url)
@@ -211,7 +211,7 @@ int zxid_start_sso(struct zxid_conf* cf, struct zxid_cgi* cgi)
  * return:: Location header as zx_str. Caller should eventually free this memory. */
 
 /* Called by:  zxid_simple_no_ses_cf */
-struct zx_str* zxid_start_sso_location(struct zxid_conf* cf, struct zxid_cgi* cgi)
+struct zx_str* zxid_start_sso_location(zxid_conf* cf, zxid_cgi* cgi)
 {
   struct zx_str* ss;
   struct zx_str* url = zxid_start_sso_url(cf, cgi);
@@ -230,12 +230,12 @@ struct zx_str* zxid_start_sso_location(struct zxid_conf* cf, struct zxid_cgi* cg
  * zxid_parse_cgi()>> where SAMLart query string argument is parsed. */
 
 /* Called by:  main x2, zxid_simple_no_ses_cf */
-int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
   struct zx_md_ArtifactResolutionService_s* ar_svc;
   struct zx_e_Body_s* body;
   struct zx_root_s* r;
-  struct zxid_entity* idp_meta;
+  zxid_entity* idp_meta;
   int len;
   char end_pt_ix[16];
   char* raw_succinct_id;
@@ -271,8 +271,8 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
   }
   
   idp_meta = zxid_get_ent_by_succinct_id(cf, raw_succinct_id);
-  if (!idp_meta) {
-    ERR("Unable to dereference SAMLart(%s). Can not find metadata for IdP.", cgi->saml_art);
+  if (!idp_meta || !idp_meta->eid) {
+    ERR("Unable to dereference SAMLart(%s). Can not find metadata for IdP. %p", cgi->saml_art, idp_meta);
     D_DEDENT("deref: ");
     return 0;
   }
@@ -283,8 +283,8 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
     break;
   case 0x04: /* SAML 2.0 */
     if (!idp_meta->ed->IDPSSODescriptor) {
-      ERR("Entity(%.*s) does not have IdP SSO Descriptor (metadata problem)", idp_meta->eid_len, idp_meta->eid);
-      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No IDPSSODescriptor eid(%.*)", idp_meta->eid_len, idp_meta->eid);
+      ERR("Entity(%s) does not have IdP SSO Descriptor (metadata problem)", idp_meta->eid);
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No IDPSSODescriptor eid(%s)", idp_meta->eid);
       D_DEDENT("deref: ");
       return 0;
     }
@@ -296,8 +296,8 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
 	  && ar_svc->Location)
 	break;
     if (!ar_svc) {
-      ERR("Entity(%.*s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding and index(%s) (metadata problem)", idp_meta->eid_len, idp_meta->eid, end_pt_ix);
-      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No Artifact Resolution Svc eid(%.*) ep_ix(%s)", idp_meta->eid_len, idp_meta->eid, end_pt_ix);
+      ERR("Entity(%s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding and index(%s) (metadata problem)", idp_meta->eid, end_pt_ix);
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No Artifact Resolution Svc eid(%s) ep_ix(%s)", idp_meta->eid, end_pt_ix);
       D_DEDENT("deref: ");
       return 0;
     }
@@ -320,7 +320,7 @@ int zxid_sp_deref_art(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_se
 
 /*() Map ZXSIG constant to letter for log and string message. */
 
-/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize */
+/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize, zxid_wsf_validate_a7n, zxid_wsp_validate */
 void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
 {
   switch (sigres) {
@@ -398,9 +398,10 @@ void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
  *     string will be a constant and MUST NOT be freed by the caller.
  * return::  0 (ZXSIG_OK) if validation was successful, otherwise a ZXSIG error code. */
 
-/* Called by:  zxid_sp_sso_finalize */
-int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n, struct zx_str* myentid, struct timeval* ourts, char** err)
+/* Called by:  zxid_sp_sso_finalize, zxid_wsf_validate_a7n */
+int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7n, struct zx_str* myentid, struct timeval* ourts, char** err)
 {
+  struct timeval tsbuf;
   struct zx_sa_AudienceRestriction_s* audr;
   struct zx_elem_s* aud;
   int secs;
@@ -410,8 +411,12 @@ int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
     return ZXSIG_OK;
   }
 
+  if (!ourts) {
+    GETTIMEOFDAY(&tsbuf, 0);
+    ourts = &tsbuf;
+  }
+
   if (a7n->Conditions->AudienceRestriction) {
-    myentid = zxid_my_entity_id(cf);
     for (audr = a7n->Conditions->AudienceRestriction; audr; audr = (struct zx_sa_AudienceRestriction_s*)audr->gg.g.n)
       for (aud = audr->Audience; aud; aud = (struct zx_elem_s*)aud->g.n)
 	if (aud->content->len == myentid->len
@@ -419,7 +424,6 @@ int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
 	  D("Found audience. %d", 0);
 	  goto found_audience;
 	}
-    ERR("SSO warn: AudienceRestriction wrong. %d", 0);
     if (cgi) {
       cgi->sigval = "V";
       cgi->sigmsg = "This SP not included in the Assertion Audience.";
@@ -427,8 +431,12 @@ int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
     if (ses)
       ses->sigres = ZXSIG_AUDIENCE;
     if (cf->audience_fatal) {
-      *err = "P";
+      ERR("SSO error: AudienceRestriction wrong. My entityID(%.*s)", myentid->len, myentid->s);
+      if (err)
+	*err = "P";
       return ZXSIG_AUDIENCE;
+    } else {
+      INFO("SSO warn: AudienceRestriction wrong. My entityID(%.*s). Configured to ignore this (AUDIENCE_FATAL=0).", myentid->len, myentid->s);
     }
   } else {
     INFO("Assertion does not have AudienceRestriction. %d", 0);
@@ -447,7 +455,8 @@ int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
 	if (ses)
 	  ses->sigres = ZXSIG_TIMEOUT;
 	if (cf->timeout_fatal) {
-	  *err = "P";
+	  if (err)
+	    *err = "P";
 	  return ZXSIG_TIMEOUT;
 	}
       } else {
@@ -464,7 +473,7 @@ int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
     secs = zx_date_time_to_secs(a7n->Conditions->NotBefore->s);
     if (secs > ourts->tv_sec) {
       if (secs - cf->before_slop > ourts->tv_sec) {
-	ERR("NotBefore rejected with slop of %d. Time to validity %ld secs", cf->after_slop, secs - ourts->tv_sec);
+	ERR("NotBefore rejected with slop of %d. Time to validity %ld secs", cf->before_slop, secs - ourts->tv_sec);
 	if (cgi) {
 	  cgi->sigval = "V";
 	  cgi->sigmsg = "Assertion is not valid yet (too soon).";
@@ -472,11 +481,12 @@ int zxid_validate_cond(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_s
 	if (ses)
 	  ses->sigres = ZXSIG_TIMEOUT;
 	if (cf->timeout_fatal) {
-	  *err = "P";
+	  if (err)
+	    *err = "P";
 	  return ZXSIG_TIMEOUT;
 	}
       } else {
-	D("NotBefore accepted with slop of %d. Time to validity %ld secs", cf->after_slop, secs - ourts->tv_sec);
+	D("NotBefore accepted with slop of %d. Time to validity %ld secs", cf->before_slop, secs - ourts->tv_sec);
       }
     } else {
       D("NotBefore ok. Time from validity %ld secs", ourts->tv_sec - secs);
@@ -500,7 +510,7 @@ struct zx_str unknown_str = {{0,0,0,0,0}, 1, "??"};  /* Static string used as du
  * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
 /* Called by:  main, zxid_sp_dig_sso_a7n */
-int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n)
+int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7n)
 {
   char* err = "S"; /* See: RES in zxid-log.pd, section "ZXID Log Format" */
   struct timeval ourts;
@@ -510,10 +520,11 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
   struct zx_str* subj = &unknown_str;
   struct zx_str* ss;
   struct zxsig_ref refs;
-  struct zxid_entity* idp_meta;
+  zxid_entity* idp_meta;
   /*ses->sigres = ZXSIG_NO_SIG; set earlier, do not overwrite */
   ses->a7n = a7n;
   ses->rs = cgi->rs;
+  ses->ssores = 1;
   GETTIMEOFDAY(&ourts, 0);
   
   D_INDENT("ssof: ");
@@ -552,13 +563,19 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
   }
   
   subj = ses->nameid->gg.content;
-  ses->nid = ses->tgt = zx_str_to_c(cf->ctx, subj);
+  ses->nid = zx_str_to_c(cf->ctx, subj);
   if (ses->nameid->Format && !memcmp(ses->nameid->Format->s, SAML2_TRANSIENT_NID_FMT, ses->nameid->Format->len)) {
-    ses->nidfmt = ses->tgtfmt = 0;
+    ses->nidfmt = 0;
   } else {
-    ses->nidfmt = ses->tgtfmt = 1;  /* anything nontransient may be a federation */
+    ses->nidfmt = 1;  /* anything nontransient may be a federation */
   }
-  
+
+  /* In SSO the acting identity and the target identity are the same */
+  ses->tgta7n = ses->a7n;
+  ses->tgtnameid = ses->nameid;
+  ses->tgt = ses->nid;
+  ses->tgtfmt = ses->nidfmt;
+
   if (a7n->AuthnStatement->SessionIndex)
     ses->sesix = zx_str_to_c(cf->ctx, a7n->AuthnStatement->SessionIndex);
   
@@ -623,12 +640,15 @@ int zxid_sp_sso_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid
     }
   }
   DD("Creating session... %d", 0);
+  ses->ssores = 0;
   zxid_put_ses(cf, ses);
   zxid_snarf_eprs_from_ses(cf, ses);  /* Harvest attributes and bootstrap(s) */
   cgi->msg = "SSO completed and session created.";
   cgi->op = '-';  /* Make sure management screen does not try to redispatch. */
   zxid_put_user(cf, ses->nameid->Format, ses->nameid->NameQualifier, ses->nameid->SPNameQualifier, ses->nameid->gg.content, 0);
   DD("Logging... %d", 0);
+  zxlog(cf, &ourts, &srcts, 0, issuer, 0, a7n->ID, subj,
+	cgi->sigval, "K", "NEWSES", ses->sid, "sesix(%s)", ses->sesix?ses->sesix:"-");
   zxlog(cf, &ourts, &srcts, 0, issuer, 0, a7n->ID, subj,
 	cgi->sigval, "K", ses->nidfmt?"FEDSSO":"TMPSSO", ses->sesix?ses->sesix:"-", 0);
   D_DEDENT("ssof: ");
@@ -652,7 +672,7 @@ erro:
  * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
 /* Called by:  zxid_sp_dig_sso_a7n */
-int zxid_sp_anon_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+int zxid_sp_anon_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
   D_INDENT("anoan_ssof: ");
   cgi->sigval = "N";
@@ -681,7 +701,8 @@ int zxid_sp_anon_finalize(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxi
  * See also: zxid_idp_as_do()
  */
 
-int zxid_as_call_ses(struct zxid_conf* cf, struct zxid_entity* idp_meta, struct zxid_cgi* cgi, struct zxid_ses* ses)
+/* Called by:  zxid_as_call */
+int zxid_as_call_ses(zxid_conf* cf, zxid_entity* idp_meta, zxid_cgi* cgi, zxid_ses* ses)
 {
   int len;
   struct zx_root_s* r;
@@ -703,9 +724,9 @@ int zxid_as_call_ses(struct zxid_conf* cf, struct zxid_entity* idp_meta, struct 
     return 0;
   }
   
-  if (!idp_meta || !idp_meta->ed->IDPSSODescriptor) {
-    ERR("Entity(%.*s) does not have IdP SSO Descriptor (metadata problem)", idp_meta?idp_meta->eid_len:1, idp_meta?idp_meta->eid:"-");
-    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No IDPSSODescriptor eid(%.*)", idp_meta?idp_meta->eid_len:1, idp_meta?idp_meta->eid:"-");
+  if (!idp_meta || !idp_meta->eid || !idp_meta->ed->IDPSSODescriptor) {
+    ERR("Entity(%s) does not have IdP SSO Descriptor (metadata problem)", idp_meta?STRNULLCHKQ(idp_meta->eid):"-");
+    zxlog(cf, 0,0,0,0,0,0,0, "N", "B", "ERR", 0, "No IDPSSODescriptor eid(%*s)", idp_meta?STRNULLCHKQ(idp_meta->eid):"-");
     D_DEDENT("as_call: ");
     return 0;
   }
@@ -728,8 +749,8 @@ int zxid_as_call_ses(struct zxid_conf* cf, struct zxid_entity* idp_meta, struct 
       break;
 #endif
   if (!ar_svc) {
-    ERR("Entity(%.*s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding (metadata problem)", idp_meta->eid_len, idp_meta->eid);
-    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No Artifact Resolution Svc eid(%.*)", idp_meta->eid_len, idp_meta->eid);
+    ERR("Entity(%s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding (metadata problem)", idp_meta->eid);
+    zxlog(cf, 0,0,0,0,0,0,0,"N","B","ERR",0,"No Artifact Resolution Svc eid(%s)", idp_meta->eid);
     D_DEDENT("as_call: ");
     return 0;
   }
@@ -754,23 +775,23 @@ int zxid_as_call_ses(struct zxid_conf* cf, struct zxid_entity* idp_meta, struct 
   /* *** free the body */
   
   if (!r || !r->Envelope || !r->Envelope->Body || !(res = r->Envelope->Body->SASLResponse)) {
-    ERR("Autentication Service call failed idp(%.*s). Missing response.", idp_meta->eid_len, idp_meta->eid);
-    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "Missing response eid(%.*)", idp_meta->eid_len, idp_meta->eid);
+    ERR("Autentication Service call failed idp(%s). Missing response.", idp_meta->eid);
+    zxlog(cf, 0,0,0,0,0,0,0, "N", "B", "ERR", 0, "Missing response eid(%s)", idp_meta->eid);
     D_DEDENT("as_call: ");
     return 0;
   }
   
   if (!res->Status || !res->Status->code || !res->Status->code->len || !res->Status->code->s) {
-    ERR("Autentication Service call failed idp(%.*s). Missing Status code.", idp_meta->eid_len, idp_meta->eid);
-    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "Missing Status code eid(%.*)", idp_meta->eid_len, idp_meta->eid);
+    ERR("Autentication Service call failed idp(%s). Missing Status code.", idp_meta->eid);
+    zxlog(cf, 0,0,0,0,0,0,0, "N", "B", "ERR", 0, "Missing Status code eid(%s)", idp_meta->eid);
     D_DEDENT("as_call: ");
     return 0;
   }
 
   if (res->Status->code->len != 2
       || res->Status->code->s[0]!='O' || res->Status->code->s[1]!='K') {  /* "OK" */
-    ERR("Autentication Service call failed idp(%.*s). Status code(%.*s).", idp_meta->eid_len, idp_meta->eid, res->Status->code->len, res->Status->code->s);
-    zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "Missing Status code(%.*s) eid(%.*)", res->Status->code->len, res->Status->code->s, idp_meta->eid_len, idp_meta->eid);
+    ERR("Autentication Service call failed idp(%s). Status code(%.*s).", idp_meta->eid, res->Status->code->len, res->Status->code->s);
+    zxlog(cf, 0,0,0,0,0,0,0, "N", "B", "ERR", 0, "Missing Status code(%.*s) eid(%s)", res->Status->code->len, res->Status->code->s, idp_meta->eid);
     D_DEDENT("as_call: ");
     return 0;
   }
@@ -793,10 +814,11 @@ int zxid_as_call_ses(struct zxid_conf* cf, struct zxid_entity* idp_meta, struct 
   return ZXID_SSO_OK;
 }
 
-struct zxid_ses* zxid_as_call(struct zxid_conf* cf, struct zxid_entity* idp_meta, const char* user, const char* pw)
+/* Called by:  zxcall_main */
+zxid_ses* zxid_as_call(zxid_conf* cf, zxid_entity* idp_meta, const char* user, const char* pw)
 {
-  struct zxid_ses* ses = zxid_alloc_ses(cf);
-  struct zxid_cgi cgi;
+  zxid_ses* ses = zxid_alloc_ses(cf);
+  zxid_cgi cgi;
   memset(&cgi, 0, sizeof(cgi));
   cgi.uid = user;
   cgi.pw = pw;

@@ -115,8 +115,8 @@ struct zx_m20_AdditionalMetaLocation_s* zx_DEC_m20_AdditionalMetaLocation(struct
     switch (tok) {
     case zx_namespace_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->namespace->g;
-      x->namespace = ss;
+      ss->g.n = &x->namespace_is_cxx_keyword->g;
+      x->namespace_is_cxx_keyword = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
 

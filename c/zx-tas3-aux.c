@@ -888,4 +888,183 @@ int zx_WALK_WO_tas3_ESLRef(struct zx_ctx* c, struct zx_tas3_ESLRef_s* x, void* c
 #endif
 
 
+
+
+#ifdef EL_NAME
+#undef EL_NAME
+#endif
+#ifdef EL_STRUCT
+#undef EL_STRUCT
+#endif
+#ifdef EL_NS
+#undef EL_NS
+#endif
+#ifdef EL_TAG
+#undef EL_TAG
+#endif
+
+#define EL_NAME   tas3_Status
+#define EL_STRUCT zx_tas3_Status_s
+#define EL_NS     tas3
+#define EL_TAG    Status
+
+/* FUNC(zx_FREE_tas3_Status) */
+
+/* Depth first traversal of data structure to free it and its subelements. Simple
+ * strings are handled as a special case according to the free_strs flag. This
+ * is useful if the strings point to underlying data from the wire that was
+ * allocated differently. */
+
+/* Called by: */
+void zx_FREE_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, int free_strs)
+{
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_free_attr(c, x->code, free_strs);
+  zx_free_attr(c, x->comment, free_strs);
+  zx_free_attr(c, x->ctlpt, free_strs);
+  zx_free_attr(c, x->id, free_strs);
+  zx_free_attr(c, x->ref, free_strs);
+  zx_free_attr(c, x->Id, free_strs);
+  zx_free_attr(c, x->actor, free_strs);
+  zx_free_attr(c, x->mustUnderstand, free_strs);
+
+  {
+      struct zx_lu_Status_s* e;
+      struct zx_lu_Status_s* en;
+      for (e = x->Status; e; e = en) {
+	  en = (struct zx_lu_Status_s*)e->gg.g.n;
+	  zx_FREE_lu_Status(c, e, free_strs);
+      }
+  }
+
+
+  zx_free_elem_common(c, &x->gg, free_strs); 
+}
+
+/* FUNC(zx_NEW_tas3_Status) */
+
+/* Trivial allocator/constructor for the datatype. */
+
+/* Called by: */
+struct zx_tas3_Status_s* zx_NEW_tas3_Status(struct zx_ctx* c)
+{
+  struct zx_tas3_Status_s* x = ZX_ZALLOC(c, struct zx_tas3_Status_s);
+  x->gg.g.tok = zx_tas3_Status_ELEM;
+  return x;
+}
+
+#ifdef ZX_ENA_AUX
+
+/* FUNC(zx_DUP_STRS_tas3_Status) */
+
+/* Depth first traversal of data structure to copy its simple strings
+ * to memory allocated from the memory allocator. The decoder will
+ * use the underlying wireprotocol PDU buffer for strings, i.e.
+ * strings are not copied - they point to the real data. If the
+ * datastructure needs to outlast the protocol data or needs a different
+ * memory allocation strategy, you need to call this function.  */
+
+/* Called by: */
+void zx_DUP_STRS_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x)
+{
+  zx_dup_strs_common(c, &x->gg);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  zx_dup_attr(c, x->code);
+  zx_dup_attr(c, x->comment);
+  zx_dup_attr(c, x->ctlpt);
+  zx_dup_attr(c, x->id);
+  zx_dup_attr(c, x->ref);
+  zx_dup_attr(c, x->Id);
+  zx_dup_attr(c, x->actor);
+  zx_dup_attr(c, x->mustUnderstand);
+
+  {
+      struct zx_lu_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_lu_Status_s*)e->gg.g.n)
+	  zx_DUP_STRS_lu_Status(c, e);
+  }
+
+}
+
+/* FUNC(zx_DEEP_CLONE_tas3_Status) */
+
+/* Depth first traversal of data structure to clone it and its sublements.
+ * The simple strings are handled as a special case according to dup_strs flag. */
+
+/* Called by: */
+struct zx_tas3_Status_s* zx_DEEP_CLONE_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, int dup_strs)
+{
+  x = (struct zx_tas3_Status_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_tas3_Status_s), dup_strs);
+  /* *** deal with xmlns specifications in exc c14n way */
+
+  x->code = zx_clone_attr(c, x->code);
+  x->comment = zx_clone_attr(c, x->comment);
+  x->ctlpt = zx_clone_attr(c, x->ctlpt);
+  x->id = zx_clone_attr(c, x->id);
+  x->ref = zx_clone_attr(c, x->ref);
+  x->Id = zx_clone_attr(c, x->Id);
+  x->actor = zx_clone_attr(c, x->actor);
+  x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
+
+  {
+      struct zx_lu_Status_s* e;
+      struct zx_lu_Status_s* en;
+      struct zx_lu_Status_s* enn;
+      for (enn = 0, e = x->Status; e; e = (struct zx_lu_Status_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_lu_Status(c, e, dup_strs);
+	  if (!enn)
+	      x->Status = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+
+  return x;
+}
+
+/* FUNC(zx_WALK_SO_tas3_Status) */
+
+/* Depth first traversal of the tree in either schema order or the wire order. */
+ 
+int zx_WALK_SO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx))
+{
+  int ret = callback(&x->gg.g, ctx);
+  if (ret)
+    return ret;
+  
+  /* *** deal with xmlns specifications in exc c14n way */
+
+
+  
+  ret = zx_walk_so_unknown_attributes(c, &x->gg, ctx, callback); 
+  if (ret)
+    return ret;
+
+  {
+      struct zx_lu_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_lu_Status_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_lu_Status(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+
+  
+  return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);
+}
+
+/* FUNC(zx_WALK_WO_tas3_Status) */
+
+int zx_WALK_WO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx))
+{
+  ERR("*** walk_wo not implemented %d", 0);
+  return 0;
+}
+
+#endif
+
+
 /* EOF -- c/zx-tas3-aux.c */

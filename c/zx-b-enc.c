@@ -7,6 +7,7 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
+ ** Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
@@ -21,6 +22,7 @@
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
  ** 30.9.2007, improvements to WO encoding --Sampo
+ ** 8.2.2010,  better handling of schema order encoding of unknown namespace prefixes --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -2598,6 +2600,11 @@ int zx_LEN_SO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x
 	  len += zx_LEN_SO_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  len += zx_LEN_SO_sa11_Assertion(c, e);
@@ -2657,6 +2664,11 @@ int zx_LEN_WO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x
 	  len += zx_LEN_WO_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  len += zx_LEN_WO_sa11_Assertion(c, e);
@@ -2711,6 +2723,11 @@ char* zx_ENC_SO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s*
       struct zx_sa_Assertion_s* e;
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n)
 	  p = zx_ENC_SO_sa_Assertion(c, e, p);
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa_EncryptedAssertion(c, e, p);
   }
   {
       struct zx_sa11_Assertion_s* e;
@@ -3151,9 +3168,9 @@ int zx_LEN_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x
 #endif
   
   {
-      struct zx_tas3sol_Obligations_s* e;
-      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
-	  len += zx_LEN_SO_tas3sol_Obligations(c, e);
+      struct zx_xa_Obligation_s* e;
+      for (e = x->Obligation; e; e = (struct zx_xa_Obligation_s*)e->gg.g.n)
+	  len += zx_LEN_SO_xa_Obligation(c, e);
   }
   {
       struct zx_tas3sol_Dict_s* e;
@@ -3206,9 +3223,9 @@ int zx_LEN_WO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x
 #endif
   
   {
-      struct zx_tas3sol_Obligations_s* e;
-      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
-	  len += zx_LEN_WO_tas3sol_Obligations(c, e);
+      struct zx_xa_Obligation_s* e;
+      for (e = x->Obligation; e; e = (struct zx_xa_Obligation_s*)e->gg.g.n)
+	  len += zx_LEN_WO_xa_Obligation(c, e);
   }
   {
       struct zx_tas3sol_Dict_s* e;
@@ -3258,9 +3275,9 @@ char* zx_ENC_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s*
 #endif
   
   {
-      struct zx_tas3sol_Obligations_s* e;
-      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
-	  p = zx_ENC_SO_tas3sol_Obligations(c, e, p);
+      struct zx_xa_Obligation_s* e;
+      for (e = x->Obligation; e; e = (struct zx_xa_Obligation_s*)e->gg.g.n)
+	  p = zx_ENC_SO_xa_Obligation(c, e, p);
   }
   {
       struct zx_tas3sol_Dict_s* e;

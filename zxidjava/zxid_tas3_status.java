@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_p_void {
+public class zxid_tas3_status {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_p_void(long cPtr, boolean futureUse) {
+  protected zxid_tas3_status(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_p_void() {
+  protected zxid_tas3_status() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_p_void obj) {
+  protected static long getCPtr(zxid_tas3_status obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

@@ -70,6 +70,8 @@ struct zx_e_Body_s {
   struct zx_xasp_XACMLPolicyQuery_s* XACMLPolicyQuery;	/* {0,1} nada */
   struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* xaspcd1_XACMLAuthzDecisionQuery;	/* {0,1} nada */
   struct zx_xaspcd1_XACMLPolicyQuery_s* xaspcd1_XACMLPolicyQuery;	/* {0,1} nada */
+  struct zx_xac_Request_s* xac_Request;	/* {0,1} nada */
+  struct zx_xac_Response_s* xac_Response;	/* {0,1}  */
   struct zx_di_Query_s* Query;	/* {0,1} nada */
   struct zx_di_QueryResponse_s* QueryResponse;	/* {0,1} nada */
   struct zx_di12_Query_s* di12_Query;	/* {0,1} nada */
@@ -300,6 +302,8 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_e_Body_GET_XACMLAuthzDecisionQuery(
 struct zx_xasp_XACMLPolicyQuery_s* zx_e_Body_GET_XACMLPolicyQuery(struct zx_e_Body_s* x, int n);
 struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zx_e_Body_GET_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n);
 struct zx_xaspcd1_XACMLPolicyQuery_s* zx_e_Body_GET_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x, int n);
+struct zx_xac_Request_s* zx_e_Body_GET_xac_Request(struct zx_e_Body_s* x, int n);
+struct zx_xac_Response_s* zx_e_Body_GET_xac_Response(struct zx_e_Body_s* x, int n);
 struct zx_di_Query_s* zx_e_Body_GET_Query(struct zx_e_Body_s* x, int n);
 struct zx_di_QueryResponse_s* zx_e_Body_GET_QueryResponse(struct zx_e_Body_s* x, int n);
 struct zx_di12_Query_s* zx_e_Body_GET_di12_Query(struct zx_e_Body_s* x, int n);
@@ -525,6 +529,8 @@ int zx_e_Body_NUM_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x);
 int zx_e_Body_NUM_XACMLPolicyQuery(struct zx_e_Body_s* x);
 int zx_e_Body_NUM_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x);
 int zx_e_Body_NUM_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x);
+int zx_e_Body_NUM_xac_Request(struct zx_e_Body_s* x);
+int zx_e_Body_NUM_xac_Response(struct zx_e_Body_s* x);
 int zx_e_Body_NUM_Query(struct zx_e_Body_s* x);
 int zx_e_Body_NUM_QueryResponse(struct zx_e_Body_s* x);
 int zx_e_Body_NUM_di12_Query(struct zx_e_Body_s* x);
@@ -750,6 +756,8 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zx_e_Body_POP_XACMLAuthzDecisionQuery(
 struct zx_xasp_XACMLPolicyQuery_s* zx_e_Body_POP_XACMLPolicyQuery(struct zx_e_Body_s* x);
 struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zx_e_Body_POP_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x);
 struct zx_xaspcd1_XACMLPolicyQuery_s* zx_e_Body_POP_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x);
+struct zx_xac_Request_s* zx_e_Body_POP_xac_Request(struct zx_e_Body_s* x);
+struct zx_xac_Response_s* zx_e_Body_POP_xac_Response(struct zx_e_Body_s* x);
 struct zx_di_Query_s* zx_e_Body_POP_Query(struct zx_e_Body_s* x);
 struct zx_di_QueryResponse_s* zx_e_Body_POP_QueryResponse(struct zx_e_Body_s* x);
 struct zx_di12_Query_s* zx_e_Body_POP_di12_Query(struct zx_e_Body_s* x);
@@ -975,6 +983,8 @@ void zx_e_Body_PUSH_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, struct zx_xas
 void zx_e_Body_PUSH_XACMLPolicyQuery(struct zx_e_Body_s* x, struct zx_xasp_XACMLPolicyQuery_s* y);
 void zx_e_Body_PUSH_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* y);
 void zx_e_Body_PUSH_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x, struct zx_xaspcd1_XACMLPolicyQuery_s* y);
+void zx_e_Body_PUSH_xac_Request(struct zx_e_Body_s* x, struct zx_xac_Request_s* y);
+void zx_e_Body_PUSH_xac_Response(struct zx_e_Body_s* x, struct zx_xac_Response_s* y);
 void zx_e_Body_PUSH_Query(struct zx_e_Body_s* x, struct zx_di_Query_s* y);
 void zx_e_Body_PUSH_QueryResponse(struct zx_e_Body_s* x, struct zx_di_QueryResponse_s* y);
 void zx_e_Body_PUSH_di12_Query(struct zx_e_Body_s* x, struct zx_di12_Query_s* y);
@@ -1202,6 +1212,8 @@ void zx_e_Body_PUT_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n, struct 
 void zx_e_Body_PUT_XACMLPolicyQuery(struct zx_e_Body_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* y);
 void zx_e_Body_PUT_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* y);
 void zx_e_Body_PUT_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x, int n, struct zx_xaspcd1_XACMLPolicyQuery_s* y);
+void zx_e_Body_PUT_xac_Request(struct zx_e_Body_s* x, int n, struct zx_xac_Request_s* y);
+void zx_e_Body_PUT_xac_Response(struct zx_e_Body_s* x, int n, struct zx_xac_Response_s* y);
 void zx_e_Body_PUT_Query(struct zx_e_Body_s* x, int n, struct zx_di_Query_s* y);
 void zx_e_Body_PUT_QueryResponse(struct zx_e_Body_s* x, int n, struct zx_di_QueryResponse_s* y);
 void zx_e_Body_PUT_di12_Query(struct zx_e_Body_s* x, int n, struct zx_di12_Query_s* y);
@@ -1427,6 +1439,8 @@ void zx_e_Body_ADD_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n, struct 
 void zx_e_Body_ADD_XACMLPolicyQuery(struct zx_e_Body_s* x, int n, struct zx_xasp_XACMLPolicyQuery_s* z);
 void zx_e_Body_ADD_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* z);
 void zx_e_Body_ADD_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x, int n, struct zx_xaspcd1_XACMLPolicyQuery_s* z);
+void zx_e_Body_ADD_xac_Request(struct zx_e_Body_s* x, int n, struct zx_xac_Request_s* z);
+void zx_e_Body_ADD_xac_Response(struct zx_e_Body_s* x, int n, struct zx_xac_Response_s* z);
 void zx_e_Body_ADD_Query(struct zx_e_Body_s* x, int n, struct zx_di_Query_s* z);
 void zx_e_Body_ADD_QueryResponse(struct zx_e_Body_s* x, int n, struct zx_di_QueryResponse_s* z);
 void zx_e_Body_ADD_di12_Query(struct zx_e_Body_s* x, int n, struct zx_di12_Query_s* z);
@@ -1652,6 +1666,8 @@ void zx_e_Body_DEL_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n);
 void zx_e_Body_DEL_XACMLPolicyQuery(struct zx_e_Body_s* x, int n);
 void zx_e_Body_DEL_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x, int n);
 void zx_e_Body_DEL_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x, int n);
+void zx_e_Body_DEL_xac_Request(struct zx_e_Body_s* x, int n);
+void zx_e_Body_DEL_xac_Response(struct zx_e_Body_s* x, int n);
 void zx_e_Body_DEL_Query(struct zx_e_Body_s* x, int n);
 void zx_e_Body_DEL_QueryResponse(struct zx_e_Body_s* x, int n);
 void zx_e_Body_DEL_di12_Query(struct zx_e_Body_s* x, int n);
@@ -1877,6 +1893,8 @@ void zx_e_Body_REV_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x);
 void zx_e_Body_REV_XACMLPolicyQuery(struct zx_e_Body_s* x);
 void zx_e_Body_REV_xaspcd1_XACMLAuthzDecisionQuery(struct zx_e_Body_s* x);
 void zx_e_Body_REV_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x);
+void zx_e_Body_REV_xac_Request(struct zx_e_Body_s* x);
+void zx_e_Body_REV_xac_Response(struct zx_e_Body_s* x);
 void zx_e_Body_REV_Query(struct zx_e_Body_s* x);
 void zx_e_Body_REV_QueryResponse(struct zx_e_Body_s* x);
 void zx_e_Body_REV_di12_Query(struct zx_e_Body_s* x);
@@ -2269,6 +2287,7 @@ struct zx_e_Header_s {
   struct zx_b12_UsageDirective_s* b12_UsageDirective;	/* {0,1} nada */
   struct zx_mm7_TransactionID_s* TransactionID;	/* {0,1} nada */
   struct zx_wsse_Security_s* Security;	/* {0,1} nada */
+  struct zx_tas3_Status_s* Status;	/* {0,1} nada */
   struct zx_tas3_Credentials_s* Credentials;	/* {0,1} nada */
   struct zx_tas3_ESLPolicies_s* ESLPolicies;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
@@ -2310,6 +2329,7 @@ struct zx_b12_Consent_s* zx_e_Header_GET_b12_Consent(struct zx_e_Header_s* x, in
 struct zx_b12_UsageDirective_s* zx_e_Header_GET_b12_UsageDirective(struct zx_e_Header_s* x, int n);
 struct zx_mm7_TransactionID_s* zx_e_Header_GET_TransactionID(struct zx_e_Header_s* x, int n);
 struct zx_wsse_Security_s* zx_e_Header_GET_Security(struct zx_e_Header_s* x, int n);
+struct zx_tas3_Status_s* zx_e_Header_GET_Status(struct zx_e_Header_s* x, int n);
 struct zx_tas3_Credentials_s* zx_e_Header_GET_Credentials(struct zx_e_Header_s* x, int n);
 struct zx_tas3_ESLPolicies_s* zx_e_Header_GET_ESLPolicies(struct zx_e_Header_s* x, int n);
 
@@ -2346,6 +2366,7 @@ int zx_e_Header_NUM_b12_Consent(struct zx_e_Header_s* x);
 int zx_e_Header_NUM_b12_UsageDirective(struct zx_e_Header_s* x);
 int zx_e_Header_NUM_TransactionID(struct zx_e_Header_s* x);
 int zx_e_Header_NUM_Security(struct zx_e_Header_s* x);
+int zx_e_Header_NUM_Status(struct zx_e_Header_s* x);
 int zx_e_Header_NUM_Credentials(struct zx_e_Header_s* x);
 int zx_e_Header_NUM_ESLPolicies(struct zx_e_Header_s* x);
 
@@ -2382,6 +2403,7 @@ struct zx_b12_Consent_s* zx_e_Header_POP_b12_Consent(struct zx_e_Header_s* x);
 struct zx_b12_UsageDirective_s* zx_e_Header_POP_b12_UsageDirective(struct zx_e_Header_s* x);
 struct zx_mm7_TransactionID_s* zx_e_Header_POP_TransactionID(struct zx_e_Header_s* x);
 struct zx_wsse_Security_s* zx_e_Header_POP_Security(struct zx_e_Header_s* x);
+struct zx_tas3_Status_s* zx_e_Header_POP_Status(struct zx_e_Header_s* x);
 struct zx_tas3_Credentials_s* zx_e_Header_POP_Credentials(struct zx_e_Header_s* x);
 struct zx_tas3_ESLPolicies_s* zx_e_Header_POP_ESLPolicies(struct zx_e_Header_s* x);
 
@@ -2418,6 +2440,7 @@ void zx_e_Header_PUSH_b12_Consent(struct zx_e_Header_s* x, struct zx_b12_Consent
 void zx_e_Header_PUSH_b12_UsageDirective(struct zx_e_Header_s* x, struct zx_b12_UsageDirective_s* y);
 void zx_e_Header_PUSH_TransactionID(struct zx_e_Header_s* x, struct zx_mm7_TransactionID_s* y);
 void zx_e_Header_PUSH_Security(struct zx_e_Header_s* x, struct zx_wsse_Security_s* y);
+void zx_e_Header_PUSH_Status(struct zx_e_Header_s* x, struct zx_tas3_Status_s* y);
 void zx_e_Header_PUSH_Credentials(struct zx_e_Header_s* x, struct zx_tas3_Credentials_s* y);
 void zx_e_Header_PUSH_ESLPolicies(struct zx_e_Header_s* x, struct zx_tas3_ESLPolicies_s* y);
 
@@ -2456,6 +2479,7 @@ void zx_e_Header_PUT_b12_Consent(struct zx_e_Header_s* x, int n, struct zx_b12_C
 void zx_e_Header_PUT_b12_UsageDirective(struct zx_e_Header_s* x, int n, struct zx_b12_UsageDirective_s* y);
 void zx_e_Header_PUT_TransactionID(struct zx_e_Header_s* x, int n, struct zx_mm7_TransactionID_s* y);
 void zx_e_Header_PUT_Security(struct zx_e_Header_s* x, int n, struct zx_wsse_Security_s* y);
+void zx_e_Header_PUT_Status(struct zx_e_Header_s* x, int n, struct zx_tas3_Status_s* y);
 void zx_e_Header_PUT_Credentials(struct zx_e_Header_s* x, int n, struct zx_tas3_Credentials_s* y);
 void zx_e_Header_PUT_ESLPolicies(struct zx_e_Header_s* x, int n, struct zx_tas3_ESLPolicies_s* y);
 
@@ -2492,6 +2516,7 @@ void zx_e_Header_ADD_b12_Consent(struct zx_e_Header_s* x, int n, struct zx_b12_C
 void zx_e_Header_ADD_b12_UsageDirective(struct zx_e_Header_s* x, int n, struct zx_b12_UsageDirective_s* z);
 void zx_e_Header_ADD_TransactionID(struct zx_e_Header_s* x, int n, struct zx_mm7_TransactionID_s* z);
 void zx_e_Header_ADD_Security(struct zx_e_Header_s* x, int n, struct zx_wsse_Security_s* z);
+void zx_e_Header_ADD_Status(struct zx_e_Header_s* x, int n, struct zx_tas3_Status_s* z);
 void zx_e_Header_ADD_Credentials(struct zx_e_Header_s* x, int n, struct zx_tas3_Credentials_s* z);
 void zx_e_Header_ADD_ESLPolicies(struct zx_e_Header_s* x, int n, struct zx_tas3_ESLPolicies_s* z);
 
@@ -2528,6 +2553,7 @@ void zx_e_Header_DEL_b12_Consent(struct zx_e_Header_s* x, int n);
 void zx_e_Header_DEL_b12_UsageDirective(struct zx_e_Header_s* x, int n);
 void zx_e_Header_DEL_TransactionID(struct zx_e_Header_s* x, int n);
 void zx_e_Header_DEL_Security(struct zx_e_Header_s* x, int n);
+void zx_e_Header_DEL_Status(struct zx_e_Header_s* x, int n);
 void zx_e_Header_DEL_Credentials(struct zx_e_Header_s* x, int n);
 void zx_e_Header_DEL_ESLPolicies(struct zx_e_Header_s* x, int n);
 
@@ -2564,6 +2590,7 @@ void zx_e_Header_REV_b12_Consent(struct zx_e_Header_s* x);
 void zx_e_Header_REV_b12_UsageDirective(struct zx_e_Header_s* x);
 void zx_e_Header_REV_TransactionID(struct zx_e_Header_s* x);
 void zx_e_Header_REV_Security(struct zx_e_Header_s* x);
+void zx_e_Header_REV_Status(struct zx_e_Header_s* x);
 void zx_e_Header_REV_Credentials(struct zx_e_Header_s* x);
 void zx_e_Header_REV_ESLPolicies(struct zx_e_Header_s* x);
 
@@ -2593,18 +2620,27 @@ struct zx_str* zx_EASY_ENC_WO_e_detail(struct zx_ctx* c, struct zx_e_detail_s* x
 struct zx_e_detail_s {
   ZX_ELEM_EXT
   zx_e_detail_EXT
+  struct zx_lu_Status_s* Status;	/* {0,-1} nada */
 };
 
 #ifdef ZX_ENA_GETPUT
 
+struct zx_lu_Status_s* zx_e_detail_GET_Status(struct zx_e_detail_s* x, int n);
+
+int zx_e_detail_NUM_Status(struct zx_e_detail_s* x);
+
+struct zx_lu_Status_s* zx_e_detail_POP_Status(struct zx_e_detail_s* x);
+
+void zx_e_detail_PUSH_Status(struct zx_e_detail_s* x, struct zx_lu_Status_s* y);
 
 
+void zx_e_detail_PUT_Status(struct zx_e_detail_s* x, int n, struct zx_lu_Status_s* y);
 
+void zx_e_detail_ADD_Status(struct zx_e_detail_s* x, int n, struct zx_lu_Status_s* z);
 
+void zx_e_detail_DEL_Status(struct zx_e_detail_s* x, int n);
 
-
-
-
+void zx_e_detail_REV_Status(struct zx_e_detail_s* x);
 
 #endif
 

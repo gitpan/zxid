@@ -10,16 +10,20 @@
  *
  * 4.9.2009, forked from zxidsimp.c --Sampo
  * 1.2.2010, added ses_to methods --Sampo
+ * 21.5.2010, added local attribute authority and local EPRs feature --Sampo
  */
 
 #include <memory.h>
 #include <string.h>
+#include <dirent.h>
+#include <errno.h>
 #include <unistd.h>
 
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
 #include "zxidconf.h"
+#include "c/zx-sa-data.h"
 
 /*(i) Convert attributes from (session) pool to LDIF entry, applying OUTMAP.
  * This is used by zxid_simple() SSO successful code to generate return
@@ -29,7 +33,7 @@
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
 /* Called by: */
-static struct zx_str* zxid_pool_to_ldif(struct zxid_conf* cf, struct zxid_attr* pool)
+static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
 {
   char* p;
   char* name;
@@ -175,8 +179,8 @@ static struct zx_str* zxid_pool_to_ldif(struct zxid_conf* cf, struct zxid_attr* 
 /*() Convert attributes from (session) pool to JSON, applying OUTMAP.
  * *** Need to check escaping JSON values, e.g. " or \n */
 
-/* Called by:  zxid_simple_ab_pep */
-static struct zx_str* zxid_pool_to_json(struct zxid_conf* cf, struct zxid_attr* pool)
+/* Called by:  zxid_ses_to_json */
+static struct zx_str* zxid_pool_to_json(zxid_conf* cf, struct zxid_attr* pool)
 {
   char* p;
   char* name;
@@ -312,8 +316,8 @@ static struct zx_str* zxid_pool_to_json(struct zxid_conf* cf, struct zxid_attr* 
  * *** Need to figure out how to distinguish query string return from
  *     other returns, like redirect. Perhaps arrange dn field always first? */
 
-/* Called by:  zxid_simple_ab_pep */
-static struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* pool)
+/* Called by:  zxid_ses_to_qs */
+static struct zx_str* zxid_pool_to_qs(zxid_conf* cf, struct zxid_attr* pool)
 {
   char* p;
   char* name;
@@ -415,26 +419,29 @@ static struct zx_str* zxid_pool_to_qs(struct zxid_conf* cf, struct zxid_attr* po
 
 /*() Convert attributes from session to LDIF, applying OUTMAP. */
 
-struct zx_str* zxid_ses_to_ldif(struct zxid_conf* cf, struct zxid_ses* ses) {
+/* Called by: */
+struct zx_str* zxid_ses_to_ldif(zxid_conf* cf, zxid_ses* ses) {
   return zxid_pool_to_ldif(cf, ses?ses->at:0);
 }
 
 /*() Convert attributes from session to JSON, applying OUTMAP. */
 
-struct zx_str* zxid_ses_to_json(struct zxid_conf* cf, struct zxid_ses* ses) {
+/* Called by:  zxid_simple_ab_pep */
+struct zx_str* zxid_ses_to_json(zxid_conf* cf, zxid_ses* ses) {
   return zxid_pool_to_json(cf, ses?ses->at:0);
 }
 
 /*() Convert attributes from session to query string, applying OUTMAP. */
 
-struct zx_str* zxid_ses_to_qs(struct zxid_conf* cf, struct zxid_ses* ses) {
+/* Called by:  zxid_simple_ab_pep */
+struct zx_str* zxid_ses_to_qs(zxid_conf* cf, zxid_ses* ses) {
   return zxid_pool_to_qs(cf, ses?ses->at:0);
 }
 
 /*() Add values, applying NEED, WANT, and INMAP */
 
 /* Called by:  zxid_add_a7n_at_to_pool x2 */
-static int zxid_add_at_values(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_sa_Attribute_s* at, char* name, struct zx_str* issuer)
+static int zxid_add_at_values(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribute_s* at, char* name, struct zx_str* issuer)
 {
   struct zx_str* ss;
   struct zxid_map* map;
@@ -483,7 +490,7 @@ static int zxid_add_at_values(struct zxid_conf* cf, struct zxid_ses* ses, struct
 /*() Add Attribute Statements of an Assertion to pool, applying NEED, WANT, and INMAP */
 
 /* Called by:  zxid_ses_to_pool */
-static void zxid_add_a7n_at_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_sa_Assertion_s* a7n)
+static void zxid_add_a7n_at_to_pool(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n)
 {
   struct zx_sa_Attribute_s* at;
   struct zx_sa_AttributeStatement_s* as;
@@ -502,8 +509,8 @@ static void zxid_add_a7n_at_to_pool(struct zxid_conf* cf, struct zxid_ses* ses, 
 
 /*() Add simple attribute to pool, applying NEED, WANT, and INMAP */
 
-/* Called by:  zxid_add_qs_to_pool, zxid_ses_to_pool x8, zxid_simple_ab_pep x2 */
-void zxid_add_attr_to_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* at_name, struct zx_str* val)
+/* Called by:  zxid_add_ldif_attrs_to_ses, zxid_add_qs_to_ses, zxid_ses_to_pool x23 */
+void zxid_add_attr_to_ses(zxid_conf* cf, zxid_ses* ses, char* at_name, struct zx_str* val)
 {
   struct zxid_map* map;
   if (!val)
@@ -525,43 +532,188 @@ void zxid_add_attr_to_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* at_n
   }
 }
 
+/*() Parse LDIF format and insert attributes to linked list. Return new head of the list.
+ * *** illegal input causes corrupt pointer. For example query string input causes corruption. */
+
+/* Called by:  zxid_ses_to_pool x3 */
+static void zxid_add_ldif_attrs_to_ses(zxid_conf* cf, zxid_ses* ses, const char* prefix, char* p, char* lk)
+{
+  char* name;
+  char* val;
+  char* nbuf;
+  char name_buf[ZXID_MAX_USER];
+  int len;
+  if (prefix) {
+    strncpy(name_buf, prefix, sizeof(name_buf)-1);
+    nbuf = name_buf + MIN(strlen(prefix), sizeof(name_buf)-1);
+  } else
+    nbuf = name_buf;  
+
+  for (; p; ++p) {
+    name = p;
+    p = strstr(p, ": ");
+    if (!p)
+      break;
+    len = MIN(p-name, sizeof(name_buf)-(nbuf-name_buf)-1);
+    memcpy(nbuf, name, len);
+    nbuf[len]=0;
+
+    val = p+2;
+    p = strchr(val, '\n');  /* *** parsing LDIF is fragile if values are multiline */
+    len = p?(p-val):strlen(val);
+    D("%s: ATTR(%s)=VAL(%.*s)", lk, name_buf, len, val);
+    zxid_add_attr_to_ses(cf, ses, name_buf,  zx_dup_len_str(cf->ctx, len, val));
+  }
+}
+
+/*() Copy user's local EPRs to his current session.
+ * This function implements a feature where user can have at
+ * some site some long term EPRs (with long term credential). When SSO
+ * is made, these EPRs are copied to user's session's EPR
+ * cache and thus made available. The persistent user EPRs could
+ * be used to implement stuff like subscriptions.
+ *
+ * The ".all" user's EPRs provide a mechanism to add to all users of
+ * a given SP some EPR. Naturally such EPR can not have per user
+ * or short time credential. This can have security implications.
+ *
+ * cf:: Config object for cf->path, and for memory allocation
+ * ses:: Session object. ses->sid is used to determine desitmation directory.
+ * path:: Path to the user directory (in /var/zxid/user/<sha1_safe_base64(idpnid)>/)
+ */
+
+/* Called by:  zxid_ses_to_pool x3 */
+static void zxid_copy_user_eprs_to_ses(zxid_conf* cf, zxid_ses* ses, struct zx_str* path)
+{
+  char bs_dir[ZXID_MAX_BUF];
+  char ses_path[ZXID_MAX_BUF];
+  DIR* dir;
+  struct dirent * de;
+  if (!ses->sid || !*ses->sid || !path)
+    return;  /* No valid session. Nothing to do. */
+  
+  snprintf(bs_dir, sizeof(bs_dir), "%.*s/.bs", path->len, path->s);
+  dir = opendir(bs_dir);
+  if (!dir) {
+    D("Local bootstrap dir(%s) does not exist", bs_dir);
+    return;
+  }
+  while (de = readdir(dir)) {
+    if (ONE_OF_2(de->d_name[0], '.', 0))   /* skip . and .. and .foo */
+      continue;
+    
+    snprintf(bs_dir, sizeof(bs_dir), "%.*s/.bs/%s", path->len, path->s, de->d_name);
+    snprintf(ses_path, sizeof(ses_path), "%.*s" ZXID_SES_DIR "%s/%s", path->len, path->s, ses->sid, de->d_name);
+    copy_file(bs_dir, ses_path, "EPRS2ses", 1);
+  }
+  closedir(dir);
+}
+
 /*(i) Process attributes from the AttributeStatements of the session
  * SSO Assertion and insert them to the pool. NEED, WANT, and INMAP
  * are applied. The pool is suitable for use by PEP or eventually
- * rendering to LDIF (or JSON). */
+ * rendering to LDIF (or JSON). This function also implements
+ * local attribute authority. */
 
-/* Called by:  zxid_simple_ab_pep */
-void zxid_ses_to_pool(struct zxid_conf* cf, struct zxid_ses* ses)
+/* Called by:  zxid_as_call_ses, zxid_fetch_ses, zxid_simple_ab_pep, zxid_wsf_validate_a7n */
+void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
 {
   char* src;
   char* dst;
   char* lim;
-  struct zx_str* issuer;
+  int got;
+  struct zx_str* issuer = 0;
+  struct zx_str* affid;
+  struct zx_str* nid;
+  struct zx_str* tgtissuer = 0;
+  struct zx_str* tgtaffid;
+  struct zx_str* tgtnid;
   struct zx_str* accr;
+  struct zx_str* path;
+  struct zx_sa_Assertion_s* a7n;
+  struct zx_sa_Assertion_s* tgta7n;
+  char buf[ZXID_MAX_USER];
+  char sha1_name[28];
+
   D_INDENT("ses_to_pool: ");
   zxid_get_ses_sso_a7n(cf, ses);
-  D("adding a7n %p to pool", ses->a7n);
-  zxid_add_a7n_at_to_pool(cf, ses, ses->a7n);
+  a7n = ses->a7n;
+  D("adding a7n %p to pool", a7n);
+  zxid_add_a7n_at_to_pool(cf, ses, a7n);
   
   /* Format some pseudo attributes that describe the SSO */
+
+  if (a7n)
+    issuer = a7n->Issuer&&a7n->Issuer->gg.content?a7n->Issuer->gg.content:0;
+  zxid_add_attr_to_ses(cf, ses, "issuer", issuer);
+  zxid_add_attr_to_ses(cf, ses, "ssoa7npath",zx_dup_str(cf->ctx, STRNULLCHK(ses->sso_a7n_path)));
   
-  issuer = ses->a7n&&ses->a7n->Issuer&&ses->a7n->Issuer->gg.content?ses->a7n->Issuer->gg.content:0;
-  zxid_add_attr_to_ses(cf, ses, "affid", issuer);
+  affid = ses->nameid&&ses->nameid->NameQualifier?ses->nameid->NameQualifier:0;
+  nid = ses->nameid&&ses->nameid->gg.content?ses->nameid->gg.content:0;
+  zxid_add_attr_to_ses(cf, ses, "affid",  affid);
+  zxid_add_attr_to_ses(cf, ses, "idpnid", nid);
+  zxid_add_attr_to_ses(cf, ses, "nidfmt", zx_dup_str(cf->ctx, ses->nidfmt?"P":"T"));
+  if (nid) {  
+    zxid_user_sha1_name(cf, affid, nid, sha1_name);
+    path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR "%s", cf->path, sha1_name);
+    zxid_add_attr_to_ses(cf, ses, "localpath",   path);
+    got = read_all(sizeof(buf)-1, buf, "splocal_user_at", "%.*s/.bs/.at", path->len, path->s);
+    if (got)
+      zxid_add_ldif_attrs_to_ses(cf, ses, "local_", buf, "splocal_user_at");
+    zxid_copy_user_eprs_to_ses(cf, ses, path);
+  }
 
-  accr = ses->a7n&&ses->a7n->AuthnStatement&&ses->a7n->AuthnStatement->AuthnContext&&ses->a7n->AuthnStatement->AuthnContext->AuthnContextClassRef&&ses->a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content&&ses->a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content?ses->a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content:0;
+  /* Format pseudo attrs that describe the target, defaulting to the SSO identity. */
+  
+  if (ses->tgta7n)
+    tgta7n = ses->tgta7n;
+  else
+    tgta7n = a7n;
+  if (tgta7n)
+    tgtissuer = tgta7n->Issuer&&tgta7n->Issuer->gg.content?tgta7n->Issuer->gg.content:0;
+  if (tgtissuer)
+    zxid_add_attr_to_ses(cf, ses, "tgtissuer", tgtissuer);
+  zxid_add_attr_to_ses(cf, ses, "tgta7npath",zx_dup_str(cf->ctx, STRNULLCHK(ses->tgt_a7n_path)));
+
+  tgtaffid = ses->tgtnameid&&ses->tgtnameid->NameQualifier?ses->tgtnameid->NameQualifier:0;
+  tgtnid = ses->tgtnameid&&ses->tgtnameid->gg.content?ses->tgtnameid->gg.content:0;
+  if (!tgtissuer) tgtissuer = issuer;  /* Default: requestor is the target */
+  if (!tgtaffid)  tgtaffid = affid;
+  if (!tgtnid)    tgtnid = nid;
+  zxid_add_attr_to_ses(cf, ses, "tgtaffid",  tgtaffid);
+  zxid_add_attr_to_ses(cf, ses, "tgtnid",    tgtnid);
+  zxid_add_attr_to_ses(cf, ses, "tgtfmt",    zx_dup_str(cf->ctx, ses->tgtfmt?"P":"T"));
+  if (tgtnid) {
+    zxid_user_sha1_name(cf, tgtaffid, tgtnid, sha1_name);
+    path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR "%s", cf->path, sha1_name);
+    zxid_add_attr_to_ses(cf, ses, "tgtpath",   path);
+    got = read_all(sizeof(buf)-1, buf, "sptgt_user_at", "%.*s/.bs/.at", path->len, path->s);
+    if (got)
+      zxid_add_ldif_attrs_to_ses(cf, ses, "tgt_", buf, "sptgt_user_at");
+    zxid_copy_user_eprs_to_ses(cf, ses, path);
+  }
+  
+  accr = a7n&&a7n->AuthnStatement&&a7n->AuthnStatement->AuthnContext&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content?a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content:0;
   zxid_add_attr_to_ses(cf, ses, "authnctxlevel", accr);
-
-  zxid_add_attr_to_ses(cf, ses, "idpnid",     zx_dup_str(cf->ctx, STRNULLCHK(ses->nid)));
-  zxid_add_attr_to_ses(cf, ses, "tgtnid",     zx_dup_str(cf->ctx, STRNULLCHK(ses->tgt)));
+  
+  got = read_all(sizeof(buf)-1, buf, "splocal.all", "%s" ZXID_USER_DIR ".all/.bs/.at" , cf->path);
+  if (got)
+    zxid_add_ldif_attrs_to_ses(cf, ses, 0, buf, "splocal.all");
+  zxid_copy_user_eprs_to_ses(cf, ses, path);
+  
   zxid_add_attr_to_ses(cf, ses, "eid",        zxid_my_entity_id(cf));
-  zxid_add_attr_to_ses(cf, ses, "sesid",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sid)));
+  zxid_add_attr_to_ses(cf, ses, "sigres",     zx_strf(cf->ctx, "%x", ses->sigres));
+  zxid_add_attr_to_ses(cf, ses, "ssores",     zx_strf(cf->ctx, "%x", ses->ssores));
+  if (ses->sid && *ses->sid) {
+    zxid_add_attr_to_ses(cf, ses, "sesid",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sid)));
+    zxid_add_attr_to_ses(cf, ses, "sespath",    zx_strf(cf->ctx, "%s" ZXID_SES_DIR "%s", cf->path, STRNULLCHK(ses->sid)));
+  }
+  zxid_add_attr_to_ses(cf, ses, "sesix",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sesix)));
   zxid_add_attr_to_ses(cf, ses, "setcookie",  zx_dup_str(cf->ctx, STRNULLCHK(ses->setcookie)));
   zxid_add_attr_to_ses(cf, ses, "cookie",     zx_dup_str(cf->ctx, STRNULLCHK(ses->cookie)));
-  zxid_add_attr_to_ses(cf, ses, "ssoa7npath", zx_dup_str(cf->ctx, STRNULLCHK(ses->sso_a7n_path)));
-  zxid_add_attr_to_ses(cf, ses, "tgta7npath", zx_dup_str(cf->ctx, STRNULLCHK(ses->tgt_a7n_path)));
-  zxid_add_attr_to_ses(cf, ses, "msgid",      zx_dup_str(cf->ctx, STRNULLCHK(ses->msgid)));
-  zxid_add_attr_to_ses(cf, ses, "rs",         zx_dup_str(cf->ctx, STRNULLCHK(ses->rs)));
+  zxid_add_attr_to_ses(cf, ses, "msgid",      zx_dup_str(cf->ctx, STRNULLCHK(ses->wsp_msgid)));
 
+  zxid_add_attr_to_ses(cf, ses, "rs",         zx_dup_str(cf->ctx, STRNULLCHK(ses->rs)));
   src = dst = ses->at->val;
   lim = ses->at->val + strlen(ses->at->val);
   URL_DECODE(dst, src, lim);
@@ -581,7 +733,7 @@ void zxid_ses_to_pool(struct zxid_conf* cf, struct zxid_ses* ses)
  * Returns 1 on success, 0 on failure (return value often not checked). */
 
 /* Called by:  zxid_az_cf_ses */
-int zxid_add_qs_to_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* qs, int apply_map)
+int zxid_add_qs_to_ses(zxid_conf* cf, zxid_ses* ses, char* qs, int apply_map)
 {
   char *p, *n, *v, *val, *name;
   if (!qs || !ses)
@@ -631,7 +783,7 @@ int zxid_add_qs_to_ses(struct zxid_conf* cf, struct zxid_ses* ses, char* qs, int
  * are reserved. */
 
 /* Called by: */
-struct zx_str* zxid_get_at(struct zxid_conf* cf, struct zxid_ses* ses, char* atname, int ix, int apply_map)
+struct zx_str* zxid_get_at(zxid_conf* cf, zxid_ses* ses, char* atname, int ix, int apply_map)
 {
   struct zxid_attr* at;
   struct zxid_attr* av;

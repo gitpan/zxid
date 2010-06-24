@@ -3651,6 +3651,274 @@ void zx_e_Body_DEL_xaspcd1_XACMLPolicyQuery(struct zx_e_Body_s* x, int n)
 
 #ifdef ZX_ENA_GETPUT
 
+/* FUNC(zx_e_Body_NUM_xac_Request) */
+
+int zx_e_Body_NUM_xac_Request(struct zx_e_Body_s* x)
+{
+  struct zx_xac_Request_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->xac_Request; y; ++n, y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_e_Body_GET_xac_Request) */
+
+struct zx_xac_Request_s* zx_e_Body_GET_xac_Request(struct zx_e_Body_s* x, int n)
+{
+  struct zx_xac_Request_s* y;
+  if (!x) return 0;
+  for (y = x->xac_Request; n>=0 && y; --n, y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_e_Body_POP_xac_Request) */
+
+struct zx_xac_Request_s* zx_e_Body_POP_xac_Request(struct zx_e_Body_s* x)
+{
+  struct zx_xac_Request_s* y;
+  if (!x) return 0;
+  y = x->xac_Request;
+  if (y)
+    x->xac_Request = (struct zx_xac_Request_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_e_Body_PUSH_xac_Request) */
+
+void zx_e_Body_PUSH_xac_Request(struct zx_e_Body_s* x, struct zx_xac_Request_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->xac_Request->gg.g;
+  x->xac_Request = z;
+}
+
+/* FUNC(zx_e_Body_REV_xac_Request) */
+
+void zx_e_Body_REV_xac_Request(struct zx_e_Body_s* x)
+{
+  struct zx_xac_Request_s* nxt;
+  struct zx_xac_Request_s* y;
+  if (!x) return;
+  y = x->xac_Request;
+  if (!y) return;
+  x->xac_Request = 0;
+  while (y) {
+    nxt = (struct zx_xac_Request_s*)y->gg.g.n;
+    y->gg.g.n = &x->xac_Request->gg.g;
+    x->xac_Request = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_e_Body_PUT_xac_Request) */
+
+void zx_e_Body_PUT_xac_Request(struct zx_e_Body_s* x, int n, struct zx_xac_Request_s* z)
+{
+  struct zx_xac_Request_s* y;
+  if (!x || !z) return;
+  y = x->xac_Request;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->xac_Request = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_e_Body_ADD_xac_Request) */
+
+void zx_e_Body_ADD_xac_Request(struct zx_e_Body_s* x, int n, struct zx_xac_Request_s* z)
+{
+  struct zx_xac_Request_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->xac_Request->gg.g;
+    x->xac_Request = z;
+    return;
+  case -1:
+    y = x->xac_Request;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xac_Request; n > 1 && y; --n, y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_e_Body_DEL_xac_Request) */
+
+void zx_e_Body_DEL_xac_Request(struct zx_e_Body_s* x, int n)
+{
+  struct zx_xac_Request_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->xac_Request = (struct zx_xac_Request_s*)x->xac_Request->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xac_Request_s*)x->xac_Request;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xac_Request; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_Request_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_e_Body_NUM_xac_Response) */
+
+int zx_e_Body_NUM_xac_Response(struct zx_e_Body_s* x)
+{
+  struct zx_xac_Response_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->xac_Response; y; ++n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_e_Body_GET_xac_Response) */
+
+struct zx_xac_Response_s* zx_e_Body_GET_xac_Response(struct zx_e_Body_s* x, int n)
+{
+  struct zx_xac_Response_s* y;
+  if (!x) return 0;
+  for (y = x->xac_Response; n>=0 && y; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_e_Body_POP_xac_Response) */
+
+struct zx_xac_Response_s* zx_e_Body_POP_xac_Response(struct zx_e_Body_s* x)
+{
+  struct zx_xac_Response_s* y;
+  if (!x) return 0;
+  y = x->xac_Response;
+  if (y)
+    x->xac_Response = (struct zx_xac_Response_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_e_Body_PUSH_xac_Response) */
+
+void zx_e_Body_PUSH_xac_Response(struct zx_e_Body_s* x, struct zx_xac_Response_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->xac_Response->gg.g;
+  x->xac_Response = z;
+}
+
+/* FUNC(zx_e_Body_REV_xac_Response) */
+
+void zx_e_Body_REV_xac_Response(struct zx_e_Body_s* x)
+{
+  struct zx_xac_Response_s* nxt;
+  struct zx_xac_Response_s* y;
+  if (!x) return;
+  y = x->xac_Response;
+  if (!y) return;
+  x->xac_Response = 0;
+  while (y) {
+    nxt = (struct zx_xac_Response_s*)y->gg.g.n;
+    y->gg.g.n = &x->xac_Response->gg.g;
+    x->xac_Response = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_e_Body_PUT_xac_Response) */
+
+void zx_e_Body_PUT_xac_Response(struct zx_e_Body_s* x, int n, struct zx_xac_Response_s* z)
+{
+  struct zx_xac_Response_s* y;
+  if (!x || !z) return;
+  y = x->xac_Response;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->xac_Response = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_e_Body_ADD_xac_Response) */
+
+void zx_e_Body_ADD_xac_Response(struct zx_e_Body_s* x, int n, struct zx_xac_Response_s* z)
+{
+  struct zx_xac_Response_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->xac_Response->gg.g;
+    x->xac_Response = z;
+    return;
+  case -1:
+    y = x->xac_Response;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xac_Response; n > 1 && y; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_e_Body_DEL_xac_Response) */
+
+void zx_e_Body_DEL_xac_Response(struct zx_e_Body_s* x, int n)
+{
+  struct zx_xac_Response_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->xac_Response = (struct zx_xac_Response_s*)x->xac_Response->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_xac_Response_s*)x->xac_Response;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->xac_Response; n > 1 && y->gg.g.n; --n, y = (struct zx_xac_Response_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
 /* FUNC(zx_e_Body_NUM_Query) */
 
 int zx_e_Body_NUM_Query(struct zx_e_Body_s* x)
@@ -35298,6 +35566,140 @@ void zx_e_Header_DEL_Security(struct zx_e_Header_s* x, int n)
 
 #ifdef ZX_ENA_GETPUT
 
+/* FUNC(zx_e_Header_NUM_Status) */
+
+int zx_e_Header_NUM_Status(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_Status_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Status; y; ++n, y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_e_Header_GET_Status) */
+
+struct zx_tas3_Status_s* zx_e_Header_GET_Status(struct zx_e_Header_s* x, int n)
+{
+  struct zx_tas3_Status_s* y;
+  if (!x) return 0;
+  for (y = x->Status; n>=0 && y; --n, y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_e_Header_POP_Status) */
+
+struct zx_tas3_Status_s* zx_e_Header_POP_Status(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_Status_s* y;
+  if (!x) return 0;
+  y = x->Status;
+  if (y)
+    x->Status = (struct zx_tas3_Status_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_e_Header_PUSH_Status) */
+
+void zx_e_Header_PUSH_Status(struct zx_e_Header_s* x, struct zx_tas3_Status_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Status->gg.g;
+  x->Status = z;
+}
+
+/* FUNC(zx_e_Header_REV_Status) */
+
+void zx_e_Header_REV_Status(struct zx_e_Header_s* x)
+{
+  struct zx_tas3_Status_s* nxt;
+  struct zx_tas3_Status_s* y;
+  if (!x) return;
+  y = x->Status;
+  if (!y) return;
+  x->Status = 0;
+  while (y) {
+    nxt = (struct zx_tas3_Status_s*)y->gg.g.n;
+    y->gg.g.n = &x->Status->gg.g;
+    x->Status = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_e_Header_PUT_Status) */
+
+void zx_e_Header_PUT_Status(struct zx_e_Header_s* x, int n, struct zx_tas3_Status_s* z)
+{
+  struct zx_tas3_Status_s* y;
+  if (!x || !z) return;
+  y = x->Status;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Status = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_e_Header_ADD_Status) */
+
+void zx_e_Header_ADD_Status(struct zx_e_Header_s* x, int n, struct zx_tas3_Status_s* z)
+{
+  struct zx_tas3_Status_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Status->gg.g;
+    x->Status = z;
+    return;
+  case -1:
+    y = x->Status;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Status; n > 1 && y; --n, y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_e_Header_DEL_Status) */
+
+void zx_e_Header_DEL_Status(struct zx_e_Header_s* x, int n)
+{
+  struct zx_tas3_Status_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Status = (struct zx_tas3_Status_s*)x->Status->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_tas3_Status_s*)x->Status;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Status; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3_Status_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
 /* FUNC(zx_e_Header_NUM_Credentials) */
 
 int zx_e_Header_NUM_Credentials(struct zx_e_Header_s* x)
@@ -35570,6 +35972,140 @@ void zx_e_Header_PUT_id(struct zx_e_Header_s* x, struct zx_str* y) { x->id = y; 
 
 
 
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_e_detail_NUM_Status) */
+
+int zx_e_detail_NUM_Status(struct zx_e_detail_s* x)
+{
+  struct zx_lu_Status_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Status; y; ++n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_e_detail_GET_Status) */
+
+struct zx_lu_Status_s* zx_e_detail_GET_Status(struct zx_e_detail_s* x, int n)
+{
+  struct zx_lu_Status_s* y;
+  if (!x) return 0;
+  for (y = x->Status; n>=0 && y; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_e_detail_POP_Status) */
+
+struct zx_lu_Status_s* zx_e_detail_POP_Status(struct zx_e_detail_s* x)
+{
+  struct zx_lu_Status_s* y;
+  if (!x) return 0;
+  y = x->Status;
+  if (y)
+    x->Status = (struct zx_lu_Status_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_e_detail_PUSH_Status) */
+
+void zx_e_detail_PUSH_Status(struct zx_e_detail_s* x, struct zx_lu_Status_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Status->gg.g;
+  x->Status = z;
+}
+
+/* FUNC(zx_e_detail_REV_Status) */
+
+void zx_e_detail_REV_Status(struct zx_e_detail_s* x)
+{
+  struct zx_lu_Status_s* nxt;
+  struct zx_lu_Status_s* y;
+  if (!x) return;
+  y = x->Status;
+  if (!y) return;
+  x->Status = 0;
+  while (y) {
+    nxt = (struct zx_lu_Status_s*)y->gg.g.n;
+    y->gg.g.n = &x->Status->gg.g;
+    x->Status = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_e_detail_PUT_Status) */
+
+void zx_e_detail_PUT_Status(struct zx_e_detail_s* x, int n, struct zx_lu_Status_s* z)
+{
+  struct zx_lu_Status_s* y;
+  if (!x || !z) return;
+  y = x->Status;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Status = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_e_detail_ADD_Status) */
+
+void zx_e_detail_ADD_Status(struct zx_e_detail_s* x, int n, struct zx_lu_Status_s* z)
+{
+  struct zx_lu_Status_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Status->gg.g;
+    x->Status = z;
+    return;
+  case -1:
+    y = x->Status;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Status; n > 1 && y; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_e_detail_DEL_Status) */
+
+void zx_e_detail_DEL_Status(struct zx_e_detail_s* x, int n)
+{
+  struct zx_lu_Status_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Status = (struct zx_lu_Status_s*)x->Status->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_lu_Status_s*)x->Status;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Status; n > 1 && y->gg.g.n; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
 
 
 

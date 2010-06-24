@@ -16,7 +16,9 @@
  * 29.8.2009, added Auto-Cert feature a.k.a. zxid_mk_self_signed_cert() --Sampo
  * 4.9.2009,  added NEED, WANT, INMAP, PEPMAP, OUTMAP, and ATTRSRC --Sampo
  * 15.11.2009, added SHOW_CONF (o=d) option --Sampo
- * 7.1.2010,   added WSC and WSP signing options --Sampo
+ * 7.1.2010,  added WSC and WSP signing options --Sampo
+ * 12.2.2010, added pthread locking --Sampo
+ * 31.5.2010, added 4 web service call PEPs --Sampo
  */
 
 #include <memory.h>
@@ -49,7 +51,7 @@
  *     buffer will be modified in place by this function. */
 
 /* Called by:  zxid_init_conf */
-void zxid_sha1_file(struct zxid_conf* cf, char* name, char* sha1)
+void zxid_sha1_file(zxid_conf* cf, char* name, char* sha1)
 {
   int gotall;
   char buf[4096];
@@ -124,8 +126,8 @@ RSA* zxid_extract_private_key(char* buf, char* name)
 
 /*() Extract a certificate from PEM encoded file. */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_idp_sso_desc x2, zxid_init_conf x3, zxid_mk_art_deref, zxid_pep_az_soap x2, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x5, zxid_sp_sso_desc x2, zxlog_write_line */
-X509* zxid_read_cert(struct zxid_conf* cf, char* name)
+/* Called by:  zxid_idp_sso_desc x2, zxid_init_conf x3, zxid_lazy_load_sign_cert_and_pkey, zxid_sp_sso_desc x2, zxlog_write_line */
+X509* zxid_read_cert(zxid_conf* cf, char* name)
 {
   char buf[4096];
   int got = read_all(sizeof(buf), buf, "read_cert", "%s" ZXID_PEM_DIR "%s", cf->path, name);
@@ -136,8 +138,8 @@ X509* zxid_read_cert(struct zxid_conf* cf, char* name)
 
 /*() Extract a private key from PEM encoded file. */
 
-/* Called by:  test_ibm_cert_problem x2, test_ibm_cert_problem_enc_dec x2, zxenc_privkey_dec, zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_init_conf x3, zxid_mk_art_deref, zxid_pep_az_soap x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x5, zxlog_write_line x2 */
-RSA* zxid_read_private_key(struct zxid_conf* cf, char* name)
+/* Called by:  test_ibm_cert_problem x2, test_ibm_cert_problem_enc_dec x2, zxenc_privkey_dec, zxid_init_conf x3, zxid_lazy_load_sign_cert_and_pkey, zxlog_write_line x2 */
+RSA* zxid_read_private_key(zxid_conf* cf, char* name)
 {
   char buf[4096];
   int got = read_all(sizeof(buf), buf, "read_private_key", "%s" ZXID_PEM_DIR "%s", cf->path, name);
@@ -146,6 +148,26 @@ RSA* zxid_read_private_key(struct zxid_conf* cf, char* name)
   return zxid_extract_private_key(buf, name);
 }
 
+/*() Lazy load signing certificate and private key. This reads them from disk
+ * if needed. If they do not exist and auto_cert is enabled, they will be
+ * generated on disk and the read. Once read from disk, they will be cached in
+ * memory. */
+
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_pep_az_soap x3, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x6, zxid_wsf_sign */
+int zxid_lazy_load_sign_cert_and_pkey(zxid_conf* cf, X509** cert, RSA** pkey, const char* logkey)
+{
+  LOCK(cf->mx, logkey);
+  if (cert) {
+    if (!(*cert = cf->sign_cert)) // Lazy load cert and private key
+      *cert = cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
+  }
+  if (!(*pkey = cf->sign_pkey))
+    *pkey = cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
+  UNLOCK(cf->mx, logkey);
+  if (cert && !*cert || !*pkey)
+    return 0;
+  return 1;
+}
 #endif
 
 /*() Set obscure options of ZX and ZXID layers. Used to set debug options.
@@ -154,8 +176,8 @@ RSA* zxid_read_private_key(struct zxid_conf* cf, char* name)
  * way the unsupported activity will happen in one controlled place where
  * it can be ignored, if need to be. You have been warned. */
 
-/* Called by:  zxid_an_page_cf, zxid_fed_mgmt_cf, zxid_idp_list_cf_cgi, zxid_simple_cf_ses */
-int zxid_set_opt(struct zxid_conf* cf, int which, int val)
+/* Called by:  zxid_fed_mgmt_cf, zxid_idp_list_cf_cgi, zxid_simple_cf_ses */
+int zxid_set_opt(zxid_conf* cf, int which, int val)
 {
   switch (which) {
   case 1: zx_debug = val; return val;
@@ -169,7 +191,8 @@ int zxid_set_opt(struct zxid_conf* cf, int which, int val)
  * way the unsupported activity will happen in one controlled place where
  * it can be ignored, if need to be. You have been warned. */
 
-char* zxid_set_opt_cstr(struct zxid_conf* cf, int which, char* val)
+/* Called by: */
+char* zxid_set_opt_cstr(zxid_conf* cf, int which, char* val)
 {
   switch (which) {
   case 2: strncpy(zx_instance, val, sizeof(zx_instance)); return zx_instance;
@@ -183,8 +206,8 @@ char* zxid_set_opt_cstr(struct zxid_conf* cf, int which, char* val)
  * to manipulate this and some other options. This function exists for some
  * special cases encountered in scripting language bindings. */
 
-/* Called by: */
-void zxid_url_set(struct zxid_conf* cf, char* url)
+/* Called by:  main x2, zxidwspcgi_main */
+void zxid_url_set(zxid_conf* cf, char* url)
 {
   if (!cf || !url) {
     ERR("NULL pointer as cf or url argument cf=%p url=%p", cf, url);
@@ -193,6 +216,9 @@ void zxid_url_set(struct zxid_conf* cf, char* url)
   D("Setting url(%s)", url);
   cf->url = zx_dup_cstr(cf->ctx, url);
 }
+
+pthread_mutex_t zxid_ent_cache_mx;
+int zxid_ent_cache_mx_init = 0;
 
 /*(i) Initialize configuration object, which must have already been
  * allocated, to factory defaults (i.e. compiled in defaults, see
@@ -212,7 +238,7 @@ void zxid_url_set(struct zxid_conf* cf, char* url)
  */
 
 /* Called by:  zxid_conf_to_cf_len, zxid_init_conf_ctx */
-int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
+int zxid_init_conf(zxid_conf* cf, char* zxid_path)
 {
   DD("Initconf with path(%s)", zxid_path);
   cf->magic = ZXID_CONF_MAGIC;
@@ -221,6 +247,15 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   memcpy(cf->path, zxid_path, cf->path_len);
   cf->path[cf->path_len] = 0;
   cf->nice_name = ZXID_NICE_NAME;
+  cf->org_name = ZXID_ORG_NAME;
+  cf->org_url = ZXID_ORG_URL;
+  cf->locality = ZXID_LOCALITY;
+  cf->state = ZXID_STATE;
+  cf->country = ZXID_COUNTRY;
+  cf->contact_org = ZXID_CONTACT_ORG;
+  cf->contact_name = ZXID_CONTACT_NAME;
+  cf->contact_email = ZXID_CONTACT_EMAIL;
+  cf->contact_tel = ZXID_CONTACT_TEL;
   cf->url = ZXID_URL;
   cf->non_standard_entityid = ZXID_NON_STANDARD_ENTITYID;
   cf->redirect_hack_imposed_url = ZXID_REDIRECT_HACK_IMPOSED_URL;
@@ -235,6 +270,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->sso_sign     = ZXID_SSO_SIGN;
   cf->wsc_sign     = ZXID_WSC_SIGN;
   cf->wsp_sign     = ZXID_WSP_SIGN;
+  cf->wspcgicmd    = ZXID_WSPCGICMD;
   cf->nameid_enc   = ZXID_NAMEID_ENC;
   cf->post_a7n_enc = ZXID_POST_A7N_ENC;
   cf->di_allow_create = ZXID_DI_ALLOW_CREATE;
@@ -262,6 +298,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->md_populate_cache = ZXID_MD_POPULATE_CACHE;
   cf->md_cache_first    = ZXID_MD_CACHE_FIRST;
   cf->md_cache_last     = ZXID_MD_CACHE_LAST;
+  cf->load_cot_cache    = ZXID_LOAD_COT_CACHE;
   cf->auto_cert         = ZXID_AUTO_CERT;
   cf->ses_arch_dir      = ZXID_SES_ARCH_DIR;
   cf->ses_cookie_name   = ZXID_SES_COOKIE_NAME;
@@ -270,6 +307,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->as_ena            = ZXID_AS_ENA;
   cf->pdp_ena           = ZXID_PDP_ENA;
 
+  cf->loguser = ZXID_LOGUSER;
   cf->log_level = ZXLOG_LEVEL;
   cf->log_err = ZXLOG_ERR;      /* Log enables and signing and encryption flags (if USE_OPENSSL) */
   cf->log_act = ZXLOG_ACT;
@@ -288,12 +326,14 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->audience_fatal = ZXID_AUDIENCE_FATAL;
   cf->dup_a7n_fatal  = ZXID_DUP_A7N_FATAL;
   cf->dup_msg_fatal  = ZXID_DUP_MSG_FATAL;
+  cf->relto_fatal    = ZXID_RELTO_FATAL;
   cf->wsp_nosig_fatal = ZXID_WSP_NOSIG_FATAL;
   cf->notimestamp_fatal = ZXID_NOTIMESTAMP_FATAL;
   cf->anon_ok        = ZXID_ANON_OK;
   cf->required_authnctx = ZXID_REQUIRED_AUTHNCTX;
   cf->issue_authnctx_pw = ZXID_ISSUE_AUTHNCTX_PW;
   cf->idp_pref_acs_binding = ZXID_IDP_PREF_ACS_BINDING;
+  cf->mandatory_attr = ZXID_MANDATORY_ATTR;
 
   cf->before_slop    = ZXID_BEFORE_SLOP;
   cf->after_slop     = ZXID_AFTER_SLOP;
@@ -309,17 +349,28 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->inmap          = zxid_load_map(cf, 0, ZXID_INMAP);
   cf->outmap         = zxid_load_map(cf, 0, ZXID_OUTMAP);
   cf->pepmap         = zxid_load_map(cf, 0, ZXID_PEPMAP);
+  cf->pepmap_rqout   = zxid_load_map(cf, 0, ZXID_PEPMAP_RQOUT);
+  cf->pepmap_rqin    = zxid_load_map(cf, 0, ZXID_PEPMAP_RQIN);
+  cf->pepmap_rsout   = zxid_load_map(cf, 0, ZXID_PEPMAP_RSOUT);
+  cf->pepmap_rsin    = zxid_load_map(cf, 0, ZXID_PEPMAP_RSIN);
 
-  cf->localpdp_role_permit   = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_ROLE_PERMIT);
-  cf->localpdp_role_deny     = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_ROLE_DENY);
-  cf->localpdp_idpnid_permit = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_IDPNID_PERMIT);
-  cf->localpdp_idpnid_deny   = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_IDPNID_DENY);
+  cf->localpdp_role_permit    = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_ROLE_PERMIT);
+  cf->localpdp_role_deny      = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_ROLE_DENY);
+  cf->localpdp_idpnid_permit  = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_IDPNID_PERMIT);
+  cf->localpdp_idpnid_deny    = zxid_load_cstr_list(cf, 0, ZXID_LOCALPDP_IDPNID_DENY);
+
+  cf->wsc_localpdp_obl_pledge = ZXID_WSC_LOCALPDP_OBL_PLEDGE;
+  cf->wsp_localpdp_obl_req    = ZXID_WSP_LOCALPDP_OBL_REQ;
+  cf->wsp_localpdp_obl_emit   = ZXID_WSP_LOCALPDP_OBL_EMIT;
+  cf->wsc_localpdp_obl_accept = ZXID_WSC_LOCALPDP_OBL_ACCEPT;
 
   cf->redir_to_content  = ZXID_REDIR_TO_CONTENT;
   cf->remote_user_ena   = ZXID_REMOTE_USER_ENA;
   cf->max_soap_retry    = ZXID_MAX_SOAP_RETRY;
   cf->mod_saml_attr_prefix = ZXID_MOD_SAML_ATTR_PREFIX;
 
+  cf->bare_url_entityid = ZXID_BARE_URL_ENTITYID;
+  cf->show_tech         = ZXID_SHOW_TECH;
   cf->idp_sel_page      = ZXID_IDP_SEL_PAGE;
   cf->idp_sel_start     = ZXID_IDP_SEL_START;
   cf->idp_sel_new_idp   = ZXID_IDP_SEL_NEW_IDP;
@@ -330,19 +381,26 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
   cf->idp_sel_end       = ZXID_IDP_SEL_END;
 
   cf->an_page           = ZXID_AN_PAGE;
-  cf->an_start          = ZXID_AN_START;
-  cf->an_our_eid        = ZXID_AN_OUR_EID;
-  cf->an_tech_user      = ZXID_AN_TECH_USER;
-  cf->an_tech_site      = ZXID_AN_TECH_SITE;
-  cf->an_footer         = ZXID_AN_FOOTER;
-  cf->an_end            = ZXID_AN_END;
-  
+  cf->an_templ_file     = ZXID_AN_TEMPL_FILE;
+  cf->an_templ          = ZXID_AN_TEMPL;
+
+  cf->new_user_page     = ZXID_NEW_USER_PAGE;
+  cf->recover_passwd    = ZXID_RECOVER_PASSWD;
+  cf->atsel_page        = ZXID_ATSEL_PAGE;
+
   cf->mgmt_start        = ZXID_MGMT_START;
   cf->mgmt_logout       = ZXID_MGMT_LOGOUT;
   cf->mgmt_defed        = ZXID_MGMT_DEFED;
   cf->mgmt_footer       = ZXID_MGMT_FOOTER;
   cf->mgmt_end          = ZXID_MGMT_END;
-
+  
+  LOCK_INIT(cf->mx);
+  LOCK_INIT(cf->curl_mx);
+  if (!zxid_ent_cache_mx_init) {
+    LOCK_INIT(zxid_ent_cache_mx);
+    zxid_ent_cache_mx_init = 1;
+  }
+  
 #if 1
   DD("path(%.*s) cf->magic=%x", cf->path_len, cf->path, cf->magic);
 #else
@@ -362,6 +420,7 @@ int zxid_init_conf(struct zxid_conf* cf, char* zxid_path)
 void zx_reset_ctx(struct zx_ctx* ctx)
 {
   memset(ctx, 0, sizeof(struct zx_ctx));
+  LOCK_INIT(ctx->mx);
   ctx->guard_seen_n.seen_n = &ctx->guard_seen_p;
   ctx->guard_seen_p.seen_p = &ctx->guard_seen_n;
   ctx->malloc_func = &malloc;
@@ -377,6 +436,7 @@ struct zx_ctx* zx_init_ctx()
 {
   struct zx_ctx* ctx;
   ctx = malloc(sizeof(struct zx_ctx));
+  D("malloc %p size=%d", ctx, sizeof(struct zx_ctx));
   if (!ctx) {
     ERR("out-of-memory in ctx alloc sizeof=%d", sizeof(struct zx_ctx));
     return 0;
@@ -390,8 +450,8 @@ struct zx_ctx* zx_init_ctx()
  * CURL initialization are omitted. However the zx_ctx is installed so
  * that memory allocation against the context should work. */
 
-/* Called by:  main, zxid_conf_to_cf_len, zxid_new_conf */
-struct zxid_conf* zxid_init_conf_ctx(struct zxid_conf* cf, char* zxid_path)
+/* Called by:  zxcot_main, zxid_conf_to_cf_len, zxid_new_conf */
+zxid_conf* zxid_init_conf_ctx(zxid_conf* cf, char* zxid_path)
 {
 #if 0
   fprintf(stderr, "Waiting 60 secs for gdb attach...\n");
@@ -413,13 +473,17 @@ struct zxid_conf* zxid_init_conf_ctx(struct zxid_conf* cf, char* zxid_path)
   return cf;
 }
 
-/* Called by:  main x5, test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, test_mode */
-struct zxid_conf* zxid_new_conf(const char* zxid_path)
+/*() Allocate conf object, but do not actually initialize it with default config
+ * or config file.
+ * See: zxid_new_conf_to_cf() for a more complete solution. */
+
+/* Called by:  main x6, test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, test_mode */
+zxid_conf* zxid_new_conf(const char* zxid_path)
 {
   /* *** unholy malloc()s: should use our own allocator! */
-  struct zxid_conf* cf = malloc(sizeof(struct zxid_conf));
+  zxid_conf* cf = malloc(sizeof(zxid_conf));
   if (!cf) {
-    ERR("out-of-memory %d", sizeof(struct zxid_conf));
+    ERR("out-of-memory %d", sizeof(zxid_conf));
     exit(1);
   }
   return zxid_init_conf_ctx(cf, zxid_path);
@@ -431,8 +495,8 @@ struct zxid_conf* zxid_new_conf(const char* zxid_path)
 
 /*() Create new (common pool) attribute and add it to a linked list */
 
-/* Called by:  zxid_add_at_values x3, zxid_add_attr_to_pool x2, zxid_add_qs_to_pool, zxid_load_atsrc, zxid_load_need */
-struct zxid_attr* zxid_new_at(struct zxid_conf* cf, struct zxid_attr* at, int name_len, char* name, int val_len, char* val, char* lk)
+/* Called by:  zxid_add_at_values x3, zxid_add_attr_to_ses x2, zxid_add_qs_to_ses, zxid_load_atsrc, zxid_load_need */
+struct zxid_attr* zxid_new_at(zxid_conf* cf, struct zxid_attr* at, int name_len, char* name, int val_len, char* val, char* lk)
 {
   struct zxid_attr* aa = ZX_ZALLOC(cf->ctx, struct zxid_attr);
   aa->n = at;
@@ -449,7 +513,7 @@ struct zxid_attr* zxid_new_at(struct zxid_conf* cf, struct zxid_attr* at, int na
  */
 
 /* Called by:  zxid_init_conf x3, zxid_parse_conf_raw x3 */
-struct zxid_map* zxid_load_map(struct zxid_conf* cf, struct zxid_map* map, char* v)
+struct zxid_map* zxid_load_map(zxid_conf* cf, struct zxid_map* map, char* v)
 {
   char* ns;
   char* A;
@@ -541,7 +605,7 @@ struct zxid_map* zxid_load_map(struct zxid_conf* cf, struct zxid_map* map, char*
  */
 
 /* Called by:  zxid_init_conf x2, zxid_parse_conf_raw x2 */
-struct zxid_need* zxid_load_need(struct zxid_conf* cf, struct zxid_need* need, char* v)
+struct zxid_need* zxid_load_need(zxid_conf* cf, struct zxid_need* need, char* v)
 {
   char* attrs;
   char* usage;
@@ -627,7 +691,7 @@ struct zxid_need* zxid_load_need(struct zxid_conf* cf, struct zxid_need* need, c
  */
 
 /* Called by:  zxid_init_conf x4, zxid_parse_conf_raw x4 */
-struct zxid_cstr_list* zxid_load_cstr_list(struct zxid_conf* cf, struct zxid_cstr_list* l, char* p)
+struct zxid_cstr_list* zxid_load_cstr_list(zxid_conf* cf, struct zxid_cstr_list* l, char* p)
 {
   char* q;
   struct zxid_cstr_list* cs;
@@ -650,7 +714,7 @@ struct zxid_cstr_list* zxid_load_cstr_list(struct zxid_conf* cf, struct zxid_cst
  */
 
 /* Called by:  zxid_init_conf, zxid_parse_conf_raw */
-struct zxid_atsrc* zxid_load_atsrc(struct zxid_conf* cf, struct zxid_atsrc* atsrc, char* v)
+struct zxid_atsrc* zxid_load_atsrc(zxid_conf* cf, struct zxid_atsrc* atsrc, char* v)
 {
   char* ns;
   char* attrs;
@@ -752,7 +816,7 @@ struct zxid_atsrc* zxid_load_atsrc(struct zxid_conf* cf, struct zxid_atsrc* atsr
 /*() Check whether attribute is in a (needed or wanted) list. Just a linear
  * scan as it is simple and good enough for handful of attributes. */
 
-/* Called by:  zxid_add_at_values x2, zxid_add_attr_to_pool x2 */
+/* Called by:  zxid_add_at_values x2, zxid_add_attr_to_ses x2 */
 struct zxid_need* zxid_is_needed(struct zxid_need* need, char* name)
 {
   struct zxid_attr* at;
@@ -769,7 +833,7 @@ struct zxid_need* zxid_is_needed(struct zxid_need* need, char* name)
 /*() Check whether attribute is in a (needed or wanted) list. Just a linear
  * scan as it is simple and good enough for handful of attributes. */
 
-/* Called by:  pool2apache, zxid_add_at_values, zxid_add_attr_to_pool, zxid_pep_az_soap, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
+/* Called by:  pool2apache, zxid_add_at_values, zxid_add_attr_to_ses, zxid_pep_az_soap, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
 struct zxid_map* zxid_find_map(struct zxid_map* map, char* name)
 {
   if (!name || !*name)
@@ -812,7 +876,7 @@ struct zxid_attr* zxid_find_at(struct zxid_attr* pool, char* name)
 
 #if defined(ZXID_CONF_FILE) || defined(ZXID_CONF_FLAG)
 
-#define SCAN_INT(v, lval) sscanf(v, "%i", &i); lval = i
+#define SCAN_INT(v, lval) sscanf(v,"%i",&i); lval=i /* Safe for char, too */
 
 /*(i) Parse partial configuration specifications, such as may occur
  * on command line or in a configuration file.
@@ -838,7 +902,7 @@ struct zxid_attr* zxid_find_at(struct zxid_attr* pool, char* name)
  * return:: -1 on failure, 0 on success */
 
 /* Called by:  zxid_conf_to_cf_len x2, zxid_parse_conf, zxid_parse_conf_raw */
-int zxid_parse_conf_raw(struct zxid_conf* cf, int qs_len, char* qs)
+int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
 {
   int i, len;
   char *p, *n, *v, *val, *name, *buf;
@@ -878,25 +942,28 @@ scan_end:
       if (!strcmp(n, "ACT_IN_ERR"))     { SCAN_INT(v, cf->log_err_in_act); break; }
       if (!strcmp(n, "AUDIENCE_FATAL")) { SCAN_INT(v, cf->audience_fatal); break; }
       if (!strcmp(n, "AFTER_SLOP"))     { SCAN_INT(v, cf->after_slop); break; }
-      if (!strcmp(n, "ANON_OK"))      { cf->anon_ok = v; D("anon_ok(%s)", cf->anon_ok); break; }
-      if (!strcmp(n, "AN_START"))     { cf->an_start = v; break; }
-      if (!strcmp(n, "AN_OUR_EID"))   { cf->an_our_eid = v; break; }
-      if (!strcmp(n, "AN_TECH_USER")) { cf->an_tech_user =v; break; }
-      if (!strcmp(n, "AN_TECH_SITE")) { cf->an_tech_site =v; break; }
-      if (!strcmp(n, "AN_FOOTER"))    { cf->an_footer = v; break; }
-      if (!strcmp(n, "AN_END"))       { cf->an_end = v; break; }
-      if (!strcmp(n, "AN_PAGE"))      { cf->an_page = v; break; }
-      if (!strcmp(n, "ATTRSRC"))      { cf->attrsrc = zxid_load_atsrc(cf, cf->attrsrc, v); break; }
-      if (!strcmp(n, "A7NTTL"))       { SCAN_INT(v, cf->a7nttl); break; }
-      if (!strcmp(n, "AS_ENA"))       { SCAN_INT(v, cf->as_ena); break; }
+      if (!strcmp(n, "ANON_OK"))        { cf->anon_ok = v; D("anon_ok(%s)", cf->anon_ok); break; }
+      if (!strcmp(n, "AN_PAGE"))        { cf->an_page = v; break; }
+      if (!strcmp(n, "AN_TEMPL_FILE"))  { cf->an_templ_file = v; break; }
+      if (!strcmp(n, "AN_TEMPL"))       { cf->an_templ = v; break; }
+      if (!strcmp(n, "ATSEL_PAGE"))     { cf->atsel_page = v; break; }
+      if (!strcmp(n, "ATTRSRC"))     { cf->attrsrc = zxid_load_atsrc(cf, cf->attrsrc, v); break; }
+      if (!strcmp(n, "A7NTTL"))         { SCAN_INT(v, cf->a7nttl); break; }
+      if (!strcmp(n, "AS_ENA"))         { SCAN_INT(v, cf->as_ena); break; }
       goto badcf;
     case 'B':  /* BEFORE_SLOP */
-      if (!strcmp(n, "BEFORE_SLOP"))     { SCAN_INT(v, cf->before_slop); break; }
-      if (!strcmp(n, "BOOTSTRAP_LEVEL")) { SCAN_INT(v, cf->bootstrap_level); break; }
+      if (!strcmp(n, "BEFORE_SLOP"))       { SCAN_INT(v, cf->before_slop); break; }
+      if (!strcmp(n, "BOOTSTRAP_LEVEL"))   { SCAN_INT(v, cf->bootstrap_level); break; }
+      if (!strcmp(n, "BARE_URL_ENTITYID")) { SCAN_INT(v, cf->bare_url_entityid); break; }
       goto badcf;
     case 'C':  /* CDC_URL, CDC_CHOICE */
-      if (!strcmp(n, "CDC_URL"))      { cf->cdc_url = v; break; }
-      if (!strcmp(n, "CDC_CHOICE"))   { SCAN_INT(v, cf->cdc_choice); break; }
+      if (!strcmp(n, "CDC_URL"))        { cf->cdc_url = v; break; }
+      if (!strcmp(n, "CDC_CHOICE"))     { SCAN_INT(v, cf->cdc_choice); break; }
+      if (!strcmp(n, "CONTACT_ORG"))    { cf->contact_org = v; break; }
+      if (!strcmp(n, "CONTACT_NAME"))   { cf->contact_name = v; break; }
+      if (!strcmp(n, "CONTACT_EMAIL"))  { cf->contact_email = v; break; }
+      if (!strcmp(n, "CONTACT_TEL"))    { cf->contact_tel = v; break; }
+      if (!strcmp(n, "COUNTRY"))        { cf->country = v; break; }
       goto badcf;
     case 'D':  /* DUP_A7N_FATAL, DUP_MSG_FATAL */
       if (!strcmp(n, "DEFAULTQS"))      { cf->defaultqs = v; break; }
@@ -927,13 +994,17 @@ scan_end:
       if (!strcmp(n, "INMAP"))           { cf->inmap = zxid_load_map(cf, cf->inmap, v); break; }
       goto badcf;
     case 'L':  /* LEVEL (log level) */
-      if (!strcmp(n, "LEVEL"))   { SCAN_INT(v, cf->log_level); break; }
+      if (!strcmp(n, "LEVEL"))     { SCAN_INT(v, cf->log_level); break; }
+      if (!strcmp(n, "LOGUSER"))   { SCAN_INT(v, cf->loguser); break; }
       if (!strcmp(n, "LOCALPDP_ROLE_PERMIT"))   { cf->localpdp_role_permit   = zxid_load_cstr_list(cf, cf->localpdp_role_permit, v);   break; }
       if (!strcmp(n, "LOCALPDP_ROLE_DENY"))     { cf->localpdp_role_deny     = zxid_load_cstr_list(cf, cf->localpdp_role_deny, v);     break; }
       if (!strcmp(n, "LOCALPDP_IDPNID_PERMIT")) { cf->localpdp_idpnid_permit = zxid_load_cstr_list(cf, cf->localpdp_idpnid_permit, v); break; }
       if (!strcmp(n, "LOCALPDP_IDPNID_DENY"))   { cf->localpdp_idpnid_deny   = zxid_load_cstr_list(cf, cf->localpdp_idpnid_deny, v);   break; }
+      if (!strcmp(n, "LOAD_COT_CACHE"))   { cf->load_cot_cache = v; break; }
+      if (!strcmp(n, "LOCALITY"))         { cf->locality = v; break; }
       goto badcf;
     case 'M':  /* MD_FETCH, MD_POPULATE_CACHE, MD_CACHE_FIRST, MD_CACHE_LAST */
+      if (!strcmp(n, "MANDATORY_ATTR"))    { cf->mandatory_attr = v; break; }
       if (!strcmp(n, "MD_FETCH"))          { SCAN_INT(v, cf->md_fetch); break; }
       if (!strcmp(n, "MD_POPULATE_CACHE")) { SCAN_INT(v, cf->md_populate_cache); break; }
       if (!strcmp(n, "MD_CACHE_FIRST"))    { SCAN_INT(v, cf->md_cache_first); break; }
@@ -955,9 +1026,12 @@ scan_end:
       if (!strcmp(n, "NOSIG_FATAL"))    { SCAN_INT(v, cf->nosig_fatal); break; }
       if (!strcmp(n, "NOTIMESTAMP_FATAL")) { SCAN_INT(v, cf->notimestamp_fatal); break; }
       if (!strcmp(n, "NEED"))           { cf->need = zxid_load_need(cf, cf->need, v); break; }
+      if (!strcmp(n, "NEW_USER_PAGE"))  { cf->new_user_page = v; break; }
       goto badcf;
     case 'O':  /* OUTMAP */
       if (!strcmp(n, "OUTMAP"))         { cf->outmap = zxid_load_map(cf, cf->outmap, v); break; }
+      if (!strcmp(n, "ORG_NAME"))       { cf->org_name = v; break; }
+      if (!strcmp(n, "ORG_URL"))        { cf->org_url = v; break; }
       goto badcf;
     case 'P':  /* PATH (e.g. /var/zxid) */
       DD("PATH maybe n(%s)=v(%s)", n, v);
@@ -983,6 +1057,10 @@ scan_end:
       if (!strcmp(n, "PDP_URL"))        { cf->pdp_url = v; break; }
       if (!strcmp(n, "PDP_CALL_URL"))   { cf->pdp_call_url = v; break; }
       if (!strcmp(n, "PEPMAP"))         { cf->pepmap = zxid_load_map(cf, cf->pepmap, v); break; }
+      if (!strcmp(n, "PEPMAP_RQOUT"))   { cf->pepmap_rqout = zxid_load_map(cf, cf->pepmap_rqout, v); break; }
+      if (!strcmp(n, "PEPMAP_RQIN"))    { cf->pepmap_rqin  = zxid_load_map(cf, cf->pepmap_rqin,  v); break; }
+      if (!strcmp(n, "PEPMAP_RSOUT"))   { cf->pepmap_rsout = zxid_load_map(cf, cf->pepmap_rsout, v); break; }
+      if (!strcmp(n, "PEPMAP_RSIN"))    { cf->pepmap_rsin  = zxid_load_map(cf, cf->pepmap_rsin,  v); break; }
       if (!strcmp(n, "POST_A7N_ENC"))   { SCAN_INT(v, cf->post_a7n_enc); break; }
       goto badcf;
     case 'R':  /* RELY_A7N, RELY_MSG */
@@ -1016,6 +1094,8 @@ scan_end:
 	}
 	break;
       }
+      if (!strcmp(n, "RECOVER_PASSWD")) { cf->recover_passwd = v; break; }
+      if (!strcmp(n, "RELTO_FATAL"))    { SCAN_INT(v, cf->relto_fatal); break; }
       goto badcf;
     case 'S':  /* SES_ARCH_DIR, SIGFAIL_IS_ERR, SIG_FATAL */
       if (!strcmp(n, "SES_ARCH_DIR"))   { cf->ses_arch_dir = (v[0]=='0' && !v[1]) ? 0 : v; break; }
@@ -1026,6 +1106,8 @@ scan_end:
       if (!strcmp(n, "SSO_SOAP_SIGN"))  { SCAN_INT(v, cf->sso_soap_sign); break; }
       if (!strcmp(n, "SSO_SOAP_RESP_SIGN"))  { SCAN_INT(v, cf->sso_soap_resp_sign); break; }
       if (!strcmp(n, "SHOW_CONF"))      { SCAN_INT(v, cf->show_conf); break; }
+      if (!strcmp(n, "SHOW_TECH"))      { SCAN_INT(v, cf->show_tech); break; }
+      if (!strcmp(n, "STATE"))          { cf->state = v; break; }
       goto badcf;
     case 'T':  /* TIMEOUT_FATAL */
       if (!strcmp(n, "TIMEOUT_FATAL"))  { SCAN_INT(v, cf->timeout_fatal); break; }
@@ -1041,7 +1123,12 @@ scan_end:
       if (!strcmp(n, "WANT_AUTHN_REQ_SIGNED")) { SCAN_INT(v, cf->want_authn_req_signed); break; }
       if (!strcmp(n, "WSC_SIGN"))       { SCAN_INT(v, cf->wsc_sign); break; }
       if (!strcmp(n, "WSP_SIGN"))       { SCAN_INT(v, cf->wsp_sign); break; }
+      if (!strcmp(n, "WSPCGICMD"))      { cf->wspcgicmd = v; break; }
       if (!strcmp(n, "WSP_NOSIG_FATAL")) { SCAN_INT(v, cf->wsp_nosig_fatal); break; }
+      if (!strcmp(n, "WSC_LOCALPDP_OBL_PLEDGE"))  { cf->wsc_localpdp_obl_pledge = v;   break; }
+      if (!strcmp(n, "WSP_LOCALPDP_OBL_REQ"))     { cf->wsp_localpdp_obl_req    = v;   break; }
+      if (!strcmp(n, "WSP_LOCALPDP_OBL_EMIT"))    { cf->wsp_localpdp_obl_emit   = v;   break; }
+      if (!strcmp(n, "WSC_LOCALPDP_OBL_ACCEPT"))  { cf->wsc_localpdp_obl_accept = v;   break; }
       goto badcf;
     case 'X':  /* XASP_VERS */
       if (!strcmp(n, "XASP_VERS"))      { cf->xasp_vers = v; break; }
@@ -1057,8 +1144,8 @@ scan_end:
 
 /*() Wrapper with initial error checking for zxid_parse_conf_raw(), which see. */
 
-/* Called by:  opt x6, set_zxid_conf */
-int zxid_parse_conf(struct zxid_conf* cf, char* qs)
+/* Called by:  opt x7, set_zxid_conf */
+int zxid_parse_conf(zxid_conf* cf, char* qs)
 {
   if (!cf || !qs)
     return -1;
@@ -1070,7 +1157,7 @@ int zxid_parse_conf(struct zxid_conf* cf, char* qs)
 /*() Pretty print need or want chain. */
 
 /* Called by:  zxid_show_conf x2 */
-static struct zx_str* zxid_show_need(struct zxid_conf* cf, struct zxid_need* np)
+static struct zx_str* zxid_show_need(zxid_conf* cf, struct zxid_need* np)
 {
   struct zxid_attr* ap;
   struct zx_str* ss;
@@ -1097,7 +1184,7 @@ static struct zx_str* zxid_show_need(struct zxid_conf* cf, struct zxid_need* np)
 /*() Pretty print map chain. */
 
 /* Called by:  zxid_show_conf x3 */
-static struct zx_str* zxid_show_map(struct zxid_conf* cf, struct zxid_map* mp)
+static struct zx_str* zxid_show_map(zxid_conf* cf, struct zxid_map* mp)
 {
   struct zx_str* inmap = zx_dup_str(cf->ctx, "");
   for (; mp; mp = mp->n) {
@@ -1114,7 +1201,7 @@ static struct zx_str* zxid_show_map(struct zxid_conf* cf, struct zxid_map* mp)
 /*() Pretty print cstr list as used in local PDP. */
 
 /* Called by:  zxid_show_conf x4 */
-static struct zx_str* zxid_show_cstr_list(struct zxid_conf* cf, struct zxid_cstr_list* cp)
+static struct zx_str* zxid_show_cstr_list(zxid_conf* cf, struct zxid_cstr_list* cp)
 {
   struct zx_str* ss = zx_dup_str(cf->ctx, "");
   for (; cp; cp = cp->n) {
@@ -1129,8 +1216,8 @@ static struct zx_str* zxid_show_cstr_list(struct zxid_conf* cf, struct zxid_cstr
 
 /*() Generate our SP CARML and return it as a string. */
 
-/* Called by:  zxid_simple_show_conf */
-struct zx_str* zxid_show_conf(struct zxid_conf* cf)
+/* Called by:  opt, zxid_simple_show_conf */
+struct zx_str* zxid_show_conf(zxid_conf* cf)
 {
   char* p;
   struct zxid_attr* ap;
@@ -1143,6 +1230,10 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
   struct zx_str* inmap;
   struct zx_str* outmap;
   struct zx_str* pepmap;
+  struct zx_str* pepmap_rqout;
+  struct zx_str* pepmap_rqin;
+  struct zx_str* pepmap_rsout;
+  struct zx_str* pepmap_rsin;
   struct zx_str* localpdp_role_permit;
   struct zx_str* localpdp_role_deny;
   struct zx_str* localpdp_idpnid_permit;
@@ -1190,6 +1281,10 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
   inmap = zxid_show_map(cf, cf->inmap);
   outmap = zxid_show_map(cf, cf->outmap);
   pepmap = zxid_show_map(cf, cf->pepmap);
+  pepmap_rqout = zxid_show_map(cf, cf->pepmap_rqout);
+  pepmap_rqin  = zxid_show_map(cf, cf->pepmap_rqin);
+  pepmap_rsout = zxid_show_map(cf, cf->pepmap_rsout);
+  pepmap_rsin  = zxid_show_map(cf, cf->pepmap_rsin);
 
   localpdp_role_permit   = zxid_show_cstr_list(cf, cf->localpdp_role_permit);
   localpdp_role_deny     = zxid_show_cstr_list(cf, cf->localpdp_role_deny);
@@ -1209,6 +1304,15 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "URL=%s\n"
 "AFFILIATION=%s\n"
 "NICE_NAME=%s\n"
+"ORG_NAME=%s\n"
+"ORG_URL=%s\n"
+"LOCALITY=%s\n"
+"STATE=%s\n"
+"COUNTRY=%s\n"
+"CONTACT_ORG=%s\n"
+"CONTACT_NAME=%s\n"
+"CONTACT_EMAIL=%s\n"
+"CONTACT_TEL=%s\n"
 "#ZXID_CONF_FILE=%d (compile)\n"
 "#ZXID_CONF_FLAG=%d (compile)\n"
 "#ZXID_MAX_CONF=%d (compile)\n"
@@ -1220,6 +1324,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "CDC_URL=%s\n"
 "CDC_CHOICE=%d\n"
 
+"LOAD_COT_CACHE=%s\n"
 "MD_FETCH=%d\n"
 "MD_POPULATE_CACHE=%d\n"
 "MD_CACHE_FIRST=%d\n"
@@ -1234,6 +1339,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "SSO_SIGN=%x\n"
 "WSC_SIGN=%x\n"
 "WSP_SIGN=%x\n"
+"WSPCGICMD=%s\n"
 "NAMEID_ENC=%x\n"
 "POST_A7N_ENC=%d\n"
 "DI_ALLOW_CREATE=%d\n"
@@ -1263,6 +1369,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "LOG_ACT_IN_ERR=%d\n"
 "LOG_SIGFAIL_IS_ERR=%d\n"
 "LOG_LEVEL=%d\n"
+"LOGUSER=%d\n"
 
 "SIG_FATAL=%d\n"
 "NOSIG_FATAL=%d\n"
@@ -1271,6 +1378,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "AUDIENCE_FATAL=%d\n"
 "DUP_A7N_FATAL=%d\n"
 "DUP_MSG_FATAL=%d\n"
+"RELTO_FATAL=%d\n"
 "WSP_NOSIG_FATAL=%d\n"
 "NOTIMESTAMP_FATAL=%d\n"
 "REDIR_TO_CONTENT=%d\n"
@@ -1285,10 +1393,13 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "ANON_OK=%s\n"
 "ISSUE_AUTHNCTX_PW=%s\n"
 "IDP_PREF_ACS_BINDING=%s\n"
+"MANDATORY_ATTR=%s\n"
 "PDP_URL=%s\n"
 "PDP_CALL_URL=%s\n"
 "XASP_VERS=%s\n"
 "MOD_SAML_ATTR_PREFIX=%s\n"
+"BARE_URL_ENTITYID=%d\n"
+"SHOW_TECH=%d\n"
 "</pre>"
 
 "<textarea cols=100 rows=20>"
@@ -1302,12 +1413,12 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "IDP_SEL_END=%s\n"
 
 "AN_PAGE=%s\n"
-"AN_START=%s\n"
-"AN_OUR_EID=%s\n"
-"AN_TECH_USER=%s\n"
-"AN_TECH_SITE=%s\n"
-"AN_FOOTER=%s\n"
-"AN_END=%s\n"
+"AN_TEMPL_FILE=%s\n"
+"AN_TEMPL=%s\n"
+
+"NEW_USER_PAGE=%s\n"
+"RECOVER_PASSWD=%s\n"
+"ATSEL_PAGE=%s\n"
 
 "MGMT_START=%s\n"
 "MGMT_LOGOUT=%s\n"
@@ -1326,10 +1437,18 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 "INMAP=\n%s\n"
 "OUTMAP=\n%s\n"
 "PEPMAP=\n%s\n"
+"PEPMAP_RQOUT=\n%s\n"
+"PEPMAP_RQIN=\n%s\n"
+"PEPMAP_RSOUT=\n%s\n"
+"PEPMAP_RSIN=\n%s\n"
 "LOCALPDP_ROLE_PERMIT=\n%s\n"
 "LOCALPDP_ROLE_DENY=\n%s\n"
 "LOCALPDP_IDPNID_PERMIT=\n%s\n"
 "LOCALPDP_IDPNID_DENY=\n%s\n"
+"WSC_LOCALPDP_OBL_PLEDGE=%s\n"
+"WSP_LOCALPDP_OBL_REQ=%s\n"
+"WSP_LOCALPDP_OBL_EMIT=%s\n"
+"WSC_LOCALPDP_OBL_ACCEPT=%s\n"
 "</pre>",
 		 cf->url, ss->s,
 		 cf->path,
@@ -1338,6 +1457,15 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 cf->url,
 		 STRNULLCHK(cf->affiliation),
 		 STRNULLCHK(cf->nice_name),
+		 STRNULLCHK(cf->org_name),
+		 STRNULLCHK(cf->org_url),
+		 STRNULLCHK(cf->locality),
+		 STRNULLCHK(cf->state),
+		 STRNULLCHK(cf->country),
+		 STRNULLCHK(cf->contact_org),
+		 STRNULLCHK(cf->contact_name),
+		 STRNULLCHK(cf->contact_email),
+		 STRNULLCHK(cf->contact_tel),
 		 ZXID_CONF_FILE,
 		 ZXID_CONF_FLAG,
 		 ZXID_MAX_CONF,
@@ -1349,6 +1477,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 STRNULLCHK(cf->cdc_url),
 		 cf->cdc_choice,
 
+		 STRNULLCHK(cf->load_cot_cache),
 		 cf->md_fetch,
 		 cf->md_populate_cache,
 		 cf->md_cache_first,
@@ -1363,6 +1492,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 cf->sso_sign,
 		 cf->wsc_sign,
 		 cf->wsp_sign,
+		 cf->wspcgicmd,
 		 cf->nameid_enc,
 		 cf->post_a7n_enc,
 		 cf->di_allow_create,
@@ -1392,6 +1522,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 cf->log_act_in_err,
 		 cf->log_sigfail_is_err,
 		 cf->log_level,
+		 cf->loguser,
   
 		 cf->sig_fatal,
 		 cf->nosig_fatal,
@@ -1400,6 +1531,7 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 cf->audience_fatal,
 		 cf->dup_a7n_fatal,
 		 cf->dup_msg_fatal,
+		 cf->relto_fatal,
 		 cf->wsp_nosig_fatal,
 		 cf->notimestamp_fatal,
 		 cf->redir_to_content,
@@ -1414,10 +1546,13 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 STRNULLCHK(cf->anon_ok),
 		 STRNULLCHK(cf->issue_authnctx_pw),
 		 STRNULLCHK(cf->idp_pref_acs_binding),
+		 STRNULLCHK(cf->mandatory_attr),
 		 STRNULLCHK(cf->pdp_url),
 		 STRNULLCHK(cf->pdp_call_url),
 		 STRNULLCHK(cf->xasp_vers),
 		 STRNULLCHK(cf->mod_saml_attr_prefix),
+		 cf->bare_url_entityid,
+		 cf->show_tech,
 
 		 STRNULLCHK(cf->idp_sel_page),
 		 STRNULLCHK(cf->idp_sel_start),
@@ -1429,12 +1564,12 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 STRNULLCHK(cf->idp_sel_end),
 
 		 STRNULLCHK(cf->an_page),
-		 STRNULLCHK(cf->an_start),
-		 STRNULLCHK(cf->an_our_eid),
-		 STRNULLCHK(cf->an_tech_user),
-		 STRNULLCHK(cf->an_tech_site),
-		 STRNULLCHK(cf->an_footer),
-		 STRNULLCHK(cf->an_end),
+		 STRNULLCHK(cf->an_templ_file),
+		 STRNULLCHK(cf->an_templ),
+
+		 STRNULLCHK(cf->new_user_page),
+		 STRNULLCHK(cf->recover_passwd),
+		 STRNULLCHK(cf->atsel_page),
 
 		 STRNULLCHK(cf->mgmt_start),
 		 STRNULLCHK(cf->mgmt_logout),
@@ -1451,10 +1586,18 @@ struct zx_str* zxid_show_conf(struct zxid_conf* cf)
 		 inmap->s,
 		 outmap->s,
 		 pepmap->s,
+		 pepmap_rqout->s,
+		 pepmap_rqin->s,
+		 pepmap_rsout->s,
+		 pepmap_rsin->s,
 		 localpdp_role_permit->s,
 		 localpdp_role_deny->s,
 		 localpdp_idpnid_permit->s,
-		 localpdp_idpnid_deny->s
+		 localpdp_idpnid_deny->s,
+		 STRNULLCHK(cf->wsc_localpdp_obl_pledge),
+		 STRNULLCHK(cf->wsp_localpdp_obl_req),
+		 STRNULLCHK(cf->wsp_localpdp_obl_emit),
+		 STRNULLCHK(cf->wsc_localpdp_obl_accept)
 	 );
 }
 

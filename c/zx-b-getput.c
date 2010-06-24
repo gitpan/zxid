@@ -1882,6 +1882,140 @@ void zx_b_TargetIdentity_DEL_Assertion(struct zx_b_TargetIdentity_s* x, int n)
 
 #ifdef ZX_ENA_GETPUT
 
+/* FUNC(zx_b_TargetIdentity_NUM_EncryptedAssertion) */
+
+int zx_b_TargetIdentity_NUM_EncryptedAssertion(struct zx_b_TargetIdentity_s* x)
+{
+  struct zx_sa_EncryptedAssertion_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->EncryptedAssertion; y; ++n, y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_b_TargetIdentity_GET_EncryptedAssertion) */
+
+struct zx_sa_EncryptedAssertion_s* zx_b_TargetIdentity_GET_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n)
+{
+  struct zx_sa_EncryptedAssertion_s* y;
+  if (!x) return 0;
+  for (y = x->EncryptedAssertion; n>=0 && y; --n, y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_b_TargetIdentity_POP_EncryptedAssertion) */
+
+struct zx_sa_EncryptedAssertion_s* zx_b_TargetIdentity_POP_EncryptedAssertion(struct zx_b_TargetIdentity_s* x)
+{
+  struct zx_sa_EncryptedAssertion_s* y;
+  if (!x) return 0;
+  y = x->EncryptedAssertion;
+  if (y)
+    x->EncryptedAssertion = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_b_TargetIdentity_PUSH_EncryptedAssertion) */
+
+void zx_b_TargetIdentity_PUSH_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, struct zx_sa_EncryptedAssertion_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->EncryptedAssertion->gg.g;
+  x->EncryptedAssertion = z;
+}
+
+/* FUNC(zx_b_TargetIdentity_REV_EncryptedAssertion) */
+
+void zx_b_TargetIdentity_REV_EncryptedAssertion(struct zx_b_TargetIdentity_s* x)
+{
+  struct zx_sa_EncryptedAssertion_s* nxt;
+  struct zx_sa_EncryptedAssertion_s* y;
+  if (!x) return;
+  y = x->EncryptedAssertion;
+  if (!y) return;
+  x->EncryptedAssertion = 0;
+  while (y) {
+    nxt = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n;
+    y->gg.g.n = &x->EncryptedAssertion->gg.g;
+    x->EncryptedAssertion = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_b_TargetIdentity_PUT_EncryptedAssertion) */
+
+void zx_b_TargetIdentity_PUT_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_EncryptedAssertion_s* z)
+{
+  struct zx_sa_EncryptedAssertion_s* y;
+  if (!x || !z) return;
+  y = x->EncryptedAssertion;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->EncryptedAssertion = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_b_TargetIdentity_ADD_EncryptedAssertion) */
+
+void zx_b_TargetIdentity_ADD_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_EncryptedAssertion_s* z)
+{
+  struct zx_sa_EncryptedAssertion_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->EncryptedAssertion->gg.g;
+    x->EncryptedAssertion = z;
+    return;
+  case -1:
+    y = x->EncryptedAssertion;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedAssertion; n > 1 && y; --n, y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_b_TargetIdentity_DEL_EncryptedAssertion) */
+
+void zx_b_TargetIdentity_DEL_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n)
+{
+  struct zx_sa_EncryptedAssertion_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->EncryptedAssertion = (struct zx_sa_EncryptedAssertion_s*)x->EncryptedAssertion->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_sa_EncryptedAssertion_s*)x->EncryptedAssertion;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->EncryptedAssertion; n > 1 && y->gg.g.n; --n, y = (struct zx_sa_EncryptedAssertion_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
 /* FUNC(zx_b_TargetIdentity_NUM_sa11_Assertion) */
 
 int zx_b_TargetIdentity_NUM_sa11_Assertion(struct zx_b_TargetIdentity_s* x)
@@ -2196,129 +2330,129 @@ void zx_b_Timeout_PUT_mustUnderstand(struct zx_b_Timeout_s* x, struct zx_str* y)
 
 #ifdef ZX_ENA_GETPUT
 
-/* FUNC(zx_b_UsageDirective_NUM_Obligations) */
+/* FUNC(zx_b_UsageDirective_NUM_Obligation) */
 
-int zx_b_UsageDirective_NUM_Obligations(struct zx_b_UsageDirective_s* x)
+int zx_b_UsageDirective_NUM_Obligation(struct zx_b_UsageDirective_s* x)
 {
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* y;
   int n = 0;
   if (!x) return 0;
-  for (y = x->Obligations; y; ++n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+  for (y = x->Obligation; y; ++n, y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
   return n;
 }
 
-/* FUNC(zx_b_UsageDirective_GET_Obligations) */
+/* FUNC(zx_b_UsageDirective_GET_Obligation) */
 
-struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_GET_Obligations(struct zx_b_UsageDirective_s* x, int n)
+struct zx_xa_Obligation_s* zx_b_UsageDirective_GET_Obligation(struct zx_b_UsageDirective_s* x, int n)
 {
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* y;
   if (!x) return 0;
-  for (y = x->Obligations; n>=0 && y; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+  for (y = x->Obligation; n>=0 && y; --n, y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
   return y;
 }
 
-/* FUNC(zx_b_UsageDirective_POP_Obligations) */
+/* FUNC(zx_b_UsageDirective_POP_Obligation) */
 
-struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_POP_Obligations(struct zx_b_UsageDirective_s* x)
+struct zx_xa_Obligation_s* zx_b_UsageDirective_POP_Obligation(struct zx_b_UsageDirective_s* x)
 {
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* y;
   if (!x) return 0;
-  y = x->Obligations;
+  y = x->Obligation;
   if (y)
-    x->Obligations = (struct zx_tas3sol_Obligations_s*)y->gg.g.n;
+    x->Obligation = (struct zx_xa_Obligation_s*)y->gg.g.n;
   return y;
 }
 
-/* FUNC(zx_b_UsageDirective_PUSH_Obligations) */
+/* FUNC(zx_b_UsageDirective_PUSH_Obligation) */
 
-void zx_b_UsageDirective_PUSH_Obligations(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Obligations_s* z)
+void zx_b_UsageDirective_PUSH_Obligation(struct zx_b_UsageDirective_s* x, struct zx_xa_Obligation_s* z)
 {
   if (!x || !z) return;
-  z->gg.g.n = &x->Obligations->gg.g;
-  x->Obligations = z;
+  z->gg.g.n = &x->Obligation->gg.g;
+  x->Obligation = z;
 }
 
-/* FUNC(zx_b_UsageDirective_REV_Obligations) */
+/* FUNC(zx_b_UsageDirective_REV_Obligation) */
 
-void zx_b_UsageDirective_REV_Obligations(struct zx_b_UsageDirective_s* x)
+void zx_b_UsageDirective_REV_Obligation(struct zx_b_UsageDirective_s* x)
 {
-  struct zx_tas3sol_Obligations_s* nxt;
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* nxt;
+  struct zx_xa_Obligation_s* y;
   if (!x) return;
-  y = x->Obligations;
+  y = x->Obligation;
   if (!y) return;
-  x->Obligations = 0;
+  x->Obligation = 0;
   while (y) {
-    nxt = (struct zx_tas3sol_Obligations_s*)y->gg.g.n;
-    y->gg.g.n = &x->Obligations->gg.g;
-    x->Obligations = y;
+    nxt = (struct zx_xa_Obligation_s*)y->gg.g.n;
+    y->gg.g.n = &x->Obligation->gg.g;
+    x->Obligation = y;
     y = nxt;
   }
 }
 
-/* FUNC(zx_b_UsageDirective_PUT_Obligations) */
+/* FUNC(zx_b_UsageDirective_PUT_Obligation) */
 
-void zx_b_UsageDirective_PUT_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* z)
+void zx_b_UsageDirective_PUT_Obligation(struct zx_b_UsageDirective_s* x, int n, struct zx_xa_Obligation_s* z)
 {
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* y;
   if (!x || !z) return;
-  y = x->Obligations;
+  y = x->Obligation;
   if (!y) return;
   switch (n) {
   case 0:
     z->gg.g.n = y->gg.g.n;
-    x->Obligations = z;
+    x->Obligation = z;
     return;
   default:
-    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
     z->gg.g.n = y->gg.g.n->n;
     y->gg.g.n = &z->gg.g;
   }
 }
 
-/* FUNC(zx_b_UsageDirective_ADD_Obligations) */
+/* FUNC(zx_b_UsageDirective_ADD_Obligation) */
 
-void zx_b_UsageDirective_ADD_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* z)
+void zx_b_UsageDirective_ADD_Obligation(struct zx_b_UsageDirective_s* x, int n, struct zx_xa_Obligation_s* z)
 {
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* y;
   if (!x || !z) return;
   switch (n) {
   case 0:
   add_to_start:
-    z->gg.g.n = &x->Obligations->gg.g;
-    x->Obligations = z;
+    z->gg.g.n = &x->Obligation->gg.g;
+    x->Obligation = z;
     return;
   case -1:
-    y = x->Obligations;
+    y = x->Obligation;
     if (!y) goto add_to_start;
-    for (; y->gg.g.n; y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->Obligations; n > 1 && y; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    for (y = x->Obligation; n > 1 && y; --n, y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
     if (!y) return;
   }
   z->gg.g.n = y->gg.g.n;
   y->gg.g.n = &z->gg.g;
 }
 
-/* FUNC(zx_b_UsageDirective_DEL_Obligations) */
+/* FUNC(zx_b_UsageDirective_DEL_Obligation) */
 
-void zx_b_UsageDirective_DEL_Obligations(struct zx_b_UsageDirective_s* x, int n)
+void zx_b_UsageDirective_DEL_Obligation(struct zx_b_UsageDirective_s* x, int n)
 {
-  struct zx_tas3sol_Obligations_s* y;
+  struct zx_xa_Obligation_s* y;
   if (!x) return;
   switch (n) {
   case 0:
-    x->Obligations = (struct zx_tas3sol_Obligations_s*)x->Obligations->gg.g.n;
+    x->Obligation = (struct zx_xa_Obligation_s*)x->Obligation->gg.g.n;
     return;
   case -1:
-    y = (struct zx_tas3sol_Obligations_s*)x->Obligations;
+    y = (struct zx_xa_Obligation_s*)x->Obligation;
     if (!y) return;
-    for (; y->gg.g.n; y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    for (; y->gg.g.n; y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
     break;
   default:
-    for (y = x->Obligations; n > 1 && y->gg.g.n; --n, y = (struct zx_tas3sol_Obligations_s*)y->gg.g.n) ;
+    for (y = x->Obligation; n > 1 && y->gg.g.n; --n, y = (struct zx_xa_Obligation_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
   }
   y->gg.g.n = y->gg.g.n->n;

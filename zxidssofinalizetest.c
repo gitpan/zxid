@@ -60,7 +60,6 @@ char* instance = "zxencdectest";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 extern int zx_debug;
-int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
@@ -73,7 +72,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
-/* Called by:  main x9 */
+/* Called by:  main x8, zxcall_main, zxcot_main */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;
@@ -105,9 +104,6 @@ void opt(int* argc, char*** argv, char*** env)
       switch ((*argv)[0][2]) {
       case '\0':
 	++zx_debug;
-	continue;
-      case 'p':  if ((*argv)[0][3]) break;
-	++debugpoll;
 	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
@@ -251,9 +247,9 @@ void opt(int* argc, char*** argv, char*** env)
 /* Called by: */
 int main(int argc, char** argv, char** env)
 {
-  struct zxid_conf* cf;
-  struct zxid_cgi cgi;
-  struct zxid_ses ses;
+  zxid_conf* cf;
+  zxid_cgi cgi;
+  zxid_ses ses;
   struct zx_root_s* r;
   int ret, got_all, len_so;
   char buf[256*1024];
@@ -268,8 +264,10 @@ int main(int argc, char** argv, char** env)
   cf = zxid_new_conf_to_cf("PATH=/var/sfis/");
 
   for (; n_iter; --n_iter) {
+    LOCK(cf->ctx->mx, "fin test");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got_all);
     r = zx_DEC_root(cf->ctx, 0, 1000);
+    UNLOCK(cf->ctx->mx, "fin test");
     if (!r)
       DIE("Decode failure");
     

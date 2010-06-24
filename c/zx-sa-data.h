@@ -877,7 +877,7 @@ void zx_sa_Conditions_REV_SubjectRestriction(struct zx_sa_Conditions_s* x);
 
 #endif
 /* -------------------------- sa_EncryptedAssertion -------------------------- */
-/* refby( zx_wsse_Security_s zx_sa_Evidence_s zx_sec_Token_s zx_tas3_Credentials_s zx_sa_Advice_s zx_sp_Response_s ) */
+/* refby( zx_wsse_Security_s zx_b_TargetIdentity_s zx_sa_Evidence_s zx_sec_Token_s zx_tas3_Credentials_s zx_sa_Advice_s zx_sp_Response_s ) */
 #ifndef zx_sa_EncryptedAssertion_EXT
 #define zx_sa_EncryptedAssertion_EXT
 #endif

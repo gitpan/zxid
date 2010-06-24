@@ -29,6 +29,7 @@
 #include <zx/wsf.h>
 #include <zx/c/zxidvers.h>
 #include <zx/c/zx-ns.h>
+#include <zx/c/zx-e-data.h>
 
 char* help =
 "zxidwsctool  - Command Line ID-WSF WSC - R" ZXID_REL "\n\
@@ -62,12 +63,12 @@ Usage: zxidwsctool [options] sesid svc\n\
 /* Called by: */
 int main(int argc, char** argv)
 {
-  struct zxid_ses sess;
-  struct zxid_conf* cf;
-  struct zxid_ses* ses;
+  zxid_ses sess;
+  zxid_conf* cf;
+  zxid_ses* ses;
   //struct zx_root_s* r;
   struct zx_e_Envelope_s* env;
-  struct zx_a_EndpointReference_s* epr;
+  zxid_epr* epr;
   int simple = 0;
   char* sid;
   char* svc;

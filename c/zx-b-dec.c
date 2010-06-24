@@ -1980,6 +1980,11 @@ next_attr:
             el->g.n = &x->Assertion->gg.g;
             x->Assertion = (struct zx_sa_Assertion_s*)el;
             break;
+          case zx_sa_EncryptedAssertion_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_sa_EncryptedAssertion(c, ns);
+            el->g.n = &x->EncryptedAssertion->gg.g;
+            x->EncryptedAssertion = (struct zx_sa_EncryptedAssertion_s*)el;
+            break;
           case zx_sa11_Assertion_ELEM:
             el = (struct zx_elem_s*)zx_DEC_sa11_Assertion(c, ns);
             el->g.n = &x->sa11_Assertion->gg.g;
@@ -2364,10 +2369,10 @@ next_attr:
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
-          case zx_tas3sol_Obligations_ELEM:
-            el = (struct zx_elem_s*)zx_DEC_tas3sol_Obligations(c, ns);
-            el->g.n = &x->Obligations->gg.g;
-            x->Obligations = (struct zx_tas3sol_Obligations_s*)el;
+          case zx_xa_Obligation_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xa_Obligation(c, ns);
+            el->g.n = &x->Obligation->gg.g;
+            x->Obligation = (struct zx_xa_Obligation_s*)el;
             break;
           case zx_tas3sol_Dict_ELEM:
             el = (struct zx_elem_s*)zx_DEC_tas3sol_Dict(c, ns);

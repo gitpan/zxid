@@ -330,6 +330,16 @@ next_attr:
             el->g.n = &x->xaspcd1_XACMLPolicyQuery->gg.g;
             x->xaspcd1_XACMLPolicyQuery = (struct zx_xaspcd1_XACMLPolicyQuery_s*)el;
             break;
+          case zx_xac_Request_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xac_Request(c, ns);
+            el->g.n = &x->xac_Request->gg.g;
+            x->xac_Request = (struct zx_xac_Request_s*)el;
+            break;
+          case zx_xac_Response_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_xac_Response(c, ns);
+            el->g.n = &x->xac_Response->gg.g;
+            x->xac_Response = (struct zx_xac_Response_s*)el;
+            break;
           case zx_di_Query_ELEM:
             el = (struct zx_elem_s*)zx_DEC_di_Query(c, ns);
             el->g.n = &x->Query->gg.g;
@@ -1993,6 +2003,11 @@ next_attr:
             el->g.n = &x->Security->gg.g;
             x->Security = (struct zx_wsse_Security_s*)el;
             break;
+          case zx_tas3_Status_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_tas3_Status(c, ns);
+            el->g.n = &x->Status->gg.g;
+            x->Status = (struct zx_tas3_Status_s*)el;
+            break;
           case zx_tas3_Credentials_ELEM:
             el = (struct zx_elem_s*)zx_DEC_tas3_Credentials(c, ns);
             el->g.n = &x->Credentials->gg.g;
@@ -2160,6 +2175,11 @@ next_attr:
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
+          case zx_lu_Status_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_lu_Status(c, ns);
+            el->g.n = &x->Status->gg.g;
+            x->Status = (struct zx_lu_Status_s*)el;
+            break;
 
 	  default:
 	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);

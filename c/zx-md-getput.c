@@ -29,10 +29,10 @@
 #include "c/zx-data.h"
 #include "c/zx-md-data.h"
 
-/* FUNC(zx_md_AdditionalMetadataLocation_GET_namespace) */
-struct zx_str* zx_md_AdditionalMetadataLocation_GET_namespace(struct zx_md_AdditionalMetadataLocation_s* x) { return x->namespace; }
-/* FUNC(zx_md_AdditionalMetadataLocation_PUT_namespace) */
-void zx_md_AdditionalMetadataLocation_PUT_namespace(struct zx_md_AdditionalMetadataLocation_s* x, struct zx_str* y) { x->namespace = y; }
+/* FUNC(zx_md_AdditionalMetadataLocation_GET_namespace_is_cxx_keyword) */
+struct zx_str* zx_md_AdditionalMetadataLocation_GET_namespace_is_cxx_keyword(struct zx_md_AdditionalMetadataLocation_s* x) { return x->namespace_is_cxx_keyword; }
+/* FUNC(zx_md_AdditionalMetadataLocation_PUT_namespace_is_cxx_keyword) */
+void zx_md_AdditionalMetadataLocation_PUT_namespace_is_cxx_keyword(struct zx_md_AdditionalMetadataLocation_s* x, struct zx_str* y) { x->namespace_is_cxx_keyword = y; }
 
 
 
@@ -7159,6 +7159,140 @@ void zx_md_Extensions_DEL_KeyAuthority(struct zx_md_Extensions_s* x, int n)
     break;
   default:
     for (y = x->KeyAuthority; n > 1 && y->gg.g.n; --n, y = (struct zx_shibmd_KeyAuthority_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_md_Extensions_NUM_DiscoveryResponse) */
+
+int zx_md_Extensions_NUM_DiscoveryResponse(struct zx_md_Extensions_s* x)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->DiscoveryResponse; y; ++n, y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_md_Extensions_GET_DiscoveryResponse) */
+
+struct zx_idpdisc_DiscoveryResponse_s* zx_md_Extensions_GET_DiscoveryResponse(struct zx_md_Extensions_s* x, int n)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  if (!x) return 0;
+  for (y = x->DiscoveryResponse; n>=0 && y; --n, y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_md_Extensions_POP_DiscoveryResponse) */
+
+struct zx_idpdisc_DiscoveryResponse_s* zx_md_Extensions_POP_DiscoveryResponse(struct zx_md_Extensions_s* x)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  if (!x) return 0;
+  y = x->DiscoveryResponse;
+  if (y)
+    x->DiscoveryResponse = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_md_Extensions_PUSH_DiscoveryResponse) */
+
+void zx_md_Extensions_PUSH_DiscoveryResponse(struct zx_md_Extensions_s* x, struct zx_idpdisc_DiscoveryResponse_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->DiscoveryResponse->gg.g;
+  x->DiscoveryResponse = z;
+}
+
+/* FUNC(zx_md_Extensions_REV_DiscoveryResponse) */
+
+void zx_md_Extensions_REV_DiscoveryResponse(struct zx_md_Extensions_s* x)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* nxt;
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  if (!x) return;
+  y = x->DiscoveryResponse;
+  if (!y) return;
+  x->DiscoveryResponse = 0;
+  while (y) {
+    nxt = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n;
+    y->gg.g.n = &x->DiscoveryResponse->gg.g;
+    x->DiscoveryResponse = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_md_Extensions_PUT_DiscoveryResponse) */
+
+void zx_md_Extensions_PUT_DiscoveryResponse(struct zx_md_Extensions_s* x, int n, struct zx_idpdisc_DiscoveryResponse_s* z)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  if (!x || !z) return;
+  y = x->DiscoveryResponse;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->DiscoveryResponse = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_md_Extensions_ADD_DiscoveryResponse) */
+
+void zx_md_Extensions_ADD_DiscoveryResponse(struct zx_md_Extensions_s* x, int n, struct zx_idpdisc_DiscoveryResponse_s* z)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->DiscoveryResponse->gg.g;
+    x->DiscoveryResponse = z;
+    return;
+  case -1:
+    y = x->DiscoveryResponse;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->DiscoveryResponse; n > 1 && y; --n, y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_md_Extensions_DEL_DiscoveryResponse) */
+
+void zx_md_Extensions_DEL_DiscoveryResponse(struct zx_md_Extensions_s* x, int n)
+{
+  struct zx_idpdisc_DiscoveryResponse_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->DiscoveryResponse = (struct zx_idpdisc_DiscoveryResponse_s*)x->DiscoveryResponse->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_idpdisc_DiscoveryResponse_s*)x->DiscoveryResponse;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->DiscoveryResponse; n > 1 && y->gg.g.n; --n, y = (struct zx_idpdisc_DiscoveryResponse_s*)y->gg.g.n) ;
     if (!y->gg.g.n) return;
   }
   y->gg.g.n = y->gg.g.n->n;

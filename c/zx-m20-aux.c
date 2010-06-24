@@ -60,7 +60,7 @@ void zx_FREE_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zx_m20_Addition
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->namespace, free_strs);
+  zx_free_attr(c, x->namespace_is_cxx_keyword, free_strs);
 
 
 
@@ -96,7 +96,7 @@ void zx_DUP_STRS_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zx_m20_Addi
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->namespace);
+  zx_dup_attr(c, x->namespace_is_cxx_keyword);
 
 
 }
@@ -112,7 +112,7 @@ struct zx_m20_AdditionalMetaLocation_s* zx_DEEP_CLONE_m20_AdditionalMetaLocation
   x = (struct zx_m20_AdditionalMetaLocation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_m20_AdditionalMetaLocation_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->namespace = zx_clone_attr(c, x->namespace);
+  x->namespace_is_cxx_keyword = zx_clone_attr(c, x->namespace_is_cxx_keyword);
 
 
   return x;

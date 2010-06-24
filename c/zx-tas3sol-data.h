@@ -58,7 +58,7 @@ struct zx_tas3sol_Dict_s {
 
 #endif
 /* -------------------------- tas3sol_Obligations -------------------------- */
-/* refby( zx_b_UsageDirective_s ) */
+/* refby( ) */
 #ifndef zx_tas3sol_Obligations_EXT
 #define zx_tas3sol_Obligations_EXT
 #endif

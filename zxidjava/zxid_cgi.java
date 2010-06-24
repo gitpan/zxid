@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_zx_sa_Assertion_s {
+public class zxid_cgi {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_zx_sa_Assertion_s(long cPtr, boolean futureUse) {
+  protected zxid_cgi(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_zx_sa_Assertion_s() {
+  protected zxid_cgi() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_zx_sa_Assertion_s obj) {
+  protected static long getCPtr(zxid_cgi obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

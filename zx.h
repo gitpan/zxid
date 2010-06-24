@@ -26,9 +26,20 @@
 #include <stdarg.h>
 
 #ifdef USE_OPENSSL
+#include <openssl/x509.h>
 #include <openssl/rsa.h>
 #else
-#define RSA void*
+#define X509 void
+#define RSA void
+#endif
+
+#ifdef MINGW
+#include <windows.h>
+#define pthread_mutex_t CRITICAL_SECTION
+#define fdtype HANDLE
+#else
+#include <pthread.h>
+#define fdtype int
 #endif
 
 #ifndef const
@@ -105,6 +116,9 @@ struct zx_ctx {
   void* (*malloc_func)(size_t);
   void* (*realloc_func)(void*, size_t);
   void  (*free_func)(void*);
+#ifdef USE_PTHREAD
+  pthread_mutex_t mx;
+#endif
 };
 
 /* We arrange all structs to start with a common header (16 bytes on 32bit platforms) */
@@ -137,6 +151,7 @@ struct zx_elem_s* zx_ref_len_simple_elem(struct zx_ctx* c, int len, const char* 
 struct zx_elem_s* zx_ref_simple_elem(struct zx_ctx* c, const char* s);
 struct zx_elem_s* zx_dup_len_simple_elem(struct zx_ctx* c, int len, const char* s);
 struct zx_elem_s* zx_dup_simple_elem(struct zx_ctx* c, const char* s);
+#define ZX_SIMPLE_ELEM_CHK(el) ((el) && (el)->gg.content && (el)->gg.content->len && (el)->gg.content->s && (el)->gg.content->s[0])
 
 /* All attributes are represented as a string, as follows. */
 
@@ -157,6 +172,7 @@ void  zx_str_free(struct zx_ctx* c, struct zx_str* ss);   /* free both ss->s and
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str* ss);
 void  zx_str_conv(struct zx_str* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
 int   zx_str_ends_in(struct zx_str* ss, int len, const char* suffix);
+#define ZX_STR_EQ(ss, cstr) ((ss) && (cstr) && (ss)->s && (ss)->len == strlen(cstr) && !memcmp((cstr), (ss)->s, (ss)->len))
 #define ZX_STR_ENDS_IN_CONST(ss, suffix) zx_str_ends_in((ss), sizeof(suffix)-1, (suffix))
 
 /* Elements that are unforeseen (errornous or extensions). */
@@ -205,9 +221,15 @@ struct zx_ctx* zx_init_ctx();   /* from malloc(3) */
 #define ZX_OUT_STR(p, str) ZX_OUT_MEM(p, ((struct zx_str*)(x))->s, ((struct zx_str*)(x))->len)
 
 #define ZX_OUT_TAG(p, tag) ZX_OUT_MEM(p, tag, sizeof(tag)-1)
-#define ZX_OUT_SIMPLE_TAG(p, tag, len) MB ZX_OUT_CH(p, '<'); ZX_OUT_MEM(p, tag, len); ME
 #define ZX_OUT_CLOSE_TAG(p, tag) ZX_OUT_MEM(p, tag, sizeof(tag)-1)
-#define ZX_OUT_SIMPLE_CLOSE_TAG(p, tag, len) MB ZX_OUT_CH(p, '<'); ZX_OUT_CH(p, '/'); ZX_OUT_MEM(p, tag, len); ZX_OUT_CH(p, '>'); ME
+#if 1
+#define ZX_LEN_SIMPLE_TAG(tok, len, ns) (1 + ((tok == ZX_TOK_NOT_FOUND && ns && ns->prefix_len)?ns->prefix_len+1:0) + len)
+#define ZX_OUT_SIMPLE_TAG(p, tok, tag, len, ns) MB ZX_OUT_CH(p, '<'); if (tok == ZX_TOK_NOT_FOUND && ns && ns->prefix_len) { ZX_OUT_MEM(p, ns->prefix, ns->prefix_len); ZX_OUT_CH(p, ':'); } ZX_OUT_MEM(p, tag, len); ME
+#define ZX_OUT_SIMPLE_CLOSE_TAG(p, tok, tag, len, ns) MB ZX_OUT_CH(p, '<'); ZX_OUT_CH(p, '/');  if (tok == ZX_TOK_NOT_FOUND && ns && ns->prefix_len) { ZX_OUT_MEM(p, ns->prefix, ns->prefix_len); ZX_OUT_CH(p, ':'); } ZX_OUT_MEM(p, tag, len); ZX_OUT_CH(p, '>'); ME
+#else
+#define ZX_OUT_SIMPLE_TAG(p, tag, len, ns) MB ZX_OUT_CH(p, '<'); if (0&&ns) { ZX_OUT_MEM(p, ns->prefix, ns->prefix_len); ZX_OUT_CH(p, ':'); } ZX_OUT_MEM(p, tag, len); ME
+#define ZX_OUT_SIMPLE_CLOSE_TAG(p, tag, len, ns) MB ZX_OUT_CH(p, '<'); ZX_OUT_CH(p, '/');  if (0&&ns) { ZX_OUT_MEM(p, ns->prefix, ns->prefix_len); ZX_OUT_CH(p, ':'); } ZX_OUT_MEM(p, tag, len); ZX_OUT_CH(p, '>'); ME
+#endif
 
 /* Special token values. */
 #define ZX_TOK_XMLNS     (-4)
@@ -229,6 +251,8 @@ struct zx_ns_s* zx_prefix_seen(struct zx_ctx* c, int len, char* prefix);
 struct zx_ns_s* zx_prefix_seen_whine(struct zx_ctx* c, int len, char* prefix, char* logkey, int mk_dummy_ns);
 struct zx_ns_s* zx_scan_xmlns(struct zx_ctx* c);
 void  zx_pop_seen(struct zx_ns_s* ns);
+
+int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey);
 
 /* zxcrypto.c - Glue to OpenSSL low level */
 

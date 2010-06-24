@@ -229,7 +229,7 @@ void zx_xac_MissingAttributeDetail_REV_AttributeValue(struct zx_xac_MissingAttri
 
 #endif
 /* -------------------------- xac_Request -------------------------- */
-/* refby( zx_sa_Statement_s zx_xasa_XACMLAuthzDecisionStatement_s zx_xaspcd1_XACMLPolicyQuery_s zx_xasp_XACMLPolicyQuery_s zx_xaspcd1_XACMLAuthzDecisionQuery_s zx_xasp_XACMLAuthzDecisionQuery_s zx_xasacd1_XACMLAuthzDecisionStatement_s ) */
+/* refby( zx_sa_Statement_s zx_xasa_XACMLAuthzDecisionStatement_s zx_xaspcd1_XACMLPolicyQuery_s zx_xasp_XACMLPolicyQuery_s zx_xaspcd1_XACMLAuthzDecisionQuery_s zx_xasp_XACMLAuthzDecisionQuery_s zx_xasacd1_XACMLAuthzDecisionStatement_s zx_e_Body_s ) */
 #ifndef zx_xac_Request_EXT
 #define zx_xac_Request_EXT
 #endif
@@ -400,7 +400,7 @@ struct zx_xac_ResourceContent_s {
 
 #endif
 /* -------------------------- xac_Response -------------------------- */
-/* refby( zx_sa_Statement_s zx_xasa_XACMLAuthzDecisionStatement_s zx_xasacd1_XACMLAuthzDecisionStatement_s ) */
+/* refby( zx_sa_Statement_s zx_xasa_XACMLAuthzDecisionStatement_s zx_xasacd1_XACMLAuthzDecisionStatement_s zx_e_Body_s ) */
 #ifndef zx_xac_Response_EXT
 #define zx_xac_Response_EXT
 #endif

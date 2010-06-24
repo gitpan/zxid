@@ -23,14 +23,14 @@
 #ifndef _TAS3_H
 #define _TAS3_H 0x20091224  /* TAS3 API version. 20091224 corresponds to first issue of D2.4 */
 
-#include <zxid.h>
+#include <zx/zxid.h>
 
 /* Map data types to TAS3 equivalents */
 
-#define tas3_conf          struct zxid_conf
-#define tas3_ses           struct zxid_ses
+#define tas3_conf          zxid_conf
+#define tas3_ses           zxid_ses
 #define tas3_str           struct zx_str
-#define tas3_epr           struct zx_a_EndpointReference_s
+#define tas3_epr           zxid_epr
 
 /* Map ZXID functions to TAS3 equivalents */
 
@@ -43,6 +43,9 @@
 #define tas3_az_cf_ses     zxid_az_cf_ses
 #define tas3_call          zxid_call
 #define tas3_callf         zxid_callf
+#define tas3_wsc_prepare_call zxid_wsc_prepare_call
+#define tas3_wsc_prepare_callf zxid_wsc_prepare_callf
+#define tas3_wsc_valid_resp zxid_wsc_valid_resp
 #define tas3_get_epr       zxid_get_epr
 #define tas3_get_epr_url   zxid_get_epr_address
 #define tas3_get_epr_entid zxid_get_epr_entid

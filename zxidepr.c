@@ -34,10 +34,11 @@
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-ns.h"
+#include "c/zx-a-data.h"
 
 /*() Fold service type (or any URN or URL) to file name. */
 
-/* Called by:  main, zxid_di_query, zxid_find_epr */
+/* Called by:  zxid_di_query, zxid_find_epr, zxid_nice_sha1, zxid_reg_svc */
 void zxid_fold_svc(char* p, int len)
 {
   for (; *p && len; ++p, --len)
@@ -62,7 +63,7 @@ void zxid_fold_svc(char* p, int len)
  * return:: 0 on success (the real return value is returned via ~buf~ result parameter) */
 
 /* Called by:  zxid_add_fed_tok_to_epr, zxid_di_query, zxid_epr_path, zxid_idp_sso */
-int zxid_nice_sha1(struct zxid_conf* cf, char* buf, int buf_len,
+int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
 		   struct zx_str* name, struct zx_str* cont, int ign_prefix)
 {
   char* p;
@@ -112,7 +113,7 @@ int zxid_nice_sha1(struct zxid_conf* cf, char* buf, int buf_len,
  * especially if you get errors about multibyte characters. */
 
 /* Called by:  zxid_cache_epr, zxid_snarf_eprs_from_ses */
-int zxid_epr_path(struct zxid_conf* cf, char* dir, char* sid,
+int zxid_epr_path(zxid_conf* cf, char* dir, char* sid,
 		  char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont)
 {
   int len = snprintf(buf, buf_len, "%s%s%s/", cf->path, dir, sid);
@@ -134,8 +135,8 @@ int zxid_epr_path(struct zxid_conf* cf, char* dir, char* sid,
  * epr:: XML data structure representing the EPR
  * return:: 1 on success, 0 on failure */
 
-/* Called by:  main x2, zxid_get_epr, zxid_snarf_eprs_from_ses */
-int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr)
+/* Called by:  main, zxid_get_epr, zxid_snarf_eprs */
+int zxid_cache_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
 {
   fdtype fd;
   struct zx_str* ss;
@@ -179,16 +180,22 @@ int zxid_cache_epr(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_Endpo
  * that looks like an EPR and that is strcturally in right place will work.
  * Typical name /var/zxid/ses/SESID/SVCTYPE,SHA1 */
 
-/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize */
-void zxid_snarf_eprs(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_EndpointReference_s* epr)
+/* Called by:  zxid_as_call_ses, zxid_snarf_eprs_from_ses */
+void zxid_snarf_eprs(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
 {
+  struct zx_str* ss;
+  struct zx_str* urlss;
   int wsf20 = 0;
-  for (; epr; epr = (struct zx_a_EndpointReference_s*)epr->gg.g.n) {
-    ++wsf20;
-    D("Detected wsf20 EPR. %d", wsf20);
-    zxid_cache_epr(cf, ses, epr);
-    D("EPR cached %d", wsf20);
+  for (; epr; epr = (zxid_epr*)epr->gg.g.n) {
+    ss = epr->Metadata->ServiceType->content;
+    urlss = epr->Address->gg.content;
+    D("%d: EPR svc(%.*s) url(%.*s)", wsf20, ss?ss->len:0, ss?ss->s:"", urlss?urlss->len:0, urlss?urlss->s:"");
+    if (zxid_cache_epr(cf, ses, epr)) {
+      ++wsf20;
+      D("%d: EPR cached svc(%.*s) url(%.*s)", wsf20, ss?ss->len:0, ss?ss->s:"", urlss?urlss->len:0, urlss?urlss->s:"");
+    }
   }
+  D("TOTAL wsf20 EPRs snarfed: %d", wsf20);
 }
 
 /*() Look into attribute statements of a SSO assertion and extract anything
@@ -201,8 +208,8 @@ void zxid_snarf_eprs(struct zxid_conf* cf, struct zxid_ses* ses, struct zx_a_End
  * that looks like an EPR and that is strcturally in right place will work.
  * Typical name /var/zxid/ses/SESID/SVCTYPE,SHA1 */
 
-/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize */
-void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
+/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize, zxid_wsf_validate_a7n */
+void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
 {
   struct zx_sa_AttributeStatement_s* as;
   struct zx_sa_Attribute_s* at;
@@ -261,8 +268,8 @@ void zxid_snarf_eprs_from_ses(struct zxid_conf* cf, struct zxid_ses* ses)
  * n:: How manieth matching instance is returned. 1 means first
  * return:: EPR data structure (or linked list of EPRs) on success, 0 on failure */
 
-/* Called by:  main x3, zxid_get_epr x2 */
-struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
+/* Called by:  main x2, zxid_get_epr x2 */
+zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
   struct zx_root_s* r;
   int len, epr_len, siz = ZXID_INIT_EPR_BUF;
@@ -270,7 +277,7 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
   char* epr_buf;  /* MUST NOT come from stack. */
   DIR* dir;
   struct dirent * de;
-  struct zx_a_EndpointReference_s* epr = 0;
+  zxid_epr* epr = 0;
   struct zx_a_Metadata_s* md = 0;  
   D_INDENT("find_epr: ");
 
@@ -288,7 +295,7 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
     return 0;
   }
   
-  D("Looking in session dir(%s) sid(%s) svc(%s) sesptr=%p", path, ses->sid, svc, ses);
+  D("Looking in session dir(%s) svc(%s) pses=%p", path, svc, ses);
   dir = opendir(path);
   if (!dir) {
     perror("opendir to find epr in session");
@@ -303,17 +310,17 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
   memcpy(path, svc, len);
   path[len] = 0;
   zxid_fold_svc(path, len);
-  D("Folded path prefix(%.*s) len=%d", len, path, len);
+  D("Folded path prefix(%.*s) len=%d n=%d", len, path, len, n);
       
   while (de = readdir(dir)) {
-    D("Considering file(%s)", de->d_name);
+    D("%d Considering file(%s)", n, de->d_name);
     if (de->d_name[0] == '.')  /* . .. and "hidden" files */
       continue;
     if (de->d_name[strlen(de->d_name)-1] == '~')  /* Ignore backups from hand edited EPRs. */
       continue;
     if (memcmp(de->d_name, path, len) || de->d_name[len] != ',')
       continue;
-    D("Checking EPR content file(%s)", de->d_name);
+    D("%d Checking EPR content file(%s)", n, de->d_name);
     epr_len = read_all(siz, epr_buf, "find_epr",
 		       "%s" ZXID_SES_DIR "%s/%s", cf->path, ses->sid, de->d_name);
     if (!epr_len)
@@ -333,8 +340,10 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
 			 "%s" ZXID_SES_DIR "%s/%s", cf->path, ses->sid, de->d_name);
     }
     
+    LOCK(cf->ctx->mx, "find epr");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, epr_buf, epr_buf + epr_len);
     r = zx_DEC_root(cf->ctx, 0, 1);
+    UNLOCK(cf->ctx->mx, "find epr");
     if (!r || !r->EndpointReference) {
       ERR("No EPR found. Failed to parse epr_buf(%.*s)", epr_len, epr_buf);
       continue;
@@ -354,7 +363,7 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
     }
     if (svc && (len != md->ServiceType->content->len
 		|| memcmp(svc, md->ServiceType->content->s, len))) {
-      D("Internal svctype(%.*s) does not match desired(%s). Reject.", md->ServiceType->content->len, md->ServiceType->content->s, svc);
+      D("%d Internal svctype(%.*s) does not match desired(%s). Reject.", n, md->ServiceType->content->len, md->ServiceType->content->s, svc);
       continue;
     }
     
@@ -363,7 +372,7 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
       if (md && md->ProviderID && md->ProviderID->content || md->ProviderID->content->len
 	  && (strlen(url) != md->ProviderID->content->len
 	      || memcmp(url, md->ProviderID->content->s, md->ProviderID->content->len))) {
-	D("ProviderID(%.*s) or endpoint URL(%.*s) does not match desired url(%s). Reject.", epr->Metadata->ProviderID->content->len, epr->Metadata->ProviderID->content->s, epr->Address->gg.content->len, epr->Address->gg.content->s, url);
+	D("%d ProviderID(%.*s) or endpoint URL(%.*s) does not match desired url(%s). Reject.", n, epr->Metadata->ProviderID->content->len, epr->Metadata->ProviderID->content->s, epr->Address->gg.content->len, epr->Address->gg.content->s, url);
 	continue;
       }
     }
@@ -375,7 +384,7 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
     if (--n)
       continue;
     
-    D("Found svc(%s) url(%.*s)", STRNULLCHK(svc), epr->Address->gg.content->len, epr->Address->gg.content->s);
+    D("%d Found svc(%s) url(%.*s)", n, STRNULLCHK(svc), epr->Address->gg.content->len, epr->Address->gg.content->s);
     closedir(dir);
     D_DEDENT("find_epr: ");
     return epr;
@@ -402,16 +411,21 @@ struct zx_a_EndpointReference_s* zxid_find_epr(struct zxid_conf* cf, struct zxid
  *     of EPRs is returned.
  */
 
-/* Called by:  main x7 */
-struct zx_a_EndpointReference_s* zxid_get_epr(struct zxid_conf* cf, struct zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
+/* Called by:  main x5 */
+zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
+  int wsf20 = 0;
+  struct zx_str* ss;
+  struct zx_str* urlss;
   struct zx_e_Envelope_s* env;
-  struct zx_a_EndpointReference_s* epr;
+  zxid_epr* epr;
   epr = zxid_find_epr(cf, ses, svc, url, di_opt, action, n);
   if (epr)
     return epr;
+  if (n > 1)
+    return 0;  /* Do not discover any more */
   
-  INFO("Discovering svc(%s)...", STRNULLCHK(svc));
+  INFO("%d Discovering svc(%s)...", n, STRNULLCHK(svc));
   env = zx_NEW_e_Envelope(cf->ctx);
   env->Header = zx_NEW_e_Header(cf->ctx);
   env->Body = zx_NEW_e_Body(cf->ctx);
@@ -423,15 +437,23 @@ struct zx_a_EndpointReference_s* zxid_get_epr(struct zxid_conf* cf, struct zxid_
   }
   env = zxid_wsc_call(cf, ses, epr, env);
   if (env && env->Body) {
-    if (env->Body->QueryResponse)
-      for (epr = env->Body->QueryResponse->EndpointReference; epr; epr = (struct zx_a_EndpointReference_s*)ZX_NEXT(epr))
-	zxid_cache_epr(cf, ses, epr);
-    if (env->Body->QueryResponse)
+    if (env->Body->QueryResponse) {
+      for (epr = env->Body->QueryResponse->EndpointReference; epr; epr = (zxid_epr*)ZX_NEXT(epr)) {
+	ss = epr->Metadata->ServiceType->content;
+	urlss = epr->Address->gg.content;
+	D("%d: EPR svc(%.*s) url(%.*s)", wsf20, ss?ss->len:0, ss?ss->s:"", urlss?urlss->len:0, urlss?urlss->s:"");
+	if (zxid_cache_epr(cf, ses, epr)) {
+	  ++wsf20;
+	  D("%d: EPR cached svc(%.*s) url(%.*s)", wsf20, ss?ss->len:0, ss?ss->s:"", urlss?urlss->len:0, urlss?urlss->s:"");
+	}
+      }
       epr = env->Body->QueryResponse->EndpointReference;
-    else
+    } else {
       epr = 0;
+    }
     if (!epr)
       ERR("No end point discovered for svc(%s)", STRNULLCHK(svc));
+    D("TOTAL wsf20 EPRs discovered: %d", wsf20);
     return epr;
   }
   ERR("discovery call failed envelope=%p", env);
@@ -441,22 +463,55 @@ struct zx_a_EndpointReference_s* zxid_get_epr(struct zxid_conf* cf, struct zxid_
 /*() Accessor function for extracting endpoint address URL. */
 
 /* Called by: */
-struct zx_str* zxid_get_epr_address(struct zxid_conf* cf, struct zx_a_EndpointReference_s* epr) {
+struct zx_str* zxid_get_epr_address(zxid_conf* cf, zxid_epr* epr) {
   return epr->Address->gg.content;
 }
 
 /*() Accessor function for extracting endpoint ProviderID. */
 
 /* Called by: */
-struct zx_str* zxid_get_epr_entid(struct zxid_conf* cf, struct zx_a_EndpointReference_s* epr) {
+struct zx_str* zxid_get_epr_entid(zxid_conf* cf, zxid_epr* epr) {
   return epr->Metadata->ProviderID->content;
+}
+
+/*() Accessor function for extracting endpoint Description (Abstract). */
+
+/* Called by: */
+struct zx_str* zxid_get_epr_desc(zxid_conf* cf, zxid_epr* epr) {
+  return epr->Metadata->Abstract->content;
+}
+
+/*() Constructor for "blank". Such EPR lacks security context so it is
+ * not directly usable for identity web service calls. However, it could
+ * be useful as a building block, or for non-idenity web service.
+ * Also id, actor, and mustUnderstand fields need to be filled in by
+ * other means (we may eventually have defaults for some of these). */
+
+/* Called by: */
+zxid_epr* zxid_new_epr(zxid_conf* cf, char* address, char* desc, char* entid, char* svctype)
+{
+  zxid_epr* epr = zx_NEW_a_EndpointReference(cf->ctx);
+  if (address) {
+    epr->Address = zx_NEW_a_Address(cf->ctx);
+    epr->Address->gg.content = zx_dup_str(cf->ctx, address);
+  }
+  if (desc || entid || svctype) {
+    epr->Metadata = zx_NEW_a_Metadata(cf->ctx);
+    if (desc)
+      epr->Metadata->Abstract = zx_dup_simple_elem(cf->ctx, desc);
+    if (entid)
+      epr->Metadata->ProviderID = zx_dup_simple_elem(cf->ctx, entid);
+    if (svctype)
+      epr->Metadata->ServiceType = zx_dup_simple_elem(cf->ctx, svctype);
+  }
+  return epr;
 }
 
 #if 0
 /*() Accessor function for extracting endpoint's SAML2 assertion token. */
 
 /* Called by: */
-struct zx_str* zxid_get_epr_a7n(struct zxid_conf* cf, struct zx_a_EndpointReference_s* epr) {
+struct zx_str* zxid_get_epr_a7n(zxid_conf* cf, zxid_epr* epr) {
   return epr->Metadata->SecurityContext->Token->Assertion;
 }
 #endif

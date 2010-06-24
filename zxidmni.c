@@ -1,4 +1,5 @@
 /* zxidmni.c  -  Handwritten functions for NameID Management logic for SP
+ * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -9,6 +10,7 @@
  *
  * 12.10.2007, split from zxidslo.c --Sampo
  * 7.10.2008,  added documentation --Sampo
+ * 12.2.2010,  added locking to lazy loading --Sampo
  */
 
 #include "errmac.h"
@@ -25,14 +27,17 @@
  * using SAML2 SOAP binding. This is the (SP) client side that contacts the IdP. */
 
 /* Called by:  zxid_mgmt, zxid_simple_ses_active_cf */
-int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
+int zxid_sp_mni_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_str* new_nym)
 {
+  X509* sign_cert;
+  RSA*  sign_pkey;
+
   zxid_get_ses_sso_a7n(cf, ses);
   if (ses->a7n) {
     struct zxsig_ref refs;
     struct zx_root_s* r;
     struct zx_e_Body_s* body;
-    struct zxid_entity* idp_meta;
+    zxid_entity* idp_meta;
 
     if (cf->log_level>0)
       zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "MNISOAP", ses->sid, "newnym(%.*s) loc", new_nym?new_nym->len:0, new_nym?new_nym->s:"");
@@ -46,11 +51,9 @@ int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
     if (cf->sso_soap_sign) {
       refs.id = body->ManageNameIDRequest->ID;
       refs.canon = zx_EASY_ENC_SO_sp_ManageNameIDRequest(cf->ctx, body->ManageNameIDRequest);
-      if (!cf->sign_cert) // Lazy load cert and private key
-	cf->sign_cert = zxid_read_cert(cf, "sign-nopw-cert.pem");
-      if (!cf->sign_pkey)
-	cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
-      body->ManageNameIDRequest->Signature = zxsig_sign(cf->ctx, 1, &refs, cf->sign_cert, cf->sign_pkey);
+      if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert mni"))
+	body->ManageNameIDRequest->Signature
+	  = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
       zx_str_free(cf->ctx, refs.canon);
     }
     r = zxid_idp_soap(cf, cgi, ses, idp_meta, ZXID_MNI_SVC, body);
@@ -75,14 +78,14 @@ int zxid_sp_mni_soap(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses
  * the environment should cause the user (browser) to be redirected. */
 
 /* Called by:  zxid_mgmt, zxid_simple_ses_active_cf */
-struct zx_str* zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_str* new_nym)
+struct zx_str* zxid_sp_mni_redir(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_str* new_nym)
 {
   zxid_get_ses_sso_a7n(cf, ses);
   if (ses->a7n) {
     struct zx_sp_ManageNameIDRequest_s* r;
     struct zx_str* rs;
     struct zx_str* loc;
-    struct zxid_entity* idp_meta;
+    zxid_entity* idp_meta;
 
     if (cf->log_level>0)
       zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "MNIREDIR", ses->sid, "newnym(%.*s)", new_nym?new_nym->len:0, new_nym?new_nym->s:"");
@@ -114,9 +117,9 @@ struct zx_str* zxid_sp_mni_redir(struct zxid_conf* cf, struct zxid_cgi* cgi, str
  * used. */
 
 /* Called by:  zxid_idp_soap_dispatch, zxid_mni_do_ss, zxid_sp_soap_dispatch */
-struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni)
+struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni)
 {
-  struct zx_sa_NameID_s* nid;
+  zxid_nid* nid;
   struct zx_str* newnym;
   
   if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)mni, mni->Signature, mni->Issuer, "ManageNameIDRequest"))
@@ -141,7 +144,7 @@ struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(struct zxid_conf* cf, struct zx
 /*() Wrapper for zxid_mni_do(), which see. */
 
 /* Called by:  zxid_idp_dispatch, zxid_sp_dispatch */
-struct zx_str* zxid_mni_do_ss(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc)
+struct zx_str* zxid_mni_do_ss(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc)
 {
   struct zx_sp_ManageNameIDResponse_s* res;
   res = zxid_mk_mni_resp(cf, zxid_OK(cf), mni->ID);

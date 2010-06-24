@@ -28,6 +28,7 @@
 #include <zx/wsf.h>
 #include <zx/c/zxidvers.h>
 #include <zx/c/zx-ns.h>
+#include <zx/c/zx-data.h>
 
 char* help =
 "zxidhrxmlwsp  -  SAML 2.0 WSP CGI - R" ZXID_REL "\n\
@@ -51,13 +52,13 @@ Usage: zxidhrxmlwsp [options]   (when used as CGI, no options can be supplied)\n
 int main(int argc, char** argv)
 {
   struct zx_ctx ctx;
-  struct zxid_conf cfs;
-  struct zxid_conf* cf;
-  struct zxid_ses sess;
-  struct zxid_ses* ses = &sess;
+  zxid_conf cfs;
+  zxid_conf* cf;
+  zxid_ses sess;
+  zxid_ses* ses = &sess;
   struct zx_root_s* r;
   //struct zx_e_Envelope_s* env;
-  //struct zx_a_EndpointReference_s* epr;
+  //zxid_epr* epr;
   struct zx_str* ss;
   //char* sid;
   char* nid;
@@ -68,14 +69,14 @@ int main(int argc, char** argv)
   int got, fd, cl=0;
   char* qs;
   char* qs2;
-  memset(ses, 0, sizeof(struct zxid_ses));
+  memset(ses, 0, sizeof(zxid_ses));
   
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */
   close(2);
   if (open("tmp/zxid2.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
     exit(2);
-  fprintf(stderr, "=================== Running ===================\n");
+  fprintf(stderr, "=================== Running idhrxml wsp ===================\n");
   zx_debug = 1;
 #endif
 
@@ -103,7 +104,7 @@ int main(int argc, char** argv)
 
 #if 1
   zx_reset_ctx(&ctx);
-  memset(&cfs, 0, sizeof(struct zxid_conf));
+  memset(&cfs, 0, sizeof(zxid_conf));
   cfs.ctx = &ctx;
   cf = &cfs;
   zxid_conf_to_cf_len(cf, -1, CONF);
@@ -153,12 +154,19 @@ int main(int argc, char** argv)
   nid = zxid_wsp_validate(cf, ses, 0, buf);
   if (!nid) {
     ERR("Request validation failed buf(%.*s)", got, buf);
+    ss = zxid_wsp_decorate(cf, ses, 0, "<Response><lu:Status code=\"INV\" comment=\"Request validation failed. Replay?\"></lu:Status></Response>");
+    D("ss(%.*s)", ss->len, ss->s);
+    printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
     exit(1);
   }
-  D("target nid(%s)", nid);
+  D("Target nid(%s)", nid);
     
+  LOCK(cf->ctx->mx, "hrxml wsp");
   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, qs2, qs2+cl);
   r = zx_DEC_root(cf->ctx, 0, 1);
+  UNLOCK(cf->ctx->mx, "hrxml wsp");
+
+  D("Decoded nid(%s)", nid);
   
   if (!r->Envelope) {
     ERR("No SOAP Envelope found buf(%.*s)", got, buf);
@@ -242,8 +250,10 @@ int main(int argc, char** argv)
       return 0;
     }
     
+    LOCK(cf->ctx->mx, "hrxml wsp cand");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got);
     r = zx_DEC_root(cf->ctx, 0, 1);
+    UNLOCK(cf->ctx->mx, "hrxml wsp cand");
     if (!r->Candidate) {
       ERR("No hrxml:Candidate tag found in cv.xml(%s)", buf);
 #if 0
@@ -349,6 +359,9 @@ int main(int argc, char** argv)
     return 0;
   }  
 
+  ss = zxid_wsp_decorate(cf, ses, 0, "<Response><lu:Status code=\"BAD\" comment=\"Unknown XML\"></lu:Status></Response>");
+  D("ss(%.*s)", ss->len, ss->s);
+  printf("CONTENT-TYPE: text/xml\r\nCONTENT-LENGTH: %d\r\n\r\n%.*s", ss->len, ss->len, ss->s);
   return 0;
 }
 

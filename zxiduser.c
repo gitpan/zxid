@@ -26,13 +26,14 @@
 #include "zxid.h"
 #include "zxidconf.h"
 #include "yubikey.h"   /* from libyubikey-1.5 */
+#include "c/zx-sa-data.h"
 
 /*() Parse a line from .mni and form a NameID, unless there is mniptr */
 
 /* Called by:  zxid_check_fed, zxid_get_user_nameid */
-struct zx_sa_NameID_s* zxid_parse_mni(struct zxid_conf* cf, char* buf, char** pmniptr)
+zxid_nid* zxid_parse_mni(zxid_conf* cf, char* buf, char** pmniptr)
 {
-  struct zx_sa_NameID_s* nameid;
+  zxid_nid* nameid;
   char* p;
   char* idpent = 0;
   char* spqual = 0;
@@ -77,30 +78,42 @@ struct zx_sa_NameID_s* zxid_parse_mni(struct zxid_conf* cf, char* buf, char** pm
   return nameid;
 }
 
+/*() Formulate NameID based directory name for the user */
+
+/* Called by:  zxid_get_user_nameid, zxid_put_user, zxid_ses_to_pool x2, zxid_user_change_nameid */
+void zxid_user_sha1_name(zxid_conf* cf, struct zx_str* qualif, struct zx_str* nid, char* sha1_name)
+{
+  struct zx_str* ss;
+  if (!nid) {
+    memset(sha1_name, 0, 28);
+    return;
+  }
+  if (qualif) {
+    ss = zx_strf(cf->ctx, "%.*s|%.*s", qualif->len, qualif->s, nid->len, nid->s);
+    sha1_safe_base64(sha1_name, ss->len, ss->s);
+    zx_str_free(cf->ctx, ss);
+  } else {
+    sha1_safe_base64(sha1_name, nid->len, nid->s);
+  }
+  sha1_name[27] = 0;
+}
+
 /*() Locate user file using a NameID, which may be old or current. If old,
  * chase the MNIptr fields until current is found. Mainly used to support MNI. */
 
 /* Called by:  zxid_sp_mni_redir, zxid_sp_mni_soap, zxid_sp_slo_redir, zxid_sp_slo_soap */
-struct zx_sa_NameID_s* zxid_get_user_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* oldnid)
+zxid_nid* zxid_get_user_nameid(zxid_conf* cf, zxid_nid* oldnid)
 {
   char sha1_name[28];
   char* buf;
   char* mniptr;
   int iter = 1000;
-  struct zx_str* ss;
-  struct zx_sa_NameID_s* nameid;
+  zxid_nid* nameid;
   
   if (!cf->user_local)
     return oldnid;
   
-  if (!oldnid->NameQualifier) {
-    sha1_safe_base64(sha1_name, oldnid->gg.content->len, oldnid->gg.content->s);
-  } else {
-    ss = zx_strf(cf->ctx, "%.*s|%.*s", oldnid->NameQualifier->len, oldnid->NameQualifier->s, oldnid->gg.content->len, oldnid->gg.content->s);
-    sha1_safe_base64(sha1_name, ss->len, ss->s);
-    zx_str_free(cf->ctx, ss);
-  }
-  sha1_name[27] = 0;
+  zxid_user_sha1_name(cf, oldnid->NameQualifier, oldnid->gg.content, sha1_name);
   buf = ZX_ALLOC(cf->ctx, ZXID_MAX_USER);
   mniptr = sha1_name;
 
@@ -121,33 +134,22 @@ struct zx_sa_NameID_s* zxid_get_user_nameid(struct zxid_conf* cf, struct zx_sa_N
 /*() Change a NameID to newnym. Old NameID's user entry is rewritten to have mniptr */
 
 /* Called by:  zxid_mni_do */
-void zxid_user_change_nameid(struct zxid_conf* cf, struct zx_sa_NameID_s* oldnid, struct zx_str* newnym)
+void zxid_user_change_nameid(zxid_conf* cf, zxid_nid* oldnid, struct zx_str* newnym)
 {
-  struct zx_str* ss;
   char sha1_name[28];
-
-  if (!oldnid->NameQualifier) {
-    sha1_safe_base64(sha1_name, newnym->len, newnym->s);
-  } else {
-    ss = zx_strf(cf->ctx, "%.*s|%.*s", oldnid->NameQualifier->len, oldnid->NameQualifier->s, newnym->len, newnym->s);
-    sha1_safe_base64(sha1_name, ss->len, ss->s);
-    zx_str_free(cf->ctx, ss);
-  }
-  sha1_name[27] = 0;
-
+  zxid_user_sha1_name(cf, oldnid->NameQualifier, newnym, sha1_name);
   zxid_put_user(cf, oldnid->Format, oldnid->NameQualifier, oldnid->SPNameQualifier, newnym, 0);
   zxid_put_user(cf, oldnid->Format, oldnid->NameQualifier, oldnid->SPNameQualifier, oldnid->gg.content, sha1_name);
 }
 
 /*() Create new user object in file system. */
 
-/* Called by:  zxid_sp_sso_finalize, zxid_user_change_nameid x2 */
-int zxid_put_user(struct zxid_conf* cf, struct zx_str* nidfmt, struct zx_str* idpent, struct zx_str* spqual, struct zx_str* idpnid, char* mniptr)
+/* Called by:  zxid_sp_sso_finalize, zxid_user_change_nameid x2, zxid_wsf_validate_a7n */
+int zxid_put_user(zxid_conf* cf, struct zx_str* nidfmt, struct zx_str* idpent, struct zx_str* spqual, struct zx_str* idpnid, char* mniptr)
 {
   char sha1_name[28];
   char dir[ZXID_MAX_BUF];
   char* buf;
-  struct zx_str* ss;
   
   if (!cf->user_local)
     return 0;
@@ -157,15 +159,7 @@ int zxid_put_user(struct zxid_conf* cf, struct zx_str* nidfmt, struct zx_str* id
     return 0;
   }
   
-  if (!idpent) {
-    sha1_safe_base64(sha1_name, idpnid->len, idpnid->s);
-  } else {
-    ss = zx_strf(cf->ctx, "%.*s|%.*s", idpent->len, idpent->s, idpnid->len, idpnid->s);
-    sha1_safe_base64(sha1_name, ss->len, ss->s);
-    zx_str_free(cf->ctx, ss);
-  }
-  sha1_name[27] = 0;
-  
+  zxid_user_sha1_name(cf, idpent, idpnid, sha1_name);
   name_from_path(dir, sizeof(dir), "%s" ZXID_USER_DIR "%s", cf->path, sha1_name);
   if (MKDIR(dir, 0777) && errno != EEXIST) {
     perror("mkdir for user");
@@ -200,8 +194,9 @@ static char* login_failed = "Login failed. Check username and password. Make sur
  * return:: 0 on failure and sets cgi->err; 1 on success  */
 
 /* Called by:  zxid_idp_as_do, zxid_simple_idp_pw_authn, zxid_simple_idp_show_an */
-int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+int zxid_pw_authn(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
+  const char* meth = "??";
   struct zx_str* ss;
   unsigned char buf[ZXID_MAX_BUF];
   unsigned char pw_buf[256];
@@ -227,6 +222,7 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
 
   len = strlen(cgi->uid);
   if (len > 32) {  /* Yubikey */
+    meth = "yk";
     strcpy(pw_hash, cgi->uid + len - 32);
     cgi->uid[len - 32] = 0;
     D("yubikey user(%s) ticket(%s)", cgi->uid, pw_hash);
@@ -274,6 +270,8 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
   
     /* *** Add here support for other authentication backends */
 
+    meth = "pw";
+
     len = read_all(sizeof(pw_buf), pw_buf, "pw_authn",
 		   "%s" ZXID_UID_DIR "%s/.pw", cf->path, cgi->uid);
     if (len < 1) {
@@ -310,13 +308,13 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
 
   /* Successful login. Establish session. */
 
-  memset(ses, 0, sizeof(struct zxid_ses));
+  memset(ses, 0, sizeof(zxid_ses));
   ses->magic = ZXID_SES_MAGIC;
   ses->an_ctx = cf->issue_authnctx_pw;  /* *** Should also depend on how user was registered */
   ss = zxid_mk_id(cf, "MSES", ZXID_ID_BITS);  /* Master session. Each pairwise SSO should have its own to avoid correlation. */
   ses->sesix = ss->s;
   ZX_FREE(cf->ctx, ss);
-  ses->sid = ses->sesix;
+  ses->sid = cgi->sid = ses->sesix;
   ses->uid = cgi->uid;
   zxid_put_ses(cf, ses);
   if (cf->ses_cookie_name && *cf->ses_cookie_name) {
@@ -326,8 +324,10 @@ int zxid_pw_authn(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* s
     ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
 				   cf->ses_cookie_name, ses->sid);
   }
-  cgi->sid = ses->sid;
-  INFO("LOCAL LOGIN SUCCESSFUL. uid(%s) sid(%s)", cgi->uid, cgi->sid);
+  INFO("LOCAL LOGIN SUCCESSFUL. sid(%s) uid(%s) %s", cgi->sid, cgi->uid, meth);
+  zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "K", "INEWSES", ses->sid, "uid(%s) %s", ses->uid, meth);
+  if (cf->loguser)
+    zxlogusr(cf, ses->uid, 0, 0, 0, 0, 0, 0, 0, "N", "K", "INEWSES", ses->sid, "uid(%s) %s", ses->uid, meth);
   return 1;
 }
 

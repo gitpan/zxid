@@ -43,17 +43,17 @@ struct zx_str* zx_EASY_ENC_WO_m20_AdditionalMetaLocation(struct zx_ctx* c, struc
 struct zx_m20_AdditionalMetaLocation_s {
   ZX_ELEM_EXT
   zx_m20_AdditionalMetaLocation_EXT
-  struct zx_str* namespace;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* namespace_is_cxx_keyword;	/* {0,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_m20_AdditionalMetaLocation_GET_namespace(struct zx_m20_AdditionalMetaLocation_s* x);
+struct zx_str* zx_m20_AdditionalMetaLocation_GET_namespace_is_cxx_keyword(struct zx_m20_AdditionalMetaLocation_s* x);
 
 
 
 
 
-void zx_m20_AdditionalMetaLocation_PUT_namespace(struct zx_m20_AdditionalMetaLocation_s* x, struct zx_str* y);
+void zx_m20_AdditionalMetaLocation_PUT_namespace_is_cxx_keyword(struct zx_m20_AdditionalMetaLocation_s* x, struct zx_str* y);
 
 
 

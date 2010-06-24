@@ -15,6 +15,8 @@
  * This file contains option processing, configuration, and main().
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
+ *
+ * WARNING: This file is outdated. See zxidhlo.c instead.
  */
 
 #include <string.h>
@@ -26,7 +28,9 @@
 #include <sys/stat.h>
 //#include <sys/wait.h>
 //#include <pthread.h>
+#ifndef WIN32CL
 #include <stdint.h>
+#endif
 #include <signal.h>
 #include <fcntl.h>
 //#include <netdb.h>
@@ -41,6 +45,7 @@
 #include "zxidconf.h"
 #include "c/zxidvers.h"
 #include "c/zx-ns.h"
+#include "c/zx-md-data.h"
 
 CU8* help =
 "zxid  -  SAML 2.0 SP CGI - R" ZXID_REL "\n\
@@ -79,7 +84,6 @@ Usage: zxid [options]   (when used as CGI, no options can be supplied)\n\
 char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
-int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
@@ -94,8 +98,8 @@ char buf[32*1024];
 /* N.B. This options processing is a skeleton. In reality CGI scripts do not have
  * an opportunity to process any options. */
 
-/* Called by:  main x9 */
-void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid_cgi* cgi)
+/* Called by:  main x8, zxcall_main, zxcot_main */
+void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
 {
   char* conf_path = 0;
   if (*argc <= 1) return;
@@ -136,9 +140,6 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       case '\0':
 	++zx_debug;
 	continue;
-      case 'p':  if ((*argv)[0][3]) break;
-	++debugpoll;
-	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
@@ -161,7 +162,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       switch ((*argv)[0][2]) {
       case 'm':
 	if (!strcmp((*argv)[0],"-import")) {
-	  struct zxid_entity* ent;
+	  zxid_entity* ent;
 	  ++(*argv); --(*argc);
 	  if (!(*argc)) break;
 	  cf->ctx->ns_tab = zx_ns_tab;
@@ -178,7 +179,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       switch ((*argv)[0][2]) {
       case 'i':
 	if (!strcmp((*argv)[0],"-fileimport")) {
-	  struct zxid_entity* ent;
+	  zxid_entity* ent;
 	  ++(*argv); --(*argc);
 	  if (!(*argc)) break;
 	  cf->ctx->ns_tab = zx_ns_tab;
@@ -331,7 +332,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
  * value causes the login screen to be rendered. */
 
 /* Called by:  main x7 */
-int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
+int zxid_mgmt(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
   struct zx_str* ss;
   D("op(%c)", cgi->op);
@@ -411,14 +412,14 @@ int zxid_mgmt(struct zxid_conf* cf, struct zxid_cgi* cgi, struct zxid_ses* ses)
 /* Called by: */
 int main(int argc, char** argv, char** env)
 {
-  struct zxid_conf* cf = zxid_new_conf(ZXID_PATH);
-  struct zxid_ses ses;
-  struct zxid_cgi cgi;
+  zxid_conf* cf = zxid_new_conf(ZXID_PATH);
+  zxid_ses ses;
+  zxid_cgi cgi;
   int got;
   char* qs;
   char* cont_len;
   struct zx_str* ss;
-  struct zxid_entity* idp;
+  zxid_entity* idp;
   
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */
@@ -574,14 +575,14 @@ int main(int argc, char** argv, char** env)
     for (; idp; idp = idp->n) {
       if (!idp->ed->IDPSSODescriptor)
 	continue;
-      printf("<input type=submit name=\"l0%.*s\" value=\" Login to %.*s (SAML20:any) \">\n",
-	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
-      printf("<input type=submit name=\"l1%.*s\" value=\" Login to %.*s (SAML20:Artifact) \">\n",
-	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
-      printf("<input type=submit name=\"l2%.*s\" value=\" Login to %.*s (SAML20:POST) \">\n",
-	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
-      printf("<input type=submit name=\"l5%.*s\" value=\" Login to %.*s (SAML20:SimpleSign) \">\n",
-	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
+      printf("<input type=submit name=\"l0%s\" value=\" Login to %s (SAML20:any) \">\n",
+	     idp->eid, idp->eid);
+      printf("<input type=submit name=\"l1%s\" value=\" Login to %s (SAML20:Artifact) \">\n",
+	     idp->eid, idp->eid);
+      printf("<input type=submit name=\"l2%s\" value=\" Login to %s (SAML20:POST) \">\n",
+	     idp->eid, idp->eid);
+      printf("<input type=submit name=\"l5%s\" value=\" Login to %s (SAML20:SimpleSign) \">\n",
+	     idp->eid, idp->eid);
     }
   }
   

@@ -641,6 +641,7 @@ struct zx_b_TargetIdentity_s {
   ZX_ELEM_EXT
   zx_b_TargetIdentity_EXT
   struct zx_sa_Assertion_s* Assertion;	/* {0,1} nada */
+  struct zx_sa_EncryptedAssertion_s* EncryptedAssertion;	/* {0,1} nada */
   struct zx_sa11_Assertion_s* sa11_Assertion;	/* {0,1} nada */
   struct zx_ff12_Assertion_s* ff12_Assertion;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
@@ -656,18 +657,22 @@ struct zx_str* zx_b_TargetIdentity_GET_actor(struct zx_b_TargetIdentity_s* x);
 struct zx_str* zx_b_TargetIdentity_GET_mustUnderstand(struct zx_b_TargetIdentity_s* x);
 
 struct zx_sa_Assertion_s* zx_b_TargetIdentity_GET_Assertion(struct zx_b_TargetIdentity_s* x, int n);
+struct zx_sa_EncryptedAssertion_s* zx_b_TargetIdentity_GET_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n);
 struct zx_sa11_Assertion_s* zx_b_TargetIdentity_GET_sa11_Assertion(struct zx_b_TargetIdentity_s* x, int n);
 struct zx_ff12_Assertion_s* zx_b_TargetIdentity_GET_ff12_Assertion(struct zx_b_TargetIdentity_s* x, int n);
 
 int zx_b_TargetIdentity_NUM_Assertion(struct zx_b_TargetIdentity_s* x);
+int zx_b_TargetIdentity_NUM_EncryptedAssertion(struct zx_b_TargetIdentity_s* x);
 int zx_b_TargetIdentity_NUM_sa11_Assertion(struct zx_b_TargetIdentity_s* x);
 int zx_b_TargetIdentity_NUM_ff12_Assertion(struct zx_b_TargetIdentity_s* x);
 
 struct zx_sa_Assertion_s* zx_b_TargetIdentity_POP_Assertion(struct zx_b_TargetIdentity_s* x);
+struct zx_sa_EncryptedAssertion_s* zx_b_TargetIdentity_POP_EncryptedAssertion(struct zx_b_TargetIdentity_s* x);
 struct zx_sa11_Assertion_s* zx_b_TargetIdentity_POP_sa11_Assertion(struct zx_b_TargetIdentity_s* x);
 struct zx_ff12_Assertion_s* zx_b_TargetIdentity_POP_ff12_Assertion(struct zx_b_TargetIdentity_s* x);
 
 void zx_b_TargetIdentity_PUSH_Assertion(struct zx_b_TargetIdentity_s* x, struct zx_sa_Assertion_s* y);
+void zx_b_TargetIdentity_PUSH_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, struct zx_sa_EncryptedAssertion_s* y);
 void zx_b_TargetIdentity_PUSH_sa11_Assertion(struct zx_b_TargetIdentity_s* x, struct zx_sa11_Assertion_s* y);
 void zx_b_TargetIdentity_PUSH_ff12_Assertion(struct zx_b_TargetIdentity_s* x, struct zx_ff12_Assertion_s* y);
 
@@ -677,18 +682,22 @@ void zx_b_TargetIdentity_PUT_actor(struct zx_b_TargetIdentity_s* x, struct zx_st
 void zx_b_TargetIdentity_PUT_mustUnderstand(struct zx_b_TargetIdentity_s* x, struct zx_str* y);
 
 void zx_b_TargetIdentity_PUT_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_Assertion_s* y);
+void zx_b_TargetIdentity_PUT_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_EncryptedAssertion_s* y);
 void zx_b_TargetIdentity_PUT_sa11_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa11_Assertion_s* y);
 void zx_b_TargetIdentity_PUT_ff12_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_ff12_Assertion_s* y);
 
 void zx_b_TargetIdentity_ADD_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_Assertion_s* z);
+void zx_b_TargetIdentity_ADD_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa_EncryptedAssertion_s* z);
 void zx_b_TargetIdentity_ADD_sa11_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_sa11_Assertion_s* z);
 void zx_b_TargetIdentity_ADD_ff12_Assertion(struct zx_b_TargetIdentity_s* x, int n, struct zx_ff12_Assertion_s* z);
 
 void zx_b_TargetIdentity_DEL_Assertion(struct zx_b_TargetIdentity_s* x, int n);
+void zx_b_TargetIdentity_DEL_EncryptedAssertion(struct zx_b_TargetIdentity_s* x, int n);
 void zx_b_TargetIdentity_DEL_sa11_Assertion(struct zx_b_TargetIdentity_s* x, int n);
 void zx_b_TargetIdentity_DEL_ff12_Assertion(struct zx_b_TargetIdentity_s* x, int n);
 
 void zx_b_TargetIdentity_REV_Assertion(struct zx_b_TargetIdentity_s* x);
+void zx_b_TargetIdentity_REV_EncryptedAssertion(struct zx_b_TargetIdentity_s* x);
 void zx_b_TargetIdentity_REV_sa11_Assertion(struct zx_b_TargetIdentity_s* x);
 void zx_b_TargetIdentity_REV_ff12_Assertion(struct zx_b_TargetIdentity_s* x);
 
@@ -772,7 +781,7 @@ struct zx_str* zx_EASY_ENC_WO_b_UsageDirective(struct zx_ctx* c, struct zx_b_Usa
 struct zx_b_UsageDirective_s {
   ZX_ELEM_EXT
   zx_b_UsageDirective_EXT
-  struct zx_tas3sol_Obligations_s* Obligations;	/* {0,1} nada */
+  struct zx_xa_Obligation_s* Obligation;	/* {0,-1} nada */
   struct zx_tas3sol_Dict_s* Dict;	/* {0,1} nada */
   struct zx_str* id;	/* {0,1} attribute xs:ID */
   struct zx_str* ref;	/* {1,1} attribute xs:anyURI */
@@ -788,16 +797,16 @@ struct zx_str* zx_b_UsageDirective_GET_Id(struct zx_b_UsageDirective_s* x);
 struct zx_str* zx_b_UsageDirective_GET_actor(struct zx_b_UsageDirective_s* x);
 struct zx_str* zx_b_UsageDirective_GET_mustUnderstand(struct zx_b_UsageDirective_s* x);
 
-struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_GET_Obligations(struct zx_b_UsageDirective_s* x, int n);
+struct zx_xa_Obligation_s* zx_b_UsageDirective_GET_Obligation(struct zx_b_UsageDirective_s* x, int n);
 struct zx_tas3sol_Dict_s* zx_b_UsageDirective_GET_Dict(struct zx_b_UsageDirective_s* x, int n);
 
-int zx_b_UsageDirective_NUM_Obligations(struct zx_b_UsageDirective_s* x);
+int zx_b_UsageDirective_NUM_Obligation(struct zx_b_UsageDirective_s* x);
 int zx_b_UsageDirective_NUM_Dict(struct zx_b_UsageDirective_s* x);
 
-struct zx_tas3sol_Obligations_s* zx_b_UsageDirective_POP_Obligations(struct zx_b_UsageDirective_s* x);
+struct zx_xa_Obligation_s* zx_b_UsageDirective_POP_Obligation(struct zx_b_UsageDirective_s* x);
 struct zx_tas3sol_Dict_s* zx_b_UsageDirective_POP_Dict(struct zx_b_UsageDirective_s* x);
 
-void zx_b_UsageDirective_PUSH_Obligations(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Obligations_s* y);
+void zx_b_UsageDirective_PUSH_Obligation(struct zx_b_UsageDirective_s* x, struct zx_xa_Obligation_s* y);
 void zx_b_UsageDirective_PUSH_Dict(struct zx_b_UsageDirective_s* x, struct zx_tas3sol_Dict_s* y);
 
 void zx_b_UsageDirective_PUT_id(struct zx_b_UsageDirective_s* x, struct zx_str* y);
@@ -806,16 +815,16 @@ void zx_b_UsageDirective_PUT_Id(struct zx_b_UsageDirective_s* x, struct zx_str* 
 void zx_b_UsageDirective_PUT_actor(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 void zx_b_UsageDirective_PUT_mustUnderstand(struct zx_b_UsageDirective_s* x, struct zx_str* y);
 
-void zx_b_UsageDirective_PUT_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* y);
+void zx_b_UsageDirective_PUT_Obligation(struct zx_b_UsageDirective_s* x, int n, struct zx_xa_Obligation_s* y);
 void zx_b_UsageDirective_PUT_Dict(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Dict_s* y);
 
-void zx_b_UsageDirective_ADD_Obligations(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Obligations_s* z);
+void zx_b_UsageDirective_ADD_Obligation(struct zx_b_UsageDirective_s* x, int n, struct zx_xa_Obligation_s* z);
 void zx_b_UsageDirective_ADD_Dict(struct zx_b_UsageDirective_s* x, int n, struct zx_tas3sol_Dict_s* z);
 
-void zx_b_UsageDirective_DEL_Obligations(struct zx_b_UsageDirective_s* x, int n);
+void zx_b_UsageDirective_DEL_Obligation(struct zx_b_UsageDirective_s* x, int n);
 void zx_b_UsageDirective_DEL_Dict(struct zx_b_UsageDirective_s* x, int n);
 
-void zx_b_UsageDirective_REV_Obligations(struct zx_b_UsageDirective_s* x);
+void zx_b_UsageDirective_REV_Obligation(struct zx_b_UsageDirective_s* x);
 void zx_b_UsageDirective_REV_Dict(struct zx_b_UsageDirective_s* x);
 
 #endif

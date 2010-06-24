@@ -300,5 +300,77 @@ void zx_tas3_ESLRef_PUT_xpath(struct zx_tas3_ESLRef_s* x, struct zx_str* y);
 
 
 #endif
+/* -------------------------- tas3_Status -------------------------- */
+/* refby( zx_e_Header_s ) */
+#ifndef zx_tas3_Status_EXT
+#define zx_tas3_Status_EXT
+#endif
+
+struct zx_tas3_Status_s* zx_DEC_tas3_Status(struct zx_ctx* c, struct zx_ns_s* ns);
+struct zx_tas3_Status_s* zx_NEW_tas3_Status(struct zx_ctx* c);
+void zx_FREE_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, int free_strs);
+#ifdef ZX_ENA_AUX
+struct zx_tas3_Status_s* zx_DEEP_CLONE_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, int dup_strs);
+void zx_DUP_STRS_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x);
+int zx_WALK_SO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+int zx_WALK_WO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx));
+#endif
+int zx_LEN_SO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x);
+int zx_LEN_WO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x);
+char* zx_ENC_SO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, char* p);
+char* zx_ENC_WO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x, char* p);
+struct zx_str* zx_EASY_ENC_SO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x);
+struct zx_str* zx_EASY_ENC_WO_tas3_Status(struct zx_ctx* c, struct zx_tas3_Status_s* x);
+
+struct zx_tas3_Status_s {
+  ZX_ELEM_EXT
+  zx_tas3_Status_EXT
+  struct zx_lu_Status_s* Status;	/* {0,-1} nada */
+  struct zx_str* code;	/* {1,1} attribute xs:QName */
+  struct zx_str* comment;	/* {0,1} attribute xs:string */
+  struct zx_str* ctlpt;	/* {0,1} attribute xs:string */
+  struct zx_str* id;	/* {0,1} attribute xs:ID */
+  struct zx_str* ref;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* Id;	/* {0,1} attribute xs:ID */
+  struct zx_str* actor;	/* {0,1} attribute xs:anyURI */
+  struct zx_str* mustUnderstand;	/* {0,1} attribute xs:boolean */
+};
+
+#ifdef ZX_ENA_GETPUT
+struct zx_str* zx_tas3_Status_GET_code(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_comment(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_ctlpt(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_id(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_ref(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_Id(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_actor(struct zx_tas3_Status_s* x);
+struct zx_str* zx_tas3_Status_GET_mustUnderstand(struct zx_tas3_Status_s* x);
+
+struct zx_lu_Status_s* zx_tas3_Status_GET_Status(struct zx_tas3_Status_s* x, int n);
+
+int zx_tas3_Status_NUM_Status(struct zx_tas3_Status_s* x);
+
+struct zx_lu_Status_s* zx_tas3_Status_POP_Status(struct zx_tas3_Status_s* x);
+
+void zx_tas3_Status_PUSH_Status(struct zx_tas3_Status_s* x, struct zx_lu_Status_s* y);
+
+void zx_tas3_Status_PUT_code(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_comment(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_ctlpt(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_id(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_ref(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_Id(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_actor(struct zx_tas3_Status_s* x, struct zx_str* y);
+void zx_tas3_Status_PUT_mustUnderstand(struct zx_tas3_Status_s* x, struct zx_str* y);
+
+void zx_tas3_Status_PUT_Status(struct zx_tas3_Status_s* x, int n, struct zx_lu_Status_s* y);
+
+void zx_tas3_Status_ADD_Status(struct zx_tas3_Status_s* x, int n, struct zx_lu_Status_s* z);
+
+void zx_tas3_Status_DEL_Status(struct zx_tas3_Status_s* x, int n);
+
+void zx_tas3_Status_REV_Status(struct zx_tas3_Status_s* x);
+
+#endif
 
 #endif

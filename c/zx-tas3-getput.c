@@ -1437,4 +1437,175 @@ void zx_tas3_ESLRef_PUT_xpath(struct zx_tas3_ESLRef_s* x, struct zx_str* y) { x-
 
 
 
+
+
+#ifdef ZX_ENA_GETPUT
+
+/* FUNC(zx_tas3_Status_NUM_Status) */
+
+int zx_tas3_Status_NUM_Status(struct zx_tas3_Status_s* x)
+{
+  struct zx_lu_Status_s* y;
+  int n = 0;
+  if (!x) return 0;
+  for (y = x->Status; y; ++n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+  return n;
+}
+
+/* FUNC(zx_tas3_Status_GET_Status) */
+
+struct zx_lu_Status_s* zx_tas3_Status_GET_Status(struct zx_tas3_Status_s* x, int n)
+{
+  struct zx_lu_Status_s* y;
+  if (!x) return 0;
+  for (y = x->Status; n>=0 && y; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+  return y;
+}
+
+/* FUNC(zx_tas3_Status_POP_Status) */
+
+struct zx_lu_Status_s* zx_tas3_Status_POP_Status(struct zx_tas3_Status_s* x)
+{
+  struct zx_lu_Status_s* y;
+  if (!x) return 0;
+  y = x->Status;
+  if (y)
+    x->Status = (struct zx_lu_Status_s*)y->gg.g.n;
+  return y;
+}
+
+/* FUNC(zx_tas3_Status_PUSH_Status) */
+
+void zx_tas3_Status_PUSH_Status(struct zx_tas3_Status_s* x, struct zx_lu_Status_s* z)
+{
+  if (!x || !z) return;
+  z->gg.g.n = &x->Status->gg.g;
+  x->Status = z;
+}
+
+/* FUNC(zx_tas3_Status_REV_Status) */
+
+void zx_tas3_Status_REV_Status(struct zx_tas3_Status_s* x)
+{
+  struct zx_lu_Status_s* nxt;
+  struct zx_lu_Status_s* y;
+  if (!x) return;
+  y = x->Status;
+  if (!y) return;
+  x->Status = 0;
+  while (y) {
+    nxt = (struct zx_lu_Status_s*)y->gg.g.n;
+    y->gg.g.n = &x->Status->gg.g;
+    x->Status = y;
+    y = nxt;
+  }
+}
+
+/* FUNC(zx_tas3_Status_PUT_Status) */
+
+void zx_tas3_Status_PUT_Status(struct zx_tas3_Status_s* x, int n, struct zx_lu_Status_s* z)
+{
+  struct zx_lu_Status_s* y;
+  if (!x || !z) return;
+  y = x->Status;
+  if (!y) return;
+  switch (n) {
+  case 0:
+    z->gg.g.n = y->gg.g.n;
+    x->Status = z;
+    return;
+  default:
+    for (; n > 1 && y->gg.g.n; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+    z->gg.g.n = y->gg.g.n->n;
+    y->gg.g.n = &z->gg.g;
+  }
+}
+
+/* FUNC(zx_tas3_Status_ADD_Status) */
+
+void zx_tas3_Status_ADD_Status(struct zx_tas3_Status_s* x, int n, struct zx_lu_Status_s* z)
+{
+  struct zx_lu_Status_s* y;
+  if (!x || !z) return;
+  switch (n) {
+  case 0:
+  add_to_start:
+    z->gg.g.n = &x->Status->gg.g;
+    x->Status = z;
+    return;
+  case -1:
+    y = x->Status;
+    if (!y) goto add_to_start;
+    for (; y->gg.g.n; y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Status; n > 1 && y; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    if (!y) return;
+  }
+  z->gg.g.n = y->gg.g.n;
+  y->gg.g.n = &z->gg.g;
+}
+
+/* FUNC(zx_tas3_Status_DEL_Status) */
+
+void zx_tas3_Status_DEL_Status(struct zx_tas3_Status_s* x, int n)
+{
+  struct zx_lu_Status_s* y;
+  if (!x) return;
+  switch (n) {
+  case 0:
+    x->Status = (struct zx_lu_Status_s*)x->Status->gg.g.n;
+    return;
+  case -1:
+    y = (struct zx_lu_Status_s*)x->Status;
+    if (!y) return;
+    for (; y->gg.g.n; y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    break;
+  default:
+    for (y = x->Status; n > 1 && y->gg.g.n; --n, y = (struct zx_lu_Status_s*)y->gg.g.n) ;
+    if (!y->gg.g.n) return;
+  }
+  y->gg.g.n = y->gg.g.n->n;
+}
+
+#endif
+
+/* FUNC(zx_tas3_Status_GET_code) */
+struct zx_str* zx_tas3_Status_GET_code(struct zx_tas3_Status_s* x) { return x->code; }
+/* FUNC(zx_tas3_Status_PUT_code) */
+void zx_tas3_Status_PUT_code(struct zx_tas3_Status_s* x, struct zx_str* y) { x->code = y; }
+/* FUNC(zx_tas3_Status_GET_comment) */
+struct zx_str* zx_tas3_Status_GET_comment(struct zx_tas3_Status_s* x) { return x->comment; }
+/* FUNC(zx_tas3_Status_PUT_comment) */
+void zx_tas3_Status_PUT_comment(struct zx_tas3_Status_s* x, struct zx_str* y) { x->comment = y; }
+/* FUNC(zx_tas3_Status_GET_ctlpt) */
+struct zx_str* zx_tas3_Status_GET_ctlpt(struct zx_tas3_Status_s* x) { return x->ctlpt; }
+/* FUNC(zx_tas3_Status_PUT_ctlpt) */
+void zx_tas3_Status_PUT_ctlpt(struct zx_tas3_Status_s* x, struct zx_str* y) { x->ctlpt = y; }
+/* FUNC(zx_tas3_Status_GET_id) */
+struct zx_str* zx_tas3_Status_GET_id(struct zx_tas3_Status_s* x) { return x->id; }
+/* FUNC(zx_tas3_Status_PUT_id) */
+void zx_tas3_Status_PUT_id(struct zx_tas3_Status_s* x, struct zx_str* y) { x->id = y; }
+/* FUNC(zx_tas3_Status_GET_ref) */
+struct zx_str* zx_tas3_Status_GET_ref(struct zx_tas3_Status_s* x) { return x->ref; }
+/* FUNC(zx_tas3_Status_PUT_ref) */
+void zx_tas3_Status_PUT_ref(struct zx_tas3_Status_s* x, struct zx_str* y) { x->ref = y; }
+/* FUNC(zx_tas3_Status_GET_Id) */
+struct zx_str* zx_tas3_Status_GET_Id(struct zx_tas3_Status_s* x) { return x->Id; }
+/* FUNC(zx_tas3_Status_PUT_Id) */
+void zx_tas3_Status_PUT_Id(struct zx_tas3_Status_s* x, struct zx_str* y) { x->Id = y; }
+/* FUNC(zx_tas3_Status_GET_actor) */
+struct zx_str* zx_tas3_Status_GET_actor(struct zx_tas3_Status_s* x) { return x->actor; }
+/* FUNC(zx_tas3_Status_PUT_actor) */
+void zx_tas3_Status_PUT_actor(struct zx_tas3_Status_s* x, struct zx_str* y) { x->actor = y; }
+/* FUNC(zx_tas3_Status_GET_mustUnderstand) */
+struct zx_str* zx_tas3_Status_GET_mustUnderstand(struct zx_tas3_Status_s* x) { return x->mustUnderstand; }
+/* FUNC(zx_tas3_Status_PUT_mustUnderstand) */
+void zx_tas3_Status_PUT_mustUnderstand(struct zx_tas3_Status_s* x, struct zx_str* y) { x->mustUnderstand = y; }
+
+
+
+
+
 /* EOF -- c/zx-tas3-getput.c */

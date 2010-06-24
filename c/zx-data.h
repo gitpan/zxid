@@ -34,6 +34,7 @@
 #include "c/zx-hrxml-data.h"
 #include "c/zx-idhrxml-data.h"
 #include "c/zx-idp-data.h"
+#include "c/zx-idpdisc-data.h"
 #include "c/zx-im-data.h"
 #include "c/zx-is-data.h"
 #include "c/zx-is12-data.h"

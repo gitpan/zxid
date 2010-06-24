@@ -2,7 +2,7 @@
  * $Id$ */
 #include "c/zx-ns.h"
 
-struct zx_ns_s zx_ns_tab[61] = {
+struct zx_ns_s zx_ns_tab[62] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("ds")-1, "ds", sizeof("http://www.w3.org/2000/09/xmldsig#")-1, "http://www.w3.org/2000/09/xmldsig#"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("xenc")-1, "xenc", sizeof("http://www.w3.org/2001/04/xmlenc#")-1, "http://www.w3.org/2001/04/xmlenc#"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("exca")-1, "exca", sizeof("http://www.w3.org/2001/10/xml-exc-c14n#")-1, "http://www.w3.org/2001/10/xml-exc-c14n#"  },
@@ -13,6 +13,7 @@ struct zx_ns_s zx_ns_tab[61] = {
 { 0, 0, 0, 0, 0, 0, 0, sizeof("e")-1, "e", sizeof("http://schemas.xmlsoap.org/soap/envelope/")-1, "http://schemas.xmlsoap.org/soap/envelope/"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("md")-1, "md", sizeof("urn:oasis:names:tc:SAML:2.0:metadata")-1, "urn:oasis:names:tc:SAML:2.0:metadata"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("shibmd")-1, "shibmd", sizeof("urn:mace:shibboleth:metadata:1.0")-1, "urn:mace:shibboleth:metadata:1.0"  },
+{ 0, 0, 0, 0, 0, 0, 0, sizeof("idpdisc")-1, "idpdisc", sizeof("urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol")-1, "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("sp11")-1, "sp11", sizeof("urn:oasis:names:tc:SAML:1.0:protocol")-1, "urn:oasis:names:tc:SAML:1.0:protocol"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("sa11")-1, "sa11", sizeof("urn:oasis:names:tc:SAML:1.0:assertion")-1, "urn:oasis:names:tc:SAML:1.0:assertion"  },
 { 0, 0, 0, 0, 0, 0, 0, sizeof("ff12")-1, "ff12", sizeof("urn:liberty:iff:2003-08")-1, "urn:liberty:iff:2003-08"  },

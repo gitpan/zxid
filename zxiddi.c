@@ -27,27 +27,26 @@
 /*() Server side  Discovery Service Query processing. See also zxid_gen_bootstraps() */
 
 /* Called by:  zxid_sp_soap_dispatch */
-struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_Assertion_s* a7n, struct zx_di_Query_s* req)
+struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct zx_di_Query_s* req)
 {
-  struct timeval srcts = {0,501000};
-  struct zx_sa_NameID_s* nameid;
+  zxid_nid* nameid;
   struct zx_di_RequestedService_s* rs;
   struct zx_di_QueryResponse_s* resp = zx_NEW_di_QueryResponse(cf->ctx);
   struct zx_root_s* r;
   char* logop;
-  int len, epr_len, match;
+  int len, epr_len, match, n_discovered = 0;
   char uid[ZXID_MAX_BUF];
   char sp_name_buf[1024];
   char mdpath[ZXID_MAX_BUF];
   char path[ZXID_MAX_BUF];
-  char epr_buf[32*1024];
+  char* epr_buf;
   DIR* dir;
   struct dirent * de;
   struct zx_str* affil;
   struct zx_elem_s* el;
   struct zx_a_Metadata_s* md = 0;  
   struct zx_str* addr = 0;  
-  struct zx_a_EndpointReference_s* epr = 0;
+  zxid_epr* epr = 0;
   D_INDENT("di_query: ");
 
   //resp->ID = zxid_mk_id(cf, "DIR", ZXID_ID_BITS);
@@ -85,12 +84,12 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
     if (rs->ServiceType && rs->ServiceType->content && rs->ServiceType->content->len) {
       /* *** proper handling of discovering simultaneously multiple service types? */
     } else {
-      D("No specific service type given. Looking for all. %p", rs->ServiceType);
+      D("%d: No specific service type given. Looking for all. %p", n_discovered, rs->ServiceType);
       len = 0;
       path[0] = 0;
     }
 
-    D("Looking for service metadata in dir(%s)", mdpath);
+    D("%d: Looking for service metadata in dir(%s)", n_discovered, mdpath);
     dir = opendir(mdpath);
     if (!dir) {
       perror("opendir to find service metadata");
@@ -103,7 +102,7 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
     /* Work through all available providers, filtering out insuitable ones. */
     
     while (de = readdir(dir)) {
-      D("Considering file(%s)", de->d_name);
+      D("%d: Considering file(%s)", n_discovered, de->d_name);
 
       if (de->d_name[strlen(de->d_name)-1] == '~')  /* Ignore backups from hand edited EPRs. */
 	continue;
@@ -118,20 +117,26 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
 	path[len] = 0;
 	zxid_fold_svc(path, len);
 	if (memcmp(de->d_name, path, len) || de->d_name[len] != ',') {
-	  D("rejected due to prefix(%s) file(%s)", path, de->d_name);
+	  D("%d:     rejected due to prefix(%s) file(%s)", n_discovered, path, de->d_name);
 	  goto next_file;
 	}
       }
       
       /* Probable enough, read and parse EPR so we can continue examination. */
 
-      epr_len = read_all(sizeof(epr_buf), epr_buf, "find_svcmd", "%s/%s", mdpath, de->d_name);
-      if (!epr_len)
+      epr_buf = ZX_ALLOC(cf->ctx, ZXID_INIT_EPR_BUF);
+      epr_len = read_all(ZXID_INIT_EPR_BUF, epr_buf, "find_svcmd", "%s/%s", mdpath, de->d_name);
+      if (!epr_len) {
+	ZX_FREE(cf->ctx, epr_buf);
 	continue;
+      }
+      LOCK(cf->ctx->mx, "diq epr");
       zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, epr_buf, epr_buf + epr_len);
       r = zx_DEC_root(cf->ctx, 0, 1);
+      UNLOCK(cf->ctx->mx, "diq epr");
       if (!r) {
 	ERR("Failed to XML parse epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
+	ZX_FREE(cf->ctx, epr_buf);
 	continue;
       }
       /* *** add ID-WSF 1.1 handling */
@@ -139,10 +144,12 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
       ZX_FREE(cf->ctx, r);
       if (!epr || !epr->Metadata) {
 	ERR("No EPR or missing <Metadata>. epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
+	ZX_FREE(cf->ctx, epr_buf);
 	continue;
       }
       if (!epr->Address || !epr->Address->gg.content || !epr->Address->gg.content->len) {
 	ERR("EPR missing <Address>. epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
+	ZX_FREE(cf->ctx, epr_buf);
 	continue;
       }
       addr = epr->Address->gg.content;
@@ -157,19 +164,21 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
 	match = 0;
 	if (!md->ServiceType || !md->ServiceType->content || !md->ServiceType->content->len) {
 	  INFO("EPR missing ServiceType. Rejected. epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
+	  ZX_FREE(cf->ctx, epr_buf);
 	  goto next_file;
 	}
 	if (el->content->len != md->ServiceType->content->len
 	    || memcmp(el->content->s, md->ServiceType->content->s, el->content->len)) {
-	  D("Internal svctype(%.*s) does not match desired(%.*s)", md->ServiceType->content->len, md->ServiceType->content->s, el->content->len, el->content->s);
+	  D("%d: Internal svctype(%.*s) does not match desired(%.*s)", n_discovered, md->ServiceType->content->len, md->ServiceType->content->s, el->content->len, el->content->s);
 	  continue;
 	}
-	D("ServiceType matches. file(%s)", de->d_name);
+	D("%d: ServiceType matches. file(%s)", n_discovered, de->d_name);
 	match = 1;
 	break;
       }
       if (!match) {
-	  D("Rejected due to ServiceType. file(%s)", de->d_name);
+	  D("%d: Rejected due to ServiceType. file(%s)", n_discovered, de->d_name);
+	  ZX_FREE(cf->ctx, epr_buf);
 	  goto next_file;
       }
 
@@ -185,10 +194,10 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
 	}
 	if (el->content->len != md->ProviderID->content->len
 	    || memcmp(el->content->s, md->ProviderID->content->s, el->content->len)) {
-	  D("ProviderID(%.*s) does not match desired(%.*s)", md->ProviderID->content->len, md->ProviderID->content->s, el->content->len, el->content->s);
+	  D("%d: ProviderID(%.*s) does not match desired(%.*s)", n_discovered, md->ProviderID->content->len, md->ProviderID->content->s, el->content->len, el->content->s);
 	  continue;
 	}
-	D("ProviderID matches. file(%s)", de->d_name);
+	D("%d: ProviderID matches. file(%s)", n_discovered, de->d_name);
 	match = 1;
 	break;
       }
@@ -201,17 +210,18 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
 	  match = 0;
 	  if (el->content->len != addr->len
 	      || memcmp(el->content->s, addr->s, el->content->len)) {
-	    D("Address(%.*s) does not match desired(%.*s)", addr->len, addr->s, el->content->len, el->content->s);
+	    D("%d: Address(%.*s) does not match desired(%.*s)", n_discovered, addr->len, addr->s, el->content->len, el->content->s);
 	    continue;
 	  }
-	  D("Address matches. file(%s)", de->d_name);
+	  D("%d: Address matches. file(%s)", n_discovered, de->d_name);
 	  match = 1;
 	  break;
 	}
       }
 #endif
       if (!match) {
-	D("Rejected due to ProviderID. file(%s)", de->d_name);
+	D("%d: Rejected due to ProviderID. file(%s)", n_discovered, de->d_name);
+	ZX_FREE(cf->ctx, epr_buf);
 	goto next_file;
       }
 
@@ -225,16 +235,18 @@ struct zx_di_QueryResponse_s* zxid_di_query(struct zxid_conf* cf, struct zx_sa_A
       /* Call Trust and Privacy Negotiation (TrustBuilder), Andreas. */
       systemf("./tpn-client.sh %s %s %s", idpnid, "urn:idhrxml:cv:update", host);
 #endif
-
-      D("Found url(%.*s)", addr->len, addr->s);
+      ++n_discovered;
+      D("%d: DISCOVERED EPR url(%.*s)", n_discovered, addr->len, addr->s);
       logop = zxid_add_fed_tok_to_epr(cf, epr, uid, 1);
-      if (!logop)
+      if (!logop) {
+	ZX_FREE(cf->ctx, epr_buf);
 	goto next_file;
+      }
 
       epr->gg.g.n = (void*)resp->EndpointReference;
       resp->EndpointReference = epr;
 
-      zxlog(cf, 0, &srcts, 0, 0, 0, a7n->ID, nameid->gg.content, "N", "K", logop, uid, "");
+      zxlog(cf, 0, 0, 0, 0, 0, a7n->ID, nameid->gg.content, "N", "K", logop, uid, "");
 
       if (rs->resultsType && rs->resultsType->s
 	  && (!memcmp(rs->resultsType->s, "only-one", rs->resultsType->len)
@@ -249,7 +261,10 @@ next_file:
     
     closedir(dir);
   }
-  
+  el = req->RequestedService->ServiceType && req->RequestedService->ServiceType->content
+    ? req->RequestedService->ServiceType : 0;
+  D("TOTAL discovered %d svctype(%.*s)", n_discovered, el?el->content->len:0, el?el->content->s:"");
+  zxlog(cf, 0, 0, 0, 0, 0, a7n->ID, nameid->gg.content, "N", "K", "DIOK", 0, "%.*s n=%d", el?el->content->len:1, el?el->content->s:"-", n_discovered);
   resp->Status = zxid_mk_lu_Status(cf, "OK", 0, 0, 0);
   D_DEDENT("di_query: ");
   return resp;

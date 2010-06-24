@@ -115,8 +115,8 @@ struct zx_md_AdditionalMetadataLocation_s* zx_DEC_md_AdditionalMetadataLocation(
     switch (tok) {
     case zx_namespace_ATTR:
       ss = ZX_ZALLOC(c, struct zx_str);
-      ss->g.n = &x->namespace->g;
-      x->namespace = ss;
+      ss->g.n = &x->namespace_is_cxx_keyword->g;
+      x->namespace_is_cxx_keyword = ss;
       ZX_ATTR_DEC_EXT(ss);
       break;
 
@@ -3140,6 +3140,11 @@ next_attr:
             el = (struct zx_elem_s*)zx_DEC_shibmd_KeyAuthority(c, ns);
             el->g.n = &x->KeyAuthority->gg.g;
             x->KeyAuthority = (struct zx_shibmd_KeyAuthority_s*)el;
+            break;
+          case zx_idpdisc_DiscoveryResponse_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_idpdisc_DiscoveryResponse(c, ns);
+            el->g.n = &x->DiscoveryResponse->gg.g;
+            x->DiscoveryResponse = (struct zx_idpdisc_DiscoveryResponse_s*)el;
             break;
 
 	  default:

@@ -5,11 +5,123 @@
 Usual suspects: zxid.user@lists.unh.edu
 
 To do:
-    - Limited SP local attribute authority
     - Add Trust and Privacy Negotiation capability to discovery
-    - Add Az calls to zxid_wsp_validate() and zxid_wsp_decorate()
-    - Do proper signature validation in zxid_wsp_validate()
+    - Wishlist of built-in attributes
+      1. HTTP method (GET, POST, HEAD, etc.)
+      2. Full URL including the hostname part (currently only local URL is passed)
+      3. Indication of which virtual server
+      4. If SOAP, the name of the first direct child element of the SOAP Body
+      5. Any SOAP Action header, from SOAP message or from HTTP header.
+    - (Local) logout should either return to referer, or to configurable page
+    - Depend logging validate, az response, emit logging decorate, azreq
+    - Static linking, dynamic linking libzxid
+    - Brian's ordering problem (risaris-bad.xml)
+    - IdP initiated SLO
+    - IdP should include URL for correcting information
+    - Add persona support to IdP
+    - Add attribute editor support to IdP
 
+Regarding mod_perl stability: I would assume most of that has to do
+with underlying memory allocator. All allocation activity in zxid code
+goes through zx_alloc() (in zxlib.c:55). The ctx->malloc_func function
+pointer is not currently used. I should fix zx_alloc() to use it.
+Anyway, all this is in place to ensure that you could replace malloc()
+with an alternative allocator, such as Apache pool allocator.
+
+In playing with allocators, important caveat: OpenSSL has similar
+vectorable allocator. You should use same allocator for OpenSSL and
+ZXID (and perl). libcurl documentation is not entirely clear regarding
+its allocator usage, but I assume it uses malloc() so that would be
+yet another worry.
+
+https://idp.testshib.org/idp/shibboleth
+
+Google Apps Integration
+
+http://code.google.com/googleapps/domain/sso/saml_reference_implementation.html
+
+Here are example docs for SimpleSAMLPHP, or Shibboleth:
+* http://simplesamlphp.org/docs/1.5/simplesamlphp-googleapps
+* https://shibboleth.usc.edu/docs/google-apps/
+
+    - zxcall should have sso only mode
+    - zxcall should have discovery only mode and iteration option
+    - zxcall should have EPR cache and session listing mode -s SID -l
+    - zxcot should have idpdimd listing mode
+    - zxpasswd should have user federation listing mode
+    - zxid_pw_authn() should not report scary error message when checking .ykspent in
+      not spent case
+    - ID Mapper to be used by Delegation Service
+    - zxid_select_tgt()
+    - Each credential as its own a7n
+    - X509 attr certs
+    - Use post screen as confirmation screen
+    NOTPUB
+
+zxid-0.60:: 23.6.2010
+    - TAS3 package version number synchronization
+zxid-0.59:: 22.6.2010
+    - Added zxcot -m to generate our own metadata (previously only available using WKL method)
+    - Fixed segv on signature validation when wsc_meta is missing, but NOSIG_FATAL=0
+    - Improved zxidcot.pl with metadata and registration listings
+    - Tightened cgi parsing to check lengths of options (avoids false detection)
+    - Add Az calls to zxid_wsp_validate() and zxid_wsp_decorate()
+zxid-0.58:: 25.5.2010
+    - Make add-envelope processing more tolerant of different namespaces
+    - Added SOAP fault and tas3:Status
+    - Improved XML parse error formatting 
+    - Fixed seg fault in zxid_wsc_prepare() in case the EPR lacks Metadata
+    - Do proper signature validation in zxid_wsp_validate() and zxid_wsc_validate_resp_env()
+    - Do proper timestamp check in zxid_wsp_validate() and zxid_wsc_validate_resp_env()
+    - Added RelatesTo correlation check in  zxid_wsc_validate_resp_env()
+    - Added concept of current fault and current tas3 status
+    - Added accessor functions for faults and tas3 status
+    - Added local PDP call to all 4 web service call control points
+    - Added remote PDP call to all 4 web service call control points
+zxid-0.57:: 18.5.2010
+    - Introduced .jar and .war as std binary distribution items
+    - Check for empty PDP_URL and disable Az in that case
+    - Added to session localpath, tgtpath, sespath so that application layer can uses ZXID storage for its own purposes.
+    - Fixed SSO failure case
+    - Added to session sigres and ssores.
+    - Added SP local attribute authority, see zxid_ses_to_pool()
+    - Added local EPR feature to SP local attribute authority, i.e. upon
+      SSO local EPRs get copied to the new session's EPR cache
+zxid-0.56:: 14.5.2010
+    - Re-tested Windows compile
+zxid-0.55:: 26.4.2010
+    - Fixes in zxididp code
+zxid-0.54:: 22.4.2010
+    - Add ability to absorb multiple EntityDescriptor elements from EntitiesDescriptor, as often happens in Shibboleth federations
+    - Fixed an infinite loop in zxcot -n -a
+    - Removed from zxid.h unused functions zxid_idp_soap_dispatch(), zxid_idp_soap_parse(), zxid_sha1_file(). Reported by Eric Rybski
+zxid-0.53:: 23.3.2010
+    - Fixed case where last item (null return) of cached multi discovery would trigger yet another discovery
+    - Added logging of the issued discovery messages
+    - Feature improvements to zxidappdemo.java
+    - Added ENA_PG and coverage targets to the Makefile (current coverage 47%)
+    - Process session in validate
+    - Added more Shibboleth metadata extensions. I claim Shibboleth metadata parses w/o warnings.
+    - Added SAML idp-discovery extention to metadata
+    - Changed templating system for IdP an page (other pages may be changed later to use the same)
+    - Added zxidnewuser.pl and other IdP mangement web GUI scripts
+    - Added zxid_wsc_prepare_call() and zxid_wsc_valid_resp() APIs, see zxidwscprepdemo.java for usage
+zxid-0.52:: 15.2.2010
+    - Log session create and destroy
+    - Relax error checking in SLO: missing NameID ok if sesix supplied
+    - Better session populate in zxid_wsp_validate()
+    - Fixed virtual host (URL autodetect) code in zxidwspdemo.java
+zxid-0.51:: 15.2.2010
+    - LOAD_COT_CACHE=file feature. The cache is concatenation of the metadata of CoT
+    - Change zxid_az() to return string containing XACML obligations
+    - Eliminate UI clutter: show_tech config flag with default off
+    - Thread safety: cf->ipport, key loading, cf->curl, cf->cot
+    - Thread safety: decoding contexts
+zxid-0.50:: 9.2.2010
+    - Fixed missing prefix in case of unknown tag/namespace
+    - Fixed ordering of unknown tags
+    - Added beginnings of a test suite, see zxtest.pl
+    - Added WSP tool: zxidwspcgi
 zxid-0.49:: 1.2.2010
     - Added AuthnSvc client and zxcall tool, which allows shellscript wsc
     - The zxcall tool also allows shell script az

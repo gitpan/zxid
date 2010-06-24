@@ -7,6 +7,7 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
+ ** Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
@@ -21,6 +22,7 @@
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
  ** 30.9.2007, improvements to WO encoding --Sampo
+ ** 8.2.2010,  better handling of schema order encoding of unknown namespace prefixes --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -84,7 +86,7 @@ int zx_LEN_SO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zx_m20_Additio
     len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, zx_ns_tab+zx_xmlns_ix_m20, &pop_seen);
 
-  len += zx_attr_so_len(x->namespace, sizeof("namespace")-1);
+  len += zx_attr_so_len(x->namespace_is_cxx_keyword, sizeof("namespace")-1);
 
 #else
   /* root node has no begin tag */
@@ -119,7 +121,7 @@ int zx_LEN_WO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zx_m20_Additio
     len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
-  len += zx_attr_wo_len(x->namespace, sizeof("namespace")-1);
+  len += zx_attr_wo_len(x->namespace_is_cxx_keyword, sizeof("namespace")-1);
 
 #else
   /* root node has no begin tag */
@@ -153,7 +155,7 @@ char* zx_ENC_SO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zx_m20_Addit
     p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, zx_ns_tab+zx_xmlns_ix_m20, &pop_seen);
 
-  p = zx_attr_so_enc(p, x->namespace, " namespace=\"", sizeof(" namespace=\"")-1);
+  p = zx_attr_so_enc(p, x->namespace_is_cxx_keyword, " namespace=\"", sizeof(" namespace=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else
@@ -203,7 +205,7 @@ char* zx_ENC_WO_m20_AdditionalMetaLocation(struct zx_ctx* c, struct zx_m20_Addit
   zx_add_xmlns_if_not_seen(c, x->gg.g.ns, &pop_seen);
 
   p = zx_enc_seen(p, pop_seen); 
-  p = zx_attr_wo_enc(p, x->namespace, "namespace=\"", sizeof("namespace=\"")-1);
+  p = zx_attr_wo_enc(p, x->namespace_is_cxx_keyword, "namespace=\"", sizeof("namespace=\"")-1);
 
   p = zx_enc_unknown_attrs(p, x->gg.any_attr);
 #else

@@ -7,6 +7,7 @@
  * Code generation uses a template, whose copyright statement follows. */
 
 /** enc-templ.c  -  XML encoder template, used in code generation
+ ** Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  ** Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  ** Author: Sampo Kellomaki (sampo@iki.fi)
  ** This is confidential unpublished proprietary source code of the author.
@@ -21,6 +22,7 @@
  ** 26.8.2006, some CSE --Sampo
  ** 23.9.2006, added WO logic --Sampo
  ** 30.9.2007, improvements to WO encoding --Sampo
+ ** 8.2.2010,  better handling of schema order encoding of unknown namespace prefixes --Sampo
  **
  ** N.B: wo=wire order (needed for exc-c14n), so=schema order
  ** N.B2: This template is meant to be processed by pd/xsd2sg.pl. Beware
@@ -784,7 +786,7 @@ int zx_LEN_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x , int simplelen,
   struct zx_elem_s* se MAYBE_UNUSED;
 #if 1 /* NORMALMODE */
   /* *** in simple_elem case should output ns prefix from ns node. */
-  int len = simplelen + 1 + 1 + simplelen + 3;
+  int len = ZX_LEN_SIMPLE_TAG(x->g.tok, simplelen, ns) + 1 + ZX_LEN_SIMPLE_TAG(x->g.tok, simplelen, ns)+2;
   if (c->inc_ns_len)
     len += zx_len_inc_ns(c, &pop_seen);
   len += zx_len_xmlns_if_not_seen(c, ns, &pop_seen);
@@ -851,7 +853,7 @@ char* zx_ENC_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , cha
 #if 1 /* NORMALMODE */
   struct zx_ns_s* pop_seen = 0;
   /* *** in simple_elem case should output ns prefix from ns node. */
-  ZX_OUT_SIMPLE_TAG(p, simpletag, simplelen);
+  ZX_OUT_SIMPLE_TAG(p, x->g.tok, simpletag, simplelen, ns);
   if (c->inc_ns)
     p = zx_enc_inc_ns(c, p, &pop_seen);
   p = zx_enc_xmlns_if_not_seen(c, p, ns, &pop_seen);
@@ -865,7 +867,7 @@ char* zx_ENC_SO_simple_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p , cha
   p = zx_enc_so_unknown_elems_and_content(c, p, x);
   
 #if 1 /* NORMALMODE */
-  ZX_OUT_SIMPLE_CLOSE_TAG(p, simpletag,simplelen);
+  ZX_OUT_SIMPLE_CLOSE_TAG(p, x->g.tok, simpletag, simplelen, ns);
   zx_pop_seen(pop_seen);
 #else
   /* root node has no end tag either */
@@ -1107,12 +1109,14 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("SecurityMechID")-1);
   case zx_sa_Assertion_ELEM:
     return zx_LEN_WO_sa_Assertion(c, (struct zx_sa_Assertion_s*)x);
+  case zx_sa_EncryptedAssertion_ELEM:
+    return zx_LEN_WO_sa_EncryptedAssertion(c, (struct zx_sa_EncryptedAssertion_s*)x);
   case zx_sa11_Assertion_ELEM:
     return zx_LEN_WO_sa11_Assertion(c, (struct zx_sa11_Assertion_s*)x);
   case zx_ff12_Assertion_ELEM:
     return zx_LEN_WO_ff12_Assertion(c, (struct zx_ff12_Assertion_s*)x);
-  case zx_tas3sol_Obligations_ELEM:
-    return zx_LEN_WO_tas3sol_Obligations(c, (struct zx_tas3sol_Obligations_s*)x);
+  case zx_xa_Obligation_ELEM:
+    return zx_LEN_WO_xa_Obligation(c, (struct zx_xa_Obligation_s*)x);
   case zx_tas3sol_Dict_ELEM:
     return zx_LEN_WO_tas3sol_Dict(c, (struct zx_tas3sol_Dict_s*)x);
   case zx_b_InteractionService_ELEM:
@@ -1635,6 +1639,10 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_xaspcd1_XACMLAuthzDecisionQuery(c, (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)x);
   case zx_xaspcd1_XACMLPolicyQuery_ELEM:
     return zx_LEN_WO_xaspcd1_XACMLPolicyQuery(c, (struct zx_xaspcd1_XACMLPolicyQuery_s*)x);
+  case zx_xac_Request_ELEM:
+    return zx_LEN_WO_xac_Request(c, (struct zx_xac_Request_s*)x);
+  case zx_xac_Response_ELEM:
+    return zx_LEN_WO_xac_Response(c, (struct zx_xac_Response_s*)x);
   case zx_di_Query_ELEM:
     return zx_LEN_WO_di_Query(c, (struct zx_di_Query_s*)x);
   case zx_di_QueryResponse_ELEM:
@@ -2099,6 +2107,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_mm7_TransactionID(c, (struct zx_mm7_TransactionID_s*)x);
   case zx_wsse_Security_ELEM:
     return zx_LEN_WO_wsse_Security(c, (struct zx_wsse_Security_s*)x);
+  case zx_tas3_Status_ELEM:
+    return zx_LEN_WO_tas3_Status(c, (struct zx_tas3_Status_s*)x);
   case zx_tas3_Credentials_ELEM:
     return zx_LEN_WO_tas3_Credentials(c, (struct zx_tas3_Credentials_s*)x);
   case zx_tas3_ESLPolicies_ELEM:
@@ -3405,6 +3415,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_shibmd_Scope(c, (struct zx_shibmd_Scope_s*)x);
   case zx_shibmd_KeyAuthority_ELEM:
     return zx_LEN_WO_shibmd_KeyAuthority(c, (struct zx_shibmd_KeyAuthority_s*)x);
+  case zx_idpdisc_DiscoveryResponse_ELEM:
+    return zx_LEN_WO_idpdisc_DiscoveryResponse(c, (struct zx_idpdisc_DiscoveryResponse_s*)x);
   case zx_md_ArtifactResolutionService_ELEM:
     return zx_LEN_WO_md_ArtifactResolutionService(c, (struct zx_md_ArtifactResolutionService_s*)x);
   case zx_md_SingleLogoutService_ELEM:
@@ -3671,8 +3683,6 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("AssertionIDRef")-1);
   case zx_sa_AssertionURIRef_ELEM:
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("AssertionURIRef")-1);
-  case zx_sa_EncryptedAssertion_ELEM:
-    return zx_LEN_WO_sa_EncryptedAssertion(c, (struct zx_sa_EncryptedAssertion_s*)x);
   case zx_sa_Conditions_ELEM:
     return zx_LEN_WO_sa_Conditions(c, (struct zx_sa_Conditions_s*)x);
   case zx_sa_Advice_ELEM:
@@ -3711,10 +3721,6 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_sa_ProxyRestriction(c, (struct zx_sa_ProxyRestriction_s*)x);
   case zx_idp_SubjectRestriction_ELEM:
     return zx_LEN_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x);
-  case zx_xac_Response_ELEM:
-    return zx_LEN_WO_xac_Response(c, (struct zx_xac_Response_s*)x);
-  case zx_xac_Request_ELEM:
-    return zx_LEN_WO_xac_Request(c, (struct zx_xac_Request_s*)x);
   case zx_sa_BaseID_ELEM:
     return zx_LEN_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x);
   case zx_sa_EncryptedID_ELEM:
@@ -3843,8 +3849,6 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_xac_Attribute(c, (struct zx_xac_Attribute_s*)x);
   case zx_tas3_ESLRef_ELEM:
     return zx_LEN_WO_tas3_ESLRef(c, (struct zx_tas3_ESLRef_s*)x);
-  case zx_xa_Obligation_ELEM:
-    return zx_LEN_WO_xa_Obligation(c, (struct zx_xa_Obligation_s*)x);
   case zx_tas3_ESLApply_ELEM:
     return zx_LEN_WO_tas3_ESLApply(c, (struct zx_tas3_ESLApply_s*)x);
   case zx_wsse_SecurityTokenReference_ELEM:
@@ -4259,12 +4263,14 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "SecurityMechID", sizeof("SecurityMechID")-1);
   case zx_sa_Assertion_ELEM:
     return zx_ENC_WO_sa_Assertion(c, (struct zx_sa_Assertion_s*)x, p);
+  case zx_sa_EncryptedAssertion_ELEM:
+    return zx_ENC_WO_sa_EncryptedAssertion(c, (struct zx_sa_EncryptedAssertion_s*)x, p);
   case zx_sa11_Assertion_ELEM:
     return zx_ENC_WO_sa11_Assertion(c, (struct zx_sa11_Assertion_s*)x, p);
   case zx_ff12_Assertion_ELEM:
     return zx_ENC_WO_ff12_Assertion(c, (struct zx_ff12_Assertion_s*)x, p);
-  case zx_tas3sol_Obligations_ELEM:
-    return zx_ENC_WO_tas3sol_Obligations(c, (struct zx_tas3sol_Obligations_s*)x, p);
+  case zx_xa_Obligation_ELEM:
+    return zx_ENC_WO_xa_Obligation(c, (struct zx_xa_Obligation_s*)x, p);
   case zx_tas3sol_Dict_ELEM:
     return zx_ENC_WO_tas3sol_Dict(c, (struct zx_tas3sol_Dict_s*)x, p);
   case zx_b_InteractionService_ELEM:
@@ -4787,6 +4793,10 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_xaspcd1_XACMLAuthzDecisionQuery(c, (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)x, p);
   case zx_xaspcd1_XACMLPolicyQuery_ELEM:
     return zx_ENC_WO_xaspcd1_XACMLPolicyQuery(c, (struct zx_xaspcd1_XACMLPolicyQuery_s*)x, p);
+  case zx_xac_Request_ELEM:
+    return zx_ENC_WO_xac_Request(c, (struct zx_xac_Request_s*)x, p);
+  case zx_xac_Response_ELEM:
+    return zx_ENC_WO_xac_Response(c, (struct zx_xac_Response_s*)x, p);
   case zx_di_Query_ELEM:
     return zx_ENC_WO_di_Query(c, (struct zx_di_Query_s*)x, p);
   case zx_di_QueryResponse_ELEM:
@@ -5251,6 +5261,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_mm7_TransactionID(c, (struct zx_mm7_TransactionID_s*)x, p);
   case zx_wsse_Security_ELEM:
     return zx_ENC_WO_wsse_Security(c, (struct zx_wsse_Security_s*)x, p);
+  case zx_tas3_Status_ELEM:
+    return zx_ENC_WO_tas3_Status(c, (struct zx_tas3_Status_s*)x, p);
   case zx_tas3_Credentials_ELEM:
     return zx_ENC_WO_tas3_Credentials(c, (struct zx_tas3_Credentials_s*)x, p);
   case zx_tas3_ESLPolicies_ELEM:
@@ -6557,6 +6569,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_shibmd_Scope(c, (struct zx_shibmd_Scope_s*)x, p);
   case zx_shibmd_KeyAuthority_ELEM:
     return zx_ENC_WO_shibmd_KeyAuthority(c, (struct zx_shibmd_KeyAuthority_s*)x, p);
+  case zx_idpdisc_DiscoveryResponse_ELEM:
+    return zx_ENC_WO_idpdisc_DiscoveryResponse(c, (struct zx_idpdisc_DiscoveryResponse_s*)x, p);
   case zx_md_ArtifactResolutionService_ELEM:
     return zx_ENC_WO_md_ArtifactResolutionService(c, (struct zx_md_ArtifactResolutionService_s*)x, p);
   case zx_md_SingleLogoutService_ELEM:
@@ -6823,8 +6837,6 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "AssertionIDRef", sizeof("AssertionIDRef")-1);
   case zx_sa_AssertionURIRef_ELEM:
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "AssertionURIRef", sizeof("AssertionURIRef")-1);
-  case zx_sa_EncryptedAssertion_ELEM:
-    return zx_ENC_WO_sa_EncryptedAssertion(c, (struct zx_sa_EncryptedAssertion_s*)x, p);
   case zx_sa_Conditions_ELEM:
     return zx_ENC_WO_sa_Conditions(c, (struct zx_sa_Conditions_s*)x, p);
   case zx_sa_Advice_ELEM:
@@ -6863,10 +6875,6 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_sa_ProxyRestriction(c, (struct zx_sa_ProxyRestriction_s*)x, p);
   case zx_idp_SubjectRestriction_ELEM:
     return zx_ENC_WO_idp_SubjectRestriction(c, (struct zx_idp_SubjectRestriction_s*)x, p);
-  case zx_xac_Response_ELEM:
-    return zx_ENC_WO_xac_Response(c, (struct zx_xac_Response_s*)x, p);
-  case zx_xac_Request_ELEM:
-    return zx_ENC_WO_xac_Request(c, (struct zx_xac_Request_s*)x, p);
   case zx_sa_BaseID_ELEM:
     return zx_ENC_WO_sa_BaseID(c, (struct zx_sa_BaseID_s*)x, p);
   case zx_sa_EncryptedID_ELEM:
@@ -6995,8 +7003,6 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_xac_Attribute(c, (struct zx_xac_Attribute_s*)x, p);
   case zx_tas3_ESLRef_ELEM:
     return zx_ENC_WO_tas3_ESLRef(c, (struct zx_tas3_ESLRef_s*)x, p);
-  case zx_xa_Obligation_ELEM:
-    return zx_ENC_WO_xa_Obligation(c, (struct zx_xa_Obligation_s*)x, p);
   case zx_tas3_ESLApply_ELEM:
     return zx_ENC_WO_tas3_ESLApply(c, (struct zx_tas3_ESLApply_s*)x, p);
   case zx_wsse_SecurityTokenReference_ELEM:

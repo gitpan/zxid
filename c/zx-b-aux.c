@@ -1656,6 +1656,14 @@ void zx_FREE_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x,
       }
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      struct zx_sa_EncryptedAssertion_s* en;
+      for (e = x->EncryptedAssertion; e; e = en) {
+	  en = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n;
+	  zx_FREE_sa_EncryptedAssertion(c, e, free_strs);
+      }
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       struct zx_sa11_Assertion_s* en;
       for (e = x->sa11_Assertion; e; e = en) {
@@ -1716,6 +1724,11 @@ void zx_DUP_STRS_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s
 	  zx_DUP_STRS_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  zx_DUP_STRS_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa11_Assertion_s* e;
       for (e = x->sa11_Assertion; e; e = (struct zx_sa11_Assertion_s*)e->gg.g.n)
 	  zx_DUP_STRS_sa11_Assertion(c, e);
@@ -1752,6 +1765,19 @@ struct zx_b_TargetIdentity_s* zx_DEEP_CLONE_b_TargetIdentity(struct zx_ctx* c, s
 	  en = zx_DEEP_CLONE_sa_Assertion(c, e, dup_strs);
 	  if (!enn)
 	      x->Assertion = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      struct zx_sa_EncryptedAssertion_s* en;
+      struct zx_sa_EncryptedAssertion_s* enn;
+      for (enn = 0, e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_sa_EncryptedAssertion(c, e, dup_strs);
+	  if (!enn)
+	      x->EncryptedAssertion = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -1809,6 +1835,14 @@ int zx_WALK_SO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* 
       struct zx_sa_Assertion_s* e;
       for (e = x->Assertion; e; e = (struct zx_sa_Assertion_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_sa_Assertion(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_sa_EncryptedAssertion(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }
@@ -2020,11 +2054,11 @@ void zx_FREE_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x,
   zx_free_attr(c, x->mustUnderstand, free_strs);
 
   {
-      struct zx_tas3sol_Obligations_s* e;
-      struct zx_tas3sol_Obligations_s* en;
-      for (e = x->Obligations; e; e = en) {
-	  en = (struct zx_tas3sol_Obligations_s*)e->gg.g.n;
-	  zx_FREE_tas3sol_Obligations(c, e, free_strs);
+      struct zx_xa_Obligation_s* e;
+      struct zx_xa_Obligation_s* en;
+      for (e = x->Obligation; e; e = en) {
+	  en = (struct zx_xa_Obligation_s*)e->gg.g.n;
+	  zx_FREE_xa_Obligation(c, e, free_strs);
       }
   }
   {
@@ -2076,9 +2110,9 @@ void zx_DUP_STRS_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s
   zx_dup_attr(c, x->mustUnderstand);
 
   {
-      struct zx_tas3sol_Obligations_s* e;
-      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n)
-	  zx_DUP_STRS_tas3sol_Obligations(c, e);
+      struct zx_xa_Obligation_s* e;
+      for (e = x->Obligation; e; e = (struct zx_xa_Obligation_s*)e->gg.g.n)
+	  zx_DUP_STRS_xa_Obligation(c, e);
   }
   {
       struct zx_tas3sol_Dict_s* e;
@@ -2106,13 +2140,13 @@ struct zx_b_UsageDirective_s* zx_DEEP_CLONE_b_UsageDirective(struct zx_ctx* c, s
   x->mustUnderstand = zx_clone_attr(c, x->mustUnderstand);
 
   {
-      struct zx_tas3sol_Obligations_s* e;
-      struct zx_tas3sol_Obligations_s* en;
-      struct zx_tas3sol_Obligations_s* enn;
-      for (enn = 0, e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n) {
-	  en = zx_DEEP_CLONE_tas3sol_Obligations(c, e, dup_strs);
+      struct zx_xa_Obligation_s* e;
+      struct zx_xa_Obligation_s* en;
+      struct zx_xa_Obligation_s* enn;
+      for (enn = 0, e = x->Obligation; e; e = (struct zx_xa_Obligation_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xa_Obligation(c, e, dup_strs);
 	  if (!enn)
-	      x->Obligations = en;
+	      x->Obligation = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -2154,9 +2188,9 @@ int zx_WALK_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* 
     return ret;
 
   {
-      struct zx_tas3sol_Obligations_s* e;
-      for (e = x->Obligations; e; e = (struct zx_tas3sol_Obligations_s*)e->gg.g.n) {
-	  ret = zx_WALK_SO_tas3sol_Obligations(c, e, ctx, callback);
+      struct zx_xa_Obligation_s* e;
+      for (e = x->Obligation; e; e = (struct zx_xa_Obligation_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xa_Obligation(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

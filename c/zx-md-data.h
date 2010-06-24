@@ -43,17 +43,17 @@ struct zx_str* zx_EASY_ENC_WO_md_AdditionalMetadataLocation(struct zx_ctx* c, st
 struct zx_md_AdditionalMetadataLocation_s {
   ZX_ELEM_EXT
   zx_md_AdditionalMetadataLocation_EXT
-  struct zx_str* namespace;	/* {1,1} attribute xs:anyURI */
+  struct zx_str* namespace_is_cxx_keyword;	/* {1,1} attribute xs:anyURI */
 };
 
 #ifdef ZX_ENA_GETPUT
-struct zx_str* zx_md_AdditionalMetadataLocation_GET_namespace(struct zx_md_AdditionalMetadataLocation_s* x);
+struct zx_str* zx_md_AdditionalMetadataLocation_GET_namespace_is_cxx_keyword(struct zx_md_AdditionalMetadataLocation_s* x);
 
 
 
 
 
-void zx_md_AdditionalMetadataLocation_PUT_namespace(struct zx_md_AdditionalMetadataLocation_s* x, struct zx_str* y);
+void zx_md_AdditionalMetadataLocation_PUT_namespace_is_cxx_keyword(struct zx_md_AdditionalMetadataLocation_s* x, struct zx_str* y);
 
 
 
@@ -1242,34 +1242,43 @@ struct zx_md_Extensions_s {
   zx_md_Extensions_EXT
   struct zx_shibmd_Scope_s* Scope;	/* {0,-1} nada */
   struct zx_shibmd_KeyAuthority_s* KeyAuthority;	/* {0,-1} nada */
+  struct zx_idpdisc_DiscoveryResponse_s* DiscoveryResponse;	/* {0,-1} nada */
 };
 
 #ifdef ZX_ENA_GETPUT
 
 struct zx_shibmd_Scope_s* zx_md_Extensions_GET_Scope(struct zx_md_Extensions_s* x, int n);
 struct zx_shibmd_KeyAuthority_s* zx_md_Extensions_GET_KeyAuthority(struct zx_md_Extensions_s* x, int n);
+struct zx_idpdisc_DiscoveryResponse_s* zx_md_Extensions_GET_DiscoveryResponse(struct zx_md_Extensions_s* x, int n);
 
 int zx_md_Extensions_NUM_Scope(struct zx_md_Extensions_s* x);
 int zx_md_Extensions_NUM_KeyAuthority(struct zx_md_Extensions_s* x);
+int zx_md_Extensions_NUM_DiscoveryResponse(struct zx_md_Extensions_s* x);
 
 struct zx_shibmd_Scope_s* zx_md_Extensions_POP_Scope(struct zx_md_Extensions_s* x);
 struct zx_shibmd_KeyAuthority_s* zx_md_Extensions_POP_KeyAuthority(struct zx_md_Extensions_s* x);
+struct zx_idpdisc_DiscoveryResponse_s* zx_md_Extensions_POP_DiscoveryResponse(struct zx_md_Extensions_s* x);
 
 void zx_md_Extensions_PUSH_Scope(struct zx_md_Extensions_s* x, struct zx_shibmd_Scope_s* y);
 void zx_md_Extensions_PUSH_KeyAuthority(struct zx_md_Extensions_s* x, struct zx_shibmd_KeyAuthority_s* y);
+void zx_md_Extensions_PUSH_DiscoveryResponse(struct zx_md_Extensions_s* x, struct zx_idpdisc_DiscoveryResponse_s* y);
 
 
 void zx_md_Extensions_PUT_Scope(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_Scope_s* y);
 void zx_md_Extensions_PUT_KeyAuthority(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_KeyAuthority_s* y);
+void zx_md_Extensions_PUT_DiscoveryResponse(struct zx_md_Extensions_s* x, int n, struct zx_idpdisc_DiscoveryResponse_s* y);
 
 void zx_md_Extensions_ADD_Scope(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_Scope_s* z);
 void zx_md_Extensions_ADD_KeyAuthority(struct zx_md_Extensions_s* x, int n, struct zx_shibmd_KeyAuthority_s* z);
+void zx_md_Extensions_ADD_DiscoveryResponse(struct zx_md_Extensions_s* x, int n, struct zx_idpdisc_DiscoveryResponse_s* z);
 
 void zx_md_Extensions_DEL_Scope(struct zx_md_Extensions_s* x, int n);
 void zx_md_Extensions_DEL_KeyAuthority(struct zx_md_Extensions_s* x, int n);
+void zx_md_Extensions_DEL_DiscoveryResponse(struct zx_md_Extensions_s* x, int n);
 
 void zx_md_Extensions_REV_Scope(struct zx_md_Extensions_s* x);
 void zx_md_Extensions_REV_KeyAuthority(struct zx_md_Extensions_s* x);
+void zx_md_Extensions_REV_DiscoveryResponse(struct zx_md_Extensions_s* x);
 
 #endif
 /* -------------------------- md_IDPSSODescriptor -------------------------- */

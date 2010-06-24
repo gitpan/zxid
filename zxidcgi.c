@@ -37,8 +37,8 @@
  *     CGI arguments are simply ignored with assumption that some other processing
  *     layer will pick them up - hence no need to flag error. */
 
-/* Called by:  chkuid x3, main x4, zxid_az_cf_ses, zxid_new_cgi, zxid_simple_cf_ses x3, zxid_simple_idp_pw_authn */
-int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
+/* Called by:  chkuid x3, main x4, zxid_az_cf_ses, zxid_decode_ssoreq, zxid_new_cgi, zxid_simple_cf_ses x3 */
+int zxid_parse_cgi(zxid_cgi* cgi, char* qs)
 {
   char *p, *n, *v, *val, *name;
   DD("qs(%s) len=%d", STRNULLCHK(qs), qs?strlen(qs):-1);
@@ -80,23 +80,32 @@ int zxid_parse_cgi(struct zxid_cgi* cgi, char* qs)
       if (!n[1]) { cgi->op = v[0];    break; }
       if (n[1] = 'k' && !n[2]) { cgi->ok = v;  break; }  /* ok button */
       goto unknown;
-    case 's': cgi->sid = v;           break;
-    case 'c': cgi->cdc = v;           break;
-      
+    case 's':
+      if (!n[1]) { cgi->sid = v; break; }
+      goto unknown;
+    case 'c':
+      if (!n[1]) { cgi->cdc = v; break; }
+      goto unknown;
       /* The following two entity IDs, combined with various login buttons
        * aim at supporting may different user interface layouts. You need to
        * understand how they interact to avoid undesired conflicts. */
     case 'e':  /* EntityID field (manual entry). Overrides 'd'. */
+      if (!n[1]) {
 set_eid:
-      if (v[0]) cgi->eid = v;
-      DD("v(%s) v0=0x%02x v=%p cgi->eid=%p cgi=%p", v, v[0], v, cgi->eid, cgi);
-      break;
-    case 'd':  /* EntityID popup or radio box */
-      if (cgi->eid && cgi->eid[0]) {
-	D("EID already set v(%s) v0=0x%02x v=%p cgi->eid=%p cgi=%p", v, v[0], v, cgi->eid, cgi);
+	if (v[0]) cgi->eid = v;
+	DD("v(%s) v0=0x%02x v=%p cgi->eid=%p cgi=%p", v, v[0], v, cgi->eid, cgi);
 	break;
       }
-      goto set_eid;
+      goto unknown;
+    case 'd':  /* EntityID popup or radio box */
+      if (!n[1]) {
+	if (cgi->eid && cgi->eid[0]) {
+	  D("EID already set v(%s) v0=0x%02x v=%p cgi->eid=%p cgi=%p", v, v[0], v, cgi->eid, cgi);
+	  break;
+	}
+	goto set_eid;
+      }
+      goto unknown;
     case 'l':
       /* Login button names are like lP<eid>, where "l" is literal ell, P is
        * protocol profile designator, and <eid> is Entity ID of the IdP.
@@ -118,6 +127,7 @@ set_eid:
 	cgi->eid = v+1;
       break;
     case 'f':  /* flags and (hidden) fields found in typical SP login form */
+      if (!n[1] || n[2]) goto unknown;
       switch (n[1]) {
       case 'a': cgi->authn_ctx = v;       D("authn_ctx=%s", cgi->authn_ctx); break;
       case 'c': cgi->allow_create = v[0]; D("allow_create=%c", cgi->allow_create); break;
@@ -134,6 +144,7 @@ set_eid:
       }
       break;
     case 'g':
+      if (!n[1] || n[2]) goto unknown;
       switch (n[1]) {
       case 'l':
       case 'r':
@@ -145,11 +156,15 @@ set_eid:
       }
       break;
     case 'a':
+      if (!n[1] || n[2]) goto unknown;
       switch (n[1]) {
       case 'l': cgi->op = n[2];           break;
-      case 'u': cgi->uid = v;             break;
+      case 'u': if (v[0] || !cgi->uid) cgi->uid = v; break;
       case 'p': cgi->pw = v;              break;
       case 'r': cgi->ssoreq = v;          break;
+      case 'n': cgi->op = 'N';            break;
+      case 'w': cgi->op = 'W';            break;
+      case 't': cgi->atselafter = 1;      break;
       }
       break;
     case 'z':
@@ -203,9 +218,9 @@ set_eid:
 }
 
 /* Called by: */
-struct zxid_cgi* zxid_new_cgi(struct zxid_conf* cf, char* qs)
+zxid_cgi* zxid_new_cgi(zxid_conf* cf, char* qs)
 {
-  struct zxid_cgi* cgi = ZX_ZALLOC(cf->ctx, struct zxid_cgi);
+  zxid_cgi* cgi = ZX_ZALLOC(cf->ctx, zxid_cgi);
   cgi->magic = ZXID_CGI_MAGIC;
   if (qs) {
     char* qqs;
@@ -231,7 +246,7 @@ struct zxid_cgi* zxid_new_cgi(struct zxid_conf* cf, char* qs)
  */
 
 /* Called by:  chkuid, zxid_simple_cf_ses */
-void zxid_get_sid_from_cookie(struct zxid_conf* cf, struct zxid_cgi* cgi, const char* cookie)
+void zxid_get_sid_from_cookie(zxid_conf* cf, zxid_cgi* cgi, const char* cookie)
 {
   char* q;
   int len;

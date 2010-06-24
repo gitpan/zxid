@@ -11,7 +11,7 @@
  *
  * Test encoding and decoding SAML 2.0 assertions and other related stuff.
  *
- * ./zxbench -d -n 1 <t/hp-idp-post-resp.xml
+ * ./zxbench -d -i 1 <t/hp-idp-post-resp.xml
  */
 
 #include <signal.h>
@@ -49,7 +49,7 @@ See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well researched bug reports to the author. Home: zxid.org\n\
 \n\
 Usage: zxbench [options] <saml-assertion.xml >reencoded-a7n.xml\n\
-  -n  N            Number of iterations to benchmark.\n\
+  -i  N            Number of iterations to benchmark.\n\
   -t  SECONDS      Timeout. Default: 0=no timeout.\n\
   -c  CIPHER       Enable crypto on DTS interface using specified cipher. Use '?' for list.\n\
   -k  FDNUMBER     File descriptor for reading symmetric key. Use 0 for stdin.\n\
@@ -73,7 +73,6 @@ char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 extern int zx_debug;
-int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
@@ -86,7 +85,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
-/* Called by:  main x9 */
+/* Called by:  main x8, zxcall_main, zxcot_main */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;
@@ -118,9 +117,6 @@ void opt(int* argc, char*** argv, char*** env)
       switch ((*argv)[0][2]) {
       case '\0':
 	++zx_debug;
-	continue;
-      case 'p':  if ((*argv)[0][3]) break;
-	++debugpoll;
 	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
@@ -267,8 +263,8 @@ int main(int argc, char** argv, char** env)
   struct zx_str* eid;
   struct zx_root_s* r;
   struct zxsig_ref refs;
-  struct zxid_entity* ent;
-  struct zxid_conf* cf;
+  zxid_entity* ent;
+  zxid_conf* cf;
   int got_all, len_so, len_wo, res;
   char buf[256*1024];
   char out[256*1024];
@@ -309,8 +305,10 @@ int main(int argc, char** argv, char** env)
   for (;n_iter; --n_iter) {
     //cf = zxid_new_conf("/var/zxid/");
     cf = zxid_new_conf("/var/sfis/");
+    LOCK(cf->ctx->mx, "zxbench");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got_all);
     r = zx_DEC_root(cf->ctx, 0, 1000);
+    UNLOCK(cf->ctx->mx, "zxbench");
     if (!r) DIE("Decode failure");
     
     //ent = zxid_get_ent_from_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4" /* cxp06 */);

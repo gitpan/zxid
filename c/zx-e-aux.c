@@ -279,6 +279,22 @@ void zx_FREE_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x, int free_strs)
       }
   }
   {
+      struct zx_xac_Request_s* e;
+      struct zx_xac_Request_s* en;
+      for (e = x->xac_Request; e; e = en) {
+	  en = (struct zx_xac_Request_s*)e->gg.g.n;
+	  zx_FREE_xac_Request(c, e, free_strs);
+      }
+  }
+  {
+      struct zx_xac_Response_s* e;
+      struct zx_xac_Response_s* en;
+      for (e = x->xac_Response; e; e = en) {
+	  en = (struct zx_xac_Response_s*)e->gg.g.n;
+	  zx_FREE_xac_Response(c, e, free_strs);
+      }
+  }
+  {
       struct zx_di_Query_s* e;
       struct zx_di_Query_s* en;
       for (e = x->Query; e; e = en) {
@@ -2019,6 +2035,16 @@ void zx_DUP_STRS_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x)
 	  zx_DUP_STRS_xaspcd1_XACMLPolicyQuery(c, e);
   }
   {
+      struct zx_xac_Request_s* e;
+      for (e = x->xac_Request; e; e = (struct zx_xac_Request_s*)e->gg.g.n)
+	  zx_DUP_STRS_xac_Request(c, e);
+  }
+  {
+      struct zx_xac_Response_s* e;
+      for (e = x->xac_Response; e; e = (struct zx_xac_Response_s*)e->gg.g.n)
+	  zx_DUP_STRS_xac_Response(c, e);
+  }
+  {
       struct zx_di_Query_s* e;
       for (e = x->Query; e; e = (struct zx_di_Query_s*)e->gg.g.n)
 	  zx_DUP_STRS_di_Query(c, e);
@@ -3361,6 +3387,32 @@ struct zx_e_Body_s* zx_DEEP_CLONE_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x
 	  en = zx_DEEP_CLONE_xaspcd1_XACMLPolicyQuery(c, e, dup_strs);
 	  if (!enn)
 	      x->xaspcd1_XACMLPolicyQuery = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_xac_Request_s* e;
+      struct zx_xac_Request_s* en;
+      struct zx_xac_Request_s* enn;
+      for (enn = 0, e = x->xac_Request; e; e = (struct zx_xac_Request_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xac_Request(c, e, dup_strs);
+	  if (!enn)
+	      x->xac_Request = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
+      struct zx_xac_Response_s* e;
+      struct zx_xac_Response_s* en;
+      struct zx_xac_Response_s* enn;
+      for (enn = 0, e = x->xac_Response; e; e = (struct zx_xac_Response_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_xac_Response(c, e, dup_strs);
+	  if (!enn)
+	      x->xac_Response = en;
 	  else
 	      enn->gg.g.n = &en->gg.g;
 	  enn = en;
@@ -6154,6 +6206,22 @@ int zx_WALK_SO_e_Body(struct zx_ctx* c, struct zx_e_Body_s* x, void* ctx, int (*
       }
   }
   {
+      struct zx_xac_Request_s* e;
+      for (e = x->xac_Request; e; e = (struct zx_xac_Request_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xac_Request(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_xac_Response_s* e;
+      for (e = x->xac_Response; e; e = (struct zx_xac_Response_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_xac_Response(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
       struct zx_di_Query_s* e;
       for (e = x->Query; e; e = (struct zx_di_Query_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_di_Query(c, e, ctx, callback);
@@ -8404,6 +8472,14 @@ void zx_FREE_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x, int free_strs)
       }
   }
   {
+      struct zx_tas3_Status_s* e;
+      struct zx_tas3_Status_s* en;
+      for (e = x->Status; e; e = en) {
+	  en = (struct zx_tas3_Status_s*)e->gg.g.n;
+	  zx_FREE_tas3_Status(c, e, free_strs);
+      }
+  }
+  {
       struct zx_tas3_Credentials_s* e;
       struct zx_tas3_Credentials_s* en;
       for (e = x->Credentials; e; e = en) {
@@ -8619,6 +8695,11 @@ void zx_DUP_STRS_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x)
       struct zx_wsse_Security_s* e;
       for (e = x->Security; e; e = (struct zx_wsse_Security_s*)e->gg.g.n)
 	  zx_DUP_STRS_wsse_Security(c, e);
+  }
+  {
+      struct zx_tas3_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_tas3_Status_s*)e->gg.g.n)
+	  zx_DUP_STRS_tas3_Status(c, e);
   }
   {
       struct zx_tas3_Credentials_s* e;
@@ -9076,6 +9157,19 @@ struct zx_e_Header_s* zx_DEEP_CLONE_e_Header(struct zx_ctx* c, struct zx_e_Heade
       }
   }
   {
+      struct zx_tas3_Status_s* e;
+      struct zx_tas3_Status_s* en;
+      struct zx_tas3_Status_s* enn;
+      for (enn = 0, e = x->Status; e; e = (struct zx_tas3_Status_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_tas3_Status(c, e, dup_strs);
+	  if (!enn)
+	      x->Status = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
+  {
       struct zx_tas3_Credentials_s* e;
       struct zx_tas3_Credentials_s* en;
       struct zx_tas3_Credentials_s* enn;
@@ -9388,6 +9482,14 @@ int zx_WALK_SO_e_Header(struct zx_ctx* c, struct zx_e_Header_s* x, void* ctx, in
       }
   }
   {
+      struct zx_tas3_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_tas3_Status_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_tas3_Status(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
       struct zx_tas3_Credentials_s* e;
       for (e = x->Credentials; e; e = (struct zx_tas3_Credentials_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_tas3_Credentials(c, e, ctx, callback);
@@ -9452,6 +9554,14 @@ void zx_FREE_e_detail(struct zx_ctx* c, struct zx_e_detail_s* x, int free_strs)
   /* *** deal with xmlns specifications in exc c14n way */
 
 
+  {
+      struct zx_lu_Status_s* e;
+      struct zx_lu_Status_s* en;
+      for (e = x->Status; e; e = en) {
+	  en = (struct zx_lu_Status_s*)e->gg.g.n;
+	  zx_FREE_lu_Status(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -9487,6 +9597,11 @@ void zx_DUP_STRS_e_detail(struct zx_ctx* c, struct zx_e_detail_s* x)
   /* *** deal with xmlns specifications in exc c14n way */
 
 
+  {
+      struct zx_lu_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_lu_Status_s*)e->gg.g.n)
+	  zx_DUP_STRS_lu_Status(c, e);
+  }
 
 }
 
@@ -9502,6 +9617,19 @@ struct zx_e_detail_s* zx_DEEP_CLONE_e_detail(struct zx_ctx* c, struct zx_e_detai
   /* *** deal with xmlns specifications in exc c14n way */
 
 
+  {
+      struct zx_lu_Status_s* e;
+      struct zx_lu_Status_s* en;
+      struct zx_lu_Status_s* enn;
+      for (enn = 0, e = x->Status; e; e = (struct zx_lu_Status_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_lu_Status(c, e, dup_strs);
+	  if (!enn)
+	      x->Status = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -9524,6 +9652,14 @@ int zx_WALK_SO_e_detail(struct zx_ctx* c, struct zx_e_detail_s* x, void* ctx, in
   if (ret)
     return ret;
 
+  {
+      struct zx_lu_Status_s* e;
+      for (e = x->Status; e; e = (struct zx_lu_Status_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_lu_Status(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
 
   
   return zx_walk_so_unknown_elems_and_content(c, &x->gg, ctx, callback);

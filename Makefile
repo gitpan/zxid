@@ -17,6 +17,8 @@
 # 29.8.2009, merged in smime support --Sampo
 # 15.9.2009, added TAS3 packaging --Sampo
 # 14.11.2009, added yubikey support --Sampo
+# 12.2.2010, added pthread support --Sampo
+# 25.2.2010, added gcov support --Sampo
 #
 # Build so far only tested on Linux, Solaris 8 and MacOS 10.3. This
 # makefile needs gmake-3.78 or newer.
@@ -33,10 +35,12 @@ vpath %.h ../zxid
 
 default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool zxlogview zxidhrxmlwsc zxidhrxmlwsp zxdecode zxcot zxpasswd zxcall
 
-all: seehelp precheck precheck_apache zxid zxidhlo zxididp zxidsimple zxlogview samlmod phpzxid javazxid apachezxid zxdecode zxcot zxpasswd zxcall smime
+all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxidwspcgi
 
-ZXIDVERSION=0x000049
-ZXIDREL=0.49
+### This is the authorative spot to set version number. Document in Changes file.
+### c/zxidvers.h is generated from these, see `make updatevers'
+ZXIDVERSION=0x000060
+ZXIDREL=0.60
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -92,8 +96,29 @@ SHARED_CLOSE=-Wl,-no-whole-archive
 CFLAGS=-g -fpic -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing
 #CFLAGS += -Os    # gcc-3.4.6 miscompiles with -Os on ix86
 CFLAGS += -Wall -Wno-parentheses -DMAYBE_UNUSED='__attribute__ ((unused))'
-CFLAGS += -ffunction-sections -fdata-sections
 #LDFLAGS += -Wl,--gc-sections
+LIBZXID=-L. -lzxid
+OBJ_EXT=o
+
+ifeq ($(ENA_PG),1)
+
+###
+### To compile for profiling your should run make ENA_PG=1
+### See also: make gcov, make lcov (and lcovhtml directory), man gcov, man gprof
+### N.B. ccache seems to be incompatible with profiling.
+###
+
+#CDEF += -DMUTEX_DEBUG
+CFLAGS += -pg -ftest-coverage -fprofile-arcs
+LDFLAGS += -pg -ftest-coverage -fprofile-arcs
+
+else
+
+# -ffunction-sections is incompatible with profiling
+
+CFLAGS += -ffunction-sections -fdata-sections
+
+endif
 
 ###
 ### Java options (watch out javac running out of heap)
@@ -102,13 +127,20 @@ CFLAGS += -ffunction-sections -fdata-sections
 JAR=jar
 JAVAC=javac
 JAVAC_FLAGS=-J-Xmx128m -g
-# Extension for JNI modules. They are dynamic link libraries, but some platforms call them .jnilib
-JNILIB=so
+# JNI library name is very platform dependent (see macosx and mingw)
+ZXIDJNI_SO=zxidjava/libzxidjni.so
 # find / -name jni.h; find / -name jni_md.h
 JNI_INC=-I/usr/java/include -I/usr/java/include/linux
 # Path where HttpServlet supplied by your application server resides: find / -name servlet-api.jar
 SERVLET_PATH=../apache-tomcat-5.5.20/common/lib/servlet-api.jar
 #SERVLET_PATH=../apache-tomcat-6.0.18/lib/servlet-api.jar
+
+# Without cURL the Artifact Profile, WSC, and metadata fetch features are disabled.
+CDEF+= -DUSE_CURL
+# Without OpenSSL signing and signature verification are not possible
+CDEF+= -DUSE_OPENSSL
+# Using PTHREAD helps to avoid problems in multithreaded programs, such as Java servlets
+CDEF+= -DUSE_PTHREAD
 
 ### To change any of the above options, you can either supply
 ### alternate values on make command line, like `make PREFIX=/your/path'
@@ -127,12 +159,9 @@ APACHE_MODULES ?= $(APACHE_ROOT)/modules
 CDIR+= -I. -I$(TOP) -I$(OPENSSL_ROOT)/include -I$(CURL_ROOT)/include
 CDIR+= $(APACHE_INCLUDE) $(APR_INCLUDE)
 CDEF+= -D_REENTRANT -DDEBUG
-# Without cURL the Artifact Profile, WSC, and metadata fetch features are disabled.
-CDEF+= -DUSE_CURL
-# Without OpenSSL signing and signature verification are not possible
-CDEF+= -DUSE_OPENSSL
 LIBS+= -lpthread -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz
 #LIBS+=-ldl
+OUTOPT=-o 
 
 # Following ld flags as well as C flag -ffunction-sections are a quest to
 # eliminate unused functions from final link.
@@ -174,7 +203,7 @@ CDEF+=-DMACOSX
 JNI_INC=-I/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Headers
 SHARED_FLAGS=-dylib -all_load -bundle
 SHARED_CLOSE=
-JNILIB=jnilib
+ZXIDJNI_SO=zxidjava/libzxidjni.jnilib
 #SHARED_FLAGS=-dylib -all_load -keep_private_externs 
 #OPENSSL_ROOT=/Developer/SDKs/MacOSX10.4u.sdk/usr
 #CURL_ROOT=/Developer/SDKs/MacOSX10.4u.sdk/usr
@@ -208,14 +237,17 @@ ifeq ($(TARGET),xmingw)
 
 SYSROOT=/apps/gcc/mingw/sysroot
 CROSS_COMPILE=1
-CC=i586-pc-mingw32-gcc
-LD=i586-pc-mingw32-gcc
-AR=i586-pc-mingw32-ar -crs
-ARX=i586-pc-mingw32-ar -x
+CC=/apps/gcc/mingw/bin/i586-pc-mingw32-gcc
+LD=/apps/gcc/mingw/bin/i586-pc-mingw32-gcc
+AR=/apps/binutils/mingw/bin/i586-pc-mingw32-ar -crs
+ARX=/apps/binutils/mingw/bin/i586-pc-mingw32-ar -x
 CDEF+=-DMINGW -DUSE_LOCK=flock -DCURL_STATICLIB
 CURL_ROOT=/apps/gcc/mingw/sysroot
 OPENSSL_ROOT=/apps/gcc/mingw/sysroot
-JNILIB=dll
+ZXIDJNI_SO=zxidjava/zxidjni.dll
+ifeq ($(SHARED),1)
+LIBZXID=-L. -lzxiddll
+endif
 
 -include xmingw.mk
 
@@ -223,8 +255,14 @@ JNILIB=dll
 WIN_LIBS= -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz -lwinmm -lwsock32 -lgdi32 -lkernel32
 LIBS= -mconsole $(WIN_LIBS)
 #SHARED_FLAGS=-shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-reloc -Wl,-whole-archive
-SHARED_FLAGS=-shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition -Wl,--output-def,zxiddll.def,--out-implib,libzxiddll.a
+SHARED_FLAGS=-Wl,--add-stdcall-alias -shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
 CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing  -mno-cygwin
+
+# java.lang.UnsatisfiedLinkError: Given procedure could not be found
+# -mno-cygwin -mrtd -Wl,--kill-at -Wl,--add-stdcall-alias
+# http://www.inonit.com/cygwin/jni/helloWorld/c.html
+# http://www.1702.org/jniswigdll.html
+# http://maba.wordpress.com/2004/07/28/generating-dll-files-for-jni-under-windowscygwingcc/
 
 else
 ifeq ($(TARGET),mingw)
@@ -234,9 +272,12 @@ CURL_ROOT=/usr/local
 OPENSSL_ROOT=/usr/local/ssl
 WIN_LIBS= -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz -lwinmm -lwsock32 -lgdi32 -lkernel32
 LIBS= -mconsole $(WIN_LIBS)
-SHARED_FLAGS=-shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,-whole-archive -Wl,--allow-multiple-definition
+SHARED_FLAGS=-Wl,--add-stdcall-alias -shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
 CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing -mno-cygwin
-JNILIB=dll
+ZXIDJNI_SO=zxidjava/zxidjni.dll
+ifeq ($(SHARED),1)
+LIBZXID=-L. -lzxiddll
+endif
 
 else
 ifeq ($(TARGET),cygwin)
@@ -247,10 +288,32 @@ OPENSSL_ROOT=/usr/local/ssl
 MOD_AUTH_SAML_LIBS=-lapr-1 -lhttpd2core
 
 else
+ifeq ($(TARGET),win32cl)
+
+# Compilation with Microsoft Visual C++ compiler's command line (aka msvc) (experimental)
+
+CDEF+=-DMINGW -DWIN32CL -DUSE_LOCK=flock -DCURL_STATICLIB
+CURL_ROOT="G:/cvsdev/libcurl-7.19.3-win32-ssl-msvc/"
+OPENSSL_ROOT="C:/OpenSSL/"
+ZLIB_ROOT="C:/Program Files/GnuWin32/"
+WIN_LIBS= -LIBPATH:$(CURL_ROOT)/lib/Debug -LIBPATH:$(OPENSSL_ROOT)/lib/VC -LIBPATH:$(ZLIB_ROOT)/lib kernel32.lib user32.lib winmm.lib Ws2_32.lib curllib.lib libeay32MD.lib ssleay32MD.lib zlib.lib
+LIBS= -lpthread -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz $(WIN_LIBS)
+SHARED_FLAGS=-LDd -MDd -shared --export-all-symbols
+CFLAGS=-Zi -WL
+#CFLAGS+=-Yd
+OUTOPT=-OUT:
+OBJ_EXT=obj
+
+ZXIDJNI_SO=zxidjava/zxidjni.dll
+ifeq ($(SHARED),1)
+LIBZXID=-L. -lzxiddll
+endif
+else
 
 # Flags for Linux 2.6 native compile (gcc + gnu binutils)
 CDEF+=-DLINUX
 
+endif
 endif
 endif
 endif
@@ -265,10 +328,11 @@ CFLAGS+= $(CDEF) $(CDIR)
 ### targets (mortals can look, but should not edit).
 ###
 
-ZXID_LIB_OBJ=zxidsimp.o zxidpool.o zxidpsso.o zxidsso.o zxidslo.o zxiddec.o zxidspx.o zxididpx.o zxidmni.o zxidpep.o zxidmk.o zxida7n.o zxidses.o zxiduser.o zxidcgi.o zxidconf.o zxidecp.o zxidcdc.o zxidloc.o zxidlib.o zxidmeta.o zxidcurl.o zxidepr.o zxida7n.o ykcrc.o ykaes.o
-ZX_OBJ=zxlib.o zxns.o zxutil.o zxlog.o zxsig.o zxcrypto.o c/license.o c/zx-attrs.o c/zx-elems.o
-WSF_OBJ=zxidmkwsf.o zxidwsc.o zxidwsp.o zxiddi.o
-SMIME_LIB_OBJ=certauth.o keygen.o pkcs12.o smime-enc.o smime-qry.o smime-vfy.o smimemime.o smimeutil.o
+ZXIDHDRS=zx.h zxid.h zxidnoswig.h c/zxidvers.h
+ZXID_LIB_OBJ=zxidsimp.$(OBJ_EXT) zxidpool.$(OBJ_EXT) zxidpsso.$(OBJ_EXT) zxidsso.$(OBJ_EXT) zxidslo.$(OBJ_EXT) zxiddec.$(OBJ_EXT) zxidspx.$(OBJ_EXT) zxididpx.$(OBJ_EXT) zxidmni.$(OBJ_EXT) zxidpep.$(OBJ_EXT) zxidpdp.$(OBJ_EXT) zxidmk.$(OBJ_EXT) zxida7n.$(OBJ_EXT) zxidses.$(OBJ_EXT) zxiduser.$(OBJ_EXT) zxidcgi.$(OBJ_EXT) zxidconf.$(OBJ_EXT) zxidecp.$(OBJ_EXT) zxidcdc.$(OBJ_EXT) zxidloc.$(OBJ_EXT) zxidlib.$(OBJ_EXT) zxidmeta.$(OBJ_EXT) zxidcurl.$(OBJ_EXT) zxidepr.$(OBJ_EXT) zxida7n.$(OBJ_EXT) ykcrc.$(OBJ_EXT) ykaes.$(OBJ_EXT)
+ZX_OBJ=zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) c/license.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT) c/zx-elems.$(OBJ_EXT)
+WSF_OBJ=zxidmkwsf.$(OBJ_EXT) zxidwsf.$(OBJ_EXT) zxidwsc.$(OBJ_EXT) zxidwsp.$(OBJ_EXT) zxiddi.$(OBJ_EXT)
+SMIME_LIB_OBJ=certauth.$(OBJ_EXT) keygen.$(OBJ_EXT) pkcs12.$(OBJ_EXT) smime-enc.$(OBJ_EXT) smime-qry.$(OBJ_EXT) smime-vfy.$(OBJ_EXT) smimemime.$(OBJ_EXT) smimeutil.$(OBJ_EXT)
 
 ifeq ($(PULVER),1)
 
@@ -291,12 +355,12 @@ c_saml2_enc_c_o=$(shell cat pulver/c_saml2_enc_c.deps)
 c_saml2_aux_c_o=$(shell cat pulver/c_saml2_aux_c.deps)
 c_saml2_getput_c_o=$(shell pulver/c_saml2_getput_c.deps)
 
-#pulver/c_saml2_dec_c.deps $(c_saml2_dec_c_o:.o=.c): c/saml2-dec.c	
+#pulver/c_saml2_dec_c.deps $(c_saml2_dec_c_o:.$(OBJ_EXT)=.c): c/saml2-dec.c	
 
 pulver/c_saml2_dec_c.deps: c/saml2-dec.c	
 	$(PULVERIZE) pulver c/saml2-dec.c >pulver/c_saml2_dec_c.deps
 
-#pulver/c_saml2_enc_c.deps $(c_saml2_enc_c_o:%.o=%.c): c/saml2-enc.c	
+#pulver/c_saml2_enc_c.deps $(c_saml2_enc_c_o:%.$(OBJ_EXT)=%.c): c/saml2-enc.c	
 
 pulver/c_saml2_enc_c.deps $(foo:%.o=%.c): c/saml2-enc.c	
 	$(PULVERIZE) pulver c/saml2-enc.c >pulver/c_saml2_enc_c.deps
@@ -352,24 +416,24 @@ endif
 
 endif
 
-#ZXID_OBJ=zxid.o zxidlib.o zxidmeta.o $(ZX_OBJ)
-ZXID_OBJ=zxid.o
-ZXIDWSCTOOL_OBJ=zxidwsctool.o
-ZXIDSP_OBJ=zxidsp.o
-ZXIDHLO_OBJ=zxidhlo.o
-ZXIDGSA_OBJ=zxidgsa.o
-ZXIDHLOWSF_OBJ=zxidhlowsf.o
-ZXIDSIMPLE_OBJ=zxidsimple.o
-ZXBENCH_OBJ=zxbench.o
-ZXIDSSOFINALIZETEST_OBJ=zxidssofinalizetest.o
-ZXENCDECTEST_OBJ=zxencdectest.o
-SFIS_OBJ=sfis.o
-SFISGSA_OBJ=sfisgsa.o
-ZXIDXMLTOOL_OBJ=zxidxmltool.o
-ZXLOGVIEW_OBJ=zxlogview.o $(ZX_OBJ)
-ZXIDHRXMLWSC_OBJ=zxidhrxmlwsc.o
-ZXIDHRXMLWSP_OBJ=zxidhrxmlwsp.o
-ZXIDIDP_OBJ=zxididp.o
+ZXID_OBJ=zxid.$(OBJ_EXT)
+ZXIDWSCTOOL_OBJ=zxidwsctool.$(OBJ_EXT)
+ZXIDSP_OBJ=zxidsp.$(OBJ_EXT)
+ZXIDHLO_OBJ=zxidhlo.$(OBJ_EXT)
+ZXIDGSA_OBJ=zxidgsa.$(OBJ_EXT)
+ZXIDHLOWSF_OBJ=zxidhlowsf.$(OBJ_EXT)
+ZXIDSIMPLE_OBJ=zxidsimple.$(OBJ_EXT)
+ZXBENCH_OBJ=zxbench.$(OBJ_EXT)
+ZXIDSSOFINALIZETEST_OBJ=zxidssofinalizetest.$(OBJ_EXT)
+ZXENCDECTEST_OBJ=zxencdectest.$(OBJ_EXT)
+SFIS_OBJ=sfis.$(OBJ_EXT)
+SFISGSA_OBJ=sfisgsa.$(OBJ_EXT)
+ZXIDXMLTOOL_OBJ=zxidxmltool.$(OBJ_EXT)
+ZXLOGVIEW_OBJ=zxlogview.$(OBJ_EXT) $(ZX_OBJ)
+ZXIDHRXMLWSC_OBJ=zxidhrxmlwsc.$(OBJ_EXT)
+ZXIDHRXMLWSP_OBJ=zxidhrxmlwsp.$(OBJ_EXT)
+ZXIDIDP_OBJ=zxididp.$(OBJ_EXT)
+
 
 #
 # Schemata and potential xml document roots.
@@ -390,6 +454,7 @@ ZX_ROOTS+=-r e:Envelope -r e:Header -r e:Body
 
 ZX_SG+=sg/saml-schema-metadata-2.0.sg
 ZX_SG+=sg/shibboleth-metadata-1.0.sg
+ZX_SG+=sg/sstc-saml-idp-discovery.sg
 ZX_ROOTS+=-r md:EntityDescriptor -r md:EntitiesDescriptor
 
 endif
@@ -505,7 +570,7 @@ ZX_GEN_H=\
  c/zx-dp-data.h   c/zx-pmm-data.h   c/zx-prov-data.h  c/zx-idp-data.h        c/zx-shps-data.h \
  c/zx-demomed-data.h c/zx-hrxml-data.h c/zx-idhrxml-data.h \
  c/zx-xsi-data.h  c/zx-xs-data.h    c/zx-xml-data.h \
- c/zx-tas3-data.h  c/zx-tas3sol-data.h c/zx-shibmd-data.h
+ c/zx-tas3-data.h  c/zx-tas3sol-data.h c/zx-shibmd-data.h c/zx-idpdisc-data.h
 
 ZX_GEN_C=\
  c/zx-a-aux.c      c/zx-di12-dec.c    c/zx-is-enc.c      c/zx-sa11-dec.c     c/zx-sp11-dec.c \
@@ -567,7 +632,8 @@ ZX_GEN_C=\
  c/zx-xml-aux.c     c/zx-xml-dec.c     c/zx-xml-enc.c     c/zx-xml-getput.c \
  c/zx-tas3-aux.c    c/zx-tas3-dec.c    c/zx-tas3-enc.c    c/zx-tas3-getput.c \
  c/zx-tas3sol-aux.c c/zx-tas3sol-dec.c c/zx-tas3sol-enc.c c/zx-tas3sol-getput.c \
- c/zx-shibmd-aux.c  c/zx-shibmd-dec.c  c/zx-shibmd-enc.c  c/zx-shibmd-getput.c
+ c/zx-shibmd-aux.c  c/zx-shibmd-dec.c  c/zx-shibmd-enc.c  c/zx-shibmd-getput.c \
+ c/zx-idpdisc-aux.c  c/zx-idpdisc-dec.c  c/zx-idpdisc-enc.c  c/zx-idpdisc-getput.c
 
 ifeq ($(ENA_GEN),1)
 
@@ -601,7 +667,8 @@ c/zx-const.h: c/zx-attrs.c c/zx-elems.c
 
 c/license.c: LICENSE-2.0.txt
 	$(ECHO) 'char* license = ' >$@
-	$(ECHO) '"Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\' >>$@ #'
+	$(ECHO) '"Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\' >>$@ #'
+	$(ECHO) 'Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\' >>$@ #'
 	$(ECHO) 'Author: Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\' >>$@ #'
 	$(SED) -e 's/"/\\"/g' -e 's/$$/\\n\\/' LICENSE-2.0.txt >>$@
 	$(ECHO) '";' >>$@
@@ -614,9 +681,13 @@ c/zxidvers.h:
 	$(ECHO) "#define ZXID_COMPILE_DATE \"`date +%s`\"" >>c/zxidvers.h
 	$(ECHO) "#endif" >>c/zxidvers.h
 
+# $(ZXID_OBJ:.o=.c) $(WSF_OBJ:.o=.c) zxdecode.c zxcot.c zxpasswd.c zxidhlo.c zxidsp.c zxidsimple.c $(ZX_OBJ:.o=.c) $(ZX_GEN_H) $(ZX_GEN_C) c/zx-const.h c/zxidvers.h
+
 gen: c/zxidvers.h c/license.c c/zx-const.h c/zx-attrs.gperf
 
 genwrap: gen zxidjava/zxid_wrap.c Net/SAML_wrap.c php/zxid_wrap.c py/zxid_wrap.c ruby/zxid_wrap.c csharp/zxid_wrap.c
+
+# make cleany && make genwrap ENA_GEN=1 && make all ENA_GEN=1
 
 endif
 
@@ -721,11 +792,11 @@ php/zxid_wrap.c php/zxid.php php/php_zxid.h php/Makefile: $(ZX_GEN_H) zxid.h php
 
 endif
 
-php/zxid_wrap.o: php/zxid_wrap.c
-	$(CC) -c -o $@ `$(PHP_CONFIG) --includes` $(CFLAGS) $<
+php/zxid_wrap.$(OBJ_EXT): php/zxid_wrap.c
+	$(CC) -c $(OUTOPT)$@ `$(PHP_CONFIG) --includes` $(CFLAGS) $<
 
-php/php_zxid.so: php/zxid_wrap.o libzxid.a
-	$(LD) -o php/php_zxid.so -shared php/zxid_wrap.o -L. -lzxid $(LIBS)
+php/php_zxid.so: php/zxid_wrap.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)php/php_zxid.so -shared php/zxid_wrap.$(OBJ_EXT) $(LIBZXID) $(LIBS)
 
 phpzxid: php/php_zxid.so
 
@@ -740,7 +811,7 @@ phpzxid_install: php/php_zxid.so
 #cp zxid.ini `$(PHP_CONFIG) --extension-dir`
 
 phpclean:
-	rm -rf php/*.o php/*~ php/*.so
+	rm -rf php/*.$(OBJ_EXT) php/*~ php/*.so
 
 phpcleaner: phpclean
 	rm -rf php/php_zxid.h php/zxid.php php/zxid_wrap.c
@@ -757,11 +828,11 @@ py/zxid_wrap.c py/zxid.py py/Makefile: $(ZX_GEN_H) zxid.h pyzxid.i
 
 endif
 
-py/zxid_wrap.o: py/zxid_wrap.c
-	$(CC) -c -o $@ `$(PY_CONFIG) --includes` $(CFLAGS) $<
+py/zxid_wrap.$(OBJ_EXT): py/zxid_wrap.c
+	$(CC) -c $(OUTOPT)$@ `$(PY_CONFIG) --includes` $(CFLAGS) $<
 
-py/py_zxid.so: py/zxid_wrap.o libzxid.a
-	$(LD) -o py/py_zxid.so -shared py/zxid_wrap.o -L. -lzxid $(LIBS)
+py/py_zxid.so: py/zxid_wrap.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)py/py_zxid.so -shared py/zxid_wrap.$(OBJ_EXT) $(LIBZXID) $(LIBS)
 
 pyzxid: py/py_zxid.so
 
@@ -771,7 +842,7 @@ pyzxid_install: py/py_zxid.so
 	cp $< `$(PY_CONFIG) --extension-dir`
 
 pyclean:
-	rm -rf py/*.o py/*~ py/*.so
+	rm -rf py/*.$(OBJ_EXT) py/*~ py/*.so
 
 pycleaner: pyclean
 	rm -rf py/zxid.py py/zxid_wrap.c
@@ -788,11 +859,11 @@ ruby/zxid_wrap.c ruby/zxid.ruby ruby/Makefile: $(ZX_GEN_H) zxid.h rubyzxid.i
 
 endif
 
-ruby/zxid_wrap.o: ruby/zxid_wrap.c
-	$(CC) -c -o $@ `$(RUBY_CONFIG) --includes` $(CFLAGS) $<
+ruby/zxid_wrap.$(OBJ_EXT): ruby/zxid_wrap.c
+	$(CC) -c $(OUTOPT)$@ `$(RUBY_CONFIG) --includes` $(CFLAGS) $<
 
-ruby/ruby_zxid.so: ruby/zxid_wrap.o libzxid.a
-	$(LD) -o ruby/ruby_zxid.so -shared ruby/zxid_wrap.o -L. -lzxid $(LIBS)
+ruby/ruby_zxid.so: ruby/zxid_wrap.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)ruby/ruby_zxid.so -shared ruby/zxid_wrap.$(OBJ_EXT) $(LIBZXID) $(LIBS)
 
 rubyzxid: ruby/ruby_zxid.so
 
@@ -802,7 +873,7 @@ rubyzxid_install: ruby/ruby_zxid.so
 	cp $< `$(RUBY_CONFIG) --extension-dir`
 
 rubyclean:
-	rm -rf ruby/*.o ruby/*~ ruby/*.so
+	rm -rf ruby/*.$(OBJ_EXT) ruby/*~ ruby/*.so
 
 rubycleaner: rubyclean
 	rm -rf ruby/zxid.ruby ruby/zxid_wrap.c
@@ -819,11 +890,11 @@ csharp/zxid_wrap.c csharp/zxid.csharp csharp/Makefile: $(ZX_GEN_H) zxid.h csharp
 
 endif
 
-csharp/zxid_wrap.o: csharp/zxid_wrap.c
-	$(CC) -c -o $@ `$(CSHARP_CONFIG) --includes` $(CFLAGS) $<
+csharp/zxid_wrap.$(OBJ_EXT): csharp/zxid_wrap.c
+	$(CC) -c $(OUTOPT)$@ `$(CSHARP_CONFIG) --includes` $(CFLAGS) $<
 
-csharp/csharp_zxid.so: csharp/zxid_wrap.o libzxid.a
-	$(LD) -o csharp/csharp_zxid.so -shared csharp/zxid_wrap.o -L. -lzxid $(LIBS)
+csharp/csharp_zxid.so: csharp/zxid_wrap.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)csharp/csharp_zxid.so -shared csharp/zxid_wrap.$(OBJ_EXT) $(LIBZXID) $(LIBS)
 
 csharpzxid: csharp/csharp_zxid.so
 
@@ -833,7 +904,7 @@ csharpzxid_install: csharp/csharp_zxid.so
 	cp $< `$(CSHARP_CONFIG) --extension-dir`
 
 csharpclean:
-	rm -rf csharp/*.o csharp/*~ csharp/*.so
+	rm -rf csharp/*.$(OBJ_EXT) csharp/*~ csharp/*.so
 
 csharpcleaner: csharpclean
 	rm -rf csharp/zxid.csharp csharp/zxid_wrap.c
@@ -851,16 +922,27 @@ zxidjava/zxid_wrap.c: $(ZX_GEN_H) zxid.h javazxid.i
 	mv zxidjava/SWIGTYPE_p_zxid_conf.java zxidjava/zxid_conf.java
 	$(PERL) -pi -e 's/SWIGTYPE_p_zxid_ses/zxid_ses/g' zxidjava/*.java
 	mv zxidjava/SWIGTYPE_p_zxid_ses.java zxidjava/zxid_ses.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zxid_cgi/zxid_cgi/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zxid_cgi.java zxidjava/zxid_cgi.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zxid_entity/zxid_entity/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zxid_entity.java zxidjava/zxid_entity.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zx_sa_Assertion_s/zxid_a7n/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zx_sa_Assertion_s.java zxidjava/zxid_a7n.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zx_sa_NameID_s/zxid_nid/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zx_sa_NameID_s.java zxidjava/zxid_nid.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zx_a_EndpointReference_s/zxid_epr/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zx_a_EndpointReference_s.java zxidjava/zxid_epr.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zx_tas3_Status_s/zxid_tas3_status/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zx_tas3_Status_s.java zxidjava/zxid_tas3_status.java
 	$(PERL) -pi -e 's/(public static \w+ )zxid_/$$1/' zxidjava/zxidjni.java
 
 endif
 
-zxidjava/zxid_wrap.o: zxidjava/zxid_wrap.c
-	$(CC) -c -o $@ $(JNI_INC) $(CFLAGS) $<
+zxidjava/zxid_wrap.$(OBJ_EXT): zxidjava/zxid_wrap.c
+	$(CC) -c $(OUTOPT)$@ $(JNI_INC) $(CFLAGS) $<
 
-# zxidjava/libzxidjni.so zxidjava/libzxidjni.jnilib zxidjava/libzxidjni.dll (?)
-zxidjava/libzxidjni.$(JNILIB): zxidjava/zxid_wrap.o libzxid.a
-	$(LD) -o zxidjava/libzxidjni.$(JNILIB) $(SHARED_FLAGS) zxidjava/zxid_wrap.o -L. -lzxid $(LIBS)  $(SHARED_CLOSE)
+$(ZXIDJNI_SO): zxidjava/zxid_wrap.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $(SHARED_FLAGS) $< $(LIBZXID) $(LIBS) $(SHARED_CLOSE)
 
 zxidjava/zxidjni.class: zxidjava/zxidjni.java
 	cd zxidjava; $(JAVAC) $(JAVAC_FLAGS) *.java
@@ -880,26 +962,43 @@ zxidappdemo.class: zxidappdemo.java zxidjava/zxidjni.class
 zxidwspdemo.class: zxidwspdemo.java zxidjava/zxidjni.class
 	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidwspdemo.java
 
-zxidjava.jar: zxidjava/*.class
-	$(JAR) cf zxidjava.jar $<
+zxidwspleaf.class: zxidwspleaf.java zxidjava/zxidjni.class
+	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidwspleaf.java
 
-javazxid: zxidjava/libzxidjni.$(JNILIB) zxidjava/zxidjni.class zxidhlo.class zxidsrvlet.class zxidappdemo.class zxidwspdemo.class
+zxidwscprepdemo.class: zxidwscprepdemo.java zxidjava/zxidjni.class
+	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidwscprepdemo.java
 
-javazxid_install: zxidjava/libzxidjni.so
+zxidjava.jar: zxidjava/zxidjni.class zxidjava/README.zxid-java
+	cp COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay zxidjava/
+	$(JAR) cf zxidjava.jar zxidjava/*.class zxidjava/*.java zxidjava/COPYING zxidjava/LICENSE*
+
+zxiddemo.war: zxidjava.jar
+	mkdir -p zxidservlet/WEB-INF/classes/zxidjava/
+	cp -f zxidjava.jar ./zxidservlet/WEB-INF/classes/
+	cp -f ./servlet/WEB-INF/web.xml ./zxidservlet/WEB-INF/
+	cp -f zxidsrvlet.class zxidappdemo.class zxidwscprepdemo.class zxidwspdemo.class zxidwspleaf.class zxidhlo.class zxidservlet/WEB-INF/classes/
+	cd ./zxidservlet ; $(JAR) cf ../zxiddemo.war *; cd ../
+	rm -rf zxidservlet
+
+javazxid: $(ZXIDJNI_SO) zxidjava/zxidjni.class zxidhlo.class zxidsrvlet.class zxidappdemo.class zxidwscprepdemo.class zxidwspdemo.class zxidwspleaf.class zxidjava.jar zxiddemo.war
+
+javazxid_install: $(ZXIDJNI_SO)
 	@$(ECHO) "javazxid_install: Work in Progress. See zxid-java.pd"
 
+# from Brian, somewhat obsoleted by zxiddemo.war
 javazxid_war:
 	mkdir -p zxidservlet/WEB-INF/classes/zxidjava/
 	cp -f ./zxidjava/*.class ./zxidservlet/WEB-INF/classes/zxidjava/
 	cp -f ./servlet/WEB-INF/web.xml ./zxidservlet/WEB-INF/
-	cp -f zxidsrvlet.class zxidappdemo.class zxidwspdemo.class zxidhlo.class zxidservlet/WEB-INF/classes/
+	cp -f zxidsrvlet.class zxidappdemo.class zxidwscprepdemo.class zxidwspdemo.class zxidwspleaf.class zxidhlo.class zxidservlet/WEB-INF/classes/
 	cd ./zxidservlet ; $(JAR) cf ../zxidservlet.war *; cd ../
 	rm -rf zxidservlet
 
-#	mv zxidservlet.war $(WEBAPPS_PATH)/
+#  rsync zxididp root@elsa:/var/zxid/webroot/apache-tomcat-5.5.20/webapps
+#  mv zxidservlet.war $(WEBAPPS_PATH)/
 
 javaclean:
-	rm -rf zxidjava/*.o zxidjava/*~ zxidjava/*.so zxidjava/*.class *.class
+	rm -rf zxidjava/*.$(OBJ_EXT) zxidjava/*~ zxidjava/*.so zxidjava/*.class *.class
 
 javacleaner: javaclean
 	rm -rf zxidjava/*.java zxidjava/zxid_wrap.c
@@ -908,8 +1007,8 @@ javacleaner: javaclean
 ### Apache authentication module
 ###
 
-mod_auth_saml.so: mod_auth_saml.o libzxid.a
-	$(LD) -o mod_auth_saml.so $(SHARED_FLAGS) mod_auth_saml.o $(SHARED_CLOSE) -L. -lzxid $(LIBS) $(MOD_AUTH_SAML_LIBS)
+mod_auth_saml.so: mod_auth_saml.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)mod_auth_saml.so $(SHARED_FLAGS) mod_auth_saml.$(OBJ_EXT) $(SHARED_CLOSE) $(LIBZXID) $(LIBS) $(MOD_AUTH_SAML_LIBS)
 
 mod_auth_saml.dll: mod_auth_saml.so
 	mv mod_auth_saml.so mod_auth_saml.dll
@@ -917,7 +1016,7 @@ mod_auth_saml.dll: mod_auth_saml.so
 mod_auth_saml:
 	@$(ECHO) "mod_auth_saml: not an official target. Use make apachezxid"
 
-precheck_apache:  precheck/chk-apache.o precheck/chk-apache
+precheck_apache:  precheck/chk-apache.$(OBJ_EXT) precheck/chk-apache
 	precheck/chk-apache
 
 apachezxid: precheck_apache precheck mod_auth_saml.so
@@ -930,75 +1029,78 @@ apachezxid_install: mod_auth_saml.so
 ###
 
 zxid: $(ZXID_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxid $(ZXID_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxid $(ZXID_OBJ) $(LIBZXID) $(LIBS)
 
-zxcot: zxcot.o libzxid.a
-	$(LD) $(LDFLAGS) -o $@ $< -L. -lzxid $(LIBS)
+zxcot: zxcot.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBZXID) $(LIBS)
 
-zxdecode: zxdecode.o libzxid.a
-	$(LD) $(LDFLAGS) -o $@ $^ -L. -lzxid $(LIBS)
+zxdecode: zxdecode.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $^ $(LIBZXID) $(LIBS)
 
-zxpasswd: zxpasswd.o libzxid.a
-	$(LD) $(LDFLAGS) -o $@ $^ -L. -lzxid $(LIBS)
+zxpasswd: zxpasswd.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $^ $(LIBZXID) $(LIBS)
 
-zxcall: zxcall.o libzxid.a
-	$(LD) $(LDFLAGS) -o $@ $< -L. -lzxid $(LIBS)
+zxcall: zxcall.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBZXID) $(LIBS)
+
+zxidwspcgi: zxidwspcgi.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBZXID) $(LIBS)
 
 zxidwsctool: $(ZXIDWSCTOOL_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidwsctool $(ZXIDWSCTOOL_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidwsctool $(ZXIDWSCTOOL_OBJ) $(LIBZXID) $(LIBS)
 
 zxidhlo: $(ZXIDHLO_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidhlo $(ZXIDHLO_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidhlo $(ZXIDHLO_OBJ) $(LIBZXID) $(LIBS)
 
 zxidsp: $(ZXIDSP_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidsp $(ZXIDSP_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidsp $(ZXIDSP_OBJ) $(LIBZXID) $(LIBS)
 
 zxididp: $(ZXIDIDP_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxididp $(ZXIDIDP_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxididp $(ZXIDIDP_OBJ) $(LIBZXID) $(LIBS)
 
 zxidgsa: $(ZXIDGSA_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidgsa $(ZXIDGSA_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidgsa $(ZXIDGSA_OBJ) $(LIBZXID) $(LIBS)
 
 zxidhlowsf: $(ZXIDHLOWSF_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidhlowsf $(ZXIDHLOWSF_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidhlowsf $(ZXIDHLOWSF_OBJ) $(LIBZXID) $(LIBS)
 
 zxidsimple: $(ZXIDSIMPLE_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidsimple $(ZXIDSIMPLE_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidsimple $(ZXIDSIMPLE_OBJ) $(LIBZXID) $(LIBS)
 
 zxbench: $(ZXBENCH_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxbench $(ZXBENCH_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxbench $(ZXBENCH_OBJ) $(LIBZXID) $(LIBS)
 
 zxidssofinalizetest: $(ZXIDSSOFINALIZETEST_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidssofinalizetest $(ZXIDSSOFINALIZETEST_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidssofinalizetest $(ZXIDSSOFINALIZETEST_OBJ) $(LIBZXID) $(LIBS)
 
 zxencdectest: $(ZXENCDECTEST_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxencdectest $^ -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxencdectest $^ $(LIBZXID) $(LIBS)
 
 sfis: $(SFIS_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o sfis $(SFIS_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)sfis $(SFIS_OBJ) $(LIBZXID) $(LIBS)
 
 sfisgsa: $(SFISGSA_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o sfisgsa $(SFISGSA_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)sfisgsa $(SFISGSA_OBJ) $(LIBZXID) $(LIBS)
 
 zxidxmltool: $(ZXIDXMLTOOL_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidxmltool $^ $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidxmltool $^ $(LIBS)
 
 zxlogview: $(ZXLOGVIEW_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxlogview $^ $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxlogview $^ $(LIBS)
 
 zxidhrxmlwsc: $(ZXIDHRXMLWSC_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidhrxmlwsc $(ZXIDHRXMLWSC_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidhrxmlwsc $(ZXIDHRXMLWSC_OBJ) $(LIBZXID) $(LIBS)
 
 zxidhrxmlwsp: $(ZXIDHRXMLWSP_OBJ) libzxid.a
-	$(LD) $(LDFLAGS) -o zxidhrxmlwsp $(ZXIDHRXMLWSP_OBJ) -L. -lzxid $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxidhrxmlwsp $(ZXIDHRXMLWSP_OBJ) $(LIBZXID) $(LIBS)
 
 zxidhrxml: zxidhrxmlwsc zxidhrxmlwsp
 
-smime: smime.o libzxid.a
-	$(LD) $(LDFLAGS) -o $@ $< -L. -lzxid $(LIBS)
+smime: smime.$(OBJ_EXT) libzxid.a
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBZXID) $(LIBS)
 
 sizeof:
-	$(CC) -o sizeof sizeof.c
+	$(CC) $(OUTOPT)sizeof sizeof.c
 
 ###
 ### Libraries
@@ -1021,16 +1123,20 @@ libzxid.a: $(ZXID_LIB_OBJ) $(ZX_OBJ)
 
 else
 
+ifeq ($(TARGET),win32cl)
+libzxid.a: $(ZX_GEN_C:.c=.obj) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
+	$(AR) zxid.lib $^
+else
 libzxid.a: $(ZX_GEN_C:.c=.o) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
 	$(AR) libzxid.a $^
-
+endif
 endif
 
 libzxid.so.0.0: libzxid.a
-	$(LD) -o libzxid.so.0.0 $(SHARED_FLAGS) $^ $(SHARED_CLOSE)
+	$(LD) $(OUTOPT)libzxid.so.0.0 $(SHARED_FLAGS) $^ $(SHARED_CLOSE)
 
-zxid.dll: libzxid.a
-	$(LD) -o zxid.dll $(SHARED_FLAGS) $^ $(SHARED_CLOSE) $(WIN_LIBS)
+zxid.dll zxid.lib: libzxid.a
+	$(LD) $(OUTOPT)zxid.dll $(SHARED_FLAGS) -Wl,--output-def,zxid.def,--out-implib,zxid.lib $^ $(SHARED_CLOSE) $(WIN_LIBS)
 
 # N.B. Failing to supply -Wl,-no-whole-archive above will cause
 # /apps/gcc/mingw/sysroot/lib/libmingw32.a(main.o):main.c:(.text+0x106): undefined reference to `WinMain@16'
@@ -1042,7 +1148,7 @@ zxid.dll: libzxid.a
 ### TAS3 Project Specific Targets
 ###
 
-TAS3COMMONFILES=README.zxid-tas3 README.zxid Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay Makefile
+TAS3COMMONFILES=README.zxid-tas3 README.zxid Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay Makefile zxmkdirs.sh
 
 TAS3MAS=T3-SSO-ZXID-MODAUTHSAML_$(ZXIDREL)
 
@@ -1066,11 +1172,12 @@ tas3phppkg: php/php_zxid.so
 
 TAS3JAVA=T3-SSO-ZXID-JAVA_$(ZXIDREL)
 
-tas3javapkg: zxidjava/libzxidjni.so zxidjava/zxidjni.class
+tas3javapkg: $(ZXIDJNI_SO) zxidjava/zxidjni.class
 	rm -rf $(TAS3JAVA) $(TAS3JAVA).zip
 	mkdir $(TAS3JAVA)
+	mkdir $(TAS3JAVA)/zxidjava
 	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' <Manifest.T3-SSO-ZXID-JAVA >$(TAS3JAVA)/Manifest
-	cp zxidjava/libzxidjni.so zxidjava/*.java zxidjava/*.class zxidjava/README.zxid-java zxid-java.pd $(TAS3JAVA)
+	cp $(ZXIDJNI_SO) zxidjava/*.java zxidjava/*.class zxidjava/README.zxid-java zxid-java.pd $(TAS3JAVA)/zxidjava
 	cp $(TAS3COMMONFILES) $(TAS3JAVA)
 	zip -r $(TAS3JAVA).zip $(TAS3JAVA)
 
@@ -1084,6 +1191,52 @@ tas3idppkg: zxididp zxpasswd zxcot zxdecode
 	cp $(TAS3COMMONFILES) $(TAS3IDP)
 	zip -r $(TAS3IDP).zip $(TAS3IDP)
 
+TAS3LINUXX86=T3-ZXID-LINUX-X86_$(ZXIDREL)
+
+tas3linuxx86pkg: zxididp zxpasswd zxcot zxdecode zxlogview mod_auth_saml.so php/php_zxid.so $(ZXIDJNI_SO) zxidjava/zxidjni.class
+	rm -rf $(TAS3LINUXX86) $(TAS3LINUXX86).zip
+	mkdir $(TAS3LINUXX86)
+	mkdir $(TAS3LINUXX86)/zxidjava
+	mkdir $(TAS3LINUXX86)/include
+	mkdir $(TAS3LINUXX86)/include/zx
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' < Manifest.T3-ZXID-LINUX-X86 > $(TAS3LINUXX86)/Manifest
+	cp mod_auth_saml.so $(TAS3LINUXX86)
+	cp *.php php/php_zxid.so php/zxid.php php/zxid.ini php/README.zxid-php zxid-php.pd $(TAS3LINUXX86)
+	cp zxididp zxpasswd zxcot zxdecode zxlogview zxid-idp.pd $(TAS3LINUXX86)
+	cp libzxid.a $(TAS3LINUXX86)
+	cp $(ZXIDHDRS) $(TAS3LINUXX86)/include/zx
+	cp $(ZXIDJNI_SO) zxidjava/*.java zxidjava/*.class zxidjava/README.zxid-java zxid-java.pd $(TAS3LINUXX86)/zxidjava
+	cp $(TAS3COMMONFILES) $(TAS3LINUXX86)
+	zip -r $(TAS3LINUXX86).zip $(TAS3LINUXX86)
+
+TAS3WIN32=T3-ZXID-WIN32_$(ZXIDREL)
+
+#tas3win32pkg: mod_auth_saml.so php/php_zxid.so
+#	cp mod_auth_saml.so $(TAS3LINUXX86)
+#	cp *.php php/php_zxid.dll php/zxid.php php/zxid.ini php/README.zxid-php zxid-php.pd $(TAS3LINUXX86)
+
+tas3win32pkg: zxid.dll zxididp zxpasswd zxcot zxdecode zxlogview $(ZXIDJNI_SO) zxidjava/zxidjni.class zxidappdemo.class zxidjava.jar zxiddemo.war
+	rm -rf $(TAS3WIN32) $(TAS3WIN32).zip
+	mkdir $(TAS3WIN32)
+	mkdir $(TAS3WIN32)/include
+	mkdir $(TAS3WIN32)/include/zx
+	$(SED) 's/^Version: .*/Version: $(ZXIDREL)/' < Manifest.T3-ZXID-WIN32 > $(TAS3WIN32)/Manifest
+	cp zxid.dll zxid.lib $(TAS3WIN32)/
+	cp $(ZXIDHDRS) $(TAS3WIN32)/include/zx
+	cp zxididp $(TAS3WIN32)/zxididp.exe
+	cp zxpasswd $(TAS3WIN32)/zxpasswd.exe
+	cp zxcot $(TAS3WIN32)/zxcot.exe
+	cp zxdecode $(TAS3WIN32)/zxdecode.exe
+	cp zxlogview $(TAS3WIN32)/zxlogview.exe
+	cp zxid-idp.pd $(TAS3WIN32)
+	cp mod_auth_saml.dll $(TAS3WIN32)
+	cp *.php php/php_zxid.dll php/zxid.php php/zxid.ini php/README.zxid-php zxid-php.pd $(TAS3WIN32)
+	cp $(ZXIDJNI_SO) $(TAS3WIN32)/
+	cp zxidjava.jar zxiddemo.war zxid-java.pd $(TAS3WIN32)
+	cp *.java *.class $(TAS3WIN32)
+	cp $(TAS3COMMONFILES) $(TAS3WIN32)
+	zip -r $(TAS3WIN32).zip $(TAS3WIN32)
+
 TAS3SRC=T3-ZXID-SRC_$(ZXIDREL)
 
 tas3srcpkg: zxid-$(ZXIDREL).tgz
@@ -1094,64 +1247,122 @@ tas3srcpkg: zxid-$(ZXIDREL).tgz
 	cp README.zxid-tas3 Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay $(TAS3SRC)
 	zip -r $(TAS3SRC).zip $(TAS3SRC)
 
-tas3rel: tas3idppkg tas3javapkg tas3phppkg tas3maspkg tas3srcpkg
+#tas3rel: tas3idppkg tas3javapkg tas3phppkg tas3maspkg tas3srcpkg
+#tas3copyrel: tas3rel
+#	scp $(TAS3SRC).zip $(TAS3IDP).zip $(TAS3JAVA).zip $(TAS3PHP).zip $(TAS3MAS).zip tas3repo:pool-in
+
+tas3rel: tas3linuxx86pkg tas3srcpkg
+
+# tas3pool T3-ZXID-SRC_0.54.zip && tas3pool -u T3-ZXID-SRC_0.54.zip
+# tas3pool T3-ZXID-LINUX-X86_0.54.zip && tas3pool -u T3-ZXID-LINUX-X86_0.54.zip
+# tas3pool T3-ZXID-WIN32_0.56.zip
 
 tas3copyrel: tas3rel
-	scp $(TAS3SRC).zip $(TAS3IDP).zip $(TAS3JAVA).zip $(TAS3PHP).zip $(TAS3MAS).zip tas3repo:pool-in
+	scp $(TAS3SRC).zip $(TAS3LINUXX86).zip tas3repo:pool-in
 
 ###
 ### Precheck to help analyse compilation problems
 ###
 
-precheck/chk-zlib: precheck/chk-zlib.o
-	$(LD) $(LDFLAGS) -o $@ $< $(LIBS)
+precheck/chk-zlib.exe: precheck/chk-zlib.$(OBJ_EXT)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
 
-precheck/chk-openssl: precheck/chk-openssl.o
-	$(LD) $(LDFLAGS) -o $@ $< $(LIBS)
+precheck/chk-openssl.exe: precheck/chk-openssl.$(OBJ_EXT)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
 
-precheck/chk-curl: precheck/chk-curl.o
-	$(LD) $(LDFLAGS) -o $@ $< $(LIBS)
+precheck/chk-curl.exe: precheck/chk-curl.$(OBJ_EXT)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
 
-precheck/chk-apache: precheck/chk-apache.o
-	$(LD) $(LDFLAGS) -o $@ $< $(LIBS)
+precheck/chk-apache.exe: precheck/chk-apache.$(OBJ_EXT)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
 
-
-precheck: precheck/chk-zlib.o precheck/chk-zlib precheck/chk-openssl.o precheck/chk-openssl \
-          precheck/chk-curl.o precheck/chk-curl
-	precheck/chk-zlib
-	precheck/chk-openssl
-	precheck/chk-curl
+ifeq ($(CROSS_COMPILE),1)
+precheck: precheck/chk-zlib.$(OBJ_EXT) precheck/chk-zlib.exe precheck/chk-openssl.$(OBJ_EXT) precheck/chk-openssl.exe precheck/chk-curl.$(OBJ_EXT) precheck/chk-curl.exe
+	@$(ECHO) "Cross compile simplified precheck ok."
+	@$(ECHO)
+else
+precheck: precheck/chk-zlib.$(OBJ_EXT) precheck/chk-zlib.exe precheck/chk-openssl.$(OBJ_EXT) precheck/chk-openssl.exe precheck/chk-curl.$(OBJ_EXT) precheck/chk-curl.exe
+	precheck/chk-zlib.exe
+	precheck/chk-openssl.exe
+	precheck/chk-curl.exe
 	@$(ECHO) "Precheck ok."
 	@$(ECHO)
+endif
 
 precheckclean:
-	rm -f precheck/*.o
-	rm -f precheck/chk-zlib	precheck/chk-openssl precheck/chk-curl precheck/chk-apache
+	rm -f precheck/*.$(OBJ_EXT)
+	rm -f precheck/chk-zlib.exe precheck/chk-openssl.exe precheck/chk-curl.exe precheck/chk-apache.exe
+
+%.obj: %.c
+	$(CC) $(CFLAGS) -Fo$@ -c $<
+
+###
+### Test suite
+###
+
+t/cot:
+	./mkdirs.sh t/
+
+t/idpcot:
+	./mkdirs.sh t/idp
+
+t/wspcot:
+	./mkdirs.sh t/wsp
+
+t/wsp2cot:
+	./mkdirs.sh t/wsp2
+
+test: t/cot t/idp t/wsp t/wsp2 zxencdectest zxcall zxididp
+	$(PERL) zxtest.pl -a
+
+#test: test.$(OBJ_EXT)
+#	$(CC) $(OUTOPT)$@ $< $(LIBZXID) $(LIBS)
+
+win32loadlibtest.exe: win32loadlibtest.$(OBJ_EXT)
+	$(CC) $(OUTOPT)$@ $<
+
+### Test dynamic link library loading (on Windows)
+
+zxidjava/testjni.class: zxidjava/testjni.java
+	cd zxidjava; $(JAVAC) $(JAVAC_FLAGS) test*.java
+
+zxidjava/testjni.$(OBJ_EXT): zxidjava/testjni.c
+	$(CC) -c $(OUTOPT)$@ $(JNI_INC) $(CFLAGS) $<
+
+zxidjava/libtestjni.a: zxidjava/testjni.$(OBJ_EXT)
+	$(AR) $@ $^
+
+zxidjava/testjni.dll: zxidjava/libtestjni.a
+	$(LD) $(OUTOPT)$@ $(SHARED_FLAGS) $^ $(SHARED_CLOSE)
+
+zxidjava/testmain: zxidjava/testmain.$(OBJ_EXT)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
+
+testmain.class: testmain.java
+	$(JAVAC) $(JAVAC_FLAGS) zxidjava/test*.java testmain.java
+
+testdll: zxidjava/testmain zxidjava/testjni.dll testmain.class
+
+testdll.zip: testdll
+	zip $@ zxidjava/testmain zxidjava/testjni.dll testmain.class testmain.java zxidjava/test*.class zxidjava/test*.java
+
+testdll.tar: testdll
+	tar cf $@ zxidjava/testmain zxidjava/testjni.dll testmain.class testmain.java zxidjava/test*.class zxidjava/test*.java
+
+testdllclean:
+	rm -rf testmain.class zxidjava/test*.class zxidjava/test*.$(OBJ_EXT) zxidjava/testmain zxidjava/libtestjni.a zxidjava/test*.dll
+
+testclean:
+	rm -rf t/*ses t/*user t/*/uid t/*nid t/*log t/*cot t/*pem tmp/*.out tmp/*.err
 
 ###
 ### Installation (needs more work, try `make dir' or `make dir ZXID_PATH=/var/zxid/idp')
+###  ./zxmkdirs.sh /var/zxid/idp
 ###
 
-ZXDIR= $(ZXID_PATH)ses \
-	$(ZXID_PATH)user \
-	$(ZXID_PATH)uid \
-	$(ZXID_PATH)nid \
-	$(ZXID_PATH)log $(ZXID_PATH)log/rely $(ZXID_PATH)log/issue \
-	$(ZXID_PATH)cot
-
 dir:
-	-mkdir -p $(ZXID_PATH)
-	-for d in $(ZXDIR); do mkdir $$d && chmod 02770 $$d; done
-	-mkdir $(ZXID_PATH)pem   # Our certificates and private keys (need to protect well)
-	chmod -R 02750 $(ZXID_PATH)pem
+	./zxmkdirs.sh
 	-cp default-cot/* $(ZXID_PATH)cot
-	@$(ECHO) "You may need to run"
-	@$(ECHO)
-	@$(ECHO) "    chown -R nobody $(ZXID_PATH)"
-	@$(ECHO)
-	@$(ECHO) "to make sure the zxid CGI script can write to the $(ZXID_PATH)"
-	@$(ECHO) "directory (substitute nobody with the user your web server runs as)."
-	@$(ECHO)
 
 #	cp zxid.pem $(ZXID_PATH)pem/sign-nopw-cert.pem
 #	cp zxid.pem $(ZXID_PATH)pem/enc-nopw-cert.pem
@@ -1211,17 +1422,29 @@ docclean:
 
 distclean: clean
 
+cleanbin:
+	rm -f zxid zxlogview zxbench zxencdectest libzxid.a libzxid.so* sizeof zxid.stderr
+	rm -f zxidhlo zxidhlowsf zxidhrxmlwsc zxidhrxmlwsp zxidsimple zxidsp zxidwsctool
+	rm -f zxidwspcgi zxidxfoobarwsp zxpasswd zxcot zxcall
+	rm -f mod_auth_saml.so zxididp zxdecode
+
 miniclean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean precheckclean
-	@$(ECHO) ------------------ Making clean
-	rm -f *.o zxid zxlogview zxbench zxencdectest libzxid.a libzxid.so* sizeof zxid.stderr
+	@$(ECHO) ------------------ Making miniclean
+	rm -f *.o *.obj zxid zxlogview zxbench zxencdectest libzxid.a libzxid.so* sizeof zxid.stderr
 	rm -f zxidhlo zxidhlowsf zxidhrxmlwsc zxidhrxmlwsp zxidsimple zxidsp zxidwsctool
 	rm -f mod_auth_saml.so zxididp
 	rm -f core* *~ .*~ .\#* c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
 
-cleaner: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javacleaner
-	@$(ECHO) ================== Making cleaner
-	rm -f c/*.[hc] c/*.gperf c/*.y deps deps.dep c/*.deps
+# make cleany && make genwrap ENA_GEN=1 && make all ENA_GEN=1
+
+cleany: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javacleaner
+	@$(ECHO) ------------------ Making cleany
+	rm -f c/*.[hc] c/*.gperf c/*.y
 	rm -rf pulver; mkdir pulver
+
+cleaner: cleany cleangcov
+	@$(ECHO) ================== Making cleaner
+	rm -f deps deps.dep c/*.deps
 
 regen: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javacleaner
 	@$(ECHO) ================== Making regen
@@ -1230,16 +1453,20 @@ regen: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javaclea
 # N.B. The clean and dist targets deliberately do not delete contents of
 #      directory c/ although they are generated files. This is to allow
 #      zxid to be built without the tools needed to generate those files.
-clean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean precheckclean
+clean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean precheckclean cleanbin
 	@$(ECHO) ------------------ Making clean
-	rm -f *.o zxid zxlogview zxbench zxencdectest libzxid.a libzxid.so* sizeof zxid.stderr
-	rm -f zxidhlo zxidhlowsf zxidhrxmlwsc zxidhrxmlwsp zxidsimple zxidsp zxidwsctool
-	rm -f mod_auth_saml.so zxididp zxdecode
-	rm -f core* *~ .*~ .\#* c/*.o c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
+	rm -f *.o c/*.o *.obj c/*.obj
+	rm -f core* *~ .*~ .\#* c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
 
-dist:
+winclean:
+	del /Q precheck\*.obj precheck\*.exe
+	del /Q *.obj c\*.obj
+
+# zxcot -n -g http://federation.njedge.net/metadata/njedge-fed-metadata.xml
+
+dist zxid-$(ZXIDREL).tgz:
 	rm -rf zxid-$(ZXIDREL)
-	mkdir zxid-$(ZXIDREL) zxid-$(ZXIDREL)/c zxid-$(ZXIDREL)/sg zxid-$(ZXIDREL)/t  zxid-$(ZXIDREL)/tex  zxid-$(ZXIDREL)/html zxid-$(ZXIDREL)/pulver zxid-$(ZXIDREL)/Net zxid-$(ZXIDREL)/Metadata zxid-$(ZXIDREL)/Raw zxid-$(ZXIDREL)/WSC zxid-$(ZXIDREL)/WSF_Raw zxid-$(ZXIDREL)/php zxid-$(ZXIDREL)/zxidjava zxid-$(ZXIDREL)/servlet zxid-$(ZXIDREL)/servlet/WEB-INF zxid-$(ZXIDREL)/servlet/META-INF zxid-$(ZXIDREL)/default-cot zxid-$(ZXIDREL)/py zxid-$(ZXIDREL)/ruby zxid-$(ZXIDREL)/csharp zxid-$(ZXIDREL)/precheck zxid-$(ZXIDREL)/pers zxid-$(ZXIDREL)/intra zxid-$(ZXIDREL)/protected zxid-$(ZXIDREL)/strong zxid-$(ZXIDREL)/other
+	mkdir zxid-$(ZXIDREL) zxid-$(ZXIDREL)/c zxid-$(ZXIDREL)/sg zxid-$(ZXIDREL)/t zxid-$(ZXIDREL)/tex  zxid-$(ZXIDREL)/html zxid-$(ZXIDREL)/pulver zxid-$(ZXIDREL)/Net zxid-$(ZXIDREL)/Metadata zxid-$(ZXIDREL)/Raw zxid-$(ZXIDREL)/WSC zxid-$(ZXIDREL)/WSF_Raw zxid-$(ZXIDREL)/php zxid-$(ZXIDREL)/zxidjava zxid-$(ZXIDREL)/servlet zxid-$(ZXIDREL)/servlet/WEB-INF zxid-$(ZXIDREL)/servlet/META-INF zxid-$(ZXIDREL)/default-cot zxid-$(ZXIDREL)/py zxid-$(ZXIDREL)/ruby zxid-$(ZXIDREL)/csharp zxid-$(ZXIDREL)/precheck zxid-$(ZXIDREL)/pers zxid-$(ZXIDREL)/intra zxid-$(ZXIDREL)/protected zxid-$(ZXIDREL)/strong zxid-$(ZXIDREL)/other
 	(cd zxid-$(ZXIDREL); ln -s . zx)
 	$(PERL) mkdist.pl zxid-$(ZXIDREL) <Manifest
 	tar czf zxid-$(ZXIDREL).tgz zxid-$(ZXIDREL)
@@ -1255,7 +1482,7 @@ winbindist:
 	rm -rf zxid-$(ZXIDREL)-win32-bin
 	mkdir zxid-$(ZXIDREL)-win32-bin zxid-$(ZXIDREL)-win32-bin/c zxid-$(ZXIDREL)-win32-bin/zxidjava  zxid-$(ZXIDREL)-win32-bin/php
 	cp zxid.dll zxidhlo zxidsimple zxididp zxcot zxpasswd zxdecode zxlogview smime *.a *.def *.h *.java *.class *.war zxid-$(ZXIDREL)-win32-bin
-	cp zxidjava/*.class zxidjava/libzxidjni.dll zxidjava/zxid_wrap.c zxid-$(ZXIDREL)-win32-bin/zxidjava
+	cp zxidjava/*.class $(ZXIDJNI_SO) zxidjava/zxid_wrap.c zxid-$(ZXIDREL)-win32-bin/zxidjava
 	cp COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay README.zxid README.zxid-win32 zxid-$(ZXIDREL)-win32-bin
 	cp c/*.h zxid-$(ZXIDREL)-win32-bin/c
 	zip -r zxid-$(ZXIDREL)-win32-bin.zip zxid-$(ZXIDREL)-win32-bin
@@ -1283,12 +1510,15 @@ winbindist:
 #   make winbindist
 #   make winbinrel
 #   make tas3rel
-#   make tas3copyrel
+#   make tas3copyrel    # tas3pool -u T3-ZXID-LINUX-X86_0.54.zip
 #   make gen ENA_GEN=1
 # zxid.user@lists.unh.edu
 
+#WEBROOT=sampo@zxid.org:zxid.org
+WEBROOT=sampo@zxidp.org:/var/zxid/webroot
+
 copydist:
-	scp zxid-$(ZXIDREL).tgz sampo@zxid.org:zxid.org
+	scp zxid-$(ZXIDREL).tgz $(WEBROOT)
 
 tex/%.pdf: %.pd
 	pd2tex -noref -nortf -nodbx -nohtml $<
@@ -1296,10 +1526,13 @@ tex/%.pdf: %.pd
 html/%.html: %.pd doc-inc.pd doc-end.pd
 	pd2tex -noref -nortf -nodbx -notex $<
 
+tex/README.zxid.pdf: README.zxid
+	pd2tex -noref -nortf -nodbx -nohtml $<
+
 html/README.zxid.html: README.zxid doc-inc.pd doc-end.pd
 	pd2tex -noref -nortf -nodbx -notex README.zxid
 
-DOC= html/README.zxid.html html/index.html html/apache.html html/mod_auth_saml.html html/zxid-simple.html html/zxid-install.html html/zxid-conf.html html/zxid-cot.html html/zxid-java.html html/zxid-log.html html/zxid-perl.html html/zxid-php.html html/zxid-raw.html html/zxid-wsf.html html/zxid-idp.html html/schemata.html
+DOC= html/README.zxid.html html/index.html html/apache.html html/mod_auth_saml.html html/zxid-simple.html html/zxid-install.html html/zxid-conf.html html/zxid-cot.html html/zxid-java.html html/zxid-log.html html/zxid-perl.html html/zxid-php.html html/zxid-raw.html html/zxid-wsf.html html/zxid-idp.html html/zxid-faq.html html/schemata.html
 
 doc: $(DOC)
 
@@ -1309,25 +1542,61 @@ cleandoc:
 	rm -f $(DOC)
 
 release:
-	scp $(DOC) tex/README.zxid.pdf html/README.zxid-win32.html html/i-*.png zxid-frame.html sampo@zxid.org:zxid.org
+	scp tex/README.zxid.pdf html/README.zxid-win32.html html/i-*.png zxid-frame.html $(WEBROOT)
 
 winbinrel:
-	scp zxid-$(ZXIDREL)-win32-bin.zip sampo@zxid.org:zxid.org
+	scp zxid-$(ZXIDREL)-win32-bin.zip $(WEBROOT)
 
 indexrel: html/index.html
-	scp $< sampo@zxid.org:zxid.org
+	scp $< $(WEBROOT)
+
+reldoc:
+	scp $(DOC)  $(WEBROOT)/html
 
 relhtml:
-	scp html/* sampo@zxid.org:zxid.org/html
+	scp html/*  $(WEBROOT)/html
 
 refhtml:
-	scp ref/html/* sampo@zxid.org:zxid.org/ref/html
+	scp ref/html/*  $(WEBROOT)/ref/html
+
+zxidpcopytc: html/zxidp-user-terms.html html/zxidp-sp-terms.html
+	scp html/zxidp-user-terms.html html/zxidp-sp-terms.html $(WEBROOT)/html
 
 rsynclite:
 	cd ..; rsync -a '--exclude=*.o' '--exclude=*.zip' '--exclude=TAGS' '--exclude=*.tgz' '--exclude=*.class' '--exclude=*.so' '--exclude=*.a'  '--exclude=zxlogview' '--exclude=zxidsimple'  '--exclude=zxidhlowsf'  '--exclude=zxidhlo' '--exclude=zxidsp' zxid mesozoic.homeip.net:
 
 cvstag:
 	cvs tag ZXID_ZXIDREL_$(ZXIDVERSION)
+
+### Coverage analysis
+
+gcov:
+	@$(ECHO) "Remember to compile for profiling: make ENA_PG=1 && make gcov"
+	gcov *.c */*.c
+
+# gcov /a/d/sampo/zxid/zxidconf.gcda -o /a/d/sampo/zxid -b -c -a -p
+
+covrep:
+	echo "*** This rule seems broken"
+	grep '#####:' *.c.gcov */*.c.gcov >uncovered.gcov
+	total=`cat *.c.gcov */*.c.gcov | wc -l`
+	inactive=`grep -e '-:' *.c.gcov */*.c.gcov | wc -l`
+	uncov=`cat uncovered.gcov | wc -l`
+	active=`expr $total - $inactive`
+	percent=`expr $uncov \* 100 / $active`
+	printf "Total source lines: %d, Active: %d, Not covered: %d (%.2f%%)\n" $total $active $uncov $percent
+
+lcov:
+	rm -rf lcovhtml; mkdir lcovhtml
+	lcov -d . -c -no-checksum -o lcovhtml/zxid.info
+	genhtml -t 'ZXID Code Coverage' -o lcovhtml lcovhtml/zxid.info
+
+cleangcov:
+	rm -f *.gcno *.gcda *.c.gcov *.y.gcov *.c-ann gmon.out
+	rm -f */*.gcno */*.gcda */*.c.gcov */*.y.gcov */*.c-ann */gmon.out
+	rm -f lcovhtml/zxid.info lcovhtml/zxid/*.html lcovhtml/zxid/c/*.html
+
+### Call graphs and reference documentation
 
 function.list: 
 	$(PERL) ./call-anal.pl -n *.c >/dev/null
@@ -1344,7 +1613,7 @@ API_REF_SRC=aux-templ.c dec-templ.c enc-templ.c getput-templ.c \
  mod_auth_saml.c \
  zxcrypto.c zxida7n.c zxidcdc.c zxidcgi.c zxidconf.c zxidcurl.c \
  zxidecp.c zxidepr.c zxidlib.c zxidloc.c \
- zxidmeta.c zxidmk.c zxidmkwsf.c zxidmni.c zxidpep.c \
+ zxidmeta.c zxidmk.c zxidmkwsf.c zxidmni.c zxidpep.c zxidpdp.c \
  zxidses.c zxidsimp.c zxidpool.c zxidslo.c zxidspx.c zxididpx.c zxiddec.c \
  zxidsso.c zxidpsso.c zxiddi.c \
  zxiduser.c zxidwsc.c zxidwsp.c \
@@ -1384,6 +1653,8 @@ dep: deps
 
 deps: $(ZXID_OBJ:.o=.c) $(WSF_OBJ:.o=.c) zxdecode.c zxcot.c zxpasswd.c zxidhlo.c zxidsp.c zxidsimple.c $(ZX_OBJ:.o=.c) $(ZX_GEN_H) $(ZX_GEN_C) c/zx-const.h c/zxidvers.h
 	$(CC) $(CDEF) $(CDIR) -MM $^ >deps.dep
+
+# make gen ENA_GEN=1
 
 endif
 
@@ -1425,6 +1696,7 @@ help:
 	@$(ECHO) "  JAVAC         Where to find javac; where jdk is installed"
 	@$(ECHO) "  JNI_INC       Where jni.h and jni_md.h are found"
 	@$(ECHO) "  SERVLET_PATH  Where servlet-api.jar is found; where Tomcat is installed."
+	@$(ECHO) "  SHARED        Set to 1 for shared object (DLL) build. Default: static."
 	@$(ECHO)
 	@$(ECHO) "Following make targets are available:"
 	@$(ECHO)

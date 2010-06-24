@@ -28,6 +28,7 @@
 #include <zx/wsf.h>
 #include <zx/c/zxidvers.h>
 #include <zx/c/zx-ns.h>
+#include <zx/c/zx-e-data.h>
 
 char* help =
 "zxidhrxmlwsc  -  SAML 2.0 SP + WSC CGI - R" ZXID_REL "\n\
@@ -108,14 +109,14 @@ int hrxml_parse_cgi(struct hrxml_cgi* cgi, char* qs)
 int main(int argc, char** argv)
 {
   struct zx_ctx ctx;
-  struct zxid_conf cfs;
+  zxid_conf cfs;
   struct hrxml_cgi cgi;
-  struct zxid_conf* cf;
-  struct zxid_ses sess;
-  struct zxid_ses* ses;
+  zxid_conf* cf;
+  zxid_ses sess;
+  zxid_ses* ses;
   struct zx_root_s* r;
   struct zx_e_Envelope_s* env;
-  struct zx_a_EndpointReference_s* epr;
+  zxid_epr* epr;
   struct zx_str* ss;
   char* p;
   char* sid;
@@ -159,7 +160,7 @@ int main(int argc, char** argv)
 
 #if 1
   zx_reset_ctx(&ctx);
-  memset(&cfs, 0, sizeof(struct zxid_conf));
+  memset(&cfs, 0, sizeof(zxid_conf));
   cfs.ctx = &ctx;
   cf = &cfs;
   zxid_conf_to_cf_len(cf, -1, CONF);
@@ -223,7 +224,7 @@ int main(int argc, char** argv)
   switch (cgi.op) {
 
   case HRXMLOP_CREATE:
-    D("Here %p", 0);
+    D("Here %d", 0);
     epr = zxid_get_epr(cf, ses, zx_xmlns_idhrxml, 0, 0, 0, 1);
     if (!epr) {
       ERR("EPR could not be discovered %d", 0);
@@ -240,8 +241,10 @@ int main(int argc, char** argv)
     
     /* Parse the XML from the form field into data structure and include it as NewData. */
     
+    LOCK(cf->ctx->mx, "hrxml wsc");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, cgi.data, cgi.data + strlen(cgi.data));
     r = zx_DEC_root(cf->ctx, 0, 1);
+    UNLOCK(cf->ctx->mx, "hrxml wsc");
     if (!r->Candidate) {
       ERR("No hrxml:Candidate tag found in form field hrxmldata(%s)", cgi.data);
       hrxml_resp = "No hrxml:Candidate tag found in form field hrxmldata.";

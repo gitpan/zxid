@@ -23,10 +23,6 @@
 #include <sys/stat.h>
 //#include <sys/wait.h>
 
-#ifdef USE_CURL
-#include <curl/curl.h>
-#endif
-
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
@@ -69,7 +65,6 @@ Usage: zxid [options] < foo.xml\n\
 char* instance = "zxidxmltool";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
-int debugpoll = 0;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
@@ -81,8 +76,8 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 char buf[256*1024];
 
-/* Called by:  main x9 */
-void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid_cgi* cgi)
+/* Called by:  main x8, zxcall_main, zxcot_main */
+void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
 {
   char* conf_path = 0;
   if (*argc <= 1) return;
@@ -123,9 +118,6 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       case '\0':
 	++zx_debug;
 	continue;
-      case 'p':  if ((*argv)[0][3]) break;
-	++debugpoll;
-	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
@@ -148,7 +140,7 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
       switch ((*argv)[0][2]) {
       case 'm':
 	if (!strcmp((*argv)[0],"-import")) {
-	  struct zxid_entity* ent;
+	  zxid_entity* ent;
 	  ++(*argv); --(*argc);
 	  if (!(*argc)) break;
 	  cf->ctx->ns_tab = zx_ns_tab;
@@ -301,14 +293,14 @@ void opt(int* argc, char*** argv, char*** env, struct zxid_conf* cf, struct zxid
 /* Called by: */
 int main(int argc, char** argv, char** env)
 {
-  struct zxid_conf* cf = zxid_new_conf(ZXID_PATH);
-  struct zxid_ses ses;
-  struct zxid_cgi cgi;
+  zxid_conf* cf = zxid_new_conf(ZXID_PATH);
+  zxid_ses ses;
+  zxid_cgi cgi;
   int got;
   char* qs;
   char* cont_len;
   struct zx_str* ss;
-  struct zxid_entity* idp;
+  zxid_entity* idp;
   
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */
@@ -466,10 +458,10 @@ int main(int argc, char** argv, char** env)
     for (; idp; idp = idp->n) {
       if (!idp->ed->IDPSSODescriptor)
 	continue;
-      printf("<input type=submit name=\"l1%.*s\" value=\" Login to %.*s (SAML20:Artifact) \">\n",
-	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
-      printf("<input type=submit name=\"l2%.*s\" value=\" Login to %.*s (SAML20:POST) \">\n",
-	     idp->eid_len, idp->eid, idp->eid_len, idp->eid);
+      printf("<input type=submit name=\"l1%s\" value=\" Login to %s (SAML20:Artifact) \">\n",
+	     idp->eid, idp->eid);
+      printf("<input type=submit name=\"l2%s\" value=\" Login to %s (SAML20:POST) \">\n",
+	     idp->eid, idp->eid);
     }
   }
   

@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_fdtype {
+public class zxid_a7n {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_fdtype(long cPtr, boolean futureUse) {
+  protected zxid_a7n(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_fdtype() {
+  protected zxid_a7n() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_fdtype obj) {
+  protected static long getCPtr(zxid_a7n obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

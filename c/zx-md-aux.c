@@ -60,7 +60,7 @@ void zx_FREE_md_AdditionalMetadataLocation(struct zx_ctx* c, struct zx_md_Additi
 {
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_free_attr(c, x->namespace, free_strs);
+  zx_free_attr(c, x->namespace_is_cxx_keyword, free_strs);
 
 
 
@@ -96,7 +96,7 @@ void zx_DUP_STRS_md_AdditionalMetadataLocation(struct zx_ctx* c, struct zx_md_Ad
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  zx_dup_attr(c, x->namespace);
+  zx_dup_attr(c, x->namespace_is_cxx_keyword);
 
 
 }
@@ -112,7 +112,7 @@ struct zx_md_AdditionalMetadataLocation_s* zx_DEEP_CLONE_md_AdditionalMetadataLo
   x = (struct zx_md_AdditionalMetadataLocation_s*)zx_clone_elem_common(c, &x->gg, sizeof(struct zx_md_AdditionalMetadataLocation_s), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
-  x->namespace = zx_clone_attr(c, x->namespace);
+  x->namespace_is_cxx_keyword = zx_clone_attr(c, x->namespace_is_cxx_keyword);
 
 
   return x;
@@ -3421,6 +3421,14 @@ void zx_FREE_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x, int f
 	  zx_FREE_shibmd_KeyAuthority(c, e, free_strs);
       }
   }
+  {
+      struct zx_idpdisc_DiscoveryResponse_s* e;
+      struct zx_idpdisc_DiscoveryResponse_s* en;
+      for (e = x->DiscoveryResponse; e; e = en) {
+	  en = (struct zx_idpdisc_DiscoveryResponse_s*)e->gg.g.n;
+	  zx_FREE_idpdisc_DiscoveryResponse(c, e, free_strs);
+      }
+  }
 
 
   zx_free_elem_common(c, &x->gg, free_strs); 
@@ -3466,6 +3474,11 @@ void zx_DUP_STRS_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x)
       for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n)
 	  zx_DUP_STRS_shibmd_KeyAuthority(c, e);
   }
+  {
+      struct zx_idpdisc_DiscoveryResponse_s* e;
+      for (e = x->DiscoveryResponse; e; e = (struct zx_idpdisc_DiscoveryResponse_s*)e->gg.g.n)
+	  zx_DUP_STRS_idpdisc_DiscoveryResponse(c, e);
+  }
 
 }
 
@@ -3507,6 +3520,19 @@ struct zx_md_Extensions_s* zx_DEEP_CLONE_md_Extensions(struct zx_ctx* c, struct 
 	  enn = en;
       }
   }
+  {
+      struct zx_idpdisc_DiscoveryResponse_s* e;
+      struct zx_idpdisc_DiscoveryResponse_s* en;
+      struct zx_idpdisc_DiscoveryResponse_s* enn;
+      for (enn = 0, e = x->DiscoveryResponse; e; e = (struct zx_idpdisc_DiscoveryResponse_s*)e->gg.g.n) {
+	  en = zx_DEEP_CLONE_idpdisc_DiscoveryResponse(c, e, dup_strs);
+	  if (!enn)
+	      x->DiscoveryResponse = en;
+	  else
+	      enn->gg.g.n = &en->gg.g;
+	  enn = en;
+      }
+  }
 
   return x;
 }
@@ -3541,6 +3567,14 @@ int zx_WALK_SO_md_Extensions(struct zx_ctx* c, struct zx_md_Extensions_s* x, voi
       struct zx_shibmd_KeyAuthority_s* e;
       for (e = x->KeyAuthority; e; e = (struct zx_shibmd_KeyAuthority_s*)e->gg.g.n) {
 	  ret = zx_WALK_SO_shibmd_KeyAuthority(c, e, ctx, callback);
+	  if (ret)
+	      return ret;
+      }
+  }
+  {
+      struct zx_idpdisc_DiscoveryResponse_s* e;
+      for (e = x->DiscoveryResponse; e; e = (struct zx_idpdisc_DiscoveryResponse_s*)e->gg.g.n) {
+	  ret = zx_WALK_SO_idpdisc_DiscoveryResponse(c, e, ctx, callback);
 	  if (ret)
 	      return ret;
       }

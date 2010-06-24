@@ -29,10 +29,10 @@
 #include "c/zx-data.h"
 #include "c/zx-m20-data.h"
 
-/* FUNC(zx_m20_AdditionalMetaLocation_GET_namespace) */
-struct zx_str* zx_m20_AdditionalMetaLocation_GET_namespace(struct zx_m20_AdditionalMetaLocation_s* x) { return x->namespace; }
-/* FUNC(zx_m20_AdditionalMetaLocation_PUT_namespace) */
-void zx_m20_AdditionalMetaLocation_PUT_namespace(struct zx_m20_AdditionalMetaLocation_s* x, struct zx_str* y) { x->namespace = y; }
+/* FUNC(zx_m20_AdditionalMetaLocation_GET_namespace_is_cxx_keyword) */
+struct zx_str* zx_m20_AdditionalMetaLocation_GET_namespace_is_cxx_keyword(struct zx_m20_AdditionalMetaLocation_s* x) { return x->namespace_is_cxx_keyword; }
+/* FUNC(zx_m20_AdditionalMetaLocation_PUT_namespace_is_cxx_keyword) */
+void zx_m20_AdditionalMetaLocation_PUT_namespace_is_cxx_keyword(struct zx_m20_AdditionalMetaLocation_s* x, struct zx_str* y) { x->namespace_is_cxx_keyword = y; }
 
 
 
