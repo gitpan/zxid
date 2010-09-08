@@ -11,6 +11,8 @@
  * 1.2.2008,  created --Sampo
  * 22.2.2008, distilled to much more compact version --Sampo
  * 25.8.2009, add attribute passing and pep call --Sampo
+ * 11.1.2010, refactoring and review --Sampo
+ * 15.7.2010, consider passing to simple layer more data about the request --Sampo
  *
  * To configure this module add to httpd.conf something like
  *
@@ -54,7 +56,7 @@ extern module AP_MODULE_DECLARE_DATA auth_saml_module;
 
 #if 0
 /* This function is run when each child process of apache starts. It does
- * initializations that do not survice fork(2). */
+ * initializations that do not survive fork(2). */
 /* Called by: */
 static void chldinit(apr_pool_t* p, server_rec* s)
 {
@@ -136,7 +138,7 @@ static int pool2apache(zxid_conf* cf, request_rec* r, struct zxid_attr* pool)
 	apr_table_setn(r->headers_out, "Location", rs);
 	ret = HTTP_SEE_OTHER;
       } else {
-	/* *** any attributes after may not appear in subrequest */
+	/* *** any attributes after this point may not appear in subrequest */
 	ap_internal_redirect_handler(rs, r);
       }
     }
@@ -274,7 +276,7 @@ static int chkuid(request_rec* r)
   memset(&cgi, 0, sizeof(zxid_cgi));
   memset(&ses, 0, sizeof(zxid_ses));
 
-  D("START %s req=%p uri(%s) args(%s)", ZXID_REL, r, r?STRNULLCHK(r->uri):"", r?STRNULLCHK(r->args):"");
+  D("===== START %s req=%p uri(%s) args(%s)", ZXID_REL, r, r?STRNULLCHK(r->uri):"", r?STRNULLCHK(r->args):"");
   
   if (r->main) {  /* subreq can't come from net: always auth. */
     D("sub ok %d", OK);
@@ -305,7 +307,7 @@ static int chkuid(request_rec* r)
   /* Redirect hack */
   
   if (cf->redirect_hack_imposed_url && !strcmp(r->uri, cf->redirect_hack_imposed_url)) {
-    D("Redirect hack: mapping imposed(%s) to zxid(%s)", r->uri, cf->redirect_hack_zxid_url);
+    D("Redirect hack: mapping(%s) imposed to zxid(%s)", r->uri, cf->redirect_hack_zxid_url);
     r->uri = cf->redirect_hack_zxid_url;
     if (cf->redirect_hack_zxid_qs) {
       if (r->args) {
@@ -329,8 +331,7 @@ static int chkuid(request_rec* r)
   if (p == cf->url)
     p = cf->url + url_len;
   
-  if (url_len >= uri_len
-      && !memcmp(p - uri_len, r->uri, uri_len)) {  /* Suffix match */
+  if (url_len >= uri_len && !memcmp(p - uri_len, r->uri, uri_len)) {  /* Suffix match */
     zxid_parse_cgi(&cgi, r->args);
     if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("matched uri(%s) cf->url(%s) qs(%s) rs(%s) op(%c)", r->uri, cf->url, r->args, cgi.rs, cgi.op);
     if (r->method_number == M_POST) {
@@ -374,17 +375,17 @@ static int chkuid(request_rec* r)
     /* Some other page. Just check for session. */
     if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("other page uri(%s) qs(%s) cf->url(%s) uri_len=%d url_len=%d", r->uri, STRNULLCHKNULL(r->args), cf->url, uri_len, url_len);
     cgi.op = 'E';
-    cgi.rs = r->uri;
+    cgi.rs = r->uri;  /* Will be copied to ses->rs and from there in ab_pep to resource-id */
     if (cf->defaultqs && cf->defaultqs[0]) {
       if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("DEFAULTQS(%s)", cf->defaultqs);
       zxid_parse_cgi(&cgi, cf->defaultqs);
     }
-    if (!cgi.sid || !zxid_get_ses(cf, &ses, cgi.sid)) {
-      D("No session(%s) active op(%c)", STRNULLCHK(cgi.sid), cgi.op);
-    } else {
+    if (cgi.sid && cgi.sid[0] && zxid_get_ses(cf, &ses, cgi.sid)) {
       res = zxid_simple_ses_active_cf(cf, &cgi, &ses, 0, AUTO_FLAGS);
       if (res)
 	goto process_zxid_simple_outcome;
+    } else {
+      D("No session(%s) active op(%c)", STRNULLCHK(cgi.sid), cgi.op);
     }
     D("other page: no_ses uri(%s)", r->uri);
   }

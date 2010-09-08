@@ -146,13 +146,12 @@ static struct zx_str* zxid_anoint_sso_resp(zxid_conf* cf, int sign, struct zx_sp
 }
 
 /*() Parse LDIF format and insert attributes to linked list. Return new head of the list.
- * The input is temporarily modified and then restored. Do not pass const string.
- * *** illegal input causes corrupt pointer. For example query string input causes corruption. */
+ * The input is temporarily modified and then restored. Do not pass const string. */
 
 /* Called by:  zxid_mk_user_a7n_to_sp x4 */
 struct zx_sa_Attribute_s* zxid_add_ldif_attrs(zxid_conf* cf, struct zx_sa_Attribute_s* prev, int len, char* p, char* lk)
 {
-  struct zx_sa_Attribute_s* at;
+  struct zx_sa_Attribute_s* at = prev;
   char* name;
   char* val;
 
@@ -175,6 +174,8 @@ struct zx_sa_Attribute_s* zxid_add_ldif_attrs(zxid_conf* cf, struct zx_sa_Attrib
     val[-2] = ':'; /* restore */
     if (p)
       *p = '\n';
+    else
+      break;
   }
   return at;
 }
@@ -300,6 +301,7 @@ zxid_a7n* zxid_mk_user_a7n_to_sp(zxid_conf* cf, zxid_ses* ses, const char* uid, 
   struct zx_sa_Subject_s* subj;
   struct zx_sa_AuthnStatement_s* an_stmt;
   struct zx_sa_AttributeStatement_s* at_stmt;
+  struct zx_sa_Attribute_s* at;
   char buf[ZXID_MAX_USER];
   int got;
 
@@ -311,6 +313,18 @@ zxid_a7n* zxid_mk_user_a7n_to_sp(zxid_conf* cf, zxid_ses* ses, const char* uid, 
   at_stmt = zx_NEW_sa_AttributeStatement(cf->ctx);
   at_stmt->Attribute = zxid_mk_attribute(cf, "zxididp", ZXID_REL " " ZXID_COMPILE_DATE);
 
+  if (cf->fedusername_suffix && cf->fedusername_suffix[0]) {
+    snprintf(buf, sizeof(buf), "%.*s@%s", nameid->gg.content->len, nameid->gg.content->s, cf->fedusername_suffix);
+    at = zxid_mk_attribute(cf, "fedusername", zx_dup_cstr(cf->ctx, buf));
+    ZX_NEXT(at) = (void*)at_stmt->Attribute;
+    at_stmt->Attribute = at;
+    if (cf->idpatopt & 0x01) {
+      at = zxid_mk_attribute(cf, "urn:oid:1.3.6.1.4.1.5923.1.1.1.6" /* eduPersonPrincipalName */, zx_dup_cstr(cf->ctx, buf));
+      at->NameFormat = zx_dup_str(cf->ctx, "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
+      ZX_NEXT(at) = (void*)at_stmt->Attribute;
+      at_stmt->Attribute = at;
+    }
+  }
   got = read_all(sizeof(buf)-1, buf, "idpsso_uid_at", "%s" ZXID_UID_DIR "%s/.bs/.at" , cf->path, uid);
   if (got) {
     at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute, got, buf, "idpsso_uid_at");
@@ -650,7 +664,8 @@ struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct 
 			  &srcts, ar->Issuer->gg.content, ar->ID, sp_name_buf);
 
   if (nameid) {
-    if (!cgi->nid_fmt || !cgi->nid_fmt[0] || !strcmp(cgi->nid_fmt, "trnsnt")) {
+    if (cgi->nid_fmt && !strcmp(cgi->nid_fmt, "trnsnt")) {
+      D("Despite old fed, using transient due to cgi->nid_fmt(%s)", STRNULLCHKD(cgi->nid_fmt));
       zxid_mk_transient_nid(cf, nameid, sp_name_buf, ses->uid);
       logop = "ITSSO";
     } else
@@ -664,8 +679,18 @@ struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct 
 
   a7n = zxid_mk_user_a7n_to_sp(cf, ses, ses->uid, nameid, sp_meta, sp_name_buf, 1);  /* SSO a7n */
 
-  /* Sign, encrypt, and ship the assertion according to the binding. */
+  /* saml-profiles-2.0-os.pdf ll.549-551 requires SubjectConfirmation even though
+   * saml-core-2.0-os.pdf ll.653-657 says <SubjectConfirmation> [Zero or More]. The
+   * profile seems to make it mandatory. See profiles ll.554-560. */
 
+  a7n->Subject->SubjectConfirmation = zx_NEW_sa_SubjectConfirmation(cf->ctx);
+  a7n->Subject->SubjectConfirmation->Method = zx_dup_str(cf->ctx, SAML2_BEARER);
+  a7n->Subject->SubjectConfirmation->SubjectConfirmationData = zx_NEW_sa_SubjectConfirmationData(cf->ctx);
+  a7n->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = acsurl;
+  a7n->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = a7n->Conditions->NotOnOrAfter;
+  
+  /* Sign, encrypt, and ship the assertion according to the binding. */
+  
   switch (binding) {
   case 'e':
     D("SAML2 PAOS ep(%.*s)", acsurl->len, acsurl->s);
@@ -744,6 +769,10 @@ struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct 
       return zx_dup_str(cf->ctx, "* ERR");
     resp = zxid_mk_saml_resp(cf);
     if (cf->post_a7n_enc) {
+      /* See saml-bindings-2.0-os.pdf, sec 3.5.5.2 Security Considerations, p.24, ll.847-851
+       * After publication it was understood that the SHOULD NOT could be eliminated
+       * if EncryptedAssertion is used. */
+
       resp->EncryptedAssertion = zxid_mk_enc_a7n(cf, a7n, sp_meta);
     } else {
       resp->Assertion = a7n;

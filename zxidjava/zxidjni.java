@@ -1158,20 +1158,20 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxid_conf_notimestamp_fatal_get(zxid_conf.getCPtr(self));
   }
 
-  public static void conf_pad2_set(zxid_conf self, char value) {
-    zxidjniJNI.zxid_conf_pad2_set(zxid_conf.getCPtr(self), value);
+  public static void conf_enckey_opt_set(zxid_conf self, char value) {
+    zxidjniJNI.zxid_conf_enckey_opt_set(zxid_conf.getCPtr(self), value);
   }
 
-  public static char conf_pad2_get(zxid_conf self) {
-    return zxidjniJNI.zxid_conf_pad2_get(zxid_conf.getCPtr(self));
+  public static char conf_enckey_opt_get(zxid_conf self) {
+    return zxidjniJNI.zxid_conf_enckey_opt_get(zxid_conf.getCPtr(self));
   }
 
-  public static void conf_pad3_set(zxid_conf self, char value) {
-    zxidjniJNI.zxid_conf_pad3_set(zxid_conf.getCPtr(self), value);
+  public static void conf_idpatopt_set(zxid_conf self, char value) {
+    zxidjniJNI.zxid_conf_idpatopt_set(zxid_conf.getCPtr(self), value);
   }
 
-  public static char conf_pad3_get(zxid_conf self) {
-    return zxidjniJNI.zxid_conf_pad3_get(zxid_conf.getCPtr(self));
+  public static char conf_idpatopt_get(zxid_conf self) {
+    return zxidjniJNI.zxid_conf_idpatopt_get(zxid_conf.getCPtr(self));
   }
 
   public static void conf_pad4_set(zxid_conf self, char value) {
@@ -1300,6 +1300,14 @@ public class zxidjni implements zxidjniConstants {
 
   public static String conf_contact_tel_get(zxid_conf self) {
     return zxidjniJNI.zxid_conf_contact_tel_get(zxid_conf.getCPtr(self));
+  }
+
+  public static void conf_fedusername_suffix_set(zxid_conf self, String value) {
+    zxidjniJNI.zxid_conf_fedusername_suffix_set(zxid_conf.getCPtr(self), value);
+  }
+
+  public static String conf_fedusername_suffix_get(zxid_conf self) {
+    return zxidjniJNI.zxid_conf_fedusername_suffix_get(zxid_conf.getCPtr(self));
   }
 
   public static void conf_ses_arch_dir_set(zxid_conf self, String value) {
@@ -2416,6 +2424,14 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxid_ses_rs_get(zxid_ses.getCPtr(self));
   }
 
+  public static void ses_an_instant_set(zxid_ses self, int value) {
+    zxidjniJNI.zxid_ses_an_instant_set(zxid_ses.getCPtr(self), value);
+  }
+
+  public static int ses_an_instant_get(zxid_ses self) {
+    return zxidjniJNI.zxid_ses_an_instant_get(zxid_ses.getCPtr(self));
+  }
+
   public static void ses_nameid_set(zxid_ses self, zxid_nid value) {
     zxidjniJNI.zxid_ses_nameid_set(zxid_ses.getCPtr(self), zxid_nid.getCPtr(value));
   }
@@ -2930,8 +2946,8 @@ public class zxidjni implements zxidjniConstants {
 
   public static String zxenc_privkey_dec(zxid_conf cf, SWIGTYPE_p_zx_xenc_EncryptedData_s ed, SWIGTYPE_p_zx_xenc_EncryptedKey_s ek) { return zxidjniJNI.zxenc_privkey_dec(zxid_conf.getCPtr(cf), SWIGTYPE_p_zx_xenc_EncryptedData_s.getCPtr(ed), SWIGTYPE_p_zx_xenc_EncryptedKey_s.getCPtr(ek)); }
 
-  public static SWIGTYPE_p_zx_xenc_EncryptedData_s zxenc_symkey_enc(zxid_conf cf, String data, String ed_id, String symkey, String symkey_id) {
-    long cPtr = zxidjniJNI.zxenc_symkey_enc(zxid_conf.getCPtr(cf), data, ed_id, symkey, symkey_id);
+  public static SWIGTYPE_p_zx_xenc_EncryptedData_s zxenc_symkey_enc(zxid_conf cf, String data, String ed_id, String symkey, SWIGTYPE_p_zx_xenc_EncryptedKey_s ek) {
+    long cPtr = zxidjniJNI.zxenc_symkey_enc(zxid_conf.getCPtr(cf), data, ed_id, symkey, SWIGTYPE_p_zx_xenc_EncryptedKey_s.getCPtr(ek));
     return (cPtr == 0) ? null : new SWIGTYPE_p_zx_xenc_EncryptedData_s(cPtr, false);
   }
 
@@ -3508,6 +3524,26 @@ public class zxidjni implements zxidjniConstants {
 
   public static String az(String conf, String qs, String sid) {
     return zxidjniJNI.zxid_az(conf, qs, sid);
+  }
+
+  public static String pep_az_base_soap_pepmap(zxid_conf cf, zxid_cgi cgi, zxid_ses ses, String pdp_url, SWIGTYPE_p_zxid_map pepmap) {
+    return zxidjniJNI.zxid_pep_az_base_soap_pepmap(zxid_conf.getCPtr(cf), zxid_cgi.getCPtr(cgi), zxid_ses.getCPtr(ses), pdp_url, SWIGTYPE_p_zxid_map.getCPtr(pepmap));
+  }
+
+  public static String pep_az_base_soap(zxid_conf cf, zxid_cgi cgi, zxid_ses ses, String pdp_url) {
+    return zxidjniJNI.zxid_pep_az_base_soap(zxid_conf.getCPtr(cf), zxid_cgi.getCPtr(cgi), zxid_ses.getCPtr(ses), pdp_url);
+  }
+
+  public static String az_base_cf_ses(zxid_conf cf, String qs, zxid_ses ses) {
+    return zxidjniJNI.zxid_az_base_cf_ses(zxid_conf.getCPtr(cf), qs, zxid_ses.getCPtr(ses));
+  }
+
+  public static String az_base_cf(zxid_conf cf, String qs, String sid) {
+    return zxidjniJNI.zxid_az_base_cf(zxid_conf.getCPtr(cf), qs, sid);
+  }
+
+  public static String az_base(String conf, String qs, String sid) {
+    return zxidjniJNI.zxid_az_base(conf, qs, sid);
   }
 
   public static int localpdp(zxid_conf cf, zxid_ses ses) {

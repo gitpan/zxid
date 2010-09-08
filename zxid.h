@@ -199,8 +199,8 @@ struct zxid_conf {
   char  wsp_nosig_fatal;
 
   char  notimestamp_fatal;
-  char  pad2;
-  char  pad3;
+  char  enckey_opt;
+  char  idpatopt;
   char  pad4;
   char  pad5;
   char  pad6;
@@ -218,6 +218,7 @@ struct zxid_conf {
   char* contact_name;
   char* contact_email;
   char* contact_tel;
+  char* fedusername_suffix;  /* Default is computed from url domain name part when url is set. */
   char* ses_arch_dir;        /* Place where dead sessions go. 0=rm */
   char* ses_cookie_name;
   char* ipport;              /* Source IP and port for logging, e.g: "1.2.3.4:5" */
@@ -396,6 +397,7 @@ struct zxid_ses {
   char* setcookie;     /* If set, the content rendering should include set-cookie header. */
   char* cookie;        /* Cookie seen by downstream internal requests after SSO. */
   char* rs;            /* RelayState at SSO. mod_auth_saml uses this as URI after SSO. */
+  long an_instant;     /* IdP: Unix seconds when authentication was performed. Used in an_stmt */
   zxid_nid* nameid;    /* From a7n or EncryptedID */
   zxid_nid* tgtnameid; /* From a7n or EncryptedID */
   zxid_a7n* a7n;       /* SAML 2.0 for Subject */
@@ -567,10 +569,10 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
 int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, int n, struct zxsig_ref* refs);
 int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, const char* d, char** sig, RSA* priv_key, const char* lk);
 int zxsig_verify_data_rsa_sha1(int len, char* data, int siglen, char* sig, X509* cert, char* lk);
-struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(zxid_conf* cf, struct zx_str* data, struct zx_xenc_EncryptedKey_s** ekp, X509* cert, char* idsuffix);
+struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(zxid_conf* cf, struct zx_str* data, struct zx_xenc_EncryptedKey_s** ekp, X509* cert, char* idsuffix, zxid_entity* meta);
 #endif
 struct zx_str* zxenc_privkey_dec(zxid_conf* cf, struct zx_xenc_EncryptedData_s* ed, struct zx_xenc_EncryptedKey_s* ek);
-struct zx_xenc_EncryptedData_s* zxenc_symkey_enc(zxid_conf* cf, struct zx_str* data, struct zx_str* ed_id, struct zx_str* symkey, struct zx_str* symkey_id);
+struct zx_xenc_EncryptedData_s* zxenc_symkey_enc(zxid_conf* cf, struct zx_str* data, struct zx_str* ed_id, struct zx_str* symkey, struct zx_xenc_EncryptedKey_s* ek);
 struct zx_str* zxenc_symkey_dec(zxid_conf* cf, struct zx_xenc_EncryptedData_s* ed, struct zx_str* symkey);
 
 /* zxlog (see logging chapter in README.zxid) */
@@ -800,6 +802,12 @@ char* zxid_pep_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* 
 char* zxid_az_cf_ses(zxid_conf* cf, const char* qs, zxid_ses* ses);
 char* zxid_az_cf(zxid_conf* cf, const char* qs, const char* sid);
 char* zxid_az(const char* conf, const char* qs, const char* sid);
+
+char* zxid_pep_az_base_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zxid_map* pepmap);
+char* zxid_pep_az_base_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url);
+char* zxid_az_base_cf_ses(zxid_conf* cf, const char* qs, zxid_ses* ses);
+char* zxid_az_base_cf(zxid_conf* cf, const char* qs, const char* sid);
+char* zxid_az_base(const char* conf, const char* qs, const char* sid);
 
 /* zxidpdp */
 

@@ -369,6 +369,7 @@ public interface zxidjniConstants {
   public final static int ZXID_VERSION = zxidjniJNI.ZXID_VERSION_get();
   public final static String ZXID_REL = zxidjniJNI.ZXID_REL_get();
   public final static String ZXID_COMPILE_DATE = zxidjniJNI.ZXID_COMPILE_DATE_get();
+  public final static String ZXID_REV = zxidjniJNI.ZXID_REV_get();
   public final static int zx_xmlns_ix_ds = zxidjniJNI.zx_xmlns_ix_ds_get();
   public final static String zx_xmlns_ds = zxidjniJNI.zx_xmlns_ds_get();
   public final static int zx_xmlns_ix_xenc = zxidjniJNI.zx_xmlns_ix_xenc_get();
