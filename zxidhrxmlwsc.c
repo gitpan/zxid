@@ -13,10 +13,11 @@
  *           README-zxid, section 10 "zxid_simple() API"
  */
 
+#include "platform.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>

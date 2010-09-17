@@ -22,15 +22,11 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 //#include <sys/wait.h>
 //#include <pthread.h>
-#ifndef WIN32CL
-#include <stdint.h>
-#endif
 #include <signal.h>
 #include <fcntl.h>
 //#include <netdb.h>

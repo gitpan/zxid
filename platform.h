@@ -9,7 +9,11 @@
 
 #include <windows.h>
 
-#define fdstdout STDOUT_FILENO
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#define fdstdout (GetStdHandle(STD_OUTPUT_HANDLE))
 /*#define fdtype HANDLE   see zxid.h */
 #define BADFD (INVALID_HANDLE_VALUE)
 #define closefile(x) (CloseHandle(x)?0:-1)
@@ -18,19 +22,35 @@
 #define getegid() 0
 
 #ifdef WIN32CL
-typedef struct DIR {
-  int first;
-  WIN32_FIND_DATA firstfd;
-} DIR;
+/* The directory handling is quite different on Windows. The following
+ * posix wrappers are implemented in zxdirent.c */
+typedef struct DIR DIR;
 struct dirent {
-  
+  char* d_name;
 };
 #define opendir zx_win23_opendir
 #define readdir zx_win23_readdir
 #define closedir zx_win23_closedir
+#define rewinddir zx_win23_rewinddir
 DIR* zx_win23_opendir(char*);
- zx_win23_readdir(DIR*);
-DIR* zx_win23_opendir(char*);
+struct dirent* zx_win23_readdir(DIR*);
+int zx_win23_closedir(DIR*);
+void zx_win23_rewinddir(DIR*);
+
+typedef struct stack_st STACK;  /* MSVC seems to have some problem with openssl/stack.h */
+
+#define snprintf _snprintf
+#define va_copy(ap2, ap) ap2 = ap
+#define symlink(a,b) ( ERR("symlink(2) (%s => %s) not supported by Win32", (a),(b)), -1 )
+#define unlink(a)    ( ERR("unlink(2) (%s) not supported by Win32", (a)), -1 )
+#define rmdir(a)     ( ERR("rmdir(2) (%s) not supported by Win32", (a)), -1 )
+#define close(fd)    ( ERR("close(2) (%s) not supported by Win32. Leaking descriptor.", (a)), -1 )
+#define getpid()  0
+#define geteuid() 0
+#define getegid() 0
+
+#else
+#include <dirent.h>
 #endif
 
 /* Windows thread identification is a mess:
@@ -55,13 +75,42 @@ DIR* zx_win23_opendir(char*);
 #define pthread_mutex_lock(mutex)     (EnterCriticalSection(mutex), 0) /* dsdbilib.c, api_mutex.c, pool.c, sg.c, io.c, shuffler.c EnterCriticalSection() */
 #define pthread_mutex_unlock(mutex)   (LeaveCriticalSection(mutex), 0) /* dsvm.c, api_mutex.c, pool.c, sg.c, io.c, shuffler.c LeaveCriticalSection() */
 
+#ifdef __cplusplus
+} // extern "C"
+#endif
+
 #else
+
+/* NOT MINGW nor WIN32CL (i.e. its Unix) */
+
+#include <dirent.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define fdstdout 1
 /*#define fdtype int   see zxid.h */
 #define BADFD (-1)
 #define closefile(x) close(x)
 #define openfile_ro(path) open((path),O_RDONLY)
+
+#ifndef _UNISTD_H
+/* We do not want to include unistd.h because it does not exist on Win32.
+ * So define these here, but protect by ifndef, because unistd.h may get
+ * indirectly included. */
+int symlink(const char *oldpath, const char *newpath);
+int unlink(const char *pathname);
+int rmdir(const char *pathname);
+int getpid(void);
+int geteuid(void);
+int getegid(void);
+int close(int);
+#endif
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif
 

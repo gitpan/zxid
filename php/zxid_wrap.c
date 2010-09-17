@@ -1187,7 +1187,7 @@ static swig_type_info _swigt__p_zx_ds_Reference_s = {"_p_zx_ds_Reference_s", "st
 static swig_type_info _swigt__p_zx_ds_Signature_s = {"_p_zx_ds_Signature_s", "struct zx_ds_Signature_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_e_Body_s = {"_p_zx_e_Body_s", "struct zx_e_Body_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_e_Envelope_s = {"_p_zx_e_Envelope_s", "struct zx_e_Envelope_s *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_zx_e_Fault_s = {"_p_zx_e_Fault_s", "struct zx_e_Fault_s *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_zx_e_Fault_s = {"_p_zx_e_Fault_s", "zxid_fault *|struct zx_e_Fault_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_e_Header_s = {"_p_zx_e_Header_s", "struct zx_e_Header_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_elem_s = {"_p_zx_elem_s", "struct zx_elem_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_ff12_Assertion_s = {"_p_zx_ff12_Assertion_s", "struct zx_ff12_Assertion_s *", 0, 0, (void*)0, 0};
@@ -21202,7 +21202,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_ses_curflt_set) {
   struct zxid_ses *arg1 = (struct zxid_ses *) 0 ;
-  struct zx_e_Fault_s *arg2 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
   zval **args[2];
   
   SWIG_ResetError();
@@ -21232,7 +21232,7 @@ fail:
 ZEND_NAMED_FUNCTION(_wrap_zxid_ses_curflt_get) {
   struct zxid_ses *arg1 = (struct zxid_ses *) 0 ;
   zval **args[1];
-  struct zx_e_Fault_s *result = 0 ;
+  zxid_fault *result = 0 ;
   
   SWIG_ResetError();
   if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
@@ -21245,7 +21245,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_ses_curflt_get) {
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (struct zx_e_Fault_s *) ((arg1)->curflt);
+  result = (zxid_fault *) ((arg1)->curflt);
   
   SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_e_Fault_s, 0);
   
@@ -32634,7 +32634,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_mk_fault) {
   char *arg7 = (char *) 0 ;
   char *arg8 = (char *) 0 ;
   zval **args[8];
-  struct zx_e_Fault_s *result = 0 ;
+  zxid_fault *result = 0 ;
   
   SWIG_ResetError();
   if(ZEND_NUM_ARGS() != 8 || zend_get_parameters_array_ex(8, args) != SUCCESS) {
@@ -32716,7 +32716,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_mk_fault) {
   }
   /*@SWIG@*/;
   
-  result = (struct zx_e_Fault_s *)zxid_mk_fault(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  result = (zxid_fault *)zxid_mk_fault(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8);
   
   SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_e_Fault_s, 0);
   
@@ -32729,7 +32729,7 @@ fail:
 ZEND_NAMED_FUNCTION(_wrap_zxid_set_fault) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
   zxid_ses *arg2 = (zxid_ses *) 0 ;
-  struct zx_e_Fault_s *arg3 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg3 = (zxid_fault *) 0 ;
   zval **args[3];
   
   SWIG_ResetError();
@@ -32764,7 +32764,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_get_fault) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
   zxid_ses *arg2 = (zxid_ses *) 0 ;
   zval **args[2];
-  struct zx_e_Fault_s *result = 0 ;
+  zxid_fault *result = 0 ;
   
   SWIG_ResetError();
   if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
@@ -32781,7 +32781,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_get_fault) {
       SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_get_fault. Expected SWIGTYPE_p_zxid_ses");
     }
   }
-  result = (struct zx_e_Fault_s *)zxid_get_fault(arg1,arg2);
+  result = (zxid_fault *)zxid_get_fault(arg1,arg2);
   
   SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_e_Fault_s, 0);
   
@@ -32793,7 +32793,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_sc1) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
-  struct zx_e_Fault_s *arg2 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
   zval **args[2];
   char *result = 0 ;
   
@@ -32828,7 +32828,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_sc2) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
-  struct zx_e_Fault_s *arg2 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
   zval **args[2];
   char *result = 0 ;
   
@@ -32863,7 +32863,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_comment) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
-  struct zx_e_Fault_s *arg2 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
   zval **args[2];
   char *result = 0 ;
   
@@ -32898,7 +32898,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_ref) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
-  struct zx_e_Fault_s *arg2 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
   zval **args[2];
   char *result = 0 ;
   
@@ -32933,7 +32933,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_actor) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
-  struct zx_e_Fault_s *arg2 = (struct zx_e_Fault_s *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
   zval **args[2];
   char *result = 0 ;
   
@@ -32960,6 +32960,37 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_actor) {
       ZVAL_STRING(return_value, (char *)result, 1);
     }
   }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_get_fault_status) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  zxid_fault *arg2 = (zxid_fault *) 0 ;
+  zval **args[2];
+  zxid_tas3_status *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_get_fault_status. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zx_e_Fault_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_get_fault_status. Expected SWIGTYPE_p_zx_e_Fault_s");
+    }
+  }
+  result = (zxid_tas3_status *)zxid_get_fault_status(arg1,arg2);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_tas3_Status_s, 0);
+  
   return;
 fail:
   zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
@@ -38317,6 +38348,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_get_tas3_fault_comment,_wrap_zxid_get_tas3_fault_comment,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_tas3_fault_ref,_wrap_zxid_get_tas3_fault_ref,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_tas3_fault_actor,_wrap_zxid_get_tas3_fault_actor,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_get_fault_status,_wrap_zxid_get_fault_status,NULL)
  SWIG_ZEND_NAMED_FE(zxid_set_tas3_status,_wrap_zxid_set_tas3_status,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_tas3_status,_wrap_zxid_get_tas3_status,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_tas3_status_sc1,_wrap_zxid_get_tas3_status_sc1,NULL)

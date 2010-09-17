@@ -20,17 +20,16 @@
  * See also zxiddi.c for discovery server code.
  */
 
+#include "platform.h"  /* for dirent.h */
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <unistd.h>
 
 #include "errmac.h"
 #include "zxid.h"
-#include "platform.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-ns.h"
@@ -74,7 +73,8 @@ int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
   sha1_cont[27] = 0;
   len = snprintf(buf, buf_len, "%.*s,%s",
 		 MAX(name->len-ign_prefix,0), name->s+ign_prefix, sha1_cont);
-
+  buf[buf_len-1] = 0; /* must terminate manually as on win32 termination is not guaranteed */
+  
   /* 012345678
    * http://
    * https://   */
@@ -117,7 +117,8 @@ int zxid_epr_path(zxid_conf* cf, char* dir, char* sid,
 		  char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont)
 {
   int len = snprintf(buf, buf_len, "%s%s%s/", cf->path, dir, sid);
-  if (len < 0) {
+  buf[buf_len-1] = 0; /* must terminate manually as on win32 termination is not guaranteed */
+  if (len <= 0) {
     perror("snprintf");
     ERR("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", len);
     if (buf && buf_len > 0)
@@ -266,7 +267,9 @@ void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
  * di_opt:: (Optional) Additional discovery options for selecting the service, query string format
  * action:: (Optional) The action, or method, that must be invocable on the service
  * n:: How manieth matching instance is returned. 1 means first
- * return:: EPR data structure (or linked list of EPRs) on success, 0 on failure */
+ * return:: EPR data structure (or linked list of EPRs) on success, 0 on failure
+ *
+ * See also: zxid_print_session() in zxcall.c */
 
 /* Called by:  main x2, zxid_get_epr x2 */
 zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
@@ -400,7 +403,7 @@ zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const cha
  *
  * cf:: ZXID configuration object, also used for memory allocation
  * ses:: Session object in whose EPR cache the file will be searched
- * svc:: Service type (usually a URN)
+ * svc:: Service type (usually the namespace URN)
  * url:: (Optional) If provided, this argument has to match either
  *     the ProviderID, EntityID, or actual service endpoint URL.
  * di_opt:: (Optional) Additional discovery options for selecting the service, query string format

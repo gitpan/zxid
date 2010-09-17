@@ -21,6 +21,8 @@
  * 31.5.2010, added 4 web service call PEPs --Sampo
  */
 
+#include "platform.h"  /* needed on Win32 for pthread_mutex_lock() et al. */
+
 #include <memory.h>
 #include <string.h>
 #ifdef USE_CURL
@@ -507,7 +509,7 @@ struct zxid_attr* zxid_new_at(zxid_conf* cf, struct zxid_attr* at, int name_len,
   COPYVAL(at->name, name, name+name_len);
   if (val)
     COPYVAL(at->val, val, val+val_len);
-  DD("%s:\tATTR name(%.*s) val(%.*s)", lk, name_len, name, val_len, STRNULLCHK(val));
+  D("%s:\tATTR name(%.*s) val(%.*s)", lk, name_len, name, val_len, STRNULLCHK(val));
   return aa;
 }
 

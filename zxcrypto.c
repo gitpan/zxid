@@ -11,6 +11,8 @@
  * 29.8.2009, added zxid_mk_self_signed_cert() --Sampo
  */
 
+#include "platform.h"  /* needed on Win32 for snprintf() et al. */
+
 #include <zx/errmac.h>
 #include <zx/zx.h>
 #include <zx/zxid.h>
@@ -348,7 +350,7 @@ int zxid_mk_self_sig_cert(zxid_conf* cf, int buflen, char* buf, char* lk, char* 
   D("keygen start lk(%s) name(%s)", lk, name);
 
   snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert %s", cf->url);
-  ou[sizeof(ou)-1] = 0;
+  ou[sizeof(ou)-1] = 0;  /* must terminate manually as on win32 termination is not guaranteed */
 
   ts = time(0);
   RAND_seed(&ts,sizeof(ts));

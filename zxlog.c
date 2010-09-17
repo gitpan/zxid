@@ -17,15 +17,15 @@
  * See also: Logging chapter in README.zxid
  */
 
+#include "platform.h"  /* needed on Win32 for pthread_mutex_lock() et al. */
+
 #include <fcntl.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -319,6 +319,7 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
 	       a7nid?a7nid->len:1, a7nid?a7nid->s:"-",
 	       nid?nid->len:1,     nid?nid->s:"-",
 	       zx_instance, STRNULLCHKD(sigval), res, op, arg?arg:"-");
+  logbuf[sizeof(len)-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   if (n <= 0 || n >= len-3) {
     if (n < 0) {
       perror("snprintf");
@@ -333,6 +334,7 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
     p = logbuf+n;
     if (fmt && fmt[0]) {
       n = vsnprintf(p, len-n-2, fmt?fmt:"-", ap);
+      p[len-n-3] = 0; /* must terminate manually as on win32 nul is not guaranteed */
       if (n <= 0 || n >= len-(p-logbuf)-2) {
 	if (n < 0) {
 	  perror("vsnprintf");

@@ -918,6 +918,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_sc2);
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_comment);
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_ref);
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_fault_actor);
+ZEND_NAMED_FUNCTION(_wrap_zxid_get_fault_status);
 ZEND_NAMED_FUNCTION(_wrap_zxid_set_tas3_status);
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_status);
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_tas3_status_sc1);

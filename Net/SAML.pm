@@ -321,6 +321,7 @@ package Net::SAML;
 *get_tas3_fault_comment = *Net::SAMLc::zxid_get_tas3_fault_comment;
 *get_tas3_fault_ref = *Net::SAMLc::zxid_get_tas3_fault_ref;
 *get_tas3_fault_actor = *Net::SAMLc::zxid_get_tas3_fault_actor;
+*get_fault_status = *Net::SAMLc::zxid_get_fault_status;
 *set_tas3_status = *Net::SAMLc::zxid_set_tas3_status;
 *get_tas3_status = *Net::SAMLc::zxid_get_tas3_status;
 *get_tas3_status_sc1 = *Net::SAMLc::zxid_get_tas3_status_sc1;
