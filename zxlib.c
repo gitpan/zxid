@@ -40,11 +40,11 @@
 int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey)
 {
   int at, end, start, len;
-  end = ctx->lim - ctx->base;
-  at = MIN(ctx->p - ctx->base, end);
+  end = ctx->lim - ctx->bas;
+  at = MIN(ctx->p - ctx->bas, end);
   start = MAX(0,at-30);
   len = MIN(at+30, end) - start;    
-  len = snprintf(buf, siz, "%s: Parse error at char %d/%d (prev char, char, next char: 0x%02x 0x%02x 0x%02x)\n%.*s\n%.*s^\n", logkey, at, end, at > 0 ? ctx->p[-1]:0, ctx->p[0], at < end ? ctx->p[1]:0, len, ctx->base + start, at-start, "-----------------------------------------------");
+  len = snprintf(buf, siz, "%s: Parse error at char %d/%d (prev char, char, next char: 0x%02x 0x%02x 0x%02x)\n%.*s\n%.*s^\n", logkey, at, end, at > 0 ? ctx->p[-1]:0, ctx->p[0], at < end ? ctx->p[1]:0, len, ctx->bas + start, at-start, "-----------------------------------------------");
   buf[siz-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   return len;
 }
@@ -97,7 +97,7 @@ void* zx_alloc(struct zx_ctx* c, int size)
 void* zx_zalloc(struct zx_ctx* c, int size)
 {
   char* p = zx_alloc(c, size);
-  memset(p, 0, size);
+  ZERO(p, size);
   return p;
 }
 
@@ -159,7 +159,7 @@ void zx_str_free(struct zx_ctx* c, struct zx_str* ss)
 struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, const char* s)
 {
   struct zx_str* ss = ZX_ZALLOC(c, struct zx_str);
-  ss->s = s;  /* ref points to underlying data */
+  ss->s = (char*)s;  /* ref points to underlying data */
   ss->len = len;
   return ss;
 }
@@ -774,7 +774,8 @@ char* zx_enc_so_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, char* p, ch
 }
 #endif
 
-/*() Prepare a context for decoding XML.
+/*() Prepare a context for decoding XML. The decoding operation will not
+ * alter the underlying data (e.g. no nuls are inserted, not even temporarily).
  * N.B. Often you would wrap this in locks, like
  *   LOCK(cf->ctx->mx, "valid");
  *   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, ss->s, ss->s + ss->len);
@@ -783,12 +784,12 @@ char* zx_enc_so_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, char* p, ch
  */
 
 /* Called by:  main x7, test_ibm_cert_problem, zxid_add_env_if_needed x2, zxid_dec_a7n, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_reg_svc, zxid_soap_call_raw, zxid_sp_soap_parse, zxid_wsp_validate */
-void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, char* start, char* lim)
+void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, const char* start, const char* lim)
 {
   c->guard_seen_n.seen_n = &c->guard_seen_p;
   c->guard_seen_p.seen_p = &c->guard_seen_n;
   c->ns_tab = ns_tab;
-  c->base = c->p = start;
+  c->bas = c->p = start;
   c->lim = lim;
 }
 
@@ -796,11 +797,11 @@ void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, char* start, c
 int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
 {
   struct zx_str* ss;
-  char* d = c->p;
+  const char* d = c->p;
   if (c->p) ZX_LOOK_FOR(c,'<');
   ss = ZX_ZALLOC(c, struct zx_str);
   ss->len = c->p - d;
-  ss->s = d;
+  ss->s = (char*)d;
   ss->g.tok = ZX_TOK_DATA;
   ss->g.n = &el->content->g;
   el->content = ss;
@@ -816,7 +817,7 @@ int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
 /* Called by:  TXDEC_ELNAME */
 int zx_scan_pi_or_comment(struct zx_ctx* c)
 {
-  char* name;
+  const char* name;
   char quote;
 
   switch (*c->p) {
@@ -868,7 +869,7 @@ int zx_scan_pi_or_comment(struct zx_ctx* c)
 }
 
 /* Called by:  TXDEC_ELNAME */
-struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, char* name, char* data, int tok, int ctx_tok)
+struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, const char* name, const char* data, int tok, int ctx_tok)
 {
   int namlen = data - name - 2;
   struct zx_any_attr_s* attr = ZX_ZALLOC(c, struct zx_any_attr_s);
@@ -881,7 +882,7 @@ struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, char*
   }
 
   attr->name_len = namlen;
-  attr->name = name;
+  attr->name = (char*)name;
   attr->ss.g.n = &el->any_attr->ss.g;
   el->any_attr = attr;
   /* *** namespace handling for unknown attribute? */
@@ -890,9 +891,9 @@ struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, char*
 }
 
 /* Called by:  TXDEC_ELNAME */
-char* zx_dec_attr_val(struct zx_ctx* c, char** name)
+char* zx_dec_attr_val(struct zx_ctx* c, const char** name)
 {
-  char* data;
+  const char* data;
   char quote;
   *name = c->p;
   quote = '=';
@@ -908,7 +909,7 @@ char* zx_dec_attr_val(struct zx_ctx* c, char** name)
   data = c->p;	
   
   ZX_LOOK_FOR(c, quote);
-  return data;
+  return (char*)data;  /* *** can the return be considered const? */
  look_for_not_found:
   zx_xml_parse_err(c, quote, (const char*)__FUNCTION__, "char not found");
   return 0;
@@ -917,9 +918,9 @@ char* zx_dec_attr_val(struct zx_ctx* c, char** name)
 /* Called by:  TXDEC_ELNAME x2, zx_dec_attr_val x2, zx_scan_pi_or_comment, zx_scan_xmlns x2 */
 void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg)
 {
-  char* errloc = MAX(c->p - 20, c->base);
+  const char* errloc = MAX(c->p - 20, c->bas);
   ERR("%s: %s: char(%c) pos=%d (%.*s)", func, msg, quote,
-      c->p - c->base, MIN(c->lim - errloc, 40), errloc);
+      c->p - c->bas, MIN(c->lim - errloc, 40), errloc);
 }
 
 /* Add inclusive namespaces. */

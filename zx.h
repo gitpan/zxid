@@ -42,9 +42,9 @@
 #define fdtype int
 #endif
 
-#ifndef const
-#define const  /* const causes swig java to break */
-#endif
+//#ifndef const
+//#define const  /* const causes swig java to break */
+//#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -69,7 +69,7 @@ extern "C" {
 struct zx_any_elem_s;
 struct zx_any_attr_s;
 
-/* Namespace management. The context references this table. The array is
+/*(s) Namespace management. The context references this table. The array is
  * terminated by an element with empty URL (url_len == 0). The elements
  * of the array are the official namespace prefixes derived from
  * target() directives in the .sg files. The linked list hanging from
@@ -79,11 +79,11 @@ struct zx_any_attr_s;
 
 struct zx_ns_s {
   struct zx_ns_s* n;        /* For holding runtime equivalences as a linked list. */
-  struct zx_ns_s* m;        /* For an equivalence, pointer to the master entry. */
+  struct zx_ns_s* m;        /* For a rt equivalence, pointer to the master entry. */
   struct zx_ns_s* seen;     /* Pointer to other "seen" namespaces with same prefix (stack) */
   struct zx_ns_s* seen_n;   /* Next prefix in seen structure (list) */
-  struct zx_ns_s* seen_p;   /* Next prefix in seen structure (list) */
-  struct zx_ns_s* seen_pop; /* Pop list for seen stack (used in end of element). */
+  struct zx_ns_s* seen_p;   /* Previous prefix in seen structure (list) */
+  struct zx_ns_s* seen_pop; /* Pop list for seen stack (used in the end of an element). */
   struct zx_ns_s* inc_n;    /* Next link for InclusiveNamespaces */
 #if 0
   char flags;               /* 0x01 == unknown */
@@ -100,9 +100,9 @@ struct zx_ns_s {
 /* Context tracks the input and namespaces. It is also passed to memory allocator. */
 
 struct zx_ctx {
-  char* base;  /* C# keyword :-( */
-  char* p;     /* Current scan pointer */
-  char* lim;
+  const char* bas;   /* base is C# keyword :-( */
+  const char* p;     /* Current scan pointer */
+  const char* lim;
   struct zx_ns_s* ns_tab;      /* Array, such as zx_ns_tab, see zx_prepare_dec_ctx() */
   struct zx_ns_s* unknown_ns;  /* Linked list of unknown namespaces. */
   /* Namespace prefixes that have been "seen", each prefix is a stack.
@@ -123,6 +123,14 @@ struct zx_ctx {
 #ifdef USE_PTHREAD
   pthread_mutex_t mx;
 #endif
+  char canon_inopt;
+  char pad1;
+  char pad2;
+  char pad3;
+  char pad4;
+  char pad5;
+  char pad6;
+  char pad7;
 };
 
 /* We arrange all structs to start with a common header (16 bytes on 32bit platforms) */
@@ -146,7 +154,7 @@ struct zx_elem_s {
   struct zx_elem_s* kids;          /* root of wo list representing child elements */
   struct zx_any_attr_s* any_attr;  /* list of attributes not understood by parser */
   struct zx_any_elem_s* any_elem;  /* list of elements not understood by parser */
-  struct zx_str* xmlns;            /* xmlns attributes, if any */
+  struct zx_ns_s* xmlns;           /* xmlns declarations (for inc_ns processing) */
   struct zx_str* content;          /* non-element content, if any */
 };
 
@@ -176,6 +184,7 @@ void  zx_str_free(struct zx_ctx* c, struct zx_str* ss);   /* free both ss->s and
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str* ss);
 void  zx_str_conv(struct zx_str* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
 int   zx_str_ends_in(struct zx_str* ss, int len, const char* suffix);
+#define ZX_STRCMP(a, b) ((a)?((b)?((a)->len == (b)->len?memcmp((a)->s, (b)->s, (a)->len):(a)->len - (b)->len):1):((b)?-1:0))
 #define ZX_STR_EQ(ss, cstr) ((ss) && (cstr) && (ss)->s && (ss)->len == strlen(cstr) && !memcmp((cstr), (ss)->s, (ss)->len))
 #define ZX_STR_ENDS_IN_CONST(ss, suffix) zx_str_ends_in((ss), sizeof(suffix)-1, (suffix))
 #define ZX_CONTENT_EQ_CONST(e, c) ((e) && (e)->content->len == sizeof(c)-1 && !memcmp((e)->content->s, (c), sizeof(c)-1))
@@ -245,23 +254,26 @@ struct zx_tok { const char* name; const char* prefix; struct zx_ns_s* ns; };
 /*struct zx_note_s* zx_clone_any(struct zx_ctx* c, struct zx_note_s* n, int dup_strs); TBD */
 /*void zx_free_any(struct zx_ctx* c, struct zx_note_s* n, int free_strs); TBD */
 
-int   zx_date_time_to_secs(char* dt);
+int   zx_date_time_to_secs(const char* dt);
 int   write2_or_append_lock_c_path(const char* c_path, int len1, const char* data1, int len2, const char* data2, const char* which, int seeky, int flag);
 int   zx_report_openssl_error(const char* logkey);
 
-void  zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_any_elem_s* x, char* nam, int namlen);
-struct zx_ns_s* zx_locate_ns_by_prefix(struct zx_ctx* c, int len, char* prefix);
-int   zx_is_ns_prefix(struct zx_ns_s* ns, int len, char* prefix);
-struct zx_ns_s* zx_prefix_seen(struct zx_ctx* c, int len, char* prefix);
-struct zx_ns_s* zx_prefix_seen_whine(struct zx_ctx* c, int len, char* prefix, char* logkey, int mk_dummy_ns);
+void  zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_any_elem_s* x, const char* nam, int namlen);
+struct zx_ns_s* zx_new_ns(struct zx_ctx* c, int prefix_len, const char* prefix, int url_len, const char* url);
+struct zx_ns_s* zx_locate_ns_by_prefix(struct zx_ctx* c, int len, const char* prefix);
+int   zx_is_ns_prefix(struct zx_ns_s* ns, int len, const char* prefix);
+struct zx_ns_s* zx_prefix_seen(struct zx_ctx* c, int len, const char* prefix);
+struct zx_ns_s* zx_prefix_seen_whine(struct zx_ctx* c, int len, const char* prefix, const char* logkey, int mk_dummy_ns);
 struct zx_ns_s* zx_scan_xmlns(struct zx_ctx* c);
+void  zx_see_elem_ns(struct zx_ctx* c, struct zx_ns_s** pop_seen, struct zx_elem_s* el);
 void  zx_pop_seen(struct zx_ns_s* ns);
 
 int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey);
 
 /* zxcrypto.c - Glue to OpenSSL low level */
 
-struct zx_str* zx_raw_cipher(struct zx_ctx* c, char* algo, int encp, struct zx_str* key, int len, char* s, int iv_len, char* iv);
+char* zx_raw_digest2(struct zx_ctx* c, char* md, char* const algo, int len, const char* s, int len2, const char* s2);
+struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, struct zx_str* key, int len, const char* s, int iv_len, const char* iv);
 struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_pkey, int pad);
 struct zx_str* zx_rsa_pub_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rsa_pkey, int pad);
 struct zx_str* zx_rsa_priv_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rsa_pkey, int pad);
@@ -272,8 +284,7 @@ char* zx_md5_crypt(const char* pw, const char* salt, char* buf);
 
 /* Common Subexpression Elimination (CSE) for generated code. */
 
-const struct zx_tok* zx_tok_by_ns(const struct zx_tok* zt, const struct zx_tok* lim,
-				  int len, char* name, struct zx_ns_s* ns);
+const struct zx_tok* zx_tok_by_ns(const struct zx_tok* zt, const struct zx_tok* lim, int len, const char* name, struct zx_ns_s* ns);
 int   zx_len_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
 char* zx_enc_xmlns_if_not_seen(struct zx_ctx* c, char* p, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
 void  zx_add_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
@@ -303,11 +314,11 @@ int   zx_walk_so_simple_elems(struct zx_ctx* c, struct zx_elem_s* se, void* ctx,
 void  zx_dup_strs_simple_elems(struct zx_ctx* c, struct zx_elem_s* se);
 #endif
 
-void  zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, char* start, char* lim);
+void  zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, const char* start, const char* lim);
 int   zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el);
 int   zx_scan_pi_or_comment(struct zx_ctx* c);
-struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, char* name, char* data, int tok, int ctx_tok);
-char* zx_dec_attr_val(struct zx_ctx* c, char** name);
+struct zx_str* zx_dec_unknown_attr(struct zx_ctx* c, struct zx_elem_s* el, const char* name, const char* data, int tok, int ctx_tok);
+char* zx_dec_attr_val(struct zx_ctx* c, const char** name);
 void  zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg);
 
 int   zx_len_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);

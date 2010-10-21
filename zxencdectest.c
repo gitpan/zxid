@@ -131,7 +131,6 @@ void test_ibm_cert_problem_enc_dec()
   printf("r2 nid(%.*s) should be(a-persistent-nid)\n", req->NameID->gg.content->len, req->NameID->gg.content->s);
 }
 
-char* instance = "zxencdectest";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 extern int debug;
@@ -185,7 +184,7 @@ void opt(int* argc, char*** argv, char*** env)
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	instance = (*argv)[0];
+	zx_instance = (*argv)[0];
 	continue;
       }
       break;
@@ -369,7 +368,7 @@ int main(int argc, char** argv, char** env)
   D("Decoding %d chars, n_iter(%d)\n", got_all, n_iter);
   
   for (; n_iter; --n_iter) {
-    memset(&ctx, 0, sizeof(ctx));
+    ZERO(&ctx, sizeof(ctx));
     LOCK(ctx.mx, "zxencdectest main");
     zx_prepare_dec_ctx(&ctx, zx_ns_tab, buf, buf + got_all);
     r = zx_DEC_root(&ctx, 0, 1000);
@@ -380,7 +379,7 @@ int main(int argc, char** argv, char** env)
     len_so = zx_LEN_SO_root(&ctx, r);
     D("Enc so len %d chars", len_so);
 
-    ctx.base = so_out;
+    ctx.bas = so_out;
     so_p = zx_ENC_SO_root(&ctx, r, so_out);
     if (!so_p)
       DIE("encoding error");
@@ -388,7 +387,7 @@ int main(int argc, char** argv, char** env)
     len_wo = zx_LEN_WO_root(&ctx, r);
     D("Enc wo len %d chars", len_wo);
 
-    ctx.base = wo_out;
+    ctx.bas = wo_out;
     wo_p = zx_ENC_WO_root(&ctx, r, wo_out);
     if (!wo_p)
       DIE("encoding error");

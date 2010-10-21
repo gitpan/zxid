@@ -14,8 +14,8 @@ To do:
       5. Any SOAP Action header, from SOAP message or from HTTP header.
     - (Local) logout should either return to referer, or to configurable page
     - Depend logging validate, az response, emit logging decorate, azreq
-    - Static linking, dynamic linking libzxid
     - Brian's ordering problem (risaris-bad.xml)
+    - Static linking, dynamic linking libzxid
     - IdP initiated SLO
     - IdP should include URL for correcting information
     - Add persona support to IdP
@@ -39,25 +39,77 @@ yet another worry.
 https://idp.testshib.org/idp/shibboleth
 
 Google Apps Integration
-
 http://code.google.com/googleapps/domain/sso/saml_reference_implementation.html
-
 Here are example docs for SimpleSAMLPHP, or Shibboleth:
 * http://simplesamlphp.org/docs/1.5/simplesamlphp-googleapps
 * https://shibboleth.usc.edu/docs/google-apps/
 
+    - Use SAML2 a7n as "sticky policy" envelope, standardizing some attribute names to convey metadata such as acceptable use or purpose, obligations, right-of-access-correction-and-deletion-URL, and the authorative source.
     - zxcot should have idpdimd listing mode
     - zxpasswd should have user federation listing mode
-    - zxid_pw_authn() should not report scary error message when
-      checking .ykspent in not spent case
-    - ID Mapper to be used by Delegation Service
-    - zxid_select_tgt()
+    - zxid_pw_authn() should not report scary error when checking .ykspent in not spent case
+    - zxid_select_tgt() (?)
     - Each credential as its own a7n
     - X509 attr certs
     - Use post screen as confirmation screen
     - If generic XML content is seen as attribute value, it should be reserialized as safe_base64 so it can be returned to app layer as attribute (e.g. via LDIF).
+    - Config option for redirection after SLO
+    - WSP_LOCALPDP_OBL_REQ processing
+    - WSC_LOCALPDP_OBL_ACCEPT processing
+    - IdP: Display Relay State in hopes of giving user more context
+    - IdP: Interpret the attribute request authn ctx query string approach and show
+      to the user what attributes were requested by the SP.
+    - IdP: If SP does not specify attribute list, display "SP did not request any
+      specific attributes. Only authentication and default attributes will be sent.
+    - AuthnReq QS option for SP to request that consent is explicitly seeked
+    - AuthnReq QS option for SP to request that attribute list is not shown up front
+    - Show whether SP wants a persistent or transient, or some other type of Id for the user.
+    - zxdecode assertion decryption support
+    - zxpasswd account creation problems
+        echo -n tas3 | ~/zxid/zxpasswd -at 'cn: Mallory McBean$givenname: Mallory$sn: McBeanBean$o: Laskenta Keskus$eduPersonEntitlement: admin$' -c mallory
     NOTPUB
 
+zxid-0.69:: 20.10.2010
+    - Added DeployingZxidServlets.txt, ZxidSSOFilter.java, and ZxidServlet.java by Stijn Lievens
+    - Added missing file zxidjava/zxidtok.java
+zxid-0.68:: 18.10.2010
+    - zxpasswd hash problems fixed
+    - Pairwise session indexes (encrypt master index and SP entid with IdP sym key)
+    - Primitive support for passing identity token in XACML request
+zxid-0.67:: 13.10.2010
+    - Fixed buffer bugs introduced by removal of ZXID_MAX_USER limit
+zxid-0.66:: 12.10.2010
+    - zxpasswd: be tolerant of newline in input
+    - Add to IdP metadata the NameIDMapping end point
+    - Removed ZXID_MAX_USER limit from .at files. Removed many other limits, too.
+    - Added zxid_epr_set_token() and other accessor functions
+    - Fixed Solaris support (unwarranted -o option to ar)
+
+zxid-0.65:: 10.10.2010
+    - zxididp: added ID Mapper (to be used by Delegation Service)
+    - zxididp: added some aspects of People Service (to be used by Delegation Service)
+    - zxididp: added SSOS
+    - Added zxid_map_identity_token()
+    - Added zxid_set_delegated_discovery_epr()
+    - Added psobj encryption for privacy preservation of people referenced by ObjectIDs
+    - Added zxid_attach_sol1_usage_directive()
+    - Added WSC_LOCALPDP_OBL_PLEDGE config option
+    - Added WSP_LOCALPDP_OBL_REQ config option
+    - Added WSP_LOCALPDP_OBL_EMIT config option
+    - Added WSC_LOCALPDP_OBL_ACCEPT config option
+    - Shortened the before and after slops from 1 day to about 2 hours
+    - Improved zxid_get_fault_status() by adding a first level status code
+    - Added -at option to zxpasswd
+    - Fixed zxpasswd -l directory listing
+    - zxid_simple():: Added handler for resolving invitation
+    - Templatized idp selection
+    - Templatized POST screen
+    - WIN32CL (MSVC CL compiler) port can now create zxidjni.dll, callable from Java on Windows
+    - Fixed truncated log bug (premature nul termination) in zxlog.
+    - Added CANON_INOPT=1 option to ignore InclusiveNamespaces/@PrefixList as needed to work around Shib 2.1.5 IdP bug
+    - Added patch  by Eric Rybinski for XML ENC padding problem reported by Sampo as OpenSSL bug 1067 back in 2005.
+    - Changed treatment of InclusiveNamespaces PrefixList to be more tolerant of undefined prefixes
+    - Fixed mktime(3) timezone bug, found by Cal
 zxid-0.64:: 16.9.2010
     - Improved WIN32CL (MSVC CL compiler) port
     - Added extern "C" markers to headers to force C calling convention even in C++, promoting binary compatibility of libraries
@@ -65,6 +117,10 @@ zxid-0.64:: 16.9.2010
     - zxcall: added discovery only mode and iteration option
     - zxcall: added EPR cache and session listing mode -s SID -l
     - Added Unix crypt hash to zxpasswd and zxid_pw_authn()
+    - Added zxid_get_fault_status() method
+    - Renamed struct zx_e_Fault_s to zxid_fault (for cleaner Java Class generation)
+    - Added mockpdp.pl
+    - Improved (fixed?) compatibility with SiteMinder version is R12 SP1 CR3 based on CRNL canonicalization analysis by Steve Kinzler
 zxid-0.63:: 29.7.2010
     - Added mandatory attribute contactType to Contact element in metadata
     - Supply AuthnInstant
@@ -112,8 +168,7 @@ zxid-0.57:: 18.5.2010
     - Fixed SSO failure case
     - Added to session sigres and ssores.
     - Added SP local attribute authority, see zxid_ses_to_pool()
-    - Added local EPR feature to SP local attribute authority, i.e. upon
-      SSO local EPRs get copied to the new session's EPR cache
+    - Added local EPR feature to SP local attribute authority, i.e. upon SSO local EPRs get copied to the new session's EPR cache (see zxid_copy_user_eprs_to_ses())
 zxid-0.56:: 14.5.2010
     - Re-tested Windows compile
 zxid-0.55:: 26.4.2010

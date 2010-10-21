@@ -302,6 +302,7 @@ static int zxid_wsf_validate_a7n(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n, co
     }
   } else {
     if (a7n->Signature && a7n->Signature->SignedInfo && a7n->Signature->SignedInfo->Reference) {
+      ZERO(&refs, sizeof(refs));
       refs.sref = a7n->Signature->SignedInfo->Reference;
       refs.blob = (struct zx_elem_s*)a7n;
       ses->sigres = zxsig_validate(cf->ctx, idp_meta->sign_cert, a7n->Signature, 1, &refs);
@@ -387,6 +388,7 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
   struct zx_root_s* r;
   zxid_entity* wsc_meta;
   struct zx_e_Envelope_s* env;
+  struct zx_e_Header_s* hdr;
   struct zx_wsse_Security_s* sec;
   //zxid_a7n* a7n;
   struct zx_str* issuer;
@@ -399,7 +401,7 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
   zxid_set_fault(cf, ses, 0);
   zxid_set_tas3_status(cf, ses, 0);
   
-  ss.s = enve;
+  ss.s = (char*)enve;
   ss.len = strlen(enve);
   LOCK(cf->ctx->mx, "valid");
   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, enve, enve + ss.len);
@@ -428,33 +430,34 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
   }
   ZX_FREE(cf->ctx, r);
 
-  if (!env->Header) {
+  hdr = env->Header;
+  if (!hdr) {
     ERR("No <e:Header> found. enve(%s)", enve);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_IN, "e:Client", "No SOAP Header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     D_DEDENT("valid: ");
     return 0;
   }
-  if (!ZX_SIMPLE_ELEM_CHK(env->Header->MessageID)) {
+  if (!ZX_SIMPLE_ELEM_CHK(hdr->MessageID)) {
     ERR("No <a:MessageID> found. enve(%s)", enve);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_IN, "e:Client", "No MessageID header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     D_DEDENT("valid: ");
     return 0;
   }
   /* Remember MessageID for generating RelatesTo in Response */
-  ses->wsp_msgid = zx_str_to_c(cf->ctx, env->Header->MessageID->gg.content);
+  ses->wsp_msgid = zx_str_to_c(cf->ctx, hdr->MessageID->gg.content);
   
-  if (!env->Header->Sender || !env->Header->Sender->providerID
-      && !env->Header->Sender->affiliationID) {
+  if (!hdr->Sender || !hdr->Sender->providerID
+      && !hdr->Sender->affiliationID) {
     ERR("No <b:Sender> found (or missing providerID or affiliationID). enve(%s)", enve);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_IN, "e:Client", "No b:Sender header found (or missing providerID or affiliationID).", "IDStarMsgNotUnderstood", 0, 0, 0));
     D_DEDENT("valid: ");
     return 0;
   }
-  issuer = env->Header->Sender->providerID;
+  issuer = hdr->Sender->providerID;
   
   /* Validate message signature (*** add Issuer trusted check, CA validation, etc.) */
   
-  if (!(sec = env->Header->Security)) {
+  if (!(sec = hdr->Security)) {
     ERR("No <wsse:Security> found. enve(%s)", enve);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_IN, "e:Client", "No wsse:Security header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     D_DEDENT("valid: ");
@@ -476,7 +479,8 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
   
   wsc_meta = zxid_get_ent_ss(cf, issuer);
   if (wsc_meta) {
-    n_refs = zxid_hunt_sig_parts(cf, n_refs, refs, sec->Signature->SignedInfo->Reference, env->Header, env->Body);
+    ZERO(refs, sizeof(refs));
+    n_refs = zxid_hunt_sig_parts(cf, n_refs, refs, sec->Signature->SignedInfo->Reference, hdr, env->Body);
     /* *** Consider adding BDY and STR */
     ses->sigres = zxsig_validate(cf->ctx, wsc_meta->sign_cert, sec->Signature, n_refs, refs);
     zxid_sigres_map(ses->sigres, &cgi.sigval, &cgi.sigmsg);
@@ -519,8 +523,8 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
 
   /* Check Target Identity */
 
-  if (env->Header->TargetIdentity) {
-    ses->tgta7n = zxid_dec_a7n(cf, env->Header->TargetIdentity->Assertion, env->Header->TargetIdentity->EncryptedAssertion);
+  if (hdr->TargetIdentity) {
+    ses->tgta7n = zxid_dec_a7n(cf, hdr->TargetIdentity->Assertion, hdr->TargetIdentity->EncryptedAssertion);
     if (ses->tgta7n && ses->tgta7n->Subject) {
       if (!zxid_wsf_validate_a7n(cf, ses, ses->a7n, "tgt", &srcts)) {
 	D_DEDENT("valid: ");
@@ -542,8 +546,20 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
     ses->tgt_a7n_path = ses->sso_a7n_path;
   }
 
-  if (env->Header->UsageDirective && env->Header->UsageDirective->Obligation
-      && ZX_STR_EQ(env->Header->UsageDirective->Obligation->ObligationId, TAS3_SOL1_ENGINE)) {
+  if (hdr->UsageDirective) {
+    if (hdr->UsageDirective->Obligation && hdr->UsageDirective->Obligation->AttributeAssignment && hdr->UsageDirective->Obligation->AttributeAssignment->gg.content) {
+      ses->rcvd_usagedir = zx_str_to_c(cf->ctx, hdr->UsageDirective->Obligation->AttributeAssignment->gg.content);
+      D("Found TAS3 UsageDirective with obligation(%s)", ses->rcvd_usagedir);
+    } else if (hdr->UsageDirective->gg.content) {
+      ses->rcvd_usagedir = zx_str_to_c(cf->ctx, hdr->UsageDirective->gg.content);
+      D("Found unknown UsageDirective(%s)", ses->rcvd_usagedir);
+    } else {
+      ERR("UsageDirective empty or not understood. %p", hdr->UsageDirective->Dict);
+    }
+  }
+
+  if (hdr->UsageDirective && hdr->UsageDirective->Obligation
+      && ZX_STR_EQ(hdr->UsageDirective->Obligation->ObligationId, TAS3_SOL1_ENGINE)) {
     /* *** extract usage directive */
   }
 
@@ -570,7 +586,7 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
     }
   }
   
-  logpath = zxlog_path(cf, issuer, env->Header->MessageID->gg.content,
+  logpath = zxlog_path(cf, issuer, hdr->MessageID->gg.content,
 		       ZXLOG_RELY_DIR, ZXLOG_MSG_KIND, 1);
   if (zxlog_dup_check(cf, logpath, "validate request")) {
     if (cf->dup_msg_fatal) {

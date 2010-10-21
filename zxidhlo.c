@@ -13,6 +13,8 @@
  *           README-zxid, section 10 "zxid_simple() API"
  */
 
+#include <zx/platform.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +47,8 @@ Usage: zxidhlo [options]   (when used as CGI, no options can be supplied)\n\
 /* CONFIG: You must edit the URL to match your domain name and port */
 
 #define ZXIDHLO "zxidhlo"
-#define CONF "URL=https://sp1.zxidsp.org:8443/" ZXIDHLO "&NOSIG_FATAL=0&PATH=/var/zxid/"
+#define CONF "PATH=/var/zxid/&URL=http://sp1.zxidsp.org:8081/" ZXIDHLO "&NOSIG_FATAL=0"
+//#define CONF "URL=https://sp1.zxidsp.org:8443/" ZXIDHLO "&NOSIG_FATAL=0&PATH=/var/zxid/"
 //#define CONF "URL=https://lima.tas3.eu:8443/" ZXIDHLO "&NOSIG_FATAL=0&PATH=/var/zxid/"
 
 /* Called by: */

@@ -91,8 +91,8 @@ struct zx_sec_Token_s* zx_DEC_sec_Token(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sec_Token_s* x = ZX_ZALLOC(c, struct zx_sec_Token_s);
   x->gg.g.tok = zx_sec_Token_ELEM;
   x->gg.g.ns = ns;
@@ -135,6 +135,9 @@ struct zx_sec_Token_s* zx_DEC_sec_Token(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -143,7 +146,7 @@ struct zx_sec_Token_s* zx_DEC_sec_Token(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -286,8 +289,8 @@ struct zx_sec_TokenPolicy_s* zx_DEC_sec_TokenPolicy(struct zx_ctx* c, struct zx_
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sec_TokenPolicy_s* x = ZX_ZALLOC(c, struct zx_sec_TokenPolicy_s);
   x->gg.g.tok = zx_sec_TokenPolicy_ELEM;
   x->gg.g.ns = ns;
@@ -336,6 +339,9 @@ struct zx_sec_TokenPolicy_s* zx_DEC_sec_TokenPolicy(struct zx_ctx* c, struct zx_
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -344,7 +350,7 @@ struct zx_sec_TokenPolicy_s* zx_DEC_sec_TokenPolicy(struct zx_ctx* c, struct zx_
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -408,6 +414,11 @@ next_attr:
 	  pop_seen = zx_scan_xmlns(c);  /* Prescan namespaces so that token can be correctly recognized. */
 	  tok = zx_elem_lookup(c, name, c->p, &ns);
 	  switch (tok) {
+          case zx_sp_NameIDPolicy_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_sp_NameIDPolicy(c, ns);
+            el->g.n = &x->NameIDPolicy->gg.g;
+            x->NameIDPolicy = (struct zx_sp_NameIDPolicy_s*)el;
+            break;
 
 	  default:
 	    el = zx_known_or_unknown_elem(c, tok, &x->gg, c->p - name, name, ns);
@@ -467,8 +478,8 @@ struct zx_sec_TransitedProvider_s* zx_DEC_sec_TransitedProvider(struct zx_ctx* c
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sec_TransitedProvider_s* x = ZX_ZALLOC(c, struct zx_sec_TransitedProvider_s);
   x->gg.g.tok = zx_sec_TransitedProvider_ELEM;
   x->gg.g.ns = ns;
@@ -505,6 +516,9 @@ struct zx_sec_TransitedProvider_s* zx_DEC_sec_TransitedProvider(struct zx_ctx* c
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -513,7 +527,7 @@ struct zx_sec_TransitedProvider_s* zx_DEC_sec_TransitedProvider(struct zx_ctx* c
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -636,8 +650,8 @@ struct zx_sec_TransitedProviderPath_s* zx_DEC_sec_TransitedProviderPath(struct z
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sec_TransitedProviderPath_s* x = ZX_ZALLOC(c, struct zx_sec_TransitedProviderPath_s);
   x->gg.g.tok = zx_sec_TransitedProviderPath_ELEM;
   x->gg.g.ns = ns;
@@ -662,6 +676,9 @@ struct zx_sec_TransitedProviderPath_s* zx_DEC_sec_TransitedProviderPath(struct z
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -670,7 +687,7 @@ struct zx_sec_TransitedProviderPath_s* zx_DEC_sec_TransitedProviderPath(struct z
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }

@@ -1,4 +1,4 @@
-/* zxidconf.h  -  Configuration of ZXID SP CGI
+/* zxidconf.h  -  Configuration of ZXID
  * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -35,7 +35,6 @@
 
 #define ZXID_CONF_FILE 1     /* (compile) */
 #define ZXID_CONF_FLAG 1     /* (compile) */
-#define ZXID_MAX_CONF  4096  /* (compile) Maximum size of conf file. */
 #define ZXID_SHOW_CONF 1     /* Whether configuration is viewable from url o=d */
 
 /*(c) ZXID configuration and working directory path
@@ -348,6 +347,11 @@
  * Whether limited IdP functionality is enabled. Affects generated metadata. */
 #define ZXID_IDP_ENA 0
 
+/*(c) Identity Mapper and People Service
+ * Whether limited Identity Mapper and People Service functionality is enabled.
+ * For this to work, IDP_ENA=1 is needed. */
+#define ZXID_IMPS_ENA 0
+
 /*(c) Mini Authentication Service
  * Whether limited Authentication Service functionality is enabled.
  * Please note that the AuthenticationService impmenetation at present (2010)
@@ -472,15 +476,32 @@
 #define ZXID_WSP_NOSIG_FATAL 1 /* Missing Security/Signature is fatal. */
 #define ZXID_NOTIMESTAMP_FATAL 1 /* Missing Security/Timestamp is fatal. */
 
+/*(c) XML canonicalization compatibility kludges
+ */
+
+#define ZXID_CANON_INOPT 0
+/* Shibboleth 2.1.5 IdP miscanonicalizes by
+ * ignoring InclusiveNamespaces/@PrefixList, yet
+ * it still supplies such list. The miscanonicalization
+ * leads namespaces missing. This has been reported to Scott Cantor as of 20101005 */
+#define ZXID_CANON_INOPT_SHIB215IDP_INCLUSIVENAMESPACES 0x01
+
 /*(c) Time Slop
  * Because clock sychronization amoung the servers in the CoT is unlikely
  * to be perfect, not to speak of timezone misconfigurations and the
  * dreaded officially introduced time errors (e.g. daylight "savings" time),
  * you can configure some slop in how the timeout is evaluated. For production
  * use something like 60 seconds could be a good value. 3600 = 1 hour, 86400 = 1 day.
- * Slop is used in assessing validity of assertions as well as message timestamps. */
-#define ZXID_BEFORE_SLOP    86400  /* Number of seconds before that is acceptable. */
-#define ZXID_AFTER_SLOP     86400  /* Number of seconds after that is acceptable. */
+ * All servers of CoT MUST use GMT (aka UTC), not local timezones. You can synchronize
+ * clocks with ntpdate ntp1.funet.fi (see man ntpdate).
+ * Slop is used in assessing validity of assertions as well as message timestamps.
+ * Time skew allows our end to lie about the time, e.g. if we are in GMT, but
+ * the other end is not and therefore we are rejected. Note that the time skew
+ * is same for all other ends, therefore this is not really a good solution.
+ * Only good solution is to have all servers synchronized to GMT (UTC) as the specs say.
+ * While flexibility is nice, there is enough rope here to hang yourself so don't do that. :-) */
+#define ZXID_BEFORE_SLOP    39600 /* Number of seconds before that is acceptable. */
+#define ZXID_AFTER_SLOP     7300  /* Number of seconds after that is acceptable. */
 
 #define ZXID_TIMESKEW       0      /* Timeskew, in seconds, for timestamps we emit. */
 #define ZXID_A7NTTL         3600   /* Time To Live for IdP issued Assertions */
@@ -627,9 +648,11 @@
  * are hidden and POST profile is used */
 #define ZXID_SHOW_TECH 0
 
-/*(c) Body tag for the ZXID generated pages.
- * Edit this to change the colors. */
+/*(c) Body tag for some old ZXID generated pages. Edit this to change the colors. But usually
+ * you should be editing stylesheet or template. */
 #define ZXID_BODY_TAG "<body bgcolor=white>"  /* (compile) */
+
+#if 0
 
 #define ZXID_IDP_SEL_START "<title>ZXID SP SSO: Choose IdP</title><link type=\"text/css\" rel=stylesheet href=\"idpsel.css\">" ZXID_BODY_TAG "<h1 class=zxtop>ZXID SP Federated SSO (user NOT logged in, no session)</h1>\n"
 
@@ -645,6 +668,7 @@
 
 #define ZXID_IDP_SEL_FOOTER  "<div class=zxbot><a class=zx href=\"http://zxid.org/\">zxid.org</a>, "
 #define ZXID_IDP_SEL_END     "</div>"
+#endif
 
 /*(c) IdP Selector Page URL
  * If the above simple customization options are not sufficient, you can
@@ -653,6 +677,51 @@
  * 0 (zero) disables. */
 
 #define ZXID_IDP_SEL_PAGE 0
+
+/*(c) Path for Template for IdP Authentication Page */
+
+#define ZXID_IDP_SEL_TEMPL_FILE "idpsel.html"
+
+/*(c) Template for IdP Authentication Page that is used if the
+ * path does not work. This is really meant to be the last resort. */
+
+#define ZXID_IDP_SEL_TEMPL "<title>ZXID SP SSO: Choose IdP</title>"\
+  "<link type=\"text/css\" rel=stylesheet href=\"idpsel.css\"><body bgcolor=white>"\
+  "<h1 class=zxtop>ZXID SP Federated SSO (user NOT logged in, no session)</h1>"\
+  "<form method=get action=\"!!URL\">"\
+  "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
+  "<h3>Login Using New IdP</h3>"\
+  "<i>A new IdP is one whose metadata we do not have yet. We need to know"\
+  "the IdP URL (aka Entity ID) in order to fetch the metadata using the"\
+  "well known location method. You will need to ask the adminstrator of"\
+  "the IdP to tell you what the EntityID is.</i>"\
+  "<p>IdP URL <input name=e size=60><input type=submit name=l0 value=\" Login \"><br>"\
+  "Entity ID of this SP (click on the link to fetch the SP metadata): <a href=\"!!EID\">!!EID</a>"\
+  "!!IDP_LIST<h3>Technical options</h3>"\
+  "<input type=checkbox name=fc value=1 checked> Create federation, NID Format:"\
+  "<select name=fn>"\
+  "<option value=prstnt>Persistent"\
+  "<option value=trnsnt>Transient"\
+  "<option value=\"\">(none)"\
+  "</select><br>"\
+  "<!-- ZXID built-in defaults, see zxidconf.h and zxid-conf.pd for explanation -->"\
+  "<input type=hidden name=fq value=\"\">"\
+  "<input type=hidden name=fy value=\"\">"\
+  "<input type=hidden name=fa value=\"\">"\
+  "<input type=hidden name=fm value=\"\">"\
+  "<input type=hidden name=fp value=0>"\
+  "<input type=hidden name=ff value=0>"\
+  "<div class=zxbot><a class=zx href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+
+/*(c) Choose the method for rendeing IdP list.
+ * 0 = popup menu
+ * 1 = buttons
+ * 2 = branded image buttons (not implemented as of 20100922) */
+#define ZXID_IDP_LIST_METH 0
+
+#define ZXID_IDP_LIST_POPUP   0
+#define ZXID_IDP_LIST_BUTTON  1
+#define ZXID_IDP_LIST_BRAND   2
 
 /*(c) If user clicks "Create New User" he is redirected to this page. */
 
@@ -699,7 +768,46 @@
   "<input type=hidden name=zxapp value=\"!!ZXAPP\">"\
   "</form><div class=zxbot><a href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
 
-#define ZXID_MGMT_START "<title>ZXID SP Mgmt</title><link type=\"text/css\" rel=stylesheet href=\"idpsel.css\">" ZXID_BODY_TAG "<h1 class=zxtop>ZXID SP Management (user logged in, session active)</h1>\n"
+/*(c) Path for Template for POST profile page */
+
+#define ZXID_POST_TEMPL_FILE "post.html"
+
+/*(c) Template for POST profile age that is used if the
+ * path does not work. This is really meant to be the last resort. */
+
+#define ZXID_POST_TEMPL "<title>ZXID Post Profile</title>"\
+  "<link type=\"text/css\" rel=stylesheet href=\"an.css\">"\
+  "<body bgcolor=white OnLoad=\"document.forms[0].submit()\">"\
+  "<form method=post action=\"!!ACTION_URL\">"\
+  "<h1 class=zxtop>ZXID POST Profile POST</h1>"\
+  "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
+  "<input type=hidden name=!!SAML_ART value=\"!!SAML_RESP\">!!RS!!SIG"\
+  "<input type=submit name=ok value=\" If JavaScript is not on, please click here to complete the transaction \">"\
+  "</form><div class=zxbot><a href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+
+/*(c) Error Page URL
+ * If the template customization options are not sufficient, you can
+ * provide URL to page of your own design. If set, takes priority over ERR_TEMPL_FILE.
+ * 0 (zero) disables. */
+
+#define ZXID_ERR_PAGE 0
+
+/*(c) Path for Template for Error Page */
+
+#define ZXID_ERR_TEMPL_FILE "err.html"
+
+/*(c) Template for Error Page that is used if the
+ * path does not work. This is really meant to be the last resort. */
+
+#define ZXID_ERR_TEMPL "<title>ZXID: Error</title>"\
+  "<link type=\"text/css\" rel=stylesheet href=\"an.css\"><body bgcolor=white>"\
+  "<form method=get action=\"!!URL\">"\
+  "<h1 class=zxtop>ZXID Error Message</h1>"\
+  "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
+  "<input type=hidden name=zxapp value=\"!!ZXAPP\">"\
+  "</form><div class=zxbot><a href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+
+#define ZXID_MGMT_START "<title>ZXID SP Mgmt</title><link type=\"text/css\" rel=stylesheet href=\"idpsel.css\"><body bgcolor=white><h1 class=zxtop>ZXID SP Management (user logged in, session active)</h1>\n"
 
 #define ZXID_MGMT_LOGOUT "<input type=submit name=gl value=\" Local Logout \">\n<input type=submit name=gr value=\" Single Logout (R) \">\n<input type=submit name=gs value=\" Single Logout (S) \">\n"
 

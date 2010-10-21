@@ -89,6 +89,7 @@ struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* id
   ar->IssueInstant = zxid_date_time(cf, time(0));
   ar->Artifact = zx_ref_simple_elem(cf->ctx, artifact);
   if (cf->sso_soap_sign) {
+    ZERO(&refs, sizeof(refs));
     refs.id = ar->ID;
     refs.canon = zx_EASY_ENC_SO_sp_ArtifactResolve(cf->ctx, ar);
     if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert art deref"))
@@ -317,16 +318,29 @@ struct zx_sa_Subject_s* zxid_mk_subj(zxid_conf* cf, zxid_entity* sp_meta, zxid_n
 /*() Construct AuthnStatement */
 
 /* Called by:  zxid_mk_user_a7n_to_sp */
-struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(zxid_conf* cf, zxid_ses* ses)
+struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(zxid_conf* cf, zxid_ses* ses, const char* eid)
 {
+  struct zx_str sesix;
+  struct zx_str eid_ss;
   struct zx_sa_AuthnStatement_s* an_stmt = zx_NEW_sa_AuthnStatement(cf->ctx);
-  an_stmt->SessionIndex = zx_dup_str(cf->ctx, ses->sesix);  /* *** need noncorrelatable session index */
+  if (ses->sesix) {
+#if 0
+    an_stmt->SessionIndex = zx_dup_str(cf->ctx, ses->sesix);
+#else
+    /* Need noncorrelatable session index */
+    eid_ss.len = strlen(eid);
+    eid_ss.s = (char*)eid;
+    sesix.len = strlen(ses->sesix);
+    sesix.s = ses->sesix;
+    an_stmt->SessionIndex = zxid_psobj_enc(cf, &eid_ss, "ZS", &sesix);
+#endif
+  }
   an_stmt->AuthnInstant = zxid_date_time(cf, ses->an_instant);
   an_stmt->AuthnContext = zx_NEW_sa_AuthnContext(cf->ctx);
   if (ses->an_ctx)
     an_stmt->AuthnContext->AuthnContextClassRef = zx_dup_simple_elem(cf->ctx, ses->an_ctx);
   else {
-    ERR("Session(%s) lacks AuthentCOntextClassRef. Output AuthnStatement will not satisfy all processing rules. See configuration option ISSUE_AUTHNCTX_PW.", ses->sesix);
+    ERR("Session(%s) lacks AuthentContextClassRef. Output AuthnStatement will not satisfy all processing rules. See configuration option ISSUE_AUTHNCTX_PW.", ses->sesix);
   }
   return an_stmt;
 }
@@ -386,6 +400,22 @@ struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(zxid_conf* cf, struct zx_xac_
   return at;
 }
 
+/*() Construct xac_Request */
+
+struct zx_xac_Request_s* zxid_mk_xac_az(zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
+{
+  struct zx_xac_Request_s* r = zx_NEW_xac_Request(cf->ctx);
+  r->Subject  = zx_NEW_xac_Subject(cf->ctx);
+  r->Subject->Attribute = subj;
+  r->Resource = zx_NEW_xac_Resource(cf->ctx);
+  r->Resource->Attribute = rsrc;
+  r->Action   = zx_NEW_xac_Action(cf->ctx);
+  r->Action->Attribute = act;
+  r->Environment = zx_NEW_xac_Environment(cf->ctx);
+  r->Environment->Attribute = env;
+  return r;
+}
+
 /*() Construct XACMLAuthzDecisionQuery */
 
 /* Called by:  zxid_pep_az_soap */
@@ -396,15 +426,7 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(zxid_conf* cf, struct zx_xa
   r->ID = zxid_mk_id(cf, "R", ZXID_ID_BITS);
   r->Version = zx_ref_str(cf->ctx, SAML2_VERSION);
   r->IssueInstant = zxid_date_time(cf, time(0));
-  r->Request = zx_NEW_xac_Request(cf->ctx);
-  r->Request->Subject  = zx_NEW_xac_Subject(cf->ctx);
-  r->Request->Subject->Attribute = subj;
-  r->Request->Resource = zx_NEW_xac_Resource(cf->ctx);
-  r->Request->Resource->Attribute = rsrc;
-  r->Request->Action   = zx_NEW_xac_Action(cf->ctx);
-  r->Request->Action->Attribute = act;
-  r->Request->Environment = zx_NEW_xac_Environment(cf->ctx);
-  r->Request->Environment->Attribute = env;
+  r->Request = zxid_mk_xac_az(cf, subj, rsrc, act, env);
   return r;
 }
 
@@ -418,15 +440,7 @@ struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zxid_mk_az_cd1(zxid_conf* cf, struc
   r->ID = zxid_mk_id(cf, "R", ZXID_ID_BITS);
   r->Version = zx_ref_str(cf->ctx, SAML2_VERSION);
   r->IssueInstant = zxid_date_time(cf, time(0));
-  r->Request = zx_NEW_xac_Request(cf->ctx);
-  r->Request->Subject  = zx_NEW_xac_Subject(cf->ctx);
-  r->Request->Subject->Attribute = subj;
-  r->Request->Resource = zx_NEW_xac_Resource(cf->ctx);
-  r->Request->Resource->Attribute = rsrc;
-  r->Request->Action   = zx_NEW_xac_Action(cf->ctx);
-  r->Request->Action->Attribute = act;
-  r->Request->Environment = zx_NEW_xac_Environment(cf->ctx);
-  r->Request->Environment->Attribute = env;
+  r->Request = zxid_mk_xac_az(cf, subj, rsrc, act, env);
   return r;
 }
 

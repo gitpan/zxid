@@ -91,8 +91,8 @@ struct zx_dap_Create_s* zx_DEC_dap_Create(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Create_s* x = ZX_ZALLOC(c, struct zx_dap_Create_s);
   x->gg.g.tok = zx_dap_Create_ELEM;
   x->gg.g.ns = ns;
@@ -123,6 +123,9 @@ struct zx_dap_Create_s* zx_DEC_dap_Create(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -131,7 +134,7 @@ struct zx_dap_Create_s* zx_DEC_dap_Create(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -274,8 +277,8 @@ struct zx_dap_CreateItem_s* zx_DEC_dap_CreateItem(struct zx_ctx* c, struct zx_ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_CreateItem_s* x = ZX_ZALLOC(c, struct zx_dap_CreateItem_s);
   x->gg.g.tok = zx_dap_CreateItem_ELEM;
   x->gg.g.ns = ns;
@@ -318,6 +321,9 @@ struct zx_dap_CreateItem_s* zx_DEC_dap_CreateItem(struct zx_ctx* c, struct zx_ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -326,7 +332,7 @@ struct zx_dap_CreateItem_s* zx_DEC_dap_CreateItem(struct zx_ctx* c, struct zx_ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -454,8 +460,8 @@ struct zx_dap_CreateResponse_s* zx_DEC_dap_CreateResponse(struct zx_ctx* c, stru
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_CreateResponse_s* x = ZX_ZALLOC(c, struct zx_dap_CreateResponse_s);
   x->gg.g.tok = zx_dap_CreateResponse_ELEM;
   x->gg.g.ns = ns;
@@ -492,6 +498,9 @@ struct zx_dap_CreateResponse_s* zx_DEC_dap_CreateResponse(struct zx_ctx* c, stru
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -500,7 +509,7 @@ struct zx_dap_CreateResponse_s* zx_DEC_dap_CreateResponse(struct zx_ctx* c, stru
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -638,8 +647,8 @@ struct zx_dap_Data_s* zx_DEC_dap_Data(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Data_s* x = ZX_ZALLOC(c, struct zx_dap_Data_s);
   x->gg.g.tok = zx_dap_Data_ELEM;
   x->gg.g.ns = ns;
@@ -700,6 +709,9 @@ struct zx_dap_Data_s* zx_DEC_dap_Data(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -708,7 +720,7 @@ struct zx_dap_Data_s* zx_DEC_dap_Data(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -841,8 +853,8 @@ struct zx_dap_Delete_s* zx_DEC_dap_Delete(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Delete_s* x = ZX_ZALLOC(c, struct zx_dap_Delete_s);
   x->gg.g.tok = zx_dap_Delete_ELEM;
   x->gg.g.ns = ns;
@@ -873,6 +885,9 @@ struct zx_dap_Delete_s* zx_DEC_dap_Delete(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -881,7 +896,7 @@ struct zx_dap_Delete_s* zx_DEC_dap_Delete(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1014,8 +1029,8 @@ struct zx_dap_DeleteItem_s* zx_DEC_dap_DeleteItem(struct zx_ctx* c, struct zx_ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_DeleteItem_s* x = ZX_ZALLOC(c, struct zx_dap_DeleteItem_s);
   x->gg.g.tok = zx_dap_DeleteItem_ELEM;
   x->gg.g.ns = ns;
@@ -1070,6 +1085,9 @@ struct zx_dap_DeleteItem_s* zx_DEC_dap_DeleteItem(struct zx_ctx* c, struct zx_ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1078,7 +1096,7 @@ struct zx_dap_DeleteItem_s* zx_DEC_dap_DeleteItem(struct zx_ctx* c, struct zx_ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1206,8 +1224,8 @@ struct zx_dap_DeleteResponse_s* zx_DEC_dap_DeleteResponse(struct zx_ctx* c, stru
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_DeleteResponse_s* x = ZX_ZALLOC(c, struct zx_dap_DeleteResponse_s);
   x->gg.g.tok = zx_dap_DeleteResponse_ELEM;
   x->gg.g.ns = ns;
@@ -1238,6 +1256,9 @@ struct zx_dap_DeleteResponse_s* zx_DEC_dap_DeleteResponse(struct zx_ctx* c, stru
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1246,7 +1267,7 @@ struct zx_dap_DeleteResponse_s* zx_DEC_dap_DeleteResponse(struct zx_ctx* c, stru
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1379,8 +1400,8 @@ struct zx_dap_ItemData_s* zx_DEC_dap_ItemData(struct zx_ctx* c, struct zx_ns_s* 
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_ItemData_s* x = ZX_ZALLOC(c, struct zx_dap_ItemData_s);
   x->gg.g.tok = zx_dap_ItemData_ELEM;
   x->gg.g.ns = ns;
@@ -1423,6 +1444,9 @@ struct zx_dap_ItemData_s* zx_DEC_dap_ItemData(struct zx_ctx* c, struct zx_ns_s* 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1431,7 +1455,7 @@ struct zx_dap_ItemData_s* zx_DEC_dap_ItemData(struct zx_ctx* c, struct zx_ns_s* 
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1564,8 +1588,8 @@ struct zx_dap_LDIF_s* zx_DEC_dap_LDIF(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_LDIF_s* x = ZX_ZALLOC(c, struct zx_dap_LDIF_s);
   x->gg.g.tok = zx_dap_LDIF_ELEM;
   x->gg.g.ns = ns;
@@ -1632,6 +1656,9 @@ struct zx_dap_LDIF_s* zx_DEC_dap_LDIF(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1640,7 +1667,7 @@ struct zx_dap_LDIF_s* zx_DEC_dap_LDIF(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1763,8 +1790,8 @@ struct zx_dap_Modify_s* zx_DEC_dap_Modify(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Modify_s* x = ZX_ZALLOC(c, struct zx_dap_Modify_s);
   x->gg.g.tok = zx_dap_Modify_ELEM;
   x->gg.g.ns = ns;
@@ -1795,6 +1822,9 @@ struct zx_dap_Modify_s* zx_DEC_dap_Modify(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1803,7 +1833,7 @@ struct zx_dap_Modify_s* zx_DEC_dap_Modify(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1946,8 +1976,8 @@ struct zx_dap_ModifyItem_s* zx_DEC_dap_ModifyItem(struct zx_ctx* c, struct zx_ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_ModifyItem_s* x = ZX_ZALLOC(c, struct zx_dap_ModifyItem_s);
   x->gg.g.tok = zx_dap_ModifyItem_ELEM;
   x->gg.g.ns = ns;
@@ -2008,6 +2038,9 @@ struct zx_dap_ModifyItem_s* zx_DEC_dap_ModifyItem(struct zx_ctx* c, struct zx_ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2016,7 +2049,7 @@ struct zx_dap_ModifyItem_s* zx_DEC_dap_ModifyItem(struct zx_ctx* c, struct zx_ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2149,8 +2182,8 @@ struct zx_dap_ModifyResponse_s* zx_DEC_dap_ModifyResponse(struct zx_ctx* c, stru
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_ModifyResponse_s* x = ZX_ZALLOC(c, struct zx_dap_ModifyResponse_s);
   x->gg.g.tok = zx_dap_ModifyResponse_ELEM;
   x->gg.g.ns = ns;
@@ -2187,6 +2220,9 @@ struct zx_dap_ModifyResponse_s* zx_DEC_dap_ModifyResponse(struct zx_ctx* c, stru
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2195,7 +2231,7 @@ struct zx_dap_ModifyResponse_s* zx_DEC_dap_ModifyResponse(struct zx_ctx* c, stru
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2333,8 +2369,8 @@ struct zx_dap_NewData_s* zx_DEC_dap_NewData(struct zx_ctx* c, struct zx_ns_s* ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_NewData_s* x = ZX_ZALLOC(c, struct zx_dap_NewData_s);
   x->gg.g.tok = zx_dap_NewData_ELEM;
   x->gg.g.ns = ns;
@@ -2359,6 +2395,9 @@ struct zx_dap_NewData_s* zx_DEC_dap_NewData(struct zx_ctx* c, struct zx_ns_s* ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2367,7 +2406,7 @@ struct zx_dap_NewData_s* zx_DEC_dap_NewData(struct zx_ctx* c, struct zx_ns_s* ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2500,8 +2539,8 @@ struct zx_dap_Notification_s* zx_DEC_dap_Notification(struct zx_ctx* c, struct z
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Notification_s* x = ZX_ZALLOC(c, struct zx_dap_Notification_s);
   x->gg.g.tok = zx_dap_Notification_ELEM;
   x->gg.g.ns = ns;
@@ -2550,6 +2589,9 @@ struct zx_dap_Notification_s* zx_DEC_dap_Notification(struct zx_ctx* c, struct z
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2558,7 +2600,7 @@ struct zx_dap_Notification_s* zx_DEC_dap_Notification(struct zx_ctx* c, struct z
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2691,8 +2733,8 @@ struct zx_dap_Notify_s* zx_DEC_dap_Notify(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Notify_s* x = ZX_ZALLOC(c, struct zx_dap_Notify_s);
   x->gg.g.tok = zx_dap_Notify_ELEM;
   x->gg.g.ns = ns;
@@ -2729,6 +2771,9 @@ struct zx_dap_Notify_s* zx_DEC_dap_Notify(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2737,7 +2782,7 @@ struct zx_dap_Notify_s* zx_DEC_dap_Notify(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2870,8 +2915,8 @@ struct zx_dap_NotifyResponse_s* zx_DEC_dap_NotifyResponse(struct zx_ctx* c, stru
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_NotifyResponse_s* x = ZX_ZALLOC(c, struct zx_dap_NotifyResponse_s);
   x->gg.g.tok = zx_dap_NotifyResponse_ELEM;
   x->gg.g.ns = ns;
@@ -2902,6 +2947,9 @@ struct zx_dap_NotifyResponse_s* zx_DEC_dap_NotifyResponse(struct zx_ctx* c, stru
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2910,7 +2958,7 @@ struct zx_dap_NotifyResponse_s* zx_DEC_dap_NotifyResponse(struct zx_ctx* c, stru
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3043,8 +3091,8 @@ struct zx_dap_Query_s* zx_DEC_dap_Query(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Query_s* x = ZX_ZALLOC(c, struct zx_dap_Query_s);
   x->gg.g.tok = zx_dap_Query_ELEM;
   x->gg.g.ns = ns;
@@ -3075,6 +3123,9 @@ struct zx_dap_Query_s* zx_DEC_dap_Query(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3083,7 +3134,7 @@ struct zx_dap_Query_s* zx_DEC_dap_Query(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3226,8 +3277,8 @@ struct zx_dap_QueryItem_s* zx_DEC_dap_QueryItem(struct zx_ctx* c, struct zx_ns_s
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_QueryItem_s* x = ZX_ZALLOC(c, struct zx_dap_QueryItem_s);
   x->gg.g.tok = zx_dap_QueryItem_ELEM;
   x->gg.g.ns = ns;
@@ -3318,6 +3369,9 @@ struct zx_dap_QueryItem_s* zx_DEC_dap_QueryItem(struct zx_ctx* c, struct zx_ns_s
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3326,7 +3380,7 @@ struct zx_dap_QueryItem_s* zx_DEC_dap_QueryItem(struct zx_ctx* c, struct zx_ns_s
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3464,8 +3518,8 @@ struct zx_dap_QueryResponse_s* zx_DEC_dap_QueryResponse(struct zx_ctx* c, struct
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_QueryResponse_s* x = ZX_ZALLOC(c, struct zx_dap_QueryResponse_s);
   x->gg.g.tok = zx_dap_QueryResponse_ELEM;
   x->gg.g.ns = ns;
@@ -3502,6 +3556,9 @@ struct zx_dap_QueryResponse_s* zx_DEC_dap_QueryResponse(struct zx_ctx* c, struct
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3510,7 +3567,7 @@ struct zx_dap_QueryResponse_s* zx_DEC_dap_QueryResponse(struct zx_ctx* c, struct
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3653,8 +3710,8 @@ struct zx_dap_ResultQuery_s* zx_DEC_dap_ResultQuery(struct zx_ctx* c, struct zx_
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_ResultQuery_s* x = ZX_ZALLOC(c, struct zx_dap_ResultQuery_s);
   x->gg.g.tok = zx_dap_ResultQuery_ELEM;
   x->gg.g.ns = ns;
@@ -3721,6 +3778,9 @@ struct zx_dap_ResultQuery_s* zx_DEC_dap_ResultQuery(struct zx_ctx* c, struct zx_
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3729,7 +3789,7 @@ struct zx_dap_ResultQuery_s* zx_DEC_dap_ResultQuery(struct zx_ctx* c, struct zx_
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3867,8 +3927,8 @@ struct zx_dap_Select_s* zx_DEC_dap_Select(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Select_s* x = ZX_ZALLOC(c, struct zx_dap_Select_s);
   x->gg.g.tok = zx_dap_Select_ELEM;
   x->gg.g.ns = ns;
@@ -3929,6 +3989,9 @@ struct zx_dap_Select_s* zx_DEC_dap_Select(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3937,7 +4000,7 @@ struct zx_dap_Select_s* zx_DEC_dap_Select(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -4070,8 +4133,8 @@ struct zx_dap_Subscription_s* zx_DEC_dap_Subscription(struct zx_ctx* c, struct z
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_Subscription_s* x = ZX_ZALLOC(c, struct zx_dap_Subscription_s);
   x->gg.g.tok = zx_dap_Subscription_ELEM;
   x->gg.g.ns = ns;
@@ -4138,6 +4201,9 @@ struct zx_dap_Subscription_s* zx_DEC_dap_Subscription(struct zx_ctx* c, struct z
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -4146,7 +4212,7 @@ struct zx_dap_Subscription_s* zx_DEC_dap_Subscription(struct zx_ctx* c, struct z
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -4294,8 +4360,8 @@ struct zx_dap_TestItem_s* zx_DEC_dap_TestItem(struct zx_ctx* c, struct zx_ns_s* 
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_TestItem_s* x = ZX_ZALLOC(c, struct zx_dap_TestItem_s);
   x->gg.g.tok = zx_dap_TestItem_ELEM;
   x->gg.g.ns = ns;
@@ -4344,6 +4410,9 @@ struct zx_dap_TestItem_s* zx_DEC_dap_TestItem(struct zx_ctx* c, struct zx_ns_s* 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -4352,7 +4421,7 @@ struct zx_dap_TestItem_s* zx_DEC_dap_TestItem(struct zx_ctx* c, struct zx_ns_s* 
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -4480,8 +4549,8 @@ struct zx_dap_TestOp_s* zx_DEC_dap_TestOp(struct zx_ctx* c, struct zx_ns_s* ns )
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_dap_TestOp_s* x = ZX_ZALLOC(c, struct zx_dap_TestOp_s);
   x->gg.g.tok = zx_dap_TestOp_ELEM;
   x->gg.g.ns = ns;
@@ -4542,6 +4611,9 @@ struct zx_dap_TestOp_s* zx_DEC_dap_TestOp(struct zx_ctx* c, struct zx_ns_s* ns )
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -4550,7 +4622,7 @@ struct zx_dap_TestOp_s* zx_DEC_dap_TestOp(struct zx_ctx* c, struct zx_ns_s* ns )
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }

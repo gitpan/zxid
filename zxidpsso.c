@@ -35,7 +35,7 @@
  * failure (i.e. duplicate), 1 on success. */
 
 /* Called by:  zxid_add_fed_tok_to_epr, zxid_idp_sso x3 */
-static int zxid_anoint_a7n(zxid_conf* cf, int sign, zxid_a7n* a7n, struct zx_str* issued_to, const char* lk, const char* uid)
+int zxid_anoint_a7n(zxid_conf* cf, int sign, zxid_a7n* a7n, struct zx_str* issued_to, const char* lk, const char* uid)
 {
   X509* sign_cert;
   RSA*  sign_pkey;
@@ -46,6 +46,7 @@ static int zxid_anoint_a7n(zxid_conf* cf, int sign, zxid_a7n* a7n, struct zx_str
   GETTIMEOFDAY(&ourts, 0);
   
   if (sign) {
+    ZERO(&refs, sizeof(refs));
     refs.id = a7n->ID;
     refs.canon = zx_EASY_ENC_SO_sa_Assertion(cf->ctx, a7n);
     if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert anoint a7n"))
@@ -96,7 +97,7 @@ static int zxid_anoint_a7n(zxid_conf* cf, int sign, zxid_a7n* a7n, struct zx_str
  * may be useful for caller to send further and should be freed by the caller. */
 
 /* Called by:  zxid_idp_sso x4 */
-static struct zx_str* zxid_anoint_sso_resp(zxid_conf* cf, int sign, struct zx_sp_Response_s* resp, struct zx_sp_AuthnRequest_s* ar)
+struct zx_str* zxid_anoint_sso_resp(zxid_conf* cf, int sign, struct zx_sp_Response_s* resp, struct zx_sp_AuthnRequest_s* ar)
 {
   X509* sign_cert;
   RSA*  sign_pkey;
@@ -107,6 +108,7 @@ static struct zx_str* zxid_anoint_sso_resp(zxid_conf* cf, int sign, struct zx_sp
   GETTIMEOFDAY(&ourts, 0);
   
   if (sign) {
+    ZERO(&refs, sizeof(refs));
     refs.id = resp->ID;
     refs.canon = zx_EASY_ENC_SO_sp_Response(cf->ctx, resp);
     if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert anoint resp"))
@@ -150,7 +152,7 @@ static struct zx_str* zxid_anoint_sso_resp(zxid_conf* cf, int sign, struct zx_sp
  * The input is temporarily modified and then restored. Do not pass const string. */
 
 /* Called by:  zxid_mk_user_a7n_to_sp x4 */
-struct zx_sa_Attribute_s* zxid_add_ldif_attrs(zxid_conf* cf, struct zx_sa_Attribute_s* prev, int len, char* p, char* lk)
+struct zx_sa_Attribute_s* zxid_add_ldif_attrs(zxid_conf* cf, struct zx_sa_Attribute_s* prev, char* p, char* lk)
 {
   struct zx_sa_Attribute_s* at = prev;
   char* name;
@@ -220,7 +222,7 @@ struct zx_sa_Attribute_s* zxid_gen_boots(zxid_conf* cf, const char* uid, char* p
   }
   
   while (de = readdir(dir)) {
-    D("Considering bootstrap file(%s%s)", path, de->d_name);
+    D("Consider bs(%s%s)", path, de->d_name);
     
     if (de->d_name[strlen(de->d_name)-1] == '~')  /* Ignore backups from hand edited EPRs. */
       continue;
@@ -229,9 +231,8 @@ struct zx_sa_Attribute_s* zxid_gen_boots(zxid_conf* cf, const char* uid, char* p
     
     /* Probable enough, read and parse EPR so we can continue examination. */
     
-    epr_buf = ZX_ALLOC(cf->ctx, ZXID_INIT_EPR_BUF);
-    epr_len = read_all(ZXID_INIT_EPR_BUF, epr_buf, "find_bs_svcmd", "%s/%s", mdpath, de->d_name);
-    if (!epr_len) {
+    epr_buf = read_all_alloc(cf->ctx, "find_bs_svcmd", 1, &epr_len, "%s/%s", mdpath, de->d_name);
+    if (!epr_buf) {
       ERR("User's (%s) bootstrap(%s) lacks service metadata registration. Reject. Consider using zxcot -e ... | zxcot -bs. See zxid-idp.pd for further information.", uid, de->d_name);
       ZX_FREE(cf->ctx, epr_buf);
       continue;
@@ -303,58 +304,50 @@ zxid_a7n* zxid_mk_user_a7n_to_sp(zxid_conf* cf, zxid_ses* ses, const char* uid, 
   struct zx_sa_AuthnStatement_s* an_stmt;
   struct zx_sa_AttributeStatement_s* at_stmt;
   struct zx_sa_Attribute_s* at;
-  char buf[ZXID_MAX_USER];
-  int got;
+  char* buf;
+  char dir[ZXID_MAX_DIR];
 
   D_INDENT("mka7n: ");
   D("sp_eid(%s)", sp_meta->eid);
 
   subj = zxid_mk_subj(cf, sp_meta, nameid);
-  an_stmt = ses ? zxid_mk_an_stmt(cf, ses) : 0;
+  an_stmt = ses ? zxid_mk_an_stmt(cf, ses, sp_meta->eid) : 0;
   at_stmt = zx_NEW_sa_AttributeStatement(cf->ctx);
   at_stmt->Attribute = zxid_mk_attribute(cf, "zxididp", ZXID_REL " " ZXID_COMPILE_DATE);
 
   if (cf->fedusername_suffix && cf->fedusername_suffix[0]) {
-    snprintf(buf, sizeof(buf), "%.*s@%s", nameid->gg.content->len, nameid->gg.content->s, cf->fedusername_suffix);
-    buf[sizeof(buf)-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
-    at = zxid_mk_attribute(cf, "fedusername", zx_dup_cstr(cf->ctx, buf));
+    snprintf(dir, sizeof(dir), "%.*s@%s", nameid->gg.content->len, nameid->gg.content->s, cf->fedusername_suffix);
+    dir[sizeof(dir)-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
+    at = zxid_mk_attribute(cf, "fedusername", zx_dup_cstr(cf->ctx, dir));
     ZX_NEXT(at) = (void*)at_stmt->Attribute;
     at_stmt->Attribute = at;
     if (cf->idpatopt & 0x01) {
-      at = zxid_mk_attribute(cf, "urn:oid:1.3.6.1.4.1.5923.1.1.1.6" /* eduPersonPrincipalName */, zx_dup_cstr(cf->ctx, buf));
+      at = zxid_mk_attribute(cf, "urn:oid:1.3.6.1.4.1.5923.1.1.1.6" /* eduPersonPrincipalName */, zx_dup_cstr(cf->ctx, dir));
       at->NameFormat = zx_dup_str(cf->ctx, "urn:oasis:names:tc:SAML:2.0:attrname-format:uri");
       ZX_NEXT(at) = (void*)at_stmt->Attribute;
       at_stmt->Attribute = at;
     }
   }
-  got = read_all(sizeof(buf)-1, buf, "idpsso_uid_at", "%s" ZXID_UID_DIR "%s/.bs/.at" , cf->path, uid);
-  if (got) {
-    at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute, got, buf, "idpsso_uid_at");
-  }
+  buf = read_all_alloc(cf->ctx, "idpsso_uid_at", 0,0, "%s" ZXID_UID_DIR "%s/.bs/.at",cf->path,uid);
+  if (buf) at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute,buf,"idpsso_uid_at");
+  
+  buf = read_all_alloc(cf->ctx, "idpsso_uid_sp_at", 0, 0, "%s" ZXID_UID_DIR "%s/%s/.at" , cf->path, uid, sp_name_buf);
+  if (buf) at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute,buf,"idpsso_uid_sp_at");
 
-  got = read_all(sizeof(buf)-1, buf, "idpsso_uid_sp_at", "%s" ZXID_UID_DIR "%s/%s/.at" , cf->path, uid, sp_name_buf);
-  if (got) {
-    at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute, got, buf, "idpsso_uid_sp_at");
-  }
+  buf = read_all_alloc(cf->ctx, "idpsso_all_at", 0, 0, "%s" ZXID_UID_DIR ".all/.bs/.at", cf->path);
+  if (buf) at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute,buf,"idpsso_all_at");
 
-  got = read_all(sizeof(buf)-1, buf, "idpsso_all_at", "%s" ZXID_UID_DIR ".all/.bs/.at" , cf->path);
-  if (got) {
-    at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute, got, buf, "idpsso_all_at");
-  }
-
-  got = read_all(sizeof(buf)-1, buf, "idpsso_all_sp_at", "%s" ZXID_UID_DIR ".all/%s/.at" , cf->path, sp_name_buf);
-  if (got) {
-    at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute, got, buf, "idpsso_all_sp_at");
-  }
+  buf = read_all_alloc(cf->ctx, "idpsso_all_sp_at", 0, 0, "%s" ZXID_UID_DIR ".all/%s/.at",cf->path,sp_name_buf);
+  if (buf) at_stmt->Attribute = zxid_add_ldif_attrs(cf, at_stmt->Attribute,buf,"idpsso_all_sp_at");
   D("sp_eid(%s) bs_lvl=%d", sp_meta->eid, bs_lvl);
   
   /* Process bootstraps */
 
-  name_from_path(buf, sizeof(buf), "%s" ZXID_UID_DIR "%s/.bs/", cf->path, uid);
-  at_stmt->Attribute = zxid_gen_boots(cf, uid, buf, at_stmt->Attribute, bs_lvl);
+  name_from_path(dir, sizeof(dir), "%s" ZXID_UID_DIR "%s/.bs/", cf->path, uid);
+  at_stmt->Attribute = zxid_gen_boots(cf, uid, dir, at_stmt->Attribute, bs_lvl);
   
-  name_from_path(buf, sizeof(buf), "%s" ZXID_UID_DIR ".all/.bs/", cf->path);
-  at_stmt->Attribute = zxid_gen_boots(cf, uid, buf, at_stmt->Attribute, bs_lvl);
+  name_from_path(dir, sizeof(dir), "%s" ZXID_UID_DIR ".all/.bs/", cf->path);
+  at_stmt->Attribute = zxid_gen_boots(cf, uid, dir, at_stmt->Attribute, bs_lvl);
   
   D("sp_eid(%s)", sp_meta->eid);
   a7n = zxid_mk_a7n(cf, zx_dup_str(cf->ctx, sp_meta->eid), subj, an_stmt, at_stmt, 0);
@@ -374,7 +367,7 @@ zxid_nid* zxid_check_fed(zxid_conf* cf, struct zx_str* affil, const char* uid, c
   struct zx_str* nid;
   struct zx_str* idp_eid;
 
-  got = read_all(sizeof(buf)-1, buf, "idpsso", "%s" ZXID_UID_DIR "%s/%s/.mni" , cf->path, uid, sp_name_buf);
+  got = read_all(sizeof(buf)-1, buf, "idpsso", 0, "%s" ZXID_UID_DIR "%s/%s/.mni" , cf->path, uid, sp_name_buf);
 
   if (!got) {
     if (allow_create == '1') {
@@ -385,7 +378,7 @@ zxid_nid* zxid_check_fed(zxid_conf* cf, struct zx_str* affil, const char* uid, c
       if (MKDIR(dir, 0777) && errno != EEXIST) {
 	perror("mkdir for uid/sp fed");
 	ERR("Creating uid/sp federation directory(%s) failed", dir);
-	zxlog(cf, 0, srcts, 0, issuer, req_id, 0, nid, "N", "S", "EFILE", dir, "mkdir fail, permissions?");
+	zxlog(cf, 0, srcts, 0, issuer, req_id, 0, 0, "N", "S", "EFILE", dir, "mkdir fail, permissions?");
 	D_DEDENT("allowcreate: ");
 	return 0;
       }
@@ -565,8 +558,73 @@ char* zxid_add_fed_tok_to_epr(zxid_conf* cf, zxid_epr* epr, const char* uid, int
   return logop;
 }
 
+/*() Internal function, just to factor out some commonality between SSO and SSOS. */
+
+zxid_a7n* zxid_sso_issue_a7n(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct timeval* srcts, zxid_entity* sp_meta, struct zx_str* acsurl, zxid_nid** nameid, char** logop, struct zx_sp_AuthnRequest_s* ar)
+{
+  zxid_a7n* a7n;
+  struct zx_sp_NameIDPolicy_s* nidpol;
+  struct zx_str* affil;
+  char sp_name_buf[1024];
+  D("sp_eid(%s)", sp_meta->eid);
+
+  if (ar->IssueInstant && ar->IssueInstant->s)
+    srcts->tv_sec = zx_date_time_to_secs(ar->IssueInstant->s);
+  
+  nidpol = ar->NameIDPolicy;
+  if (!cgi->allow_create && nidpol && nidpol->AllowCreate && nidpol->AllowCreate->s) {
+    D("No allow_create from form, extract from SAMLRequest (%.*s) len=%d", nidpol->AllowCreate->len, nidpol->AllowCreate->s, nidpol->AllowCreate->len);
+    cgi->allow_create = ZXID_XML_TRUE_TEST(nidpol->AllowCreate) ? '1' : '0';
+  }
+
+  if ((!cgi->nid_fmt || !cgi->nid_fmt[0])
+      && nidpol && nidpol->Format && nidpol->Format->s) {
+    D("No Name ID Format from form, extract from SAMLRequest (%.*s) len=%d", nidpol->Format->len, nidpol->Format->s, nidpol->Format->len);
+    cgi->nid_fmt = nidpol->Format->len == sizeof(SAML2_TRANSIENT_NID_FMT)-1
+      && !memcmp(nidpol->Format->s, SAML2_TRANSIENT_NID_FMT, sizeof(SAML2_TRANSIENT_NID_FMT)-1)
+      ? "trnsnt" : "prstnt";
+  }
+
+  /* Check for federation. */
+  
+  affil = nidpol && nidpol->SPNameQualifier ? nidpol->SPNameQualifier : ar->Issuer->gg.content;
+  zxid_nice_sha1(cf, sp_name_buf, sizeof(sp_name_buf), affil, affil, 7);
+  D("sp_name_buf(%s)  allow_create=%d", sp_name_buf, cgi->allow_create);
+  *nameid = zxid_check_fed(cf, affil, ses->uid, cgi->allow_create,
+			  srcts, ar->Issuer->gg.content, ar->ID, sp_name_buf);
+
+  if (*nameid) {
+    if (cgi->nid_fmt && !strcmp(cgi->nid_fmt, "trnsnt")) {
+      D("Despite old fed, using transient due to cgi->nid_fmt(%s)", STRNULLCHKD(cgi->nid_fmt));
+      zxid_mk_transient_nid(cf, *nameid, sp_name_buf, ses->uid);
+      if (logop) *logop = "ITSSO";
+    } else
+      if (logop) *logop = "IFSSO";
+  } else {
+    D("No nameid (because of no federation), using transient %d", 0);
+    *nameid = zx_NEW_sa_NameID(cf->ctx);
+    zxid_mk_transient_nid(cf, *nameid, sp_name_buf, ses->uid);
+    if (logop) *logop = "ITSSO";
+  }
+
+  a7n = zxid_mk_user_a7n_to_sp(cf, ses, ses->uid, *nameid, sp_meta, sp_name_buf, 1);  /* SSO a7n */
+
+  /* saml-profiles-2.0-os.pdf ll.549-551 requires SubjectConfirmation even though
+   * saml-core-2.0-os.pdf ll.653-657 says <SubjectConfirmation> [Zero or More]. The
+   * profile seems to make it mandatory. See profiles ll.554-560. */
+
+  a7n->Subject->SubjectConfirmation = zx_NEW_sa_SubjectConfirmation(cf->ctx);
+  a7n->Subject->SubjectConfirmation->Method = zx_dup_str(cf->ctx, SAML2_BEARER);
+  a7n->Subject->SubjectConfirmation->SubjectConfirmationData = zx_NEW_sa_SubjectConfirmationData(cf->ctx);
+  if (acsurl)
+    a7n->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = acsurl;
+  a7n->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = a7n->Conditions->NotOnOrAfter;
+
+  return a7n;
+}
+
 /*(i) Generate SSO assertion and ship it to SP by chosen binding. User has already
- * logged in by the time this is called. */
+ * logged in by the time this is called. See also zxid_ssos_anreq() */
 
 /* Called by:  zxid_idp_dispatch */
 struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_AuthnRequest_s* ar)
@@ -579,15 +637,12 @@ struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct 
   struct zx_str* acsurl = 0;
   struct zx_str tmpss;
   struct zx_str* ss;
-  struct zx_str* affil;
   struct zx_str* payload;
   struct timeval srcts = {0,501000};
   zxid_nid* nameid;
   zxid_a7n* a7n;
-  struct zx_sp_NameIDPolicy_s* nidpol;
   struct zx_sp_Response_s* resp;
   struct zx_e_Envelope_s* e;
-  char sp_name_buf[1024];
   char* p;
   char* logop;
 
@@ -642,54 +697,7 @@ struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct 
 
   /* User ses->uid is already logged in, now check for federation with sp */
 
-  D("sp_eid(%s)", sp_meta->eid);
-
-  if (ar->IssueInstant && ar->IssueInstant->s)
-    srcts.tv_sec = zx_date_time_to_secs(ar->IssueInstant->s);
-  
-  nidpol = ar->NameIDPolicy;
-  if (!cgi->allow_create && nidpol && nidpol->AllowCreate && nidpol->AllowCreate->s) {
-    D("No allow_create from form, extract from SAMLRequest (%.*s) len=%d", nidpol->AllowCreate->len, nidpol->AllowCreate->s, nidpol->AllowCreate->len);
-    cgi->allow_create = ZXID_XML_TRUE_TEST(nidpol->AllowCreate) ? '1' : '0';
-  }
-
-  if ((!cgi->nid_fmt || !cgi->nid_fmt[0])
-      && nidpol && nidpol->Format && nidpol->Format->s) {
-    D("No Name ID Format from form, extract from SAMLRequest (%.*s) len=%d", nidpol->Format->len, nidpol->Format->s, nidpol->Format->len);
-    cgi->nid_fmt = nidpol->Format->len == sizeof(SAML2_TRANSIENT_NID_FMT)-1 && !memcmp(nidpol->Format->s, SAML2_TRANSIENT_NID_FMT, sizeof(SAML2_TRANSIENT_NID_FMT)-1) ? "trnsnt" : "prstnt";
-  }
-
-  affil = nidpol && nidpol->SPNameQualifier ? nidpol->SPNameQualifier : ar->Issuer->gg.content;
-  zxid_nice_sha1(cf, sp_name_buf, sizeof(sp_name_buf), affil, affil, 7);
-  D("sp_name_buf(%s)  allow_create=%d", sp_name_buf, cgi->allow_create);
-  nameid = zxid_check_fed(cf, affil, ses->uid, cgi->allow_create,
-			  &srcts, ar->Issuer->gg.content, ar->ID, sp_name_buf);
-
-  if (nameid) {
-    if (cgi->nid_fmt && !strcmp(cgi->nid_fmt, "trnsnt")) {
-      D("Despite old fed, using transient due to cgi->nid_fmt(%s)", STRNULLCHKD(cgi->nid_fmt));
-      zxid_mk_transient_nid(cf, nameid, sp_name_buf, ses->uid);
-      logop = "ITSSO";
-    } else
-      logop = "IFSSO";
-  } else {
-    D("No nameid (because of no federation), using transient %d", 0);
-    nameid = zx_NEW_sa_NameID(cf->ctx);
-    zxid_mk_transient_nid(cf, nameid, sp_name_buf, ses->uid);
-    logop = "ITSSO";
-  }
-
-  a7n = zxid_mk_user_a7n_to_sp(cf, ses, ses->uid, nameid, sp_meta, sp_name_buf, 1);  /* SSO a7n */
-
-  /* saml-profiles-2.0-os.pdf ll.549-551 requires SubjectConfirmation even though
-   * saml-core-2.0-os.pdf ll.653-657 says <SubjectConfirmation> [Zero or More]. The
-   * profile seems to make it mandatory. See profiles ll.554-560. */
-
-  a7n->Subject->SubjectConfirmation = zx_NEW_sa_SubjectConfirmation(cf->ctx);
-  a7n->Subject->SubjectConfirmation->Method = zx_dup_str(cf->ctx, SAML2_BEARER);
-  a7n->Subject->SubjectConfirmation->SubjectConfirmationData = zx_NEW_sa_SubjectConfirmationData(cf->ctx);
-  a7n->Subject->SubjectConfirmation->SubjectConfirmationData->Recipient = acsurl;
-  a7n->Subject->SubjectConfirmation->SubjectConfirmationData->NotOnOrAfter = a7n->Conditions->NotOnOrAfter;
+  a7n = zxid_sso_issue_a7n(cf, cgi, ses, &srcts, sp_meta, acsurl, &nameid, &logop, ar);
   
   /* Sign, encrypt, and ship the assertion according to the binding. */
   
@@ -698,6 +706,7 @@ struct zx_str* zxid_idp_sso(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct 
     D("SAML2 PAOS ep(%.*s)", acsurl->len, acsurl->s);
     
     if (cf->sso_sign & ZXID_SSO_SIGN_A7N) {
+      ZERO(&refs, sizeof(refs));
       refs.id = a7n->ID;
       refs.canon = zx_EASY_ENC_SO_sa_Assertion(cf->ctx, a7n);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert paos"))
@@ -848,8 +857,8 @@ struct zx_as_SASLResponse_s* zxid_idp_as_do(zxid_conf* cf, struct zx_as_SASLRequ
   char buf[1024];
   char path[ZXID_MAX_BUF];
 
-  memset(&cgi, 0, sizeof(cgi));
-  memset(&ses, 0, sizeof(ses));
+  ZERO(&cgi, sizeof(cgi));
+  ZERO(&ses, sizeof(ses));
 
   if (SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(req->Data->content->len) >= sizeof(buf)-1) {
     ERR("Too long username and password data %d", req->Data->content->len);

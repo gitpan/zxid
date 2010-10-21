@@ -25,7 +25,7 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
-CU8* help =
+char* help =
 "zxcall  -  Web Service Client tool R" ZXID_REL "\n\
 SAML 2.0 and ID-WSF 2.0 are standards for federated identity and web services.\n\
 Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
@@ -36,8 +36,9 @@ Send well researched bug reports to the author. Home: zxid.org\n\
 Usage: zxcall [options] -s SESID -t SVCTYPE <soap_req_body.xml >soap_resp.xml\n\
        zxcall [options] -a IDP USER:PW -t SVCTYPE <soap_req_body.xml >soap_resp.xml\n\
        zxcall [options] -a IDP USER:PW -t SVCTYPE -nd # Discovery only\n\
-       zxcall [options] -a IDP USER:PW # Authentication only\n\
-       zxcall [options] -s SESID -l    # List session cache\n\
+       zxcall [options] -a IDP USER:PW   # Authentication only\n\
+       zxcall [options] -s SESID -im EID # Identity Mapping to EID\n\
+       zxcall [options] -s SESID -l      # List session cache\n\
   -c CONF          Optional configuration string (default -c PATH=/var/zxid/)\n\
                    Most of the configuration is read from /var/zxid/zxid.conf\n\
   -s SESID         Session ID referring to a directory in /var/zxid/ses\n\
@@ -51,6 +52,7 @@ Usage: zxcall [options] -s SESID -t SVCTYPE <soap_req_body.xml >soap_resp.xml\n\
   -din N           Discovery index (default: 1=pick first).\n\
   -az AZCREDS      Optional authorization credentials. Query string format.\n\
                    N.B. For authorization to work PDP_URL configuration option is needed.\n\
+  -im DSTEID       Map session's login identity to identity at some other SP\n\
   -e SOAPBODY      Pass SOAP body as argument (default is to read from STDIN)\n\
   -b               In response, only return content of SOAP body, omitting Envelope and Body.\n\
   -nd              Discovery only (you need to specify -t SVCTYPE as well)\n\
@@ -80,6 +82,7 @@ char* svc = 0;
 char* url = 0;
 char* di  = 0;
 char* az  = 0;
+char* im_to = 0;
 char* bdy = 0;
 zxid_conf* cf;
 
@@ -170,6 +173,52 @@ static void opt(int* argc, char*** argv, char*** env)
       }
       break;
 
+    case 'i':
+      switch ((*argv)[0][2]) {
+      case 'm':
+	++(*argv); --(*argc);
+	if ((*argc) < 1) break;
+	im_to = (*argv)[0];
+	continue;
+      }
+      break;
+
+    case 'l':
+      switch ((*argv)[0][2]) {
+      case '\0':
+	++listses;
+	continue;
+#if 0
+      case 'i':
+	if (!strcmp((*argv)[0],"-license")) {
+	  extern char* license;
+	  fprintf(stderr, license);
+	  exit(0);
+	}
+	break;
+#endif
+      }
+      break;
+
+    case 'n':
+      switch ((*argv)[0][2]) {
+      case 'd':
+	++di_only;
+	continue;
+      case '\0':
+	++dryrun;
+	continue;
+      }
+      break;
+
+    case 'q':
+      switch ((*argv)[0][2]) {
+      case '\0':
+	verbose = 0;
+	continue;
+      }
+      break;
+
     case 's':
       switch ((*argv)[0][2]) {
       case '\0':
@@ -196,42 +245,6 @@ static void opt(int* argc, char*** argv, char*** env)
 	++(*argv); --(*argc);
 	if ((*argc) < 1) break;
 	url = (*argv)[0];
-	continue;
-      }
-      break;
-
-    case 'n':
-      switch ((*argv)[0][2]) {
-      case 'd':
-	++di_only;
-	continue;
-      case '\0':
-	++dryrun;
-	continue;
-      }
-      break;
-
-    case 'l':
-      switch ((*argv)[0][2]) {
-      case '\0':
-	++listses;
-	continue;
-#if 0
-      case 'i':
-	if (!strcmp((*argv)[0],"-license")) {
-	  extern char* license;
-	  fprintf(stderr, license);
-	  exit(0);
-	}
-	break;
-#endif
-      }
-      break;
-
-    case 'q':
-      switch ((*argv)[0][2]) {
-      case '\0':
-	verbose = 0;
 	continue;
       }
       break;
@@ -272,7 +285,7 @@ help:
 int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
 {
   struct zx_root_s* r;
-  int epr_len, siz = ZXID_INIT_EPR_BUF, din = 0;
+  int epr_len, din = 0;
   char path[ZXID_MAX_BUF];
   char* epr_buf;  /* MUST NOT come from stack. */
   DIR* dir;
@@ -297,8 +310,6 @@ int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
     return 0;
   }
 
-  epr_buf = ZX_ALLOC(cf->ctx, siz);
-  
   while (de = readdir(dir)) {
     D("%d Considering file(%s)", din, de->d_name);
     if (de->d_name[0] == '.')  /* . .. and "hidden" files */
@@ -306,24 +317,10 @@ int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
     if (de->d_name[strlen(de->d_name)-1] == '~')  /* Ignore backups from hand edited EPRs. */
       continue;
     D("%d Checking EPR content file(%s)", din, de->d_name);
-    epr_len = read_all(siz, epr_buf, "lstses",
-		       "%s" ZXID_SES_DIR "%s/%s", cf->path, ses->sid, de->d_name);
-    if (!epr_len)
+    epr_buf = read_all_alloc(cf->ctx, "lstses", 1, &epr_len,
+			     "%s" ZXID_SES_DIR "%s/%s", cf->path, ses->sid, de->d_name);
+    if (!epr_buf)
       continue;
-
-    while (epr_len == siz) {
-      siz += siz;
-      if (siz > ZXID_MAX_CURL_BUF) {
-	ERR("Fail: Size of EPR(%s) exeeds internal limit %d.", de->d_name, ZXID_MAX_CURL_BUF);
-	ZX_FREE(cf->ctx, epr_buf);
-	D_DEDENT("lstses: ");
-	return 0;
-      }
-      D("Large EPR. Reallocating and rereading %d", siz);
-      REALLOCN(/*cf->ctx,*/ epr_buf, siz);
-      epr_len = read_all(siz, epr_buf, "lstses",
-			 "%s" ZXID_SES_DIR "%s/%s", cf->path, ses->sid, de->d_name);
-    }
     
     LOCK(cf->ctx->mx, "lstses");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, epr_buf, epr_buf + epr_len);
@@ -403,6 +400,13 @@ int zxcall_main(int argc, char** argv, char** env)
 
   if (listses)
     return zxid_print_session(cf, ses);   
+
+  if (im_to) {
+    D("Map to identity at eid(%s)", im_to);
+    zxid_map_identity_token(cf, ses, im_to, 0);
+    //printf("%.*s\n", nameid->gg.content->len, nameid->gg.content->s);
+    return 0;
+  }
 
   if (di_only) {
     D("Discover only. svctype(%s), index=%d", STRNULLCHK(svc), din);

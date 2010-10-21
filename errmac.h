@@ -176,6 +176,8 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
  
 #define CONV_DIGIT(x) ((x) - '0')
 
+#define LEAP(a) (!((a)%4) && (((a)%100) || !((a)%400)))
+
 /* Original Base64  Len  (x+2) / 3
  * ""       ""        0  2     0(2)     Suitable original(packed) sizes = bits
  * 1        WX==      4  3     1(0)     to avoid padding are
@@ -267,8 +269,9 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define FREE_EXPR(p) (0)
 #endif
 
-#define ZMALLOC(p) MB MALLOC(p); memset((p), 0, sizeof(*(p))); ME
-#define ZMALLOCN(p,n) MB MALLOCN((p),(n)); memset((p), 0, (n)); ME
+#define ZERO(p,n) memset((p), 0, (n))
+#define ZMALLOC(p) MB MALLOC(p); ZERO((p), sizeof(*(p))); ME
+#define ZMALLOCN(p,n) MB MALLOCN((p),(n)); ZERO((p), (n)); ME
 
      /* Common type declarations */
 #define const_str const char FAR*
@@ -361,10 +364,10 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
                                { int psiz = (n); if(!(e)) { (p)=0; break; } } \
                                (char*)(p)=(char*)((k)->ap); (k)->ap += PALIGN(n); ME
 
-#define ZPALLOC(p,k)         MB PALLOC((p),(k)); memset((p), 0, sizeof(*(p))); ME
-#define ZPALLOCN(p,k,n)      MB PALLOCN((p),(k),(n)); memset((p), 0, (n)); ME
-#define ZPALLOCEXT(p,k,e)    MB PALLOCEXT((p),(k),(e)); memset((p), 0, sizeof(*(p))); ME
-#define ZPALLOCEXTN(p,k,n,e) MB PALLOCEXTN((p),(k),(n),(e)); memset((p), 0, (n)); ME
+#define ZPALLOC(p,k)         MB PALLOC((p),(k)); ZERO((p), sizeof(*(p))); ME
+#define ZPALLOCN(p,k,n)      MB PALLOCN((p),(k),(n)); ZERO((p), (n)); ME
+#define ZPALLOCEXT(p,k,e)    MB PALLOCEXT((p),(k),(e)); ZERO((p), sizeof(*(p))); ME
+#define ZPALLOCEXTN(p,k,n,e) MB PALLOCEXTN((p),(k),(n),(e)); ZERO((p), (n)); ME
 
 /* =============== pthread locking =============== */
 

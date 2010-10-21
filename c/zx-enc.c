@@ -89,9 +89,19 @@ int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
 	  len += zx_LEN_SO_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa_NameID_s* e;
       for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
 	  len += zx_LEN_SO_sa_NameID(c, e);
+  }
+  {
+      struct zx_sa_EncryptedID_s* e;
+      for (e = x->EncryptedID; e; e = (struct zx_sa_EncryptedID_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sa_EncryptedID(c, e);
   }
   for (se = x->NewID; se; se = (struct zx_elem_s*)se->g.n)
     len += zx_LEN_SO_simple_elem(c,se, sizeof("sp:NewID")-1, zx_ns_tab+zx_xmlns_ix_sp);
@@ -241,6 +251,11 @@ int zx_LEN_SO_root(struct zx_ctx* c, struct zx_root_s* x )
 	  len += zx_LEN_SO_a_EndpointReference(c, e);
   }
   {
+      struct zx_sec_Token_s* e;
+      for (e = x->Token; e; e = (struct zx_sec_Token_s*)e->gg.g.n)
+	  len += zx_LEN_SO_sec_Token(c, e);
+  }
+  {
       struct zx_hrxml_Candidate_s* e;
       for (e = x->Candidate; e; e = (struct zx_hrxml_Candidate_s*)e->gg.g.n)
 	  len += zx_LEN_SO_hrxml_Candidate(c, e);
@@ -295,9 +310,19 @@ int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 	  len += zx_LEN_WO_sa_Assertion(c, e);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa_EncryptedAssertion(c, e);
+  }
+  {
       struct zx_sa_NameID_s* e;
       for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
 	  len += zx_LEN_WO_sa_NameID(c, e);
+  }
+  {
+      struct zx_sa_EncryptedID_s* e;
+      for (e = x->EncryptedID; e; e = (struct zx_sa_EncryptedID_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sa_EncryptedID(c, e);
   }
   for (se = x->NewID; se; se = (struct zx_elem_s*)se->g.n)
     len += zx_LEN_WO_simple_elem(c, se, sizeof("NewID")-1);
@@ -447,6 +472,11 @@ int zx_LEN_WO_root(struct zx_ctx* c, struct zx_root_s* x )
 	  len += zx_LEN_WO_a_EndpointReference(c, e);
   }
   {
+      struct zx_sec_Token_s* e;
+      for (e = x->Token; e; e = (struct zx_sec_Token_s*)e->gg.g.n)
+	  len += zx_LEN_WO_sec_Token(c, e);
+  }
+  {
       struct zx_hrxml_Candidate_s* e;
       for (e = x->Candidate; e; e = (struct zx_hrxml_Candidate_s*)e->gg.g.n)
 	  len += zx_LEN_WO_hrxml_Candidate(c, e);
@@ -501,9 +531,19 @@ char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
 	  p = zx_ENC_SO_sa_Assertion(c, e, p);
   }
   {
+      struct zx_sa_EncryptedAssertion_s* e;
+      for (e = x->EncryptedAssertion; e; e = (struct zx_sa_EncryptedAssertion_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa_EncryptedAssertion(c, e, p);
+  }
+  {
       struct zx_sa_NameID_s* e;
       for (e = x->NameID; e; e = (struct zx_sa_NameID_s*)e->gg.g.n)
 	  p = zx_ENC_SO_sa_NameID(c, e, p);
+  }
+  {
+      struct zx_sa_EncryptedID_s* e;
+      for (e = x->EncryptedID; e; e = (struct zx_sa_EncryptedID_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sa_EncryptedID(c, e, p);
   }
   for (se = x->NewID; se; se = (struct zx_elem_s*)se->g.n)
     p = zx_ENC_SO_simple_elem(c, se, p, "sp:NewID", sizeof("sp:NewID")-1, zx_ns_tab+zx_xmlns_ix_sp);
@@ -651,6 +691,11 @@ char* zx_ENC_SO_root(struct zx_ctx* c, struct zx_root_s* x, char* p )
       struct zx_a_EndpointReference_s* e;
       for (e = x->EndpointReference; e; e = (struct zx_a_EndpointReference_s*)e->gg.g.n)
 	  p = zx_ENC_SO_a_EndpointReference(c, e, p);
+  }
+  {
+      struct zx_sec_Token_s* e;
+      for (e = x->Token; e; e = (struct zx_sec_Token_s*)e->gg.g.n)
+	  p = zx_ENC_SO_sec_Token(c, e, p);
   }
   {
       struct zx_hrxml_Candidate_s* e;
@@ -3755,6 +3800,8 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("ConfirmationMethod")-1);
   case zx_sa11_SubjectConfirmationData_ELEM:
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("SubjectConfirmationData")-1);
+  case zx_sp_NameIDPolicy_ELEM:
+    return zx_LEN_WO_sp_NameIDPolicy(c, (struct zx_sp_NameIDPolicy_s*)x);
   case zx_sec_TransitedProvider_ELEM:
     return zx_LEN_WO_sec_TransitedProvider(c, (struct zx_sec_TransitedProvider_s*)x);
   case zx_sec12_Issuer_ELEM:
@@ -3805,8 +3852,6 @@ int zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x)
     return zx_LEN_WO_simple_elem(c, (struct zx_elem_s*)x, sizeof("Artifact")-1);
   case zx_sp_Status_ELEM:
     return zx_LEN_WO_sp_Status(c, (struct zx_sp_Status_s*)x);
-  case zx_sp_NameIDPolicy_ELEM:
-    return zx_LEN_WO_sp_NameIDPolicy(c, (struct zx_sp_NameIDPolicy_s*)x);
   case zx_sp_Scoping_ELEM:
     return zx_LEN_WO_sp_Scoping(c, (struct zx_sp_Scoping_s*)x);
   case zx_sp_IDPEntry_ELEM:
@@ -6909,6 +6954,8 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "ConfirmationMethod", sizeof("ConfirmationMethod")-1);
   case zx_sa11_SubjectConfirmationData_ELEM:
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "SubjectConfirmationData", sizeof("SubjectConfirmationData")-1);
+  case zx_sp_NameIDPolicy_ELEM:
+    return zx_ENC_WO_sp_NameIDPolicy(c, (struct zx_sp_NameIDPolicy_s*)x, p);
   case zx_sec_TransitedProvider_ELEM:
     return zx_ENC_WO_sec_TransitedProvider(c, (struct zx_sec_TransitedProvider_s*)x, p);
   case zx_sec12_Issuer_ELEM:
@@ -6959,8 +7006,6 @@ char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p)
     return zx_ENC_WO_simple_elem(c, (struct zx_elem_s*)x, p, "Artifact", sizeof("Artifact")-1);
   case zx_sp_Status_ELEM:
     return zx_ENC_WO_sp_Status(c, (struct zx_sp_Status_s*)x, p);
-  case zx_sp_NameIDPolicy_ELEM:
-    return zx_ENC_WO_sp_NameIDPolicy(c, (struct zx_sp_NameIDPolicy_s*)x, p);
   case zx_sp_Scoping_ELEM:
     return zx_ENC_WO_sp_Scoping(c, (struct zx_sp_Scoping_s*)x, p);
   case zx_sp_IDPEntry_ELEM:

@@ -52,8 +52,9 @@ pulverize.pl     - A build tool for generating pulverized libraries for dead fun
 mockpdp.pl       - A mockup of a PDP, run as CGI
 call-anal.pl     - Call graph analysis tool (see make callgraph)
 xml-pretty.pl    - XML Pretty Printer
+zximport-htpasswd.pl - Script to create users in /var/zxid/idpuid from .htpasswd
 
-# Handwritten code
+# Handwritten code, mainly for libzxid.a
 
 Makefile         - Used to build ZXID (needs GNU make)
 BSDmakefile      - Trigger gmake on BSD systems
@@ -74,7 +75,6 @@ ds-templ.c       - Code generation template for DS script API
 getput-templ.c   - Code generation template for accessor functions
 zxdirent.c       - Kevlin Henney's dirent.c (modified by Sampo) for WIN32CL port
 zxlog.c          - Logging routines with encryption and signing
-zxlogview.c      - Log viewing tool with decryption and sig verification
 zxsig.c          - XML DSIG support
 zxcrypto.c       - Cryptographical functions
 zxlib.c          - Functions used to capture commonalities in generated code
@@ -103,20 +103,14 @@ zxidpsso.c       - Single Sign-On functions for IdP: Generate A7N
 zxidsso.c        - Single Sign-On functions for SP: Consume A7N
 zxida7n.c        - Functions for querying assertions
 zxidepr.c        - End Point Reference (EPR) and bootstrap handling
-zxidwsf.c        - Handwritten ID-WSF Framework level utilities, e.g. signing and validation
-zxidwsc.c        - Handwritten ID-WSF Web Services Client engine
-zxidwsp.c        - Handwritten ID-WSF Web Services Provider helpers
-zxiddi.c         - Handwritten ID-WSF Discovery Service
-zxidmkwsf.c      - Handwritten constructors for WSF
-zxidhlowsf.c     - Demonstration of calling ID-WSF services (DS and DAP)
-zxidxmltool.c    - Testing tool for parsing XML
-zxbench.c        - A benchmarking tool
-zxencdectest.c   - An XML encoding and decoding testing tool
-zxidssofinalizetest.c  - Test zxid_sso_finalize()
-zxdecode.c       - SAML redirect and post message decoding tool
-zxcot.c          - CoT (Circle-of-Trust) management tool: list CoT, add metadata to CoT
-zxpasswd.c       - Password creation and user management tool
-zxcall.c         - Web Service Client tool
+zxidwsf.c        - ID-WSF Framework level utilities, e.g. signing and validation
+zxidwsc.c        - ID-WSF Web Services Client engine
+zxidwsp.c        - ID-WSF Web Services Provider helpers
+zxiddi.c         - ID-WSF Discovery Service
+zxidim.c         - ID-WSF Identity Mapping Service
+zxidps.c         - ID-WSF People Service
+zxidmkwsf.c      - Constructors for WSF
+zxidsimp.c       - Simple API implementation
 
 # Yubikey (yubico.com) One Time Password (OTP) USB token support
 
@@ -124,18 +118,32 @@ yubikey.h        - yubikey library header (from libyubikey-1.5)
 ykcrc.c          - ticket validity check
 ykaes.c          - AES128 implementation from yubico
 
-# Full API demos
+# HTML templates for SP, IdP,and PS (!!BANGBANG substitutions will be performed)
 
-zxid.c           - Main ZXID SP program (a CGI script)
-zxid.pl          - SAML 2.0 SP example written in perl
-zxid.php         - SAML 2.0 SP example written in php
-zxid.java        - SAML 2.0 SP example written in java (as CGI script)
-zxid-java.sh     - Shell script for wrapping zxid.java with correct paths
-zxidwsctool.c    - Command line Web Services Client, a tool for making ID-WSF calls
+idpsel.html      - IdentityProvider selection. See also IDP_SEL_TEMPL_FILE and IDP_SEL_PAGE confs.
+an-main.html     - IdP's main authentication screen. See also AN_TEMPL_FILE and AN_PAGE configs.
+post.html        - Error message (for IdP and PS). See also ERR_TEMPL_FILE and ERR_PAGE configs.
+err.html         - Error message (for IdP and PS). See also ERR_TEMPL_FILE and ERR_PAGE configs.
+idpsel.css       - Stylesheet for ipdsel.html
+an.css           - Stylesheet for an-main.html, post.html, and err.html
+
+# Utilities
+
+zxcot.c          - CoT (Circle-of-Trust) management tool: list CoT, add metadata to CoT
+zxpasswd.c       - Password creation and user management tool
+zxcall.c         - Web Service Client tool
+zxlogview.c      - Log viewing tool with log decryption and log sig verification
+zxdecode.c       - SAML redirect and post message decoding tool
+
+# Test utilities (haphazardly maintained)
+
+zxidxmltool.c    - Testing tool for parsing XML
+zxbench.c        - A benchmarking tool
+zxencdectest.c   - An XML encoding and decoding testing tool
+zxidssofinalizetest.c  - Test zxid_sso_finalize()
 
 # Simple and Hello World demos
 
-zxidsimp.c       - Simple API main definition
 zxidhlo.c        - Hello World SSO using simple API
 zxidsimple.c     - Simple API helper program for shell scripts
 zxidhlo.sh       - Hello World SSO as a shell script
@@ -162,6 +170,19 @@ zxidhrxmlwsp.c   - Example of ID-SIS HR-XML Web Services Provider
 zxididp.c        - A rudimentary IdP (WIP Jan 2010)
 zxidsp.c         - A slightly more configurable use of simple API
 zxidwspcgi.c     - Generic Web Services Provider that calls your shell script
+DeployingZxidServlets.txt  - Documentation for deploying ZxidSSOFilter.java and ZxidServlet.java
+ZxidSSOFilter.java - Filter to intercept unauthenticated requests and forward them to ZxidServlet
+ZxidServlet.java - SAML2 SSO servlet (similar to zxidsrvlet.java, but more modern)
+
+# Misc API demos
+
+zxid.c           - Old ZXID SP demo program (a CGI script)
+zxid.pl          - Old SAML 2.0 SP example written in perl
+zxid.php         - Old SAML 2.0 SP example written in php
+zxid.java        - Old SAML 2.0 SP example written in java (as CGI script)
+zxid-java.sh     - Shell script for wrapping zxid.java with correct paths
+zxidwsctool.c    - Command line WS Client, a tool for making ID-WSF calls (older than zxcall)
+zxidhlowsf.c     - Demonstration of calling ID-WSF services (DS and DAP)
 
 # S/MIME Utility for Certificate Manipulations, Signing, and Encryption
 
@@ -192,7 +213,9 @@ smimeutil.i      - SWIG input file to generate SMIMEUtil perl module
 default-cot/OKCy5mMaXMJUnKQ1wVJCcT00AA8  - auth-int.orange.fr
 default-cot/ZLIYSwzbSQdzIWHISwoWtdrx6JI  - auth.orange.fr
 default-cot/_CBGcFVVbIEmt5oh3jUx4GEfHLM  - idp.symdemo.com
-default-cot/s36Te-rgbzReSjVc8vDDGy89tT8  - http://idp.ssocircle.com
+default-cot/s36Te-rgbzReSjVc8vDDGy89tT8  - idp.ssocircle.com
+default-cot/yBeCTPt0NQ2vMuI-srKw5h4N2i8  - zxidp.org
+default-cot/bty2J1MJ0hQsDjiAB8TasGyUU1E  - idp.tas3.eu
 
 # Module generation facilities
 
@@ -388,9 +411,6 @@ zxiddash.pl
 dash.css
 dash-main.html
 
-idpsel.css
-an.css
-
 zxidatsel.pl
 atsel.css
 atsel-main.html
@@ -559,7 +579,9 @@ zxidjava/SWIGTYPE_p_f_p_void_size_t__p_void.java
 zxidjava/SWIGTYPE_p_f_size_t__p_void.java
 zxidjava/SWIGTYPE_p_int.java
 zxidjava/SWIGTYPE_p_p_char.java
+zxidjava/SWIGTYPE_p_p_zx_lu_Status_s.java
 zxidjava/SWIGTYPE_p_p_zx_ns_s.java
+zxidjava/SWIGTYPE_p_p_zx_sa_NameID_s.java
 zxidjava/SWIGTYPE_p_time_t.java
 zxidjava/SWIGTYPE_p_timeval.java
 zxidjava/SWIGTYPE_p_unsigned_char.java
@@ -586,6 +608,8 @@ zxidjava/SWIGTYPE_p_zx_e_Envelope_s.java
 zxidjava/SWIGTYPE_p_zx_e_Header_s.java
 zxidjava/SWIGTYPE_p_zx_elem_s.java
 zxidjava/SWIGTYPE_p_zx_ff12_Assertion_s.java
+zxidjava/SWIGTYPE_p_zx_im_IdentityMappingRequest_s.java
+zxidjava/SWIGTYPE_p_zx_im_IdentityMappingResponse_s.java
 zxidjava/SWIGTYPE_p_zx_lu_Status_s.java
 zxidjava/SWIGTYPE_p_zx_md_ArtifactResolutionService_s.java
 zxidjava/SWIGTYPE_p_zx_md_AssertionConsumerService_s.java
@@ -597,6 +621,10 @@ zxidjava/SWIGTYPE_p_zx_md_SingleLogoutService_s.java
 zxidjava/SWIGTYPE_p_zx_md_SingleSignOnService_s.java
 zxidjava/SWIGTYPE_p_zx_node_s.java
 zxidjava/SWIGTYPE_p_zx_ns_s.java
+zxidjava/SWIGTYPE_p_zx_ps_AddEntityRequest_s.java
+zxidjava/SWIGTYPE_p_zx_ps_AddEntityResponse_s.java
+zxidjava/SWIGTYPE_p_zx_ps_ResolveIdentifierRequest_s.java
+zxidjava/SWIGTYPE_p_zx_ps_ResolveIdentifierResponse_s.java
 zxidjava/SWIGTYPE_p_zx_root_s.java
 zxidjava/SWIGTYPE_p_zx_sa11_Assertion_s.java
 zxidjava/SWIGTYPE_p_zx_sa_AttributeStatement_s.java
@@ -612,6 +640,8 @@ zxidjava/SWIGTYPE_p_zx_sp_LogoutRequest_s.java
 zxidjava/SWIGTYPE_p_zx_sp_LogoutResponse_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ManageNameIDRequest_s.java
 zxidjava/SWIGTYPE_p_zx_sp_ManageNameIDResponse_s.java
+zxidjava/SWIGTYPE_p_zx_sp_NameIDMappingRequest_s.java
+zxidjava/SWIGTYPE_p_zx_sp_NameIDMappingResponse_s.java
 zxidjava/SWIGTYPE_p_zx_sp_NewEncryptedID_s.java
 zxidjava/SWIGTYPE_p_zx_sp_Response_s.java
 zxidjava/SWIGTYPE_p_zx_sp_Status_s.java
@@ -620,6 +650,7 @@ zxidjava/SWIGTYPE_p_zx_wsse_SecurityTokenReference_s.java
 zxidjava/SWIGTYPE_p_zx_wsse_Security_s.java
 zxidjava/SWIGTYPE_p_zx_wsu_Timestamp_s.java
 zxidjava/SWIGTYPE_p_zx_xac_Attribute_s.java
+zxidjava/SWIGTYPE_p_zx_xac_Request_s.java
 zxidjava/SWIGTYPE_p_zx_xac_Response_s.java
 zxidjava/SWIGTYPE_p_zx_xasa_XACMLAuthzDecisionStatement_s.java
 zxidjava/SWIGTYPE_p_zx_xasp_XACMLAuthzDecisionQuery_s.java
@@ -630,15 +661,20 @@ zxidjava/SWIGTYPE_p_zxid_atsrc.java
 zxidjava/SWIGTYPE_p_zxid_attr.java
 zxidjava/SWIGTYPE_p_zxid_cstr_list.java
 zxidjava/SWIGTYPE_p_zxid_curl_ctx.java
+zxidjava/SWIGTYPE_p_zxid_invite.java
 zxidjava/SWIGTYPE_p_zxid_map.java
 zxidjava/SWIGTYPE_p_zxid_need.java
+zxidjava/SWIGTYPE_p_zxid_perm.java
+zxidjava/SWIGTYPE_p_zxid_psobj.java
 zxidjava/SWIGTYPE_p_zxsig_ref.java
+
 zxidjava/zxid_a7n.java
 zxidjava/zxid_cgi.java
 zxidjava/zxid_conf.java
 zxidjava/zxid_entity.java
 zxidjava/zxid_epr.java
 zxidjava/zxid_nid.java
+zxidjava/zxid_tok.java
 zxidjava/zxid_ses.java
 zxidjava/zxid_tas3_status.java
 zxidjava/zxid_fault.java

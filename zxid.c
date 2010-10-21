@@ -19,6 +19,7 @@
  * WARNING: This file is outdated. See zxidhlo.c instead.
  */
 
+#include "platform.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,7 +44,7 @@
 #include "c/zx-ns.h"
 #include "c/zx-md-data.h"
 
-CU8* help =
+char* help =
 "zxid  -  SAML 2.0 SP CGI - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated idenity and Sinlg Sign-On.\n\
 Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
@@ -77,7 +78,6 @@ Usage: zxid [options]   (when used as CGI, no options can be supplied)\n\
   -h               This help message\n\
   --               End of options\n";
 
-char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 int timeout = 0;
@@ -122,9 +122,9 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
       if (!(*argc)) break;
       if (conf_path != (char*)1) {
 	if (conf_path)
-	  read_all(sizeof(buf), buf, "new conf path in opt", "%s", conf_path);
+	  read_all(sizeof(buf), buf, "new conf path in opt", 1, "%s", conf_path);
 	else
-	  read_all(sizeof(buf), buf, "no conf path in opt", "%szxid.conf", cf->path);
+	  read_all(sizeof(buf), buf, "no conf path in opt", 1, "%szxid.conf", cf->path);
 	zxid_parse_conf(cf, buf);
 	conf_path = (char*)1;
       }
@@ -139,7 +139,7 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	instance = (*argv)[0];
+	strcpy(zx_instance, (*argv)[0]);
 	continue;
       }
       break;
@@ -309,15 +309,15 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
     /* fall thru means unrecognized flag */
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
-    fprintf(stderr, help);
+    fprintf(stderr, "%s", help);
     fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());
     exit(3);
   }
   if (conf_path != (char*)1) {
     if (conf_path)
-      read_all(sizeof(buf), buf, "conf_path in end of opt", "%s", conf_path);
+      read_all(sizeof(buf), buf, "conf_path in end of opt", 1, "%s", conf_path);
     else
-      read_all(sizeof(buf), buf, "no conf_path in end of opt", "%szxid.conf", cf->path);
+      read_all(sizeof(buf), buf, "no conf_path in end of opt", 1, "%szxid.conf", cf->path);
     zxid_parse_conf(cf, buf);
   }
 }
@@ -456,7 +456,7 @@ int main(int argc, char** argv, char** env)
 
   /* Pick up application variables from query string and post content (indicated by o=P in QS) */
   
-  memset(&cgi, 0, sizeof(cgi));
+  ZERO(&cgi, sizeof(cgi));
   qs = getenv("QUERY_STRING");
   if (qs) {
     D("QS(%s)", qs);
@@ -495,7 +495,7 @@ int main(int argc, char** argv, char** env)
       if (zxid_mgmt(cf, &cgi, &ses))
 	return 0;
   }
-  memset(&ses, 0, sizeof(ses));
+  ZERO(&ses, sizeof(ses));
   
   switch (cgi.op) {
   case 'M':  /* Invoke LECP or redirect to CDC reader. */

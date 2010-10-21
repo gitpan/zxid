@@ -14,10 +14,11 @@
  * 4.9.2009,  added zxid_map_val() --Sampo
  */
 
+#include "platform.h"
 #include <string.h>
 #include <stdio.h>
+#include <sys/stat.h>  /* umask(2) */
 
-#include "platform.h"
 #include "errmac.h"
 #include "zxid.h"
 #include "zxidconf.h"
@@ -82,7 +83,8 @@ struct zx_str* zxid_mk_id(zxid_conf* cf, char* prefix, int bits)
  * there are two ways to format this: with or with-out milliseconds. ZXID accepts
  * either form as input, as they are both legal, but will only generate the
  * without milliseconds form. Some other softwares are buggy and fail to
- * accept the without milliseconds form. You can change the format at compile time.
+ * accept the without milliseconds form. You can change the format at compile time
+ * by editing zxidlib.c:94.
  */
 /* Called by:  zxid_mk_a7n x3, zxid_mk_art_deref, zxid_mk_authn_req, zxid_mk_az, zxid_mk_az_cd1, zxid_mk_logout, zxid_mk_logout_resp, zxid_mk_mni, zxid_mk_mni_resp, zxid_mk_saml_resp, zxid_wsc_prep_secmech, zxid_wsf_decor */
 struct zx_str* zxid_date_time(zxid_conf* cf, time_t secs)
@@ -248,6 +250,7 @@ struct zx_str* zxid_saml2_post_enc(zxid_conf* cf, char* field, struct zx_str* pa
   char* sig;
   char* p;
   int alloc_len, zlen, slen, field_len, rs_len;
+  zxid_cgi cgi;
   field_len = strlen(field);
   rs_len = relay_state?strlen(relay_state):0;
   if (rs_len) {
@@ -330,8 +333,24 @@ struct zx_str* zxid_saml2_post_enc(zxid_conf* cf, char* field, struct zx_str* pa
   *p = 0;
   ASSERTOP(p-url, <=, alloc_len);  /* Check sig did not overrun its fixed size alloc SIG_SIZE */  
 
-  /* Se o JavaScript não esta enablado, por favor clique aqui para finalizar a transacção. */
-
+#if 1
+  /* Template based POST page, see post.html */
+  ZERO(&cgi, sizeof(cgi));
+  cgi.action_url = zx_str_to_c(cf->ctx, action_url);
+  cgi.saml_art  = field;
+  cgi.saml_resp = url;
+  if (rs_len) {
+    logpath = zx_strf(cf->ctx, "<input type=hidden name=RelayState value=\"%s\">", relay_state);
+    cgi.rs = logpath->s;
+    ZX_FREE(cf->ctx, logpath);
+  }
+  if (sign) {
+    logpath = zx_strf(cf->ctx, "<input type=hidden name=SigAlg value=\"" SIG_ALGO "\"><input type=hidden name=Signature value=\"%s\">", sigbuf);
+    cgi.sig = logpath->s;
+    ZX_FREE(cf->ctx, logpath);
+  }
+  payload = zxid_template_page_cf(cf, &cgi, cf->post_templ_file, cf->post_templ, 64*1024, 0);
+#else
   payload = zx_strf(cf->ctx, "<title>ZXID POST Profile</title>"
 "<body bgcolor=white OnLoad=\"document.forms[0].submit()\">"
 "<h1>ZXID POST Profile POST</h1>"
@@ -349,6 +368,7 @@ struct zx_str* zxid_saml2_post_enc(zxid_conf* cf, char* field, struct zx_str* pa
 		    sign?"<input type=hidden name=SigAlg value=\"" SIG_ALGO "\"><input type=hidden name=Signature value=\"":"",
 		    sigbuf,
 		    sign?"\">":"");
+#endif
   ZX_FREE(cf->ctx, url);
   return payload;
 }
@@ -678,6 +698,8 @@ struct zx_str* zxid_decrypt_newnym(zxid_conf* cf, struct zx_str* newnym, struct 
  * elem:: Element that was signed, usually needs type cast.
  * sig:: Signature element within elem
  * issue_ent:: The EntityID zx_str of the signer (Issuer)
+ * pop_seen:: Namespaces collected from outer layers
+ * lk:: Log key
  * return:: 0 if sig check could not be made due to error, 1 if there was
  *     no signature to check, 2 if check was made, in which case the result is
  *     in ses->sigres, 3 if check was not possible (due to error), but sig was not
@@ -689,7 +711,7 @@ struct zx_str* zxid_decrypt_newnym(zxid_conf* cf, struct zx_str* newnym, struct 
  */
 
 /* Called by:  zxid_idp_slo_do, zxid_mni_do, zxid_sp_dig_sso_a7n, zxid_sp_slo_do, zxid_xacml_az_cd1_do, zxid_xacml_az_do */
-int zxid_chk_sig(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_elem_s* elem, struct zx_ds_Signature_s* sig, struct zx_sa_Issuer_s* issue_ent, const char* lk)
+int zxid_chk_sig(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_elem_s* elem, struct zx_ds_Signature_s* sig, struct zx_sa_Issuer_s* issue_ent, struct zx_ns_s* pop_seen, const char* lk)
 {
   struct zx_str* issuer = 0;
   struct zxsig_ref refs;
@@ -729,8 +751,11 @@ int zxid_chk_sig(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_elem_s* 
     goto erro;
   }
 
+  ZERO(&refs, sizeof(refs));
   refs.sref = sig->SignedInfo->Reference;
   refs.blob = elem;
+  refs.pop_seen = pop_seen;
+  zx_see_elem_ns(cf->ctx, &refs.pop_seen, elem);
   ses->sigres = zxsig_validate(cf->ctx, idp_meta->sign_cert, sig, 1, &refs);
   zxid_sigres_map(ses->sigres, &cgi->sigval, &cgi->sigmsg);
   D("Response sigres(%d)", ses->sigres);
@@ -852,6 +877,25 @@ nobody:
   memcpy(enve, p, q-p);
   enve[q-p] = 0;
   return enve;
+}
+
+/*() Get symmetric key, generating it if necessary. */
+
+char* zx_get_symkey(zxid_conf* cf, const char* keyname, char* symkey)
+{
+  char buf[1024];
+  int um, gotall = read_all(sizeof(buf), buf, "symkey", 1, "%s" ZXID_PEM_DIR "%s", cf->path, keyname);
+  if (!gotall && cf->auto_cert) {
+    INFO("AUTO_CERT: generating symmetric encryption key in %s" ZXID_PEM_DIR "%s", cf->path, keyname);
+    gotall = 128 >> 3;
+    zx_rand(buf, gotall);
+    um = umask(0077);  /* Key material should be readable only by owner */
+    write_all_path_fmt("auto_cert", sizeof(buf), buf,
+		       "%s" ZXID_PEM_DIR "%s", cf->path, keyname, "%.*s", gotall, buf);
+    umask(um);
+  }
+  SHA1((unsigned char*)buf, gotall, (unsigned char*)symkey);
+  return symkey;
 }
 
 /* EOF  --  zxidlib.c */

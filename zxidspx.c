@@ -64,13 +64,16 @@ zxid_a7n* zxid_dec_a7n(zxid_conf* cf, zxid_a7n* a7n, struct zx_sa_EncryptedAsser
 static int zxid_sp_dig_sso_a7n(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_Response_s* resp)
 {
   zxid_a7n* a7n;
+  struct zx_ns_s* pop_seen = 0;
 
-  if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)resp, resp->Signature, resp->Issuer, "Response"))
+  if (!zxid_chk_sig(cf, cgi, ses, &resp->gg, resp->Signature, resp->Issuer, 0, "Response"))
     return 0;
   
   a7n = zxid_dec_a7n(cf, resp->Assertion, resp->EncryptedAssertion);
-  if (a7n)
-    return zxid_sp_sso_finalize(cf, cgi, ses, a7n);
+  if (a7n) {
+    zx_see_elem_ns(cf->ctx, &pop_seen, &resp->gg);
+    return zxid_sp_sso_finalize(cf, cgi, ses, a7n, pop_seen);
+  }
   if (cf->anon_ok && cgi->rs && !strcmp(cf->anon_ok, cgi->rs))  /* Prefix match */
     return zxid_sp_anon_finalize(cf, cgi, ses);
   ERR("No Assertion found and not anon_ok in SAML Response %d", 0);
@@ -223,7 +226,7 @@ static struct zx_sp_Response_s* zxid_xacml_az_do(zxid_conf* cf, zxid_cgi* cgi, z
   struct zx_str* subj;
   struct zx_xac_Attribute_s* xac_at;
   
-  if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)azq, azq->Signature, azq->Issuer, "XACMLAuthzDecisionQuery"))
+  if (!zxid_chk_sig(cf, cgi, ses, &azq->gg, azq->Signature, azq->Issuer, 0, "XACMLAuthzDecisionQuery"))
     return 0;
 
   affil = subj = 0;
@@ -268,7 +271,7 @@ static struct zx_sp_Response_s* zxid_xacml_az_cd1_do(zxid_conf* cf, zxid_cgi* cg
   struct zx_str* subj;
   struct zx_xac_Attribute_s* xac_at;
   
-  if (!zxid_chk_sig(cf, cgi, ses, (struct zx_elem_s*)azq, azq->Signature, azq->Issuer, "XACMLAuthzDecisionQuery"))
+  if (!zxid_chk_sig(cf, cgi, ses, &azq->gg, azq->Signature, azq->Issuer, 0, "XACMLAuthzDecisionQuery"))
     return 0;
 
   affil = subj = 0;
@@ -316,75 +319,76 @@ int zxid_sp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx
   X509* sign_cert;
   RSA*  sign_pkey;
   struct zxsig_ref refs;
-  struct zx_e_Body_s* body;
-  struct zx_sp_LogoutRequest_s* req;
+  struct zx_e_Header_s* hdr;  /* Request headers */
+  struct zx_e_Body_s* bdy;    /* Request Body */
+  struct zx_e_Body_s* body;   /* Response Body */
   struct zx_str* issuer;
+  zxid_a7n* a7n;
   ses->sigres = ZXSIG_NO_SIG;
 
   if (!r) goto bad;
   if (!r->Envelope) goto bad;
-  
+  hdr = r->Envelope->Header;
+  bdy = r->Envelope->Body;
+
   if (cf->log_level > 1)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "SPDISP", 0, "sid(%s) soap", STRNULLCHK(ses->sid));
 
-  if (r->Envelope->Body->ArtifactResponse) {
-    if (!zxid_saml_ok(cf, cgi, r->Envelope->Body->ArtifactResponse->Status, "ArtResp"))
+  if (bdy->ArtifactResponse) {
+    if (!zxid_saml_ok(cf, cgi, bdy->ArtifactResponse->Status, "ArtResp"))
       return 0;
-    return zxid_sp_dig_sso_a7n(cf, cgi, ses, r->Envelope->Body->ArtifactResponse->Response);
+    return zxid_sp_dig_sso_a7n(cf, cgi, ses, bdy->ArtifactResponse->Response);
   }
 
-  if (r->Envelope->Body->Response) {    /* PAOS/ECP response */
-    if (!zxid_saml_ok(cf, cgi, r->Envelope->Body->Response->Status, "PAOS Resp"))
+  if (bdy->Response) {    /* PAOS/ECP response */
+    if (!zxid_saml_ok(cf, cgi, bdy->Response->Status, "PAOS Resp"))
       return 0;
-    return zxid_sp_dig_sso_a7n(cf, cgi, ses, r->Envelope->Body->Response);
+    return zxid_sp_dig_sso_a7n(cf, cgi, ses, bdy->Response);
   }
+
+  body = zx_NEW_e_Body(cf->ctx);
   
-  if (req = r->Envelope->Body->LogoutRequest) {
-    if (!zxid_sp_slo_do(cf, cgi, ses, req))
+  if (bdy->LogoutRequest) {
+    if (!zxid_sp_slo_do(cf, cgi, ses, bdy->LogoutRequest))
       return 0;
-
-    body = zx_NEW_e_Body(cf->ctx);
-    body->LogoutResponse = zxid_mk_logout_resp(cf, zxid_OK(cf), req->ID);
+    body->LogoutResponse = zxid_mk_logout_resp(cf, zxid_OK(cf), bdy->LogoutRequest->ID);
     if (cf->sso_soap_resp_sign) {
+      ZERO(&refs, sizeof(refs));
       refs.id = body->LogoutResponse->ID;
       refs.canon = zx_EASY_ENC_SO_sp_LogoutResponse(cf->ctx, body->LogoutResponse);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert slor"))
 	body->LogoutResponse->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
       zx_str_free(cf->ctx, refs.canon);
     }
-    return zxid_soap_cgi_resp_body(cf, body, req->Issuer->gg.content);
+    return zxid_soap_cgi_resp_body(cf, body, bdy->LogoutRequest->Issuer->gg.content);
   }
 
-  if (r->Envelope->Body->ManageNameIDRequest) {
-    struct zx_sp_ManageNameIDResponse_s* res;
-    res = zxid_mni_do(cf, cgi, ses, r->Envelope->Body->ManageNameIDRequest);
-    body = zx_NEW_e_Body(cf->ctx);
-    body->ManageNameIDResponse = res;
+  if (bdy->ManageNameIDRequest) {
+    body->ManageNameIDResponse = zxid_mni_do(cf, cgi, ses, bdy->ManageNameIDRequest);
     if (cf->sso_soap_resp_sign) {
-      refs.id = res->ID;
-      refs.canon = zx_EASY_ENC_SO_sp_ManageNameIDResponse(cf->ctx, res);
+      ZERO(&refs, sizeof(refs));
+      refs.id = body->ManageNameIDResponse->ID;
+      refs.canon = zx_EASY_ENC_SO_sp_ManageNameIDResponse(cf->ctx, body->ManageNameIDResponse);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert mnir"))
-	res->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
+	body->ManageNameIDResponse->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
       zx_str_free(cf->ctx, refs.canon);
     }
-    return zxid_soap_cgi_resp_body(cf, body, r->Envelope->Body->ManageNameIDRequest->Issuer->gg.content);
+    return zxid_soap_cgi_resp_body(cf, body, bdy->ManageNameIDRequest->Issuer->gg.content);
   }
-
-  D("as_ena=%d %p", cf->as_ena, r->Envelope->Body->SASLRequest);
+  
+  DD("as_ena=%d %p", cf->as_ena, bdy->SASLRequest);
   if (cf->as_ena) {
-    if (r->Envelope->Body->SASLRequest) {
-      struct zx_as_SASLResponse_s* res;
-      if (r->Envelope->Header && r->Envelope->Header->Sender
-	  && r->Envelope->Header->Sender->providerID)
-	issuer = r->Envelope->Header->Sender->providerID;
+    if (bdy->SASLRequest) {
+      if (hdr && hdr->Sender
+	  && hdr->Sender->providerID)
+	issuer = hdr->Sender->providerID;
       else
 	issuer = 0;
-      //issuer = r->Envelope->Body->SASLRequest->Issuer->gg.content;
-      res = zxid_idp_as_do(cf, r->Envelope->Body->SASLRequest);
-      body = zx_NEW_e_Body(cf->ctx);
-      body->SASLResponse = res;
+      //issuer = bdy->SASLRequest->Issuer->gg.content;
+      body->SASLResponse = zxid_idp_as_do(cf, bdy->SASLRequest);
 #if 0
       if (cf->sso_soap_resp_sign) {
+	ZERO(&refs, sizeof(refs));
 	refs.id = res->ID;
 	refs.canon = zx_EASY_ENC_SO_as_SASLResponse(cf->ctx, res);
 	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert asr"))
@@ -395,34 +399,72 @@ int zxid_sp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx
       return zxid_soap_cgi_resp_body(cf, body, issuer);
     }
   }
-  
+    
+  if (cf->pdp_ena) {
+    if (bdy->XACMLAuthzDecisionQuery) {
+      D("XACMLAuthzDecisionQuery %d",0);
+      body->Response = zxid_xacml_az_do(cf, cgi, ses, bdy->XACMLAuthzDecisionQuery);
+      if (cf->sso_soap_resp_sign) {
+	ZERO(&refs, sizeof(refs));
+	refs.id = body->Response->ID;
+	refs.canon = zx_EASY_ENC_SO_sp_Response(cf->ctx, body->Response);
+	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert azr"))
+	body->Response->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
+	zx_str_free(cf->ctx, refs.canon);
+      }
+      return zxid_soap_cgi_resp_body(cf, body, bdy->XACMLAuthzDecisionQuery->Issuer->gg.content);
+    }
+    if (bdy->xaspcd1_XACMLAuthzDecisionQuery) {
+      D("xaspcd1:XACMLAuthzDecisionQuery %d",0);
+      body->Response = zxid_xacml_az_cd1_do(cf, cgi, ses, bdy->xaspcd1_XACMLAuthzDecisionQuery);
+      if (cf->sso_soap_resp_sign) {
+	ZERO(&refs, sizeof(refs));
+	refs.id = body->Response->ID;
+	refs.canon = zx_EASY_ENC_SO_sp_Response(cf->ctx, body->Response);
+	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert azr"))
+	body->Response->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
+	zx_str_free(cf->ctx, refs.canon);
+      }
+      return zxid_soap_cgi_resp_body(cf, body, bdy->XACMLAuthzDecisionQuery->Issuer->gg.content);
+    }
+  }
+
   if (cf->idp_ena) {
-    if (r->Envelope->Body->ArtifactResolve) {
+    if (bdy->ArtifactResolve) {
       D("*** ArtifactResolve not implemented yet %d",0);
-      //if (!zxid_saml_ok(cf, cgi, r->Envelope->Body->ArtifactResponse->Status, "ArtResp"))
+      //if (!zxid_saml_ok(cf, cgi, bdy->ArtifactResponse->Status, "ArtResp"))
       //  return 0;
-      //return zxid_sp_dig_sso_a7n(cf, cgi, ses, r->Envelope->Body->ArtifactResponse->Response);
+      //return zxid_sp_dig_sso_a7n(cf, cgi, ses, bdy->ArtifactResponse->Response);
     }
 
-    if (r->Envelope->Body->Query) { /* Discovery 2.0 Query */
-      zxid_a7n* a7n;
-      struct zx_di_QueryResponse_s* di_resp;
-
-      if (!r->Envelope->Header || !r->Envelope->Header->Security
-	  || !r->Envelope->Header->Sender || !r->Envelope->Header->Sender->providerID) {
-	goto malformed;
+    if (bdy->NameIDMappingRequest && cf->imps_ena) {
+      body->NameIDMappingResponse = zxid_nidmap_do(cf, bdy->NameIDMappingRequest);
+      if (cf->sso_soap_resp_sign) {
+	ZERO(&refs, sizeof(refs));
+	refs.id = body->NameIDMappingResponse->ID;
+	refs.canon = zx_EASY_ENC_SO_sp_NameIDMappingResponse(cf->ctx, body->NameIDMappingResponse);
+	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert mnir"))
+	  body->NameIDMappingResponse->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
+	zx_str_free(cf->ctx, refs.canon);
       }
-      
-      issuer = r->Envelope->Header->Sender->providerID;
-      
-      a7n = zxid_dec_a7n(cf, r->Envelope->Header->Security->Assertion,
-			 r->Envelope->Header->Security->EncryptedAssertion);
-      di_resp = zxid_di_query(cf, a7n, r->Envelope->Body->Query);
-      body = zx_NEW_e_Body(cf->ctx);
-      body->QueryResponse = di_resp;
+      return zxid_soap_cgi_resp_body(cf, body, bdy->NameIDMappingRequest->Issuer->gg.content);
+    }
+    
+    if (!hdr || !hdr->Security || !hdr->Sender || !hdr->Sender->providerID) {
+      goto malformed;
+    }
+    
+    issuer = hdr->Sender->providerID;
+    a7n = zxid_dec_a7n(cf, hdr->Security->Assertion, hdr->Security->EncryptedAssertion);
+    
+    if (bdy->Query) { /* Discovery 2.0 Query */
+
+      body->QueryResponse = zxid_di_query(cf, a7n, bdy->Query, issuer);
+    idwsf_resp:
 #if 0
       // *** should really sign the Body, putting sig in wsse:Security header
       if (cf->sso_soap_resp_sign) {
+	ZERO(&refs, sizeof(refs));
 	refs.id = di_resp->ID;
 	refs.canon = zx_EASY_ENC_SO_e_Body(cf->ctx, body);
 	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert dir"))
@@ -432,38 +474,24 @@ int zxid_sp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx
 #endif
       return zxid_soap_cgi_resp_body(cf, body, issuer);
     }
-  }
-  
-  if (cf->pdp_ena) {
-    if (r->Envelope->Body->XACMLAuthzDecisionQuery) {
-      struct zx_sp_Response_s* res;
-      D("XACMLAuthzDecisionQuery %d",0);
-      res = zxid_xacml_az_do(cf, cgi, ses, r->Envelope->Body->XACMLAuthzDecisionQuery);
-      body = zx_NEW_e_Body(cf->ctx);
-      body->Response = res;
-      if (cf->sso_soap_resp_sign) {
-	refs.id = res->ID;
-	refs.canon = zx_EASY_ENC_SO_sp_Response(cf->ctx, res);
-	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert azr"))
-	res->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
-	zx_str_free(cf->ctx, refs.canon);
+
+    if (cf->imps_ena) {
+      if (bdy->AddEntityRequest) {
+	body->AddEntityResponse = zxid_ps_addent_invite(cf, a7n, bdy->AddEntityRequest, issuer);
+	goto idwsf_resp;
       }
-      return zxid_soap_cgi_resp_body(cf, body, r->Envelope->Body->XACMLAuthzDecisionQuery->Issuer->gg.content);
+      if (bdy->ResolveIdentifierRequest) {
+	body->ResolveIdentifierResponse = zxid_ps_resolv_id(cf, a7n, bdy->ResolveIdentifierRequest, issuer);
+	goto idwsf_resp;
+      }
+      if (bdy->IdentityMappingRequest) {
+	body->IdentityMappingResponse = zxid_imreq(cf, a7n, bdy->IdentityMappingRequest, issuer);
+	goto idwsf_resp;
+      }
     }
-    if (r->Envelope->Body->xaspcd1_XACMLAuthzDecisionQuery) {
-      struct zx_sp_Response_s* res;
-      D("xaspcd1:XACMLAuthzDecisionQuery %d",0);
-      res = zxid_xacml_az_cd1_do(cf, cgi, ses, r->Envelope->Body->xaspcd1_XACMLAuthzDecisionQuery);
-      body = zx_NEW_e_Body(cf->ctx);
-      body->Response = res;
-      if (cf->sso_soap_resp_sign) {
-	refs.id = res->ID;
-	refs.canon = zx_EASY_ENC_SO_sp_Response(cf->ctx, res);
-	if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert azr"))
-	res->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
-	zx_str_free(cf->ctx, refs.canon);
-      }
-      return zxid_soap_cgi_resp_body(cf, body, r->Envelope->Body->XACMLAuthzDecisionQuery->Issuer->gg.content);
+    if (bdy->AuthnRequest && cf->as_ena) {
+      body->Response = zxid_ssos_anreq(cf, a7n, bdy->AuthnRequest, issuer);
+      goto idwsf_resp;
     }
   }
   

@@ -11,6 +11,8 @@
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
 
+#include <zx/platform.h>
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -145,7 +147,7 @@ int zxidwspcgi_main(int argc, char** argv)
   char* qs;
   char* qs2;
   pid_t pid;
-  memset(ses, 0, sizeof(zxid_ses));
+  ZERO(ses, sizeof(zxid_ses));
 
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */

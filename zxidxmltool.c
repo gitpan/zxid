@@ -8,6 +8,7 @@
  * $Id: zxidxmltool.c,v 1.5 2009-11-24 23:53:40 sampo Exp $
  *
  * 29.9.2007, started --Sampo
+ * WARNING: This code appears to be historical as of Oct-2010. --Sampo
  */
 
 #include <signal.h>
@@ -58,7 +59,6 @@ Usage: zxid [options] < foo.xml\n\
   -h               This help message\n\
   --               End of options\n";
 
-char* instance = "zxidxmltool";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 int timeout = 0;
@@ -100,9 +100,9 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
       if (!(*argc)) break;
       if (conf_path != (char*)1) {
 	if (conf_path)
-	  read_all(sizeof(buf), buf, "new conf path in opt", "%s", conf_path);
+	  read_all(sizeof(buf), buf, "new conf path in opt", 1, "%s", conf_path);
 	else
-	  read_all(sizeof(buf), buf, "no conf path in opt", "%szxid.conf", cf->path);
+	  read_all(sizeof(buf), buf, "no conf path in opt", 1, "%szxid.conf", cf->path);
 	zxid_parse_conf(cf, buf);
 	conf_path = (char*)1;
       }
@@ -117,7 +117,7 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	instance = (*argv)[0];
+	zx_instance = (*argv)[0];
 	continue;
       }
       break;
@@ -276,9 +276,9 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
   }
   if (conf_path != (char*)1) {
     if (conf_path)
-      read_all(sizeof(buf), buf, "conf_path in end of opt", "%s", conf_path);
+      read_all(sizeof(buf), buf, "conf_path in end of opt", 1, "%s", conf_path);
     else
-      read_all(sizeof(buf), buf, "no conf_path in end of opt", "%szxid.conf", cf->path);
+      read_all(sizeof(buf), buf, "no conf_path in end of opt", 1, "%szxid.conf", cf->path);
     zxid_parse_conf(cf, buf);
   }
 }
@@ -336,7 +336,7 @@ int main(int argc, char** argv, char** env)
 
   /* Pick up application variables from query string and post content (indicated by o=P in QS) */
   
-  memset(&cgi, 0, sizeof(cgi));
+  ZERO(&cgi, sizeof(cgi));
   qs = getenv("QUERY_STRING");
   if (qs) {
     D("QS(%s)", qs);
@@ -375,7 +375,7 @@ int main(int argc, char** argv, char** env)
       if (zxid_mgmt(cf, &cgi, &ses))
 	return 0;
   }
-  memset(&ses, 0, sizeof(ses));
+  ZERO(&ses, sizeof(ses));
   
   switch (cgi.op) {
   case 'M':  /* Invoke LECP or redirect to CDC reader. */

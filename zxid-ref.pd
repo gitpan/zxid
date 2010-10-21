@@ -8,6 +8,10 @@
 
 [IDFF12meta] Peted Davis, Ed., "Liberty Metadata Description and Discovery Specification", version 1.1, Liberty Alliance Project, 2004. (liberty-metadata-v1.1.pdf)
 
+[IDWSF08] Conor Cahill et al.: "Liberty Alliance Web Services Framework: A Technical Overview", Liberty Alliance, 2008. File: idwsf-intro-v1.0.pdf (from http://projectliberty.org/liberty/resource_center/papers)
+
+[IDWSF2Overview] Jonathan Tourzan and Yuzo Koga, eds.: "Liberty ID-WSF Web Services Framework Overview", Liberty Alliance, 2006. liberty-idwsf-overview-v2.0.pdf from http://projectliberty.org/resource_center/specifications
+
 [SAML2core] "Assertions and Protocols for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-core-2.0-os
 
 [SAML2prof] "Profiles for the OASIS Security Assertion Markup Language (SAML) V2.0", Oasis Standard, 15.3.2005, saml-profiles-2.0-os
@@ -38,25 +42,27 @@
 
 [XMLDSIG] "XML-Signature Syntax and Processing", W3C Recommendation, 12.2.2002, http://www.w3.org/TR/xmldsig-core, RFC3275
 
-[Disco2] Liberty ID-WSF Discovery service 2.0
+[Disco2] Cahill, ed.: "Liberty ID-WSF Discovery service 2.0", liberty-idwsf-disco-svc-2.0-errata-v1.0.pdf from http://projectliberty.org/resource_center/
 
-[Disco12] Liberty ID-WSF Discovery service 1.1 (liberty-idwsf-disco-svc-v1.2.pdf)
+[Disco12] Liberty ID-WSF Discovery service 1.2 (liberty-idwsf-disco-svc-v1.2.pdf)
 
-[SecMech2] Liberty ID-WSF 2.0 Security Mechanisms
+[PeopleSvc] "Liberty ID-WSF People Service Specification", liberty-idwsf-people-service-1.0-errata-v1.0.pdf from http://projectliberty.org/resource_center/specifications/
 
-[SOAPAuthn2] Liberty ID-WSF 2.0 Authentication Service
+[SecMech2] "Liberty ID-WSF 2.0 Security Mechanisms", liberty-idwsf-security-mechanisms-core-2.0-errata-v1.0.pdf from http://projectliberty.org/resource_center/specifications
 
-[SOAPBinding2] Liberty ID-WSF 2.0 framework document that pulls together all aspects
+[SOAPAuthn2] "Liberty ID-WSF Authentication, Single Sign-On, and Identity Mapping Services Specification", liberty-idwsf-authn-svc-2.0-errata-v1.0.pdf from http://projectliberty.org/resource_center/specifications/
 
-[DST21] Liberty Data Services Template 2.1
+[SOAPBinding2] "Liberty ID-WSF SOAP Binding Specification", liberty-idwsf-soap-binding-2.0-errata-v1.0.pdf from http://projectliberty.org/resource_center/specifications
 
-[DST20] Liberty DST v2.0
+[DST21] Sampo Kellomäki and Jukka Kainulainen, eds.: "Liberty Data Services Template 2.1", Liberty Alliance, 2007. liberty-idwsf-dst-v2.1.pdf from http://projectliberty.org/resource_center/specifications/
+
+[DST20] Sampo Kellomäki and Jukka Kainulainen, eds.: "Liberty DST v2.0", Liberty Alliance, 2006.
 
 [DST11] Liberty DST v1.1
 
-[IDDAP] Liberty Identity based Directory Access Protocol
+[IDDAP] Sampo Kellomäki, ed.: "Liberty Identity based Directory Access Protocol", Liberty Alliance, 2007.
 
-[IDPP] Liberty Personal Profile specification.
+[IDPP] Sampo Kellomäki, ed.: "Liberty Personal Profile specification", Liberty Alliance, 2003.
 
 [Interact11] Liberty ID-WSF Interaction Service protocol 1.1
 

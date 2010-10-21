@@ -447,7 +447,7 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
     secs = zx_date_time_to_secs(a7n->Conditions->NotOnOrAfter->s);
     if (secs <= ourts->tv_sec) {
       if (secs + cf->after_slop <= ourts->tv_sec) {
-	ERR("NotOnOrAfter rejected with slop of %d. Time to expiry %ld secs", cf->after_slop, secs - ourts->tv_sec);
+	ERR("NotOnOrAfter rejected with slop of %d. Time to expiry %ld secs. Our gettimeofday: %ld secs, remote: %d secs", cf->after_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
 	if (cgi) {
 	  cgi->sigval = "V";
 	  cgi->sigmsg = "Assertion has expired.";
@@ -460,10 +460,10 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
 	  return ZXSIG_TIMEOUT;
 	}
       } else {
-	D("NotOnOrAfter accepted with slop of %d. Time to expiry %ld secs", cf->after_slop, secs - ourts->tv_sec);
+	D("NotOnOrAfter accepted with slop of %d. Time to expiry %ld secs. Our gettimeofday: %ld secs, remote: %d secs", cf->after_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
       }
     } else {
-      D("NotOnOrAfter ok. Time to expiry %ld secs", secs - ourts->tv_sec);
+      D("NotOnOrAfter ok. Time to expiry %ld secs. Our gettimeofday: %ld secs, remote: %d secs", secs - ourts->tv_sec, ourts->tv_sec, secs);
     }
   } else {
     INFO("Assertion does not have NotOnOrAfter. %d", 0);
@@ -473,7 +473,7 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
     secs = zx_date_time_to_secs(a7n->Conditions->NotBefore->s);
     if (secs > ourts->tv_sec) {
       if (secs - cf->before_slop > ourts->tv_sec) {
-	ERR("NotBefore rejected with slop of %d. Time to validity %ld secs", cf->before_slop, secs - ourts->tv_sec);
+	ERR("NotBefore rejected with slop of %d. Time to validity %ld secs. Our gettimeofday: %ld secs, remote: %d secs", cf->before_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
 	if (cgi) {
 	  cgi->sigval = "V";
 	  cgi->sigmsg = "Assertion is not valid yet (too soon).";
@@ -486,10 +486,10 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
 	  return ZXSIG_TIMEOUT;
 	}
       } else {
-	D("NotBefore accepted with slop of %d. Time to validity %ld secs", cf->before_slop, secs - ourts->tv_sec);
+	D("NotBefore accepted with slop of %d. Time to validity %ld secs. Our gettimeofday: %ld secs, remote: %d secs", cf->before_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
       }
     } else {
-      D("NotBefore ok. Time from validity %ld secs", ourts->tv_sec - secs);
+      D("NotBefore ok. Time from validity %ld secs. Our gettimeofday: %ld secs, remote: %d secs", ourts->tv_sec - secs, ourts->tv_sec, secs);
     }
   } else {
     INFO("Assertion does not have NotBefore. %d", 0);
@@ -510,7 +510,7 @@ struct zx_str unknown_str = {{0,0,0,0,0}, 1, "??"};  /* Static string used as du
  * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
 /* Called by:  main, zxid_sp_dig_sso_a7n */
-int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7n)
+int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7n, struct zx_ns_s* pop_seen)
 {
   char* err = "S"; /* See: RES in zxid-log.pd, section "ZXID Log Format" */
   struct timeval ourts;
@@ -595,8 +595,13 @@ int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* 
     }
   } else {
     if (a7n->Signature && a7n->Signature->SignedInfo && a7n->Signature->SignedInfo->Reference) {
+      cf->ctx->guard_seen_n.seen_n = &cf->ctx->guard_seen_p;  /* *** should call zx_reset_ctx? */
+      cf->ctx->guard_seen_p.seen_p = &cf->ctx->guard_seen_n;
+      ZERO(&refs, sizeof(refs));
       refs.sref = a7n->Signature->SignedInfo->Reference;
-      refs.blob = (struct zx_elem_s*)a7n;
+      refs.blob = &a7n->gg;
+      refs.pop_seen = pop_seen;
+      zx_see_elem_ns(cf->ctx, &refs.pop_seen, &a7n->gg);
       ses->sigres = zxsig_validate(cf->ctx, idp_meta->sign_cert, a7n->Signature, 1, &refs);
       zxid_sigres_map(ses->sigres, &cgi->sigval, &cgi->sigmsg);
     } else {
@@ -819,9 +824,9 @@ zxid_ses* zxid_as_call(zxid_conf* cf, zxid_entity* idp_meta, const char* user, c
 {
   zxid_ses* ses = zxid_alloc_ses(cf);
   zxid_cgi cgi;
-  memset(&cgi, 0, sizeof(cgi));
-  cgi.uid = user;
-  cgi.pw = pw;
+  ZERO(&cgi, sizeof(cgi));
+  cgi.uid = (char*)user;
+  cgi.pw = (char*)pw;
   
   if (!zxid_as_call_ses(cf, idp_meta, &cgi, ses)) {
     ZX_FREE(cf->ctx, ses);

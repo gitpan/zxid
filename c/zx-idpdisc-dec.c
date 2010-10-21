@@ -91,8 +91,8 @@ struct zx_idpdisc_DiscoveryResponse_s* zx_DEC_idpdisc_DiscoveryResponse(struct z
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_idpdisc_DiscoveryResponse_s* x = ZX_ZALLOC(c, struct zx_idpdisc_DiscoveryResponse_s);
   x->gg.g.tok = zx_idpdisc_DiscoveryResponse_ELEM;
   x->gg.g.ns = ns;
@@ -147,6 +147,9 @@ struct zx_idpdisc_DiscoveryResponse_s* zx_DEC_idpdisc_DiscoveryResponse(struct z
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -155,7 +158,7 @@ struct zx_idpdisc_DiscoveryResponse_s* zx_DEC_idpdisc_DiscoveryResponse(struct z
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }

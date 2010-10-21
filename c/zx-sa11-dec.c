@@ -91,8 +91,8 @@ struct zx_sa11_Action_s* zx_DEC_sa11_Action(struct zx_ctx* c, struct zx_ns_s* ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Action_s* x = ZX_ZALLOC(c, struct zx_sa11_Action_s);
   x->gg.g.tok = zx_sa11_Action_ELEM;
   x->gg.g.ns = ns;
@@ -123,6 +123,9 @@ struct zx_sa11_Action_s* zx_DEC_sa11_Action(struct zx_ctx* c, struct zx_ns_s* ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -131,7 +134,7 @@ struct zx_sa11_Action_s* zx_DEC_sa11_Action(struct zx_ctx* c, struct zx_ns_s* ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -254,8 +257,8 @@ struct zx_sa11_Advice_s* zx_DEC_sa11_Advice(struct zx_ctx* c, struct zx_ns_s* ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Advice_s* x = ZX_ZALLOC(c, struct zx_sa11_Advice_s);
   x->gg.g.tok = zx_sa11_Advice_ELEM;
   x->gg.g.ns = ns;
@@ -280,6 +283,9 @@ struct zx_sa11_Advice_s* zx_DEC_sa11_Advice(struct zx_ctx* c, struct zx_ns_s* ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -288,7 +294,7 @@ struct zx_sa11_Advice_s* zx_DEC_sa11_Advice(struct zx_ctx* c, struct zx_ns_s* ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -431,8 +437,8 @@ struct zx_sa11_Assertion_s* zx_DEC_sa11_Assertion(struct zx_ctx* c, struct zx_ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Assertion_s* x = ZX_ZALLOC(c, struct zx_sa11_Assertion_s);
   x->gg.g.tok = zx_sa11_Assertion_ELEM;
   x->gg.g.ns = ns;
@@ -487,6 +493,9 @@ struct zx_sa11_Assertion_s* zx_DEC_sa11_Assertion(struct zx_ctx* c, struct zx_ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -495,7 +504,7 @@ struct zx_sa11_Assertion_s* zx_DEC_sa11_Assertion(struct zx_ctx* c, struct zx_ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -678,8 +687,8 @@ struct zx_sa11_Attribute_s* zx_DEC_sa11_Attribute(struct zx_ctx* c, struct zx_ns
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Attribute_s* x = ZX_ZALLOC(c, struct zx_sa11_Attribute_s);
   x->gg.g.tok = zx_sa11_Attribute_ELEM;
   x->gg.g.ns = ns;
@@ -716,6 +725,9 @@ struct zx_sa11_Attribute_s* zx_DEC_sa11_Attribute(struct zx_ctx* c, struct zx_ns
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -724,7 +736,7 @@ struct zx_sa11_Attribute_s* zx_DEC_sa11_Attribute(struct zx_ctx* c, struct zx_ns
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -852,8 +864,8 @@ struct zx_sa11_AttributeDesignator_s* zx_DEC_sa11_AttributeDesignator(struct zx_
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AttributeDesignator_s* x = ZX_ZALLOC(c, struct zx_sa11_AttributeDesignator_s);
   x->gg.g.tok = zx_sa11_AttributeDesignator_ELEM;
   x->gg.g.ns = ns;
@@ -890,6 +902,9 @@ struct zx_sa11_AttributeDesignator_s* zx_DEC_sa11_AttributeDesignator(struct zx_
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -898,7 +913,7 @@ struct zx_sa11_AttributeDesignator_s* zx_DEC_sa11_AttributeDesignator(struct zx_
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1021,8 +1036,8 @@ struct zx_sa11_AttributeStatement_s* zx_DEC_sa11_AttributeStatement(struct zx_ct
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AttributeStatement_s* x = ZX_ZALLOC(c, struct zx_sa11_AttributeStatement_s);
   x->gg.g.tok = zx_sa11_AttributeStatement_ELEM;
   x->gg.g.ns = ns;
@@ -1047,6 +1062,9 @@ struct zx_sa11_AttributeStatement_s* zx_DEC_sa11_AttributeStatement(struct zx_ct
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1055,7 +1073,7 @@ struct zx_sa11_AttributeStatement_s* zx_DEC_sa11_AttributeStatement(struct zx_ct
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1188,8 +1206,8 @@ struct zx_sa11_AttributeValue_s* zx_DEC_sa11_AttributeValue(struct zx_ctx* c, st
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AttributeValue_s* x = ZX_ZALLOC(c, struct zx_sa11_AttributeValue_s);
   x->gg.g.tok = zx_sa11_AttributeValue_ELEM;
   x->gg.g.ns = ns;
@@ -1214,6 +1232,9 @@ struct zx_sa11_AttributeValue_s* zx_DEC_sa11_AttributeValue(struct zx_ctx* c, st
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1222,7 +1243,7 @@ struct zx_sa11_AttributeValue_s* zx_DEC_sa11_AttributeValue(struct zx_ctx* c, st
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1355,8 +1376,8 @@ struct zx_sa11_AudienceRestrictionCondition_s* zx_DEC_sa11_AudienceRestrictionCo
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AudienceRestrictionCondition_s* x = ZX_ZALLOC(c, struct zx_sa11_AudienceRestrictionCondition_s);
   x->gg.g.tok = zx_sa11_AudienceRestrictionCondition_ELEM;
   x->gg.g.ns = ns;
@@ -1381,6 +1402,9 @@ struct zx_sa11_AudienceRestrictionCondition_s* zx_DEC_sa11_AudienceRestrictionCo
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1389,7 +1413,7 @@ struct zx_sa11_AudienceRestrictionCondition_s* zx_DEC_sa11_AudienceRestrictionCo
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1517,8 +1541,8 @@ struct zx_sa11_AuthenticationStatement_s* zx_DEC_sa11_AuthenticationStatement(st
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AuthenticationStatement_s* x = ZX_ZALLOC(c, struct zx_sa11_AuthenticationStatement_s);
   x->gg.g.tok = zx_sa11_AuthenticationStatement_ELEM;
   x->gg.g.ns = ns;
@@ -1555,6 +1579,9 @@ struct zx_sa11_AuthenticationStatement_s* zx_DEC_sa11_AuthenticationStatement(st
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1563,7 +1590,7 @@ struct zx_sa11_AuthenticationStatement_s* zx_DEC_sa11_AuthenticationStatement(st
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1701,8 +1728,8 @@ struct zx_sa11_AuthorityBinding_s* zx_DEC_sa11_AuthorityBinding(struct zx_ctx* c
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AuthorityBinding_s* x = ZX_ZALLOC(c, struct zx_sa11_AuthorityBinding_s);
   x->gg.g.tok = zx_sa11_AuthorityBinding_ELEM;
   x->gg.g.ns = ns;
@@ -1745,6 +1772,9 @@ struct zx_sa11_AuthorityBinding_s* zx_DEC_sa11_AuthorityBinding(struct zx_ctx* c
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1753,7 +1783,7 @@ struct zx_sa11_AuthorityBinding_s* zx_DEC_sa11_AuthorityBinding(struct zx_ctx* c
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -1876,8 +1906,8 @@ struct zx_sa11_AuthorizationDecisionStatement_s* zx_DEC_sa11_AuthorizationDecisi
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_AuthorizationDecisionStatement_s* x = ZX_ZALLOC(c, struct zx_sa11_AuthorizationDecisionStatement_s);
   x->gg.g.tok = zx_sa11_AuthorizationDecisionStatement_ELEM;
   x->gg.g.ns = ns;
@@ -1914,6 +1944,9 @@ struct zx_sa11_AuthorizationDecisionStatement_s* zx_DEC_sa11_AuthorizationDecisi
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -1922,7 +1955,7 @@ struct zx_sa11_AuthorizationDecisionStatement_s* zx_DEC_sa11_AuthorizationDecisi
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2060,8 +2093,8 @@ struct zx_sa11_Conditions_s* zx_DEC_sa11_Conditions(struct zx_ctx* c, struct zx_
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Conditions_s* x = ZX_ZALLOC(c, struct zx_sa11_Conditions_s);
   x->gg.g.tok = zx_sa11_Conditions_ELEM;
   x->gg.g.ns = ns;
@@ -2098,6 +2131,9 @@ struct zx_sa11_Conditions_s* zx_DEC_sa11_Conditions(struct zx_ctx* c, struct zx_
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2106,7 +2142,7 @@ struct zx_sa11_Conditions_s* zx_DEC_sa11_Conditions(struct zx_ctx* c, struct zx_
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2244,8 +2280,8 @@ struct zx_sa11_DoNotCacheCondition_s* zx_DEC_sa11_DoNotCacheCondition(struct zx_
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_DoNotCacheCondition_s* x = ZX_ZALLOC(c, struct zx_sa11_DoNotCacheCondition_s);
   x->gg.g.tok = zx_sa11_DoNotCacheCondition_ELEM;
   x->gg.g.ns = ns;
@@ -2270,6 +2306,9 @@ struct zx_sa11_DoNotCacheCondition_s* zx_DEC_sa11_DoNotCacheCondition(struct zx_
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2278,7 +2317,7 @@ struct zx_sa11_DoNotCacheCondition_s* zx_DEC_sa11_DoNotCacheCondition(struct zx_
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2401,8 +2440,8 @@ struct zx_sa11_Evidence_s* zx_DEC_sa11_Evidence(struct zx_ctx* c, struct zx_ns_s
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Evidence_s* x = ZX_ZALLOC(c, struct zx_sa11_Evidence_s);
   x->gg.g.tok = zx_sa11_Evidence_ELEM;
   x->gg.g.ns = ns;
@@ -2427,6 +2466,9 @@ struct zx_sa11_Evidence_s* zx_DEC_sa11_Evidence(struct zx_ctx* c, struct zx_ns_s
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2435,7 +2477,7 @@ struct zx_sa11_Evidence_s* zx_DEC_sa11_Evidence(struct zx_ctx* c, struct zx_ns_s
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2568,8 +2610,8 @@ struct zx_sa11_NameIdentifier_s* zx_DEC_sa11_NameIdentifier(struct zx_ctx* c, st
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_NameIdentifier_s* x = ZX_ZALLOC(c, struct zx_sa11_NameIdentifier_s);
   x->gg.g.tok = zx_sa11_NameIdentifier_ELEM;
   x->gg.g.ns = ns;
@@ -2606,6 +2648,9 @@ struct zx_sa11_NameIdentifier_s* zx_DEC_sa11_NameIdentifier(struct zx_ctx* c, st
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2614,7 +2659,7 @@ struct zx_sa11_NameIdentifier_s* zx_DEC_sa11_NameIdentifier(struct zx_ctx* c, st
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2737,8 +2782,8 @@ struct zx_sa11_Subject_s* zx_DEC_sa11_Subject(struct zx_ctx* c, struct zx_ns_s* 
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_Subject_s* x = ZX_ZALLOC(c, struct zx_sa11_Subject_s);
   x->gg.g.tok = zx_sa11_Subject_ELEM;
   x->gg.g.ns = ns;
@@ -2763,6 +2808,9 @@ struct zx_sa11_Subject_s* zx_DEC_sa11_Subject(struct zx_ctx* c, struct zx_ns_s* 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2771,7 +2819,7 @@ struct zx_sa11_Subject_s* zx_DEC_sa11_Subject(struct zx_ctx* c, struct zx_ns_s* 
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -2904,8 +2952,8 @@ struct zx_sa11_SubjectConfirmation_s* zx_DEC_sa11_SubjectConfirmation(struct zx_
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_SubjectConfirmation_s* x = ZX_ZALLOC(c, struct zx_sa11_SubjectConfirmation_s);
   x->gg.g.tok = zx_sa11_SubjectConfirmation_ELEM;
   x->gg.g.ns = ns;
@@ -2930,6 +2978,9 @@ struct zx_sa11_SubjectConfirmation_s* zx_DEC_sa11_SubjectConfirmation(struct zx_
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -2938,7 +2989,7 @@ struct zx_sa11_SubjectConfirmation_s* zx_DEC_sa11_SubjectConfirmation(struct zx_
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3076,8 +3127,8 @@ struct zx_sa11_SubjectLocality_s* zx_DEC_sa11_SubjectLocality(struct zx_ctx* c, 
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_SubjectLocality_s* x = ZX_ZALLOC(c, struct zx_sa11_SubjectLocality_s);
   x->gg.g.tok = zx_sa11_SubjectLocality_ELEM;
   x->gg.g.ns = ns;
@@ -3114,6 +3165,9 @@ struct zx_sa11_SubjectLocality_s* zx_DEC_sa11_SubjectLocality(struct zx_ctx* c, 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3122,7 +3176,7 @@ struct zx_sa11_SubjectLocality_s* zx_DEC_sa11_SubjectLocality(struct zx_ctx* c, 
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -3245,8 +3299,8 @@ struct zx_sa11_SubjectStatement_s* zx_DEC_sa11_SubjectStatement(struct zx_ctx* c
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_sa11_SubjectStatement_s* x = ZX_ZALLOC(c, struct zx_sa11_SubjectStatement_s);
   x->gg.g.tok = zx_sa11_SubjectStatement_ELEM;
   x->gg.g.ns = ns;
@@ -3271,6 +3325,9 @@ struct zx_sa11_SubjectStatement_s* zx_DEC_sa11_SubjectStatement(struct zx_ctx* c
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -3279,7 +3336,7 @@ struct zx_sa11_SubjectStatement_s* zx_DEC_sa11_SubjectStatement(struct zx_ctx* c
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }

@@ -90,8 +90,8 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_root_s* x = ZX_ZALLOC(c, struct zx_root_s);
   x->gg.g.tok = zx_root_ELEM;
   x->gg.g.ns = ns;
@@ -154,10 +154,20 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
             el->g.n = &x->Assertion->gg.g;
             x->Assertion = (struct zx_sa_Assertion_s*)el;
             break;
+          case zx_sa_EncryptedAssertion_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_sa_EncryptedAssertion(c, ns);
+            el->g.n = &x->EncryptedAssertion->gg.g;
+            x->EncryptedAssertion = (struct zx_sa_EncryptedAssertion_s*)el;
+            break;
           case zx_sa_NameID_ELEM:
             el = (struct zx_elem_s*)zx_DEC_sa_NameID(c, ns);
             el->g.n = &x->NameID->gg.g;
             x->NameID = (struct zx_sa_NameID_s*)el;
+            break;
+          case zx_sa_EncryptedID_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_sa_EncryptedID(c, ns);
+            el->g.n = &x->EncryptedID->gg.g;
+            x->EncryptedID = (struct zx_sa_EncryptedID_s*)el;
             break;
           case zx_sp_NewID_ELEM:
             el = zx_DEC_simple_elem(c, ns, tok);
@@ -309,6 +319,11 @@ struct zx_root_s* zx_DEC_root(struct zx_ctx* c, struct zx_ns_s* ns , int n_decod
             el->g.n = &x->EndpointReference->gg.g;
             x->EndpointReference = (struct zx_a_EndpointReference_s*)el;
             break;
+          case zx_sec_Token_ELEM:
+            el = (struct zx_elem_s*)zx_DEC_sec_Token(c, ns);
+            el->g.n = &x->Token->gg.g;
+            x->Token = (struct zx_sec_Token_s*)el;
+            break;
           case zx_hrxml_Candidate_ELEM:
             el = (struct zx_elem_s*)zx_DEC_hrxml_Candidate(c, ns);
             el->g.n = &x->Candidate->gg.g;
@@ -393,8 +408,8 @@ struct zx_elem_s* zx_DEC_simple_elem(struct zx_ctx* c, struct zx_ns_s* ns , int 
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_elem_s* x = ZX_ZALLOC(c, struct zx_elem_s);
   x->g.tok = toke;
   x->g.ns = ns;
@@ -419,6 +434,9 @@ struct zx_elem_s* zx_DEC_simple_elem(struct zx_ctx* c, struct zx_ns_s* ns , int 
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->xmlns;
+      x->xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, x, name, data, tok, x->g.tok);
@@ -427,7 +445,7 @@ struct zx_elem_s* zx_DEC_simple_elem(struct zx_ctx* c, struct zx_ns_s* ns , int 
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -543,19 +561,19 @@ next_attr:
 #define EL_TAG    wrong_elem
 
 /* Called by: */
-struct zx_any_elem_s* zx_DEC_wrong_elem(struct zx_ctx* c, struct zx_ns_s* ns , char* nam, int namlen)
+struct zx_any_elem_s* zx_DEC_wrong_elem(struct zx_ctx* c, struct zx_ns_s* ns , const char* nam, int namlen)
 {
   int tok;
   struct zx_elem_s* iternode;
   struct zx_elem_s* el;
   struct zx_str* ss;
   struct zx_ns_s* pop_seen;
-  char* name;
-  char* data;
+  const char* name;
+  const char* data;
   struct zx_any_elem_s* x = ZX_ZALLOC(c, struct zx_any_elem_s);
   x->gg.g.tok = ZX_TOK_NOT_FOUND;
   x->name_len = namlen;
-  x->name = nam;
+  x->name = (char*)nam;
   x->gg.g.ns = ns;
   ZX_START_DEC_EXT(x);
 
@@ -578,6 +596,9 @@ struct zx_any_elem_s* zx_DEC_wrong_elem(struct zx_ctx* c, struct zx_ns_s* ns , c
     case ZX_TOK_XMLNS:
       ZX_XMLNS_DEC_EXT(ss);
       DD("xmlns detected(%.*s)", data-2-name, name);
+      ns = zx_new_ns(c, data-2-name, name, c->p - data, data);
+      ns->n = x->gg.xmlns;
+      x->gg.xmlns = ns;
       goto next_attr;
     default:
       ss = zx_dec_unknown_attr(c, &x->gg, name, data, tok, x->gg.g.tok);
@@ -586,7 +607,7 @@ struct zx_any_elem_s* zx_DEC_wrong_elem(struct zx_ctx* c, struct zx_ns_s* ns , c
     ss->g.tok = tok;
     ss->g.err |= ZXERR_ATTR_FLAG;
     ss->len = c->p - data;
-    ss->s = data;
+    ss->s = (char*)data;
 next_attr:
     continue;
   }
@@ -699,9 +720,9 @@ next_attr:
 /* FUNC(zx_known_or_unknown_elem) */
 
 /* Called by:  zx_DEC_ELNAME */
-struct zx_elem_s* zx_known_or_unknown_elem(struct zx_ctx* c, int tok, struct zx_elem_s* x, int len, char* name, struct zx_ns_s* ns)
+struct zx_elem_s* zx_known_or_unknown_elem(struct zx_ctx* c, int tok, struct zx_elem_s* x, int len, const char* name, struct zx_ns_s* ns)
 {
-  char* p;
+  const char* p;
   struct zx_elem_s* el;
   if (tok == ZX_TOK_NOT_FOUND) {
     D("Unknown element(%.*s) in context(%d)", len, name, x->g.tok);
@@ -729,11 +750,11 @@ struct zx_elem_s* zx_known_or_unknown_elem(struct zx_ctx* c, int tok, struct zx_
  * The ...2tok() functions come from code generation via gperf. */
 
 /* Called by:  zx_DEC_ELNAME */
-int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
+int zx_attr_lookup(struct zx_ctx* c, const char* name, const char* lim, struct zx_ns_s** ns)
 {
   const struct zx_tok* zt;
-  char* prefix;
-  char* p;
+  const char* prefix;
+  const char* p;
   
   for (p = name; p < lim && *p != ':'; ++p) ;  /* look for namespace prefix */
   if (p < lim) {
@@ -753,7 +774,7 @@ int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 		  && !memcmp("xmlns", prefix, sizeof("xmlns")-1))
 	: (lim-name == sizeof("xmlns")-1
 	   && !memcmp("xmlns", name, sizeof("xmlns")-1))) {
-      /* Namespace declaration. Skip because these were prescanned (see ablec in this file). */
+      /* Namespace declaration. Skip because these were prescanned (see above in this file). */
       return ZX_TOK_XMLNS;
     }
     return ZX_TOK_NOT_FOUND;
@@ -769,11 +790,11 @@ int zx_attr_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
 /* FUNC(zx_elem_lookup) */
 
 /* Called by:  zx_DEC_ELNAME x2 */
-int zx_elem_lookup(struct zx_ctx* c, char* name, char* lim, struct zx_ns_s** ns)
+int zx_elem_lookup(struct zx_ctx* c, const char* name, const char* lim, struct zx_ns_s** ns)
 {
   const struct zx_tok* zt;
-  char* prefix;
-  char* p;
+  const char* prefix;
+  const char* p;
   
   for (p = name; p < lim && *p != ':'; ++p) ;  /* look for namespace prefix */
   if (p < lim) {

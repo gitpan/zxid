@@ -12,6 +12,8 @@
  * Test encoding and decoding SAML 2.0 assertions and other related stuff.
  *
  * ./zxbench -d -i 1 <t/hp-idp-post-resp.xml
+ *
+ * WARNING: This code appears to be seriously out of date and historical as of Oct-2010. --Sampo
  */
 
 #include <signal.h>
@@ -68,7 +70,6 @@ Usage: zxbench [options] <saml-assertion.xml >reencoded-a7n.xml\n\
 
 #define DIE(reason) MB fprintf(stderr, "%s\n", reason); exit(2); ME
 
-char* instance = "zxid";  /* how this server is identified in logs */
 int afr_buf_size = 0;
 int verbose = 1;
 extern int zx_debug;
@@ -120,7 +121,7 @@ void opt(int* argc, char*** argv, char*** env)
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	instance = (*argv)[0];
+	zx_instance = (*argv)[0];
 	continue;
       }
       break;
@@ -302,8 +303,7 @@ int main(int argc, char** argv, char** env)
   D("Decoding %d chars, n_iter(%d)", got_all, n_iter);
   
   for (;n_iter; --n_iter) {
-    //cf = zxid_new_conf("/var/zxid/");
-    cf = zxid_new_conf("/var/sfis/");
+    cf = zxid_new_conf("/var/zxid/");
     LOCK(cf->ctx->mx, "zxbench");
     zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got_all);
     r = zx_DEC_root(cf->ctx, 0, 1000);
@@ -320,6 +320,7 @@ int main(int argc, char** argv, char** env)
 	  eid = r->Envelope->Body->ArtifactResponse->Issuer->gg.content;
 	  D("Found sig in Envelope/Body/ArtifactResponse eid(%.*s)", eid->len, eid->s);
 	  ent = zxid_get_ent_from_cache(cf, eid);
+	  ZERO(refs, sizeof(refs));
 	  refs.sref = r->Envelope->Body->ArtifactResponse->Signature->SignedInfo->Reference;
 	  refs.blob = (struct zx_elem_s*)r->Envelope->Body->ArtifactResponse;
 	  res = zxsig_validate(cf->ctx, ent->sign_cert,

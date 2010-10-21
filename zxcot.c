@@ -25,7 +25,7 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
-CU8* help =
+char* help =
 "zxcot  -  Circle-of-Trust management tool R" ZXID_REL "\n\
 Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
@@ -263,13 +263,20 @@ static void opt(int* argc, char*** argv, char*** env)
 /* --------------- reg_svc --------------- */
 
 /*() IdP and Discovery. Register service metadata to /var/zxid/idpdimd/XX,
- * and possibly boostrap to /var/zxid/idpuid/.all/.bs/YY */
+ * and possibly boostrap to /var/zxid/idpuid/.all/.bs/YY
+ *
+ * bs_reg:: Register-also-as-bootstrap flag
+ * dry_run:: nonzero: do not write anything
+ * ddimd:: Discovery metadata directory, such as /var/zxid/idpdimd
+ * duid:: uid dir such as  /var/zxid/idpuid
+ * returns:: 0 on success, nonzero on error. */
 
 /* Called by:  zxcot_main */
 static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddimd, const char* duid)
 {
   char sha1_name[28];
   char path[ZXID_MAX_BUF];
+  char* duids;
   char* p;
   char* uiddir;
   int got, fd;
@@ -327,11 +334,11 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 
   sha1_safe_base64(sha1_name, ss->len, ss->s);
   sha1_name[27] = 0;
-  duid = strdup(duid);
-  got = strlen(duid);
-  if (strcmp(duid + got - (sizeof("dimd/")-1), "dimd/")) {
+  duids = strdup(duid);
+  got = strlen(duids);
+  if (strcmp(duids + got - (sizeof("dimd/")-1), "dimd/")) {
     /* strcpy ok, because always fits: "uid/" is shorter than "dimd/" */
-    strcpy(duid + got - (sizeof("dimd/")-1), "uid/");
+    strcpy(duids + got - (sizeof("dimd/")-1), "uid/");
   }
 
   if (verbose)
@@ -349,7 +356,7 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
   }
   
   D("Register EPR path(%s%s,%s) in discovery metadata.", ddimd, path, sha1_name);
-  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -b",
+  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -b", 1,
 			 "%s%s,%s", ddimd, path, sha1_name);
   if (fd == BADFD) {
     perror("open epr for registering");
@@ -364,11 +371,11 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 
   if (bs_reg) {
     if (verbose)
-      fprintf(stderr, "Activating bootstrap %s.all/.bs/%s,%s", duid, path, sha1_name);
+      fprintf(stderr, "Activating bootstrap %s.all/.bs/%s,%s", duids, path, sha1_name);
 
     if (!dryrun) {
-      fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -bs",
-			     "%s.all/.bs/%s,%s", duid, path, sha1_name);
+      fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -bs", 1,
+			     "%s.all/.bs/%s,%s", duids, path, sha1_name);
       if (fd == BADFD) {
 	perror("open epr for bootstrap activation");
 	ERR("Failed to open file for writing: sha1_name(%s,%s) to bootstrap activation", path, sha1_name);
@@ -379,7 +386,7 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
       close_file(fd, (const char*)__FUNCTION__);
     }
   } else {
-    D("You may also want to activate bootstrap by\n  touch %s.all/.bs/%s,%s", duid, path, sha1_name);
+    D("You may also want to activate bootstrap by\n  touch %s.all/.bs/%s,%s", duids, path, sha1_name);
   }
   return 0;
 }
@@ -423,7 +430,8 @@ static int zxid_addmd(zxid_conf* cf, char* mdurl, int dry_run, const char* dcot)
       continue;
     }
   
-    fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -a", "%s%s", dcot, ent->sha1_name);
+    fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -a", 1,
+			   "%s%s", dcot, ent->sha1_name);
     if (fd == BADFD) {
       perror("open metadata for writing metadata to cache");
       ERR("Failed to open file for writing: sha1_name(%s) to metadata cache", ent->sha1_name);
@@ -447,7 +455,7 @@ static int zxid_genmd(zxid_conf* cf, int dry_run, const char* dcot)
 {
   zxid_cgi cgi;
   struct zx_str* meta = zxid_sp_meta(cf, &cgi);
-  memset(&cgi, 0, sizeof(cgi));
+  ZERO(&cgi, sizeof(cgi));
   printf("%.*s", meta->len, meta->s);
   return 0;
 }
@@ -461,9 +469,9 @@ static int zxid_lscot_line(zxid_conf* cf, int col_swap, const char* dcot, const 
 {
   zxid_entity* ent;
   char* p;
-  int got = read_all(ZXID_MAX_MD, buf, "zxcot line", "%s%s", dcot, den);
+  int got = read_all(ZXID_MAX_MD, buf, "zxcot line", 1, "%s%s", dcot, den);
   if (!got) {
-    ERR("Zero data in file(%s%s)", dcot, den);
+    ERR("Zero data in file(%s%s). If cot directory does not exist consider running zxmkdirs.sh", dcot, den);
     return 1;
   }
   p = buf;

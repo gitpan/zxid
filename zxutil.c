@@ -13,6 +13,7 @@
  * 21.5.2010, added file copy --Sampo
  */
 
+#include "platform.h"
 #include "errmac.h"
 
 #include <stdarg.h>
@@ -30,11 +31,11 @@
 #define fdtype HANDLE
 #else
 #define fdtype int
+#include <sys/stat.h>
 #endif
 
 #include "zx.h"
 #include "zxidconf.h"
-#include "platform.h"
 
 #if !defined(USE_STDIO) && !defined(MINGW)
 /* *** Static initialization of struct flock is suspect since man fcntl() documentation
@@ -62,11 +63,6 @@ int vname_from_path(char* buf, int buf_len, const char* name_fmt, va_list ap)
     return 0;
   }
   return 1;
-#if 0
- too_long:
-  ERR("Path too long base(%s) dir(%s) name(%s)\n", base, dir, name);
-  return 0;
-#endif
 }
 
 /*() Generate formatted file name path. */
@@ -85,7 +81,7 @@ int name_from_path(char* buf, int buf_len, const char* name_fmt, ...)
 /*() Open a file with formatted file name path. */
 
 /* Called by:  open_fd_from_path, read_all */
-fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, const char* name_fmt, va_list ap)
+fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, int reperr, const char* name_fmt, va_list ap)
 {
   fdtype fd;
   char buf[ZXID_MAX_BUF];
@@ -101,9 +97,11 @@ fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, const char* n
   fd = open(buf, flags, mode);
 #endif
   if (fd == BADFD) {
-    if (logkey[0] != '-') {
+    if (reperr && logkey[0] != '-') {
       perror("open (vopen_fd_from_path)");
       ERR("File(%s) not found lk(%s) errno=%d err(%s). flags=0x%x, euid=%d egid=%d", buf, logkey, errno, STRERROR(errno), flags, geteuid(), getegid());
+    } else {
+      D("File(%s) not found lk(%s) errno=%d err(%s). flags=0x%x, euid=%d egid=%d", buf, logkey, errno, STRERROR(errno), flags, geteuid(), getegid());
     }
     return BADFD;
   }
@@ -113,12 +111,12 @@ fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, const char* n
 /*() Open a file with formatted file name path. */
 
 /* Called by:  main x2, write_all_path_fmt, zxid_addmd, zxid_cache_epr, zxid_get_ent_from_file, zxid_get_meta, zxid_reg_svc x2, zxid_write_ent_to_cache */
-fdtype open_fd_from_path(int flags, int mode, const char* logkey, const char* name_fmt, ...)
+fdtype open_fd_from_path(int flags, int mode, const char* logkey, int reperr, const char* name_fmt, ...)
 {
   va_list ap;
   fdtype fd;
   va_start(ap, name_fmt);
-  fd = vopen_fd_from_path(flags, mode, logkey, name_fmt, ap);
+  fd = vopen_fd_from_path(flags, mode, logkey, reperr, name_fmt, ap);
   va_end(ap);
   return fd;
 }
@@ -160,16 +158,18 @@ int read_all_fd(fdtype fd, char* p, int want, int* got_all)
  *
  * maxlen:: Length of buffer
  * buf:: Result parameter. This buffer will be populated with data from the file.
+ * logkey:: Logging key to help debugging
+ * name_fmt:: Format string for building file name
  * return:: actual total length. The buffer will always be nul terminated. */
 
 /* Called by:  list_user x5, list_users x2, main x4, opt x10, test_mode x2, zxid_check_fed, zxid_conf_to_cf_len, zxid_di_query x2, zxid_find_epr x2, zxid_gen_boots, zxid_get_ses, zxid_get_ses_sso_a7n, zxid_get_user_nameid, zxid_lscot_line, zxid_mk_user_a7n_to_sp x4, zxid_parse_conf_raw, zxid_pw_authn x3, zxid_read_cert, zxid_read_private_key, zxid_ses_to_pool x3, zxid_sha1_file, zxid_template_page_cf, zxlog_write_line */
-int read_all(int maxlen, char* buf, const char* logkey, const char* name_fmt, ...)
+int read_all(int maxlen, char* buf, const char* logkey, int reperr, const char* name_fmt, ...)
 {
   va_list ap;
   int gotall;
   fdtype fd;
   va_start(ap, name_fmt);
-  fd = vopen_fd_from_path(O_RDONLY, 0, logkey, name_fmt, ap);
+  fd = vopen_fd_from_path(O_RDONLY, 0, logkey, reperr, name_fmt, ap);
   va_end(ap);
   if (fd == BADFD) { if (buf) buf[0] = 0; return 0; }
   if (read_all_fd(fd, buf, maxlen, &gotall) == -1) {
@@ -182,6 +182,57 @@ int read_all(int maxlen, char* buf, const char* logkey, const char* name_fmt, ..
   close_file(fd, logkey);
   buf[MIN(gotall, maxlen-1)] = 0;  /* nul terminate */
   return gotall;
+}
+
+int get_file_size(fdtype fd)
+{
+#ifdef MINGW
+  return GetFileSize(fd,0);
+#else
+  struct stat st;
+  fstat(fd, &st);
+  return st.st_size;
+#endif
+}
+
+/*() Read all data from a file at formatted file name path, allocating
+ * the buffer as needed.
+ *
+ * c:: ZX allocation context
+ * logkey:: Logging key to help debugging
+ * lenp:: Optional result parameter returning the length of the data read. Null ok.
+ * name_fmt:: Format string for building file name
+ * return:: The data or null on fail. The buffer will always be nul terminated. */
+
+/* Called by: */
+char* read_all_alloc(struct zx_ctx* c, const char* logkey, int reperr, int* lenp, const char* name_fmt, ...)
+{
+  va_list ap;
+  char* buf;
+  int len, gotall;
+  fdtype fd;
+  va_start(ap, name_fmt);
+  fd = vopen_fd_from_path(O_RDONLY, 0, logkey, reperr, name_fmt, ap);
+  va_end(ap);
+  if (fd == BADFD) { if (lenp) *lenp = 0; return 0; }
+
+  len = get_file_size(fd);
+  buf = ZX_ALLOC(c, len+1);
+  
+  if (read_all_fd(fd, buf, len, &gotall) == -1) {
+    perror("Trouble reading.");
+    D("read error lk(%s)", logkey);
+    close_file(fd, logkey);
+    buf[len] = 0;
+    if (lenp)
+      *lenp = 0;
+    return 0;
+  }
+  close_file(fd, logkey);
+  buf[MIN(gotall, len)] = 0;  /* nul terminate */
+  if (lenp)
+    *lenp = gotall;
+  return buf;
 }
 
 /*() Low level function that keeps writing data to a file descriptor unil
@@ -210,22 +261,24 @@ int write_all_fd(fdtype fd, const char* p, int pending)
   return 1;
 }
 
-/*() Write all data to a file at the formatted path. The buf is used for formatting
- * data. The path_fmt can have up to two %s specifiers, which will be satisfied
- * by prepath and postpath. Return 1 on success, 0 on fail. */
+/*() Write all data to a file at the formatted path. The buf is used
+ * for formatting data. The path_fmt can have up to two %s specifiers,
+ * which will be satisfied by prepath and postpath. Return 1 on
+ * success, 0 on fail. */
 
 /* Called by:  main x5, zxid_check_fed x2, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_ses, zxid_put_user, zxid_pw_authn, zxlog_write_line */
-int write_all_path_fmt(const char* logkey, int len, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...)
+int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...)
 {
+  int len;
   va_list ap;
   fdtype fd;
-  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, logkey, path_fmt, prepath, postpath);
+  fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, logkey, 1, path_fmt, prepath, postpath);
   DD("write_all_path_fmt(%s, %x)", logkey, fd);
   if (fd == BADFD) return 0;
   
   va_start(ap, data_fmt);
-  len = vsnprintf(buf, len, data_fmt, ap);
-  buf[len-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
+  len = vsnprintf(buf, maxlen-1, data_fmt, ap);
+  buf[maxlen-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   va_end(ap);
   if (len < 0) {
     perror("vsnprintf");
@@ -241,18 +294,24 @@ int write_all_path_fmt(const char* logkey, int len, char* buf, const char* path_
   return 1;
 }
 
-/*() Write or append all data to a file at the formatted path. The file
- * is opened for appending, data written, and file closed (flushing the data).
- * Will perform file locking to ensure consistent results. Will create the
- * file if needed, but will not create parent directories. Returns 1 on success, 0 on err */
+/*() Write or append all data to a file at the formatted path. The
+ * file is opened for appending, data written, and file closed
+ * (flushing the data).  Will perform file locking to ensure
+ * consistent results. Will create the file if needed, but will not
+ * create parent directories. Up to two items of data can
+ * be written/appended. If you have only one item, supply null
+ * for the second. For overwrite behaviour supply seeky=SEEK_SET and
+ * flag=O_TRUNC (the seek offset is always 0). For append behaviour
+ * supply seeky=SEEK_END and flag=O_APPEND.
+ * Returns 1 on success, 0 on err */
 
 /* Called by:  zxlog_blob, zxlog_write_line x2 */
 int write2_or_append_lock_c_path(const char* c_path,
 				 int len1, const char* data1,
 				 int len2, const char* data2,
 				 const char* which,  /* log key */
-				 int seeky,   /* SEEK_END, O_APPEND == append */
-				 int flag)    /* SEEK_SET, O_TRUNC  == overwrite */
+				 int seeky, /* SEEK_END,0 O_APPEND == append */
+				 int flag)  /* SEEK_SET,0 O_TRUNC  == overwr */
 {
   fdtype fd;
   if (!c_path)
@@ -648,7 +707,7 @@ char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char*
  * out_buf:: Buffer where result will be written. It must be 28 characters long and already allocated. The buffer will not be null terminated.
  * len:: Length of data. -1=use strlen(data)
  * data:: Data to be digested
- * return:: Pointer one past last character written */
+ * return:: Pointer one past last character written (not nul terminated) */
 
 /* Called by:  zxcot_main, zxid_decode_redir_or_post x2, zxid_get_ent_from_cache, zxid_mk_ent, zxid_nice_sha1, zxid_reg_svc, zxid_user_sha1_name x2, zxlog_path x2, zxlog_write_line */
 char* sha1_safe_base64(char* out_buf, int len, const char* data)
@@ -656,7 +715,7 @@ char* sha1_safe_base64(char* out_buf, int len, const char* data)
   char sha1[20];
   if (len == -1)
     len = strlen(data);
-  SHA1(data, len, sha1);
+  SHA1((unsigned char*)data, len, (unsigned char*)sha1);
   return base64_fancy_raw(sha1, 20, out_buf, safe_basis_64, 1<<31, 0, 0, '.');
 }
 
@@ -686,7 +745,7 @@ char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out
   char* out;
   z_stream z;
   *out_len = 0;
-  memset(&z, 0, sizeof(z_stream));
+  ZERO(&z, sizeof(z_stream));
   z.zalloc = zx_zlib_zalloc;
   z.zfree = zx_zlib_zfree;
   z.opaque = c;
@@ -729,7 +788,7 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, const char* in, int* out
   char* old_out;
   z_stream z;
   *out_len = 0;
-  memset(&z, 0, sizeof(z_stream));
+  ZERO(&z, sizeof(z_stream));
   z.zalloc = zx_zlib_zalloc;
   z.zfree = zx_zlib_zfree;
   z.opaque = c;
@@ -841,8 +900,8 @@ char* zx_url_encode(struct zx_ctx* c, int in_len, char* in, int* out_len)
   return out;
 }
 
-const unsigned char* hex_trans      = "0123456789abcdef";
-const unsigned char* ykmodhex_trans = "cbdefghijklnrtuv";  /* as of libyubikey-1.5 */
+const unsigned char const * hex_trans      = (unsigned char*)"0123456789abcdef";
+const unsigned char const * ykmodhex_trans = (unsigned char*)"cbdefghijklnrtuv";  /* as of libyubikey-1.5 */
 
 /*() Especially useful as yubikey_modhex_decode() replacement.
  * Supports inplace conversion. Does not nul terminate. */
@@ -853,12 +912,12 @@ char* zx_hexdec(char* dst, char* src, int len, const unsigned char* trans)
   const unsigned char* hi;
   const unsigned char* lo;
   for (; len>1; len-=2, ++dst, src+=2) {
-    hi = strchr(trans, src[0]);
+    hi = (const unsigned char*)strchr((char*)trans, src[0]);
     if (!hi) {
       ERR("Bad hi character(%x) in hex string using trans(%s) len left=%d src(%.*s)", src[0], trans, len, len, src);
       hi = trans;
     }
-    lo = strchr(trans, src[1]);
+    lo = (const unsigned char*)strchr((char*)trans, src[1]);
     if (!lo) {
       ERR("Bad lo character(%x) in hex string using trans(%s) len left=%d src(%.*s)", src[1], trans, len, len, src);
       lo = trans;
@@ -868,22 +927,79 @@ char* zx_hexdec(char* dst, char* src, int len, const unsigned char* trans)
   return dst;
 }
 
+static short zx_mmdd[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 };
+
+/*() Map from tm struct back to seconds since Unix epoch. The tm struct
+ * is assumed to be on GMT. This function is needed because mktime(3) is
+ * tainted by local time zone brain damage. This function aims to be
+ * equivalent to GNU extension timegm(3) (see Linux man pages). */
+
+static int zx_timegm(const struct tm* t)
+{
+  int x;
+  int aa = t->tm_year - 70, mon = t->tm_mon, dd = t->tm_mday;
+  int hh = t->tm_hour, mm = t->tm_min, ss = t->tm_sec;
+
+  if (ss > 60) {
+    mm += ss/60;
+    ss %= 60;
+  }
+  if (mm > 60) {
+    hh += mm/60;
+    mm %= 60;
+  }
+  if (hh > 60) {
+    dd += hh/60;
+    hh %= 60;
+  }
+  if (mon > 12) {
+    aa += mon/12;
+    mon %= 12;
+  }
+  while (dd > zx_mmdd[mon+1]) {
+    if (mon == 1 && LEAP(aa+1970))
+      --dd;
+    dd -= zx_mmdd[mon];
+    ++mon;
+    if (mon > 11) {
+      mon = 0;
+      ++aa;
+    }
+  }
+  if (aa < 0)
+    return -1;
+
+  x  = aa * 365 + (aa + 1) / 4; /* Account for leap year every 4 years */
+
+  if ((aa -= 131) >= 0) {
+    aa /= 100;
+    x -= (aa >> 2) * 3 + 1;
+    if ((aa &= 3) == 3)
+      --aa;
+    x -= aa;
+  }
+  
+  x += zx_mmdd[mon] + dd-1 + (LEAP(aa+1970) && mon>1?1:0);
+  x *= 24; /* Days to hours */
+  return ((x + hh) * 60 + mm) * 60 + ss;
+}
+
 /*() Convert a date-time format timestamp into seconds since Unix epoch.
  * Format is as follows
  *   01234567890123456789
  *   yyyy-MM-ddThh:mm:ssZ */
 
 /* Called by:  zxid_idp_sso, zxid_sp_sso_finalize, zxid_validate_cond x2, zxid_wsp_validate */
-int zx_date_time_to_secs(char* dt)
+int zx_date_time_to_secs(const char* dt)
 {
   struct tm t;
-  memset(&t, 0, sizeof(t));
+  ZERO(&t, sizeof(t));
   sscanf(dt, "%d-%d-%dT%d:%d:%dZ",
 	 &t.tm_year, &t.tm_mon, &t.tm_mday,
 	 &t.tm_hour, &t.tm_min, &t.tm_sec);
   t.tm_year -= 1900;
   --t.tm_mon;
-  return mktime(&t);
+  return zx_timegm(&t);
 }
 
 /* EOF  --  zxutil.c */

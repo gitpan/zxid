@@ -122,7 +122,8 @@ zxid_entity* zxid_get_meta(zxid_conf* cf, char* url)
 #else
   {
     /* TEST CODE (usually disabled) */
-    int fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "get_meta TEST", "%s" ZXID_COT_DIR "test", cf->path);
+    int fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "get_meta TEST", 1,
+			       "%s" ZXID_COT_DIR "test", cf->path);
     if (fd == -1) {
       perror("open meta to write");
       /*UNLOCK(cf->curl_mx, "curl get_meta");*/
@@ -221,17 +222,17 @@ struct zx_str* zxid_http_post_raw(zxid_conf* cf, int url_len, const char* url, i
   
   if (len == -1)
     len = strlen(data);
-  wc.buf = wc.p = data;
-  wc.lim = data + len;
+  wc.buf = wc.p = (char*)data;
+  wc.lim = (char*)data + len;
   
   curl_easy_setopt(cf->curl, CURLOPT_POST, 1);
   curl_easy_setopt(cf->curl, CURLOPT_POSTFIELDSIZE, len);
   curl_easy_setopt(cf->curl, CURLOPT_READDATA, &wc);
   curl_easy_setopt(cf->curl, CURLOPT_READFUNCTION, zxid_curl_read_data);
 
-  memset(&content_type, 0, sizeof(content_type));
+  ZERO(&content_type, sizeof(content_type));
   content_type.data = "Content-Type: text/xml";
-  memset(&SOAPaction, 0, sizeof(SOAPaction));
+  ZERO(&SOAPaction, sizeof(SOAPaction));
 #if 1
   SOAPaction.data = "SOAPAction: \"\"";  /* Empty SOAPAction is the ID-WSF (and SAML?) standard */
 #else

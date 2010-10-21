@@ -51,16 +51,108 @@ int zx_EVP_CIPHER_iv_length(const EVP_CIPHER* cipher)  { return EVP_CIPHER_iv_le
 int zx_EVP_CIPHER_block_size(const EVP_CIPHER* cipher) { return EVP_CIPHER_block_size(cipher); }
 #endif
 
+/*() zx_raw_digest2() computes a message digest over two items. The result
+ * is placed in buffer md, which must already be of length sufficient for
+ * the digest. md will not be nul terminated (and will usually have binary
+ * data). Possible algos: SHA1 */
+
+char* zx_raw_digest2(struct zx_ctx* c, char* md, char* const algo, int len, const char* s, int len2, const char* s2)
+{
+  char* where = "start";
+  const EVP_MD* evp_digest;
+  EVP_MD_CTX ctx;
+  OpenSSL_add_all_digests();
+  EVP_MD_CTX_init(&ctx);
+  evp_digest = EVP_get_digestbyname(algo);
+  if (!evp_digest) {
+    ERR("Digest algo name(%s) not recognized by the crypto library (OpenSSL)", algo);
+    return 0;
+  }
+    
+  if (!EVP_DigestInit_ex(&ctx, evp_digest, 0 /* engine */)) {
+    where = "EVP_DigestInit_ex()";
+    goto sslerr;
+  }
+  
+  if (len && s) {
+    if (!EVP_DigestUpdate(&ctx, s, len)) {
+      where = "EVP_DigestUpdate()";
+      goto sslerr;
+    }
+  }
+  
+  if (len2 && s2) {
+    if (!EVP_DigestUpdate(&ctx, s2, len2)) {
+      where = "EVP_DigestUpdate() 2";
+      goto sslerr;
+    }
+  }
+  
+  if(!EVP_DigestFinal_ex(&ctx, (unsigned char*)md, 0)) {
+    where = "EVP_DigestFinal_ex()";
+    goto sslerr;
+  }
+  EVP_MD_CTX_cleanup(&ctx);
+  return md;
+
+ sslerr:
+  zx_report_openssl_error(where);
+  EVP_MD_CTX_cleanup(&ctx);
+  return 0;
+}
+
+/*() zx_EVP_DecryptFinal_ex() is a drop-in replacement for OpenSSL EVP_DecryptFinal_ex.
+ * It performs XML Enc compatible padding check.  See OpenSSL bug 1067
+ * http://rt.openssl.org/Ticket/Display.html?user=guest&;pass=guest&id=1067 */
+
+int zx_EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl) {
+  int i,n;
+  unsigned int b;
+  
+  *outl=0;
+  b=ctx->cipher->block_size;
+  if (b > 1) {
+    if (ctx->buf_len || !ctx->final_used) {
+      //EVPerr(EVP_F_EVP_DECRYPTFINAL_EX,EVP_R_WRONG_FINAL_BLOCK_LENGTH);
+      return(0);
+    }
+    ASSERTOP(b, <=, sizeof ctx->final);
+    n=ctx->final[b-1];
+    if (n == 0 || n > (int)b) {
+      //EVPerr(EVP_F_EVP_DECRYPTFINAL_EX,EVP_R_BAD_DECRYPT);
+      return(0);
+    }
+      
+    /* The padding used in XML Enc does not follow RFC 1423
+     * and is not supported by OpenSSL. The last padding byte
+     * is checked, but all other padding bytes are ignored
+     * and trimmed.
+     *
+     * [XMLENC] D. Eastlake, ed., XML Encryption Syntax and
+     * Processing, W3C Recommendation 10. Dec. 2002,
+     * www.w3.org/TR/2002/REC-xmlenc-core-20021210">http://www.w3.org/TR/2002/REC-xmlenc-core-20021210 */
+    if (ctx->final[b-1] != n) {
+      //EVPerr(EVP_F_EVP_DECRYPTFINAL_EX,EVP_R_BAD_DECRYPT);
+      return(0);
+    }
+    n=ctx->cipher->block_size-n;
+    for (i=0; i<n; i++)
+      out[i]=ctx->final[i];
+    *outl=n;
+  } else
+    *outl=0;
+  return 1;
+}
+
 //#define ZX_DEFAULT_IV "012345678901234567890123456789012345678901234567890123456789" /* 60 */
 #define ZX_DEFAULT_IV   "ZX_DEFAULT_IV ZXID.ORG SAML 2.0 and Liberty ID-WSF by Sampo." /* 60 */
 
 /*() zx_raw_cipher() can encrypt and decrypt, based on encflag, using symmetic cipher algo.
- * If encflag indicates encryption, the initialization vector will be prepended. */
+ * If encflag (==1) indicates encryption, the initialization vector will be prepended. */
 
-struct zx_str* zx_raw_cipher(struct zx_ctx* c, char* algo, int encflag,
-			     struct zx_str* key, int len, char* s, int iv_len, char* iv)
+struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, struct zx_str* key, int len, const char* s, int iv_len, const char* iv)
 {
-  char* ivv;
+  const char* ivv;
   char* where = "start";
   struct zx_str* out;
   int outlen, tmplen, alloclen;
@@ -100,7 +192,7 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, char* algo, int encflag,
   else
     iv_len = 0;  /* When decrypting, the iv has already been stripped. */
   
-  if (!EVP_CipherInit_ex(&ctx, evp_cipher, 0 /* engine */, key->s, ivv, encflag)) {
+  if (!EVP_CipherInit_ex(&ctx, evp_cipher, 0 /* engine */, (unsigned char*)key->s, (unsigned char*)ivv, encflag)) {
     where = "EVP_CipherInit_ex()";
     goto sslerr;
   }
@@ -110,17 +202,36 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, char* algo, int encflag,
     goto sslerr;
   }
   
-  if(!EVP_CipherUpdate(&ctx, out->s + iv_len, &outlen, s, len)) { /* Actual crypto happens here */
+  if (!EVP_CipherUpdate(&ctx, (unsigned char*)out->s + iv_len, &outlen, (unsigned char*)s, len)) { /* Actual crypto happens here */
     where = "EVP_CipherUpdate()";
     goto sslerr;
   }
   
   ASSERTOP(outlen + iv_len, <=, alloclen);
-  
-  if(!EVP_CipherFinal_ex(&ctx, out->s + iv_len + outlen, &tmplen)) {  /* Append final block */
+
+#if 0  
+  if(!EVP_CipherFinal_ex(&ctx, (unsigned char*)out->s + iv_len + outlen, &tmplen)) {  /* Append final block */
     where = "EVP_CipherFinal_ex()";
     goto sslerr;
   }
+#else
+  /* Patch from Eric Rybski <rybskej@yahoo.com> */
+  if (encflag) {
+    if(!EVP_CipherFinal_ex(&ctx, out->s + iv_len + outlen, &tmplen)) { /* Append final block */
+      where = "EVP_CipherFinal_ex()";
+      goto sslerr;
+    }
+  } else {
+    /* Perform our own padding check, as XML Enc is not guaranteed compatible
+     * with OpenSSL & RFC 1423. See OpenSSL bug 1067
+     * http://rt.openssl.org/Ticket/Display.html?user=guest&;pass=guest&id=1067 */
+    EVP_CIPHER_CTX_set_padding(&ctx, 0);
+    if(!zx_EVP_DecryptFinal_ex(&ctx, out->s + iv_len + outlen, &tmplen)) { /* Append final block */
+      where = "zx_EVP_DecryptFinal_ex()";
+      goto sslerr;
+    }
+  }
+#endif
   EVP_CIPHER_CTX_cleanup(&ctx);
   
   outlen += tmplen;
@@ -171,7 +282,7 @@ struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_p
   ciphered = zx_new_len_str(c, siz);
   if (!ciphered)
     return 0;
-  ret = RSA_public_encrypt(plain->len, plain->s, ciphered->s, rsa_pkey, pad);
+  ret = RSA_public_encrypt(plain->len, (unsigned char*)plain->s, (unsigned char*)ciphered->s, rsa_pkey, pad);
   if (siz != ret) {
     D("RSA pub enc wrong ret=%d siz=%d\n",ret,siz);
     zx_report_openssl_error("zx_pub_encrypt_rsa fail (${ret})");
@@ -194,7 +305,7 @@ struct zx_str* zx_rsa_pub_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rs
   plain = zx_new_len_str(c, siz);
   if (!plain)
     return 0;
-  ret = RSA_public_decrypt(ciphered->len, ciphered->s, plain->s, rsa_pkey, pad);
+  ret = RSA_public_decrypt(ciphered->len, (unsigned char*)ciphered->s, (unsigned char*)plain->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA public decrypt failed ret=%d len_cipher_data=%d",ret,ciphered->len);
     zx_report_openssl_error("zx_public_decrypt_rsa fail");
@@ -223,7 +334,7 @@ struct zx_str* zx_rsa_priv_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* r
   plain = zx_new_len_str(c, siz);
   if (!plain)
     return 0;
-  ret = RSA_private_decrypt(ciphered->len, ciphered->s, plain->s, rsa_pkey, pad);
+  ret = RSA_private_decrypt(ciphered->len, (unsigned char*)ciphered->s, (unsigned char*)plain->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA private decrypt failed ret=%d len_cipher_data=%d",ret,ciphered->len);
     zx_report_openssl_error("zx_priv_decrypt_rsa fail");
@@ -246,7 +357,7 @@ struct zx_str* zx_rsa_priv_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_
   ciphered = zx_new_len_str(c, siz);
   if (!ciphered)
     return 0;
-  ret = RSA_private_encrypt(plain->len, plain->s, ciphered->s, rsa_pkey, pad);
+  ret = RSA_private_encrypt(plain->len, (unsigned char*)plain->s, (unsigned char*)ciphered->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA private encrypt failed ret=%d len_plain=%d", ret, plain->len);
     zx_report_openssl_error("zx_priv_encrypt_rsa fail");
@@ -293,7 +404,7 @@ void zx_rand(char* buf, int n_bytes)
 #if ZXID_TRUE_RAND
   RAND_bytes(buf, n_bytes);
 #else
-  RAND_pseudo_bytes(buf, n_bytes);
+  RAND_pseudo_bytes((unsigned char*)buf, n_bytes);
 #endif
 #else
   ERR("ZXID was compiled without USE_OPENSSL. This means random number generation facilities are unavailable. Recompile ZXID or acknowledge that there is no security. n_rand_bytes=%d", n);
@@ -306,7 +417,7 @@ static void zxid_add_subject_field(X509_NAME* subj, int typ, int nid, char* val)
   X509_NAME_ENTRY* ne;
   if (!val || !*val)
     return;
-  ne = X509_NAME_ENTRY_create_by_NID(0, nid, typ, val, strlen(val));
+  ne = X509_NAME_ENTRY_create_by_NID(0, nid, typ, (unsigned char*)val, strlen(val));
   X509_NAME_add_entry(subj, ne, X509_NAME_entry_count(subj), 0);
 }
 
@@ -618,7 +729,7 @@ char* zx_md5_crypt(const char* pw, const char* salt, char* buf)
   for (pl = strlen(pw); pl > 0; pl -= 16)
     MD5_Update(&ctx, (unsigned const char *)final, pl>16 ? 16 : pl);
 
-  memset(final, 0, sizeof final); /* Don't leave anything around in vm they could use. */
+  ZERO(final, sizeof final); /* Don't leave anything around in vm they could use. */
   
   /* Then something really weird... */
   for (j = 0, i = strlen(pw); i; i >>= 1)
@@ -666,7 +777,7 @@ char* zx_md5_crypt(const char* pw, const char* salt, char* buf)
   l = final[11];                                       to64(p, l, 2);  p += 2;
   *p = '\0';
 
-  memset(final, 0, sizeof final); /* Don't leave anything around in vm they could use. */
+  ZERO(final, sizeof final); /* Don't leave anything around in vm they could use. */
   return buf;
 }
 

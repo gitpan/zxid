@@ -106,7 +106,7 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
     ref->DigestMethod->Algorithm = zx_ref_str(c, DIGEST_ALGO);
     
     ref->URI = zx_strf(c, "#%.*s", sref->id->len, sref->id->s);
-    SHA1(sref->canon->s, sref->canon->len, sha1);
+    SHA1((unsigned char*)sref->canon->s, sref->canon->len, (unsigned char*)sha1);
     b64 = zx_new_len_str(c, SIMPLE_BASE64_LEN(sizeof(sha1)));
     base64_fancy_raw(sha1, sizeof(sha1), b64->s, std_basis_64, 1<<31, 0, 0, '=');
     ref->DigestValue = zx_new_simple_elem(c, b64);
@@ -116,7 +116,7 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   }
   
   ss = zx_EASY_ENC_SO_ds_SignedInfo(c, si);
-  SHA1(ss->s, ss->len, sha1);
+  SHA1((unsigned char*)ss->s, ss->len, (unsigned char*)sha1);
   zx_str_free(c, ss);
   
   if (!priv_key) {
@@ -126,7 +126,7 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   siglen = RSA_size(priv_key);
   sigu = ZX_ALLOC(c, siglen);
   
-  if (!RSA_sign(NID_sha1, sha1, sizeof(sha1), sigu, &siglen, priv_key)) {
+  if (!RSA_sign(NID_sha1, (unsigned char*)sha1, sizeof(sha1), (unsigned char*)sigu, (unsigned int*)&siglen, priv_key)) {
     ERR("RSA_sign() failed. Bad certificate or private key? %p", priv_key);
     zx_report_openssl_error("signing error");
     ZX_FREE(c, sigu);
@@ -139,6 +139,29 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   sig->SignatureValue = zx_NEW_ds_SignatureValue(c);
   sig->SignatureValue->gg.content = b64;
   return sig;
+}
+
+/*() CRNL->NL canonicalization is specified in xml-c14n */
+
+static void zxsig_canon_crnl_inplace(struct zx_str* ss)
+{
+  char* p;
+  char* lim;
+  if (!ss || !ss->len || !ss->s) {
+    ERR("Asked to canonicalize null or empty string %p", ss);
+    return;
+  }
+  p = ss->s;
+  lim = p + ss->len;
+  while (p < lim) {
+    p = memchr(p, 0x0d, lim-p);
+    if (!p)
+      break;
+    --lim;
+    D("Canonicalizing CRNL to NL %d", lim-p);
+    memmove(p, p+1, lim-p);  /* *** could be more efficient */
+  }
+  ss->len = lim - ss->s;
 }
 
 /*(i) Validate XML-DSIG signature over XML data found in ~sref~ array.
@@ -176,21 +199,25 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
 
   /* Figure out inclusive namespaces, if any. */
   c->inc_ns = 0;
-  for (ssref = sref, nn = n; nn; --nn, ++ssref) {
-    if (!ssref->sref->Transforms)
-      continue;
-    for (xform = ssref->sref->Transforms->Transform; xform; xform = (struct zx_ds_Transform_s*)xform->gg.g.n) {
-      ss = xform->InclusiveNamespaces ? xform->InclusiveNamespaces->PrefixList : 0;
-      if (ss && ss->len) {
+  if (c->canon_inopt & ZXID_CANON_INOPT_SHIB215IDP_INCLUSIVENAMESPACES) {
+    INFO("Warning: Processing <InclusiveNamespaces> has been disabled (config option CANON_INOPT=1). The canonicalization may not be fully xml-enc-c14n compatible (but it may enable interoperation with an IdP that is not fully compatible). %x", c->canon_inopt);
+  } else {
+    for (ssref = sref, nn = n; nn; --nn, ++ssref) {
+      if (!ssref->sref->Transforms)
+	continue;
+      for (xform = ssref->sref->Transforms->Transform; xform; xform = (void*)xform->gg.g.n) {
+	ss = xform->InclusiveNamespaces ? xform->InclusiveNamespaces->PrefixList : 0;
+	if (!ss || !ss->len)
+	  continue;
 	for (p = ss->s, lim = p + ss->len; p < lim; ) {
 	  q = memchr(p, ' ', lim-p);
 	  if (!q)
 	    siz = lim-p;
 	  else
 	    siz = q - p;
-	  ns = zx_locate_ns_by_prefix(c, siz, p);
+	  ns = zx_prefix_seen(c, siz, p);
 	  if (!ns) {
-	    ERR("InclusiveNamespaces/@PrefixList contains unknown ns prefix(%.*s)", siz, p);
+	    INFO("InclusiveNamespaces/@PrefixList contains unknown ns prefix(%.*s)", siz, p);
 	    p += siz + 1;
 	    continue;
 	  }
@@ -202,14 +229,16 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
     }
   }
   c->inc_ns_len = c->inc_ns;
+  zx_pop_seen(sref->pop_seen);
 
   for (; n; --n, ++sref) {
     ss = zx_EASY_ENC_WO_any_elem(c, sref->blob);
+    zxsig_canon_crnl_inplace(ss);
     if (       ZX_STR_ENDS_IN_CONST(sref->sref->DigestMethod->Algorithm, "#sha1")) {
-      SHA1(ss->s, ss->len, md_calc);
+      SHA1((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
       siz = 20;
     } else if (ZX_STR_ENDS_IN_CONST(sref->sref->DigestMethod->Algorithm, "#md5")) {
-      MD5(ss->s, ss->len, md_calc);
+      MD5((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
       siz = 16;
     } else {
       ERR("Unknown digest algo(%.*s) in sref(%.*s). Only SHA1 and MD5 are supported.",
@@ -240,6 +269,7 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
   }
   c->exclude_sig = 0;
   ss = zx_EASY_ENC_WO_ds_SignedInfo(c, sig->SignedInfo);
+  zxsig_canon_crnl_inplace(ss);
   evp_pkey = X509_get_pubkey(cert);
   if (!evp_pkey) goto certerr;
 
@@ -252,30 +282,30 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
     /* PKCS#1 v2.0 */
     rsa_pkey = EVP_PKEY_get1_RSA(evp_pkey);
     if (!rsa_pkey) goto certerr;
-    SHA1(ss->s, ss->len, md_calc);
+    SHA1((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
     DD("VFY rsa-sha1 (PKCS#1 v2.0) canon sigInfo(%.*s) %d", ss->len, ss->s, hexdmp("inner sha1: ", md_calc,20,20));
-    verdict = RSA_verify(NID_sha1, md_calc, 20, old_sig_raw, lim - old_sig_raw, rsa_pkey);
+    verdict = RSA_verify(NID_sha1, (unsigned char*)md_calc, 20, (unsigned char*)old_sig_raw, lim - old_sig_raw, rsa_pkey);
     if (!verdict) goto vfyerr;
   } else if (ZX_STR_ENDS_IN_CONST(sig->SignedInfo->SignatureMethod->Algorithm, "#dsa-sha1")) {
     dsa_pkey = EVP_PKEY_get1_DSA(evp_pkey);
     if (!dsa_pkey) goto certerr;
-    SHA1(ss->s, ss->len, md_calc);
+    SHA1((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
     DD("VFY dsa-sha1 canon sigInfo(%.*s) %d", ss->len, ss->s,hexdmp("inner sha1: ",md_calc,20,20));
-    verdict = DSA_verify(NID_sha1, md_calc, 20, old_sig_raw, lim - old_sig_raw, dsa_pkey);
+    verdict = DSA_verify(NID_sha1, (unsigned char*)md_calc, 20, (unsigned char*)old_sig_raw, lim - old_sig_raw, dsa_pkey);
     if (!verdict) goto vfyerr;
   } else if (ZX_STR_ENDS_IN_CONST(sig->SignedInfo->SignatureMethod->Algorithm, "#rsa-md5")) {
     rsa_pkey = EVP_PKEY_get1_RSA(evp_pkey);
     if (!rsa_pkey) goto certerr;
-    MD5(ss->s, ss->len, md_calc);
+    MD5((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
     DD("VFY rsa-md5 canon sigInfo(%.*s) %d", ss->len, ss->s, hexdmp("inner md5: ",md_calc,16,16));
-    verdict = RSA_verify(NID_md5, md_calc, 16, old_sig_raw, lim - old_sig_raw, rsa_pkey);
+    verdict = RSA_verify(NID_md5, (unsigned char*)md_calc, 16, (unsigned char*)old_sig_raw, lim - old_sig_raw, rsa_pkey);
     if (!verdict) goto vfyerr;
   } else if (ZX_STR_ENDS_IN_CONST(sig->SignedInfo->SignatureMethod->Algorithm, "#dsa-md5")) {
     dsa_pkey = EVP_PKEY_get1_DSA(evp_pkey);
     if (!dsa_pkey) goto certerr;
-    MD5(ss->s, ss->len, md_calc);
+    MD5((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
     DD("VFY dsa-md5 canon sigInfo(%.*s) %d", ss->len, ss->s, hexdmp("inner md5: ",md_calc,16,16));
-    verdict = DSA_verify(NID_md5, md_calc, 16, old_sig_raw, lim - old_sig_raw, dsa_pkey);
+    verdict = DSA_verify(NID_md5, (unsigned char*)md_calc, 16, (unsigned char*)old_sig_raw, lim - old_sig_raw, dsa_pkey);
     if (!verdict) goto vfyerr;
   } else {
     ERR("Unknown digest algo(%.*s) in sref(%.*s). Only SHA1 and MD5 are supported.",
@@ -339,7 +369,7 @@ int zx_report_openssl_error(const char* logkey)
 int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, const char* data, char** sig, RSA* priv_key, const char* lk)
 {
   char sha1[20];  /* 160 bits */
-  SHA1(data, len, sha1);
+  SHA1((unsigned char*)data, len, (unsigned char*)sha1);
   
   DD("RSA_sign(%s) data(%.*s)", lk, len, data);
   DD("RSA_sign(%s) data above %d", lk, hexdump("data: ", data, data+len, 4096));
@@ -352,7 +382,7 @@ int zxsig_data_rsa_sha1(struct zx_ctx* c, int len, const char* data, char** sig,
   
   len = RSA_size(priv_key);
   *sig = ZX_ALLOC(c, len);
-  if (RSA_sign(NID_sha1, sha1, 20, *sig, &len, priv_key))  /* PKCS#1 v2.0 */
+  if (RSA_sign(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)*sig, (unsigned int*)&len, priv_key))  /* PKCS#1 v2.0 */
     return len;
   ERR("RSA signing in %s data failed. Perhaps you have bad, or no, private key(%p) len=%d data=%p", lk, priv_key, len, data);
   zx_report_openssl_error(lk);
@@ -376,7 +406,7 @@ int zxsig_verify_data_rsa_sha1(int len, char* data, int siglen, char* sig, X509*
   EVP_PKEY* evp_pkey;
   struct rsa_st* rsa_pkey;
   char sha1[20];  /* 160 bits */
-  SHA1(data, len, sha1);
+  SHA1((unsigned char*)data, len, (unsigned char*)sha1);
   
   DD("RSA_vfy(%s) data above %d", lk, hexdump("data: ", data, data+len, 4096));
   DD("RSA_vfy(%s) sig above %d",  lk, hexdump("sig: ",  sig,  sig+siglen, 4096));
@@ -395,7 +425,7 @@ int zxsig_verify_data_rsa_sha1(int len, char* data, int siglen, char* sig, X509*
     return ZXSIG_BAD_CERT;
   }
   
-  verdict = RSA_verify(NID_sha1, sha1, 20, sig, siglen, rsa_pkey);  /* PKCS#1 v2.0 */
+  verdict = RSA_verify(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)sig, siglen, rsa_pkey);  /* PKCS#1 v2.0 */
   if (!verdict) {
     ERR("RSA signature verify in %s data failed. Perhaps you have bad or no certificate(%p) len=%d data=%p siglen=%d sig=%p", lk, cert, len, data, siglen, sig);
     zx_report_openssl_error(lk);

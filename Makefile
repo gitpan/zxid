@@ -40,8 +40,8 @@ all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxidwspcg
 
 ### This is the authorative spot to set version number. Document in Changes file.
 ### c/zxidvers.h is generated from these, see `make updatevers'
-ZXIDVERSION=0x000064
-ZXIDREL=0.64
+ZXIDVERSION=0x000069
+ZXIDREL=0.69
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -208,6 +208,12 @@ ZXIDJNI_SO=zxidjava/libzxidjni.jnilib
 #SHARED_FLAGS=-dylib -all_load -keep_private_externs 
 #OPENSSL_ROOT=/Developer/SDKs/MacOSX10.4u.sdk/usr
 #CURL_ROOT=/Developer/SDKs/MacOSX10.4u.sdk/usr
+# Try find / -name ap_config.h; find / -name apr.h
+APACHE_INCLUDE = -I/Developer/SDKs/MacOSX10.6.sdk/usr/include/apache2
+APR_INCLUDE    = -I/Developer/SDKs/MacOSX10.6.sdk/usr/include/apr-1
+APACHE_MODULES = /usr/libexec/apache2
+MOD_AUTH_SAML_LIBS=-lapr-1
+#  -lhttpd2core
 
 else
 ifeq ($(TARGET),xmingw)
@@ -354,7 +360,7 @@ CFLAGS+= $(CDEF) $(CDIR)
 ZXIDHDRS=zx.h zxid.h zxidnoswig.h c/zxidvers.h
 ZXID_LIB_OBJ=zxidsimp.$(OBJ_EXT) zxidpool.$(OBJ_EXT) zxidpsso.$(OBJ_EXT) zxidsso.$(OBJ_EXT) zxidslo.$(OBJ_EXT) zxiddec.$(OBJ_EXT) zxidspx.$(OBJ_EXT) zxididpx.$(OBJ_EXT) zxidmni.$(OBJ_EXT) zxidpep.$(OBJ_EXT) zxidpdp.$(OBJ_EXT) zxidmk.$(OBJ_EXT) zxida7n.$(OBJ_EXT) zxidses.$(OBJ_EXT) zxiduser.$(OBJ_EXT) zxidcgi.$(OBJ_EXT) zxidconf.$(OBJ_EXT) zxidecp.$(OBJ_EXT) zxidcdc.$(OBJ_EXT) zxidloc.$(OBJ_EXT) zxidlib.$(OBJ_EXT) zxidmeta.$(OBJ_EXT) zxidcurl.$(OBJ_EXT) zxidepr.$(OBJ_EXT) zxida7n.$(OBJ_EXT) ykcrc.$(OBJ_EXT) ykaes.$(OBJ_EXT) $(PLATFORM_OBJ)
 ZX_OBJ=zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) c/license.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT) c/zx-elems.$(OBJ_EXT)
-WSF_OBJ=zxidmkwsf.$(OBJ_EXT) zxidwsf.$(OBJ_EXT) zxidwsc.$(OBJ_EXT) zxidwsp.$(OBJ_EXT) zxiddi.$(OBJ_EXT)
+WSF_OBJ=zxidmkwsf.$(OBJ_EXT) zxidwsf.$(OBJ_EXT) zxidwsc.$(OBJ_EXT) zxidwsp.$(OBJ_EXT) zxiddi.$(OBJ_EXT) zxidim.$(OBJ_EXT) zxidps.$(OBJ_EXT)
 SMIME_LIB_OBJ=certauth.$(OBJ_EXT) keygen.$(OBJ_EXT) pkcs12.$(OBJ_EXT) smime-enc.$(OBJ_EXT) smime-qry.$(OBJ_EXT) smime-vfy.$(OBJ_EXT) smimemime.$(OBJ_EXT) smimeutil.$(OBJ_EXT)
 
 ifeq ($(PULVER),1)
@@ -449,8 +455,7 @@ ZXIDSIMPLE_OBJ=zxidsimple.$(OBJ_EXT)
 ZXBENCH_OBJ=zxbench.$(OBJ_EXT)
 ZXIDSSOFINALIZETEST_OBJ=zxidssofinalizetest.$(OBJ_EXT)
 ZXENCDECTEST_OBJ=zxencdectest.$(OBJ_EXT)
-SFIS_OBJ=sfis.$(OBJ_EXT)
-SFISGSA_OBJ=sfisgsa.$(OBJ_EXT)
+ZXMQTEST_OBJ=zxmqtest.$(OBJ_EXT)
 ZXIDXMLTOOL_OBJ=zxidxmltool.$(OBJ_EXT)
 ZXLOGVIEW_OBJ=zxlogview.$(OBJ_EXT) $(ZX_OBJ)
 ZXIDHRXMLWSC_OBJ=zxidhrxmlwsc.$(OBJ_EXT)
@@ -470,7 +475,7 @@ ZX_SG+=sg/xmldsig-core.sg sg/xenc-schema.sg sg/ec.sg
 ifeq ($(ENA_SAML2),1)
 
 ZX_SG+=sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/saml-schema-ecp-2.0.sg sg/liberty-paos-v2.0.sg sg/wsf-soap11.sg
-ZX_ROOTS+=-r sa:Assertion -r sa:NameID -r sp:NewID -r sp:AuthnRequest -r sp:Response
+ZX_ROOTS+=-r sa:Assertion -r sa:EncryptedAssertion -r sa:NameID -r sa:EncryptedID -r sp:NewID -r sp:AuthnRequest -r sp:Response
 ZX_ROOTS+=-r sp:LogoutRequest -r sp:LogoutResponse
 ZX_ROOTS+=-r sp:ManageNameIDRequest -r sp:ManageNameIDResponse
 ZX_ROOTS+=-r e:Envelope -r e:Header -r e:Body
@@ -525,7 +530,7 @@ ZX_SG += sg/liberty-idwsf-pmm-v1.0.sg sg/liberty-idwsf-prov-v1.0.sg
 ZX_SG += sg/liberty-idwsf-shps-v1.0.sg
 ZX_SG += sg/hr-xml-sampo.sg sg/id-hrxml.sg
 ZX_SG += sg/demo-media-v1.0.sg
-ZX_ROOTS+= -r a:EndpointReference
+ZX_ROOTS+= -r a:EndpointReference -r sec:Token
 ZX_ROOTS+= -r hrxml:Candidate
 
 #ZX_SG += sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/xmldsig-core.sg sg/xenc-schema.sg sg/saml-schema-metadata-2.0.sg sg/oasis-sstc-saml-schema-protocol-1.1.sg sg/oasis-sstc-saml-schema-assertion-1.1.sg sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg sg/liberty-authentication-context-v2.0.sg
@@ -801,6 +806,8 @@ php/zxid_wrap.c php/zxid.php php/php_zxid.h php/Makefile: $(ZX_GEN_H) zxid.h php
 
 endif
 
+# -Wno-unused-label
+
 php/zxid_wrap.$(OBJ_EXT): php/zxid_wrap.c
 	$(CC) -c $(OUTOPT)$@ `$(PHP_CONFIG) --includes` $(CFLAGS) $<
 
@@ -945,6 +952,8 @@ zxidjava/zxid_wrap.c: $(ZX_GEN_H) zxid.h javazxid.i
 	mv zxidjava/SWIGTYPE_p_zx_tas3_Status_s.java zxidjava/zxid_tas3_status.java
 	$(PERL) -pi -e 's/SWIGTYPE_p_zx_e_Fault_s/zxid_fault/g' zxidjava/*.java
 	mv zxidjava/SWIGTYPE_p_zx_e_Fault_s.java zxidjava/zxid_fault.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zx_sec_Token_s/zxid_tok/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zx_sec_Token_s.java zxidjava/zxid_tok.java
 	$(PERL) -pi -e 's/(public static \w+ )zxid_/$$1/' zxidjava/zxidjni.java
 
 endif
@@ -987,6 +996,12 @@ zxidwspleaf.class: zxidwspleaf.java zxidjava/zxidjni.class
 zxidwscprepdemo.class: zxidwscprepdemo.java zxidjava/zxidjni.class
 	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java zxidwscprepdemo.java
 
+ZxidSSOFilter.class: ZxidSSOFilter.java zxidjava/zxidjni.class
+	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java ZxidSSOFilter.java
+
+ZxidServlet.class: ZxidServlet.java zxidjava/zxidjni.class
+	$(JAVAC) $(JAVAC_FLAGS) -classpath $(SERVLET_PATH) zxidjava/*.java ZxidServlet.java
+
 zxidjava.jar: zxidjava/zxidjni.class zxidjava/README.zxid-java
 	$(CP) COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay zxidjava/
 	$(JAR) cf zxidjava.jar zxidjava/*.class zxidjava/*.java zxidjava/COPYING zxidjava/LICENSE*
@@ -999,7 +1014,7 @@ zxiddemo.war: zxidjava.jar
 	cd ./zxidservlet ; $(JAR) cf ../zxiddemo.war *; cd ../
 	rm -rf zxidservlet
 
-javazxid: $(ZXIDJNI_SO) zxidjava/zxidjni.class zxidhlo.class zxidsrvlet.class zxidappdemo.class zxidwscprepdemo.class zxidwspdemo.class zxidwspleaf.class zxidjava.jar zxiddemo.war
+javazxid: $(ZXIDJNI_SO) zxidjava/zxidjni.class zxidhlo.class zxidsrvlet.class zxidappdemo.class zxidwscprepdemo.class zxidwspdemo.class zxidwspleaf.class ZxidSSOFilter.class ZxidServlet.class zxidjava.jar zxiddemo.war
 
 javazxid_install: $(ZXIDJNI_SO)
 	@$(ECHO) "javazxid_install: Work in Progress. See zxid-java.pd"
@@ -1095,6 +1110,9 @@ zxidssofinalizetest: $(ZXIDSSOFINALIZETEST_OBJ) $(LIBZXID_A)
 zxencdectest: $(ZXENCDECTEST_OBJ) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)zxencdectest$(EXE) $^ $(LIBZXID) $(LIBS)
 
+zxmqtest: $(ZXMQTEST_OBJ) $(LIBZXID_A)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxmqtest$(EXE) $^ -lzmq $(LIBZXID) $(LIBS)
+
 zxidxmltool: $(ZXIDXMLTOOL_OBJ) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)zxidxmltool$(EXE) $^ $(LIBS)
 
@@ -1141,7 +1159,7 @@ $(LIBZXID_A): $(ZX_GEN_C:.c=.obj) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_L
 	$(AR) $(OUTOPT)zxid.lib $^
 else
 $(LIBZXID_A): $(ZX_GEN_C:.c=.o) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
-	$(AR) $(OUTOPT)$(LIBZXID_A) $^
+	$(AR) $(LIBZXID_A) $^
 endif
 endif
 
@@ -1168,7 +1186,7 @@ TAS3MAS=T3-SSO-ZXID-MODAUTHSAML_$(ZXIDREL)
 tas3maspkg: mod_auth_saml.so
 	rm -rf $(TAS3MAS) $(TAS3MAS).zip
 	mkdir $(TAS3MAS)
-	$(PERL) version $(ZXIDREL) < Manifest.T3-SSO-ZXID-MODAUTHSAML > $(TAS3MAS)/Manifest
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-SSO-ZXID-MODAUTHSAML > $(TAS3MAS)/Manifest
 	$(CP) mod_auth_saml.so $(TAS3MAS)
 	$(CP) $(TAS3COMMONFILES) $(TAS3MAS)
 	zip -r $(TAS3MAS).zip $(TAS3MAS)
@@ -1178,7 +1196,7 @@ TAS3PHP=T3-SSO-ZXID-PHP_$(ZXIDREL)
 tas3phppkg: php/php_zxid.so
 	rm -rf $(TAS3PHP) $(TAS3PHP).zip
 	mkdir $(TAS3PHP)
-	$(PERL) version $(ZXIDREL) <Manifest.T3-SSO-ZXID-PHP >$(TAS3PHP)/Manifest
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) <Manifest.T3-SSO-ZXID-PHP >$(TAS3PHP)/Manifest
 	$(CP) *.php php/php_zxid.so php/zxid.php php/zxid.ini php/README.zxid-php zxid-php.pd $(TAS3PHP)
 	$(CP) $(TAS3COMMONFILES) $(TAS3PHP)
 	zip -r $(TAS3PHP).zip $(TAS3PHP)
@@ -1189,7 +1207,7 @@ tas3javapkg: $(ZXIDJNI_SO) zxidjava/zxidjni.class
 	rm -rf $(TAS3JAVA) $(TAS3JAVA).zip
 	mkdir $(TAS3JAVA)
 	mkdir $(TAS3JAVA)/zxidjava
-	$(PERL) version $(ZXIDREL) <Manifest.T3-SSO-ZXID-JAVA >$(TAS3JAVA)/Manifest
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) <Manifest.T3-SSO-ZXID-JAVA >$(TAS3JAVA)/Manifest
 	$(CP) $(ZXIDJNI_SO) zxidjava/*.java zxidjava/*.class zxidjava/README.zxid-java zxid-java.pd $(TAS3JAVA)/zxidjava
 	$(CP) $(TAS3COMMONFILES) $(TAS3JAVA)
 	zip -r $(TAS3JAVA).zip $(TAS3JAVA)
@@ -1199,7 +1217,7 @@ TAS3IDP=T3-IDP-ZXID_$(ZXIDREL)
 tas3idppkg: zxididp zxpasswd zxcot zxdecode
 	rm -rf $(TAS3IDP) $(TAS3IDP).zip
 	mkdir $(TAS3IDP)
-	$(PERL) version $(ZXIDREL) < Manifest.T3-IDP-ZXID > $(TAS3IDP)/Manifest
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-IDP-ZXID > $(TAS3IDP)/Manifest
 	$(CP) zxididp zxpasswd zxcot zxdecode zxid-idp.pd $(TAS3IDP)
 	$(CP) $(TAS3COMMONFILES) $(TAS3IDP)
 	zip -r $(TAS3IDP).zip $(TAS3IDP)
@@ -1210,14 +1228,18 @@ tas3linuxx86pkg: zxididp zxpasswd zxcot zxdecode zxlogview mod_auth_saml.so php/
 	rm -rf $(TAS3LINUXX86) $(TAS3LINUXX86).zip
 	mkdir $(TAS3LINUXX86)
 	mkdir $(TAS3LINUXX86)/zxidjava
+	mkdir $(TAS3LINUXX86)/php
 	mkdir $(TAS3LINUXX86)/include
 	mkdir $(TAS3LINUXX86)/include/zx
-	$(PERL) version $(ZXIDREL) < Manifest.T3-ZXID-LINUX-X86 > $(TAS3LINUXX86)/Manifest
+	mkdir $(TAS3LINUXX86)/include/zx/c
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-ZXID-LINUX-X86 > $(TAS3LINUXX86)/Manifest
 	$(CP) mod_auth_saml.so $(TAS3LINUXX86)
-	$(CP) *.php php/php_zxid.so php/zxid.php php/zxid.ini php/README.zxid-php zxid-php.pd $(TAS3LINUXX86)
+	$(CP) *.php zxid-php.pd $(TAS3LINUXX86)
+	$(CP) php/php_zxid.so php/zxid.php php/zxid.ini php/README.zxid-php $(TAS3LINUXX86)/php
 	$(CP) zxididp zxpasswd zxcot zxdecode zxlogview zxid-idp.pd $(TAS3LINUXX86)
 	$(CP) $(LIBZXID_A) $(TAS3LINUXX86)
 	$(CP) $(ZXIDHDRS) $(TAS3LINUXX86)/include/zx
+	$(CP) c/*.h $(TAS3LINUXX86)/include/zx/c
 	$(CP) $(ZXIDJNI_SO) zxidjava/*.java zxidjava/*.class zxidjava/README.zxid-java zxid-java.pd $(TAS3LINUXX86)/zxidjava
 	$(CP) $(TAS3COMMONFILES) $(TAS3LINUXX86)
 	zip -r $(TAS3LINUXX86).zip $(TAS3LINUXX86)
@@ -1233,7 +1255,8 @@ tas3win32pkg: zxid.dll zxididp zxpasswd zxcot zxdecode zxlogview $(ZXIDJNI_SO) z
 	mkdir $(TAS3WIN32)
 	mkdir $(TAS3WIN32)/include
 	mkdir $(TAS3WIN32)/include/zx
-	$(PERL) version $(ZXIDREL) < Manifest.T3-ZXID-WIN32 > $(TAS3WIN32)/Manifest
+	mkdir $(TAS3WIN32)/include/zx/c
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-ZXID-WIN32 > $(TAS3WIN32)/Manifest
 	$(CP) zxid.dll zxid.lib $(TAS3WIN32)/
 	$(CP) $(ZXIDHDRS) $(TAS3WIN32)/include/zx
 	$(CP) zxididp $(TAS3WIN32)/zxididp.exe
@@ -1255,7 +1278,7 @@ TAS3SRC=T3-ZXID-SRC_$(ZXIDREL)
 tas3srcpkg: zxid-$(ZXIDREL).tgz
 	rm -rf $(TAS3SRC) $(TAS3SRC).zip
 	mkdir $(TAS3SRC)
-	$(PERL) version $(ZXIDREL) < Manifest.T3-ZXID-SRC > $(TAS3SRC)/Manifest
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-ZXID-SRC > $(TAS3SRC)/Manifest
 	$(CP) zxid-$(ZXIDREL).tgz $(TAS3SRC)
 	$(CP) README.zxid-tas3 Changes COPYING LICENSE-2.0.txt LICENSE.openssl LICENSE.ssleay $(TAS3SRC)
 	zip -r $(TAS3SRC).zip $(TAS3SRC)
@@ -1271,7 +1294,7 @@ tas3rel: tas3linuxx86pkg tas3srcpkg
 # tas3pool T3-ZXID-WIN32_0.56.zip
 
 tas3copyrel: tas3rel
-	scp $(TAS3SRC).zip $(TAS3LINUXX86).zip tas3repo:pool-in
+	rsync $(TAS3SRC).zip $(TAS3LINUXX86).zip tas3repo:pool-in
 
 ###
 ### Precheck to help analyse compilation problems
@@ -1285,6 +1308,9 @@ precheck/chk-openssl.exe: precheck/chk-openssl.$(OBJ_EXT)
 
 precheck/chk-curl.exe: precheck/chk-curl.$(OBJ_EXT)
 	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
+
+precheck/chk-apache.$(OBJ_EXT): precheck/chk-apache.c
+	$(CC) -c $(APACHE_INCLUDE) $(APR_INCLUDE) -o $@ $^
 
 precheck/chk-apache.exe: precheck/chk-apache.$(OBJ_EXT)
 	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
@@ -1321,16 +1347,16 @@ precheckclean:
 ###
 
 t/cot:
-	./mkdirs.sh t/
+	./zxmkdirs.sh t/
 
 t/idpcot:
-	./mkdirs.sh t/idp
+	./zxmkdirs.sh t/idp
 
 t/wspcot:
-	./mkdirs.sh t/wsp
+	./zxmkdirs.sh t/wsp
 
 t/wsp2cot:
-	./mkdirs.sh t/wsp2
+	./zxmkdirs.sh t/wsp2
 
 test: t/cot t/idp t/wsp t/wsp2 zxencdectest zxcall zxididp
 	$(PERL) zxtest.pl -a
@@ -1381,7 +1407,7 @@ testclean:
 ###
 
 dir:
-	./zxmkdirs.sh
+	./zxmkdirs.sh $(ZXID_PATH)
 	-cp default-cot/* $(ZXID_PATH)cot
 
 #	cp zxid.pem $(ZXID_PATH)pem/sign-nopw-cert.pem
@@ -1427,9 +1453,9 @@ SSL=/aino/openssl-0.9.8g
 BB=/aino/busybox-1.11.1
 #DS=~/ds
 #DS=/d/sampo/ds4/ds
-DS=/d/sampo/ds
-SLIM=/d/sampo/slim
-PD=/d/sampo/pd
+DS=/home/sampo/ds
+SLIM=/home/sampo/slim
+PD=/home/sampo/pd
 APACHE=/aino/httpd-2.2.8
 
 megatags:
@@ -1443,14 +1469,14 @@ docclean:
 distclean: clean
 
 cleanbin:
-	rm -f zxid zxlogview zxbench zxencdectest $(LIBZXID_A) libzxid.so* sizeof zxid.stderr
+	rm -f zxid zxlogview zxbench zxencdectest zxmqtest $(LIBZXID_A) libzxid.so* sizeof zxid.stderr
 	rm -f zxidhlo zxidhlowsf zxidhrxmlwsc zxidhrxmlwsp zxidsimple zxidsp zxidwsctool
 	rm -f zxidwspcgi zxidxfoobarwsp zxpasswd zxcot zxcall
 	rm -f mod_auth_saml.so zxididp zxdecode
 
 miniclean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean precheckclean
 	@$(ECHO) ------------------ Making miniclean
-	rm -f *.o *.obj zxid zxlogview zxbench zxencdectest $(LIBZXID_A) libzxid.so* sizeof zxid.stderr
+	rm -f *.o *.obj zxid zxlogview zxbench zxencdectest zxmqtest $(LIBZXID_A) libzxid.so* sizeof zxid.stderr
 	rm -f zxidhlo zxidhlowsf zxidhrxmlwsc zxidhrxmlwsp zxidsimple zxidsp zxidwsctool
 	rm -f mod_auth_saml.so zxididp
 	rm -f core* *~ .*~ .\#* c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
@@ -1530,7 +1556,7 @@ winbindist:
 #   make winbindist
 #   make winbinrel
 #   make tas3rel
-#   make tas3copyrel    # tas3pool -u T3-ZXID-LINUX-X86_0.54.zip;
+#   make tas3copyrel    # tas3pool -u T3-ZXID-LINUX-X86_0.54.zip
 #    ./pool-submit.sh 0.62
 #   make gen ENA_GEN=1
 # zxid.user@lists.unh.edu
@@ -1539,7 +1565,7 @@ winbindist:
 WEBROOT=sampo@zxidp.org:/var/zxid/webroot
 
 copydist:
-	scp zxid-$(ZXIDREL).tgz $(WEBROOT)
+	rsync zxid-$(ZXIDREL).tgz $(WEBROOT)
 
 tex/%.pdf: %.pd
 	pd2tex -noref -nortf -nodbx -nohtml $<
@@ -1569,7 +1595,7 @@ winbinrel:
 	scp zxid-$(ZXIDREL)-win32-bin.zip $(WEBROOT)
 
 indexrel: html/index.html
-	scp $< $(WEBROOT)
+	rsync $< $(WEBROOT)
 
 reldoc:
 	scp $(DOC)  $(WEBROOT)/html
@@ -1636,7 +1662,7 @@ API_REF_SRC=aux-templ.c dec-templ.c enc-templ.c getput-templ.c \
  zxidecp.c zxidepr.c zxidlib.c zxidloc.c \
  zxidmeta.c zxidmk.c zxidmkwsf.c zxidmni.c zxidpep.c zxidpdp.c \
  zxidses.c zxidsimp.c zxidpool.c zxidslo.c zxidspx.c zxididpx.c zxiddec.c \
- zxidsso.c zxidpsso.c zxiddi.c \
+ zxidsso.c zxidpsso.c zxiddi.c   zxidim.c  zxidps.c \
  zxiduser.c zxidwsc.c zxidwsp.c \
  zxlib.c zxlog.c zxlogview.c zxns.c zxsig.c zxutil.c
 
