@@ -36,12 +36,12 @@ vpath %.h ../zxid
 
 default: seehelp precheck zxid zxidhlo zxididp zxidhlowsf zxidsimple zxidwsctool zxlogview zxidhrxmlwsc zxidhrxmlwsp zxdecode zxcot zxpasswd zxcall
 
-all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxidwspcgi
+all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxencdectest zxidwspcgi
 
 ### This is the authorative spot to set version number. Document in Changes file.
 ### c/zxidvers.h is generated from these, see `make updatevers'
-ZXIDVERSION=0x000069
-ZXIDREL=0.69
+ZXIDVERSION=0x000070
+ZXIDREL=0.70
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -92,6 +92,9 @@ AR=ar -crs
 ARX=ar -x
 CC=gcc
 LD=gcc
+GCOV=gcov
+LCOV=lcov
+GENHTML=genhtml
 SHARED_FLAGS=-shared --export-all-symbols -Wl,-whole-archive -Wl,--allow-multiple-definition
 SHARED_CLOSE=-Wl,-no-whole-archive
 CFLAGS=-g -fpic -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing
@@ -359,7 +362,7 @@ CFLAGS+= $(CDEF) $(CDIR)
 
 ZXIDHDRS=zx.h zxid.h zxidnoswig.h c/zxidvers.h
 ZXID_LIB_OBJ=zxidsimp.$(OBJ_EXT) zxidpool.$(OBJ_EXT) zxidpsso.$(OBJ_EXT) zxidsso.$(OBJ_EXT) zxidslo.$(OBJ_EXT) zxiddec.$(OBJ_EXT) zxidspx.$(OBJ_EXT) zxididpx.$(OBJ_EXT) zxidmni.$(OBJ_EXT) zxidpep.$(OBJ_EXT) zxidpdp.$(OBJ_EXT) zxidmk.$(OBJ_EXT) zxida7n.$(OBJ_EXT) zxidses.$(OBJ_EXT) zxiduser.$(OBJ_EXT) zxidcgi.$(OBJ_EXT) zxidconf.$(OBJ_EXT) zxidecp.$(OBJ_EXT) zxidcdc.$(OBJ_EXT) zxidloc.$(OBJ_EXT) zxidlib.$(OBJ_EXT) zxidmeta.$(OBJ_EXT) zxidcurl.$(OBJ_EXT) zxidepr.$(OBJ_EXT) zxida7n.$(OBJ_EXT) ykcrc.$(OBJ_EXT) ykaes.$(OBJ_EXT) $(PLATFORM_OBJ)
-ZX_OBJ=zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) c/license.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT) c/zx-elems.$(OBJ_EXT)
+ZX_OBJ=zxlibdec.$(OBJ_EXT) zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) c/license.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT)  c/zx-ns.$(OBJ_EXT)
 WSF_OBJ=zxidmkwsf.$(OBJ_EXT) zxidwsf.$(OBJ_EXT) zxidwsc.$(OBJ_EXT) zxidwsp.$(OBJ_EXT) zxiddi.$(OBJ_EXT) zxidim.$(OBJ_EXT) zxidps.$(OBJ_EXT)
 SMIME_LIB_OBJ=certauth.$(OBJ_EXT) keygen.$(OBJ_EXT) pkcs12.$(OBJ_EXT) smime-enc.$(OBJ_EXT) smime-qry.$(OBJ_EXT) smime-vfy.$(OBJ_EXT) smimemime.$(OBJ_EXT) smimeutil.$(OBJ_EXT)
 
@@ -466,6 +469,8 @@ ZXIDIDP_OBJ=zxididp.$(OBJ_EXT)
 #
 # Schemata and potential xml document roots.
 # See also sg/wsf-soap11.sg for a place to "glue" new functions in.
+# N.B. As of 0.69 implementation, the search to zx_ns_tab is a linear
+# scan, so it pays to place commonly referenced namespaces early in ZX_SG.
 #
 
 ZX_SG+=sg/xmldsig-core.sg sg/xenc-schema.sg sg/ec.sg
@@ -474,7 +479,7 @@ ZX_SG+=sg/xmldsig-core.sg sg/xenc-schema.sg sg/ec.sg
 
 ifeq ($(ENA_SAML2),1)
 
-ZX_SG+=sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/saml-schema-ecp-2.0.sg sg/liberty-paos-v2.0.sg sg/wsf-soap11.sg
+ZX_SG+=sg/wsf-soap11.sg sg/saml-schema-assertion-2.0.sg sg/saml-schema-protocol-2.0.sg sg/saml-schema-ecp-2.0.sg sg/liberty-paos-v2.0.sg
 ZX_ROOTS+=-r sa:Assertion -r sa:EncryptedAssertion -r sa:NameID -r sa:EncryptedID -r sp:NewID -r sp:AuthnRequest -r sp:Response
 ZX_ROOTS+=-r sp:LogoutRequest -r sp:LogoutResponse
 ZX_ROOTS+=-r sp:ManageNameIDRequest -r sp:ManageNameIDResponse
@@ -487,28 +492,18 @@ ZX_ROOTS+=-r md:EntityDescriptor -r md:EntitiesDescriptor
 
 endif
 
-# SAML 1.1
+# OASIS XACML 2.0 (and committee draft 1)
 
-ifeq ($(ENA_SAML11),1)
+ifeq ($(ENA_XACML2),1)
 
-ZX_SG += sg/oasis-sstc-saml-schema-protocol-1.1.sg sg/oasis-sstc-saml-schema-assertion-1.1.sg
-ZX_ROOTS += -r sa11:Assertion -r sp11:Request -r sp11:Response
-
-endif
-
-# Liberty ID-FF 1.2
-
-ifeq ($(ENA_FF12),1)
-
-ZX_SG += sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg sg/liberty-authentication-context-v2.0.sg
-ZX_ROOTS+= -r ff12:Assertion -r ff12:AuthnRequest -r ff12:AuthnResponse
-ZX_ROOTS+= -r ff12:AuthnRequestEnvelope -r ff12:AuthnResponseEnvelope
-ZX_ROOTS+= -r ff12:RegisterNameIdentifierRequest -r ff12:RegisterNameIdentifierResponse
-ZX_ROOTS+= -r ff12:FederationTerminationNotification
-ZX_ROOTS+= -r ff12:LogoutRequest -r ff12:LogoutResponse
-ZX_ROOTS+= -r ff12:NameIdentifierMappingRequest -r ff12:NameIdentifierMappingResponse
-ZX_SG+=    sg/liberty-metadata-v2.0.sg
-ZX_ROOTS+= -r m20:EntityDescriptor -r m20:EntitiesDescriptor
+ZX_SG += sg/access_control-xacml-2.0-context-schema-os.sg
+ZX_SG += sg/access_control-xacml-2.0-policy-schema-os.sg
+ZX_SG += sg/access_control-xacml-2.0-saml-assertion-schema-os.sg
+ZX_SG += sg/access_control-xacml-2.0-saml-protocol-schema-os.sg
+ZX_SG += sg/xacml-2.0-profile-saml2.0-v2-schema-protocol-cd-1.sg
+ZX_SG += sg/xacml-2.0-profile-saml2.0-v2-schema-assertion-cd-1.sg
+ZX_ROOTS += -r xasp:XACMLAuthzDecisionQuery -r xasp:XACMLPolicyQuery
+ZX_ROOTS += -r xaspcd1:XACMLAuthzDecisionQuery -r xaspcd1:XACMLPolicyQuery
 
 endif
 
@@ -537,27 +532,37 @@ ZX_ROOTS+= -r hrxml:Candidate
 
 endif
 
+# SAML 1.1
+
+ifeq ($(ENA_SAML11),1)
+
+ZX_SG += sg/oasis-sstc-saml-schema-protocol-1.1.sg sg/oasis-sstc-saml-schema-assertion-1.1.sg
+ZX_ROOTS += -r sa11:Assertion -r sp11:Request -r sp11:Response
+
+endif
+
+# Liberty ID-FF 1.2
+
+ifeq ($(ENA_FF12),1)
+
+ZX_SG += sg/liberty-idff-protocols-schema-1.2-errata-v2.0.sg sg/liberty-authentication-context-v2.0.sg
+ZX_ROOTS+= -r ff12:Assertion -r ff12:AuthnRequest -r ff12:AuthnResponse
+ZX_ROOTS+= -r ff12:AuthnRequestEnvelope -r ff12:AuthnResponseEnvelope
+ZX_ROOTS+= -r ff12:RegisterNameIdentifierRequest -r ff12:RegisterNameIdentifierResponse
+ZX_ROOTS+= -r ff12:FederationTerminationNotification
+ZX_ROOTS+= -r ff12:LogoutRequest -r ff12:LogoutResponse
+ZX_ROOTS+= -r ff12:NameIdentifierMappingRequest -r ff12:NameIdentifierMappingResponse
+ZX_SG+=    sg/liberty-metadata-v2.0.sg
+ZX_ROOTS+= -r m20:EntityDescriptor -r m20:EntitiesDescriptor
+
+endif
+
 # Liberty ID-WSF 1.1
 
 ifeq ($(ENA_WSF11),1)
 
 ZX_SG += sg/liberty-idwsf-soap-binding-v1.2.sg  sg/liberty-idwsf-security-mechanisms-v1.2.sg
 ZX_SG += sg/liberty-idwsf-disco-svc-v1.2.sg     sg/liberty-idwsf-interaction-svc-v1.1.sg
-
-endif
-
-# OASIS XACML 2.0 (and committee draft 1)
-
-ifeq ($(ENA_XACML2),1)
-
-ZX_SG += sg/access_control-xacml-2.0-context-schema-os.sg
-ZX_SG += sg/access_control-xacml-2.0-policy-schema-os.sg
-ZX_SG += sg/access_control-xacml-2.0-saml-assertion-schema-os.sg
-ZX_SG += sg/access_control-xacml-2.0-saml-protocol-schema-os.sg
-ZX_SG += sg/xacml-2.0-profile-saml2.0-v2-schema-protocol-cd-1.sg
-ZX_SG += sg/xacml-2.0-profile-saml2.0-v2-schema-assertion-cd-1.sg
-ZX_ROOTS += -r xasp:XACMLAuthzDecisionQuery -r xasp:XACMLPolicyQuery
-ZX_ROOTS += -r xaspcd1:XACMLAuthzDecisionQuery -r xaspcd1:XACMLPolicyQuery
 
 endif
 
@@ -569,7 +574,7 @@ ZX_SG += sg/ws-trust-1.3.sg sg/ws-policy.sg sg/ws-secureconversation-1.3.sg
 
 endif
 
-# WS-Trust
+# TAS3
 
 ifeq ($(ENA_TAS3),1)
 
@@ -580,6 +585,25 @@ endif
 #
 # Generated files (the zxid/c subdirectory) (see also Manifest if you add files)
 #
+
+ZX_GEN_GPERF=\
+ c/zx-a.gperf    c/zx-di12.gperf  c/zx-lu.gperf    c/zx-xenc.gperf \
+ c/zx-ac.gperf   c/zx-m20.gperf   c/zx-sec.gperf   c/zx-exca.gperf \
+ c/zx-b.gperf    c/zx-ds.gperf    c/zx-md.gperf    c/zx-sec12.gperf \
+ c/zx-b12.gperf  c/zx-e.gperf     c/zx-sp.gperf \
+ c/zx-ff12.gperf c/zx-sa.gperf    c/zx-sp11.gperf \
+ c/zx-is.gperf   c/zx-sa11.gperf  c/zx-wsse.gperf \
+ c/zx-di.gperf   c/zx-is12.gperf  c/zx-sbf.gperf   c/zx-wsu.gperf \
+ c/zx-ecp.gperf  c/zx-paos.gperf  c/zx-dap.gperf   c/zx-ps.gperf \
+ c/zx-im.gperf   c/zx-as.gperf    c/zx-subs.gperf  c/zx-dst.gperf \
+ c/zx-cb.gperf   c/zx-cdm.gperf   c/zx-gl.gperf    c/zx-mm7.gperf \
+ c/zx-wst.gperf  c/zx-wsp.gperf   c/zx-wsc.gperf \
+ c/zx-xa.gperf   c/zx-xac.gperf   c/zx-xasa.gperf  c/zx-xasp.gperf \
+ c/zx-xasacd1.gperf               c/zx-xaspcd1.gperf \
+ c/zx-dp.gperf   c/zx-pmm.gperf   c/zx-prov.gperf  c/zx-idp.gperf c/zx-shps.gperf \
+ c/zx-demomed.gperf c/zx-hrxml.gperf c/zx-idhrxml.gperf \
+ c/zx-tas3.gperf  c/zx-tas3sol.gperf c/zx-shibmd.gperf c/zx-idpdisc.gperf \
+ c/zx-xml.gperf
 
 ZX_GEN_H=\
  c/zx-a-data.h    c/zx-di12-data.h  c/zx-lu-data.h    c/zx-xenc-data.h \
@@ -600,7 +624,7 @@ ZX_GEN_H=\
  c/zx-xsi-data.h  c/zx-xs-data.h    c/zx-xml-data.h \
  c/zx-tas3-data.h  c/zx-tas3sol-data.h c/zx-shibmd-data.h c/zx-idpdisc-data.h
 
-ZX_GEN_C=\
+ZX_GEN_C= \
  c/zx-a-aux.c      c/zx-di12-dec.c    c/zx-is-enc.c      c/zx-sa11-dec.c     c/zx-sp11-dec.c \
  c/zx-a-dec.c      c/zx-di12-enc.c    c/zx-is-getput.c   c/zx-sa11-enc.c     c/zx-sp11-enc.c \
  c/zx-a-enc.c      c/zx-di12-getput.c c/zx-is12-aux.c    c/zx-sa11-getput.c  c/zx-sp11-getput.c \
@@ -619,7 +643,7 @@ ZX_GEN_C=\
  c/zx-b12-dec.c    c/zx-md-dec.c      c/zx-sec12-aux.c \
  c/zx-b12-enc.c    c/zx-enc.c         c/zx-md-enc.c      c/zx-sec12-dec.c \
  c/zx-b12-getput.c c/zx-ff12-aux.c    c/zx-md-getput.c   c/zx-sec12-enc.c \
- c/zx-dec.c        c/zx-ff12-dec.c    c/zx-ns.c          c/zx-sec12-getput.c \
+ c/zx-dec.c        c/zx-ff12-dec.c                       c/zx-sec12-getput.c \
  c/zx-di-aux.c     c/zx-ff12-enc.c    c/zx-sa-aux.c      c/zx-sp-aux.c \
  c/zx-di-dec.c     c/zx-ff12-getput.c c/zx-sa-dec.c      c/zx-sp-dec.c \
  c/zx-di-enc.c     c/zx-getput.c      c/zx-sa-enc.c      c/zx-sp-enc.c \
@@ -667,22 +691,51 @@ ifeq ($(ENA_GEN),1)
 
 ### Schema based code generation
 ### If this runs over and over again, check timestamps in sg/ directory, or make -d -p
+# gperf mystery flags explanation (most of these should be set via directives in .gperf source)
+#  -t  programmer supplied struct type
+#  -T  prevent the struct type from leaking in output (it is properly available from zx.h)
+#  -K  indicate key field name (when not "name")
+#  -D  duplicates allowed
+#  -C  constant (readonly) tables
+#  -l  compare key lengths before strcmp, nul byte compatibility
+#  -G  global static table (i.e. not hidden as function static variable)
+#  -P  pic tables (starting with int) for faster dynamic linking
+#  -W arg  Word array name
+#  -N arg  Lookup function name
 
-c/zx-attrs.gperf c/zx-elems.gperf $(ZX_GEN_C) $(ZX_GEN_H): $(ZX_SG) dec-templ.c enc-templ.c aux-templ.c getput-templ.c
+c/zx-ns.gperf c/zx-attrs.gperf $(ZX_GEN_GPERF) $(ZX_GEN_C) $(ZX_GEN_H): $(ZX_SG) dec-templ.c enc-templ.c aux-templ.c getput-templ.c
 	@ls $(XSD2SG_PL) || ( echo "You need to install xsd2sg.pl from Plaindoc distribution at http://zxid.org/plaindoc/pd.html. Not found $(XSD2SG)" && exit 2 )
 	$(XSD2SG) -z zx -gen c/zx -p zx_ $(ZX_ROOTS) -S $(ZX_SG) >junk
 
+c/zx-ns.c: c/zx-ns.gperf
+	@which $(GPERF) || ( echo "You need to install gperf from ftp.gnu.org. Not found $(GPERF)" && exit 2 )
+	$(GPERF) $< | $(PERL) ./sed-zxid.pl nss >$@
+
+c/%.c: c/%.gperf
+	@which $(GPERF) || ( echo "You need to install gperf from ftp.gnu.org. Not found $(GPERF)" && exit 2 )
+	$(GPERF) -l $< | $(PERL) ./sed-zxid.pl elems >$@
+
+#	cat $@ | $(PERL) gen-consts-from-gperf-output.pl zx_ _ELEM zx_el_tab >>$(@:.c=-data.h)
+
+#c/zx-elems.c: c/zx-elems.gperf    *** old, unified table. Modern is per namespace tables.
+#	$(GPERF) -t -T -D -C -l -G -W zx_elems -N zx_elem2tok $< | $(PERL) ./sed-zxid.pl elems >$@
+
 c/zx-attrs.c: c/zx-attrs.gperf
 	@which $(GPERF) || ( echo "You need to install gperf from ftp.gnu.org. Not found $(GPERF)" && exit 2 )
-	$(GPERF) -t -D -C -T -l -G -W zx_attrs -N zx_attr2tok $< | $(PERL) ./sed-zxid.pl attrs >$@
+	$(GPERF) -D -l $< | $(PERL) ./sed-zxid.pl attrs >$@
 
-c/zx-elems.c: c/zx-elems.gperf
-	@which $(GPERF) || ( echo "You need to install gperf from ftp.gnu.org. Not found $(GPERF)" && exit 2 )
-	$(GPERF) -t -D -C -T -l -G -W zx_elems -N zx_elem2tok $< | $(PERL) ./sed-zxid.pl elems >$@
+c/zx-const-elems.h: $(ZX_GEN_GPERF:.gperf=.c)
+	cat $^ | $(PERL) gen-consts-from-gperf-output.pl zx_ '_ELEM' $(ZX_GEN_GPERF:c/zx-%.gperf=zx_%_el_tab) >$@
 
-c/zx-const.h: c/zx-attrs.c c/zx-elems.c
-	cat c/zx-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ATTR zx_attrs >$@
-	cat c/zx-elems.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ELEM zx_elems >>$@
+c/zx-const.h: c/zx-ns.c c/zx-attrs.c c/zx-const-elems.h
+	cat c/zx-ns.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _NS zx_ns_tab >$@
+	cat c/zx-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ATTR zx_at_tab >>$@
+	cat c/zx-const-elems.h >>$@
+
+
+#c/zx-const.h: c/zx-attrs.c c/zx-ns.c
+#	cat c/zx-attrs.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _ATTR zx_at_tab >$@
+#	cat c/zx-ns.c | $(PERL) gen-consts-from-gperf-output.pl zx_ _NS zx_ns_tab >>$@
 
 # Other
 
@@ -1031,6 +1084,10 @@ javazxid_war:
 #  rsync zxididp root@elsa:/var/zxid/webroot/apache-tomcat-5.5.20/webapps
 #  mv zxidservlet.war $(WEBAPPS_PATH)/
 
+javaswigchk:
+	ls zxidjava/SWIGTYPE*.java >foo
+	fgrep zxidjava/SWIGTYPE Manifest | cmp - foo
+
 javaclean:
 	rm -rf zxidjava/*.$(OBJ_EXT) zxidjava/*~ zxidjava/*.so zxidjava/*.class *.class
 
@@ -1076,6 +1133,8 @@ zxpasswd: zxpasswd.$(OBJ_EXT) $(LIBZXID_A)
 
 zxcall: zxcall.$(OBJ_EXT) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)$@$(EXE) $< $(LIBZXID) $(LIBS)
+
+# *** unresolved link problem with __gcov_fork, which is not found in 3.4.6 libgcov.a
 
 zxidwspcgi: zxidwspcgi.$(OBJ_EXT) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)$@$(EXE) $< $(LIBZXID) $(LIBS)
@@ -1155,10 +1214,10 @@ $(LIBZXID_A): $(ZXID_LIB_OBJ) $(ZX_OBJ)
 else
 
 ifeq ($(TARGET),win32cl)
-$(LIBZXID_A): $(ZX_GEN_C:.c=.obj) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
+$(LIBZXID_A): $(ZX_GEN_C:.c=.obj) $(ZX_GEN_GPERF:.gperf=.obj) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
 	$(AR) $(OUTOPT)zxid.lib $^
 else
-$(LIBZXID_A): $(ZX_GEN_C:.c=.o) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
+$(LIBZXID_A): $(ZX_GEN_C:.c=.o) $(ZX_GEN_GPERF:.gperf=.o) $(ZXID_LIB_OBJ) $(ZX_OBJ) $(WSF_OBJ) $(SMIME_LIB_OBJ)
 	$(AR) $(LIBZXID_A) $^
 endif
 endif
@@ -1301,10 +1360,10 @@ tas3copyrel: tas3rel
 ###
 
 precheck/chk-zlib.exe: precheck/chk-zlib.$(OBJ_EXT)
-	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< -lz
 
 precheck/chk-openssl.exe: precheck/chk-openssl.$(OBJ_EXT)
-	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< -lssl -lcrypto
 
 precheck/chk-curl.exe: precheck/chk-curl.$(OBJ_EXT)
 	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
@@ -1328,6 +1387,11 @@ precheck: precheck/chk-zlib.$(OBJ_EXT) precheck/chk-zlib.exe precheck/chk-openss
 	@$(ECHO)
 else
 precheck: precheck/chk-zlib.$(OBJ_EXT) precheck/chk-zlib.exe precheck/chk-openssl.$(OBJ_EXT) precheck/chk-openssl.exe precheck/chk-curl.$(OBJ_EXT) precheck/chk-curl.exe zx/zx.h
+	echo CC=$(CC)
+	which cc
+	which gcc
+	$(CC) -v
+	@$(ECHO)
 	precheck/chk-zlib.exe
 	precheck/chk-openssl.exe
 	precheck/chk-curl.exe
@@ -1347,16 +1411,16 @@ precheckclean:
 ###
 
 t/cot:
-	./zxmkdirs.sh t/
+	sh ./zxmkdirs.sh t/
 
 t/idpcot:
-	./zxmkdirs.sh t/idp
+	sh ./zxmkdirs.sh t/idp
 
 t/wspcot:
-	./zxmkdirs.sh t/wsp
+	sh ./zxmkdirs.sh t/wsp
 
 t/wsp2cot:
-	./zxmkdirs.sh t/wsp2
+	sh ./zxmkdirs.sh t/wsp2
 
 test: t/cot t/idp t/wsp t/wsp2 zxencdectest zxcall zxididp
 	$(PERL) zxtest.pl -a
@@ -1407,7 +1471,7 @@ testclean:
 ###
 
 dir:
-	./zxmkdirs.sh $(ZXID_PATH)
+	sh ./zxmkdirs.sh $(ZXID_PATH)
 	-cp default-cot/* $(ZXID_PATH)cot
 
 #	cp zxid.pem $(ZXID_PATH)pem/sign-nopw-cert.pem
@@ -1482,13 +1546,14 @@ miniclean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean p
 	rm -f core* *~ .*~ .\#* c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar afr.*
 
 # make cleany && make genwrap ENA_GEN=1 && make all ENA_GEN=1
+# make cleany && make gen ENA_GEN=1 && make all ENA_GEN=1
 
-cleany: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javacleaner
+cleany: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javacleaner cleangcov
 	@$(ECHO) ------------------ Making cleany
-	rm -f c/*.[hc] c/*.gperf c/*.y
+	rm -f c/*.[hc] c/*.gperf c/*.y c/*.ds
 	rm -rf pulver; mkdir pulver
 
-cleaner: cleany cleangcov
+cleaner: cleany
 	@$(ECHO) ================== Making cleaner
 	rm -f deps deps.dep c/*.deps
 
@@ -1546,6 +1611,7 @@ winbindist:
 #     pd2tex index.pd
 #     pd2tex apache.pd
 #     pd2tex mod_auth_saml.pd
+#   make javaswigchk
 #   make dist
 #   make copydist
 #   make release
@@ -1559,7 +1625,7 @@ winbindist:
 #   make tas3copyrel    # tas3pool -u T3-ZXID-LINUX-X86_0.54.zip
 #    ./pool-submit.sh 0.62
 #   make gen ENA_GEN=1
-# zxid.user@lists.unh.edu
+# zxid.user@lists.unh.edu, wsf-dev@lists.openliberty.org
 
 #WEBROOT=sampo@zxid.org:zxid.org
 WEBROOT=sampo@zxidp.org:/var/zxid/webroot
@@ -1594,7 +1660,7 @@ release:
 winbinrel:
 	scp zxid-$(ZXIDREL)-win32-bin.zip $(WEBROOT)
 
-indexrel: html/index.html
+indexrel: zxid-tas3-ios-index.html
 	rsync $< $(WEBROOT)
 
 reldoc:
@@ -1616,32 +1682,54 @@ cvstag:
 	cvs tag ZXID_ZXIDREL_$(ZXIDVERSION)
 
 ### Coverage analysis
+### See also: make gcov, make lcov (and lcovhtml directory), man gcov, man gprof
+###   profiling:/home/sampo/zxid/zxidconf.gcda:Version mismatch - expected 304* got 403*
+###
+### N.B. Apparently gcov is very picky between compiler versions (and libgcov version).
+### Be sure to use you only use matching pair. gcov is also fidgety about processing
+### source code subdirectories (presumably because it was compiled from top level
+### directory). Apparently all subdirectory .gcov files land on top level.
+###
+### .gcno graph files are created at compile time. Recompile (with  -ftest-coverage) to recreate.
+### .gcda arc files are updated at runtime (if compiled with -fprofile-arcs)
+### gmon.out is created at runtime if compiled with -pg
+#
+#ls *.c c/*.c Net/*.c php/*.c zxidjava/*.c precheck/*.c | xargs $(GCOV)
+# 	$(GCOV) *.c c/*.c Net/*.c php/*.c zxidjava/*.c precheck/*.c
+#	$(GCOV) -o Net Net/*.c
+#	$(GCOV) -o php php/*.c
 
 gcov:
-	@$(ECHO) "Remember to compile for profiling: make ENA_PG=1 && make gcov"
-	gcov *.c */*.c
+	@$(ECHO) "Remember to compile for profiling: make all ENA_PG=1 && make gcov"
+	echo GCOV=$(GCOV)
+	which gcov
+	$(GCOV) -v
+	$(GCOV) *.c
+	ls c/*.c | xargs -l $(GCOV) -o c
+	$(GCOV) -o zxidjava zxidjava/*.c
+	$(GCOV) -o precheck precheck/*.c
 
-# gcov /a/d/sampo/zxid/zxidconf.gcda -o /a/d/sampo/zxid -b -c -a -p
+# gcov /a/d/sampo/zxid/zxidconf.gcda -o /home/sampo/zxid -b -c -a -p
 
 covrep:
-	echo "*** This rule seems broken"
-	grep '#####:' *.c.gcov */*.c.gcov >uncovered.gcov
-	total=`cat *.c.gcov */*.c.gcov | wc -l`
-	inactive=`grep -e '-:' *.c.gcov */*.c.gcov | wc -l`
-	uncov=`cat uncovered.gcov | wc -l`
-	active=`expr $total - $inactive`
-	percent=`expr $uncov \* 100 / $active`
-	printf "Total source lines: %d, Active: %d, Not covered: %d (%.2f%%)\n" $total $active $uncov $percent
+	sh ./covrep.sh
+
+### lcov is alternative to gcov target (it runs gcove internally, as specified by --gcov-tool)
+### We have tested with versions 1.8 and 1.9, see http://ltp.sourceforge.net/coverage/lcov.php
 
 lcov:
 	rm -rf lcovhtml; mkdir lcovhtml
-	lcov -d . -c -no-checksum -o lcovhtml/zxid.info
-	genhtml -t 'ZXID Code Coverage' -o lcovhtml lcovhtml/zxid.info
+	$(LCOV) --gcov-tool $(GCOV) --ignore-errors graph -b . -d . -c -no-checksum -o lcovhtml/zxid.info
+	$(GENHTML) -t 'ZXID Code Coverage' -o lcovhtml lcovhtml/zxid.info
+
+gprof:
+	gprof zxencdectest
 
 cleangcov:
 	rm -f *.gcno *.gcda *.c.gcov *.y.gcov *.c-ann gmon.out
 	rm -f */*.gcno */*.gcda */*.c.gcov */*.y.gcov */*.c-ann */gmon.out
 	rm -f lcovhtml/zxid.info lcovhtml/zxid/*.html lcovhtml/zxid/c/*.html
+	rm -f gmon.out
 
 ### Call graphs and reference documentation
 

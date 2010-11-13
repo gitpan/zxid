@@ -243,6 +243,10 @@ static void opt(int* argc, char*** argv, char*** env)
     DD("HERE");
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
+    if (verbose>1) {
+      printf(help);
+      exit(0);
+    }
     fprintf(stderr, help);
     /*fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());*/
     exit(3);
@@ -283,21 +287,19 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
   struct zx_root_s* r;
   zxid_epr* epr;
   struct zx_str* ss;
+  struct zx_str* tt;
   
   read_all_fd(0, buf, sizeof(buf)-1, &got);  /* Read EPR */
   buf[got] = 0;
   p = buf;
   
-  LOCK(cf->ctx->mx, "cot reg_svc");
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got);
-  r = zx_DEC_root(cf->ctx, 0, 1);
-  UNLOCK(cf->ctx->mx, "cot reg_svc");
+  r = zx_dec_zx_root(cf->ctx, got, buf, "cot reg_svc");
   if (!r || !r->EndpointReference) {
     ERR("Failed to parse <EndpointReference> buf(%.*s)", got, buf);
     return 1;
   }
   epr = r->EndpointReference;
-  if (!epr->Address || !epr->Address->gg.content || !epr->Address->gg.content->len) {
+  if (!ZX_SIMPLE_ELEM_CHK(epr->Address)) {
     ERR("<EndpointReference> MUST have <Address> element buf(%.*s)", got, buf);
     return 1;
   }
@@ -305,8 +307,7 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
     ERR("<EndpointReference> MUST have <Metadata> element buf(%.*s)", got, buf);
     return 1;
   }
-  if (!epr->Metadata->ProviderID
-      || !epr->Metadata->ProviderID->content->len || !epr->Metadata->ProviderID->content->len) {
+  if (!ZX_SIMPLE_ELEM_CHK(epr->Metadata->ProviderID)) {
     ERR("<EndpointReference> MUST have <Metadata> with <ProviderID> element buf(%.*s)", got, buf);
     return 1;
   }
@@ -323,12 +324,12 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
   
 #if 0
   // *** wrong
-  got = MIN(epr->Metadata->ProviderID->content->len, sizeof(path)-1);
-  memcpy(path, epr->Metadata->ProviderID->content->s, got);
+  tt = ZX_GET_CONTENT(epr->Metadata->ProviderID);
 #else
-  got = MIN(epr->Metadata->ServiceType->content->len, sizeof(path)-1);
-  memcpy(path, epr->Metadata->ServiceType->content->s, got);
+  tt = ZX_GET_CONTENT(epr->Metadata->ServiceType);
 #endif
+  got = MIN(tt->len, sizeof(path)-1);
+  memcpy(path, tt?tt->s:"", got);
   path[got] = 0;
   zxid_fold_svc(path, got);
 
@@ -422,13 +423,15 @@ static int zxid_addmd(zxid_conf* cf, char* mdurl, int dry_run, const char* dcot)
     if (!ss)
       return 2;
   
-    if (verbose)
-      fprintf(stderr, "Writing ent(%s) to %s%s\n", ent->eid, dcot, ent->sha1_name);
     if (dry_run) {
       write_all_fd(fdstdout, ss->s, ss->len);
       zx_str_free(cf->ctx, ss);
+      if (verbose>1)
+	printf("\n\nDry run ent(%s) to %s%s\n", ent->eid, dcot, ent->sha1_name);
       continue;
     }
+    if (verbose)
+      printf("Writing ent(%s) to %s%s\n", ent->eid, dcot, ent->sha1_name);
   
     fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -a", 1,
 			   "%s%s", dcot, ent->sha1_name);

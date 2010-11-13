@@ -40,6 +40,7 @@ Usage: zxdecode [options] <message >decoded\n\
   -z -Z            Prevent or force inflate step (default auto detects)\n\
   -i N             Pick Nth detected decodable structure, default: 1=first\n\
   -s               Enable signature validation step (reads config from -c, see below)\n\
+  -s -s            Only validate hashes (check canon), do not fetch meta or check RSA\n\
   -c CONF          For -s, optional configuration string (default -c PATH=/var/zxid/)\n\
                    Most of the configuration is read from /var/zxid/zxid.conf\n\
   -sha1            Compute sha1 over input and print as base64. For debugging canon.\n\
@@ -184,10 +185,48 @@ static void opt(int* argc, char*** argv, char*** env)
     /* fall thru means unrecognized flag */
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
+    if (verbose>1) {
+      printf(help);
+      exit(0);
+    }
     fprintf(stderr, help);
     /*fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());*/
     exit(3);
   }
+}
+
+static int wsse_sec_validate(struct zx_e_Envelope_s* env)
+{
+  int ret;
+  int n_refs = 0;
+  struct zxsig_ref refs[ZXID_N_WSF_SIGNED_HEADERS];
+  struct zx_wsse_Security_s* sec = env->Header->Security;
+
+  if (!sec || !sec->Signature) {
+    ERR("Missing signature on <wsse:Security> %p", sec);
+    return 8;
+  }
+  if (!sec->Signature->SignedInfo || !sec->Signature->SignedInfo->Reference) {
+    ERR("Malformed signature, missing mandatory SignedInfo(%p) or Reference", sec->Signature->SignedInfo);
+    return 9;
+  }
+  
+  ZERO(refs, sizeof(refs));
+  n_refs = zxid_hunt_sig_parts(cf, n_refs, refs, sec->Signature->SignedInfo->Reference, env->Header, env->Body);
+  /*zx_see_elem_ns(cf->ctx, &refs.pop_seen, &resp->gg); *** */
+  ret = zxsig_validate(cf->ctx, 0, sec->Signature, n_refs, refs);
+  if (ret == ZXSIG_BAD_CERT) {
+    INFO("Canon sha1 of <wsse:Security> verified OK %d", ret);
+    if (verbose)
+      printf("\nCanon sha1 if <wsse:Security> verified OK %d\n", ret);
+  } else {
+    ERR("Response Signature hash validation error. Bad canonicalization? ret=%d",ret);
+    return 10;
+  }
+
+  if (ret && verbose)
+    printf("\nSIG Verified OK, zxid_sp_sso_finalize() returned %d\n", ret);
+  return ret?0:6;
 }
 
 static int sig_validate(int len, char* p)
@@ -198,39 +237,106 @@ static int sig_validate(int len, char* p)
   struct zx_root_s* r;
   struct zx_sp_Response_s* resp;
   struct zx_ns_s* pop_seen = 0;
+  struct zxsig_ref refs;
   zxid_a7n* a7n;
   
   ZERO(&cgi, sizeof(cgi));
   ZERO(&ses, sizeof(ses));
 
-  LOCK(cf->ctx->mx, "decode");
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, p, p + len);
-  r = zx_DEC_root(cf->ctx, 0, 1);
-  UNLOCK(cf->ctx->mx, "decode");
+  r = zx_dec_zx_root(cf->ctx, len, p, "decode");
   if (!r) {
     ERR("Failed to parse buf(%.*s)", len, p);
     return 2;
   }
-  resp = r->Response;
-  if (!resp) {
-    ERR("No <sp:Response> found buf(%.*s)", len, p);
+
+  if (r->Response)
+    resp = r->Response;
+  else if (r->Envelope && r->Envelope->Body) {
+    if (r->Envelope->Body->Response)
+      resp = r->Envelope->Body->Response;
+    else if (r->Envelope->Body->ArtifactResponse && r->Envelope->Body->ArtifactResponse->Response)
+      resp = r->Envelope->Body->ArtifactResponse->Response;
+    else if (r->Envelope->Header && r->Envelope->Header->Security)
+      return wsse_sec_validate(r->Envelope);
+    else {
+      ERR("<e:Envelope> found, but no <sp:Response> element in it %d",0);
+      return 3;
+    }
+  } else {
+    a7n = zxid_dec_a7n(cf, r->Assertion, r->EncryptedAssertion);
+    if (a7n) {
+      INFO("Bare Assertion without Response wrapper detected %p", r->Assertion);
+      goto got_a7n;
+    }
+    ERR("No <sp:Response>, <sa:Assertion>, or <sa:EncryptedAssertion> found buf(%.*s)", len, p);
     return 3;
   }
 
   /* See zxid_sp_dig_sso_a7n() for similar code. */
   
-  if (!zxid_chk_sig(cf, &cgi, &ses, &resp->gg, resp->Signature, resp->Issuer, 0, "Response"))
-    return 4;
+  if (sig_flag == 2) {
+    if (!resp->Signature) {
+      INFO("No signature in Response %d", 0);
+    } else {
+      if (!resp->Signature->SignedInfo || !resp->Signature->SignedInfo->Reference) {
+	ERR("Malformed signature, missing mandatory SignedInfo(%p) or Reference", resp->Signature->SignedInfo);
+	return 9;
+      }
+
+      ZERO(&refs, sizeof(refs));
+      refs.sref = resp->Signature->SignedInfo->Reference;
+      refs.blob = &resp->gg;
+      refs.pop_seen = pop_seen;
+      zx_see_elem_ns(cf->ctx, &refs.pop_seen, &resp->gg);
+      ret = zxsig_validate(cf->ctx, 0, resp->Signature, 1, &refs);
+      if (ret == ZXSIG_BAD_CERT) {
+	INFO("Canon sha1 of Response verified OK %d", ret);
+	if (verbose)
+	  printf("\nCanon sha1 of Response verified OK %d\n", ret);
+      } else {
+	ERR("Response Signature hash validation error. Bad canonicalization? ret=%d",ret);
+	if (sig_flag < 3)
+	  return 10;
+      }
+    }
+  } else {
+    if (!zxid_chk_sig(cf, &cgi, &ses, &resp->gg, resp->Signature, resp->Issuer, 0, "Response"))
+      return 4;
+  }
   
   a7n = zxid_dec_a7n(cf, resp->Assertion, resp->EncryptedAssertion);
   if (!a7n) {
     ERR("No Assertion found and not anon_ok in SAML Response %d", 0);
     return 5;
   }
-
   zx_see_elem_ns(cf->ctx, &pop_seen, &resp->gg);
-  ret = zxid_sp_sso_finalize(cf, &cgi, &ses, a7n, pop_seen);
-  INFO("zxid_sp_sso_finalize() returned %d", ret);
+got_a7n:
+  if (sig_flag == 2) {
+    if (a7n->Signature && a7n->Signature->SignedInfo && a7n->Signature->SignedInfo->Reference) {
+      cf->ctx->guard_seen_n.seen_n = &cf->ctx->guard_seen_p;  /* *** should call zx_reset_ctx? */
+      cf->ctx->guard_seen_p.seen_p = &cf->ctx->guard_seen_n;
+      ZERO(&refs, sizeof(refs));
+      refs.sref = a7n->Signature->SignedInfo->Reference;
+      refs.blob = &a7n->gg;
+      refs.pop_seen = pop_seen;
+      zx_see_elem_ns(cf->ctx, &refs.pop_seen, &a7n->gg);
+      ret = zxsig_validate(cf->ctx, 0, a7n->Signature, 1, &refs);
+      if (ret == ZXSIG_BAD_CERT) {
+	INFO("Canon sha1 of Assertion verified OK %d", ret);
+	if (ret && verbose)
+	  printf("\nCanon sha1 of Assertion verified OK %d\n", ret);
+	return 0;
+      }
+      ERR("Canon sha1 of Assertion failed to verify ret=%d", ret);
+      return 11;
+    } else {
+      ERR("Assertion does not contain a signature %p", a7n->Signature);
+      return 7;
+    }
+  } else {
+    ret = zxid_sp_sso_finalize(cf, &cgi, &ses, a7n, pop_seen);
+    INFO("zxid_sp_sso_finalize() returned %d", ret);
+  }
   if (ret && verbose)
     printf("\nSIG Verified OK, zxid_sp_sso_finalize() returned %d\n", ret);
   return ret?0:6;
@@ -297,7 +403,7 @@ decompress:
     for (p2 = p-1; m2 < p2; --p2)
       if (!ONE_OF_4(*p2, ' ', '\t', '\015', '\012'))
 	break;
-    D("Msg_sans_ws(%.*s) start=%x end=%x", p2-m2+1, m2, *m2, *p2);
+    D("Msg_minus_whitespace(%.*s) start=%x end=%x", p2-m2+1, m2, *m2, *p2);
     
     if (*m2 == '<' && *p2 == '>') {  /* POST profiles do not compress the payload */
       len = p2 - m2 + 1;

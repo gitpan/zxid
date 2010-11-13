@@ -70,7 +70,7 @@ int main(int argc, char** argv)
   int got, fd, cl=0;
   char* qs;
   char* qs2;
-  ZERO(ses, sizeof(ses));
+  ZERO(ses, sizeof(zxid_ses));
   
 #if 1
   /* Helps debugging CGI scripts if you see stderr. */
@@ -162,14 +162,11 @@ int main(int argc, char** argv)
   }
   D("Target nid(%s)", nid);
     
-  LOCK(cf->ctx->mx, "hrxml wsp");
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, qs2, qs2+cl);
-  r = zx_DEC_root(cf->ctx, 0, 1);
-  UNLOCK(cf->ctx->mx, "hrxml wsp");
+  r = zx_dec_zx_root(cf->ctx, cl, qs2, "hrxml wsp");
 
-  D("Decoded nid(%s)", nid);
+  DD("Decoded nid(%s)", nid);
   
-  if (!r->Envelope) {
+  if (!r || !r->Envelope) {
     ERR("No SOAP Envelope found buf(%.*s)", got, buf);
     exit(1);
   }
@@ -202,8 +199,8 @@ int main(int argc, char** argv)
       return 0;
     }
     
-    ss = zx_EASY_ENC_WO_hrxml_Candidate(cf->ctx,
-	       r->Envelope->Body->idhrxml_Create->CreateItem->NewData->Candidate);
+    ss = zx_EASY_ENC_WO_any_elem(cf->ctx,
+	       &r->Envelope->Body->idhrxml_Create->CreateItem->NewData->Candidate->gg);
 
     fd = open_fd_from_path(O_CREAT|O_WRONLY|O_TRUNC, 0666, "create", 1, "%shrxml/cv.xml", cf->path);
     write_all_fd(fd, ss->s, ss->len);
@@ -251,11 +248,8 @@ int main(int argc, char** argv)
       return 0;
     }
     
-    LOCK(cf->ctx->mx, "hrxml wsp cand");
-    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got);
-    r = zx_DEC_root(cf->ctx, 0, 1);
-    UNLOCK(cf->ctx->mx, "hrxml wsp cand");
-    if (!r->Candidate) {
+    r = zx_dec_zx_root(cf->ctx, got, buf, "hrxml wsp cand");
+    if (!r || !r->Candidate) {
       ERR("No hrxml:Candidate tag found in cv.xml(%s)", buf);
 #if 0
       env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "Fail", "No Candidate in data");
@@ -269,7 +263,7 @@ int main(int argc, char** argv)
 
 #if 0
     env = ZXID_RESP_ENV(cf, "idhrxml:QueryResponse", "OK", "Fine");
-    env->Body->idhrxml_QueryResponse->Data = zx_NEW_idhrxml_Data(cf->ctx);
+    env->Body->idhrxml_QueryResponse->Data = zx_NEW_idhrxml_Data(cf->ctx,0);
     env->Body->idhrxml_QueryResponse->Data->Candidate = r->Candidate;
     ss = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
 #else
@@ -312,8 +306,8 @@ int main(int argc, char** argv)
       return 0;
     }
     
-    ss = zx_EASY_ENC_WO_hrxml_Candidate(cf->ctx,
-	       r->Envelope->Body->idhrxml_Modify->ModifyItem->NewData->Candidate);
+    ss = zx_EASY_ENC_WO_any_elem(cf->ctx,
+	       &r->Envelope->Body->idhrxml_Modify->ModifyItem->NewData->Candidate->gg);
 
     fd = open_fd_from_path(O_CREAT|O_WRONLY|O_TRUNC, 0666, "modify", 1, "%shrxml/cv.xml", cf->path);
     write_all_fd(fd, ss->s, ss->len);

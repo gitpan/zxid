@@ -8,18 +8,18 @@
 
 package zxidjava;
 
-public class SWIGTYPE_p_zx_tok {
+public class SWIGTYPE_p_f_p_char_int__p_zx_el_tok {
   private long swigCPtr;
 
-  protected SWIGTYPE_p_zx_tok(long cPtr, boolean futureUse) {
+  protected SWIGTYPE_p_f_p_char_int__p_zx_el_tok(long cPtr, boolean futureUse) {
     swigCPtr = cPtr;
   }
 
-  protected SWIGTYPE_p_zx_tok() {
+  protected SWIGTYPE_p_f_p_char_int__p_zx_el_tok() {
     swigCPtr = 0;
   }
 
-  protected static long getCPtr(SWIGTYPE_p_zx_tok obj) {
+  protected static long getCPtr(SWIGTYPE_p_f_p_char_int__p_zx_el_tok obj) {
     return (obj == null) ? 0 : obj.swigCPtr;
   }
 }

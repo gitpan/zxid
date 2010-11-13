@@ -31,33 +31,19 @@
 #define EL_NS     ELNS
 #define EL_TAG    ELTAG
 
-/* FUNC(TXFREE_ELNAME) */
-
-/* Depth first traversal of data structure to free it and its subelements. Simple
- * strings are handled as a special case according to the free_strs flag. This
- * is useful if the strings point to underlying data from the wire that was
- * allocated differently. */
-
-/* Called by: */
-void TXFREE_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, int free_strs)
-{
-  /* *** deal with xmlns specifications in exc c14n way */
-
-ATTRS_FREE;
-ELEMS_FREE;
-
-  zx_free_elem_common(c, &x->gg, free_strs); 
-}
-
 /* FUNC(TXNEW_ELNAME) */
 
 /* Trivial allocator/constructor for the datatype. */
 
 /* Called by: */
-struct ELSTRUCT* TXNEW_ELNAME(struct zx_ctx* c)
+struct ELSTRUCT* TXNEW_ELNAME(struct zx_ctx* c, struct zx_elem_s* father)
 {
   struct ELSTRUCT* x = ZX_ZALLOC(c, struct ELSTRUCT);
   x->gg.g.tok = TXELNAME_ELEM;
+  if (father) {
+    x->gg.g.n = &father->kids->g;
+    father->kids = &x->gg;
+  }
   return x;
 }
 
@@ -75,6 +61,7 @@ struct ELSTRUCT* TXNEW_ELNAME(struct zx_ctx* c)
 /* Called by: */
 void TXDUP_STRS_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x)
 {
+  struct zx_elem_s* se  MAYBE_UNUSED;
   zx_dup_strs_common(c, &x->gg);
   /* *** deal with xmlns specifications in exc c14n way */
 
@@ -90,6 +77,10 @@ ELEMS_DUP_STRS;
 /* Called by: */
 struct ELSTRUCT* TXDEEP_CLONE_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, int dup_strs)
 {
+  struct zx_elem_s* e   MAYBE_UNUSED;
+  struct zx_elem_s* en  MAYBE_UNUSED;
+  struct zx_elem_s* enn MAYBE_UNUSED;
+
   x = (struct ELSTRUCT*)zx_clone_elem_common(c, &x->gg, sizeof(struct ELSTRUCT), dup_strs);
   /* *** deal with xmlns specifications in exc c14n way */
 
@@ -104,6 +95,7 @@ ELEMS_CLONE;
  
 int TXWALK_SO_ELNAME(struct zx_ctx* c, struct ELSTRUCT* x, void* ctx, int (*callback)(struct zx_node_s* node, void* ctx))
 {
+  struct zx_elem_s* e   MAYBE_UNUSED;
   int ret = callback(&x->gg.g, ctx);
   if (ret)
     return ret;

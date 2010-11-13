@@ -158,6 +158,10 @@ static void opt(int* argc, char*** argv, char*** env)
 	}
       case 'c':
 	ss = zxid_show_conf(cf);
+	if (verbose>1) {
+	  printf("\n======== CONF ========\n%.*s\n^^^^^^^^ CONF ^^^^^^^^\n",ss->len,ss->s);
+	  exit(0);
+	}
 	fprintf(stderr, "\n======== CONF ========\n%.*s\n^^^^^^^^ CONF ^^^^^^^^\n",ss->len,ss->s);
 	continue;
       }
@@ -262,6 +266,10 @@ static void opt(int* argc, char*** argv, char*** env)
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
 help:
+    if (verbose>1) {
+      printf(help);
+      exit(0);
+    }
     fprintf(stderr, help);
     /*fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());*/
     exit(3);
@@ -322,10 +330,7 @@ int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
     if (!epr_buf)
       continue;
     
-    LOCK(cf->ctx->mx, "lstses");
-    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, epr_buf, epr_buf + epr_len);
-    r = zx_DEC_root(cf->ctx, 0, 1);
-    UNLOCK(cf->ctx->mx, "lstses");
+    r = zx_dec_zx_root(cf->ctx, epr_len, epr_buf, "lstses");
     if (!r || !r->EndpointReference) {
       ERR("No EPR found. Failed to parse epr_buf(%.*s)", epr_len, epr_buf);
       continue;
@@ -334,11 +339,11 @@ int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
     ZX_FREE(cf->ctx, r);
 
     md = epr->Metadata;
-    if (!md || !md->ServiceType || !md->ServiceType->content || !md->ServiceType->content->len) {
+    if (!md || !ZX_SIMPLE_ELEM_CHK(md->ServiceType)) {
       ERR("No Metadata %p or ServiceType. Failed to parse epr_buf(%.*s)", md, epr_len, epr_buf);
       printf("EPR %d no service type\n", ++din);
     } else {
-      ss = md->ServiceType->content;
+      ss = ZX_GET_CONTENT(md->ServiceType);
       printf("EPR %d SvcType: %.*s\n", ++din, ss->len, ss->s);
     }
     ss = zxid_get_epr_address(cf, epr);
@@ -404,7 +409,7 @@ int zxcall_main(int argc, char** argv, char** env)
   if (im_to) {
     D("Map to identity at eid(%s)", im_to);
     zxid_map_identity_token(cf, ses, im_to, 0);
-    //printf("%.*s\n", nameid->gg.content->len, nameid->gg.content->s);
+    //printf("%.*s\n", ZX_GET_CONTENT_LEN(nameid), ZX_GET_CONTENT_S(nameid));
     return 0;
   }
 

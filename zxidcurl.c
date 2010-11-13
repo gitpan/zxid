@@ -108,10 +108,10 @@ size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
  */
 
 /* Called by:  opt x3, zxid_addmd, zxid_get_meta_ss */
-zxid_entity* zxid_get_meta(zxid_conf* cf, char* url)
+zxid_entity* zxid_get_meta(zxid_conf* cf, const char* url)
 {
-  zxid_entity* ent;
 #ifdef USE_CURL
+  zxid_entity* ent;
   CURLcode res;
   struct zxid_curl_ctx rc;
 #if 1
@@ -165,7 +165,7 @@ zxid_entity* zxid_get_meta(zxid_conf* cf, char* url)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "GOTMD", url, 0);
   return ent;
 #else
-  ERR("This copy of zxid was compiled to NOT use libcurl. As such metadata fetching is not supported. Add -DUSE_CURL and recompile. %d", 0);
+  ERR("This copy of zxid was compiled to NOT use libcurl. As such metadata fetching and web service calling are not supported. Add -DUSE_CURL and recompile. %d", 0);
   return 0;
 #endif
 }
@@ -315,10 +315,7 @@ struct zx_root_s* zxid_soap_call_raw(zxid_conf* cf, struct zx_str* url, struct z
   if (!ret)
     return 0;
   
-  LOCK(cf->ctx->mx, "soap_call");
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, ret->s, ret->s + ret->len);
-  r = zx_DEC_root(cf->ctx, 0, 1);
-  UNLOCK(cf->ctx->mx, "soap_call");
+  r = zx_dec_zx_root(cf->ctx, ret->len, ret->s, "soap_call");
   if (!r || !r->Envelope || !r->Envelope->Body) {
     ERR("Failed to parse SOAP response url(%.*s) buf(%.*s)",
 	url->len, url->s, ret->len, ret->s);

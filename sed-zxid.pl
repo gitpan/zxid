@@ -10,15 +10,21 @@ $op = shift;
 undef $/;
 $_ = <STDIN>;
 
+if ($op eq 'nss') {
+    #s%^(\#line.*)$%/* $1 */%gm;
+    s/static struct zx_ns_s/struct zx_ns_s/g;
+    print;
+}
+
 if ($op eq 'attrs') {
-    s/lengthtable/zx_attrs_lens/g;
-    s/static const struct zx_tok/const struct zx_tok/g;
+    #s%^(\#line.*)$%/* $1 */%gm;
+    s/static struct zx_at_tok/struct zx_at_tok/g;
     print;
 }
 
 if ($op eq 'elems') {
-    s/lengthtable/zx_elems_lens/g;
-    s/static const struct zx_tok/const struct zx_tok/g;
+    #s%^(\#line.*)$%/* $1 */%gm;
+    s/static struct zx_el_tok/struct zx_el_tok/g;
     print;
 }
 
@@ -58,5 +64,6 @@ if ($op eq 'zxidvers') {
 #endif
 ZXIDVERS
 ;
+
 }
 __END__

@@ -60,24 +60,43 @@ Here are example docs for SimpleSAMLPHP, or Shibboleth:
     - IdP: Interpret the attribute request authn ctx query string approach and show
       to the user what attributes were requested by the SP.
     - IdP: If SP does not specify attribute list, display "SP did not request any
-      specific attributes. Only authentication and default attributes will be sent.
+      specific attributes. Only authentication and default attributes will be sent."
     - AuthnReq QS option for SP to request that consent is explicitly seeked
     - AuthnReq QS option for SP to request that attribute list is not shown up front
+    - Consider removing zx_scan_pi_or_comment() from most tags, only leaving for top level.
     - Show whether SP wants a persistent or transient, or some other type of Id for the user.
-    - zxdecode assertion decryption support
+    - Sort unknown attributes wrt known attributes in SO and WO enc
     - zxpasswd account creation problems
         echo -n tas3 | ~/zxid/zxpasswd -at 'cn: Mallory McBean$givenname: Mallory$sn: McBeanBean$o: Laskenta Keskus$eduPersonEntitlement: admin$' -c mallory
+
+zxid-0.71:: 8.11.2010
+    - Moved back to global elems hash, but with separate namespace hash
+    - Eliminate SO encoders entirely, enhancing WO encoder to do their job
     NOTPUB
+
+zxid-0.70:: 13.11.2010
+    - zxdecode: assertion decode and decryption support
+    - zxdecode: sha1 validation without sig validation using -s -s
+    - Fix canonicalization of attribute names with namespace prefixes
+    - Fix detection of namespace of an XML attribute, see t/shib-a7n2.xml
+    - Some optimizations based on gcov and gprof
+    - Moved to per namespace elem hashes and namespace hash
+    - Fairly complete re-engineering/re-factoring of the generated enc/dec code
+    - Fix SO encoder
+    - Add more test cases
 
 zxid-0.69:: 20.10.2010
     - Added DeployingZxidServlets.txt, ZxidSSOFilter.java, and ZxidServlet.java by Stijn Lievens
     - Added missing file zxidjava/zxidtok.java
+
 zxid-0.68:: 18.10.2010
     - zxpasswd hash problems fixed
     - Pairwise session indexes (encrypt master index and SP entid with IdP sym key)
     - Primitive support for passing identity token in XACML request
+
 zxid-0.67:: 13.10.2010
     - Fixed buffer bugs introduced by removal of ZXID_MAX_USER limit
+
 zxid-0.66:: 12.10.2010
     - zxpasswd: be tolerant of newline in input
     - Add to IdP metadata the NameIDMapping end point

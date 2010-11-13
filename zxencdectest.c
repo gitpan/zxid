@@ -36,9 +36,8 @@
 #include "c/zx-ns.h"
 
 int read_all_fd(int fd, char* p, int want, int* got_all);
-int write_all_fd(int fd, char* p, int pending);
 
-CU8* help =
+char* help =
 "zxencdectest  -  ZX encoding and decoding tester - R" ZXID_REL "\n\
 Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 Copyright (c) 2006-2007 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
@@ -85,10 +84,7 @@ void test_ibm_cert_problem()
 
   /* IBM padding debug */
   cf = zxid_new_conf("/var/zxid/");
-  LOCK(cf->ctx->mx, "zxencdectest");
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + got_all);
-  r = zx_DEC_root(cf->ctx, 0, 1000);
-  UNLOCK(cf->ctx->mx, "zxencdectest");
+  r = zx_dec_zx_root(cf->ctx, got_all, buf, "zxencdectest");
   if (!r)
     DIE("Decode failure");
 
@@ -100,7 +96,7 @@ void test_ibm_cert_problem()
   
   req = r->Envelope->Body->LogoutRequest;
   req->NameID = zxid_decrypt_nameid(cf, req->NameID, req->EncryptedID);
-  printf("r1 nid(%.*s)\n", req->NameID->gg.content->len, req->NameID->gg.content->s);
+  printf("r1 nid(%.*s)\n", ZX_GET_CONTENT_LEN(req->NameID), ZX_GET_CONTENT_S(req->NameID));
 }
 
 /* Called by:  opt */
@@ -113,11 +109,11 @@ void test_ibm_cert_problem_enc_dec()
 
   cf = zxid_new_conf("/var/zxid/");
 
-  nameid = zx_NEW_sa_NameID(cf->ctx);
-  nameid->Format = zx_ref_str(cf->ctx, "persistent");
-  nameid->NameQualifier = zx_ref_str(cf->ctx, "ibmidp");
-  /*nameid->SPNameQualifier = zx_ref_str(cf->ctx, spqual);*/
-  nameid->gg.content = zx_ref_str(cf->ctx, "a-persistent-nid");
+  nameid = zx_NEW_sa_NameID(cf->ctx,0);
+  nameid->Format = zx_ref_attr(cf->ctx, zx_Format_ATTR, "persistent");
+  nameid->NameQualifier = zx_ref_attr(cf->ctx, zx_NameQualifier_ATTR, "ibmidp");
+  /*nameid->SPNameQualifier = zx_ref_attr(cf->ctx, zx_SPNameQualifier_ATTR, spqual);*/
+  zx_add_content(cf->ctx, &nameid->gg, zx_ref_str(cf->ctx, "a-persistent-nid"));
 
 #if 0
   cf->enc_pkey = zxid_read_private_key(cf, "sym-idp-enc.pem");
@@ -128,7 +124,7 @@ void test_ibm_cert_problem_enc_dec()
   
   req = zxid_mk_logout(cf, nameid, 0, idp_meta);  
   req->NameID = zxid_decrypt_nameid(cf, req->NameID, req->EncryptedID);
-  printf("r2 nid(%.*s) should be(a-persistent-nid)\n", req->NameID->gg.content->len, req->NameID->gg.content->s);
+  printf("r2 nid(%.*s) should be(a-persistent-nid)\n", ZX_GET_CONTENT_LEN(req->NameID), ZX_GET_CONTENT_S(req->NameID));
 }
 
 int afr_buf_size = 0;
@@ -184,7 +180,7 @@ void opt(int* argc, char*** argv, char*** env)
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	zx_instance = (*argv)[0];
+	strncpy(zx_instance, (*argv)[0], sizeof(zx_instance));
 	continue;
       }
       break;
@@ -369,12 +365,17 @@ int main(int argc, char** argv, char** env)
   
   for (; n_iter; --n_iter) {
     ZERO(&ctx, sizeof(ctx));
-    LOCK(ctx.mx, "zxencdectest main");
-    zx_prepare_dec_ctx(&ctx, zx_ns_tab, buf, buf + got_all);
-    r = zx_DEC_root(&ctx, 0, 1000);
-    UNLOCK(ctx.mx, "zxencdectest main");
+    r = zx_dec_zx_root(&ctx, got_all, buf, "zxencdectest main");  /* n_decode=1000 ?!? */
     if (!r)
       DIE("Decode failure");
+
+    len_wo = zx_LEN_WO_any_elem(&ctx, &r->gg);
+    D("Enc wo len %d chars", len_wo);
+
+    ctx.bas = wo_out;
+    wo_p = zx_ENC_WO_any_elem(&ctx, &r->gg, wo_out);
+    if (!wo_p)
+      DIE("encoding error");
 
     len_so = zx_LEN_SO_root(&ctx, r);
     D("Enc so len %d chars", len_so);
@@ -384,15 +385,7 @@ int main(int argc, char** argv, char** env)
     if (!so_p)
       DIE("encoding error");
 
-    len_wo = zx_LEN_WO_root(&ctx, r);
-    D("Enc wo len %d chars", len_wo);
-
-    ctx.bas = wo_out;
-    wo_p = zx_ENC_WO_root(&ctx, r, wo_out);
-    if (!wo_p)
-      DIE("encoding error");
-
-    zx_FREE_root(&ctx, r, 0);
+    zx_free_elem(&ctx, &r->gg, 0);
   }
 
   if (got_all != len_wo)

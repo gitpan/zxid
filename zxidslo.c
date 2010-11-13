@@ -46,19 +46,19 @@ int zxid_sp_slo_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
     struct zx_str* ses_ix;
     zxid_entity* idp_meta;
     
-    ses_ix = ses->a7n->AuthnStatement?ses->a7n->AuthnStatement->SessionIndex:0;
+    ses_ix = ses->a7n->AuthnStatement?&ses->a7n->AuthnStatement->SessionIndex->g:0;
     if (cf->log_level>0)
-      zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "SLOSOAP", ses->sid, "sesix(%.*s)", ses_ix?ses_ix->len:1, ses_ix?ses_ix->s:"?");
+      zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "W", "SLOSOAP", ses->sid, "sesix(%.*s)", ses_ix?ses_ix->len:1, ses_ix?ses_ix->s:"?");
     
     idp_meta = zxid_get_ses_idp(cf, ses);
     if (!idp_meta)
       return 0;
     
-    body = zx_NEW_e_Body(cf->ctx);
+    body = zx_NEW_e_Body(cf->ctx,0);
     body->LogoutRequest = zxid_mk_logout(cf, zxid_get_user_nameid(cf, ses->nameid), ses_ix, idp_meta);
     if (cf->sso_soap_sign) {
       ZERO(&refs, sizeof(refs));
-      refs.id = body->LogoutRequest->ID;
+      refs.id = &body->LogoutRequest->ID->g;
       refs.canon = zx_EASY_ENC_SO_sp_LogoutRequest(cf->ctx, body->LogoutRequest);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert slo"))
 	body->LogoutRequest->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
@@ -101,9 +101,9 @@ struct zx_str* zxid_sp_slo_redir(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
     zxid_entity* idp_meta;
     struct zx_str* ses_ix;
 
-    ses_ix = ses->a7n->AuthnStatement?ses->a7n->AuthnStatement->SessionIndex:0;
+    ses_ix = ses->a7n->AuthnStatement?&ses->a7n->AuthnStatement->SessionIndex->g:0;
     if (cf->log_level>0)
-      zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "SLOREDIR", ses->sid, "sesix(%.*s)", ses_ix?ses_ix->len:1, ses_ix?ses_ix->s:"?");
+      zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "W", "SLOREDIR", ses->sid, "sesix(%.*s)", ses_ix?ses_ix->len:1, ses_ix?ses_ix->s:"?");
     
     idp_meta = zxid_get_ses_idp(cf, ses);
     if (!idp_meta)
@@ -113,7 +113,7 @@ struct zx_str* zxid_sp_slo_redir(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
     if (!loc)
       return zx_dup_str(cf->ctx, "* ERR");
     r = zxid_mk_logout(cf, zxid_get_user_nameid(cf, ses->nameid), ses_ix, idp_meta);
-    r->Destination = loc;
+    r->Destination = zx_ref_len_attr(cf->ctx, zx_Destination_ATTR, loc->len, loc->s);
     rs = zx_EASY_ENC_SO_sp_LogoutRequest(cf->ctx, r);
     D("SLO(%.*s)", rs->len, rs->s);
     return zxid_saml2_redir(cf, loc, rs, 0);
@@ -140,7 +140,7 @@ struct zx_str* zxid_slo_resp_redir(zxid_conf* cf, zxid_cgi* cgi, struct zx_sp_Lo
   struct zx_str* ss;
   struct zx_str* ss2;
 
-  meta = zxid_get_ent_ss(cf, req->Issuer->gg.content);
+  meta = zxid_get_ent_ss(cf, ZX_GET_CONTENT(req->Issuer));
   loc = zxid_idp_loc_raw(cf, cgi, meta, ZXID_SLO_SVC, SAML2_REDIR, 0);
   if (!loc)
     loc = zxid_sp_loc_raw(cf, cgi, meta, ZXID_SLO_SVC, SAML2_REDIR, 0);
@@ -149,8 +149,8 @@ struct zx_str* zxid_slo_resp_redir(zxid_conf* cf, zxid_cgi* cgi, struct zx_sp_Lo
 
   zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "SLORESREDIR", 0, "");
 
-  res = zxid_mk_logout_resp(cf, zxid_OK(cf), req->ID);
-  res->Destination = loc;
+  res = zxid_mk_logout_resp(cf, zxid_OK(cf), &req->ID->g);
+  res->Destination = zx_ref_len_attr(cf->ctx, zx_Destination_ATTR, loc->len, loc->s);
   ss = zx_EASY_ENC_SO_sp_LogoutResponse(cf->ctx, res);
   ss2 = zxid_saml2_resp_redir(cf, loc, ss, cgi->rs);
   /*zx_str_free(cf->ctx, loc); Do NOT free loc as it is still referenced by the metadata. */
@@ -163,20 +163,20 @@ struct zx_str* zxid_slo_resp_redir(zxid_conf* cf, zxid_cgi* cgi, struct zx_sp_Lo
 /* Called by:  zxid_idp_dispatch, zxid_sp_dispatch, zxid_sp_soap_dispatch */
 int zxid_sp_slo_do(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_LogoutRequest_s* req)
 {
-  struct zx_str* sesix = req->SessionIndex&&req->SessionIndex->content&&req->SessionIndex->content->len&&req->SessionIndex->content->s?req->SessionIndex->content:0;
+  struct zx_str* sesix = ZX_GET_CONTENT(req->SessionIndex);
 
   if (!zxid_chk_sig(cf, cgi, ses, &req->gg, req->Signature, req->Issuer, 0, "LogoutRequest"))
     return 0;
 
   if (cf->log_level>0)
-    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, cgi->sigval, "K", "SLO", ses->sid, "sesix(%.*s)", sesix?sesix->len:1, sesix?sesix->s:"?");
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), cgi->sigval, "K", "SLO", ses->sid, "sesix(%.*s)", sesix?sesix->len:1, sesix?sesix->s:"?");
   
   req->NameID = zxid_decrypt_nameid(cf, req->NameID, req->EncryptedID);
-  if (!req->NameID || !req->NameID->gg.content) {
+  if (!ZX_GET_CONTENT(req->NameID)) {
     ERR("SLO failed: request does not have NameID. %p", req->NameID);
     return 0;
   }
-  zxid_find_ses(cf, ses, sesix, req->NameID->gg.content);
+  zxid_find_ses(cf, ses, sesix, ZX_GET_CONTENT(req->NameID));
   zxid_del_ses(cf, ses);
   return 1;
 }
@@ -191,23 +191,23 @@ int zxid_sp_slo_do(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_Log
 /* Called by:  zxid_idp_dispatch, zxid_idp_soap_dispatch, zxid_sp_dispatch */
 int zxid_idp_slo_do(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_LogoutRequest_s* req)
 {
-  struct zx_str* sesix = req->SessionIndex&&req->SessionIndex->content&&req->SessionIndex->content->len&&req->SessionIndex->content->s?req->SessionIndex->content:0;
+  struct zx_str* sesix = ZX_GET_CONTENT(req->SessionIndex);
   if (sesix)
-    sesix = zxid_psobj_dec(cf, req->Issuer, "ZS", sesix);
+    sesix = zxid_psobj_dec(cf, ZX_GET_CONTENT(req->Issuer), "ZS", sesix);
   
   if (!zxid_chk_sig(cf, cgi, ses, &req->gg, req->Signature, req->Issuer, 0, "LogoutRequest"))
     return 0;
   
   if (cf->log_level>0)
-    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, cgi->sigval, "K", "ISLO", ses->sid, "sesix(%.*s)", sesix?sesix->len:1, sesix?sesix->s:"?");
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), cgi->sigval, "K", "ISLO", ses->sid, "sesix(%.*s)", sesix?sesix->len:1, sesix?sesix->s:"?");
   if (cf->loguser)
-    zxlogusr(cf, ses->uid, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, cgi->sigval, "K", "ISLO", ses->sid, "sesix(%.*s)", sesix?sesix->len:1, sesix?sesix->s:"?");
+    zxlogusr(cf, ses->uid, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), cgi->sigval, "K", "ISLO", ses->sid, "sesix(%.*s)", sesix?sesix->len:1, sesix?sesix->s:"?");
 
   req->NameID = zxid_decrypt_nameid(cf, req->NameID, req->EncryptedID);
-  if (!req->NameID || !req->NameID->gg.content) {
+  if (!ZX_GET_CONTENT(req->NameID)) {
     INFO("SLO: request does not have NameID. %p sesix(%.*s)", req->NameID, sesix?sesix->len:0, sesix?sesix->s:"");
   }
-  if (zxid_find_ses(cf, ses, sesix, 0 /*req->NameID->gg.content*/))
+  if (zxid_find_ses(cf, ses, sesix, 0 /*ZX_GET_CONTENT(req->NameID)*/))
     zxid_del_ses(cf, ses);
   return 1;
 }

@@ -233,20 +233,17 @@ int main(int argc, char** argv)
     }
     D("Here %p", epr);
 
-    env = zx_NEW_e_Envelope(cf->ctx);
-    env->Header = zx_NEW_e_Header(cf->ctx);
-    env->Body = zx_NEW_e_Body(cf->ctx);
-    env->Body->idhrxml_Create = zx_NEW_idhrxml_Create(cf->ctx);
-    env->Body->idhrxml_Create->CreateItem = zx_NEW_idhrxml_CreateItem(cf->ctx);
-    env->Body->idhrxml_Create->CreateItem->NewData = zx_NEW_idhrxml_NewData(cf->ctx);
+    env = zx_NEW_e_Envelope(cf->ctx,0);
+    env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
+    env->Body = zx_NEW_e_Body(cf->ctx, &env->gg);
+    env->Body->idhrxml_Create = zx_NEW_idhrxml_Create(cf->ctx, &env->Body->gg);
+    env->Body->idhrxml_Create->CreateItem = zx_NEW_idhrxml_CreateItem(cf->ctx, &env->Body->idhrxml_Create->gg);
+    env->Body->idhrxml_Create->CreateItem->NewData = zx_NEW_idhrxml_NewData(cf->ctx, &env->Body->idhrxml_Create->CreateItem->gg);
     
     /* Parse the XML from the form field into data structure and include it as NewData. */
     
-    LOCK(cf->ctx->mx, "hrxml wsc");
-    zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, cgi.data, cgi.data + strlen(cgi.data));
-    r = zx_DEC_root(cf->ctx, 0, 1);
-    UNLOCK(cf->ctx->mx, "hrxml wsc");
-    if (!r->Candidate) {
+    r = zx_dec_zx_root(cf->ctx, strlen(cgi.data), cgi.data, "hrxml wsc");
+    if (!r || !r->Candidate) {
       ERR("No hrxml:Candidate tag found in form field hrxmldata(%s)", cgi.data);
       hrxml_resp = "No hrxml:Candidate tag found in form field hrxmldata.";
       break;
@@ -264,11 +261,11 @@ int main(int argc, char** argv)
       ERR("There was no result %p", env->Body);
       break;
     }
-    if (!memcmp(env->Body->idhrxml_CreateResponse->Status->code->s, "OK", 2)) {
+    if (!memcmp(env->Body->idhrxml_CreateResponse->Status->code->g.s, "OK", 2)) {
       hrxml_resp = "Create OK.";
     } else {
       hrxml_resp = "Create Failed.";
-      D("Non OK status(%.*s)", env->Body->idhrxml_CreateResponse->Status->code->len, env->Body->idhrxml_CreateResponse->Status->code->s);
+      D("Non OK status(%.*s)", env->Body->idhrxml_CreateResponse->Status->code->g.len, env->Body->idhrxml_CreateResponse->Status->code->g.s);
     }
     D("Here %p", epr);
     break;
@@ -279,12 +276,13 @@ int main(int argc, char** argv)
       ERR("EPR could not be discovered %d", 0);
       break;
     }
-    env = zx_NEW_e_Envelope(cf->ctx);
-    env->Header = zx_NEW_e_Header(cf->ctx);
-    env->Body = zx_NEW_e_Body(cf->ctx);
-    env->Body->idhrxml_Query = zx_NEW_idhrxml_Query(cf->ctx);
-    env->Body->idhrxml_Query->QueryItem = zx_NEW_idhrxml_QueryItem(cf->ctx);
-    env->Body->idhrxml_Query->QueryItem->Select = zx_ref_simple_elem(cf->ctx, cgi.select);
+    env = zx_NEW_e_Envelope(cf->ctx,0);
+    env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
+    env->Body = zx_NEW_e_Body(cf->ctx, &env->gg);
+    env->Body->idhrxml_Query = zx_NEW_idhrxml_Query(cf->ctx, &env->Body->gg);
+    env->Body->idhrxml_Query->QueryItem = zx_NEW_idhrxml_QueryItem(cf->ctx, &env->Body->idhrxml_Query->gg);
+    env->Body->idhrxml_Query->QueryItem->Select
+      = zx_ref_simple_elem(cf->ctx, &env->Body->idhrxml_Query->QueryItem->gg, zx_idhrxml_Select_ELEM, cgi.select);
         
     env = zxid_wsc_call(cf, ses, epr, env, 0);
     D("HERE env=%p", env);
@@ -296,7 +294,7 @@ int main(int argc, char** argv)
       ERR("There was no result %p", env->Body);
       break;
     }
-    if (!memcmp(env->Body->idhrxml_QueryResponse->Status->code->s, "OK", 2)) {
+    if (!memcmp(env->Body->idhrxml_QueryResponse->Status->code->g.s, "OK", 2)) {
       if (!env->Body->idhrxml_QueryResponse->Data) {
 	hrxml_resp = "No data in otherwise successful response.";
 	ERR("There was no data %p", env->Body);
@@ -307,11 +305,11 @@ int main(int argc, char** argv)
 	ERR("There was no candidate %p", env->Body);
 	break;
       }
-      ss = zx_EASY_ENC_WO_hrxml_Candidate(cf->ctx, env->Body->idhrxml_QueryResponse->Data->Candidate);
+      ss = zx_EASY_ENC_WO_any_elem(cf->ctx, &env->Body->idhrxml_QueryResponse->Data->Candidate->gg);
       hrxml_resp = ss->s;
     } else {
       hrxml_resp = "Query Failed.";
-      D("Non OK status(%.*s)", env->Body->idhrxml_QueryResponse->Status->code->len, env->Body->idhrxml_QueryResponse->Status->code->s);
+      D("Non OK status(%.*s)", env->Body->idhrxml_QueryResponse->Status->code->g.len, env->Body->idhrxml_QueryResponse->Status->code->g.s);
     }
     break;
 
@@ -339,11 +337,11 @@ int main(int argc, char** argv)
       ERR("There was no result %p", env->Body);
       break;
     }
-    if (!memcmp(env->Body->idhrxml_DeleteResponse->Status->code->s, "OK", 2)) {
+    if (!memcmp(env->Body->idhrxml_DeleteResponse->Status->code->g.s, "OK", 2)) {
       hrxml_resp = "Delete OK.";
     } else {
       hrxml_resp = "Delete Failed.";
-      D("Non OK status(%.*s)", env->Body->idhrxml_DeleteResponse->Status->code->len, env->Body->idhrxml_DeleteResponse->Status->code->s);
+      D("Non OK status(%.*s)", env->Body->idhrxml_DeleteResponse->Status->code->g.len, env->Body->idhrxml_DeleteResponse->Status->code->g.s);
     }
     break;
   }

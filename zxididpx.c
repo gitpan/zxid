@@ -66,7 +66,7 @@ struct zx_str* zxid_idp_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, in
   }
 
   if (r->ManageNameIDRequest) {
-    sp_meta = zxid_get_ent_ss(cf, r->ManageNameIDRequest->Issuer->gg.content);
+    sp_meta = zxid_get_ent_ss(cf, ZX_GET_CONTENT(r->ManageNameIDRequest->Issuer));
     loc = zxid_sp_loc_raw(cf, cgi, sp_meta, ZXID_MNI_SVC, SAML2_REDIR, 0);
     if (!loc)
       return 0;  /* *** consider sending error page */
@@ -87,7 +87,7 @@ struct zx_str* zxid_idp_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, in
   }
 
   if (cf->log_level > 0)
-    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "IDPDISP", 0, "sid(%s) unknown req or resp (loc)", ses->sid);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "C", "IDPDISP", 0, "sid(%s) unknown req or resp (loc)", ses->sid);
   ERR("Unknown request or response %p", r);
   return zx_dup_str(cf->ctx, "* ERR");
 }
@@ -112,7 +112,7 @@ int zxid_idp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct z
   if (!r->Envelope) goto bad;
   
   if (cf->log_level > 1)
-    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "W", "IDPDISP", 0, "sid(%s) soap", ses->sid);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "W", "IDPDISP", 0, "sid(%s) soap", ses->sid);
 
   if (r->Envelope->Body->ArtifactResolve) {
     D("ArtifactResolve not implemented yet %d",0);
@@ -125,37 +125,38 @@ int zxid_idp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct z
     if (!zxid_idp_slo_do(cf, cgi, ses, req))
       return 0;
 
-    body = zx_NEW_e_Body(cf->ctx);
+    body = zx_NEW_e_Body(cf->ctx,0);
     body->LogoutResponse = zxid_mk_logout_resp(cf, zxid_OK(cf), req->ID);
     if (cf->sso_soap_resp_sign) {
-      ZERO(refs, sizeof(refs));
+      ZERO(&refs, sizeof(refs));
       refs.id = body->LogoutResponse->ID;
       refs.canon = zx_EASY_ENC_SO_sp_LogoutResponse(cf->ctx, body->LogoutResponse);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert idp slo"))
 	body->LogoutResponse->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
       zx_str_free(cf->ctx, refs.canon);
     }
-    return zxid_soap_cgi_resp_body(cf, body, req->Issuer->gg.content);
+    return zxid_soap_cgi_resp_body(cf, body, ZX_GET_CONTENT(req->Issuer));
   }
 
   if (r->Envelope->Body->ManageNameIDRequest) {
     struct zx_sp_ManageNameIDResponse_s* res = zxid_mni_do(cf, cgi, ses, r->Envelope->Body->ManageNameIDRequest);
-    body = zx_NEW_e_Body(cf->ctx);
+    body = zx_NEW_e_Body(cf->ctx,0);
     body->ManageNameIDResponse = res;
     if (cf->sso_soap_resp_sign) {
+      ZERO(&refs, sizeof(refs));
       refs.id = res->ID;
       refs.canon = zx_EASY_ENC_SO_sp_ManageNameIDResponse(cf->ctx, res);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert idp mni"))
 	res->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
       zx_str_free(cf->ctx, refs.canon);
     }
-    return zxid_soap_cgi_resp_body(cf, body, r->Envelope->Body->ManageNameIDRequest->Issuer->gg.content);
+    return zxid_soap_cgi_resp_body(cf, body, ZX_GET_CONTENT(r->Envelope->Body->ManageNameIDRequest->Issuer));
   }
   
  bad:
   ERR("Unknown soap request %p", r);
   if (cf->log_level > 0)
-    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "IDPDISP", 0, "sid(%s) unknown soap req", ses->sid);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "C", "IDPDISP", 0, "sid(%s) unknown soap req", ses->sid);
   return 0;
 }
 
@@ -165,13 +166,10 @@ int zxid_idp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct z
 int zxid_idp_soap_parse(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int len, char* buf)
 {
   struct zx_root_s* r;
-  LOCK(cf->ctx->mx, "idp soap parse");
-  zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, buf, buf + len);
-  r = zx_DEC_root(cf->ctx, 0, 1);
-  UNLOCK(cf->ctx->mx, "idp soap parse");
+  r = zx_dec_zx_root(cf->ctx, len, buf, "idp soap parse");
   if (!r || !r->Envelope || !r->Envelope->Body) {
     ERR("Failed to parse SOAP request buf(%.*s)", len, buf);
-    zxlog(cf, 0, 0, 0, 0, 0, 0, ses->nameid?ses->nameid->gg.content:0, "N", "C", "BADXML", 0, "sid(%s) bad soap req", ses->sid);
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "C", "BADXML", 0, "sid(%s) bad soap req", ses->sid);
     return 0;
   }
   return zxid_sp_soap_dispatch(cf, cgi, ses, r);

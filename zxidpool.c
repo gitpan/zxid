@@ -468,12 +468,14 @@ static int zxid_add_at_values(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribu
   ses->at->orig = at;
   ses->at->issuer = issuer;
   
-  for (av = at->AttributeValue; av; av = (struct zx_sa_AttributeValue_s*)ZX_NEXT(av)) {
-    D("Adding value: %p", av->gg.content);
+  for (av = at->AttributeValue;
+       av && av->gg.g.tok == zx_sa_AttributeValue_ELEM;
+       av = (struct zx_sa_AttributeValue_s*)ZX_NEXT(av)) {
+    D("Adding value: %p", ZX_GET_CONTENT(av));
     if (av->EndpointReference || av->ResourceOffering)
       continue;  /* Skip bootstraps. They are handled elsewhere, see zxid_snarf_eprs_from_ses(). */
-    if (av->gg.content) {
-      ss = zxid_map_val(cf, map, av->gg.content);
+    if (ZX_GET_CONTENT(av)) {
+      ss = zxid_map_val(cf, map, ZX_GET_CONTENT(av));
       if (ses->at->val) {
 	D("map val(%.*s)", ss->len, ss->s);
 	ses->at->nv = zxid_new_at(cf, ses->at->nv, 0, 0, ss->len, ss->s, "multival");
@@ -497,12 +499,16 @@ static void zxid_add_a7n_at_to_pool(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n)
   if (!a7n)
     return;
   
-  for (as = a7n->AttributeStatement; as; as = (struct zx_sa_AttributeStatement_s*)ZX_NEXT(as)) {
-    for (at = as->Attribute; at; at = (struct zx_sa_Attribute_s*)ZX_NEXT(at)) {      
+  for (as = a7n->AttributeStatement;
+       as && as->gg.g.tok == zx_sa_AttributeStatement_ELEM;
+       as = (struct zx_sa_AttributeStatement_s*)ZX_NEXT(as)) {
+    for (at = as->Attribute;
+	 at && at->gg.g.tok == zx_sa_Attribute_ELEM;
+	 at = (struct zx_sa_Attribute_s*)ZX_NEXT(at)) {      
       if (at->Name)
-	zxid_add_at_values(cf, ses, at, zx_str_to_c(cf->ctx, at->Name), a7n->Issuer ? a7n->Issuer->gg.content : 0);
+	zxid_add_at_values(cf, ses, at, zx_str_to_c(cf->ctx, &at->Name->g), ZX_GET_CONTENT(a7n->Issuer));
       if (at->FriendlyName)
-	zxid_add_at_values(cf, ses, at, zx_str_to_c(cf->ctx, at->FriendlyName), a7n->Issuer ? a7n->Issuer->gg.content : 0);
+	zxid_add_at_values(cf, ses, at, zx_str_to_c(cf->ctx, &at->FriendlyName->g), ZX_GET_CONTENT(a7n->Issuer));
     }
   }
 }
@@ -647,12 +653,12 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   /* Format some pseudo attributes that describe the SSO */
 
   if (a7n)
-    issuer = a7n->Issuer&&a7n->Issuer->gg.content?a7n->Issuer->gg.content:0;
+    issuer = ZX_GET_CONTENT(a7n->Issuer);
   zxid_add_attr_to_ses(cf, ses, "issuer", issuer);
   zxid_add_attr_to_ses(cf, ses, "ssoa7npath",zx_dup_str(cf->ctx, STRNULLCHK(ses->sso_a7n_path)));
   
-  affid = ses->nameid&&ses->nameid->NameQualifier?ses->nameid->NameQualifier:0;
-  nid = ses->nameid&&ses->nameid->gg.content?ses->nameid->gg.content:0;
+  affid = ses->nameid&&ses->nameid->NameQualifier?&ses->nameid->NameQualifier->g:0;
+  nid = ZX_GET_CONTENT(ses->nameid);
   zxid_add_attr_to_ses(cf, ses, "affid",  affid);
   zxid_add_attr_to_ses(cf, ses, "idpnid", nid);
   zxid_add_attr_to_ses(cf, ses, "nidfmt", zx_dup_str(cf->ctx, ses->nidfmt?"P":"T"));
@@ -675,13 +681,13 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   else
     tgta7n = a7n;
   if (tgta7n)
-    tgtissuer = tgta7n->Issuer&&tgta7n->Issuer->gg.content?tgta7n->Issuer->gg.content:0;
+    tgtissuer = ZX_GET_CONTENT(tgta7n->Issuer);
   if (tgtissuer)
     zxid_add_attr_to_ses(cf, ses, "tgtissuer", tgtissuer);
   zxid_add_attr_to_ses(cf, ses, "tgta7npath",zx_dup_str(cf->ctx, STRNULLCHK(ses->tgt_a7n_path)));
 
-  tgtaffid = ses->tgtnameid&&ses->tgtnameid->NameQualifier?ses->tgtnameid->NameQualifier:0;
-  tgtnid = ses->tgtnameid&&ses->tgtnameid->gg.content?ses->tgtnameid->gg.content:0;
+  tgtaffid = ses->tgtnameid&&ses->tgtnameid->NameQualifier?&ses->tgtnameid->NameQualifier->g:0;
+  tgtnid = ZX_GET_CONTENT(ses->tgtnameid);
   if (!tgtissuer) tgtissuer = issuer;  /* Default: requestor is the target */
   if (!tgtaffid)  tgtaffid = affid;
   if (!tgtnid)    tgtnid = nid;
@@ -700,7 +706,7 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
     zxid_copy_user_eprs_to_ses(cf, ses, path);
   }
   
-  accr = a7n&&(as = a7n->AuthnStatement)&&as->AuthnContext&&as->AuthnContext->AuthnContextClassRef?as->AuthnContext->AuthnContextClassRef->content:0;
+  accr = a7n&&(as = a7n->AuthnStatement)&&as->AuthnContext?ZX_GET_CONTENT(as->AuthnContext->AuthnContextClassRef):0;
   //accr = a7n&&a7n->AuthnStatement&&a7n->AuthnStatement->AuthnContext&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content?a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content:0;
   zxid_add_attr_to_ses(cf, ses, "authnctxlevel", accr);
   
@@ -751,15 +757,14 @@ int zxid_add_qs_to_ses(zxid_conf* cf, zxid_ses* ses, char* qs, int apply_map)
     return 0;
 
   D("qs(%s) len=%d", qs, strlen(qs));
-  while (*qs) {
-    for (; *qs == '&'; ++qs) ;                  /* Skip over & or && */
+  while (qs && *qs) {
+    for (; *qs == '&'; ++qs) ;    /* Skip over & or && */
     if (!*qs) break;
     
-    for (name = qs; *qs && *qs != '='; ++qs) ;  /* Scan name (until '=') */
-    DD("HERE %d", *qs);
-    if (!*qs) break;
-    if (qs == name) {                           /* Key was an empty string: skip it */
-      for (; *qs && *qs != '&'; ++qs) ;         /* Scan value (until '&') *** or '?' */
+    qs = strchr(name = qs, '=');  /* Scan name (until '=') */
+    if (!qs) break;
+    if (qs == name) {             /* Key was an empty string: skip it */
+      qs = strchr(qs, '&');       /* Scan value (until '&') *** or '?' */
       continue;
     }
     for (; name < qs && *name <= ' '; ++name) ; /* Skip over initial whitespace before name */

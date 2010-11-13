@@ -47,11 +47,11 @@ int zxid_idp_map_nid2uid(zxid_conf* cf, int len, char* uid, zxid_a7n* a7n, struc
   nameid = zxid_decrypt_nameid(cf, a7n->Subject->NameID, a7n->Subject->EncryptedID);
   if (nameidp)
     *nameidp = nameid;
-  affil = nameid->SPNameQualifier ? nameid->SPNameQualifier : zxid_my_entity_id(cf);
+  affil = nameid->SPNameQualifier ? &nameid->SPNameQualifier->g : zxid_my_entity_id(cf);
   zxid_nice_sha1(cf, sp_name_buf, sizeof(sp_name_buf), affil, affil, 7);
-  len = read_all(len-1, uid, "idp_map_nid2uid", 1, "%s" ZXID_NID_DIR "%s/%.*s", cf->path, sp_name_buf, nameid->gg.content->len, nameid->gg.content->s);
+  len = read_all(len-1, uid, "idp_map_nid2uid", 1, "%s" ZXID_NID_DIR "%s/%.*s", cf->path, sp_name_buf, ZX_GET_CONTENT_LEN(nameid), ZX_GET_CONTENT_S(nameid));
   if (!len) {
-    ERR("Can not find reverse mapping for SP,SHA1(%s) nid(%.*s)", sp_name_buf, nameid->gg.content->len, nameid->gg.content->s);
+    ERR("Can not find reverse mapping for SP,SHA1(%s) nid(%.*s)", sp_name_buf, ZX_GET_CONTENT_LEN(nameid), ZX_GET_CONTENT_S(nameid));
     if (stp)
       *stp = zxid_mk_lu_Status(cf, "Fail", 0, 0, 0);
     return 0;
@@ -66,7 +66,7 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
 {
   zxid_nid* nameid;
   struct zx_di_RequestedService_s* rs;
-  struct zx_di_QueryResponse_s* resp = zx_NEW_di_QueryResponse(cf->ctx);
+  struct zx_di_QueryResponse_s* resp = zx_NEW_di_QueryResponse(cf->ctx,0);
   struct zx_root_s* r;
   char* logop;
   int len, epr_len, match, n_discovered = 0;
@@ -78,6 +78,8 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
   struct dirent* de;
   struct zx_elem_s* el;
   struct zx_a_Metadata_s* md = 0;  
+  struct zx_str* ss;
+  struct zx_str* tt;
   struct zx_str* addr = 0;  
   zxid_epr* epr = 0;
   D_INDENT("di_query: ");
@@ -91,11 +93,13 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
 
   /* Work through all requests */
 
-  for (rs = req->RequestedService; rs; rs = (struct zx_di_RequestedService_s*)ZX_NEXT(rs)) {
+  for (rs = req->RequestedService;
+       rs && rs->gg.g.tok == zx_di_RequestedService_ELEM;
+       rs = (struct zx_di_RequestedService_s*)ZX_NEXT(rs)) {
 
     /* Look for all entities providing service */
 
-    if (rs->ServiceType && rs->ServiceType->content && rs->ServiceType->content->len) {
+    if (ZX_SIMPLE_ELEM_CHK(rs->ServiceType)) {
       /* *** proper handling of discovering simultaneously multiple service types? */
     } else {
       D("%d: No specific service type given. Looking for all. %p", n_discovered, rs->ServiceType);
@@ -123,11 +127,14 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
       
       /* Filter file name by service type */
       
-      for (el = rs->ServiceType; el; el = (struct zx_elem_s*)el->g.n) {
-	if (!el->content || !el->content->len)
+      for (el = rs->ServiceType;
+	   el && el->g.tok == zx_di_ServiceType_ELEM;
+	   el = (struct zx_elem_s*)el->g.n) {
+	ss = ZX_GET_CONTENT(el);
+	if (!ss || !ss->len)
 	  continue;
-	len = MIN(el->content->len, sizeof(path)-1);
-	memcpy(path, el->content->s, len);
+	len = MIN(ss->len, sizeof(path)-1);
+	memcpy(path, ss->s, len);
 	path[len] = 0;
 	zxid_fold_svc(path, len);
 	if (memcmp(de->d_name, path, len) || de->d_name[len] != ',') {
@@ -142,10 +149,7 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
       if (!epr_buf)
 	continue;
       
-      LOCK(cf->ctx->mx, "diq epr");
-      zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, epr_buf, epr_buf + epr_len);
-      r = zx_DEC_root(cf->ctx, 0, 1);
-      UNLOCK(cf->ctx->mx, "diq epr");
+      r = zx_dec_zx_root(cf->ctx, epr_len, epr_buf, "diq epr");
       if (!r) {
 	ERR("Failed to XML parse epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
 	ZX_FREE(cf->ctx, epr_buf);
@@ -159,29 +163,32 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
 	ZX_FREE(cf->ctx, epr_buf);
 	continue;
       }
-      if (!epr->Address || !epr->Address->gg.content || !epr->Address->gg.content->len) {
+      if (!ZX_SIMPLE_ELEM_CHK(epr->Address)) {
 	ERR("EPR missing <Address>. epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
 	ZX_FREE(cf->ctx, epr_buf);
 	continue;
       }
-      addr = epr->Address->gg.content;
+      addr = ZX_GET_CONTENT(epr->Address);
       md = epr->Metadata;
 
       /* Filter by service type */
       
       match = 1;
-      for (el = rs->ServiceType; el; el = (struct zx_elem_s*)el->g.n) {
-	if (!el->content || !el->content->len)
+      for (el = rs->ServiceType;
+	   el && el->g.tok == zx_di_ServiceType_ELEM;
+	   el = (struct zx_elem_s*)el->g.n) {
+	ss = ZX_GET_CONTENT(el);
+	if (!ss || !ss->len)
 	  continue;
 	match = 0;
-	if (!md->ServiceType || !md->ServiceType->content || !md->ServiceType->content->len) {
+	tt = ZX_GET_CONTENT(md->ServiceType);
+	if (!tt || !tt->len) {
 	  INFO("EPR missing ServiceType. Rejected. epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
 	  ZX_FREE(cf->ctx, epr_buf);
 	  goto next_file;
 	}
-	if (el->content->len != md->ServiceType->content->len
-	    || memcmp(el->content->s, md->ServiceType->content->s, el->content->len)) {
-	  D("%d: Internal svctype(%.*s) does not match desired(%.*s)", n_discovered, md->ServiceType->content->len, md->ServiceType->content->s, el->content->len, el->content->s);
+	if (ss->len != tt->len || memcmp(ss->s, tt->s, ss->len)) {
+	  D("%d: Internal svctype(%.*s) does not match desired(%.*s)", n_discovered, tt->len, tt->s, ss->len, ss->s);
 	  continue;
 	}
 	D("%d: ServiceType matches. file(%s)", n_discovered, de->d_name);
@@ -196,17 +203,20 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
 
       /* Filter by provider id */
       
-      for (el = rs->ProviderID; el; el = (struct zx_elem_s*)el->g.n) {
-	if (!el->content || !el->content->len)
+      for (el = rs->ProviderID;
+	   el && el->g.tok == zx_di_ProviderID_ELEM;
+	   el = (struct zx_elem_s*)el->g.n) {
+	ss = ZX_GET_CONTENT(el);
+	if (!ss || !ss->len)
 	  continue;
 	match = 0;
-	if (!md->ProviderID || !md->ProviderID->content || !md->ProviderID->content->len) {
+	tt = ZX_GET_CONTENT(md->ProviderID);
+	if (!tt || !tt->len) {
 	  INFO("EPR missing ProviderID. epr_buf(%.*s) file(%s)", epr_len, epr_buf, de->d_name);
 	  break;
 	}
-	if (el->content->len != md->ProviderID->content->len
-	    || memcmp(el->content->s, md->ProviderID->content->s, el->content->len)) {
-	  D("%d: ProviderID(%.*s) does not match desired(%.*s)", n_discovered, md->ProviderID->content->len, md->ProviderID->content->s, el->content->len, el->content->s);
+	if (ss->len != tt->len || memcmp(ss->s, tt->s, ss->len)) {
+	  D("%d: ProviderID(%.*s) does not match desired(%.*s)", n_discovered, tt->len, tt->s, ss->len, ss->s);
 	  continue;
 	}
 	D("%d: ProviderID matches. file(%s)", n_discovered, de->d_name);
@@ -216,13 +226,15 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
 #if 1
       /* TAS3 extension: allow matching by the Address (URL) as well */
       if (!match) {
-	for (el = rs->ProviderID; el; el = (struct zx_elem_s*)el->g.n) {
-	  if (!el->content || !el->content->len)
+	for (el = rs->ProviderID;
+	     el && el->g.tok == zx_di_ProviderID_ELEM;
+	     el = (struct zx_elem_s*)el->g.n) {
+	  ss = ZX_GET_CONTENT(el);
+	  if (!ss || !ss->len)
 	    continue;
 	  match = 0;
-	  if (el->content->len != addr->len
-	      || memcmp(el->content->s, addr->s, el->content->len)) {
-	    D("%d: Address(%.*s) does not match desired(%.*s)", n_discovered, addr->len, addr->s, el->content->len, el->content->s);
+	  if (ss->len != addr->len || memcmp(ss->s, addr->s, ss->len)) {
+	    D("%d: Address(%.*s) does not match desired(%.*s)", n_discovered, addr->len, addr->s, ss->len, ss->s);
 	    continue;
 	  }
 	  D("%d: Address matches. file(%s)", n_discovered, de->d_name);
@@ -258,12 +270,12 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf, zxid_a7n* a7n, struct
       epr->gg.g.n = (void*)resp->EndpointReference;
       resp->EndpointReference = epr;
 
-      zxlog(cf, 0, 0, 0, issuer, 0, a7n->ID, nameid->gg.content, "N", "K", logop, uid, "");
+      zxlog(cf, 0, 0, 0, issuer, 0, &a7n->ID->g, ZX_GET_CONTENT(nameid), "N", "K", logop, uid, "");
 
-      if (rs->resultsType && rs->resultsType->s
-	  && (!memcmp(rs->resultsType->s, "only-one", rs->resultsType->len)
-	      || !memcmp(rs->resultsType->s, "best", rs->resultsType->len))) {
-	D("only-one or best requested (%.*s)", rs->resultsType->len, rs->resultsType->s);
+      if (rs->resultsType && rs->resultsType->g.s
+	  && (!memcmp(rs->resultsType->g.s, "only-one", rs->resultsType->g.len)
+	      || !memcmp(rs->resultsType->g.s, "best", rs->resultsType->g.len))) {
+	D("only-one or best requested (%.*s)", rs->resultsType->g.len, rs->resultsType->g.s);
 	break;
       }
       
@@ -273,10 +285,9 @@ next_file:
     
     closedir(dir);
   }
-  el = req->RequestedService->ServiceType && req->RequestedService->ServiceType->content
-    ? req->RequestedService->ServiceType : 0;
-  D("TOTAL discovered %d svctype(%.*s)", n_discovered, el?el->content->len:0, el?el->content->s:"");
-  zxlog(cf, 0, 0, 0, issuer, 0, a7n->ID, nameid->gg.content, "N", "K", "DIOK", 0, "%.*s n=%d", el?el->content->len:1, el?el->content->s:"-", n_discovered);
+  ss = ZX_GET_CONTENT(req->RequestedService->ServiceType);
+  D("TOTAL discovered %d svctype(%.*s)", n_discovered, ss?ss->len:0, ss?ss->s:"");
+  zxlog(cf, 0, 0, 0, issuer, 0, &a7n->ID->g, ZX_GET_CONTENT(nameid), "N", "K", "DIOK", 0, "%.*s n=%d", ss?ss->len:1, ss?ss->s:"-", n_discovered);
   resp->Status = zxid_mk_lu_Status(cf, "OK", 0, 0, 0);
   D_DEDENT("di_query: ");
   return resp;
