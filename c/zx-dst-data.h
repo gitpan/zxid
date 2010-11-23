@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_dst_N_ELEMS 0
-#if !defined(zx_dst__ELEM_MAX) && zx_dst_N_ELEMS == 0
-#define zx_dst__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_dst_el_tab[zx_dst__ELEM_MAX];
-struct zx_el_tok* zx_dst_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- dst_TestResult -------------------------- */
 /* refby( zx_dap_QueryResponse_s zx_idhrxml_QueryResponse_s ) */
 #ifndef zx_dst_TestResult_EXT
@@ -37,8 +30,10 @@ struct zx_dst_TestResult_s {
   struct zx_attr_s* itemIDRef;	/* {1,1} attribute lu:IDReferenceType */
 };
 
-struct zx_dst_TestResult_s* zx_DEC_dst_TestResult(struct zx_ctx* c, struct zx_dst_TestResult_s* x);
-struct zx_dst_TestResult_s* zx_NEW_dst_TestResult(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_dst_TestResult(c, father) (struct zx_dst_TestResult_s*)zx_new_elem((c),(father),zx_dst_TestResult_ELEM)
+
+int zx_DEC_ATTR_dst_TestResult(struct zx_ctx* c, struct zx_dst_TestResult_s* x);
+int zx_DEC_ELEM_dst_TestResult(struct zx_ctx* c, struct zx_dst_TestResult_s* x);
 int zx_LEN_SO_dst_TestResult(struct zx_ctx* c, struct zx_dst_TestResult_s* x);
 char* zx_ENC_SO_dst_TestResult(struct zx_ctx* c, struct zx_dst_TestResult_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_dst_TestResult(struct zx_ctx* c, struct zx_dst_TestResult_s* x);

@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_sbf_N_ELEMS 0
-#if !defined(zx_sbf__ELEM_MAX) && zx_sbf_N_ELEMS == 0
-#define zx_sbf__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_sbf_el_tab[zx_sbf__ELEM_MAX];
-struct zx_el_tok* zx_sbf_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- sbf_Framework -------------------------- */
 /* refby( zx_di_EndpointContext_s zx_e_Header_s zx_a_Metadata_s ) */
 #ifndef zx_sbf_Framework_EXT
@@ -40,8 +33,10 @@ struct zx_sbf_Framework_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_sbf_Framework_s* zx_DEC_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x);
-struct zx_sbf_Framework_s* zx_NEW_sbf_Framework(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_sbf_Framework(c, father) (struct zx_sbf_Framework_s*)zx_new_elem((c),(father),zx_sbf_Framework_ELEM)
+
+int zx_DEC_ATTR_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x);
+int zx_DEC_ELEM_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x);
 int zx_LEN_SO_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x);
 char* zx_ENC_SO_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_sbf_Framework(struct zx_ctx* c, struct zx_sbf_Framework_s* x);

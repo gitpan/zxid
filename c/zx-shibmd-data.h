@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_shibmd_N_ELEMS 0
-#if !defined(zx_shibmd__ELEM_MAX) && zx_shibmd_N_ELEMS == 0
-#define zx_shibmd__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_shibmd_el_tab[zx_shibmd__ELEM_MAX];
-struct zx_el_tok* zx_shibmd_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- shibmd_KeyAuthority -------------------------- */
 /* refby( zx_md_Extensions_s ) */
 #ifndef zx_shibmd_KeyAuthority_EXT
@@ -38,8 +31,10 @@ struct zx_shibmd_KeyAuthority_s {
   struct zx_attr_s* VerifyDepth;	/* {0,1} attribute xs:unsignedByte */
 };
 
-struct zx_shibmd_KeyAuthority_s* zx_DEC_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_shibmd_KeyAuthority_s* x);
-struct zx_shibmd_KeyAuthority_s* zx_NEW_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_shibmd_KeyAuthority(c, father) (struct zx_shibmd_KeyAuthority_s*)zx_new_elem((c),(father),zx_shibmd_KeyAuthority_ELEM)
+
+int zx_DEC_ATTR_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_shibmd_KeyAuthority_s* x);
+int zx_DEC_ELEM_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_shibmd_KeyAuthority_s* x);
 int zx_LEN_SO_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_shibmd_KeyAuthority_s* x);
 char* zx_ENC_SO_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_shibmd_KeyAuthority_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_shibmd_KeyAuthority(struct zx_ctx* c, struct zx_shibmd_KeyAuthority_s* x);
@@ -85,8 +80,10 @@ struct zx_shibmd_Scope_s {
   struct zx_attr_s* regexp;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_shibmd_Scope_s* zx_DEC_shibmd_Scope(struct zx_ctx* c, struct zx_shibmd_Scope_s* x);
-struct zx_shibmd_Scope_s* zx_NEW_shibmd_Scope(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_shibmd_Scope(c, father) (struct zx_shibmd_Scope_s*)zx_new_elem((c),(father),zx_shibmd_Scope_ELEM)
+
+int zx_DEC_ATTR_shibmd_Scope(struct zx_ctx* c, struct zx_shibmd_Scope_s* x);
+int zx_DEC_ELEM_shibmd_Scope(struct zx_ctx* c, struct zx_shibmd_Scope_s* x);
 int zx_LEN_SO_shibmd_Scope(struct zx_ctx* c, struct zx_shibmd_Scope_s* x);
 char* zx_ENC_SO_shibmd_Scope(struct zx_ctx* c, struct zx_shibmd_Scope_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_shibmd_Scope(struct zx_ctx* c, struct zx_shibmd_Scope_s* x);

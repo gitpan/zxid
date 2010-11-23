@@ -1,18 +1,31 @@
 #!/usr/bin/perl
 # 2.2.2010, Sampo Kellomaki (sampo@iki.fi)
+# 18.11.2010, greatly enchanced --Sampo
+#
+# Test suite for ZXID
 
 $usage = <<USAGE;
 Test driver for ZXID
 Usage: http://localhost:8081/zxtest.pl?tst=XML1
-       ./zxtest.pl -a [-x] tst=XML1    # Run specific test
-       ./zxtest.pl -a [-x] ntst=XML    # Run all tests except specified
-         -a Ascii mode
-         -x Print exec command lines to stderr
+       ./zxtest.pl -a [-x] [-dx] tst=XML1    # Run specific test
+       ./zxtest.pl -a [-x] [-dx] ntst=XML    # Run all tests except specified
+         -a  Ascii mode (give twice for colored ascii)
+         -x  Print exec command lines to stderr
+         -dx Proprietary per character color diff (default: system diff -u)
+         N.B. Positional order of even optional arguments is significant.
 USAGE
     ;
 
 $cvsid = '$Id$';
 ($rev) = (split /\s+/, $cvsid)[2];
+
+# See https://wiki.archlinux.org/index.php/Color_Bash_Prompt
+#sub red   { $ascii > 1 ? "\e[1;31m$_[0]\e[0m" : $_[0]; }  # red text
+#sub green { $ascii > 1 ? "\e[1;32m$_[0]\e[0m" : $_[0]; }
+sub red    { $ascii > 1 ? "\e[1;41m$_[0]\e[0m" : $_[0]; }  # red background, black bold text
+sub green  { $ascii > 1 ? "\e[1;42m$_[0]\e[0m" : $_[0]; }
+sub redy   { $ascii > 1 ? "\e[41m$_[0]\e[0m" : $_[0]; }    # red background, black text (no bold)
+sub greeny { $ascii > 1 ? "\e[42m$_[0]\e[0m" : $_[0]; }
 
 use Encode;
 use Digest::MD5;
@@ -35,8 +48,13 @@ $trace = 0;
 #open STDERR, ">>zxtest.err";
 
 select STDERR; $| = 1; select STDOUT; $| = 1;
-warn "START pid=$$ $cvsid qs($ENV{'QUERY_STRING'})";
-$ascii = shift if $ARGV[0] eq '-a';
+$ascii = 1,shift if $ARGV[0] eq '-a';
+$ascii = 2,shift if $ARGV[0] eq '-a';
+$show_exec = shift if $ARGV[0] eq '-x';
+$diffx = shift if $ARGV[0] eq '-dx';
+
+$ENV{'LD_LIBRARY_PATH'} = '/apps/lib', shift;  # *** Specific to Sampo's environment
+warn "START pid=$$ $cvsid qs($ENV{'QUERY_STRING'}) LD($ENV{'LD_LIBRARY_PATH'})";
 syswrite STDOUT, "Content-Type: text/html\r\n\r\n" if !$ascii;
 
 ### N.B. Ignoring SIGCHLD breaks return value of system() and $?
@@ -63,13 +81,17 @@ sub readall {
     my ($f) = @_;
     my ($pkg, $srcfile, $line) = caller;
     undef $/;         # Read all in, without breaking on lines
-    open F, "<$f" or die "$srcfile:$line: Cant read($f): $!";
-    binmode F;
-    flock F, 1;
-    my $x = <F>;
-    flock F, 8;
-    close F;
-    return $x;
+    if (open F, "<$f") {
+	binmode F;
+	#flock F, 1;
+	my $x = <F>;
+	#flock F, 8;
+	close F;
+	return $x;
+    } else {
+	warn "$srcfile:$line: Cant read($f): $!";
+	return undef;
+    }
 }
 
 sub cgiout {
@@ -165,10 +187,8 @@ sub test_http {
 	tst_print('col1r', 'Conn. Err', $latency, $slow, $test, $status);
     } elsif ($laststatus ne 'OK') {
 	tst_print('col1r', 'App Err', $latency, $slow, $test, $lasterror);
-    } elsif ($latency > $slow) {
-	tst_print('col1y', 'OK slow', $latency, $slow, $test, $lasterror);
     } else {
-	tst_print('col1g', 'OK', $latency, $slow, $test, $lasterror);
+	tst_ok($latency, $slow, $test);
     }
 }
 
@@ -201,10 +221,8 @@ sub test_http_post {
 	tst_print('col1r', 'Conn. Err', $latency, $slow, $test, $status);
     } elsif ($laststatus ne 'OK') {
 	tst_print('col1r', 'App Err', $latency, $slow, $test, $lasterror);
-    } elsif ($latency > $slow) {
-	tst_print('col1y', 'OK slow', $latency, $slow, $test, $lasterror);
     } else {
-	tst_print('col1g', 'OK', $latency, $slow, $test, $lasterror);
+	tst_ok($latency, $slow, $test);
     }
 }
 
@@ -654,15 +672,6 @@ sub kill_server {
     }
 }
 
-sub tst_ok {
-    my ($latency, $slow, $test) = @_;
-    if ($latency > $slow) {
-	tst_print('col1y', 'OK slow', $latency, $slow, $test, $lasterror);
-    } else {
-	tst_print('col1g', 'OK', $latency, $slow, $test, $lasterror);
-    }
-}
-
 sub G {
     my ($cmd, $tsti, $expl, $timeout, $slow, $url) = @_;
     return unless $tst eq 'all' || $tst eq substr($tsti,0,length $tst);
@@ -758,6 +767,63 @@ sub C {
     tst_ok($latency, $slow, $test);
 }
 
+sub ediffy {
+    my ($data1,$data2) = @_;
+    return 0 if $data1 eq $data2;
+
+    # Ignore some common innocent differences
+
+    $data1 =~ s/R0\.\d+ \(\d+\)/R0./g;
+    $data2 =~ s/R0\.\d+ \(\d+\)/R0./g;
+    $data1 =~ s/R0\.\d+/R0./g;
+    $data2 =~ s/R0\.\d+/R0./g;
+
+    $data1 =~ s/^(msgid: ).+/$1/gm;
+    $data2 =~ s/^(msgid: ).+/$1/gm;
+    $data1 =~ s/^(sespath: ).+/$1/gm;
+    $data2 =~ s/^(sespath: ).+/$1/gm;
+    $data1 =~ s/^(sesid: ).+/$1/gm;
+    $data2 =~ s/^(sesid: ).+/$1/gm;
+    $data1 =~ s/^(tgta7npath: ).+/$1/gm;
+    $data2 =~ s/^(tgta7npath: ).+/$1/gm;
+    $data1 =~ s/^(ssoa7npath: ).+/$1/gm;
+    $data2 =~ s/^(ssoa7npath: ).+/$1/gm;
+    $data1 =~ s/^(zxididp: 0\.).+/$1/gm;
+    $data2 =~ s/^(zxididp: 0\.).+/$1/gm;
+
+    return 0 if $data1 eq $data2;
+
+    my $ret = 0;
+    require Algorithm::Diff;
+    my @seq1 = split //, $data1;
+    my @seq2 = split //, $data2;
+    my $diff = Algorithm::Diff->new( \@seq1, \@seq2 );
+    
+    $diff->Base(1);   # Return line numbers, not indices
+    while(  $diff->Next()  ) {
+        if (@sames = $diff->Same()) {
+	    print @sames;
+	    next;
+	}
+        if (@dels = $diff->Items(1)) {
+	    print redy(join '', @dels);
+	    ++$ret;;
+	}
+        if (@adds = $diff->Items(2)) {
+	    print greeny(join '', @adds);
+	    ++$ret;
+	}
+    }
+    return $ret;
+}
+
+sub ediffy_read {
+    my ($file1,$file2) = @_;
+    my $data1 = readall $file1;
+    my $data2 = readall $file2;
+    return ediffy($data1,$data2);
+}
+
 sub ED {  # enc-dec command with diff
     my ($tsti, $expl, $n_iter, $file, $exitval, $timeout) = @_;
     return unless $tst eq 'all' || $tst eq substr($tsti,0,length $tst);
@@ -770,10 +836,17 @@ sub ED {  # enc-dec command with diff
     
     my $latency = call_system($test, $timeout, $slow, "./zxencdectest -i $n_iter <$file >tmp/$tsti.out 2>tmp/tst.err", $exitval);
     return if $latency == -1;
-    
-    if (system "/usr/bin/diff t/$tsti.out tmp/$tsti.out") {
-	tst_print('col1r', 'Diff Err', $latency, $slow, $test, '');
-	return;
+
+    if ($diffx) {
+	if (ediffy_read("t/$tsti.out", "tmp/$tsti.out")) {
+	    tst_print('col1r', 'Diff ERR', $latency, $slow, $test, '');
+	    return;
+	}
+    } else {
+	if (system "/usr/bin/diff t/$tsti.out tmp/$tsti.out") {
+	    tst_print('col1r', 'Diff Err', $latency, $slow, $test, '');
+	    return;
+	}
     }
     tst_ok($latency, $slow, $test);
 }
@@ -811,9 +884,16 @@ sub CMD {  # zxpasswd command with diff
     my $latency = call_system($test, $timeout, $slow, "$cmd >tmp/$tsti.out 2>tmp/tst.err", $exitval);
     return if $latency == -1;
     
-    if (system "/usr/bin/diff t/$tsti.out tmp/$tsti.out") {
-	tst_print('col1r', 'Diff Err', $latency, $slow, $test, '');
-	return;
+    if ($diffx) {
+	if (ediffy_read("t/$tsti.out", "tmp/$tsti.out")) {
+	    tst_print('col1r', 'Diff ERR', $latency, $slow, $test, '');
+	    return;
+	}
+    } else {
+	if (system "/usr/bin/diff t/$tsti.out tmp/$tsti.out") {
+	    tst_print('col1r', 'Diff Err', $latency, $slow, $test, '');
+	    return;
+	}
     }
     tst_ok($latency, $slow, $test);
 }
@@ -821,10 +901,6 @@ sub CMD {  # zxpasswd command with diff
 ##################################################################
 ### START
 ###
-
-if ($ARGV[0] eq '-x') {
-    $show_exec = shift;
-}
 
 $cgi = cgidec($ENV{'QUERY_STRING'} || shift);
 $tst = $$cgi{'tst'} || 'all';
@@ -864,14 +940,27 @@ HTML
 
 sub tst_link {
     my ($tsti, $expl, $url) = @_;
+    ++$n_tst;
     return "$tsti $expl" if $ascii;
     return qq(<a href="zxtest.pl?tst=$tsti">$tsti</a> <a href="$url">*</a> $expl);
+}
+
+sub tst_ok {
+    my ($latency, $slow, $test) = @_;
+    ++$n_tst_ok;
+    if ($latency > $slow) {
+	tst_print('col1y', 'OK slow', $latency, $slow, $test, $lasterror);
+    } else {
+	tst_print('col1g', 'OK', $latency, $slow, $test, $lasterror);
+    }
 }
 
 sub tst_print {
     my ($class1, $status, $latency, $slow, $test, $lasterror) = @_;
     if ($ascii) {
-	printf "%-8s %-5s %-5s %-50s %s\n", $status, $latency, $slow, $test, $lasterror;
+	$status = sprintf "%-8s", $status;
+	$status = $class1 eq 'col1r' ? red($status) : green($status);
+	printf "%s %-5s %-5s %-50s %s\n", $status, $latency, $slow, $test, $lasterror;
     } else {
 	syswrite STDOUT, "<table class=line><tr><td class=$class1>$status</td><td class=col2>$latency</td><td class=col3>$slow</td><td class=col4>$test</td><td class=col5>$lasterror&nbsp;</td></tr></table>\n";
     }
@@ -895,12 +984,32 @@ CMD('HELP1', 'zxcall -h',   "./zxcall -v -h");
 CMD('HELP2', 'zxpasswd -h', "./zxpasswd -v -h");
 CMD('HELP3', 'zxcot -h',    "./zxcot -v -h");
 CMD('HELP4', 'zxdecode -h', "./zxdecode -v -h");
+CMD('HELP5', 'zxlogview -h',"./zxlogview -v -h");
 
 CMD('CONF1', 'zxcall -dc dump config', "./zxcall -v -v -c PATH=/var/zxid/ -dc");
+CMD('CONF2', 'zxidhlo o=d dump config',   "QUERY_STRING=o=d ./zxidhlo");
+CMD('CONF3', 'zxidhlo o=c dump carml',    "QUERY_STRING=o=c ./zxidhlo");
+CMD('CONF4', 'zxidhlo o=B dump metadata', "QUERY_STRING=o=B ./zxidhlo");
+CMD('CONF5', 'zxididp o=B dump metadata', "QUERY_STRING=o=B ./zxididp");
+
+CMD('HLO1', 'zxidhlo o=M LECP check', "QUERY_STRING=o=M ./zxidhlo");
+CMD('HLO2', 'zxidhlo o=C CDC', "QUERY_STRING=o=C ./zxidhlo");
+CMD('HLO3', 'zxidhlo o=E idp select page', "QUERY_STRING=o=E ./zxidhlo");
+CMD('HLO4', 'zxidhlo o=L start sso failure', "QUERY_STRING=o=L ./zxidhlo");
+CMD('HLO5', 'zxidhlo o=A artifact failure', "QUERY_STRING=o=A ./zxidhlo");
+CMD('HLO6', 'zxidhlo o=P POST failure', "QUERY_STRING=o=P ./zxidhlo");
+CMD('HLO7', 'zxidhlo o=D deleg invite failure', "QUERY_STRING=o=D ./zxidhlo");
+CMD('HLO8', 'zxidhlo o=F not an idp fail', "QUERY_STRING=o=F ./zxidhlo");
+
+CMD('IDP1', 'zxididp o=R fail', "QUERY_STRING=o=R ./zxididp");
+CMD('IDP2', 'zxididp o=F fail', "QUERY_STRING=o=F ./zxididp");
+CMD('IDP3', 'zxididp o=N new user fail', "QUERY_STRING=o=N ./zxididp");
+CMD('IDP4', 'zxididp o=W pwreset fail', "QUERY_STRING=o=W ./zxididp");
 
 CMD('PW1', 'zxpasswd list user', "./zxpasswd -l tastest");
 CMD('PW2', 'zxpasswd pw an ok', "echo tas123 | ./zxpasswd -v -a tastest");
 CMD('PW3', 'zxpasswd pw an fail', "echo tas124 | ./zxpasswd -v -a tastest",1792);
+CMD('PW4', 'zxpasswd create user', "echo tas125 | ./zxpasswd -at y -a 'cn: pw test user' -c pwtest");
 
 CMD('COT1', 'zxcot list', "./zxcot");
 CMD('COT2', 'zxcot list swap', "./zxcot -s");
@@ -908,6 +1017,14 @@ CMD('COT3', 'zxcot list s2', "./zxcot -s -s");
 CMD('COT4', 'zxcot get idp meta dry', "./zxcot -g http://idp.tas3.pt:8081/zxididp?o=B -n -v");
 CMD('COT5', 'zxcot get sp meta dry', "./zxcot -g http://sp.tas3.pt:8080/zxidservlet/sso?o=B -n -v");
 CMD('COT6', 'zxcot my meta', "./zxcot -m");
+CMD('COT7', 'zxcot my meta add', "./zxcot -m | ./zxcot -a");
+CMD('COT8', 'zxcot gen epr', "./zxcot -e http://localhost:1234/ testabstract http://localhost:1234/?o=B x-impossible");
+CMD('COT9', 'zxcot gen epr add', "./zxcot -e http://localhost:1234/ testabstract http://localhost:1234/?o=B x-impossible | ./zxcot -b -bs");
+CMD('COT10', 'zxcot my meta', "./zxcot -p http://localhost:1234/?o=B");
+CMD('COT11', 'zxcot list s2', "./zxcot -s /var/zxid/idpcot");
+
+CMD('LOG1', 'zxlogview list', "./zxlogview /var/zxid/pem/logsign-nopw-cert.pem /var/zxid/pem/logenc-nopw-cert.pem <t/act");
+CMD('LOG2', 'zxlogview list', "./zxlogview -t /var/zxid/pem/logsign-nopw-cert.pem /var/zxid/pem/logenc-nopw-cert.pem");
 
 CMD('SIG1',  'sig vry shib resp', "./zxdecode -v -s -c AUDIENCE_FATAL=0 -c TIMEOUT_FATAL=0 -c DUP_A7N_FATAL=0 -c DUP_MSG_FATAL=0 <cal-private/shib-resp.xml");
 CMD('SIG2',  'sig vry shib post', "./zxdecode -v -s -c AUDIENCE_FATAL=0 -c TIMEOUT_FATAL=0 -c DUP_A7N_FATAL=0 -c DUP_MSG_FATAL=0 <cal-private/shib-resp.qs");
@@ -1015,6 +1132,8 @@ ZXC('ZXC-WS1', 'AS + WSF call: idhrxml',  1000, "-t urn:id-sis-idhrxml:2007-06:d
 ZXC('ZXC-WS2', 'AS + WSF call: x-foobar', 1000, "-t urn:x-foobar", 't/x-foobar-rq.xml');
 
 CMD('ZXC-WS3', 'AS + WSF call leaf (x-recurs)', "./zxcall -d -a http://idp.tas3.pt:8081/zxididp test:foo -t x-recurs -e '<foobar>Hello</foobar>' -b");
+CMD('ZXC-WS4', 'AS + WSF call EPR not found', "./zxcall -d -a http://idp.tas3.pt:8081/zxididp test:foo -t x-none -e '<foobar>Hello</foobar>' -b",512);
+CMD('ZXC-WS5', 'AS + WSF call bad pw', "./zxcall -d -a http://idp.tas3.pt:8081/zxididp test:bad -t x-none -e '<foobar>Hello</foobar>' -b",256);
 
 # *** TODO: add through GUI testing for SSO
 # *** TODO: via zxidhlo
@@ -1022,6 +1141,8 @@ CMD('ZXC-WS3', 'AS + WSF call leaf (x-recurs)', "./zxcall -d -a http://idp.tas3.
 # *** TODO: via zxidhlo.php
 # *** TODO: via Net::SAML
 # *** TODO: via SSO servlet
+
+CMD('COVIMP1', 'Silly tests just to improve test coverage', "./zxcovimp.sh");
 
 if (0) {
 #C('DBG1', 'Test exit value', 0.5, 0.1, "echo foo");
@@ -1031,9 +1152,15 @@ tA('ST', 'ST1', 'static content bypass svn.zxid.org', 5, 0.5, "http://svn.zxid.o
 tP('ST', 'ST2', 'static content bypass zxid.org', 5, 0.5, "http://zxid.org/favicon.ico");
 }
 
+$success_ratio = sprintf "=== Test success %d/%d (%.1f%%) ===\n", $n_tst_ok, $n_tst, $n_tst_ok*100.0/$n_tst;
+
+print $success_ratio if $ascii;
+
 syswrite STDOUT, <<HTML if !$ascii;
 </table>
 <p><i>Hint: Click on test name to run just that test.</i>
+
+<p><b>$success_ratio</b>
 
 [ <a href="zxtest.pl">zxtest.pl</a> 
 | <a href="zxtest.pl?tst=XML">XML Encoding and Decoding</a> 

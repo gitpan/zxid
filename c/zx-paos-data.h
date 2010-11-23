@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_paos_N_ELEMS 0
-#if !defined(zx_paos__ELEM_MAX) && zx_paos_N_ELEMS == 0
-#define zx_paos__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_paos_el_tab[zx_paos__ELEM_MAX];
-struct zx_el_tok* zx_paos_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- paos_Request -------------------------- */
 /* refby( zx_e_Header_s ) */
 #ifndef zx_paos_Request_EXT
@@ -41,8 +34,10 @@ struct zx_paos_Request_s {
   struct zx_attr_s* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
-struct zx_paos_Request_s* zx_DEC_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x);
-struct zx_paos_Request_s* zx_NEW_paos_Request(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_paos_Request(c, father) (struct zx_paos_Request_s*)zx_new_elem((c),(father),zx_paos_Request_ELEM)
+
+int zx_DEC_ATTR_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x);
+int zx_DEC_ELEM_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x);
 int zx_LEN_SO_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x);
 char* zx_ENC_SO_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_paos_Request(struct zx_ctx* c, struct zx_paos_Request_s* x);
@@ -90,8 +85,10 @@ struct zx_paos_Response_s {
   struct zx_attr_s* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
-struct zx_paos_Response_s* zx_DEC_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x);
-struct zx_paos_Response_s* zx_NEW_paos_Response(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_paos_Response(c, father) (struct zx_paos_Response_s*)zx_new_elem((c),(father),zx_paos_Response_ELEM)
+
+int zx_DEC_ATTR_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x);
+int zx_DEC_ELEM_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x);
 int zx_LEN_SO_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x);
 char* zx_ENC_SO_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_paos_Response(struct zx_ctx* c, struct zx_paos_Response_s* x);

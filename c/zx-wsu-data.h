@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_wsu_N_ELEMS 0
-#if !defined(zx_wsu__ELEM_MAX) && zx_wsu_N_ELEMS == 0
-#define zx_wsu__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_wsu_el_tab[zx_wsu__ELEM_MAX];
-struct zx_el_tok* zx_wsu_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- wsu_Created -------------------------- */
 /* refby( zx_wst_Lifetime_s zx_wsu_Timestamp_s ) */
 #ifndef zx_wsu_Created_EXT
@@ -39,8 +32,10 @@ struct zx_wsu_Created_s {
   struct zx_attr_s* Id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_wsu_Created_s* zx_DEC_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x);
-struct zx_wsu_Created_s* zx_NEW_wsu_Created(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsu_Created(c, father) (struct zx_wsu_Created_s*)zx_new_elem((c),(father),zx_wsu_Created_ELEM)
+
+int zx_DEC_ATTR_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x);
+int zx_DEC_ELEM_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x);
 int zx_LEN_SO_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x);
 char* zx_ENC_SO_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsu_Created(struct zx_ctx* c, struct zx_wsu_Created_s* x);
@@ -84,8 +79,10 @@ struct zx_wsu_Expires_s {
   struct zx_attr_s* Id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_wsu_Expires_s* zx_DEC_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x);
-struct zx_wsu_Expires_s* zx_NEW_wsu_Expires(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsu_Expires(c, father) (struct zx_wsu_Expires_s*)zx_new_elem((c),(father),zx_wsu_Expires_ELEM)
+
+int zx_DEC_ATTR_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x);
+int zx_DEC_ELEM_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x);
 int zx_LEN_SO_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x);
 char* zx_ENC_SO_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsu_Expires(struct zx_ctx* c, struct zx_wsu_Expires_s* x);
@@ -131,8 +128,10 @@ struct zx_wsu_Timestamp_s {
   struct zx_attr_s* Id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_wsu_Timestamp_s* zx_DEC_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x);
-struct zx_wsu_Timestamp_s* zx_NEW_wsu_Timestamp(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsu_Timestamp(c, father) (struct zx_wsu_Timestamp_s*)zx_new_elem((c),(father),zx_wsu_Timestamp_ELEM)
+
+int zx_DEC_ATTR_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x);
+int zx_DEC_ELEM_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x);
 int zx_LEN_SO_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x);
 char* zx_ENC_SO_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsu_Timestamp(struct zx_ctx* c, struct zx_wsu_Timestamp_s* x);

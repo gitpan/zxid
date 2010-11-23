@@ -12,7 +12,6 @@ public interface zxidjniConstants {
   public final static int ZX_TOK_NO_ATTR = zxidjniJNI.ZX_TOK_NO_ATTR_get();
   public final static int ZX_TOK_ATTR_ERR = zxidjniJNI.ZX_TOK_ATTR_ERR_get();
   public final static int ZX_TOK_XMLNS = zxidjniJNI.ZX_TOK_XMLNS_get();
-  public final static int zx_root_ELEM = zxidjniJNI.zx_root_ELEM_get();
   public final static int ZX_TOK_DATA = zxidjniJNI.ZX_TOK_DATA_get();
   public final static int ZX_TOK_ATTR_NOT_FOUND = zxidjniJNI.ZX_TOK_ATTR_NOT_FOUND_get();
   public final static int ZX_TOK_NOT_FOUND = zxidjniJNI.ZX_TOK_NOT_FOUND_get();
@@ -22,8 +21,6 @@ public interface zxidjniConstants {
   public final static int ZX_TOK_NS_MASK = zxidjniJNI.ZX_TOK_NS_MASK_get();
   public final static int ZX_TOK_NS_SHIFT = zxidjniJNI.ZX_TOK_NS_SHIFT_get();
   public final static int ZX_TOK_FLAGS_MASK = zxidjniJNI.ZX_TOK_FLAGS_MASK_get();
-  public final static int zx_xs__ELEM_MAX = zxidjniJNI.zx_xs__ELEM_MAX_get();
-  public final static int zx_xsi__ELEM_MAX = zxidjniJNI.zx_xsi__ELEM_MAX_get();
   public final static String SIG_ALGO_RSA_SHA1 = zxidjniJNI.SIG_ALGO_RSA_SHA1_get();
   public final static String SIG_ALGO_DSA_SHA1 = zxidjniJNI.SIG_ALGO_DSA_SHA1_get();
   public final static String SIG_ALGO = zxidjniJNI.SIG_ALGO_get();

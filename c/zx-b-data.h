@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_b_N_ELEMS 0
-#if !defined(zx_b__ELEM_MAX) && zx_b_N_ELEMS == 0
-#define zx_b__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_b_el_tab[zx_b__ELEM_MAX];
-struct zx_el_tok* zx_b_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- b_ApplicationEPR -------------------------- */
 /* refby( zx_e_Header_s ) */
 #ifndef zx_b_ApplicationEPR_EXT
@@ -45,8 +38,10 @@ struct zx_b_ApplicationEPR_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_ApplicationEPR_s* zx_DEC_b_ApplicationEPR(struct zx_ctx* c, struct zx_b_ApplicationEPR_s* x);
-struct zx_b_ApplicationEPR_s* zx_NEW_b_ApplicationEPR(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_ApplicationEPR(c, father) (struct zx_b_ApplicationEPR_s*)zx_new_elem((c),(father),zx_b_ApplicationEPR_ELEM)
+
+int zx_DEC_ATTR_b_ApplicationEPR(struct zx_ctx* c, struct zx_b_ApplicationEPR_s* x);
+int zx_DEC_ELEM_b_ApplicationEPR(struct zx_ctx* c, struct zx_b_ApplicationEPR_s* x);
 int zx_LEN_SO_b_ApplicationEPR(struct zx_ctx* c, struct zx_b_ApplicationEPR_s* x);
 char* zx_ENC_SO_b_ApplicationEPR(struct zx_ctx* c, struct zx_b_ApplicationEPR_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_ApplicationEPR(struct zx_ctx* c, struct zx_b_ApplicationEPR_s* x);
@@ -123,8 +118,10 @@ struct zx_b_Consent_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_Consent_s* zx_DEC_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s* x);
-struct zx_b_Consent_s* zx_NEW_b_Consent(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_Consent(c, father) (struct zx_b_Consent_s*)zx_new_elem((c),(father),zx_b_Consent_ELEM)
+
+int zx_DEC_ATTR_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s* x);
+int zx_DEC_ELEM_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s* x);
 int zx_LEN_SO_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s* x);
 char* zx_ENC_SO_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_Consent(struct zx_ctx* c, struct zx_b_Consent_s* x);
@@ -177,8 +174,10 @@ struct zx_b_CredentialsContext_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_CredentialsContext_s* zx_DEC_b_CredentialsContext(struct zx_ctx* c, struct zx_b_CredentialsContext_s* x);
-struct zx_b_CredentialsContext_s* zx_NEW_b_CredentialsContext(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_CredentialsContext(c, father) (struct zx_b_CredentialsContext_s*)zx_new_elem((c),(father),zx_b_CredentialsContext_ELEM)
+
+int zx_DEC_ATTR_b_CredentialsContext(struct zx_ctx* c, struct zx_b_CredentialsContext_s* x);
+int zx_DEC_ELEM_b_CredentialsContext(struct zx_ctx* c, struct zx_b_CredentialsContext_s* x);
 int zx_LEN_SO_b_CredentialsContext(struct zx_ctx* c, struct zx_b_CredentialsContext_s* x);
 char* zx_ENC_SO_b_CredentialsContext(struct zx_ctx* c, struct zx_b_CredentialsContext_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_CredentialsContext(struct zx_ctx* c, struct zx_b_CredentialsContext_s* x);
@@ -247,8 +246,10 @@ struct zx_b_EndpointUpdate_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_EndpointUpdate_s* zx_DEC_b_EndpointUpdate(struct zx_ctx* c, struct zx_b_EndpointUpdate_s* x);
-struct zx_b_EndpointUpdate_s* zx_NEW_b_EndpointUpdate(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_EndpointUpdate(c, father) (struct zx_b_EndpointUpdate_s*)zx_new_elem((c),(father),zx_b_EndpointUpdate_ELEM)
+
+int zx_DEC_ATTR_b_EndpointUpdate(struct zx_ctx* c, struct zx_b_EndpointUpdate_s* x);
+int zx_DEC_ELEM_b_EndpointUpdate(struct zx_ctx* c, struct zx_b_EndpointUpdate_s* x);
 int zx_LEN_SO_b_EndpointUpdate(struct zx_ctx* c, struct zx_b_EndpointUpdate_s* x);
 char* zx_ENC_SO_b_EndpointUpdate(struct zx_ctx* c, struct zx_b_EndpointUpdate_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_EndpointUpdate(struct zx_ctx* c, struct zx_b_EndpointUpdate_s* x);
@@ -326,8 +327,10 @@ struct zx_b_Framework_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_Framework_s* zx_DEC_b_Framework(struct zx_ctx* c, struct zx_b_Framework_s* x);
-struct zx_b_Framework_s* zx_NEW_b_Framework(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_Framework(c, father) (struct zx_b_Framework_s*)zx_new_elem((c),(father),zx_b_Framework_ELEM)
+
+int zx_DEC_ATTR_b_Framework(struct zx_ctx* c, struct zx_b_Framework_s* x);
+int zx_DEC_ELEM_b_Framework(struct zx_ctx* c, struct zx_b_Framework_s* x);
 int zx_LEN_SO_b_Framework(struct zx_ctx* c, struct zx_b_Framework_s* x);
 char* zx_ENC_SO_b_Framework(struct zx_ctx* c, struct zx_b_Framework_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_Framework(struct zx_ctx* c, struct zx_b_Framework_s* x);
@@ -381,8 +384,10 @@ struct zx_b_InteractionService_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_InteractionService_s* zx_DEC_b_InteractionService(struct zx_ctx* c, struct zx_b_InteractionService_s* x);
-struct zx_b_InteractionService_s* zx_NEW_b_InteractionService(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_InteractionService(c, father) (struct zx_b_InteractionService_s*)zx_new_elem((c),(father),zx_b_InteractionService_ELEM)
+
+int zx_DEC_ATTR_b_InteractionService(struct zx_ctx* c, struct zx_b_InteractionService_s* x);
+int zx_DEC_ELEM_b_InteractionService(struct zx_ctx* c, struct zx_b_InteractionService_s* x);
 int zx_LEN_SO_b_InteractionService(struct zx_ctx* c, struct zx_b_InteractionService_s* x);
 char* zx_ENC_SO_b_InteractionService(struct zx_ctx* c, struct zx_b_InteractionService_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_InteractionService(struct zx_ctx* c, struct zx_b_InteractionService_s* x);
@@ -457,8 +462,10 @@ struct zx_b_ProcessingContext_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_ProcessingContext_s* zx_DEC_b_ProcessingContext(struct zx_ctx* c, struct zx_b_ProcessingContext_s* x);
-struct zx_b_ProcessingContext_s* zx_NEW_b_ProcessingContext(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_ProcessingContext(c, father) (struct zx_b_ProcessingContext_s*)zx_new_elem((c),(father),zx_b_ProcessingContext_ELEM)
+
+int zx_DEC_ATTR_b_ProcessingContext(struct zx_ctx* c, struct zx_b_ProcessingContext_s* x);
+int zx_DEC_ELEM_b_ProcessingContext(struct zx_ctx* c, struct zx_b_ProcessingContext_s* x);
 int zx_LEN_SO_b_ProcessingContext(struct zx_ctx* c, struct zx_b_ProcessingContext_s* x);
 char* zx_ENC_SO_b_ProcessingContext(struct zx_ctx* c, struct zx_b_ProcessingContext_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_ProcessingContext(struct zx_ctx* c, struct zx_b_ProcessingContext_s* x);
@@ -506,8 +513,10 @@ struct zx_b_RedirectRequest_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_RedirectRequest_s* zx_DEC_b_RedirectRequest(struct zx_ctx* c, struct zx_b_RedirectRequest_s* x);
-struct zx_b_RedirectRequest_s* zx_NEW_b_RedirectRequest(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_RedirectRequest(c, father) (struct zx_b_RedirectRequest_s*)zx_new_elem((c),(father),zx_b_RedirectRequest_ELEM)
+
+int zx_DEC_ATTR_b_RedirectRequest(struct zx_ctx* c, struct zx_b_RedirectRequest_s* x);
+int zx_DEC_ELEM_b_RedirectRequest(struct zx_ctx* c, struct zx_b_RedirectRequest_s* x);
 int zx_LEN_SO_b_RedirectRequest(struct zx_ctx* c, struct zx_b_RedirectRequest_s* x);
 char* zx_ENC_SO_b_RedirectRequest(struct zx_ctx* c, struct zx_b_RedirectRequest_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_RedirectRequest(struct zx_ctx* c, struct zx_b_RedirectRequest_s* x);
@@ -558,8 +567,10 @@ struct zx_b_Sender_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_Sender_s* zx_DEC_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x);
-struct zx_b_Sender_s* zx_NEW_b_Sender(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_Sender(c, father) (struct zx_b_Sender_s*)zx_new_elem((c),(father),zx_b_Sender_ELEM)
+
+int zx_DEC_ATTR_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x);
+int zx_DEC_ELEM_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x);
 int zx_LEN_SO_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x);
 char* zx_ENC_SO_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_Sender(struct zx_ctx* c, struct zx_b_Sender_s* x);
@@ -614,8 +625,10 @@ struct zx_b_TargetIdentity_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_TargetIdentity_s* zx_DEC_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x);
-struct zx_b_TargetIdentity_s* zx_NEW_b_TargetIdentity(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_TargetIdentity(c, father) (struct zx_b_TargetIdentity_s*)zx_new_elem((c),(father),zx_b_TargetIdentity_ELEM)
+
+int zx_DEC_ATTR_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x);
+int zx_DEC_ELEM_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x);
 int zx_LEN_SO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x);
 char* zx_ENC_SO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_TargetIdentity(struct zx_ctx* c, struct zx_b_TargetIdentity_s* x);
@@ -695,8 +708,10 @@ struct zx_b_Timeout_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_Timeout_s* zx_DEC_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s* x);
-struct zx_b_Timeout_s* zx_NEW_b_Timeout(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_Timeout(c, father) (struct zx_b_Timeout_s*)zx_new_elem((c),(father),zx_b_Timeout_ELEM)
+
+int zx_DEC_ATTR_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s* x);
+int zx_DEC_ELEM_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s* x);
 int zx_LEN_SO_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s* x);
 char* zx_ENC_SO_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_Timeout(struct zx_ctx* c, struct zx_b_Timeout_s* x);
@@ -748,8 +763,10 @@ struct zx_b_UsageDirective_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_UsageDirective_s* zx_DEC_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x);
-struct zx_b_UsageDirective_s* zx_NEW_b_UsageDirective(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_UsageDirective(c, father) (struct zx_b_UsageDirective_s*)zx_new_elem((c),(father),zx_b_UsageDirective_ELEM)
+
+int zx_DEC_ATTR_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x);
+int zx_DEC_ELEM_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x);
 int zx_LEN_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x);
 char* zx_ENC_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_UsageDirective(struct zx_ctx* c, struct zx_b_UsageDirective_s* x);
@@ -819,8 +836,10 @@ struct zx_b_UserInteraction_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b_UserInteraction_s* zx_DEC_b_UserInteraction(struct zx_ctx* c, struct zx_b_UserInteraction_s* x);
-struct zx_b_UserInteraction_s* zx_NEW_b_UserInteraction(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b_UserInteraction(c, father) (struct zx_b_UserInteraction_s*)zx_new_elem((c),(father),zx_b_UserInteraction_ELEM)
+
+int zx_DEC_ATTR_b_UserInteraction(struct zx_ctx* c, struct zx_b_UserInteraction_s* x);
+int zx_DEC_ELEM_b_UserInteraction(struct zx_ctx* c, struct zx_b_UserInteraction_s* x);
 int zx_LEN_SO_b_UserInteraction(struct zx_ctx* c, struct zx_b_UserInteraction_s* x);
 char* zx_ENC_SO_b_UserInteraction(struct zx_ctx* c, struct zx_b_UserInteraction_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b_UserInteraction(struct zx_ctx* c, struct zx_b_UserInteraction_s* x);

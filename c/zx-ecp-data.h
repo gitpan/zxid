@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_ecp_N_ELEMS 0
-#if !defined(zx_ecp__ELEM_MAX) && zx_ecp_N_ELEMS == 0
-#define zx_ecp__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_ecp_el_tab[zx_ecp__ELEM_MAX];
-struct zx_el_tok* zx_ecp_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- ecp_RelayState -------------------------- */
 /* refby( zx_e_Header_s ) */
 #ifndef zx_ecp_RelayState_EXT
@@ -38,8 +31,10 @@ struct zx_ecp_RelayState_s {
   struct zx_attr_s* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
-struct zx_ecp_RelayState_s* zx_DEC_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x);
-struct zx_ecp_RelayState_s* zx_NEW_ecp_RelayState(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_ecp_RelayState(c, father) (struct zx_ecp_RelayState_s*)zx_new_elem((c),(father),zx_ecp_RelayState_ELEM)
+
+int zx_DEC_ATTR_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x);
+int zx_DEC_ELEM_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x);
 int zx_LEN_SO_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x);
 char* zx_ENC_SO_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_ecp_RelayState(struct zx_ctx* c, struct zx_ecp_RelayState_s* x);
@@ -84,8 +79,10 @@ struct zx_ecp_Request_s {
   struct zx_attr_s* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
-struct zx_ecp_Request_s* zx_DEC_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x);
-struct zx_ecp_Request_s* zx_NEW_ecp_Request(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_ecp_Request(c, father) (struct zx_ecp_Request_s*)zx_new_elem((c),(father),zx_ecp_Request_ELEM)
+
+int zx_DEC_ATTR_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x);
+int zx_DEC_ELEM_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x);
 int zx_LEN_SO_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x);
 char* zx_ENC_SO_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_ecp_Request(struct zx_ctx* c, struct zx_ecp_Request_s* x);
@@ -147,8 +144,10 @@ struct zx_ecp_Response_s {
   struct zx_attr_s* mustUnderstand;	/* {1,1} attribute xs:boolean */
 };
 
-struct zx_ecp_Response_s* zx_DEC_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x);
-struct zx_ecp_Response_s* zx_NEW_ecp_Response(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_ecp_Response(c, father) (struct zx_ecp_Response_s*)zx_new_elem((c),(father),zx_ecp_Response_ELEM)
+
+int zx_DEC_ATTR_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x);
+int zx_DEC_ELEM_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x);
 int zx_LEN_SO_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x);
 char* zx_ENC_SO_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_ecp_Response(struct zx_ctx* c, struct zx_ecp_Response_s* x);

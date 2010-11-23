@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_as_N_ELEMS 0
-#if !defined(zx_as__ELEM_MAX) && zx_as_N_ELEMS == 0
-#define zx_as__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_as_el_tab[zx_as__ELEM_MAX];
-struct zx_el_tok* zx_as_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- as_Extensions -------------------------- */
 /* refby( zx_as_SASLRequest_s ) */
 #ifndef zx_as_Extensions_EXT
@@ -36,8 +29,10 @@ struct zx_as_Extensions_s {
   zx_as_Extensions_EXT
 };
 
-struct zx_as_Extensions_s* zx_DEC_as_Extensions(struct zx_ctx* c, struct zx_as_Extensions_s* x);
-struct zx_as_Extensions_s* zx_NEW_as_Extensions(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_as_Extensions(c, father) (struct zx_as_Extensions_s*)zx_new_elem((c),(father),zx_as_Extensions_ELEM)
+
+int zx_DEC_ATTR_as_Extensions(struct zx_ctx* c, struct zx_as_Extensions_s* x);
+int zx_DEC_ELEM_as_Extensions(struct zx_ctx* c, struct zx_as_Extensions_s* x);
 int zx_LEN_SO_as_Extensions(struct zx_ctx* c, struct zx_as_Extensions_s* x);
 char* zx_ENC_SO_as_Extensions(struct zx_ctx* c, struct zx_as_Extensions_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_as_Extensions(struct zx_ctx* c, struct zx_as_Extensions_s* x);
@@ -73,8 +68,10 @@ struct zx_as_Parameter_s {
   struct zx_attr_s* name;	/* {1,1} attribute xs:ID */
 };
 
-struct zx_as_Parameter_s* zx_DEC_as_Parameter(struct zx_ctx* c, struct zx_as_Parameter_s* x);
-struct zx_as_Parameter_s* zx_NEW_as_Parameter(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_as_Parameter(c, father) (struct zx_as_Parameter_s*)zx_new_elem((c),(father),zx_as_Parameter_ELEM)
+
+int zx_DEC_ATTR_as_Parameter(struct zx_ctx* c, struct zx_as_Parameter_s* x);
+int zx_DEC_ELEM_as_Parameter(struct zx_ctx* c, struct zx_as_Parameter_s* x);
 int zx_LEN_SO_as_Parameter(struct zx_ctx* c, struct zx_as_Parameter_s* x);
 char* zx_ENC_SO_as_Parameter(struct zx_ctx* c, struct zx_as_Parameter_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_as_Parameter(struct zx_ctx* c, struct zx_as_Parameter_s* x);
@@ -112,8 +109,10 @@ struct zx_as_PasswordTransforms_s {
   struct zx_as_Transform_s* Transform;	/* {1,-1}  */
 };
 
-struct zx_as_PasswordTransforms_s* zx_DEC_as_PasswordTransforms(struct zx_ctx* c, struct zx_as_PasswordTransforms_s* x);
-struct zx_as_PasswordTransforms_s* zx_NEW_as_PasswordTransforms(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_as_PasswordTransforms(c, father) (struct zx_as_PasswordTransforms_s*)zx_new_elem((c),(father),zx_as_PasswordTransforms_ELEM)
+
+int zx_DEC_ATTR_as_PasswordTransforms(struct zx_ctx* c, struct zx_as_PasswordTransforms_s* x);
+int zx_DEC_ELEM_as_PasswordTransforms(struct zx_ctx* c, struct zx_as_PasswordTransforms_s* x);
 int zx_LEN_SO_as_PasswordTransforms(struct zx_ctx* c, struct zx_as_PasswordTransforms_s* x);
 char* zx_ENC_SO_as_PasswordTransforms(struct zx_ctx* c, struct zx_as_PasswordTransforms_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_as_PasswordTransforms(struct zx_ctx* c, struct zx_as_PasswordTransforms_s* x);
@@ -162,8 +161,10 @@ struct zx_as_SASLRequest_s {
   struct zx_attr_s* mechanism;	/* {1,1} attribute principalchosen */
 };
 
-struct zx_as_SASLRequest_s* zx_DEC_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x);
-struct zx_as_SASLRequest_s* zx_NEW_as_SASLRequest(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_as_SASLRequest(c, father) (struct zx_as_SASLRequest_s*)zx_new_elem((c),(father),zx_as_SASLRequest_ELEM)
+
+int zx_DEC_ATTR_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x);
+int zx_DEC_ELEM_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x);
 int zx_LEN_SO_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x);
 char* zx_ENC_SO_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_as_SASLRequest(struct zx_ctx* c, struct zx_as_SASLRequest_s* x);
@@ -233,8 +234,10 @@ struct zx_as_SASLResponse_s {
   struct zx_attr_s* serverMechanism;	/* {0,1} attribute xs:string */
 };
 
-struct zx_as_SASLResponse_s* zx_DEC_as_SASLResponse(struct zx_ctx* c, struct zx_as_SASLResponse_s* x);
-struct zx_as_SASLResponse_s* zx_NEW_as_SASLResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_as_SASLResponse(c, father) (struct zx_as_SASLResponse_s*)zx_new_elem((c),(father),zx_as_SASLResponse_ELEM)
+
+int zx_DEC_ATTR_as_SASLResponse(struct zx_ctx* c, struct zx_as_SASLResponse_s* x);
+int zx_DEC_ELEM_as_SASLResponse(struct zx_ctx* c, struct zx_as_SASLResponse_s* x);
 int zx_LEN_SO_as_SASLResponse(struct zx_ctx* c, struct zx_as_SASLResponse_s* x);
 char* zx_ENC_SO_as_SASLResponse(struct zx_ctx* c, struct zx_as_SASLResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_as_SASLResponse(struct zx_ctx* c, struct zx_as_SASLResponse_s* x);
@@ -305,8 +308,10 @@ struct zx_as_Transform_s {
   struct zx_attr_s* name;	/* {1,1} attribute xs:ID */
 };
 
-struct zx_as_Transform_s* zx_DEC_as_Transform(struct zx_ctx* c, struct zx_as_Transform_s* x);
-struct zx_as_Transform_s* zx_NEW_as_Transform(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_as_Transform(c, father) (struct zx_as_Transform_s*)zx_new_elem((c),(father),zx_as_Transform_ELEM)
+
+int zx_DEC_ATTR_as_Transform(struct zx_ctx* c, struct zx_as_Transform_s* x);
+int zx_DEC_ELEM_as_Transform(struct zx_ctx* c, struct zx_as_Transform_s* x);
 int zx_LEN_SO_as_Transform(struct zx_ctx* c, struct zx_as_Transform_s* x);
 char* zx_ENC_SO_as_Transform(struct zx_ctx* c, struct zx_as_Transform_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_as_Transform(struct zx_ctx* c, struct zx_as_Transform_s* x);

@@ -49,6 +49,7 @@ sub this {
 
 package Net::SAML;
 
+*zx_new_elem = *Net::SAMLc::zx_new_elem;
 *zx_new_simple_elem = *Net::SAMLc::zx_new_simple_elem;
 *zx_ref_len_simple_elem = *Net::SAMLc::zx_ref_len_simple_elem;
 *zx_ref_simple_elem = *Net::SAMLc::zx_ref_simple_elem;
@@ -113,22 +114,16 @@ package Net::SAML;
 *zx_free_attr = *Net::SAMLc::zx_free_attr;
 *zx_free_elem = *Net::SAMLc::zx_free_elem;
 *zx_add_content = *Net::SAMLc::zx_add_content;
-*zx_prepare_dec_ctx = *Net::SAMLc::zx_prepare_dec_ctx;
-*zx_dec_zx_root = *Net::SAMLc::zx_dec_zx_root;
-*zx_scan_data = *Net::SAMLc::zx_scan_data;
-*zx_scan_pi_or_comment = *Net::SAMLc::zx_scan_pi_or_comment;
-*zx_known_attr_wrong_context = *Net::SAMLc::zx_known_attr_wrong_context;
-*zx_known_elem_wrong_context = *Net::SAMLc::zx_known_elem_wrong_context;
-*zx_dec_attr_val = *Net::SAMLc::zx_dec_attr_val;
-*zx_dec_reverse_lists = *Net::SAMLc::zx_dec_reverse_lists;
 *zx_xml_parse_err = *Net::SAMLc::zx_xml_parse_err;
 *zx_xml_parse_dbg = *Net::SAMLc::zx_xml_parse_dbg;
-*zx_scan_elem_start = *Net::SAMLc::zx_scan_elem_start;
-*zx_scan_elem_end = *Net::SAMLc::zx_scan_elem_end;
 *zx_xmlns_detected = *Net::SAMLc::zx_xmlns_detected;
 *zx_len_inc_ns = *Net::SAMLc::zx_len_inc_ns;
 *zx_add_inc_ns = *Net::SAMLc::zx_add_inc_ns;
 *zx_in_inc_ns = *Net::SAMLc::zx_in_inc_ns;
+*zx_prepare_dec_ctx = *Net::SAMLc::zx_prepare_dec_ctx;
+*zx_dec_zx_root = *Net::SAMLc::zx_dec_zx_root;
+*zx_DEC_elem = *Net::SAMLc::zx_DEC_elem;
+*zx_el_desc_lookup = *Net::SAMLc::zx_el_desc_lookup;
 *simple = *Net::SAMLc::zxid_simple;
 *idp_list = *Net::SAMLc::zxid_idp_list;
 *idp_select = *Net::SAMLc::zxid_idp_select;
@@ -468,10 +463,6 @@ use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
 *swig_prefix_len_set = *Net::SAMLc::zx_ns_s_prefix_len_set;
 *swig_prefix_get = *Net::SAMLc::zx_ns_s_prefix_get;
 *swig_prefix_set = *Net::SAMLc::zx_ns_s_prefix_set;
-*swig_elem2tok_get = *Net::SAMLc::zx_ns_s_elem2tok_get;
-*swig_elem2tok_set = *Net::SAMLc::zx_ns_s_elem2tok_set;
-*swig_el_tab_get = *Net::SAMLc::zx_ns_s_el_tab_get;
-*swig_el_tab_set = *Net::SAMLc::zx_ns_s_el_tab_set;
 *swig_n_get = *Net::SAMLc::zx_ns_s_n_get;
 *swig_n_set = *Net::SAMLc::zx_ns_s_n_set;
 *swig_master_get = *Net::SAMLc::zx_ns_s_master_get;
@@ -734,47 +725,6 @@ sub ACQUIRE {
 }
 
 
-############# Class : Net::SAML::zx_el_tok ##############
-
-package Net::SAML::zx_el_tok;
-use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
-@ISA = qw( Net::SAML );
-%OWNER = ();
-%ITERATORS = ();
-*swig_name_get = *Net::SAMLc::zx_el_tok_name_get;
-*swig_name_set = *Net::SAMLc::zx_el_tok_name_set;
-*swig_siz_get = *Net::SAMLc::zx_el_tok_siz_get;
-*swig_siz_set = *Net::SAMLc::zx_el_tok_siz_set;
-sub new {
-    my $pkg = shift;
-    my $self = Net::SAMLc::new_zx_el_tok(@_);
-    bless $self, $pkg if defined($self);
-}
-
-sub DESTROY {
-    return unless $_[0]->isa('HASH');
-    my $self = tied(%{$_[0]});
-    return unless defined $self;
-    delete $ITERATORS{$self};
-    if (exists $OWNER{$self}) {
-        Net::SAMLc::delete_zx_el_tok($self);
-        delete $OWNER{$self};
-    }
-}
-
-sub DISOWN {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    delete $OWNER{$ptr};
-}
-
-sub ACQUIRE {
-    my $self = shift;
-    my $ptr = tied(%$self);
-    $OWNER{$ptr} = 1;
-}
-
-
 ############# Class : Net::SAML::zx_at_tok ##############
 
 package Net::SAML::zx_at_tok;
@@ -797,6 +747,94 @@ sub DESTROY {
     delete $ITERATORS{$self};
     if (exists $OWNER{$self}) {
         Net::SAMLc::delete_zx_at_tok($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zx_el_desc ##############
+
+package Net::SAML::zx_el_desc;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_n_get = *Net::SAMLc::zx_el_desc_n_get;
+*swig_n_set = *Net::SAMLc::zx_el_desc_n_set;
+*swig_tok_get = *Net::SAMLc::zx_el_desc_tok_get;
+*swig_tok_set = *Net::SAMLc::zx_el_desc_tok_set;
+*swig_siz_get = *Net::SAMLc::zx_el_desc_siz_get;
+*swig_siz_set = *Net::SAMLc::zx_el_desc_siz_set;
+*swig_at_dec_get = *Net::SAMLc::zx_el_desc_at_dec_get;
+*swig_at_dec_set = *Net::SAMLc::zx_el_desc_at_dec_set;
+*swig_el_dec_get = *Net::SAMLc::zx_el_desc_el_dec_get;
+*swig_el_dec_set = *Net::SAMLc::zx_el_desc_el_dec_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zx_el_desc(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zx_el_desc($self);
+        delete $OWNER{$self};
+    }
+}
+
+sub DISOWN {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    delete $OWNER{$ptr};
+}
+
+sub ACQUIRE {
+    my $self = shift;
+    my $ptr = tied(%$self);
+    $OWNER{$ptr} = 1;
+}
+
+
+############# Class : Net::SAML::zx_el_tok ##############
+
+package Net::SAML::zx_el_tok;
+use vars qw(@ISA %OWNER %ITERATORS %BLESSEDMEMBERS);
+@ISA = qw( Net::SAML );
+%OWNER = ();
+%ITERATORS = ();
+*swig_name_get = *Net::SAMLc::zx_el_tok_name_get;
+*swig_name_set = *Net::SAMLc::zx_el_tok_name_set;
+*swig_n_get = *Net::SAMLc::zx_el_tok_n_get;
+*swig_n_set = *Net::SAMLc::zx_el_tok_n_set;
+sub new {
+    my $pkg = shift;
+    my $self = Net::SAMLc::new_zx_el_tok(@_);
+    bless $self, $pkg if defined($self);
+}
+
+sub DESTROY {
+    return unless $_[0]->isa('HASH');
+    my $self = tied(%{$_[0]});
+    return unless defined $self;
+    delete $ITERATORS{$self};
+    if (exists $OWNER{$self}) {
+        Net::SAMLc::delete_zx_el_tok($self);
         delete $OWNER{$self};
     }
 }
@@ -1927,7 +1965,6 @@ package Net::SAML;
 *ZX_TOK_NO_ATTR = *Net::SAMLc::ZX_TOK_NO_ATTR;
 *ZX_TOK_ATTR_ERR = *Net::SAMLc::ZX_TOK_ATTR_ERR;
 *ZX_TOK_XMLNS = *Net::SAMLc::ZX_TOK_XMLNS;
-*zx_root_ELEM = *Net::SAMLc::zx_root_ELEM;
 *ZX_TOK_DATA = *Net::SAMLc::ZX_TOK_DATA;
 *ZX_TOK_ATTR_NOT_FOUND = *Net::SAMLc::ZX_TOK_ATTR_NOT_FOUND;
 *ZX_TOK_NOT_FOUND = *Net::SAMLc::ZX_TOK_NOT_FOUND;
@@ -1937,8 +1974,6 @@ package Net::SAML;
 *ZX_TOK_NS_MASK = *Net::SAMLc::ZX_TOK_NS_MASK;
 *ZX_TOK_NS_SHIFT = *Net::SAMLc::ZX_TOK_NS_SHIFT;
 *ZX_TOK_FLAGS_MASK = *Net::SAMLc::ZX_TOK_FLAGS_MASK;
-*zx_xs__ELEM_MAX = *Net::SAMLc::zx_xs__ELEM_MAX;
-*zx_xsi__ELEM_MAX = *Net::SAMLc::zx_xsi__ELEM_MAX;
 *SIG_ALGO_RSA_SHA1 = *Net::SAMLc::SIG_ALGO_RSA_SHA1;
 *SIG_ALGO_DSA_SHA1 = *Net::SAMLc::SIG_ALGO_DSA_SHA1;
 *SIG_ALGO = *Net::SAMLc::SIG_ALGO;

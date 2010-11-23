@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_exca_N_ELEMS 0
-#if !defined(zx_exca__ELEM_MAX) && zx_exca_N_ELEMS == 0
-#define zx_exca__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_exca_el_tab[zx_exca__ELEM_MAX];
-struct zx_el_tok* zx_exca_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- exca_InclusiveNamespaces -------------------------- */
 /* refby( zx_ds_Transform_s ) */
 #ifndef zx_exca_InclusiveNamespaces_EXT
@@ -37,8 +30,10 @@ struct zx_exca_InclusiveNamespaces_s {
   struct zx_attr_s* PrefixList;	/* {1,1} attribute xs:string */
 };
 
-struct zx_exca_InclusiveNamespaces_s* zx_DEC_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_exca_InclusiveNamespaces_s* x);
-struct zx_exca_InclusiveNamespaces_s* zx_NEW_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_exca_InclusiveNamespaces(c, father) (struct zx_exca_InclusiveNamespaces_s*)zx_new_elem((c),(father),zx_exca_InclusiveNamespaces_ELEM)
+
+int zx_DEC_ATTR_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_exca_InclusiveNamespaces_s* x);
+int zx_DEC_ELEM_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_exca_InclusiveNamespaces_s* x);
 int zx_LEN_SO_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_exca_InclusiveNamespaces_s* x);
 char* zx_ENC_SO_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_exca_InclusiveNamespaces_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_exca_InclusiveNamespaces(struct zx_ctx* c, struct zx_exca_InclusiveNamespaces_s* x);

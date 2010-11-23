@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_idpdisc_N_ELEMS 0
-#if !defined(zx_idpdisc__ELEM_MAX) && zx_idpdisc_N_ELEMS == 0
-#define zx_idpdisc__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_idpdisc_el_tab[zx_idpdisc__ELEM_MAX];
-struct zx_el_tok* zx_idpdisc_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- idpdisc_DiscoveryResponse -------------------------- */
 /* refby( zx_md_Extensions_s ) */
 #ifndef zx_idpdisc_DiscoveryResponse_EXT
@@ -41,8 +34,10 @@ struct zx_idpdisc_DiscoveryResponse_s {
   struct zx_attr_s* isDefault;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_idpdisc_DiscoveryResponse_s* zx_DEC_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_idpdisc_DiscoveryResponse_s* x);
-struct zx_idpdisc_DiscoveryResponse_s* zx_NEW_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_idpdisc_DiscoveryResponse(c, father) (struct zx_idpdisc_DiscoveryResponse_s*)zx_new_elem((c),(father),zx_idpdisc_DiscoveryResponse_ELEM)
+
+int zx_DEC_ATTR_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_idpdisc_DiscoveryResponse_s* x);
+int zx_DEC_ELEM_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_idpdisc_DiscoveryResponse_s* x);
 int zx_LEN_SO_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_idpdisc_DiscoveryResponse_s* x);
 char* zx_ENC_SO_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_idpdisc_DiscoveryResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_idpdisc_DiscoveryResponse(struct zx_ctx* c, struct zx_idpdisc_DiscoveryResponse_s* x);

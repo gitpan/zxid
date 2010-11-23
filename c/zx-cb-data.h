@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_cb_N_ELEMS 0
-#if !defined(zx_cb__ELEM_MAX) && zx_cb_N_ELEMS == 0
-#define zx_cb__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_cb_el_tab[zx_cb__ELEM_MAX];
-struct zx_el_tok* zx_cb_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- cb_By -------------------------- */
 /* refby( ) */
 #ifndef zx_cb_By_EXT
@@ -38,8 +31,10 @@ struct zx_cb_By_s {
   struct zx_attr_s* sortWeight;	/* {0,1} attribute xs:number */
 };
 
-struct zx_cb_By_s* zx_DEC_cb_By(struct zx_ctx* c, struct zx_cb_By_s* x);
-struct zx_cb_By_s* zx_NEW_cb_By(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_By(c, father) (struct zx_cb_By_s*)zx_new_elem((c),(father),zx_cb_By_ELEM)
+
+int zx_DEC_ATTR_cb_By(struct zx_ctx* c, struct zx_cb_By_s* x);
+int zx_DEC_ELEM_cb_By(struct zx_ctx* c, struct zx_cb_By_s* x);
 int zx_LEN_SO_cb_By(struct zx_ctx* c, struct zx_cb_By_s* x);
 char* zx_ENC_SO_cb_By(struct zx_ctx* c, struct zx_cb_By_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_By(struct zx_ctx* c, struct zx_cb_By_s* x);
@@ -85,8 +80,10 @@ struct zx_cb_Create_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_Create_s* zx_DEC_cb_Create(struct zx_ctx* c, struct zx_cb_Create_s* x);
-struct zx_cb_Create_s* zx_NEW_cb_Create(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Create(c, father) (struct zx_cb_Create_s*)zx_new_elem((c),(father),zx_cb_Create_ELEM)
+
+int zx_DEC_ATTR_cb_Create(struct zx_ctx* c, struct zx_cb_Create_s* x);
+int zx_DEC_ELEM_cb_Create(struct zx_ctx* c, struct zx_cb_Create_s* x);
 int zx_LEN_SO_cb_Create(struct zx_ctx* c, struct zx_cb_Create_s* x);
 char* zx_ENC_SO_cb_Create(struct zx_ctx* c, struct zx_cb_Create_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Create(struct zx_ctx* c, struct zx_cb_Create_s* x);
@@ -175,8 +172,10 @@ struct zx_cb_CreateItem_s {
   struct zx_attr_s* objectType;	/* {0,1} attribute xs:NCName */
 };
 
-struct zx_cb_CreateItem_s* zx_DEC_cb_CreateItem(struct zx_ctx* c, struct zx_cb_CreateItem_s* x);
-struct zx_cb_CreateItem_s* zx_NEW_cb_CreateItem(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_CreateItem(c, father) (struct zx_cb_CreateItem_s*)zx_new_elem((c),(father),zx_cb_CreateItem_ELEM)
+
+int zx_DEC_ATTR_cb_CreateItem(struct zx_ctx* c, struct zx_cb_CreateItem_s* x);
+int zx_DEC_ELEM_cb_CreateItem(struct zx_ctx* c, struct zx_cb_CreateItem_s* x);
 int zx_LEN_SO_cb_CreateItem(struct zx_ctx* c, struct zx_cb_CreateItem_s* x);
 char* zx_ENC_SO_cb_CreateItem(struct zx_ctx* c, struct zx_cb_CreateItem_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_CreateItem(struct zx_ctx* c, struct zx_cb_CreateItem_s* x);
@@ -230,8 +229,10 @@ struct zx_cb_CreateResponse_s {
   struct zx_attr_s* timeStamp;	/* {0,1} attribute xs:dateTime */
 };
 
-struct zx_cb_CreateResponse_s* zx_DEC_cb_CreateResponse(struct zx_ctx* c, struct zx_cb_CreateResponse_s* x);
-struct zx_cb_CreateResponse_s* zx_NEW_cb_CreateResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_CreateResponse(c, father) (struct zx_cb_CreateResponse_s*)zx_new_elem((c),(father),zx_cb_CreateResponse_ELEM)
+
+int zx_DEC_ATTR_cb_CreateResponse(struct zx_ctx* c, struct zx_cb_CreateResponse_s* x);
+int zx_DEC_ELEM_cb_CreateResponse(struct zx_ctx* c, struct zx_cb_CreateResponse_s* x);
 int zx_LEN_SO_cb_CreateResponse(struct zx_ctx* c, struct zx_cb_CreateResponse_s* x);
 char* zx_ENC_SO_cb_CreateResponse(struct zx_ctx* c, struct zx_cb_CreateResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_CreateResponse(struct zx_ctx* c, struct zx_cb_CreateResponse_s* x);
@@ -296,8 +297,10 @@ struct zx_cb_Credential_s {
   struct zx_attr_s* notOnOrAfter;	/* {0,1} attribute xs:dateTime */
 };
 
-struct zx_cb_Credential_s* zx_DEC_cb_Credential(struct zx_ctx* c, struct zx_cb_Credential_s* x);
-struct zx_cb_Credential_s* zx_NEW_cb_Credential(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Credential(c, father) (struct zx_cb_Credential_s*)zx_new_elem((c),(father),zx_cb_Credential_ELEM)
+
+int zx_DEC_ATTR_cb_Credential(struct zx_ctx* c, struct zx_cb_Credential_s* x);
+int zx_DEC_ELEM_cb_Credential(struct zx_ctx* c, struct zx_cb_Credential_s* x);
 int zx_LEN_SO_cb_Credential(struct zx_ctx* c, struct zx_cb_Credential_s* x);
 char* zx_ENC_SO_cb_Credential(struct zx_ctx* c, struct zx_cb_Credential_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Credential(struct zx_ctx* c, struct zx_cb_Credential_s* x);
@@ -350,8 +353,10 @@ struct zx_cb_Data_s {
   struct zx_attr_s* changeFormat;	/* {0,1} attribute ChangedElements */
 };
 
-struct zx_cb_Data_s* zx_DEC_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x);
-struct zx_cb_Data_s* zx_NEW_cb_Data(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Data(c, father) (struct zx_cb_Data_s*)zx_new_elem((c),(father),zx_cb_Data_ELEM)
+
+int zx_DEC_ATTR_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x);
+int zx_DEC_ELEM_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x);
 int zx_LEN_SO_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x);
 char* zx_ENC_SO_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Data(struct zx_ctx* c, struct zx_cb_Data_s* x);
@@ -413,8 +418,10 @@ struct zx_cb_Delete_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_Delete_s* zx_DEC_cb_Delete(struct zx_ctx* c, struct zx_cb_Delete_s* x);
-struct zx_cb_Delete_s* zx_NEW_cb_Delete(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Delete(c, father) (struct zx_cb_Delete_s*)zx_new_elem((c),(father),zx_cb_Delete_ELEM)
+
+int zx_DEC_ATTR_cb_Delete(struct zx_ctx* c, struct zx_cb_Delete_s* x);
+int zx_DEC_ELEM_cb_Delete(struct zx_ctx* c, struct zx_cb_Delete_s* x);
 int zx_LEN_SO_cb_Delete(struct zx_ctx* c, struct zx_cb_Delete_s* x);
 char* zx_ENC_SO_cb_Delete(struct zx_ctx* c, struct zx_cb_Delete_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Delete(struct zx_ctx* c, struct zx_cb_Delete_s* x);
@@ -489,8 +496,10 @@ struct zx_cb_DeleteItem_s {
   struct zx_attr_s* predefined;	/* {0,1} attribute xs:string */
 };
 
-struct zx_cb_DeleteItem_s* zx_DEC_cb_DeleteItem(struct zx_ctx* c, struct zx_cb_DeleteItem_s* x);
-struct zx_cb_DeleteItem_s* zx_NEW_cb_DeleteItem(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_DeleteItem(c, father) (struct zx_cb_DeleteItem_s*)zx_new_elem((c),(father),zx_cb_DeleteItem_ELEM)
+
+int zx_DEC_ATTR_cb_DeleteItem(struct zx_ctx* c, struct zx_cb_DeleteItem_s* x);
+int zx_DEC_ELEM_cb_DeleteItem(struct zx_ctx* c, struct zx_cb_DeleteItem_s* x);
 int zx_LEN_SO_cb_DeleteItem(struct zx_ctx* c, struct zx_cb_DeleteItem_s* x);
 char* zx_ENC_SO_cb_DeleteItem(struct zx_ctx* c, struct zx_cb_DeleteItem_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_DeleteItem(struct zx_ctx* c, struct zx_cb_DeleteItem_s* x);
@@ -546,8 +555,10 @@ struct zx_cb_DeleteResponse_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_DeleteResponse_s* zx_DEC_cb_DeleteResponse(struct zx_ctx* c, struct zx_cb_DeleteResponse_s* x);
-struct zx_cb_DeleteResponse_s* zx_NEW_cb_DeleteResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_DeleteResponse(c, father) (struct zx_cb_DeleteResponse_s*)zx_new_elem((c),(father),zx_cb_DeleteResponse_ELEM)
+
+int zx_DEC_ATTR_cb_DeleteResponse(struct zx_ctx* c, struct zx_cb_DeleteResponse_s* x);
+int zx_DEC_ELEM_cb_DeleteResponse(struct zx_ctx* c, struct zx_cb_DeleteResponse_s* x);
 int zx_LEN_SO_cb_DeleteResponse(struct zx_ctx* c, struct zx_cb_DeleteResponse_s* x);
 char* zx_ENC_SO_cb_DeleteResponse(struct zx_ctx* c, struct zx_cb_DeleteResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_DeleteResponse(struct zx_ctx* c, struct zx_cb_DeleteResponse_s* x);
@@ -602,8 +613,10 @@ struct zx_cb_EncryptedResourceID_s {
   struct zx_xenc_EncryptedKey_s* EncryptedKey;	/* {1,1} nada */
 };
 
-struct zx_cb_EncryptedResourceID_s* zx_DEC_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_cb_EncryptedResourceID_s* x);
-struct zx_cb_EncryptedResourceID_s* zx_NEW_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_EncryptedResourceID(c, father) (struct zx_cb_EncryptedResourceID_s*)zx_new_elem((c),(father),zx_cb_EncryptedResourceID_ELEM)
+
+int zx_DEC_ATTR_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_cb_EncryptedResourceID_s* x);
+int zx_DEC_ELEM_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_cb_EncryptedResourceID_s* x);
 int zx_LEN_SO_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_cb_EncryptedResourceID_s* x);
 char* zx_ENC_SO_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_cb_EncryptedResourceID_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_EncryptedResourceID(struct zx_ctx* c, struct zx_cb_EncryptedResourceID_s* x);
@@ -654,8 +667,10 @@ struct zx_cb_Extension_s {
   zx_cb_Extension_EXT
 };
 
-struct zx_cb_Extension_s* zx_DEC_cb_Extension(struct zx_ctx* c, struct zx_cb_Extension_s* x);
-struct zx_cb_Extension_s* zx_NEW_cb_Extension(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Extension(c, father) (struct zx_cb_Extension_s*)zx_new_elem((c),(father),zx_cb_Extension_ELEM)
+
+int zx_DEC_ATTR_cb_Extension(struct zx_ctx* c, struct zx_cb_Extension_s* x);
+int zx_DEC_ELEM_cb_Extension(struct zx_ctx* c, struct zx_cb_Extension_s* x);
 int zx_LEN_SO_cb_Extension(struct zx_ctx* c, struct zx_cb_Extension_s* x);
 char* zx_ENC_SO_cb_Extension(struct zx_ctx* c, struct zx_cb_Extension_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Extension(struct zx_ctx* c, struct zx_cb_Extension_s* x);
@@ -695,8 +710,10 @@ struct zx_cb_ItemData_s {
   struct zx_attr_s* changeFormat;	/* {0,1} attribute ChangedElements */
 };
 
-struct zx_cb_ItemData_s* zx_DEC_cb_ItemData(struct zx_ctx* c, struct zx_cb_ItemData_s* x);
-struct zx_cb_ItemData_s* zx_NEW_cb_ItemData(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_ItemData(c, father) (struct zx_cb_ItemData_s*)zx_new_elem((c),(father),zx_cb_ItemData_ELEM)
+
+int zx_DEC_ATTR_cb_ItemData(struct zx_ctx* c, struct zx_cb_ItemData_s* x);
+int zx_DEC_ELEM_cb_ItemData(struct zx_ctx* c, struct zx_cb_ItemData_s* x);
 int zx_LEN_SO_cb_ItemData(struct zx_ctx* c, struct zx_cb_ItemData_s* x);
 char* zx_ENC_SO_cb_ItemData(struct zx_ctx* c, struct zx_cb_ItemData_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_ItemData(struct zx_ctx* c, struct zx_cb_ItemData_s* x);
@@ -748,8 +765,10 @@ struct zx_cb_ItemSelection_s {
   struct zx_attr_s* format;	/* {0,1} attribute xs:anyURI */
 };
 
-struct zx_cb_ItemSelection_s* zx_DEC_cb_ItemSelection(struct zx_ctx* c, struct zx_cb_ItemSelection_s* x);
-struct zx_cb_ItemSelection_s* zx_NEW_cb_ItemSelection(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_ItemSelection(c, father) (struct zx_cb_ItemSelection_s*)zx_new_elem((c),(father),zx_cb_ItemSelection_ELEM)
+
+int zx_DEC_ATTR_cb_ItemSelection(struct zx_ctx* c, struct zx_cb_ItemSelection_s* x);
+int zx_DEC_ELEM_cb_ItemSelection(struct zx_ctx* c, struct zx_cb_ItemSelection_s* x);
 int zx_LEN_SO_cb_ItemSelection(struct zx_ctx* c, struct zx_cb_ItemSelection_s* x);
 char* zx_ENC_SO_cb_ItemSelection(struct zx_ctx* c, struct zx_cb_ItemSelection_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_ItemSelection(struct zx_ctx* c, struct zx_cb_ItemSelection_s* x);
@@ -793,8 +812,10 @@ struct zx_cb_Modification_s {
   struct zx_attr_s* overrideAllowed;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_cb_Modification_s* zx_DEC_cb_Modification(struct zx_ctx* c, struct zx_cb_Modification_s* x);
-struct zx_cb_Modification_s* zx_NEW_cb_Modification(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Modification(c, father) (struct zx_cb_Modification_s*)zx_new_elem((c),(father),zx_cb_Modification_ELEM)
+
+int zx_DEC_ATTR_cb_Modification(struct zx_ctx* c, struct zx_cb_Modification_s* x);
+int zx_DEC_ELEM_cb_Modification(struct zx_ctx* c, struct zx_cb_Modification_s* x);
 int zx_LEN_SO_cb_Modification(struct zx_ctx* c, struct zx_cb_Modification_s* x);
 char* zx_ENC_SO_cb_Modification(struct zx_ctx* c, struct zx_cb_Modification_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Modification(struct zx_ctx* c, struct zx_cb_Modification_s* x);
@@ -862,8 +883,10 @@ struct zx_cb_Modify_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_Modify_s* zx_DEC_cb_Modify(struct zx_ctx* c, struct zx_cb_Modify_s* x);
-struct zx_cb_Modify_s* zx_NEW_cb_Modify(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Modify(c, father) (struct zx_cb_Modify_s*)zx_new_elem((c),(father),zx_cb_Modify_ELEM)
+
+int zx_DEC_ATTR_cb_Modify(struct zx_ctx* c, struct zx_cb_Modify_s* x);
+int zx_DEC_ELEM_cb_Modify(struct zx_ctx* c, struct zx_cb_Modify_s* x);
 int zx_LEN_SO_cb_Modify(struct zx_ctx* c, struct zx_cb_Modify_s* x);
 char* zx_ENC_SO_cb_Modify(struct zx_ctx* c, struct zx_cb_Modify_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Modify(struct zx_ctx* c, struct zx_cb_Modify_s* x);
@@ -953,8 +976,10 @@ struct zx_cb_ModifyResponse_s {
   struct zx_attr_s* timeStamp;	/* {0,1} attribute xs:dateTime */
 };
 
-struct zx_cb_ModifyResponse_s* zx_DEC_cb_ModifyResponse(struct zx_ctx* c, struct zx_cb_ModifyResponse_s* x);
-struct zx_cb_ModifyResponse_s* zx_NEW_cb_ModifyResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_ModifyResponse(c, father) (struct zx_cb_ModifyResponse_s*)zx_new_elem((c),(father),zx_cb_ModifyResponse_ELEM)
+
+int zx_DEC_ATTR_cb_ModifyResponse(struct zx_ctx* c, struct zx_cb_ModifyResponse_s* x);
+int zx_DEC_ELEM_cb_ModifyResponse(struct zx_ctx* c, struct zx_cb_ModifyResponse_s* x);
 int zx_LEN_SO_cb_ModifyResponse(struct zx_ctx* c, struct zx_cb_ModifyResponse_s* x);
 char* zx_ENC_SO_cb_ModifyResponse(struct zx_ctx* c, struct zx_cb_ModifyResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_ModifyResponse(struct zx_ctx* c, struct zx_cb_ModifyResponse_s* x);
@@ -1018,8 +1043,10 @@ struct zx_cb_NewData_s {
   struct zx_elem_s* Card;	/* {0,-1} cb:CardType */
 };
 
-struct zx_cb_NewData_s* zx_DEC_cb_NewData(struct zx_ctx* c, struct zx_cb_NewData_s* x);
-struct zx_cb_NewData_s* zx_NEW_cb_NewData(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_NewData(c, father) (struct zx_cb_NewData_s*)zx_new_elem((c),(father),zx_cb_NewData_ELEM)
+
+int zx_DEC_ATTR_cb_NewData(struct zx_ctx* c, struct zx_cb_NewData_s* x);
+int zx_DEC_ELEM_cb_NewData(struct zx_ctx* c, struct zx_cb_NewData_s* x);
 int zx_LEN_SO_cb_NewData(struct zx_ctx* c, struct zx_cb_NewData_s* x);
 char* zx_ENC_SO_cb_NewData(struct zx_ctx* c, struct zx_cb_NewData_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_NewData(struct zx_ctx* c, struct zx_cb_NewData_s* x);
@@ -1067,8 +1094,10 @@ struct zx_cb_Notification_s {
   struct zx_attr_s* subscriptionID;	/* {1,1} attribute xs:string */
 };
 
-struct zx_cb_Notification_s* zx_DEC_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x);
-struct zx_cb_Notification_s* zx_NEW_cb_Notification(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Notification(c, father) (struct zx_cb_Notification_s*)zx_new_elem((c),(father),zx_cb_Notification_ELEM)
+
+int zx_DEC_ATTR_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x);
+int zx_DEC_ELEM_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x);
 int zx_LEN_SO_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x);
 char* zx_ENC_SO_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Notification(struct zx_ctx* c, struct zx_cb_Notification_s* x);
@@ -1123,8 +1152,10 @@ struct zx_cb_Notify_s {
   struct zx_attr_s* timeStamp;	/* {0,1} attribute xs:dateTime */
 };
 
-struct zx_cb_Notify_s* zx_DEC_cb_Notify(struct zx_ctx* c, struct zx_cb_Notify_s* x);
-struct zx_cb_Notify_s* zx_NEW_cb_Notify(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Notify(c, father) (struct zx_cb_Notify_s*)zx_new_elem((c),(father),zx_cb_Notify_ELEM)
+
+int zx_DEC_ATTR_cb_Notify(struct zx_ctx* c, struct zx_cb_Notify_s* x);
+int zx_DEC_ELEM_cb_Notify(struct zx_ctx* c, struct zx_cb_Notify_s* x);
 int zx_LEN_SO_cb_Notify(struct zx_ctx* c, struct zx_cb_Notify_s* x);
 char* zx_ENC_SO_cb_Notify(struct zx_ctx* c, struct zx_cb_Notify_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Notify(struct zx_ctx* c, struct zx_cb_Notify_s* x);
@@ -1183,8 +1214,10 @@ struct zx_cb_NotifyAdminTo_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_NotifyAdminTo_s* zx_DEC_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_cb_NotifyAdminTo_s* x);
-struct zx_cb_NotifyAdminTo_s* zx_NEW_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_NotifyAdminTo(c, father) (struct zx_cb_NotifyAdminTo_s*)zx_new_elem((c),(father),zx_cb_NotifyAdminTo_ELEM)
+
+int zx_DEC_ATTR_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_cb_NotifyAdminTo_s* x);
+int zx_DEC_ELEM_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_cb_NotifyAdminTo_s* x);
 int zx_LEN_SO_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_cb_NotifyAdminTo_s* x);
 char* zx_ENC_SO_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_cb_NotifyAdminTo_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_NotifyAdminTo(struct zx_ctx* c, struct zx_cb_NotifyAdminTo_s* x);
@@ -1248,8 +1281,10 @@ struct zx_cb_NotifyResponse_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_NotifyResponse_s* zx_DEC_cb_NotifyResponse(struct zx_ctx* c, struct zx_cb_NotifyResponse_s* x);
-struct zx_cb_NotifyResponse_s* zx_NEW_cb_NotifyResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_NotifyResponse(c, father) (struct zx_cb_NotifyResponse_s*)zx_new_elem((c),(father),zx_cb_NotifyResponse_ELEM)
+
+int zx_DEC_ATTR_cb_NotifyResponse(struct zx_ctx* c, struct zx_cb_NotifyResponse_s* x);
+int zx_DEC_ELEM_cb_NotifyResponse(struct zx_ctx* c, struct zx_cb_NotifyResponse_s* x);
 int zx_LEN_SO_cb_NotifyResponse(struct zx_ctx* c, struct zx_cb_NotifyResponse_s* x);
 char* zx_ENC_SO_cb_NotifyResponse(struct zx_ctx* c, struct zx_cb_NotifyResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_NotifyResponse(struct zx_ctx* c, struct zx_cb_NotifyResponse_s* x);
@@ -1306,8 +1341,10 @@ struct zx_cb_NotifyTo_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_NotifyTo_s* zx_DEC_cb_NotifyTo(struct zx_ctx* c, struct zx_cb_NotifyTo_s* x);
-struct zx_cb_NotifyTo_s* zx_NEW_cb_NotifyTo(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_NotifyTo(c, father) (struct zx_cb_NotifyTo_s*)zx_new_elem((c),(father),zx_cb_NotifyTo_ELEM)
+
+int zx_DEC_ATTR_cb_NotifyTo(struct zx_ctx* c, struct zx_cb_NotifyTo_s* x);
+int zx_DEC_ELEM_cb_NotifyTo(struct zx_ctx* c, struct zx_cb_NotifyTo_s* x);
 int zx_LEN_SO_cb_NotifyTo(struct zx_ctx* c, struct zx_cb_NotifyTo_s* x);
 char* zx_ENC_SO_cb_NotifyTo(struct zx_ctx* c, struct zx_cb_NotifyTo_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_NotifyTo(struct zx_ctx* c, struct zx_cb_NotifyTo_s* x);
@@ -1374,8 +1411,10 @@ struct zx_cb_Query_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_Query_s* zx_DEC_cb_Query(struct zx_ctx* c, struct zx_cb_Query_s* x);
-struct zx_cb_Query_s* zx_NEW_cb_Query(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Query(c, father) (struct zx_cb_Query_s*)zx_new_elem((c),(father),zx_cb_Query_ELEM)
+
+int zx_DEC_ATTR_cb_Query(struct zx_ctx* c, struct zx_cb_Query_s* x);
+int zx_DEC_ELEM_cb_Query(struct zx_ctx* c, struct zx_cb_Query_s* x);
 int zx_LEN_SO_cb_Query(struct zx_ctx* c, struct zx_cb_Query_s* x);
 char* zx_ENC_SO_cb_Query(struct zx_ctx* c, struct zx_cb_Query_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Query(struct zx_ctx* c, struct zx_cb_Query_s* x);
@@ -1457,8 +1496,10 @@ struct zx_cb_QueryItem_s {
   struct zx_attr_s* format;	/* {0,1} attribute xs:anyURI */
 };
 
-struct zx_cb_QueryItem_s* zx_DEC_cb_QueryItem(struct zx_ctx* c, struct zx_cb_QueryItem_s* x);
-struct zx_cb_QueryItem_s* zx_NEW_cb_QueryItem(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_QueryItem(c, father) (struct zx_cb_QueryItem_s*)zx_new_elem((c),(father),zx_cb_QueryItem_ELEM)
+
+int zx_DEC_ATTR_cb_QueryItem(struct zx_ctx* c, struct zx_cb_QueryItem_s* x);
+int zx_DEC_ELEM_cb_QueryItem(struct zx_ctx* c, struct zx_cb_QueryItem_s* x);
 int zx_LEN_SO_cb_QueryItem(struct zx_ctx* c, struct zx_cb_QueryItem_s* x);
 char* zx_ENC_SO_cb_QueryItem(struct zx_ctx* c, struct zx_cb_QueryItem_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_QueryItem(struct zx_ctx* c, struct zx_cb_QueryItem_s* x);
@@ -1509,8 +1550,10 @@ struct zx_cb_QueryResponse_s {
   struct zx_attr_s* timeStamp;	/* {0,1} attribute xs:dateTime */
 };
 
-struct zx_cb_QueryResponse_s* zx_DEC_cb_QueryResponse(struct zx_ctx* c, struct zx_cb_QueryResponse_s* x);
-struct zx_cb_QueryResponse_s* zx_NEW_cb_QueryResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_QueryResponse(c, father) (struct zx_cb_QueryResponse_s*)zx_new_elem((c),(father),zx_cb_QueryResponse_ELEM)
+
+int zx_DEC_ATTR_cb_QueryResponse(struct zx_ctx* c, struct zx_cb_QueryResponse_s* x);
+int zx_DEC_ELEM_cb_QueryResponse(struct zx_ctx* c, struct zx_cb_QueryResponse_s* x);
 int zx_LEN_SO_cb_QueryResponse(struct zx_ctx* c, struct zx_cb_QueryResponse_s* x);
 char* zx_ENC_SO_cb_QueryResponse(struct zx_ctx* c, struct zx_cb_QueryResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_QueryResponse(struct zx_ctx* c, struct zx_cb_QueryResponse_s* x);
@@ -1577,8 +1620,10 @@ struct zx_cb_RefItem_s {
   struct zx_attr_s* subscriptionID;	/* {0,1} attribute xs:string */
 };
 
-struct zx_cb_RefItem_s* zx_DEC_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x);
-struct zx_cb_RefItem_s* zx_NEW_cb_RefItem(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_RefItem(c, father) (struct zx_cb_RefItem_s*)zx_new_elem((c),(father),zx_cb_RefItem_ELEM)
+
+int zx_DEC_ATTR_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x);
+int zx_DEC_ELEM_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x);
 int zx_LEN_SO_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x);
 char* zx_ENC_SO_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_RefItem(struct zx_ctx* c, struct zx_cb_RefItem_s* x);
@@ -1622,8 +1667,10 @@ struct zx_cb_ReportUsage_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_ReportUsage_s* zx_DEC_cb_ReportUsage(struct zx_ctx* c, struct zx_cb_ReportUsage_s* x);
-struct zx_cb_ReportUsage_s* zx_NEW_cb_ReportUsage(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_ReportUsage(c, father) (struct zx_cb_ReportUsage_s*)zx_new_elem((c),(father),zx_cb_ReportUsage_ELEM)
+
+int zx_DEC_ATTR_cb_ReportUsage(struct zx_ctx* c, struct zx_cb_ReportUsage_s* x);
+int zx_DEC_ELEM_cb_ReportUsage(struct zx_ctx* c, struct zx_cb_ReportUsage_s* x);
 int zx_LEN_SO_cb_ReportUsage(struct zx_ctx* c, struct zx_cb_ReportUsage_s* x);
 char* zx_ENC_SO_cb_ReportUsage(struct zx_ctx* c, struct zx_cb_ReportUsage_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_ReportUsage(struct zx_ctx* c, struct zx_cb_ReportUsage_s* x);
@@ -1694,8 +1741,10 @@ struct zx_cb_ReportUsageResponse_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_ReportUsageResponse_s* zx_DEC_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_cb_ReportUsageResponse_s* x);
-struct zx_cb_ReportUsageResponse_s* zx_NEW_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_ReportUsageResponse(c, father) (struct zx_cb_ReportUsageResponse_s*)zx_new_elem((c),(father),zx_cb_ReportUsageResponse_ELEM)
+
+int zx_DEC_ATTR_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_cb_ReportUsageResponse_s* x);
+int zx_DEC_ELEM_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_cb_ReportUsageResponse_s* x);
 int zx_LEN_SO_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_cb_ReportUsageResponse_s* x);
 char* zx_ENC_SO_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_cb_ReportUsageResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_ReportUsageResponse(struct zx_ctx* c, struct zx_cb_ReportUsageResponse_s* x);
@@ -1741,8 +1790,10 @@ struct zx_cb_ResourceID_s {
   struct zx_attr_s* id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_cb_ResourceID_s* zx_DEC_cb_ResourceID(struct zx_ctx* c, struct zx_cb_ResourceID_s* x);
-struct zx_cb_ResourceID_s* zx_NEW_cb_ResourceID(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_ResourceID(c, father) (struct zx_cb_ResourceID_s*)zx_new_elem((c),(father),zx_cb_ResourceID_ELEM)
+
+int zx_DEC_ATTR_cb_ResourceID(struct zx_ctx* c, struct zx_cb_ResourceID_s* x);
+int zx_DEC_ELEM_cb_ResourceID(struct zx_ctx* c, struct zx_cb_ResourceID_s* x);
 int zx_LEN_SO_cb_ResourceID(struct zx_ctx* c, struct zx_cb_ResourceID_s* x);
 char* zx_ENC_SO_cb_ResourceID(struct zx_ctx* c, struct zx_cb_ResourceID_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_ResourceID(struct zx_ctx* c, struct zx_cb_ResourceID_s* x);
@@ -1783,8 +1834,10 @@ struct zx_cb_Status_s {
   struct zx_attr_s* ref;	/* {0,1} attribute xs:anyURI */
 };
 
-struct zx_cb_Status_s* zx_DEC_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x);
-struct zx_cb_Status_s* zx_NEW_cb_Status(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Status(c, father) (struct zx_cb_Status_s*)zx_new_elem((c),(father),zx_cb_Status_ELEM)
+
+int zx_DEC_ATTR_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x);
+int zx_DEC_ELEM_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x);
 int zx_LEN_SO_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x);
 char* zx_ENC_SO_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Status(struct zx_ctx* c, struct zx_cb_Status_s* x);
@@ -1845,8 +1898,10 @@ struct zx_cb_Subscription_s {
   struct zx_attr_s* subscriptionID;	/* {1,1} attribute xs:string */
 };
 
-struct zx_cb_Subscription_s* zx_DEC_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x);
-struct zx_cb_Subscription_s* zx_NEW_cb_Subscription(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_Subscription(c, father) (struct zx_cb_Subscription_s*)zx_new_elem((c),(father),zx_cb_Subscription_ELEM)
+
+int zx_DEC_ATTR_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x);
+int zx_DEC_ELEM_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x);
 int zx_LEN_SO_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x);
 char* zx_ENC_SO_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_Subscription(struct zx_ctx* c, struct zx_cb_Subscription_s* x);
@@ -1953,8 +2008,10 @@ struct zx_cb_UsageType_s {
   struct zx_attr_s* modifier;	/* {0,1} attribute xs:string */
 };
 
-struct zx_cb_UsageType_s* zx_DEC_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x);
-struct zx_cb_UsageType_s* zx_NEW_cb_UsageType(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_cb_UsageType(c, father) (struct zx_cb_UsageType_s*)zx_new_elem((c),(father),zx_cb_UsageType_ELEM)
+
+int zx_DEC_ATTR_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x);
+int zx_DEC_ELEM_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x);
 int zx_LEN_SO_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x);
 char* zx_ENC_SO_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_cb_UsageType(struct zx_ctx* c, struct zx_cb_UsageType_s* x);

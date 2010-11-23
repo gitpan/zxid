@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_lu_N_ELEMS 0
-#if !defined(zx_lu__ELEM_MAX) && zx_lu_N_ELEMS == 0
-#define zx_lu__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_lu_el_tab[zx_lu__ELEM_MAX];
-struct zx_el_tok* zx_lu_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- lu_Extension -------------------------- */
 /* refby( zx_dap_Notify_s zx_ps_NotifyResponse_s zx_idhrxml_DeleteResponse_s zx_dap_Create_s zx_idhrxml_Notify_s zx_idhrxml_NotifyResponse_s zx_idhrxml_ModifyResponse_s zx_dap_ModifyResponse_s zx_idhrxml_Create_s zx_dap_CreateResponse_s zx_idhrxml_CreateResponse_s zx_dap_Delete_s zx_ps_Subscription_s zx_idhrxml_Delete_s zx_dap_Subscription_s zx_dap_NotifyResponse_s zx_dap_DeleteResponse_s zx_dap_QueryResponse_s zx_dap_Query_s zx_idhrxml_QueryResponse_s zx_idhrxml_Query_s zx_idhrxml_Modify_s zx_dap_Modify_s zx_idhrxml_Subscription_s ) */
 #ifndef zx_lu_Extension_EXT
@@ -36,8 +29,10 @@ struct zx_lu_Extension_s {
   zx_lu_Extension_EXT
 };
 
-struct zx_lu_Extension_s* zx_DEC_lu_Extension(struct zx_ctx* c, struct zx_lu_Extension_s* x);
-struct zx_lu_Extension_s* zx_NEW_lu_Extension(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_lu_Extension(c, father) (struct zx_lu_Extension_s*)zx_new_elem((c),(father),zx_lu_Extension_ELEM)
+
+int zx_DEC_ATTR_lu_Extension(struct zx_ctx* c, struct zx_lu_Extension_s* x);
+int zx_DEC_ELEM_lu_Extension(struct zx_ctx* c, struct zx_lu_Extension_s* x);
 int zx_LEN_SO_lu_Extension(struct zx_ctx* c, struct zx_lu_Extension_s* x);
 char* zx_ENC_SO_lu_Extension(struct zx_ctx* c, struct zx_lu_Extension_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_lu_Extension(struct zx_ctx* c, struct zx_lu_Extension_s* x);
@@ -76,8 +71,10 @@ struct zx_lu_Status_s {
   struct zx_attr_s* ref;	/* {0,1} attribute xs:anyURI */
 };
 
-struct zx_lu_Status_s* zx_DEC_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x);
-struct zx_lu_Status_s* zx_NEW_lu_Status(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_lu_Status(c, father) (struct zx_lu_Status_s*)zx_new_elem((c),(father),zx_lu_Status_ELEM)
+
+int zx_DEC_ATTR_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x);
+int zx_DEC_ELEM_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x);
 int zx_LEN_SO_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x);
 char* zx_ENC_SO_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_lu_Status(struct zx_ctx* c, struct zx_lu_Status_s* x);
@@ -127,8 +124,10 @@ struct zx_lu_TestResult_s {
   struct zx_attr_s* itemIDRef;	/* {1,1} attribute xs:string */
 };
 
-struct zx_lu_TestResult_s* zx_DEC_lu_TestResult(struct zx_ctx* c, struct zx_lu_TestResult_s* x);
-struct zx_lu_TestResult_s* zx_NEW_lu_TestResult(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_lu_TestResult(c, father) (struct zx_lu_TestResult_s*)zx_new_elem((c),(father),zx_lu_TestResult_ELEM)
+
+int zx_DEC_ATTR_lu_TestResult(struct zx_ctx* c, struct zx_lu_TestResult_s* x);
+int zx_DEC_ELEM_lu_TestResult(struct zx_ctx* c, struct zx_lu_TestResult_s* x);
 int zx_LEN_SO_lu_TestResult(struct zx_ctx* c, struct zx_lu_TestResult_s* x);
 char* zx_ENC_SO_lu_TestResult(struct zx_ctx* c, struct zx_lu_TestResult_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_lu_TestResult(struct zx_ctx* c, struct zx_lu_TestResult_s* x);

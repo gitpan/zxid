@@ -41,24 +41,6 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zx_ns_s_prefix_get(SWIGTYPE_p_zx_ns_s.getCPtr(self));
   }
 
-  public static void zx_ns_s_elem2tok_set(SWIGTYPE_p_zx_ns_s self, SWIGTYPE_p_f_p_char_int__p_zx_el_tok value) {
-    zxidjniJNI.zx_ns_s_elem2tok_set(SWIGTYPE_p_zx_ns_s.getCPtr(self), SWIGTYPE_p_f_p_char_int__p_zx_el_tok.getCPtr(value));
-  }
-
-  public static SWIGTYPE_p_f_p_char_int__p_zx_el_tok zx_ns_s_elem2tok_get(SWIGTYPE_p_zx_ns_s self) {
-    long cPtr = zxidjniJNI.zx_ns_s_elem2tok_get(SWIGTYPE_p_zx_ns_s.getCPtr(self));
-    return (cPtr == 0) ? null : new SWIGTYPE_p_f_p_char_int__p_zx_el_tok(cPtr, false);
-  }
-
-  public static void zx_ns_s_el_tab_set(SWIGTYPE_p_zx_ns_s self, SWIGTYPE_p_zx_el_tok value) {
-    zxidjniJNI.zx_ns_s_el_tab_set(SWIGTYPE_p_zx_ns_s.getCPtr(self), SWIGTYPE_p_zx_el_tok.getCPtr(value));
-  }
-
-  public static SWIGTYPE_p_zx_el_tok zx_ns_s_el_tab_get(SWIGTYPE_p_zx_ns_s self) {
-    long cPtr = zxidjniJNI.zx_ns_s_el_tab_get(SWIGTYPE_p_zx_ns_s.getCPtr(self));
-    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_tok(cPtr, false);
-  }
-
   public static void zx_ns_s_n_set(SWIGTYPE_p_zx_ns_s self, SWIGTYPE_p_zx_ns_s value) {
     zxidjniJNI.zx_ns_s_n_set(SWIGTYPE_p_zx_ns_s.getCPtr(self), SWIGTYPE_p_zx_ns_s.getCPtr(value));
   }
@@ -453,6 +435,11 @@ public class zxidjni implements zxidjniConstants {
     zxidjniJNI.delete_zx_elem_s(SWIGTYPE_p_zx_elem_s.getCPtr(self));
   }
 
+  public static SWIGTYPE_p_zx_elem_s zx_new_elem(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s father, int tok) {
+    long cPtr = zxidjniJNI.zx_new_elem(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(father), tok);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_elem_s(cPtr, false);
+  }
+
   public static SWIGTYPE_p_zx_elem_s zx_new_simple_elem(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s father, int tok, String ss) {
     long cPtr = zxidjniJNI.zx_new_simple_elem(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(father), tok, ss);
     return (cPtr == 0) ? null : new SWIGTYPE_p_zx_elem_s(cPtr, false);
@@ -572,31 +559,6 @@ public class zxidjni implements zxidjniConstants {
     return (cPtr == 0) ? null : new SWIGTYPE_p_zx_ctx(cPtr, false);
   }
 
-  public static void zx_el_tok_name_set(SWIGTYPE_p_zx_el_tok self, String value) {
-    zxidjniJNI.zx_el_tok_name_set(SWIGTYPE_p_zx_el_tok.getCPtr(self), value);
-  }
-
-  public static String zx_el_tok_name_get(SWIGTYPE_p_zx_el_tok self) {
-    return zxidjniJNI.zx_el_tok_name_get(SWIGTYPE_p_zx_el_tok.getCPtr(self));
-  }
-
-  public static void zx_el_tok_siz_set(SWIGTYPE_p_zx_el_tok self, int value) {
-    zxidjniJNI.zx_el_tok_siz_set(SWIGTYPE_p_zx_el_tok.getCPtr(self), value);
-  }
-
-  public static int zx_el_tok_siz_get(SWIGTYPE_p_zx_el_tok self) {
-    return zxidjniJNI.zx_el_tok_siz_get(SWIGTYPE_p_zx_el_tok.getCPtr(self));
-  }
-
-  public static SWIGTYPE_p_zx_el_tok new_zx_el_tok() {
-    long cPtr = zxidjniJNI.new_zx_el_tok();
-    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_tok(cPtr, true);
-  }
-
-  public static void delete_zx_el_tok(SWIGTYPE_p_zx_el_tok self) {
-    zxidjniJNI.delete_zx_el_tok(SWIGTYPE_p_zx_el_tok.getCPtr(self));
-  }
-
   public static void zx_at_tok_name_set(SWIGTYPE_p_zx_at_tok self, String value) {
     zxidjniJNI.zx_at_tok_name_set(SWIGTYPE_p_zx_at_tok.getCPtr(self), value);
   }
@@ -612,6 +574,84 @@ public class zxidjni implements zxidjniConstants {
 
   public static void delete_zx_at_tok(SWIGTYPE_p_zx_at_tok self) {
     zxidjniJNI.delete_zx_at_tok(SWIGTYPE_p_zx_at_tok.getCPtr(self));
+  }
+
+  public static void zx_el_desc_n_set(SWIGTYPE_p_zx_el_desc self, SWIGTYPE_p_zx_el_desc value) {
+    zxidjniJNI.zx_el_desc_n_set(SWIGTYPE_p_zx_el_desc.getCPtr(self), SWIGTYPE_p_zx_el_desc.getCPtr(value));
+  }
+
+  public static SWIGTYPE_p_zx_el_desc zx_el_desc_n_get(SWIGTYPE_p_zx_el_desc self) {
+    long cPtr = zxidjniJNI.zx_el_desc_n_get(SWIGTYPE_p_zx_el_desc.getCPtr(self));
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_desc(cPtr, false);
+  }
+
+  public static void zx_el_desc_tok_set(SWIGTYPE_p_zx_el_desc self, int value) {
+    zxidjniJNI.zx_el_desc_tok_set(SWIGTYPE_p_zx_el_desc.getCPtr(self), value);
+  }
+
+  public static int zx_el_desc_tok_get(SWIGTYPE_p_zx_el_desc self) {
+    return zxidjniJNI.zx_el_desc_tok_get(SWIGTYPE_p_zx_el_desc.getCPtr(self));
+  }
+
+  public static void zx_el_desc_siz_set(SWIGTYPE_p_zx_el_desc self, int value) {
+    zxidjniJNI.zx_el_desc_siz_set(SWIGTYPE_p_zx_el_desc.getCPtr(self), value);
+  }
+
+  public static int zx_el_desc_siz_get(SWIGTYPE_p_zx_el_desc self) {
+    return zxidjniJNI.zx_el_desc_siz_get(SWIGTYPE_p_zx_el_desc.getCPtr(self));
+  }
+
+  public static void zx_el_desc_at_dec_set(SWIGTYPE_p_zx_el_desc self, SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int value) {
+    zxidjniJNI.zx_el_desc_at_dec_set(SWIGTYPE_p_zx_el_desc.getCPtr(self), SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int.getCPtr(value));
+  }
+
+  public static SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int zx_el_desc_at_dec_get(SWIGTYPE_p_zx_el_desc self) {
+    long cPtr = zxidjniJNI.zx_el_desc_at_dec_get(SWIGTYPE_p_zx_el_desc.getCPtr(self));
+    return (cPtr == 0) ? null : new SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int(cPtr, false);
+  }
+
+  public static void zx_el_desc_el_dec_set(SWIGTYPE_p_zx_el_desc self, SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int value) {
+    zxidjniJNI.zx_el_desc_el_dec_set(SWIGTYPE_p_zx_el_desc.getCPtr(self), SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int.getCPtr(value));
+  }
+
+  public static SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int zx_el_desc_el_dec_get(SWIGTYPE_p_zx_el_desc self) {
+    long cPtr = zxidjniJNI.zx_el_desc_el_dec_get(SWIGTYPE_p_zx_el_desc.getCPtr(self));
+    return (cPtr == 0) ? null : new SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int(cPtr, false);
+  }
+
+  public static SWIGTYPE_p_zx_el_desc new_zx_el_desc() {
+    long cPtr = zxidjniJNI.new_zx_el_desc();
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_desc(cPtr, true);
+  }
+
+  public static void delete_zx_el_desc(SWIGTYPE_p_zx_el_desc self) {
+    zxidjniJNI.delete_zx_el_desc(SWIGTYPE_p_zx_el_desc.getCPtr(self));
+  }
+
+  public static void zx_el_tok_name_set(SWIGTYPE_p_zx_el_tok self, String value) {
+    zxidjniJNI.zx_el_tok_name_set(SWIGTYPE_p_zx_el_tok.getCPtr(self), value);
+  }
+
+  public static String zx_el_tok_name_get(SWIGTYPE_p_zx_el_tok self) {
+    return zxidjniJNI.zx_el_tok_name_get(SWIGTYPE_p_zx_el_tok.getCPtr(self));
+  }
+
+  public static void zx_el_tok_n_set(SWIGTYPE_p_zx_el_tok self, SWIGTYPE_p_zx_el_desc value) {
+    zxidjniJNI.zx_el_tok_n_set(SWIGTYPE_p_zx_el_tok.getCPtr(self), SWIGTYPE_p_zx_el_desc.getCPtr(value));
+  }
+
+  public static SWIGTYPE_p_zx_el_desc zx_el_tok_n_get(SWIGTYPE_p_zx_el_tok self) {
+    long cPtr = zxidjniJNI.zx_el_tok_n_get(SWIGTYPE_p_zx_el_tok.getCPtr(self));
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_desc(cPtr, false);
+  }
+
+  public static SWIGTYPE_p_zx_el_tok new_zx_el_tok() {
+    long cPtr = zxidjniJNI.new_zx_el_tok();
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_tok(cPtr, true);
+  }
+
+  public static void delete_zx_el_tok(SWIGTYPE_p_zx_el_tok self) {
+    zxidjniJNI.delete_zx_el_tok(SWIGTYPE_p_zx_el_tok.getCPtr(self));
   }
 
   public static int zx_date_time_to_secs(String dt) {
@@ -744,53 +784,12 @@ public class zxidjni implements zxidjniConstants {
     zxidjniJNI.zx_add_content(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(x), cont);
   }
 
-  public static void zx_prepare_dec_ctx(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_ns_s ns_tab, int n_ns, String start, String lim) {
-    zxidjniJNI.zx_prepare_dec_ctx(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_ns_s.getCPtr(ns_tab), n_ns, start, lim);
-  }
-
-  public static SWIGTYPE_p_zx_root_s zx_dec_zx_root(SWIGTYPE_p_zx_ctx c, int len, String start, String func) {
-    long cPtr = zxidjniJNI.zx_dec_zx_root(SWIGTYPE_p_zx_ctx.getCPtr(c), len, start, func);
-    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_root_s(cPtr, false);
-  }
-
-  public static int zx_scan_data(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s el) {
-    return zxidjniJNI.zx_scan_data(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(el));
-  }
-
-  public static int zx_scan_pi_or_comment(SWIGTYPE_p_zx_ctx c) {
-    return zxidjniJNI.zx_scan_pi_or_comment(SWIGTYPE_p_zx_ctx.getCPtr(c));
-  }
-
-  public static void zx_known_attr_wrong_context(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s x) {
-    zxidjniJNI.zx_known_attr_wrong_context(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(x));
-  }
-
-  public static void zx_known_elem_wrong_context(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s x) {
-    zxidjniJNI.zx_known_elem_wrong_context(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(x));
-  }
-
-  public static String zx_dec_attr_val(SWIGTYPE_p_zx_ctx c, String func) {
-    return zxidjniJNI.zx_dec_attr_val(SWIGTYPE_p_zx_ctx.getCPtr(c), func);
-  }
-
-  public static void zx_dec_reverse_lists(SWIGTYPE_p_zx_elem_s x) {
-    zxidjniJNI.zx_dec_reverse_lists(SWIGTYPE_p_zx_elem_s.getCPtr(x));
-  }
-
   public static void zx_xml_parse_err(SWIGTYPE_p_zx_ctx c, char quote, String func, String msg) {
     zxidjniJNI.zx_xml_parse_err(SWIGTYPE_p_zx_ctx.getCPtr(c), quote, func, msg);
   }
 
   public static void zx_xml_parse_dbg(SWIGTYPE_p_zx_ctx c, char quote, String func, String msg) {
     zxidjniJNI.zx_xml_parse_dbg(SWIGTYPE_p_zx_ctx.getCPtr(c), quote, func, msg);
-  }
-
-  public static String zx_scan_elem_start(SWIGTYPE_p_zx_ctx c, String func) {
-    return zxidjniJNI.zx_scan_elem_start(SWIGTYPE_p_zx_ctx.getCPtr(c), func);
-  }
-
-  public static int zx_scan_elem_end(SWIGTYPE_p_zx_ctx c, String start, String func) {
-    return zxidjniJNI.zx_scan_elem_end(SWIGTYPE_p_zx_ctx.getCPtr(c), start, func);
   }
 
   public static SWIGTYPE_p_zx_ns_s zx_xmlns_detected(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s x, String data) {
@@ -808,6 +807,24 @@ public class zxidjni implements zxidjniConstants {
 
   public static int zx_in_inc_ns(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_ns_s new_ns) {
     return zxidjniJNI.zx_in_inc_ns(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_ns_s.getCPtr(new_ns));
+  }
+
+  public static void zx_prepare_dec_ctx(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_ns_s ns_tab, int n_ns, String start, String lim) {
+    zxidjniJNI.zx_prepare_dec_ctx(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_ns_s.getCPtr(ns_tab), n_ns, start, lim);
+  }
+
+  public static SWIGTYPE_p_zx_root_s zx_dec_zx_root(SWIGTYPE_p_zx_ctx c, int len, String start, String func) {
+    long cPtr = zxidjniJNI.zx_dec_zx_root(SWIGTYPE_p_zx_ctx.getCPtr(c), len, start, func);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_root_s(cPtr, false);
+  }
+
+  public static void zx_DEC_elem(SWIGTYPE_p_zx_ctx c, SWIGTYPE_p_zx_elem_s x) {
+    zxidjniJNI.zx_DEC_elem(SWIGTYPE_p_zx_ctx.getCPtr(c), SWIGTYPE_p_zx_elem_s.getCPtr(x));
+  }
+
+  public static SWIGTYPE_p_zx_el_desc zx_el_desc_lookup(int tok) {
+    long cPtr = zxidjniJNI.zx_el_desc_lookup(tok);
+    return (cPtr == 0) ? null : new SWIGTYPE_p_zx_el_desc(cPtr, false);
   }
 
   public static void entity_n_set(zxid_entity self, zxid_entity value) {

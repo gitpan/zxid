@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_wsp_N_ELEMS 0
-#if !defined(zx_wsp__ELEM_MAX) && zx_wsp_N_ELEMS == 0
-#define zx_wsp__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_wsp_el_tab[zx_wsp__ELEM_MAX];
-struct zx_el_tok* zx_wsp_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- wsp_All -------------------------- */
 /* refby( zx_wsp_Policy_s zx_wsp_All_s zx_wsp_ExactlyOne_s ) */
 #ifndef zx_wsp_All_EXT
@@ -40,8 +33,10 @@ struct zx_wsp_All_s {
   struct zx_wsp_PolicyReference_s* PolicyReference;	/* {0,1} nada */
 };
 
-struct zx_wsp_All_s* zx_DEC_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x);
-struct zx_wsp_All_s* zx_NEW_wsp_All(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsp_All(c, father) (struct zx_wsp_All_s*)zx_new_elem((c),(father),zx_wsp_All_ELEM)
+
+int zx_DEC_ATTR_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x);
+int zx_DEC_ELEM_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x);
 int zx_LEN_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x);
 char* zx_ENC_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsp_All(struct zx_ctx* c, struct zx_wsp_All_s* x);
@@ -108,8 +103,10 @@ struct zx_wsp_AppliesTo_s {
   zx_wsp_AppliesTo_EXT
 };
 
-struct zx_wsp_AppliesTo_s* zx_DEC_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x);
-struct zx_wsp_AppliesTo_s* zx_NEW_wsp_AppliesTo(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsp_AppliesTo(c, father) (struct zx_wsp_AppliesTo_s*)zx_new_elem((c),(father),zx_wsp_AppliesTo_ELEM)
+
+int zx_DEC_ATTR_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x);
+int zx_DEC_ELEM_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x);
 int zx_LEN_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x);
 char* zx_ENC_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsp_AppliesTo(struct zx_ctx* c, struct zx_wsp_AppliesTo_s* x);
@@ -148,8 +145,10 @@ struct zx_wsp_ExactlyOne_s {
   struct zx_wsp_PolicyReference_s* PolicyReference;	/* {0,1} nada */
 };
 
-struct zx_wsp_ExactlyOne_s* zx_DEC_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x);
-struct zx_wsp_ExactlyOne_s* zx_NEW_wsp_ExactlyOne(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsp_ExactlyOne(c, father) (struct zx_wsp_ExactlyOne_s*)zx_new_elem((c),(father),zx_wsp_ExactlyOne_ELEM)
+
+int zx_DEC_ATTR_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x);
+int zx_DEC_ELEM_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x);
 int zx_LEN_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x);
 char* zx_ENC_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsp_ExactlyOne(struct zx_ctx* c, struct zx_wsp_ExactlyOne_s* x);
@@ -222,8 +221,10 @@ struct zx_wsp_Policy_s {
   struct zx_attr_s* Id;	/* {0,1} attribute xs:ID */
 };
 
-struct zx_wsp_Policy_s* zx_DEC_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x);
-struct zx_wsp_Policy_s* zx_NEW_wsp_Policy(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsp_Policy(c, father) (struct zx_wsp_Policy_s*)zx_new_elem((c),(father),zx_wsp_Policy_ELEM)
+
+int zx_DEC_ATTR_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x);
+int zx_DEC_ELEM_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x);
 int zx_LEN_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x);
 char* zx_ENC_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsp_Policy(struct zx_ctx* c, struct zx_wsp_Policy_s* x);
@@ -297,8 +298,10 @@ struct zx_wsp_PolicyAttachment_s {
   struct zx_wsp_PolicyReference_s* PolicyReference;	/* {0,1} nada */
 };
 
-struct zx_wsp_PolicyAttachment_s* zx_DEC_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x);
-struct zx_wsp_PolicyAttachment_s* zx_NEW_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsp_PolicyAttachment(c, father) (struct zx_wsp_PolicyAttachment_s*)zx_new_elem((c),(father),zx_wsp_PolicyAttachment_ELEM)
+
+int zx_DEC_ATTR_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x);
+int zx_DEC_ELEM_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x);
 int zx_LEN_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x);
 char* zx_ENC_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsp_PolicyAttachment(struct zx_ctx* c, struct zx_wsp_PolicyAttachment_s* x);
@@ -360,8 +363,10 @@ struct zx_wsp_PolicyReference_s {
   struct zx_attr_s* URI;	/* {1,1} attribute xs:anyURI */
 };
 
-struct zx_wsp_PolicyReference_s* zx_DEC_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x);
-struct zx_wsp_PolicyReference_s* zx_NEW_wsp_PolicyReference(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_wsp_PolicyReference(c, father) (struct zx_wsp_PolicyReference_s*)zx_new_elem((c),(father),zx_wsp_PolicyReference_ELEM)
+
+int zx_DEC_ATTR_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x);
+int zx_DEC_ELEM_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x);
 int zx_LEN_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x);
 char* zx_ENC_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_wsp_PolicyReference(struct zx_ctx* c, struct zx_wsp_PolicyReference_s* x);

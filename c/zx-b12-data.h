@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_b12_N_ELEMS 0
-#if !defined(zx_b12__ELEM_MAX) && zx_b12_N_ELEMS == 0
-#define zx_b12__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_b12_el_tab[zx_b12__ELEM_MAX];
-struct zx_el_tok* zx_b12_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- b12_Consent -------------------------- */
 /* refby( zx_e_Header_s ) */
 #ifndef zx_b12_Consent_EXT
@@ -41,8 +34,10 @@ struct zx_b12_Consent_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b12_Consent_s* zx_DEC_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x);
-struct zx_b12_Consent_s* zx_NEW_b12_Consent(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b12_Consent(c, father) (struct zx_b12_Consent_s*)zx_new_elem((c),(father),zx_b12_Consent_ELEM)
+
+int zx_DEC_ATTR_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x);
+int zx_DEC_ELEM_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x);
 int zx_LEN_SO_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x);
 char* zx_ENC_SO_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b12_Consent(struct zx_ctx* c, struct zx_b12_Consent_s* x);
@@ -93,8 +88,10 @@ struct zx_b12_Correlation_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b12_Correlation_s* zx_DEC_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x);
-struct zx_b12_Correlation_s* zx_NEW_b12_Correlation(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b12_Correlation(c, father) (struct zx_b12_Correlation_s*)zx_new_elem((c),(father),zx_b12_Correlation_ELEM)
+
+int zx_DEC_ATTR_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x);
+int zx_DEC_ELEM_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x);
 int zx_LEN_SO_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x);
 char* zx_ENC_SO_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b12_Correlation(struct zx_ctx* c, struct zx_b12_Correlation_s* x);
@@ -144,8 +141,10 @@ struct zx_b12_ProcessingContext_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b12_ProcessingContext_s* zx_DEC_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingContext_s* x);
-struct zx_b12_ProcessingContext_s* zx_NEW_b12_ProcessingContext(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b12_ProcessingContext(c, father) (struct zx_b12_ProcessingContext_s*)zx_new_elem((c),(father),zx_b12_ProcessingContext_ELEM)
+
+int zx_DEC_ATTR_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingContext_s* x);
+int zx_DEC_ELEM_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingContext_s* x);
 int zx_LEN_SO_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingContext_s* x);
 char* zx_ENC_SO_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingContext_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b12_ProcessingContext(struct zx_ctx* c, struct zx_b12_ProcessingContext_s* x);
@@ -191,8 +190,10 @@ struct zx_b12_Provider_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b12_Provider_s* zx_DEC_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x);
-struct zx_b12_Provider_s* zx_NEW_b12_Provider(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b12_Provider(c, father) (struct zx_b12_Provider_s*)zx_new_elem((c),(father),zx_b12_Provider_ELEM)
+
+int zx_DEC_ATTR_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x);
+int zx_DEC_ELEM_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x);
 int zx_LEN_SO_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x);
 char* zx_ENC_SO_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b12_Provider(struct zx_ctx* c, struct zx_b12_Provider_s* x);
@@ -241,8 +242,10 @@ struct zx_b12_UsageDirective_s {
   struct zx_attr_s* mustUnderstand;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_b12_UsageDirective_s* zx_DEC_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s* x);
-struct zx_b12_UsageDirective_s* zx_NEW_b12_UsageDirective(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_b12_UsageDirective(c, father) (struct zx_b12_UsageDirective_s*)zx_new_elem((c),(father),zx_b12_UsageDirective_ELEM)
+
+int zx_DEC_ATTR_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s* x);
+int zx_DEC_ELEM_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s* x);
 int zx_LEN_SO_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s* x);
 char* zx_ENC_SO_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_b12_UsageDirective(struct zx_ctx* c, struct zx_b12_UsageDirective_s* x);

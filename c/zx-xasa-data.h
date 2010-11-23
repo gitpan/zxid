@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_xasa_N_ELEMS 0
-#if !defined(zx_xasa__ELEM_MAX) && zx_xasa_N_ELEMS == 0
-#define zx_xasa__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_xasa_el_tab[zx_xasa__ELEM_MAX];
-struct zx_el_tok* zx_xasa_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- xasa_XACMLAuthzDecisionStatement -------------------------- */
 /* refby( zx_sa11_Assertion_s zx_sa_Assertion_s zx_ff12_Assertion_s ) */
 #ifndef zx_xasa_XACMLAuthzDecisionStatement_EXT
@@ -38,8 +31,10 @@ struct zx_xasa_XACMLAuthzDecisionStatement_s {
   struct zx_xac_Request_s* Request;	/* {0,1} nada */
 };
 
-struct zx_xasa_XACMLAuthzDecisionStatement_s* zx_DEC_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasa_XACMLAuthzDecisionStatement_s* x);
-struct zx_xasa_XACMLAuthzDecisionStatement_s* zx_NEW_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xasa_XACMLAuthzDecisionStatement(c, father) (struct zx_xasa_XACMLAuthzDecisionStatement_s*)zx_new_elem((c),(father),zx_xasa_XACMLAuthzDecisionStatement_ELEM)
+
+int zx_DEC_ATTR_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasa_XACMLAuthzDecisionStatement_s* x);
+int zx_DEC_ELEM_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasa_XACMLAuthzDecisionStatement_s* x);
 int zx_LEN_SO_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasa_XACMLAuthzDecisionStatement_s* x);
 char* zx_ENC_SO_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasa_XACMLAuthzDecisionStatement_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xasa_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasa_XACMLAuthzDecisionStatement_s* x);
@@ -92,8 +87,10 @@ struct zx_xasa_XACMLPolicyStatement_s {
   struct zx_xa_PolicySet_s* PolicySet;	/* {0,1} nada */
 };
 
-struct zx_xasa_XACMLPolicyStatement_s* zx_DEC_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasa_XACMLPolicyStatement_s* x);
-struct zx_xasa_XACMLPolicyStatement_s* zx_NEW_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xasa_XACMLPolicyStatement(c, father) (struct zx_xasa_XACMLPolicyStatement_s*)zx_new_elem((c),(father),zx_xasa_XACMLPolicyStatement_ELEM)
+
+int zx_DEC_ATTR_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasa_XACMLPolicyStatement_s* x);
+int zx_DEC_ELEM_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasa_XACMLPolicyStatement_s* x);
 int zx_LEN_SO_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasa_XACMLPolicyStatement_s* x);
 char* zx_ENC_SO_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasa_XACMLPolicyStatement_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xasa_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasa_XACMLPolicyStatement_s* x);

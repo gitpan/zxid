@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_subs_N_ELEMS 0
-#if !defined(zx_subs__ELEM_MAX) && zx_subs_N_ELEMS == 0
-#define zx_subs__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_subs_el_tab[zx_subs__ELEM_MAX];
-struct zx_el_tok* zx_subs_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- subs_RefItem -------------------------- */
 /* refby( zx_ps_Subscription_s zx_dap_Subscription_s zx_idhrxml_Subscription_s ) */
 #ifndef zx_subs_RefItem_EXT
@@ -38,8 +31,10 @@ struct zx_subs_RefItem_s {
   struct zx_attr_s* itemIDRef;	/* {1,1} attribute lu:IDReferenceType */
 };
 
-struct zx_subs_RefItem_s* zx_DEC_subs_RefItem(struct zx_ctx* c, struct zx_subs_RefItem_s* x);
-struct zx_subs_RefItem_s* zx_NEW_subs_RefItem(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_subs_RefItem(c, father) (struct zx_subs_RefItem_s*)zx_new_elem((c),(father),zx_subs_RefItem_ELEM)
+
+int zx_DEC_ATTR_subs_RefItem(struct zx_ctx* c, struct zx_subs_RefItem_s* x);
+int zx_DEC_ELEM_subs_RefItem(struct zx_ctx* c, struct zx_subs_RefItem_s* x);
 int zx_LEN_SO_subs_RefItem(struct zx_ctx* c, struct zx_subs_RefItem_s* x);
 char* zx_ENC_SO_subs_RefItem(struct zx_ctx* c, struct zx_subs_RefItem_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_subs_RefItem(struct zx_ctx* c, struct zx_subs_RefItem_s* x);

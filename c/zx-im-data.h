@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_im_N_ELEMS 0
-#if !defined(zx_im__ELEM_MAX) && zx_im_N_ELEMS == 0
-#define zx_im__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_im_el_tab[zx_im__ELEM_MAX];
-struct zx_el_tok* zx_im_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- im_IdentityMappingRequest -------------------------- */
 /* refby( zx_e_Body_s ) */
 #ifndef zx_im_IdentityMappingRequest_EXT
@@ -37,8 +30,10 @@ struct zx_im_IdentityMappingRequest_s {
   struct zx_im_MappingInput_s* MappingInput;	/* {1,-1} nada */
 };
 
-struct zx_im_IdentityMappingRequest_s* zx_DEC_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_im_IdentityMappingRequest_s* x);
-struct zx_im_IdentityMappingRequest_s* zx_NEW_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_im_IdentityMappingRequest(c, father) (struct zx_im_IdentityMappingRequest_s*)zx_new_elem((c),(father),zx_im_IdentityMappingRequest_ELEM)
+
+int zx_DEC_ATTR_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_im_IdentityMappingRequest_s* x);
+int zx_DEC_ELEM_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_im_IdentityMappingRequest_s* x);
 int zx_LEN_SO_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_im_IdentityMappingRequest_s* x);
 char* zx_ENC_SO_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_im_IdentityMappingRequest_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_im_IdentityMappingRequest(struct zx_ctx* c, struct zx_im_IdentityMappingRequest_s* x);
@@ -83,8 +78,10 @@ struct zx_im_IdentityMappingResponse_s {
   struct zx_im_MappingOutput_s* MappingOutput;	/* {0,-1} nada */
 };
 
-struct zx_im_IdentityMappingResponse_s* zx_DEC_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_im_IdentityMappingResponse_s* x);
-struct zx_im_IdentityMappingResponse_s* zx_NEW_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_im_IdentityMappingResponse(c, father) (struct zx_im_IdentityMappingResponse_s*)zx_new_elem((c),(father),zx_im_IdentityMappingResponse_ELEM)
+
+int zx_DEC_ATTR_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_im_IdentityMappingResponse_s* x);
+int zx_DEC_ELEM_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_im_IdentityMappingResponse_s* x);
 int zx_LEN_SO_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_im_IdentityMappingResponse_s* x);
 char* zx_ENC_SO_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_im_IdentityMappingResponse_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_im_IdentityMappingResponse(struct zx_ctx* c, struct zx_im_IdentityMappingResponse_s* x);
@@ -138,8 +135,10 @@ struct zx_im_MappingInput_s {
   struct zx_attr_s* reqID;	/* {0,1} attribute xs:string */
 };
 
-struct zx_im_MappingInput_s* zx_DEC_im_MappingInput(struct zx_ctx* c, struct zx_im_MappingInput_s* x);
-struct zx_im_MappingInput_s* zx_NEW_im_MappingInput(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_im_MappingInput(c, father) (struct zx_im_MappingInput_s*)zx_new_elem((c),(father),zx_im_MappingInput_ELEM)
+
+int zx_DEC_ATTR_im_MappingInput(struct zx_ctx* c, struct zx_im_MappingInput_s* x);
+int zx_DEC_ELEM_im_MappingInput(struct zx_ctx* c, struct zx_im_MappingInput_s* x);
 int zx_LEN_SO_im_MappingInput(struct zx_ctx* c, struct zx_im_MappingInput_s* x);
 char* zx_ENC_SO_im_MappingInput(struct zx_ctx* c, struct zx_im_MappingInput_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_im_MappingInput(struct zx_ctx* c, struct zx_im_MappingInput_s* x);
@@ -194,8 +193,10 @@ struct zx_im_MappingOutput_s {
   struct zx_attr_s* reqRef;	/* {0,1} attribute lu:IDReferenceType */
 };
 
-struct zx_im_MappingOutput_s* zx_DEC_im_MappingOutput(struct zx_ctx* c, struct zx_im_MappingOutput_s* x);
-struct zx_im_MappingOutput_s* zx_NEW_im_MappingOutput(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_im_MappingOutput(c, father) (struct zx_im_MappingOutput_s*)zx_new_elem((c),(father),zx_im_MappingOutput_ELEM)
+
+int zx_DEC_ATTR_im_MappingOutput(struct zx_ctx* c, struct zx_im_MappingOutput_s* x);
+int zx_DEC_ELEM_im_MappingOutput(struct zx_ctx* c, struct zx_im_MappingOutput_s* x);
 int zx_LEN_SO_im_MappingOutput(struct zx_ctx* c, struct zx_im_MappingOutput_s* x);
 char* zx_ENC_SO_im_MappingOutput(struct zx_ctx* c, struct zx_im_MappingOutput_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_im_MappingOutput(struct zx_ctx* c, struct zx_im_MappingOutput_s* x);

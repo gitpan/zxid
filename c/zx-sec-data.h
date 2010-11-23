@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_sec_N_ELEMS 0
-#if !defined(zx_sec__ELEM_MAX) && zx_sec_N_ELEMS == 0
-#define zx_sec__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_sec_el_tab[zx_sec__ELEM_MAX];
-struct zx_el_tok* zx_sec_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- sec_Token -------------------------- */
 /* refby( zx_ps_ResolveInput_s zx_di_SecurityContext_s zx_ps_AddKnownEntityRequest_s zx_ps_TestMembershipRequest_s zx_ps_ResolveOutput_s zx_im_MappingInput_s zx_im_MappingOutput_s ) */
 #ifndef zx_sec_Token_EXT
@@ -43,8 +36,10 @@ struct zx_sec_Token_s {
   struct zx_attr_s* usage;	/* {0,1} attribute xs:anyURI */
 };
 
-struct zx_sec_Token_s* zx_DEC_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x);
-struct zx_sec_Token_s* zx_NEW_sec_Token(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_sec_Token(c, father) (struct zx_sec_Token_s*)zx_new_elem((c),(father),zx_sec_Token_ELEM)
+
+int zx_DEC_ATTR_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x);
+int zx_DEC_ELEM_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x);
 int zx_LEN_SO_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x);
 char* zx_ENC_SO_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_sec_Token(struct zx_ctx* c, struct zx_sec_Token_s* x);
@@ -122,8 +117,10 @@ struct zx_sec_TokenPolicy_s {
   struct zx_attr_s* wantDSEPR;	/* {0,1} attribute xs:boolean */
 };
 
-struct zx_sec_TokenPolicy_s* zx_DEC_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x);
-struct zx_sec_TokenPolicy_s* zx_NEW_sec_TokenPolicy(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_sec_TokenPolicy(c, father) (struct zx_sec_TokenPolicy_s*)zx_new_elem((c),(father),zx_sec_TokenPolicy_ELEM)
+
+int zx_DEC_ATTR_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x);
+int zx_DEC_ELEM_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x);
 int zx_LEN_SO_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x);
 char* zx_ENC_SO_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_sec_TokenPolicy(struct zx_ctx* c, struct zx_sec_TokenPolicy_s* x);
@@ -176,8 +173,10 @@ struct zx_sec_TransitedProvider_s {
   struct zx_attr_s* timeStamp;	/* {0,1} attribute xs:dateTime */
 };
 
-struct zx_sec_TransitedProvider_s* zx_DEC_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProvider_s* x);
-struct zx_sec_TransitedProvider_s* zx_NEW_sec_TransitedProvider(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_sec_TransitedProvider(c, father) (struct zx_sec_TransitedProvider_s*)zx_new_elem((c),(father),zx_sec_TransitedProvider_ELEM)
+
+int zx_DEC_ATTR_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProvider_s* x);
+int zx_DEC_ELEM_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProvider_s* x);
 int zx_LEN_SO_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProvider_s* x);
 char* zx_ENC_SO_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProvider_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_sec_TransitedProvider(struct zx_ctx* c, struct zx_sec_TransitedProvider_s* x);
@@ -217,8 +216,10 @@ struct zx_sec_TransitedProviderPath_s {
   struct zx_sec_TransitedProvider_s* TransitedProvider;	/* {1,-1} nada */
 };
 
-struct zx_sec_TransitedProviderPath_s* zx_DEC_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_sec_TransitedProviderPath_s* x);
-struct zx_sec_TransitedProviderPath_s* zx_NEW_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_sec_TransitedProviderPath(c, father) (struct zx_sec_TransitedProviderPath_s*)zx_new_elem((c),(father),zx_sec_TransitedProviderPath_ELEM)
+
+int zx_DEC_ATTR_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_sec_TransitedProviderPath_s* x);
+int zx_DEC_ELEM_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_sec_TransitedProviderPath_s* x);
 int zx_LEN_SO_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_sec_TransitedProviderPath_s* x);
 char* zx_ENC_SO_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_sec_TransitedProviderPath_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_sec_TransitedProviderPath(struct zx_ctx* c, struct zx_sec_TransitedProviderPath_s* x);

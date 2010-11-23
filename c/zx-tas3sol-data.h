@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_tas3sol_N_ELEMS 0
-#if !defined(zx_tas3sol__ELEM_MAX) && zx_tas3sol_N_ELEMS == 0
-#define zx_tas3sol__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_tas3sol_el_tab[zx_tas3sol__ELEM_MAX];
-struct zx_el_tok* zx_tas3sol_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- tas3sol_Dict -------------------------- */
 /* refby( zx_b_UsageDirective_s ) */
 #ifndef zx_tas3sol_Dict_EXT
@@ -36,8 +29,10 @@ struct zx_tas3sol_Dict_s {
   zx_tas3sol_Dict_EXT
 };
 
-struct zx_tas3sol_Dict_s* zx_DEC_tas3sol_Dict(struct zx_ctx* c, struct zx_tas3sol_Dict_s* x);
-struct zx_tas3sol_Dict_s* zx_NEW_tas3sol_Dict(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_tas3sol_Dict(c, father) (struct zx_tas3sol_Dict_s*)zx_new_elem((c),(father),zx_tas3sol_Dict_ELEM)
+
+int zx_DEC_ATTR_tas3sol_Dict(struct zx_ctx* c, struct zx_tas3sol_Dict_s* x);
+int zx_DEC_ELEM_tas3sol_Dict(struct zx_ctx* c, struct zx_tas3sol_Dict_s* x);
 int zx_LEN_SO_tas3sol_Dict(struct zx_ctx* c, struct zx_tas3sol_Dict_s* x);
 char* zx_ENC_SO_tas3sol_Dict(struct zx_ctx* c, struct zx_tas3sol_Dict_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_tas3sol_Dict(struct zx_ctx* c, struct zx_tas3sol_Dict_s* x);
@@ -72,8 +67,10 @@ struct zx_tas3sol_Obligations_s {
   zx_tas3sol_Obligations_EXT
 };
 
-struct zx_tas3sol_Obligations_s* zx_DEC_tas3sol_Obligations(struct zx_ctx* c, struct zx_tas3sol_Obligations_s* x);
-struct zx_tas3sol_Obligations_s* zx_NEW_tas3sol_Obligations(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_tas3sol_Obligations(c, father) (struct zx_tas3sol_Obligations_s*)zx_new_elem((c),(father),zx_tas3sol_Obligations_ELEM)
+
+int zx_DEC_ATTR_tas3sol_Obligations(struct zx_ctx* c, struct zx_tas3sol_Obligations_s* x);
+int zx_DEC_ELEM_tas3sol_Obligations(struct zx_ctx* c, struct zx_tas3sol_Obligations_s* x);
 int zx_LEN_SO_tas3sol_Obligations(struct zx_ctx* c, struct zx_tas3sol_Obligations_s* x);
 char* zx_ENC_SO_tas3sol_Obligations(struct zx_ctx* c, struct zx_tas3sol_Obligations_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_tas3sol_Obligations(struct zx_ctx* c, struct zx_tas3sol_Obligations_s* x);

@@ -16,6 +16,7 @@
  * 7.10.2008, added documentation --Sampo
  * 26.5.2010, added XML parse error reporting --Sampo
  * 27.10.2010, forked from zxlib.c, re-engineered namespace handling --Sampo
+ * 20.11.2010, reengineered for unified simplifed decoder --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for snprintf(), va_copy() et al. */
@@ -68,40 +69,8 @@ void zx_xml_parse_dbg(struct zx_ctx* c, char quote, const char* func, const char
 
 /* --------------------- D e c o d e r ---------------------- */
 
-/*() Prepare a context for decoding XML. The decoding operation will not
- * alter the underlying data (e.g. no nuls are inserted, not even temporarily).
- * N.B. Often you would wrap this in locks, like
- *   LOCK(cf->ctx->mx, "valid");
- *   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, n_ns, ss->s, ss->s + ss->len);
- *   r = zx_DEC_root(cf->ctx, 0, 1);
- *   UNLOCK(cf->ctx->mx, "valid");
- */
-
-/* Called by:  main x7, test_ibm_cert_problem, zxid_add_env_if_needed x2, zxid_dec_a7n, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_reg_svc, zxid_soap_call_raw, zxid_sp_soap_parse, zxid_wsp_validate */
-void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, const char* start, const char* lim)
-{
-  c->guard_seen_n.seen_n = &c->guard_seen_p;
-  c->guard_seen_p.seen_p = &c->guard_seen_n;
-  c->ns_tab = ns_tab;
-  c->n_ns = n_ns;
-  c->bas = c->p = start;
-  c->lim = lim;
-}
-
-/*(i) Decode arbitary xml with zx_ns_tab set of namespaces and parsers. */
-
-struct zx_root_s* zx_dec_zx_root(struct zx_ctx* c, int len, const char* start, const char* func)
-{
-  struct zx_root_s* r;
-  LOCK(c->mx, func);
-  zx_prepare_dec_ctx(c, zx_ns_tab, sizeof(zx_ns_tab)/sizeof(struct zx_ns_s), start, start + len);
-  r = zx_DEC_root(c, 0, 1);
-  UNLOCK(c->mx, func);
-  return r;
-}
-
 /* Called by:  TXDEC_ELNAME */
-int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
+static int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
 {
   struct zx_str* ss;
   const char* d = c->p;
@@ -121,7 +90,7 @@ int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
 }
 
 /* Called by:  TXDEC_ELNAME */
-int zx_scan_pi_or_comment(struct zx_ctx* c)
+static int zx_scan_pi_or_comment(struct zx_ctx* c)
 {
   const char* name;
   char quote;
@@ -174,39 +143,10 @@ int zx_scan_pi_or_comment(struct zx_ctx* c)
   return 1;
 }
 
-/*() dec-templ.c CSE. */
-
-/* Called by:  TXDEC_ELNAME */
-void zx_known_attr_wrong_context(struct zx_ctx* c, struct zx_elem_s* x)
-{
-  struct zx_attr_s* attr = x->attr;  /* Last parsed attribute is on head of attrs list. */
-  D("Known attribute(%.*s) tok=0x%x in wrong context(%.*s)", attr->name_len, attr->name, attr->g.tok, x->g.len, x->g.s);
-}
-
-void zx_known_elem_wrong_context(struct zx_ctx* c, struct zx_elem_s* x)
-{
-  struct zx_elem_s* el = x->kids;  /* Last parsed element is on head of kids list. */
-  D("Known element(%.*s) tok=0x%x in wrong context(%.*s)", el->g.len, el->g.s, el->g.tok, x->g.len, x->g.s);
-  zx_DEC_wrong_elem(c, el);
-}
-
-/*() Called from dec-templ.c for CSE elimination. */
-
-void zx_dec_reverse_lists(struct zx_elem_s* x)
-{
-  struct zx_elem_s* iternode;
-  struct zx_attr_s* attr;
-  iternode = x->kids;
-  REVERSE_LIST_NEXT(x->kids, iternode, g.n);
-  /* *** Attribute list should be in alphabetical order first by NS URI and then by attribute name */
-  attr = x->attr;
-  REVERSE_LIST_NEXT(x->attr, attr, g.n);
-}
-
 /*() Assuming current c->p points to a name, scan until end of the name.
  * Called from innards for dec-templ.c for CSE. Leaves c->p pointing to char after name. */
 
-const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
+static const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
 {
   const char* name = c->p;
   int len = strcspn(c->p, " >/\n\r\t");
@@ -220,7 +160,7 @@ const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
 
 /*() End of tag detection called from innards for dec-templ.c for CSE. */
 
-int zx_scan_elem_end(struct zx_ctx* c, const char* start, const char* func)
+static int zx_scan_elem_end(struct zx_ctx* c, const char* start, const char* func)
 {
   const char* name;
   const char* errloc;
@@ -240,10 +180,41 @@ look_for_not_found:
   return 0;
 }
 
+/*() dec-templ.c CSE. */
+
+/* Called by:  TXDEC_ELNAME */
+static void zx_known_attr_wrong_context(struct zx_ctx* c, struct zx_elem_s* x)
+{
+  struct zx_attr_s* attr = x->attr;  /* Last parsed attribute is on head of attrs list. */
+  D("Known attribute(%.*s) tok=0x%x in wrong context(%.*s)", attr->name_len, attr->name, attr->g.tok, x->g.len, x->g.s);
+}
+
+static void zx_known_elem_wrong_context(struct zx_ctx* c, struct zx_elem_s* x)
+{
+  struct zx_elem_s* el = x->kids;  /* Last parsed element is on head of kids list. */
+  if (el->g.tok == ZX_TOK_AND_NS_NOT_FOUND)
+    return;
+  D("Known element(%.*s) tok=0x%x in wrong context(%.*s)", el->g.len, el->g.s, el->g.tok, x->g.len, x->g.s);
+  el->g.tok = ZX_TOK_AND_NS_NOT_FOUND;
+}
+
+/*() Called from dec-templ.c for CSE elimination. */
+
+static void zx_dec_reverse_lists(struct zx_elem_s* x)
+{
+  struct zx_elem_s* iternode;
+  struct zx_attr_s* attr;
+  iternode = x->kids;
+  REVERSE_LIST_NEXT(x->kids, iternode, g.n);
+  /* *** Attribute list should be in alphabetical order first by NS URI and then by attribute name */
+  attr = x->attr;
+  REVERSE_LIST_NEXT(x->attr, attr, g.n);
+}
+
 /*() Called from dec-templ.c for CSE elimination. */
 
 /* Called by:  TXDEC_ELNAME */
-const char* zx_dec_attr_val(struct zx_ctx* c, const char* func)
+static const char* zx_dec_attr_val(struct zx_ctx* c, const char* func)
 {
   const char* data;
   char quote;
@@ -266,15 +237,14 @@ const char* zx_dec_attr_val(struct zx_ctx* c, const char* func)
   return 0;
 }
 
-/* Tokenize an attribute.
+/*() Tokenize an attribute.
  * Lookup functions to convert a namespace qualified string to an integer token.
- * The att2tok() functions come from xsd2sg.pl code generation via gperf. */
-
-/*() Internal function CSE. Attribute token lookup.
+ * The att2tok() functions come from xsd2sg.pl code generation via gperf.
+ * Internal function CSE.
  * Starts with c->p pointing to beginning of attribute (with ns prefix, if any) */
 
 /* Called by:  TXDEC_ELNAME */
-int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x, const char* func)
+static int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x)
 {
   const char* prefix;
   const char* name;
@@ -291,7 +261,7 @@ int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x, const char* func)
 
   attr = ZX_ZALLOC(c, struct zx_attr_s);
   attr->name = (char*)(name = c->p);
-  if (!(data = zx_dec_attr_val(c, func))) {
+  if (!(data = zx_dec_attr_val(c, "attr_lookup"))) {
     ZX_FREE(c, attr);
     return ZX_TOK_ATTR_ERR;
   }
@@ -315,7 +285,7 @@ int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x, const char* func)
       zx_xmlns_detected(c, x, data);
       return ZX_TOK_XMLNS;
     }
-    ns = zx_prefix_seen_whine(c, (name-1)-prefix, prefix, (const char*)__FUNCTION__, 0);
+    ns = zx_prefix_seen_whine(c, (name-1)-prefix, prefix, "attr_lookup", 0);
     if (ns) {
       attr->ns = ns;
       if (ns->master)
@@ -345,21 +315,41 @@ int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x, const char* func)
   return attr->g.tok |= ZX_TOK_ATTR_NOT_FOUND;
 }
 
-/* Lookup function to convert a namespace qualified string to an integer token.
+/*() Given token, find element descriptor. */
+
+struct zx_el_desc* zx_el_desc_lookup(int tok)
+{
+  struct zx_el_desc* ed;
+  if (tok == ZX_TOK_AND_NS_NOT_FOUND)
+    return 0;
+  if (!IN_RANGE(tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX)) {
+    ERR("out of range token 0x%06x", tok);
+    return 0;
+  }
+  for (ed = zx_el_tab[tok & ZX_TOK_TOK_MASK].n; ed; ed = ed->n)
+    if (ed->tok == tok)
+      return ed;
+  ERR("unknown token 0x%06x", tok);
+  return 0;
+}
+
+/*() Lookup function to convert a namespace qualified string to an integer token.
  * First namespace is looked up and then the element in namespace specific hash.
  * The hash functions come from xsd2sg.pl code generation via gperf. */
 
 /* Called by:  TXDEC_ELNAME x2 */
-struct zx_elem_s* zx_elem_lookup(struct zx_ctx* c, struct zx_elem_s* x, struct zx_ns_s** pop_seenp)
+static struct zx_elem_s* zx_elem_lookup(struct zx_ctx* c, struct zx_elem_s* x, struct zx_ns_s** pop_seenp)
 {
   struct zx_elem_s* el;
   struct zx_ns_s* ns;
   struct zx_ns_s* master_ns;
   const struct zx_el_tok* zt;
+  const struct zx_el_desc* ed;
   const char* full_name;
   const char* name;
   const char* prefix;
   const char* p;
+  int tok;
 
   if (!(name = zx_scan_elem_start(c, (const char*)__FUNCTION__)))
     return 0;
@@ -376,29 +366,140 @@ struct zx_elem_s* zx_elem_lookup(struct zx_ctx* c, struct zx_elem_s* x, struct z
 
   ns = zx_prefix_seen_whine(c, prefix ? (name-1)-prefix : 0, prefix, (const char*)__FUNCTION__,1);
   master_ns = ns->master?ns->master:ns;
-  if (master_ns->elem2tok) {
-    zt = master_ns->elem2tok(name, c->p - name);
-    if (zt) {
-      el = ZX_ALLOC(c, zt->siz);
-      ZERO(el, zt->siz);
-      el->g.tok = (master_ns - c->ns_tab) << ZX_TOK_NS_SHIFT | (zt - master_ns->el_tab);
-    } else {
-      INFO("Known namespace, unknown element <%.*s>, child of <%.*s>", c->p - full_name, full_name, x->g.len, x->g.s);
-      el = ZX_ZALLOC(c, struct zx_elem_s);
-      el->g.tok = ZX_TOK_AND_NS_NOT_FOUND;
-    }
+  zt = zx_elem2tok(name, c->p - name);
+  if (zt) {
+    tok = ((master_ns - c->ns_tab) << ZX_TOK_NS_SHIFT) | (zt - zx_el_tab);
+    ed = zx_el_desc_lookup(tok);
+    if (ed) {
+      el = ZX_ALLOC(c, ed->siz);
+      ZERO(el, ed->siz);
+    } else
+      goto unknown_el;
   } else {
+unknown_el:
     INFO("Unknown element <%.*s>, child of <%.*s>", c->p - full_name, full_name, x->g.len, x->g.s);
     el = ZX_ZALLOC(c, struct zx_elem_s);
-    el->g.tok = ZX_TOK_AND_NS_NOT_FOUND;
+    tok = ZX_TOK_AND_NS_NOT_FOUND;
   }
 
+  el->g.tok = tok;
   el->ns = ns;
   el->g.s = (char*)full_name;
   el->g.len = c->p - full_name;
   el->g.n = &x->kids->g;
   x->kids = el;
   return el;
+}
+
+/*() Element Decoder. When per element decoder is called, the c->p
+ * will point to just past the element name. The element has already
+ * been allocated to the correct size and the namespace prescan has
+ * already been done. */
+
+void zx_DEC_elem(struct zx_ctx* c, struct zx_elem_s* x)
+{
+  int tok MAYBE_UNUSED;  /* Unused in zx_DEC_root() */
+  struct zx_el_desc* ed = zx_el_desc_lookup(x->g.tok);
+  struct zx_elem_s* el;
+  struct zx_ns_s* pop_seen;
+
+  if (x->g.tok != zx_root_ELEM) {
+    /* The tag name has already been detected. Process attributes until '>' */
+    
+    for (; c->p; ++c->p) {
+      tok = zx_attr_lookup(c, x);
+      switch (tok) {
+      case ZX_TOK_XMLNS: break;
+      case ZX_TOK_ATTR_NOT_FOUND: break;
+      case ZX_TOK_ATTR_ERR: return; 
+      case ZX_TOK_NO_ATTR: goto no_attr;
+      default:
+	if (!ed || !ed->at_dec(c, x))  /* element specific attribute processing */
+	  zx_known_attr_wrong_context(c, (struct zx_elem_s*)x);
+      }
+    }
+no_attr:
+    if (c->p) {
+      ++c->p;
+      if (c->p[-1] == '/' && c->p[0] == '>') {  /* <Tag/> without content */
+	++c->p;
+	goto out;
+      }
+    }
+  }
+
+  /* Process contents until '</' */
+  
+  while (c->p) {
+  next_elem:
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
+    if (*c->p == '<') {
+    potential_tag:
+      ++c->p;
+      switch (*c->p) {
+      case '?':  /* processing instruction <?xml ... ?> */
+      case '!':  /* comment <!-- ... --> */
+	if (zx_scan_pi_or_comment(c))
+	  break;
+	goto next_elem;
+      case '/':  /* close tag */
+	if (!zx_scan_elem_end(c, ((struct zx_elem_s*)x)->g.s, (const char*)__FUNCTION__))
+	  return;
+	/* Legitimate close tag. Normal exit from this function. */
+	++c->p;
+	goto out;
+      default:
+	if (AZaz_(*c->p)) {
+	  el = zx_elem_lookup(c, (struct zx_elem_s*)x, &pop_seen);
+	  if (!el)
+	    return;
+	  zx_DEC_elem(c, el);
+	  if (!ed || !ed->el_dec(c, x))  /* element specific subelement processing */
+	    zx_known_elem_wrong_context(c, (struct zx_elem_s*)x);
+	  zx_pop_seen(pop_seen);
+	  goto next_elem;
+	}
+      }
+      /* false alarm <, fall thru */
+    }
+    if (!zx_scan_data(c, (struct zx_elem_s*)x))
+      return;
+    goto potential_tag;
+  }
+ out:
+  zx_dec_reverse_lists((struct zx_elem_s*)x);
+}
+
+/*() Prepare a context for decoding XML. The decoding operation will not
+ * alter the underlying data (e.g. no nuls are inserted, not even temporarily).
+ * N.B. Often you would wrap this in locks, like
+ *   LOCK(cf->ctx->mx, "valid");
+ *   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, n_ns, ss->s, ss->s + ss->len);
+ *   r = zx_DEC_root(cf->ctx, 0, 1);
+ *   UNLOCK(cf->ctx->mx, "valid");
+ */
+
+/* Called by:  main x7, test_ibm_cert_problem, zxid_add_env_if_needed x2, zxid_dec_a7n, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_reg_svc, zxid_soap_call_raw, zxid_sp_soap_parse, zxid_wsp_validate */
+void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, const char* start, const char* lim)
+{
+  c->guard_seen_n.seen_n = &c->guard_seen_p;
+  c->guard_seen_p.seen_p = &c->guard_seen_n;
+  c->ns_tab = ns_tab;
+  c->n_ns = n_ns;
+  c->bas = c->p = start;
+  c->lim = lim;
+}
+
+/*(i) Decode arbitary xml with zx_ns_tab set of namespaces and parsers. */
+
+struct zx_root_s* zx_dec_zx_root(struct zx_ctx* c, int len, const char* start, const char* func)
+{
+  struct zx_root_s* r = zx_NEW_root(c, 0);
+  LOCK(c->mx, func);
+  zx_prepare_dec_ctx(c, zx_ns_tab, sizeof(zx_ns_tab)/sizeof(struct zx_ns_s), start, start + len);
+  zx_DEC_elem(c, &r->gg);
+  UNLOCK(c->mx, func);
+  return r;
 }
 
 /* EOF -- zxlibdec.c */

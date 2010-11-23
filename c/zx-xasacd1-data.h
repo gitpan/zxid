@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_xasacd1_N_ELEMS 0
-#if !defined(zx_xasacd1__ELEM_MAX) && zx_xasacd1_N_ELEMS == 0
-#define zx_xasacd1__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_xasacd1_el_tab[zx_xasacd1__ELEM_MAX];
-struct zx_el_tok* zx_xasacd1_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- xasacd1_ReferencedPolicies -------------------------- */
 /* refby( zx_xasacd1_XACMLPolicyStatement_s zx_xaspcd1_XACMLAuthzDecisionQuery_s ) */
 #ifndef zx_xasacd1_ReferencedPolicies_EXT
@@ -38,8 +31,10 @@ struct zx_xasacd1_ReferencedPolicies_s {
   struct zx_xa_PolicySet_s* PolicySet;	/* {0,1} nada */
 };
 
-struct zx_xasacd1_ReferencedPolicies_s* zx_DEC_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_xasacd1_ReferencedPolicies_s* x);
-struct zx_xasacd1_ReferencedPolicies_s* zx_NEW_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xasacd1_ReferencedPolicies(c, father) (struct zx_xasacd1_ReferencedPolicies_s*)zx_new_elem((c),(father),zx_xasacd1_ReferencedPolicies_ELEM)
+
+int zx_DEC_ATTR_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_xasacd1_ReferencedPolicies_s* x);
+int zx_DEC_ELEM_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_xasacd1_ReferencedPolicies_s* x);
 int zx_LEN_SO_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_xasacd1_ReferencedPolicies_s* x);
 char* zx_ENC_SO_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_xasacd1_ReferencedPolicies_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xasacd1_ReferencedPolicies(struct zx_ctx* c, struct zx_xasacd1_ReferencedPolicies_s* x);
@@ -92,8 +87,10 @@ struct zx_xasacd1_XACMLAuthzDecisionStatement_s {
   struct zx_xac_Request_s* Request;	/* {0,1} nada */
 };
 
-struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_DEC_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* x);
-struct zx_xasacd1_XACMLAuthzDecisionStatement_s* zx_NEW_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xasacd1_XACMLAuthzDecisionStatement(c, father) (struct zx_xasacd1_XACMLAuthzDecisionStatement_s*)zx_new_elem((c),(father),zx_xasacd1_XACMLAuthzDecisionStatement_ELEM)
+
+int zx_DEC_ATTR_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* x);
+int zx_DEC_ELEM_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* x);
 int zx_LEN_SO_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* x);
 char* zx_ENC_SO_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xasacd1_XACMLAuthzDecisionStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLAuthzDecisionStatement_s* x);
@@ -147,8 +144,10 @@ struct zx_xasacd1_XACMLPolicyStatement_s {
   struct zx_xasacd1_ReferencedPolicies_s* ReferencedPolicies;	/* {0,1} nada */
 };
 
-struct zx_xasacd1_XACMLPolicyStatement_s* zx_DEC_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLPolicyStatement_s* x);
-struct zx_xasacd1_XACMLPolicyStatement_s* zx_NEW_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xasacd1_XACMLPolicyStatement(c, father) (struct zx_xasacd1_XACMLPolicyStatement_s*)zx_new_elem((c),(father),zx_xasacd1_XACMLPolicyStatement_ELEM)
+
+int zx_DEC_ATTR_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLPolicyStatement_s* x);
+int zx_DEC_ELEM_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLPolicyStatement_s* x);
 int zx_LEN_SO_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLPolicyStatement_s* x);
 char* zx_ENC_SO_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLPolicyStatement_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xasacd1_XACMLPolicyStatement(struct zx_ctx* c, struct zx_xasacd1_XACMLPolicyStatement_s* x);

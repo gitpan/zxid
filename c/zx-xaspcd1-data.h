@@ -18,13 +18,6 @@
 #define ZX_ELEM_EXT  /* This extension point should be defined by who includes this file. */
 #endif
 
-#define zx_xaspcd1_N_ELEMS 0
-#if !defined(zx_xaspcd1__ELEM_MAX) && zx_xaspcd1_N_ELEMS == 0
-#define zx_xaspcd1__ELEM_MAX 0
-#endif
-extern struct zx_el_tok zx_xaspcd1_el_tab[zx_xaspcd1__ELEM_MAX];
-struct zx_el_tok* zx_xaspcd1_elem2tok(const char* name, unsigned int name_len);
-
 /* -------------------------- xaspcd1_XACMLAuthzDecisionQuery -------------------------- */
 /* refby( zx_e_Body_s ) */
 #ifndef zx_xaspcd1_XACMLAuthzDecisionQuery_EXT
@@ -51,8 +44,10 @@ struct zx_xaspcd1_XACMLAuthzDecisionQuery_s {
   struct zx_attr_s* Version;	/* {1,1} attribute xa:VersionType */
 };
 
-struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zx_DEC_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* x);
-struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zx_NEW_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xaspcd1_XACMLAuthzDecisionQuery(c, father) (struct zx_xaspcd1_XACMLAuthzDecisionQuery_s*)zx_new_elem((c),(father),zx_xaspcd1_XACMLAuthzDecisionQuery_ELEM)
+
+int zx_DEC_ATTR_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* x);
+int zx_DEC_ELEM_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* x);
 int zx_LEN_SO_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* x);
 char* zx_ENC_SO_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xaspcd1_XACMLAuthzDecisionQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* x);
@@ -171,8 +166,10 @@ struct zx_xaspcd1_XACMLPolicyQuery_s {
   struct zx_attr_s* Version;	/* {1,1} attribute xa:VersionType */
 };
 
-struct zx_xaspcd1_XACMLPolicyQuery_s* zx_DEC_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLPolicyQuery_s* x);
-struct zx_xaspcd1_XACMLPolicyQuery_s* zx_NEW_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_elem_s* father);
+#define zx_NEW_xaspcd1_XACMLPolicyQuery(c, father) (struct zx_xaspcd1_XACMLPolicyQuery_s*)zx_new_elem((c),(father),zx_xaspcd1_XACMLPolicyQuery_ELEM)
+
+int zx_DEC_ATTR_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLPolicyQuery_s* x);
+int zx_DEC_ELEM_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLPolicyQuery_s* x);
 int zx_LEN_SO_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLPolicyQuery_s* x);
 char* zx_ENC_SO_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLPolicyQuery_s* x, char* p);
 struct zx_str* zx_EASY_ENC_SO_xaspcd1_XACMLPolicyQuery(struct zx_ctx* c, struct zx_xaspcd1_XACMLPolicyQuery_s* x);
