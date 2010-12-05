@@ -29,6 +29,7 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
+/* Called by:  zxid_psobj_dec, zxid_psobj_enc */
 static int zxid_psobj_key_setup(zxid_conf* cf, struct zx_str* eid, char* symkey)
 {
   if (!cf->psobj_symkey[0])
@@ -49,6 +50,7 @@ static int zxid_psobj_key_setup(zxid_conf* cf, struct zx_str* eid, char* symkey)
  * of secret (/var/zxid/pem/psobj-enc.key) known to ps server (i.e. the
  * zxididp) and the Entity ID of the entity. */
 
+/* Called by:  zxid_mk_an_stmt, zxid_ps_addent_invite */
 struct zx_str* zxid_psobj_enc(zxid_conf* cf, struct zx_str* eid, const char* prefix, struct zx_str* psobj)
 {
   char* lim;
@@ -72,6 +74,7 @@ struct zx_str* zxid_psobj_enc(zxid_conf* cf, struct zx_str* eid, const char* pre
 
 /*() Decrypt psobj identifier from an entity. */
 
+/* Called by:  zxid_idp_slo_do, zxid_ps_addent_invite */
 struct zx_str* zxid_psobj_dec(zxid_conf* cf, struct zx_str* eid, const char* prefix, struct zx_str* psobj)
 {
   char* lim;
@@ -101,6 +104,7 @@ struct zx_str* zxid_psobj_dec(zxid_conf* cf, struct zx_str* eid, const char* pre
 
 /*() Render the linked list of delegated permissions to a string */
 
+/* Called by:  zxid_put_invite, zxid_put_psobj */
 char* zxid_render_perms(zxid_conf* cf, struct zxid_perm* perms)
 {
   int n, len = 0;
@@ -131,6 +135,7 @@ char* zxid_render_perms(zxid_conf* cf, struct zxid_perm* perms)
 
 /*() Render the linked list of invitation IDs to a string */
 
+/* Called by:  zxid_put_psobj x2 */
 char* zxid_render_str_list(zxid_conf* cf, struct zx_str* strs, const char* attr_name)
 {
   int n, len = 0, atn_len = strlen(attr_name);
@@ -159,6 +164,7 @@ char* zxid_render_str_list(zxid_conf* cf, struct zx_str* strs, const char* attr_
 
 /*() Create new invitation in file system. */
 
+/* Called by:  zxid_ps_addent_invite */
 int zxid_put_invite(zxid_conf* cf, struct zxid_invite* inv)
 {
   char buf[ZXID_MAX_USER];
@@ -187,6 +193,7 @@ int zxid_put_invite(zxid_conf* cf, struct zxid_invite* inv)
 
 /*() Create new People Service Object in file system. */
 
+/* Called by:  zxid_ps_addent_invite */
 int zxid_put_psobj(zxid_conf* cf, struct zxid_psobj* obj)
 {
   char* buf = ZX_ALLOC(cf->ctx, ZXID_MAX_USER);
@@ -218,7 +225,7 @@ int zxid_put_psobj(zxid_conf* cf, struct zxid_psobj* obj)
 /*() Populate psobj from LDIF. Parse LDIF format and insert attributes to struct.
  * The input is temporarily modified and then restored. Do not pass const string. */
 
-/* Called by:  zxid_mk_user_a7n_to_sp x4 */
+/* Called by: */
 int zxid_parse_psobj(zxid_conf* cf, struct zxid_psobj* obj, char* p, const char* lk)
 {
   char* name;
@@ -314,7 +321,7 @@ int zxid_parse_psobj(zxid_conf* cf, struct zxid_psobj* obj, char* p, const char*
 /*() Populate invitation from LDIF. Parse LDIF format and insert attributes to struct.
  * The input is temporarily modified and then restored. Do not pass const string. */
 
-/* Called by:  zxid_mk_user_a7n_to_sp x4 */
+/* Called by:  zxid_ps_accept_invite, zxid_ps_finalize_invite */
 int zxid_parse_invite(zxid_conf* cf, struct zxid_invite* inv, char* p, const char* lk)
 {
   char* name;
@@ -416,6 +423,7 @@ int zxid_parse_invite(zxid_conf* cf, struct zxid_invite* inv, char* p, const cha
 /*() Accept an invitation. Process a URL of form https://idp.tas3.pt/zxididp?o=D&inv=i123431
  * Both logged in and not yet logged in cases are possible. */
 
+/* Called by:  zxid_simple_no_ses_cf, zxid_simple_ses_active_cf */
 char* zxid_ps_accept_invite(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
   int now = time(0);
@@ -457,6 +465,7 @@ char* zxid_ps_accept_invite(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
 /*() Finalize an invitation. This function is invoked after zxid_ps_accept_invite() (o=D)
  * when user is returning from IdP, by way of o=G placed in RelayState. */
 
+/* Called by:  zxid_simple_ses_active_cf */
 char* zxid_ps_finalize_invite(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
   int now = time(0);
@@ -517,7 +526,7 @@ struct zx_ps_AddEntityResponse_s* zxid_ps_addent_invite(zxid_conf* cf, zxid_a7n*
 
   if (!req || !req->Object) {
     ERR("Malformed request (%p): Object missing.", req);
-    resp->Status = zxid_mk_lu_Status(cf, "Fail", 0, 0, 0);
+    resp->Status = zxid_mk_lu_Status(cf, &resp->gg, "Fail", 0, 0, 0);
     D_DEDENT("ps_inv: ");
     return resp;
   }
@@ -558,23 +567,23 @@ struct zx_ps_AddEntityResponse_s* zxid_ps_addent_invite(zxid_conf* cf, zxid_a7n*
 
   /* The invitation URL will be processed by zxid_ps_accept_invite(), see above. */
   resp->SPtoPSRedirectURL
-    = zx_new_simple_elem(cf->ctx, &resp->gg, zx_ps_SPtoPSRedirectURL_ELEM,
-			 zx_strf(cf->ctx, "%s?o=D&inv=%.*s", cf->url, inv->invid->len, inv->invid->s));
+    = zx_new_str_elem(cf->ctx, &resp->gg, zx_ps_SPtoPSRedirectURL_ELEM,
+		      zx_strf(cf->ctx, "%s?o=D&inv=%.*s", cf->url, inv->invid->len, inv->invid->s));
   resp->Object = zx_NEW_ps_Object(cf->ctx, &resp->gg);
-  resp->Object->ObjectID = zx_new_simple_elem(cf->ctx, &resp->Object->gg, zx_ps_ObjectID_ELEM, zxid_psobj_enc(cf, issuer,"ZO",obj->psobj));
+  resp->Object->ObjectID = zx_new_str_elem(cf->ctx, &resp->Object->gg, zx_ps_ObjectID_ELEM, zxid_psobj_enc(cf, issuer,"ZO",obj->psobj));
   resp->Object->DisplayName = zx_NEW_ps_DisplayName(cf->ctx, &resp->Object->gg);
   zx_add_content(cf->ctx, &resp->Object->DisplayName->gg, obj->dispname);
-  resp->Object->DisplayName->Locale = zx_dup_attr(cf->ctx, zx_Locale_ATTR, "xx");  /* unknown locale */
+  resp->Object->DisplayName->Locale = zx_ref_attr(cf->ctx, &resp->Object->DisplayName->gg, zx_Locale_ATTR, "xx");  /* unknown locale */
   for (tag = obj->tags; tag; tag = tag->n) {
     resp->Object->Tag = zx_NEW_ps_Tag(cf->ctx, &resp->Object->gg);
     zx_add_content(cf->ctx, &resp->Object->Tag->gg, tag);
   }
-  resp->Object->NodeType = zx_dup_attr(cf->ctx, zx_NodeType_ATTR, obj->nodetype?PS_COL:PS_ENT);
-  resp->Object->CreatedDateTime = zxid_date_time_attr(cf, zx_CreatedDateTime_ATTR, obj->create_secs);
-  resp->Object->ModifiedDateTime = zxid_date_time_attr(cf, zx_TimeStamp_ATTR, obj->mod_secs);
+  resp->Object->NodeType = zx_ref_attr(cf->ctx, &resp->Object->gg, zx_NodeType_ATTR, obj->nodetype?PS_COL:PS_ENT);
+  resp->Object->CreatedDateTime = zxid_date_time_attr(cf, &resp->Object->gg, zx_CreatedDateTime_ATTR, obj->create_secs);
+  resp->Object->ModifiedDateTime = zxid_date_time_attr(cf, &resp->Object->gg, zx_TimeStamp_ATTR, obj->mod_secs);
   resp->TimeStamp = resp->Object->CreatedDateTime;
-  resp->id = zx_ref_len_attr(cf->ctx, zx_id_ATTR, inv->invid->len, inv->invid->s);  /* *** why is ID requred by schema at all? */
-  resp->Status = zxid_mk_lu_Status(cf, "OK", 0, 0, 0);
+  resp->id = zx_ref_len_attr(cf->ctx, &resp->gg, zx_id_ATTR, inv->invid->len, inv->invid->s);  /* *** why is ID requred by schema at all? */
+  resp->Status = zxid_mk_lu_Status(cf, &resp->gg, "OK", 0, 0, 0);
   zxlog(cf, 0, 0, 0, issuer, 0, &a7n->ID->g, ZX_GET_CONTENT(nameid), "N", "K", "PSINV", 0, "inv=%.*s", inv->invid->len, inv->invid->s);
   D_DEDENT("ps_inv: ");
   return resp;
@@ -608,7 +617,7 @@ struct zx_ps_ResolveIdentifierResponse_s* zxid_ps_resolv_id(zxid_conf* cf, zxid_
   }
 
   zxlog(cf, 0, 0, 0, issuer, 0, &a7n->ID->g, ZX_GET_CONTENT(nameid), "N", "K", "PSRESOLVOK", 0, "n=%d", n_resolv);
-  resp->Status = zxid_mk_lu_Status(cf, "OK", 0, 0, 0);
+  resp->Status = zxid_mk_lu_Status(cf, &resp->gg, "OK", 0, 0, 0);
   D_DEDENT("ps_resolv: ");
   return resp;
 }

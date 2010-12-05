@@ -14,9 +14,9 @@ public interface zxidjniConstants {
   public final static int ZX_TOK_XMLNS = zxidjniJNI.ZX_TOK_XMLNS_get();
   public final static int ZX_TOK_DATA = zxidjniJNI.ZX_TOK_DATA_get();
   public final static int ZX_TOK_ATTR_NOT_FOUND = zxidjniJNI.ZX_TOK_ATTR_NOT_FOUND_get();
-  public final static int ZX_TOK_NOT_FOUND = zxidjniJNI.ZX_TOK_NOT_FOUND_get();
+  public final static int ZX_TOK_TOK_NOT_FOUND = zxidjniJNI.ZX_TOK_TOK_NOT_FOUND_get();
   public final static int ZX_TOK_NS_NOT_FOUND = zxidjniJNI.ZX_TOK_NS_NOT_FOUND_get();
-  public final static int ZX_TOK_AND_NS_NOT_FOUND = zxidjniJNI.ZX_TOK_AND_NS_NOT_FOUND_get();
+  public final static int ZX_TOK_NOT_FOUND = zxidjniJNI.ZX_TOK_NOT_FOUND_get();
   public final static int ZX_TOK_TOK_MASK = zxidjniJNI.ZX_TOK_TOK_MASK_get();
   public final static int ZX_TOK_NS_MASK = zxidjniJNI.ZX_TOK_NS_MASK_get();
   public final static int ZX_TOK_NS_SHIFT = zxidjniJNI.ZX_TOK_NS_SHIFT_get();
@@ -221,6 +221,7 @@ public interface zxidjniConstants {
   public final static String SUBS_END_DELETED = zxidjniJNI.SUBS_END_DELETED_get();
   public final static String WSF11_DI_RO = zxidjniJNI.WSF11_DI_RO_get();
   public final static String WSF20_DI_RO = zxidjniJNI.WSF20_DI_RO_get();
+  public final static String TAS3_EPR = zxidjniJNI.TAS3_EPR_get();
   public final static String IMPLIED_RSC = zxidjniJNI.IMPLIED_RSC_get();
   public final static String XMLNS_DISCO_1_1 = zxidjniJNI.XMLNS_DISCO_1_1_get();
   public final static String XMLNS_DISCO_EXT = zxidjniJNI.XMLNS_DISCO_EXT_get();

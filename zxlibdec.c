@@ -33,7 +33,7 @@
 
 #include "errmac.h"
 #include "zx.h"
-#include "c/zx-data.h"  /* Also generic zx_simple_elem, etc. */
+#include "c/zx-data.h"
 #include "c/zx-ns.h"
 
 /*() Format error message describing an XML parse error. The buf argument
@@ -52,7 +52,7 @@ int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey)
   return len;
 }
 
-/* Called by:  TXDEC_ELNAME x2, zx_dec_attr_val x2, zx_scan_pi_or_comment, zx_scan_xmlns x2 */
+/* Called by:  zx_dec_attr_val x2, zx_scan_elem_end, zx_scan_pi_or_comment, zx_scan_xmlns x2 */
 void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg)
 {
   const char* errloc = MAX(c->p - 20, c->bas);
@@ -60,6 +60,7 @@ void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char
       c->p - c->bas, MIN(c->lim - errloc, 40), errloc);
 }
 
+/* Called by:  zx_xmlns_decl */
 void zx_xml_parse_dbg(struct zx_ctx* c, char quote, const char* func, const char* msg)
 {
   const char* errloc = MAX(c->p - 20, c->bas);
@@ -69,7 +70,7 @@ void zx_xml_parse_dbg(struct zx_ctx* c, char quote, const char* func, const char
 
 /* --------------------- D e c o d e r ---------------------- */
 
-/* Called by:  TXDEC_ELNAME */
+/* Called by:  zx_DEC_elem */
 static int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
 {
   struct zx_str* ss;
@@ -89,7 +90,7 @@ static int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
   return 0;
 }
 
-/* Called by:  TXDEC_ELNAME */
+/* Called by:  zx_DEC_elem */
 static int zx_scan_pi_or_comment(struct zx_ctx* c)
 {
   const char* name;
@@ -146,6 +147,7 @@ static int zx_scan_pi_or_comment(struct zx_ctx* c)
 /*() Assuming current c->p points to a name, scan until end of the name.
  * Called from innards for dec-templ.c for CSE. Leaves c->p pointing to char after name. */
 
+/* Called by:  zx_elem_lookup */
 static const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
 {
   const char* name = c->p;
@@ -160,6 +162,7 @@ static const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
 
 /*() End of tag detection called from innards for dec-templ.c for CSE. */
 
+/* Called by:  zx_DEC_elem */
 static int zx_scan_elem_end(struct zx_ctx* c, const char* start, const char* func)
 {
   const char* name;
@@ -180,40 +183,161 @@ look_for_not_found:
   return 0;
 }
 
-/*() dec-templ.c CSE. */
+/*() Check the child element ordering of a token against schema.
+ * Returns 0 if ordering is good. If ordering is bad, returns index to
+ * the offending child element. This check does not verify whether all
+ * mandatory child elements are present - it merely checks that the
+ * order is right. */
 
-/* Called by:  TXDEC_ELNAME */
-static void zx_known_attr_wrong_context(struct zx_ctx* c, struct zx_elem_s* x)
+/* Called by:  zx_reverse_elem_lists */
+int zx_chk_el_ord(struct zx_elem_s* x)
 {
-  struct zx_attr_s* attr = x->attr;  /* Last parsed attribute is on head of attrs list. */
-  D("Known attribute(%.*s) tok=0x%x in wrong context(%.*s)", attr->name_len, attr->name, attr->g.tok, x->g.len, x->g.s);
+  int i,j,n;
+  struct zx_el_tok* et;
+  struct zx_el_tok* ef;
+  struct zx_el_desc* ed = zx_el_desc_lookup(x->g.tok);
+  if (!ed)
+    return 0;
+  x = x->kids;
+  for (n = i = j = 0; x; i = j, x = (struct zx_elem_s*)x->g.n) {
+    ++n;
+    if (x->g.tok == ZX_TOK_DATA)
+      continue;
+    for (j = i; ed->el_order[j] != ZX_TOK_NOT_FOUND; ++j)
+      if (x->g.tok == ed->el_order[j])
+	break;
+    if (ed->el_order[j] == ZX_TOK_NOT_FOUND) {
+      if (x->g.tok == ZX_TOK_NOT_FOUND || !IN_RANGE(x->g.tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX)) {
+	ef = zx_el_tab + MINMAX(ed->tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX);
+	INFO("Unknown <%.*s> token(0x%06x) as %d. child of <%s> 0x%06x (%d,%d)", x->g.len, x->g.s, x->g.tok, n, ef->name, ed->tok, i, j);
+      } else {
+	et = zx_el_tab + (x->g.tok & ZX_TOK_TOK_MASK);
+	ef = zx_el_tab + MINMAX(ed->tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX);
+	ERR("Known <%s> tok(0x%06x) in wrong place as %d. child of <%s> tok(0x%06x) (%d,%d)", et->name, x->g.tok, n, ef->name, ed->tok, i, j);
+      }
+      return n;
+    }
+  }
+  return 0;
 }
 
-static void zx_known_elem_wrong_context(struct zx_ctx* c, struct zx_elem_s* x)
+/*() Insert an attribute to element's attribtue list in canoncically sorted
+ * place, i.e. no namespace sorts first, namespaced attribute sort by
+ * namespace URI (not namespace prefix). Assumes the attribute
+ * list has so far been sorted. Used as part of insertion sort. */
+
+struct zx_attr_s* zx_ord_ins_at(struct zx_elem_s* x, struct zx_attr_s* in_at)
 {
-  struct zx_elem_s* el = x->kids;  /* Last parsed element is on head of kids list. */
-  if (el->g.tok == ZX_TOK_AND_NS_NOT_FOUND)
-    return;
-  D("Known element(%.*s) tok=0x%x in wrong context(%.*s)", el->g.len, el->g.s, el->g.tok, x->g.len, x->g.s);
-  el->g.tok = ZX_TOK_AND_NS_NOT_FOUND;
+  struct zx_attr_s* at;
+  struct zx_attr_s** atp;
+  const char* at_name;
+  const char* in_at_name;
+  const char* p;
+  int res, at_name_len, in_at_name_len;
+
+  atp = &x->attr;
+  for (at = x->attr; at; atp = (struct zx_attr_s**)&at->g.n, at = (struct zx_attr_s*)at->g.n) {
+    if (!in_at->ns && IN_RANGE((in_at->g.tok & ZX_TOK_NS_MASK)>>ZX_TOK_NS_SHIFT, 1, zx__NS_MAX))
+      in_at->ns = zx_ns_tab + ((in_at->g.tok & ZX_TOK_NS_MASK)>>ZX_TOK_NS_SHIFT);
+    if (in_at->ns) {
+      if (!at->ns && IN_RANGE((at->g.tok & ZX_TOK_NS_MASK)>>ZX_TOK_NS_SHIFT, 1, zx__NS_MAX))
+	at->ns = zx_ns_tab + ((at->g.tok & ZX_TOK_NS_MASK)>>ZX_TOK_NS_SHIFT);
+      if (at->ns) {
+	if (at->ns != in_at->ns) {
+	  res = memcmp(at->ns->url, in_at->ns->url, MIN(at->ns->url_len, in_at->ns->url_len));
+	  if (res > 0)
+	    break;
+	  if (res < 0)
+	    continue;
+	  if (at->ns->url_len > in_at->ns->url_len)
+	    break;
+	  if (at->ns->url_len < in_at->ns->url_len)
+	    continue;
+	}
+      } else
+	continue;  /* at has no namespace, sorts earlier than in_at that has namespace. */
+    } else {
+      if (at->ns)
+	break;  /* No namespace sorts before namespace */
+    }
+    /* Neither has namespace, or namespaces were equal: sort by attribute name */
+
+    if (at->name) {
+      at_name = at->name;
+      at_name_len = at->name_len;
+      p = memchr(at_name, ':', at_name_len);
+      if (p) {
+	at_name_len -= 1 + p - at_name;
+	at_name = p+1;
+      }
+    } else {
+      if (IN_RANGE((at->g.tok & ZX_TOK_TOK_MASK), 0, zx__ATTR_MAX)) {
+	at_name = (char*)zx_at_tab[at->g.tok & ZX_TOK_TOK_MASK].name;
+	at_name_len = strlen(at_name);
+      } else {
+	ERR("Attribute supplied without name and tok 0x%06x is out of range", at->g.tok);
+	break;
+      }
+    }
+    if (in_at->name) {
+      in_at_name = in_at->name;
+      in_at_name_len = in_at->name_len;
+      p = memchr(in_at_name, ':', in_at_name_len);
+      if (p) {
+	in_at_name_len -= 1 + p - in_at_name;
+	in_at_name = p+1;
+      }
+    } else {
+      if (IN_RANGE((in_at->g.tok & ZX_TOK_TOK_MASK), 0, zx__ATTR_MAX)) {
+	in_at_name = (char*)zx_at_tab[in_at->g.tok & ZX_TOK_TOK_MASK].name;
+	in_at_name_len = strlen(in_at_name);
+      } else {
+	ERR("Attribute supplied without name and tok 0x%06x is out of range", in_at->g.tok);
+	break;
+      }
+    }
+    res = memcmp(at_name, in_at_name, MIN(at_name_len, in_at_name_len));
+    if (res > 0 || !res && at_name_len >= in_at_name_len)
+      break;
+  }
+  in_at->g.n = &at->g;
+  *atp = in_at;
+  return in_at;
 }
 
 /*() Called from dec-templ.c for CSE elimination. */
 
-static void zx_dec_reverse_lists(struct zx_elem_s* x)
+/* Called by:  zx_DEC_elem, zxid_ac_desc, zxid_ar_desc, zxid_az_soap, zxid_contact_desc, zxid_idp_sso_desc, zxid_key_desc, zxid_key_info, zxid_mk_a7n, zxid_mk_saml_resp, zxid_mk_xac_az, zxid_mni_desc, zxid_nimap_desc, zxid_org_desc, zxid_slo_desc, zxid_sp_meta, zxid_sp_sso_desc, zxid_sso_desc */
+void zx_reverse_elem_lists(struct zx_elem_s* x)
 {
   struct zx_elem_s* iternode;
-  struct zx_attr_s* attr;
+  struct zx_attr_s* in_at;
+  struct zx_attr_s* at_next;
+
   iternode = x->kids;
   REVERSE_LIST_NEXT(x->kids, iternode, g.n);
-  /* *** Attribute list should be in alphabetical order first by NS URI and then by attribute name */
-  attr = x->attr;
-  REVERSE_LIST_NEXT(x->attr, attr, g.n);
+
+  zx_chk_el_ord(x);
+  
+  /* Insertion sort attribute list in alphabetical order 1st by NS URI, then by attribute name */
+
+  in_at = x->attr;
+  if (!in_at || !in_at->g.n)
+    return;  /* Nothing to sort (no attributes or just one attribute) */
+
+  at_next = in_at;    /* Start insertion sort by considering first to already be in place. */
+  in_at = (struct zx_attr_s*)in_at->g.n;
+  at_next->g.n = 0;
+
+  for (; in_at; in_at = at_next) {
+    at_next = (struct zx_attr_s*)in_at->g.n;
+    zx_ord_ins_at(x, in_at);
+  }
 }
 
 /*() Called from dec-templ.c for CSE elimination. */
 
-/* Called by:  TXDEC_ELNAME */
+/* Called by:  zx_attr_lookup */
 static const char* zx_dec_attr_val(struct zx_ctx* c, const char* func)
 {
   const char* data;
@@ -243,7 +367,7 @@ static const char* zx_dec_attr_val(struct zx_ctx* c, const char* func)
  * Internal function CSE.
  * Starts with c->p pointing to beginning of attribute (with ns prefix, if any) */
 
-/* Called by:  TXDEC_ELNAME */
+/* Called by:  zx_DEC_elem */
 static int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x)
 {
   const char* prefix;
@@ -317,10 +441,11 @@ static int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x)
 
 /*() Given token, find element descriptor. */
 
+/* Called by:  zx_DEC_elem, zx_ENC_WO_any_elem, zx_LEN_WO_any_elem, zx_check_elem_order, zx_elem_lookup, zx_new_elem */
 struct zx_el_desc* zx_el_desc_lookup(int tok)
 {
   struct zx_el_desc* ed;
-  if (tok == ZX_TOK_AND_NS_NOT_FOUND)
+  if (tok == ZX_TOK_NOT_FOUND)
     return 0;
   if (!IN_RANGE(tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX)) {
     ERR("out of range token 0x%06x", tok);
@@ -337,8 +462,8 @@ struct zx_el_desc* zx_el_desc_lookup(int tok)
  * First namespace is looked up and then the element in namespace specific hash.
  * The hash functions come from xsd2sg.pl code generation via gperf. */
 
-/* Called by:  TXDEC_ELNAME x2 */
-static struct zx_elem_s* zx_elem_lookup(struct zx_ctx* c, struct zx_elem_s* x, struct zx_ns_s** pop_seenp)
+/* Called by:  zx_DEC_elem */
+static struct zx_elem_s* zx_el_lookup(struct zx_ctx* c, struct zx_elem_s* x, struct zx_ns_s** pop_seenp)
 {
   struct zx_elem_s* el;
   struct zx_ns_s* ns;
@@ -379,7 +504,7 @@ static struct zx_elem_s* zx_elem_lookup(struct zx_ctx* c, struct zx_elem_s* x, s
 unknown_el:
     INFO("Unknown element <%.*s>, child of <%.*s>", c->p - full_name, full_name, x->g.len, x->g.s);
     el = ZX_ZALLOC(c, struct zx_elem_s);
-    tok = ZX_TOK_AND_NS_NOT_FOUND;
+    tok = ZX_TOK_NOT_FOUND;
   }
 
   el->g.tok = tok;
@@ -396,6 +521,7 @@ unknown_el:
  * been allocated to the correct size and the namespace prescan has
  * already been done. */
 
+/* Called by:  zx_DEC_elem, zx_dec_zx_root */
 void zx_DEC_elem(struct zx_ctx* c, struct zx_elem_s* x)
 {
   int tok MAYBE_UNUSED;  /* Unused in zx_DEC_root() */
@@ -414,8 +540,9 @@ void zx_DEC_elem(struct zx_ctx* c, struct zx_elem_s* x)
       case ZX_TOK_ATTR_ERR: return; 
       case ZX_TOK_NO_ATTR: goto no_attr;
       default:
-	if (!ed || !ed->at_dec(c, x))  /* element specific attribute processing */
-	  zx_known_attr_wrong_context(c, (struct zx_elem_s*)x);
+	if (!ed || !ed->at_dec(c, x)) { /* element specific attribute processing */
+	  D("Known attribute(%.*s) tok=0x%x in wrong context(%.*s)", x->attr->name_len, x->attr->name, x->attr->g.tok, x->g.len, x->g.s);
+	}
       }
     }
 no_attr:
@@ -450,12 +577,16 @@ no_attr:
 	goto out;
       default:
 	if (AZaz_(*c->p)) {
-	  el = zx_elem_lookup(c, (struct zx_elem_s*)x, &pop_seen);
+	  el = zx_el_lookup(c, (struct zx_elem_s*)x, &pop_seen);
 	  if (!el)
 	    return;
 	  zx_DEC_elem(c, el);
-	  if (!ed || !ed->el_dec(c, x))  /* element specific subelement processing */
-	    zx_known_elem_wrong_context(c, (struct zx_elem_s*)x);
+	  if (!ed || !ed->el_dec(c, x)) { /* element specific subelement processing */
+	    if (el->g.tok != ZX_TOK_NOT_FOUND) {
+	      D("Known element(%.*s) tok=0x%x in wrong context(%.*s)", el->g.len, el->g.s, el->g.tok, x->g.len, x->g.s);
+	      el->g.tok = ZX_TOK_NOT_FOUND;
+	    }
+	  }
 	  zx_pop_seen(pop_seen);
 	  goto next_elem;
 	}
@@ -467,7 +598,7 @@ no_attr:
     goto potential_tag;
   }
  out:
-  zx_dec_reverse_lists((struct zx_elem_s*)x);
+  zx_reverse_elem_lists((struct zx_elem_s*)x);
 }
 
 /*() Prepare a context for decoding XML. The decoding operation will not
@@ -479,7 +610,7 @@ no_attr:
  *   UNLOCK(cf->ctx->mx, "valid");
  */
 
-/* Called by:  main x7, test_ibm_cert_problem, zxid_add_env_if_needed x2, zxid_dec_a7n, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_reg_svc, zxid_soap_call_raw, zxid_sp_soap_parse, zxid_wsp_validate */
+/* Called by:  zx_dec_zx_root */
 void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, const char* start, const char* lim)
 {
   c->guard_seen_n.seen_n = &c->guard_seen_p;
@@ -492,6 +623,7 @@ void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, cons
 
 /*(i) Decode arbitary xml with zx_ns_tab set of namespaces and parsers. */
 
+/* Called by:  main x8, sig_validate, test_ibm_cert_problem, zxid_add_env_if_needed x2, zxid_dec_a7n, zxid_decode_redir_or_post, zxid_decrypt_nameid, zxid_decrypt_newnym, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n x2, zxid_idp_soap_parse, zxid_parse_meta, zxid_print_session, zxid_reg_svc, zxid_soap_call_raw, zxid_sp_soap_parse, zxid_str2a7n, zxid_str2nid, zxid_str2token, zxid_wsp_validate */
 struct zx_root_s* zx_dec_zx_root(struct zx_ctx* c, int len, const char* start, const char* func)
 {
   struct zx_root_s* r = zx_NEW_root(c, 0);

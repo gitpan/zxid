@@ -76,9 +76,9 @@ zxid_nid* zxid_parse_mni(zxid_conf* cf, char* buf, char** pmniptr)
   }
   
   nameid = zx_NEW_sa_NameID(cf->ctx,0);
-  if (*buf)              nameid->Format = zx_dup_attr(cf->ctx, zx_Format_ATTR, buf);
-  if (idpent && *idpent) nameid->NameQualifier = zx_dup_attr(cf->ctx, zx_NameQualifier_ATTR, idpent);
-  if (spqual && *spqual) nameid->SPNameQualifier = zx_dup_attr(cf->ctx, zx_SPNameQualifier_ATTR, spqual);
+  if (*buf)              nameid->Format = zx_dup_attr(cf->ctx, &nameid->gg, zx_Format_ATTR, buf);
+  if (idpent && *idpent) nameid->NameQualifier = zx_dup_attr(cf->ctx, &nameid->gg, zx_NameQualifier_ATTR, idpent);
+  if (spqual && *spqual) nameid->SPNameQualifier = zx_dup_attr(cf->ctx, &nameid->gg, zx_SPNameQualifier_ATTR, spqual);
   if (nid && *nid)       zx_add_content(cf->ctx, &nameid->gg, zx_dup_str(cf->ctx, nid));
   return nameid;
 }
@@ -154,7 +154,7 @@ void zxid_user_change_nameid(zxid_conf* cf, zxid_nid* oldnid, struct zx_str* new
  * its subdirectories).
  * See also zxid_ses_to_pool() */
 
-/* Called by:  zxid_sp_sso_finalize, zxid_user_change_nameid x2, zxid_wsf_validate_a7n */
+/* Called by:  zxid_sp_sso_finalize, zxid_user_change_nameid x2, zxid_wsp_validate */
 int zxid_put_user(zxid_conf* cf, struct zx_str* nidfmt, struct zx_str* idpent, struct zx_str* spqual, struct zx_str* idpnid, char* mniptr)
 {
   char sha1_name[28];

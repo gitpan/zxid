@@ -1,4 +1,5 @@
 /* zxsig.c  -  Signature generation and validation
+ * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -11,6 +12,7 @@
  * 23.9.2007, added XML ENC support --Sampo
  * 8.10.2007, added XML signing support --Sampo
  * 4.10.2008, improved documentation --Sampo
+ * 1.12.2010, improved logging of canonicalizations --Sampo
  */
 
 #include <memory.h>
@@ -75,7 +77,7 @@
  *       FK6X9qO8qZntp3CeFbA7gpG9n9rWyJWlzSXy0vKNspwMGdl8HPfOGcXEs2Ts=</></>
  */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_pep_az_soap x3, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x6, zxid_wsf_sign */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_az_soap x3, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x7, zxid_ssos_anreq, zxid_wsf_sign */
 struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* sref, X509* cert, RSA* priv_key)
 {
   char sha1[20];
@@ -86,36 +88,40 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   struct zx_ds_Reference_s* ref;
   struct zx_ds_Signature_s* sig = zx_NEW_ds_Signature(c,0);
   struct zx_ds_SignedInfo_s* si = sig->SignedInfo = zx_NEW_ds_SignedInfo(c, &sig->gg);
-  si->CanonicalizationMethod = zx_NEW_ds_CanonicalizationMethod(c, &sig->gg);
-  si->CanonicalizationMethod->Algorithm = zx_ref_attr(c, zx_Algorithm_ATTR, CANON_ALGO);
-  si->SignatureMethod = zx_NEW_ds_SignatureMethod(c, &sig->gg);
-  si->SignatureMethod->Algorithm = zx_ref_attr(c, zx_Algorithm_ATTR, SIG_ALGO);
+  si->CanonicalizationMethod = zx_NEW_ds_CanonicalizationMethod(c, &si->gg);
+  si->CanonicalizationMethod->Algorithm = zx_ref_attr(c, &si->CanonicalizationMethod->gg, zx_Algorithm_ATTR, CANON_ALGO);
+  si->SignatureMethod = zx_NEW_ds_SignatureMethod(c, &si->gg);
+  si->SignatureMethod->Algorithm = zx_ref_attr(c, &si->SignatureMethod->gg, zx_Algorithm_ATTR, SIG_ALGO);
 
   for (; n; --n, ++sref) {
-    ref = zx_NEW_ds_Reference(c, &sig->gg);
+    ref = zx_NEW_ds_Reference(c, &si->gg);
     ref->Transforms = zx_NEW_ds_Transforms(c, &ref->gg);
     ref->Transforms->Transform = zx_NEW_ds_Transform(c, &ref->Transforms->gg);
-    ref->Transforms->Transform->Algorithm = zx_ref_attr(c, zx_Algorithm_ATTR, CANON_ALGO);
+    ref->Transforms->Transform->Algorithm = zx_ref_attr(c, &ref->Transforms->Transform->gg, zx_Algorithm_ATTR, CANON_ALGO);
 
     ref->Transforms->Transform = zx_NEW_ds_Transform(c, &ref->Transforms->gg);
-    ref->Transforms->Transform->Algorithm = zx_ref_attr(c, zx_Algorithm_ATTR, ENVELOPED_ALGO);
+    ref->Transforms->Transform->Algorithm = zx_ref_attr(c, &ref->Transforms->Transform->gg, zx_Algorithm_ATTR, ENVELOPED_ALGO);
     
     ref->DigestMethod = zx_NEW_ds_DigestMethod(c, &ref->gg);
-    ref->DigestMethod->Algorithm = zx_ref_attr(c, zx_Algorithm_ATTR, DIGEST_ALGO);
+    ref->DigestMethod->Algorithm = zx_ref_attr(c, &ref->DigestMethod->gg, zx_Algorithm_ATTR, DIGEST_ALGO);
     
-    ref->URI = zx_attrf(c, zx_URI_ATTR, "#%.*s", sref->id->len, sref->id->s);
+    ref->URI = zx_attrf(c, &ref->gg, zx_URI_ATTR, "#%.*s", sref->id->len, sref->id->s);
     SHA1((unsigned char*)sref->canon->s, sref->canon->len, (unsigned char*)sha1);
     b64 = zx_new_len_str(c, SIMPLE_BASE64_LEN(sizeof(sha1)));
     base64_fancy_raw(sha1, sizeof(sha1), b64->s, std_basis_64, 1<<31, 0, 0, '=');
-    ref->DigestValue = zx_new_simple_elem(c, &ref->gg, zx_ds_DigestValue_ELEM, b64);
+    ref->DigestValue = zx_new_str_elem(c, &ref->gg, zx_ds_DigestValue_ELEM, b64);
     si->Reference = ref;  /* *** Need to reverse the list? */
     /* This debug print allows you to debug canonicalization reated signature
      * problems from signer's end. The verifier's end is aroind line zxsig.c:270
      * in zxsig_validate() */
-    D("SIG REF(#%.*s) SHA1(%.*s) CANON(%.*s)", sref->id->len, sref->id->s, b64->len, b64->s, sref->canon->len, sref->canon->s);
+    DD("SIG REF(#%.*s) SHA1(%.*s) CANON(%.*s)", sref->id->len, sref->id->s, b64->len, b64->s, sref->canon->len, sref->canon->s);
+    D("SIG REF(#%.*s) SHA1(%.*s)", sref->id->len, sref->id->s, b64->len, b64->s);
+    D_XML_BLOB(0, "SIG CANON", sref->canon->len, sref->canon->s);
+    zx_reverse_elem_lists(&si->Reference->gg);
   }
+  zx_reverse_elem_lists(&si->gg);
   
-  ss = zx_EASY_ENC_SO_ds_SignedInfo(c, si);
+  ss = zx_EASY_ENC_elem(c, &si->gg);
   SHA1((unsigned char*)ss->s, ss->len, (unsigned char*)sha1);
   zx_str_free(c, ss);
   
@@ -138,11 +144,13 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
   ZX_FREE(c, sigu);
   sig->SignatureValue = zx_NEW_ds_SignatureValue(c, &sig->gg);
   zx_add_content(c, &sig->SignatureValue->gg, b64);
+  zx_reverse_elem_lists(&sig->gg);
   return sig;
 }
 
 /*() CRNL->NL canonicalization is specified in xml-c14n */
 
+/* Called by:  zxsig_validate x2 */
 static void zxsig_canon_crnl_inplace(struct zx_str* ss)
 {
   char* p;
@@ -180,7 +188,7 @@ static void zxsig_canon_crnl_inplace(struct zx_str* ss)
  *     referenced by the signature
  * return:: ZXSIG value. 0 (ZXSIG_OK) means success. Any other value is some sort of failure */
 
-/* Called by:  main x5, zxid_chk_sig, zxid_sp_sso_finalize, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  main x5, sig_validate x2, wsse_sec_validate, zxid_chk_sig, zxid_sp_sso_finalize, zxid_wsc_validate_resp_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
 int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, int n, struct zxsig_ref* sref)
 {
   EVP_PKEY* evp_pkey;
@@ -241,7 +249,7 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
 
   algo = &sref->sref->DigestMethod->Algorithm->g;
   for (; n; --n, ++sref) {
-    ss = zx_EASY_ENC_WO_any_elem(c, sref->blob);
+    ss = zx_EASY_ENC_elem(c, sref->blob);
     zxsig_canon_crnl_inplace(ss);
     if (       ZX_STR_ENDS_IN_CONST(algo, "#sha1")) {
       SHA1((unsigned char*)ss->s, ss->len, (unsigned char*)md_calc);
@@ -267,8 +275,9 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
     if (memcmp(md_calc, md_given, siz)) {
       /* See also debug print of original canonicalization for signature
        * generation around line zxsig.c:115 in zxsig_sign() */
-      ERR("Message digest(%.*s) mismatch at sref(%.*s), canon blob(%.*s)",
-	  dv->len, dv->s, sref->sref->URI->g.len, sref->sref->URI->g.s, ss->len, ss->s);
+      DD("Message digest(%.*s) mismatch at sref(%.*s), canon blob(%.*s)", dv->len, dv->s, sref->sref->URI->g.len, sref->sref->URI->g.s, ss->len, ss->s);
+      ERR("Message digest(%.*s) mismatch at sref(%.*s)", dv->len, dv->s, sref->sref->URI->g.len, sref->sref->URI->g.s);
+      D_XML_BLOB(0, "VFY FAIL CANON BLOB", ss->len, ss->s);
       ZX_FREE(c, ss);
       return ZXSIG_BAD_DIGEST;
     }
@@ -279,7 +288,7 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
     return ZXSIG_BAD_CERT;
   }
   c->exclude_sig = 0;
-  ss = zx_EASY_ENC_WO_any_elem(c, &sig->SignedInfo->gg);
+  ss = zx_EASY_ENC_elem(c, &sig->SignedInfo->gg);
   zxsig_canon_crnl_inplace(ss);
   evp_pkey = X509_get_pubkey(cert);
   if (!evp_pkey) goto certerr;
@@ -334,7 +343,9 @@ certerr:
 
 vfyerr:
   zx_report_openssl_error("verification error");
-  D("VFY FAIL canon sigInfo(%.*s) %d", ss->len, ss->s, hexdmp("inner md_calc: ", md_calc, 20, 20));
+  DD("VFY FAIL canon sigInfo(%.*s) %d", ss->len, ss->s,hexdmp("inner md_calc: ", md_calc, 20, 20));
+  ERR("VFY FAIL canon sigInfo md %d", hexdmp("inner md_calc: ", md_calc, 20, 20));
+  D_XML_BLOB(0, "VFY FAIL CANON SIGINFO", ss->len, ss->s);
   ZX_FREE(c, ss);
   return ZXSIG_VFY_FAIL;
 }
@@ -344,7 +355,7 @@ vfyerr:
  * logkey:: Way for caller to indicate what the OpenSSL errors are all about
  * return:: Number of open SSL errors processed, or 0 if none. Often ignored. */
 
-/* Called by:  main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxid_mk_self_sig_cert x4, zxlog_write_line, zxsig_data_rsa_sha1, zxsig_sign, zxsig_validate x2, zxsig_verify_data_rsa_sha1 x3 */
+/* Called by:  main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_raw_cipher, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxid_mk_self_sig_cert x4, zxlog_write_line, zxsig_data_rsa_sha1, zxsig_sign, zxsig_validate x2, zxsig_verify_data_rsa_sha1 x3 */
 int zx_report_openssl_error(const char* logkey)
 {
   char buf[256];
@@ -506,7 +517,8 @@ struct zx_str* zxenc_symkey_dec(zxid_conf* cf, struct zx_xenc_EncryptedData_s* e
     return 0;
   }
   ZX_FREE(cf->ctx, raw.s);
-  D("plain(%.*s)", ss->len, ss->s);
+  DD("plain(%.*s)", ss->len, ss->s);
+  D_XML_BLOB(cf, "PLAIN", ss->len, ss->s);
   return ss;
 
  wrong_key_len:
@@ -630,29 +642,31 @@ struct zx_xenc_EncryptedData_s* zxenc_symkey_enc(zxid_conf* cf, struct zx_str* d
   struct zx_str* ss;
   struct zx_str* b64;
   struct zx_xenc_EncryptedData_s* ed = zx_NEW_xenc_EncryptedData(cf->ctx,0);
-  ed->Id = zx_ref_len_attr(cf->ctx, zx_Id_ATTR, ed_id->len, ed_id->s);
-  ed->Type = zx_ref_attr(cf->ctx, zx_Type_ATTR, "http://www.w3.org/2001/04/xmlenc#Element");
+  ed->Id = zx_ref_len_attr(cf->ctx, &ed->gg, zx_Id_ATTR, ed_id->len, ed_id->s);
+  ed->Type = zx_ref_attr(cf->ctx, &ed->gg, zx_Type_ATTR, "http://www.w3.org/2001/04/xmlenc#Element");
   ed->EncryptionMethod = zx_NEW_xenc_EncryptionMethod(cf->ctx, &ed->gg);
-  ed->EncryptionMethod->Algorithm = zx_ref_attr(cf->ctx, zx_Algorithm_ATTR, ENC_ALGO);
+  ed->EncryptionMethod->Algorithm = zx_ref_attr(cf->ctx, &ed->EncryptionMethod->gg, zx_Algorithm_ATTR, ENC_ALGO);
   if (ek) {
     ed->KeyInfo = zx_NEW_ds_KeyInfo(cf->ctx, &ed->gg);
     if (cf->enckey_opt & 0x20) {
       D("Nested EncryptedKey %p", ek); /* Shibboleth early 2010 */
-      ed->KeyInfo->EncryptedKey = ek;
+      ZX_ADD_KID(ed->KeyInfo, EncryptedKey, ek);
     } else {
       D("Sibling EncryptedKey with RetrievalMethod %p", ek);
       ed->KeyInfo->RetrievalMethod = zx_NEW_ds_RetrievalMethod(cf->ctx, &ed->KeyInfo->gg);
-      ed->KeyInfo->RetrievalMethod->Type = zx_ref_attr(cf->ctx, zx_Type_ATTR, "http://www.w3.org/2001/04/xmlenc#EncryptedKey");
-      ed->KeyInfo->RetrievalMethod->URI = zx_attrf(cf->ctx, zx_URI_ATTR, "#%.*s", ek->Id->g.len, ek->Id->g.s);
+      ed->KeyInfo->RetrievalMethod->Type = zx_ref_attr(cf->ctx, &ed->KeyInfo->RetrievalMethod->gg, zx_Type_ATTR, "http://www.w3.org/2001/04/xmlenc#EncryptedKey");
+      ed->KeyInfo->RetrievalMethod->URI = zx_attrf(cf->ctx, &ed->KeyInfo->RetrievalMethod->gg, zx_URI_ATTR, "#%.*s", ek->Id->g.len, ek->Id->g.s);
     }
   }
-  D("Plaintext(%.*s)", data->len, data->s);
+  DD("Plaintext(%.*s)", data->len, data->s);
+  D_XML_BLOB(cf, "PLAINTEXT", data->len, data->s);
   ss = zx_raw_cipher(cf->ctx, "AES-128-CBC", 1, symkey, data->len, data->s, 16, 0);
   b64 = zx_new_len_str(cf->ctx, SIMPLE_BASE64_LEN(ss->len));
   base64_fancy_raw(ss->s, ss->len, b64->s, std_basis_64, 0, 0, 0, '=');
   zx_str_free(cf->ctx, ss);
   ed->CipherData = zx_NEW_xenc_CipherData(cf->ctx, &ed->gg);
-  ed->CipherData->CipherValue = zx_new_simple_elem(cf->ctx, &ed->CipherData->gg, zx_xenc_CipherValue_ELEM, b64);
+  ed->CipherData->CipherValue = zx_new_str_elem(cf->ctx, &ed->CipherData->gg, zx_xenc_CipherValue_ELEM, b64);
+  zx_reverse_elem_lists(&ed->gg);
   return ed;
 }
 
@@ -670,7 +684,7 @@ struct zx_xenc_EncryptedData_s* zxenc_symkey_enc(zxid_conf* cf, struct zx_str* d
  * idsuffix:: Use to generate XML ~Id~ attributes for <EncryptedKey> and <EncryptedData>
  * return:: Encrypted data as XML data structure. Caller should free this memory. */
 
-/* Called by:  zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni */
+/* Called by:  zxid_mk_enc_a7n x2, zxid_mk_enc_id x2, zxid_mk_mni x2 */
 struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(zxid_conf* cf, struct zx_str* data, struct zx_xenc_EncryptedKey_s** ekp, X509* cert, char* idsuffix, zxid_entity* meta)
 {
   struct rsa_st* rsa_pkey;
@@ -680,17 +694,14 @@ struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(zxid_conf* cf, struct zx_str* d
   struct zx_str* b64;
   struct zx_xenc_EncryptedKey_s* ek = zx_NEW_xenc_EncryptedKey(cf->ctx,0);
   
-  ek->Id = zx_attrf(cf->ctx, zx_Id_ATTR, "EK%s", idsuffix);
-  ek->ReferenceList = zx_NEW_xenc_ReferenceList(cf->ctx, &ek->gg);
-  ek->ReferenceList->DataReference = zx_NEW_xenc_DataReference(cf->ctx, &ek->ReferenceList->gg);
-  ek->ReferenceList->DataReference->URI = zx_attrf(cf->ctx, zx_URI_ATTR, "#ED%s", idsuffix);
+  ek->Id = zx_attrf(cf->ctx, &ek->gg, zx_Id_ATTR, "EK%s", idsuffix);
   ek->EncryptionMethod = zx_NEW_xenc_EncryptionMethod(cf->ctx, &ek->gg);
-  ek->EncryptionMethod->Algorithm = zx_ref_attr(cf->ctx, zx_Algorithm_ATTR, ENC_KEYTRAN_ALGO);
+  ek->EncryptionMethod->Algorithm = zx_ref_attr(cf->ctx, &ek->EncryptionMethod->gg, zx_Algorithm_ATTR, ENC_KEYTRAN_ALGO);
   ek->KeyInfo = zxid_key_info(cf, &ek->gg, cert);
   if (meta && cf->enckey_opt & 0x01) {
     /* This hack may help early 2010 vintage Shibboleth SP to work without nested EncryptedKey.
      * (personal communication w/Scott 20100906 --Sampo) */
-    ek->Recipient = zx_dup_attr(cf->ctx, zx_Recipient_ATTR, meta->eid);
+    ek->Recipient = zx_dup_attr(cf->ctx, &ek->gg, zx_Recipient_ATTR, meta->eid);
   }
   
   zx_rand(symkey, sizeof(symkey));
@@ -711,7 +722,11 @@ struct zx_xenc_EncryptedData_s* zxenc_pubkey_enc(zxid_conf* cf, struct zx_str* d
   base64_fancy_raw(ss->s, ss->len, b64->s, std_basis_64, 0, 0, 0, '=');
   zx_str_free(cf->ctx, ss);
   ek->CipherData = zx_NEW_xenc_CipherData(cf->ctx, &ek->gg);
-  ek->CipherData->CipherValue = zx_new_simple_elem(cf->ctx, &ek->CipherData->gg, zx_xenc_CipherValue_ELEM, b64);
+  ek->CipherData->CipherValue = zx_new_str_elem(cf->ctx, &ek->CipherData->gg, zx_xenc_CipherValue_ELEM, b64);
+  ek->ReferenceList = zx_NEW_xenc_ReferenceList(cf->ctx, &ek->gg);
+  ek->ReferenceList->DataReference = zx_NEW_xenc_DataReference(cf->ctx, &ek->ReferenceList->gg);
+  ek->ReferenceList->DataReference->URI = zx_attrf(cf->ctx, &ek->ReferenceList->DataReference->gg, zx_URI_ATTR, "#ED%s", idsuffix);
+  zx_reverse_elem_lists(&ek->gg);
   if (ekp)
     *ekp = ek;
   

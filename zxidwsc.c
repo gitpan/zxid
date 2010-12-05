@@ -26,9 +26,6 @@
 #include "c/zx-data.h"
 #include "c/zx-e-data.h"
 
-#define zx_e_actor_ATTR (zx_e_NS|zx_actor_ATTR)
-#define zx_e_mustUnderstand_ATTR (zx_e_NS|zx_mustUnderstand_ATTR)
-
 /*() WSC response validation work horse. This check the ID-WSF [SOAPbind2] specified
  * criteria, as well as additional criteria and calls PDP, if configured.
  *
@@ -50,7 +47,8 @@
  *
  * See also: zxid_wsp_validate() */
 
-static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
+/* Called by:  zxid_call_epr, zxid_wsc_valid_resp */
+static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
 {
   int n_refs = 0;
   struct zxsig_ref refs[ZXID_N_WSF_SIGNED_HEADERS];
@@ -71,18 +69,18 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
   
   if (!env) {
     ERR("No <e:Envelope> found. enve(%s)", STRNULLCHK(enve));
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No SOAP Envelope found.", "IDStarMsgNotUnderstood", 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No SOAP Envelope found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
   hdr = env->Header;
   if (!hdr) {
     ERR("No <e:Header> found. enve(%s)", STRNULLCHK(enve));
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No SOAP Header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No SOAP Header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
   if (!ZX_SIMPLE_ELEM_CHK(hdr->MessageID)) {
     ERR("No <a:MessageID> found. enve(%s)", STRNULLCHK(enve));
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No MessageID header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No MessageID header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
   relto = ZX_GET_CONTENT(hdr->RelatesTo);
@@ -95,7 +93,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
 	/* N.B. [SOAPBinding2] p.27, ll.818-822 indicates RelatesTo checking as SHOULD. */
 	if (cf->relto_fatal) {
 	  ERR("<a:RelatesTo> (%.*s) does not match request msgid(%s).", relto->len, relto->s, ses->wsc_msgid);
-	  zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "RelatesTo in response does not match request MessageID.", "InvalidRefToMsgID", 0, 0, 0));
+	  zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "RelatesTo in response does not match request MessageID.", "InvalidRefToMsgID", 0, 0, 0));
 	  return 0;
 	} else {
 	  INFO("<a:RelatesTo> (%.*s) does not match request msgid(%s), but configured to ignore this error (RELTO_FATAL=0).", relto->len, relto->s, ses->wsc_msgid);
@@ -107,7 +105,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
   } else {
     if (cf->relto_fatal) {
       ERR("No <a:RelatesTo> found. enve(%s)", STRNULLCHK(enve));
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No RelatesTo header found in reply.", "IDStarMsgNotUnderstood", 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No RelatesTo header found in reply.", "IDStarMsgNotUnderstood", 0, 0, 0));
       return 0;
     } else {
       INFO("No <a:RelatesTo> found, but configured to ignore this (RELTO_FATAL=0). %d", 0);
@@ -117,7 +115,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
 
   if (!hdr->Sender || !hdr->Sender->providerID && !hdr->Sender->affiliationID) {
     ERR("No <b:Sender> found (or missing providerID or affiliationID). enve(%s)", STRNULLCHK(enve));
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No b:Sender header found (or missing providerID or affiliationID).", "IDStarMsgNotUnderstood", 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No b:Sender header found (or missing providerID or affiliationID).", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
   issuer = &hdr->Sender->providerID->g;
@@ -126,7 +124,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
   
   if (!(sec = hdr->Security)) {
     ERR("No <wsse:Security> found. enve(%s)", STRNULLCHK(enve));
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
 
@@ -134,7 +132,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
     ses->sigres = ZXSIG_NO_SIG;
     if (cf->wsp_nosig_fatal) {
       ERR("No Security/Signature found. enve(%s) %p", STRNULLCHK(enve), sec->Signature);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security/ds:Signature found.", TAS3_STATUS_NOSIG, 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security/ds:Signature found.", TAS3_STATUS_NOSIG, 0, 0, 0));
       return 0;
     } else {
       INFO("No Security/Signature found, but configured to ignore this problem. %p", sec->Signature);
@@ -149,7 +147,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
       INFO("Unable to find SAML metadata for Sender(%.*s), but configured to ignore this problem (NOSIG_FATAL=0).", issuer->len, issuer->s);
     } else {
       ERR("Unable to find SAML metadata for Sender(%.*s).", issuer->len, issuer->s);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "No unable to find SAML metadata for sender.", "ProviderIDNotValid", 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No unable to find SAML metadata for sender.", "ProviderIDNotValid", 0, 0, 0));
       return 0;
     }
   }
@@ -161,11 +159,11 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
   zxid_sigres_map(ses->sigres, &cgi.sigval, &cgi.sigmsg);
   if (cf->sig_fatal && ses->sigres) {
     ERR("Fail due to failed message signature sigres=%d", ses->sigres);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "Message signature did not validate.", TAS3_STATUS_BADSIG, 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "Message signature did not validate.", TAS3_STATUS_BADSIG, 0, 0, 0));
     return 0;
   }
 
-  if (!zxid_wsf_timestamp_check(cf, ses, sec->Timestamp, &ourts,&srcts,TAS3_PEP_RS_IN,"e:Server"))
+  if (!zxid_timestamp_chk(cf, ses, sec->Timestamp, &ourts, &srcts, TAS3_PEP_RS_IN, "e:Server"))
     return 0;
 
   if (hdr->UsageDirective) {
@@ -195,13 +193,13 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
   
   if (!zxid_localpdp(cf, ses)) {
     ERR("RSIN4 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Client", "Response denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Client", "Response denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
     return 0;
   } else if (cf->pdp_url && *cf->pdp_url) {
     //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
     if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rsin)) {
       ERR("RSIN4 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Client", "Response denied by WSC policy at PDP", TAS3_STATUS_DENY, 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Client", "Response denied by WSC policy at PDP", TAS3_STATUS_DENY, 0, 0, 0));
       return 0;
     }
   }
@@ -215,7 +213,7 @@ static int zxid_wsc_validate_resp_env(zxid_conf* cf, zxid_ses* ses, const char* 
   if (zxlog_dup_check(cf, logpath, "validate response")) {
     if (cf->dup_msg_fatal) {
       zxlog_blob(cf, cf->log_rely_msg, logpath, &ss, "validate response dup err");
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RS_IN, "e:Server", "Duplicate Message.", "DuplicateMsg", 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "Duplicate Message.", "DuplicateMsg", 0, 0, 0));
       return 0;
     } else {
       INFO("Duplicate message detected, but configured to ignore this (DUP_MSG_FATAL=0). %d",0);
@@ -245,43 +243,47 @@ static int zxid_wsc_prep(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_
       D("TargetIdentity: Using token from EPR due to specification of ses->call_invoktok %d",0);
       tok = epr->Metadata->SecurityContext->Token;
     }
-    hdr->TargetIdentity = zx_NEW_b_TargetIdentity(cf->ctx,0);
-    hdr->TargetIdentity->actor = zx_ref_attr(cf->ctx, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-    hdr->TargetIdentity->mustUnderstand = zx_ref_attr(cf->ctx, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
-    if (tok->EncryptedAssertion)
-      hdr->TargetIdentity->EncryptedAssertion = tok->EncryptedAssertion;
-    else if (tok->Assertion)
-      hdr->TargetIdentity->Assertion = tok->Assertion;
-    else {
+    hdr->TargetIdentity = zx_NEW_b_TargetIdentity(cf->ctx, &hdr->gg);
+    hdr->TargetIdentity->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->TargetIdentity->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+    hdr->TargetIdentity->actor = zx_ref_attr(cf->ctx, &hdr->TargetIdentity->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
+    if (tok->EncryptedAssertion) {
+      ZX_ADD_KID(hdr->TargetIdentity, EncryptedAssertion, tok->EncryptedAssertion);
+    } else if (tok->Assertion) {
+      ZX_ADD_KID(hdr->TargetIdentity, Assertion, tok->Assertion);
+    } else {
       ERR("No <sa:EncryptedAssertion> or <sa:Assertion> found in <sec:Token> %p", tok);
     }
   } /* else this is just implied by the sec mech */
 
-  hdr->To = zx_NEW_a_To(cf->ctx, &hdr->gg);
-  zx_add_content(cf->ctx, &hdr->To->gg, ZX_GET_CONTENT(epr->Address));
-  hdr->To->actor = zx_ref_attr(cf->ctx, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  hdr->To->mustUnderstand = zx_ref_attr(cf->ctx, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
-
+#if 1
   /* Mandatory for a request. */
   hdr->ReplyTo = zx_NEW_a_ReplyTo(cf->ctx, &hdr->gg);
   /*hdr->ReplyTo->Address = zxid_mk_addr(cf, zx_strf(cf->ctx, "%s?o=P", cf->url));*/
-  hdr->ReplyTo->Address = zxid_mk_addr(cf, zx_dup_str(cf->ctx, A_ANON));
-  hdr->ReplyTo->actor = zx_ref_attr(cf->ctx, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  hdr->ReplyTo->mustUnderstand = zx_ref_attr(cf->ctx, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->ReplyTo->Address = zxid_mk_addr(cf, &hdr->ReplyTo->gg, zx_dup_str(cf->ctx, A_ANON));
+  hdr->ReplyTo->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->ReplyTo->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->ReplyTo->actor = zx_ref_attr(cf->ctx, &hdr->ReplyTo->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
+#endif
+
+  hdr->To = zx_NEW_a_To(cf->ctx, &hdr->gg);
+  zx_add_content(cf->ctx, &hdr->To->gg, ZX_GET_CONTENT(epr->Address));
+  hdr->To->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->To->gg, zx_e_mustUnderstand_ATTR,ZXID_TRUE);
+  hdr->To->actor = zx_ref_attr(cf->ctx, &hdr->To->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
 
 #if 0
   /* Omission means to use same address as ReplyTo */
   hdr->FaultTo = zx_NEW_a_FaultTo(cf->ctx, &hdr->gg);
-  hdr->FaultTo->Address = zx_mk_addr(cf->ctx, zx_strf(cf->ctx, "%s?o=P", cf->url));
-  hdr->FaultTo->actor = zx_ref_attr(cf->ctx, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  hdr->FaultTo->mustUnderstand = zx_ref_attr(cf->ctx, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->FaultTo->Address = zx_mk_addr(cf->ctx, &hdr->FaultTo->gg, zx_strf(cf->ctx, "%s?o=P", cf->url));
+  hdr->FaultTo->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->FaultTo->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->FaultTo->actor = zx_ref_attr(cf->ctx, &hdr->FaultTo->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
 #endif
 
   zxid_attach_sol1_usage_directive(cf, ses, env, TAS3_PLEDGE, cf->wsc_localpdp_obl_pledge);
+  zx_reverse_elem_lists(&hdr->gg);
   return 1;
 }
 
-static void zxid_choose_security_token(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_wsse_Security_s* sec)
+/* Called by:  zxid_wsc_prep_secmech x2 */
+static void zxid_choose_sectok(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_wsse_Security_s* sec)
 {
   zxid_tok* tok;
   if (ses->call_invoktok) {
@@ -296,11 +298,13 @@ static void zxid_choose_security_token(zxid_conf* cf, zxid_ses* ses, zxid_epr* e
       return;
     }
   }
-  if (tok->EncryptedAssertion)
+  if (tok->EncryptedAssertion) {
     sec->EncryptedAssertion = tok->EncryptedAssertion;
-  else if (tok->Assertion)
+    zx_add_kid_before(&sec->gg, zx_wsu_Timestamp_ELEM, &sec->EncryptedAssertion->gg);
+  } else if (tok->Assertion) {
     sec->Assertion = tok->Assertion;
-  else
+    zx_add_kid_before(&sec->gg, zx_wsu_Timestamp_ELEM, &sec->Assertion->gg);
+  } else
     ERR("No <sa:EncryptedAssertion> or <sa:Assertion> found in <sec:Token> %p", tok);
 }
 
@@ -328,7 +332,7 @@ static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, st
   }
   zx_add_content(cf->ctx, &sec->Timestamp->Created->gg, zxid_date_time(cf, time(0)));
     
-  /* Clear away any credentials from previous iteration, if any. */
+  /* Clear away any credentials from previous iteration, if any. *** clear kids list, too */
   sec->Signature = 0;
   sec->BinarySecurityToken = 0;
   sec->SecurityTokenReference = 0;
@@ -344,10 +348,11 @@ static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, st
     D("secmech null %d", secmech);
     break;
   case ZXID_SEC_MECH_BEARER:
-    zxid_choose_security_token(cf, ses, epr, sec);
-    str = sec->SecurityTokenReference = zx_NEW_wsse_SecurityTokenReference(cf->ctx,0);
+    zxid_choose_sectok(cf, ses, epr, sec);
+    str = sec->SecurityTokenReference = zx_NEW_wsse_SecurityTokenReference(cf->ctx, 0);
+    zx_add_kid_before(&sec->gg, zx_wsu_Timestamp_ELEM, &str->gg);
     str->KeyIdentifier = zx_NEW_wsse_KeyIdentifier(cf->ctx, &str->gg);
-    str->KeyIdentifier->ValueType = zx_ref_attr(cf->ctx, zx_ValueType_ATTR, SAMLID_TOK_PROFILE);
+    str->KeyIdentifier->ValueType = zx_ref_attr(cf->ctx, &str->KeyIdentifier->gg, zx_ValueType_ATTR, SAMLID_TOK_PROFILE);
     if (sec->Assertion)
       zx_add_content(cf->ctx, &str->KeyIdentifier->gg, &sec->Assertion->ID->g);
     /* *** In case of encrypted assertion, how is the KeyIdentifier populated? */
@@ -356,7 +361,7 @@ static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, st
     D("secmech bearer %d", secmech);
     break;
   case ZXID_SEC_MECH_SAML:
-    zxid_choose_security_token(cf, ses, epr, sec);
+    zxid_choose_sectok(cf, ses, epr, sec);
     /* *** Sign SEC, MID, TO, ACT (if any) */
     zxid_wsf_sign(cf, cf->wsc_sign, sec, 0, hdr, env->Body);
     D("secmech saml hok %d", secmech);
@@ -389,7 +394,7 @@ static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, st
  * additional SOAP headers at will before calling this function. This function
  * will add Liberty ID-WSF specific SOAP headers. */
 
-/* Called by:  main x9, zxid_call, zxid_get_epr */
+/* Called by:  main x9, zxid_call_epr, zxid_get_epr, zxid_map_identity_token */
 struct zx_e_Envelope_s* zxid_wsc_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_e_Envelope_s* env, char** ret_enve)
 {
   int i, res;
@@ -476,7 +481,7 @@ static char zx_env_close[] = "</e:Envelope>";
  * payload content of the <e:Body> and the rest of the SOAP envelope is added.
  */
 
-/* Called by:  zxid_call, zxid_wsc_prepare_call, zxid_wsc_valid_resp, zxid_wsp_decorate */
+/* Called by:  zxid_call_epr, zxid_wsc_prepare_call, zxid_wsc_valid_resp, zxid_wsp_decorate */
 struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
 {
   struct zx_e_Envelope_s* env;
@@ -496,11 +501,11 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
       env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
   } else if (r->Body) {
     env = zx_NEW_e_Envelope(cf->ctx,0);
+    ZX_ADD_KID(env, Body, r->Body);
     if (r->Header)
-      env->Header = r->Header;
+      ZX_ADD_KID(env, Header, r->Header);
     else
       env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
-    env->Body = r->Body;
   } else { /* Resort to stringwise attempt to add envelope. */
     ZX_FREE(cf->ctx, r);
     if (!memcmp(enve, "<?xml ", sizeof("<?xml ")-1)) {  /* Ignore common, but unnecessary decl. */
@@ -532,7 +537,7 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
  * normally you should be using zxid_call() and let the discovery
  * take its course. */
 
-/* Called by:  zxcall_main, zxid_callf */
+/* Called by:  zxid_call, zxid_callf_epr */
 struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const char* az_cred, const char* enve)
 {
   char* ret_enve;
@@ -555,14 +560,14 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
   
   if (!zxid_localpdp(cf, ses)) {
     ERR("RQOUT1 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
     D_DEDENT("call: ");
     return 0;
   } else if (cf->pdp_url && *cf->pdp_url) {
     //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
     if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rqout)) {
       ERR("RQOUT1 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC policy", TAS3_STATUS_DENY, 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC policy", TAS3_STATUS_DENY, 0, 0, 0));
       D_DEDENT("call: ");
       return 0;
     }
@@ -575,12 +580,12 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
     ERR("Web services call failed %d", 0);
     /* Let validate report the error so that tas3 status gets set correctly */
   }
-  if (zxid_wsc_validate_resp_env(cf, ses, az_cred, env, ret_enve) != 1) {
+  if (zxid_wsc_valid_re_env(cf, ses, az_cred, env, ret_enve) != 1) {
     D_DEDENT("call: ");
     return 0;
   }
   
-  ret = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+  ret = zx_EASY_ENC_elem(cf->ctx, &env->gg);
   D_DEDENT("call: ");
   return ret;
 }
@@ -588,7 +593,7 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
 /*() Call web service, printf style. See zxid_call() for more documentation.
  * Normally you should be calling zxid_callf() instead. */
 
-/* Called by:  main */
+/* Called by: */
 struct zx_str* zxid_callf_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const char* az_cred, const char* env_f, ...)
 {
   char* s;
@@ -636,6 +641,7 @@ struct zx_str* zxid_callf_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const
  *     content. NULL on failure. ses->curflt and/or ses->curstatus contain
  *     more detailed error information. */
 
+/* Called by:  zxcall_main, zxid_callf */
 struct zx_str* zxid_call(zxid_conf* cf, zxid_ses* ses, const char* svctype, const char* url, const char* di_opt, const char* az_cred, const char* enve)
 {
   zxid_epr* epr;
@@ -729,14 +735,14 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
   
   if (!zxid_localpdp(cf, ses)) {
     ERR("RQOUT1 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
     D_DEDENT("prep: ");
     return 0;
   } else if (cf->pdp_url && *cf->pdp_url) {
     //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
     if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rqout)) {
       ERR("RQOUT1 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, TAS3_PEP_RQ_IN, "e:Client", "Request denied by WSC policy", TAS3_STATUS_DENY, 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Request denied by WSC policy", TAS3_STATUS_DENY, 0, 0, 0));
       D_DEDENT("prep: ");
       return 0;
     }
@@ -744,7 +750,7 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
   
   /* *** add usage directives */
 
-  ret = zx_EASY_ENC_SO_e_Envelope(cf->ctx, env);
+  ret = zx_EASY_ENC_elem(cf->ctx, &env->gg);
   D_DEDENT("prep: ");
   return ret;
 }
@@ -778,7 +784,7 @@ int zxid_wsc_valid_resp(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
 
   D_INDENT("valid: ");
   env = zxid_add_env_if_needed(cf, enve);
-  ret = zxid_wsc_validate_resp_env(cf, ses, az_cred, env, enve);
+  ret = zxid_wsc_valid_re_env(cf, ses, az_cred, env, enve);
   D_DEDENT("valid: ");
   return ret;
 }

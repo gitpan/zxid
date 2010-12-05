@@ -26,7 +26,7 @@
 #include "c/zx-data.h"
 
 char* help =
-"zxcot  -  Circle-of-Trust management tool R" ZXID_REL "\n\
+"zxcot  -  Circle-of-Trust and metadata management tool R" ZXID_REL "\n\
 Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
@@ -78,7 +78,7 @@ char* dimddir = ZXID_PATH ZXID_DIMD_DIR;
 char* uiddir  = ZXID_PATH ZXID_UID_DIR;
 zxid_conf* cf = 0;
 
-/* Called by:  main x8, zxcall_main, zxcot_main */
+/* Called by:  main x8, zxcall_main, zxcot_main, zxdecode_main */
 static void opt(int* argc, char*** argv, char*** env)
 {
   int len;
@@ -240,7 +240,6 @@ static void opt(int* argc, char*** argv, char*** env)
 
     } 
     /* fall thru means unrecognized flag */
-    DD("HERE");
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
     if (verbose>1) {
@@ -271,8 +270,8 @@ static void opt(int* argc, char*** argv, char*** env)
  *
  * bs_reg:: Register-also-as-bootstrap flag
  * dry_run:: nonzero: do not write anything
- * ddimd:: Discovery metadata directory, such as /var/zxid/idpdimd
- * duid:: uid dir such as  /var/zxid/idpuid
+ * ddimd:: Discovery metadata directory, such as /var/zxid/idpdimd/
+ * duid:: uid dir such as  /var/zxid/idpuid/
  * returns:: 0 on success, nonzero on error. */
 
 /* Called by:  zxcot_main */
@@ -280,9 +279,8 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 {
   char sha1_name[28];
   char path[ZXID_MAX_BUF];
-  char* duids;
   char* p;
-  char* uiddir;
+  //char* uiddir;
   int got, fd;
   struct zx_root_s* r;
   zxid_epr* epr;
@@ -318,7 +316,7 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 
   /* *** possibly add something here and double check the required fields are available. */
 
-  ss = zx_EASY_ENC_SO_a_EndpointReference(cf->ctx, epr);
+  ss = zx_EASY_ENC_elem(cf->ctx, &epr->gg);
   if (!ss)
     return 2;
   
@@ -335,15 +333,9 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 
   sha1_safe_base64(sha1_name, ss->len, ss->s);
   sha1_name[27] = 0;
-  duids = strdup(duid);
-  got = strlen(duids);
-  if (strcmp(duids + got - (sizeof("dimd/")-1), "dimd/")) {
-    /* strcpy ok, because always fits: "uid/" is shorter than "dimd/" */
-    strcpy(duids + got - (sizeof("dimd/")-1), "uid/");
-  }
 
   if (verbose)
-    fprintf(stderr, "Registering metadata in %s%s,%s", ddimd, path, sha1_name);
+    fprintf(stderr, "Registering metadata in %s%s,%s\n", ddimd, path, sha1_name);
   
   if (dry_run) {
     if (verbose)
@@ -372,11 +364,11 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 
   if (bs_reg) {
     if (verbose)
-      fprintf(stderr, "Activating bootstrap %s.all/.bs/%s,%s", duids, path, sha1_name);
+      fprintf(stderr, "Activating bootstrap %s.all/.bs/%s,%s", duid, path, sha1_name);
 
     if (!dryrun) {
       fd = open_fd_from_path(O_CREAT | O_WRONLY | O_TRUNC, 0666, "zxcot -bs", 1,
-			     "%s.all/.bs/%s,%s", duids, path, sha1_name);
+			     "%s.all/.bs/%s,%s", duid, path, sha1_name);
       if (fd == BADFD) {
 	perror("open epr for bootstrap activation");
 	ERR("Failed to open file for writing: sha1_name(%s,%s) to bootstrap activation", path, sha1_name);
@@ -387,7 +379,7 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
       close_file(fd, (const char*)__FUNCTION__);
     }
   } else {
-    D("You may also want to activate bootstrap by\n  touch %s.all/.bs/%s,%s", duids, path, sha1_name);
+    D("You may also want to activate bootstrap by\n  touch %s.all/.bs/%s,%s", duid, path, sha1_name);
   }
   return 0;
 }
@@ -419,7 +411,7 @@ static int zxid_addmd(zxid_conf* cf, char* mdurl, int dry_run, const char* dcot)
   }
 
   for (; ent; ent = ent->n) {
-    ss = zx_EASY_ENC_SO_md_EntityDescriptor(cf->ctx, ent->ed);
+    ss = zx_EASY_ENC_elem(cf->ctx, &ent->ed->gg);
     if (!ss)
       return 2;
   

@@ -61,7 +61,7 @@ void zxid_fold_svc(char* p, int len)
  * ign_prefix:: How many characters to ignore from beginning of name: 0 or 7 (http://)
  * return:: 0 on success (the real return value is returned via ~buf~ result parameter) */
 
-/* Called by:  zxid_add_fed_tok_to_epr, zxid_di_query, zxid_epr_path, zxid_idp_sso */
+/* Called by:  zxid_add_fed_tok2epr, zxid_epr_path, zxid_idp_map_nid2uid, zxid_imreq, zxid_nidmap_do x2, zxid_sso_issue_a7n */
 int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
 		   struct zx_str* name, struct zx_str* cont, int ign_prefix)
 {
@@ -151,7 +151,7 @@ int zxid_cache_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
     ERR("EPR is not a ID-WSF 2.0 Bootstrap: no Metadata %p", epr);
     return 0;
   }
-  ss = zx_EASY_ENC_WO_any_elem(cf->ctx, &epr->gg);
+  ss = zx_EASY_ENC_elem(cf->ctx, &epr->gg);
   if (!ss) {
     ERR("Encoding EndpointReference failed %p", epr);
     return 0;
@@ -209,7 +209,7 @@ void zxid_snarf_eprs(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
  * that looks like an EPR and that is strcturally in right place will work.
  * Typical name /var/zxid/ses/SESID/SVCTYPE,SHA1 */
 
-/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize, zxid_wsf_validate_a7n */
+/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize, zxid_wsc_validate_resp_env, zxid_wsp_validate */
 void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
 {
   struct zx_sa_AttributeStatement_s* as;
@@ -234,7 +234,7 @@ void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
 	    ++wsf11;
 	    D("Detected wsf11 resource offering. %d", wsf11);
 #if 0	    
-	    ss = zx_EASY_ENC_WO_any_elem(cf->ctx, &av->ResourceOffering->gg);
+	    ss = zx_EASY_ENC_elem(cf->ctx, &av->ResourceOffering->gg);
 	    
 	    zxid_epr_path(cf, ZXID_SES_DIR, ses->sid, path, sizeof(path),
 			  ZX_GET_CONTENT(av->EndpointReference->Metadata->ServiceType), ss);
@@ -408,7 +408,7 @@ zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const cha
  *     of EPRs is returned.
  */
 
-/* Called by:  main x5 */
+/* Called by:  main x5, zxcall_main, zxid_call, zxid_map_identity_token */
 zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
   int wsf20 = 0;
@@ -424,9 +424,8 @@ zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char
   
   INFO("%d Discovering svc(%s)...", n, STRNULLCHK(svc));
   env = zx_NEW_e_Envelope(cf->ctx,0);
-  env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
   env->Body = zx_NEW_e_Body(cf->ctx, &env->gg);
-  env->Body->Query = zxid_mk_di_query(cf, svc, url, di_opt, 0);
+  env->Body->Query = zxid_mk_di_query(cf, &env->Body->gg, svc, url, di_opt, 0);
   if (ses->deleg_di_epr) {
     epr = ses->deleg_di_epr;
     D("%d: Using delegated discovery EPR", n);
@@ -437,6 +436,7 @@ zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char
       return 0;
     }
   }
+  env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
   env = zxid_wsc_call(cf, ses, epr, env, 0);
   if (env && env->Body) {
     if (env->Body->QueryResponse) {
@@ -466,7 +466,7 @@ zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char
 
 /*() Accessor function for extracting endpoint address URL. */
 
-/* Called by: */
+/* Called by:  zxcall_main, zxid_print_session */
 struct zx_str* zxid_get_epr_address(zxid_conf* cf, zxid_epr* epr) {
   if (!epr)
     return 0;
@@ -475,7 +475,7 @@ struct zx_str* zxid_get_epr_address(zxid_conf* cf, zxid_epr* epr) {
 
 /*() Accessor function for extracting endpoint ProviderID. */
 
-/* Called by: */
+/* Called by:  zxcall_main, zxid_print_session */
 struct zx_str* zxid_get_epr_entid(zxid_conf* cf, zxid_epr* epr) {
   if (!epr || !epr->Metadata)
     return 0;
@@ -484,7 +484,7 @@ struct zx_str* zxid_get_epr_entid(zxid_conf* cf, zxid_epr* epr) {
 
 /*() Accessor function for extracting endpoint Description (Abstract). */
 
-/* Called by: */
+/* Called by:  zxcall_main, zxid_print_session */
 struct zx_str* zxid_get_epr_desc(zxid_conf* cf, zxid_epr* epr) {
   if (!epr || !epr->Metadata)
     return 0;
@@ -493,6 +493,7 @@ struct zx_str* zxid_get_epr_desc(zxid_conf* cf, zxid_epr* epr) {
 
 /*() Accessor function for extracting security mechanism ID. */
 
+/* Called by: */
 struct zx_str* zxid_get_epr_secmech(zxid_conf* cf, zxid_epr* epr) {
   struct zx_elem_s* secmech;
   if (!epr || !epr->Metadata)
@@ -514,6 +515,7 @@ struct zx_str* zxid_get_epr_secmech(zxid_conf* cf, zxid_epr* epr) {
  * discovery (recommended) or using zxid_set_epr_token() (if
  * you know what you are doing). */
 
+/* Called by: */
 void zxid_set_epr_secmech(zxid_conf* cf, zxid_epr* epr, const char* secmec) {
   if (!epr) {
     ERR("Null EPR. %p", epr);
@@ -525,17 +527,18 @@ void zxid_set_epr_secmech(zxid_conf* cf, zxid_epr* epr, const char* secmec) {
     epr->Metadata->SecurityContext = zx_NEW_di_SecurityContext(cf->ctx, &epr->Metadata->gg);
   if (secmec) {
     epr->Metadata->SecurityContext->SecurityMechID
-      = zx_dup_simple_elem(cf->ctx, &epr->Metadata->SecurityContext->gg, zx_di_SecurityMechID_ELEM, secmec);
+      = zx_dup_elem(cf->ctx, &epr->Metadata->SecurityContext->gg, zx_di_SecurityMechID_ELEM, secmec);
     INFO("SecurityMechID set to(%s)", secmec);
   } else {
     epr->Metadata->SecurityContext->SecurityMechID
-      = zx_dup_simple_elem(cf->ctx, &epr->Metadata->SecurityContext->gg, zx_di_SecurityMechID_ELEM, 0);
+      = zx_dup_elem(cf->ctx, &epr->Metadata->SecurityContext->gg, zx_di_SecurityMechID_ELEM, 0);
     INFO("SecurityMechID set null %d", 0);
   }
 }
 
 /*() Accessor function for extracting endpoint's (SAML2 assertion) token. */
 
+/* Called by: */
 zxid_tok* zxid_get_epr_token(zxid_conf* cf, zxid_epr* epr) {
   if (!epr || !epr->Metadata || !epr->Metadata->SecurityContext) {
     ERR("Null EPR or EPR is missing Metadata or SecurityContext. %p", epr);
@@ -555,6 +558,7 @@ zxid_tok* zxid_get_epr_token(zxid_conf* cf, zxid_epr* epr) {
  * call (the audience restriction will be wrong); just copy
  * token that was received on WSP interface and use it on WSC interface. */
 
+/* Called by: */
 void zxid_set_epr_token(zxid_conf* cf, zxid_epr* epr, zxid_tok* tok) {
   if (!epr) {
     ERR("Null EPR. %p", epr);
@@ -586,17 +590,18 @@ zxid_epr* zxid_new_epr(zxid_conf* cf, char* address, char* desc, char* entid, ch
     epr->Metadata = zx_NEW_a_Metadata(cf->ctx, &epr->gg);
     if (desc)
       epr->Metadata->Abstract
-	= zx_dup_simple_elem(cf->ctx, &epr->Metadata->gg, zx_di_Abstract_ELEM, desc);
+	= zx_dup_elem(cf->ctx, &epr->Metadata->gg, zx_di_Abstract_ELEM, desc);
     if (entid)
       epr->Metadata->ProviderID
-	= zx_dup_simple_elem(cf->ctx, &epr->Metadata->gg, zx_di_ProviderID_ELEM, entid);
+	= zx_dup_elem(cf->ctx, &epr->Metadata->gg, zx_di_ProviderID_ELEM, entid);
     if (svctype)
       epr->Metadata->ServiceType
-	= zx_dup_simple_elem(cf->ctx, &epr->Metadata->gg, zx_di_ServiceType_ELEM, svctype);
+	= zx_dup_elem(cf->ctx, &epr->Metadata->gg, zx_di_ServiceType_ELEM, svctype);
   }
   return epr;
 }
 
+/* Called by: */
 zxid_epr* zxid_get_delegated_discovery_epr(zxid_conf* cf, zxid_ses* ses)
 {
   return ses->deleg_di_epr;
@@ -606,6 +611,7 @@ zxid_epr* zxid_get_delegated_discovery_epr(zxid_conf* cf, zxid_ses* ses)
  * as selecting somebody else's Discovery Service. This allows delegated
  * access. */
 
+/* Called by: */
 void zxid_set_delegated_discovery_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
 {
   ses->deleg_di_epr = epr;
@@ -613,6 +619,7 @@ void zxid_set_delegated_discovery_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* ep
 
 /*() Get session's call invokation token. */
 
+/* Called by: */
 zxid_tok* zxid_get_call_invoktok(zxid_conf* cf, zxid_ses* ses) {
   if (!ses) {
     ERR("Null session. %p", ses);
@@ -623,6 +630,7 @@ zxid_tok* zxid_get_call_invoktok(zxid_conf* cf, zxid_ses* ses) {
 
 /*() Set session's call invokation token. */
 
+/* Called by: */
 void zxid_set_call_invoktok(zxid_conf* cf, zxid_ses* ses, zxid_tok* tok) {
   if (!ses) {
     ERR("Null session. %p", ses);
@@ -633,6 +641,7 @@ void zxid_set_call_invoktok(zxid_conf* cf, zxid_ses* ses, zxid_tok* tok) {
 
 /*() Get session's call target token. */
 
+/* Called by: */
 zxid_tok* zxid_get_call_tgttok(zxid_conf* cf, zxid_ses* ses) {
   if (!ses) {
     ERR("Null session. %p", ses);
@@ -643,6 +652,7 @@ zxid_tok* zxid_get_call_tgttok(zxid_conf* cf, zxid_ses* ses) {
 
 /*() Set session's call target token. */
 
+/* Called by: */
 void zxid_set_call_tgttok(zxid_conf* cf, zxid_ses* ses, zxid_tok* tok) {
   if (!ses) {
     ERR("Null session. %p", ses);
@@ -653,14 +663,16 @@ void zxid_set_call_tgttok(zxid_conf* cf, zxid_ses* ses, zxid_tok* tok) {
 
 /*() Serialize a token. */
 
+/* Called by: */
 struct zx_str* zxid_token2str(zxid_conf* cf, zxid_tok* tok) {
   if (!tok)
     return 0;
-  return zx_EASY_ENC_WO_any_elem(cf->ctx, &tok->gg);
+  return zx_EASY_ENC_elem(cf->ctx, &tok->gg);
 }
 
 /*() Parse string into token. */
 
+/* Called by: */
 zxid_tok* zxid_str2token(zxid_conf* cf, struct zx_str* ss) {
   struct zx_root_s* r;
   zxid_tok* tok;
@@ -686,14 +698,16 @@ zxid_tok* zxid_str2token(zxid_conf* cf, struct zx_str* ss) {
 
 /*() Serialize an assertion. */
 
+/* Called by: */
 struct zx_str* zxid_a7n2str(zxid_conf* cf, zxid_a7n* a7n) {
   if (!a7n)
     return 0;
-  return zx_EASY_ENC_WO_any_elem(cf->ctx, &a7n->gg);
+  return zx_EASY_ENC_elem(cf->ctx, &a7n->gg);
 }
 
 /*() Parse string into assertion. */
 
+/* Called by: */
 zxid_a7n* zxid_str2a7n(zxid_conf* cf, struct zx_str* ss) {
   struct zx_root_s* r;
 
@@ -711,14 +725,16 @@ zxid_a7n* zxid_str2a7n(zxid_conf* cf, struct zx_str* ss) {
 
 /*() Serialize a NameID. */
 
+/* Called by: */
 struct zx_str* zxid_nid2str(zxid_conf* cf, zxid_nid* nid) {
   if (!nid)
     return 0;
-  return zx_EASY_ENC_WO_any_elem(cf->ctx, &nid->gg);
+  return zx_EASY_ENC_elem(cf->ctx, &nid->gg);
 }
 
 /*() Parse string into NameID. */
 
+/* Called by: */
 zxid_nid* zxid_str2nid(zxid_conf* cf, struct zx_str* ss) {
   struct zx_root_s* r;
 
@@ -736,6 +752,7 @@ zxid_nid* zxid_str2nid(zxid_conf* cf, struct zx_str* ss) {
 
 /*() Get session's invoker nameid. */
 
+/* Called by: */
 zxid_nid* zxid_get_nameid(zxid_conf* cf, zxid_ses* ses) {
   if (!ses)
     return 0;
@@ -744,6 +761,7 @@ zxid_nid* zxid_get_nameid(zxid_conf* cf, zxid_ses* ses) {
 
 /*() Set session's invoker nameid. */
 
+/* Called by: */
 void zxid_set_nameid(zxid_conf* cf, zxid_ses* ses, zxid_nid* nid) {
   if (!ses)
     return;
@@ -752,6 +770,7 @@ void zxid_set_nameid(zxid_conf* cf, zxid_ses* ses, zxid_nid* nid) {
 
 /*() Get session's target nameid. */
 
+/* Called by: */
 zxid_nid* zxid_get_tgtnameid(zxid_conf* cf, zxid_ses* ses) {
   if (!ses)
     return 0;
@@ -760,6 +779,7 @@ zxid_nid* zxid_get_tgtnameid(zxid_conf* cf, zxid_ses* ses) {
 
 /*() Set session's target nameid. */
 
+/* Called by: */
 void zxid_set_tgtnameid(zxid_conf* cf, zxid_ses* ses, zxid_nid* nid) {
   if (!ses)
     return;
@@ -768,6 +788,7 @@ void zxid_set_tgtnameid(zxid_conf* cf, zxid_ses* ses, zxid_nid* nid) {
 
 /*() Get session's invoker assertion. */
 
+/* Called by: */
 zxid_a7n* zxid_get_a7n(zxid_conf* cf, zxid_ses* ses) {
   if (!ses)
     return 0;
@@ -776,6 +797,7 @@ zxid_a7n* zxid_get_a7n(zxid_conf* cf, zxid_ses* ses) {
 
 /*() Set session's invoker assertion. */
 
+/* Called by: */
 void zxid_set_a7n(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n) {
   if (!ses)
     return;
@@ -784,6 +806,7 @@ void zxid_set_a7n(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n) {
 
 /*() Get session's target assertion. */
 
+/* Called by: */
 zxid_a7n* zxid_get_tgta7n(zxid_conf* cf, zxid_ses* ses) {
   if (!ses)
     return 0;
@@ -792,6 +815,7 @@ zxid_a7n* zxid_get_tgta7n(zxid_conf* cf, zxid_ses* ses) {
 
 /*() Set session's target assertion. */
 
+/* Called by: */
 void zxid_set_tgta7n(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n) {
   if (!ses)
     return;
