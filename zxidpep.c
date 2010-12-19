@@ -17,6 +17,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-const.h"
@@ -68,8 +69,8 @@ static void zxid_pepmap_extract(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, str
       continue;
     }
 
-    at->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, at->val));
-    if (map->dst && map->dst[0] && map->src && map->src[0] != '*') {
+    at->map_val = zxid_map_val(cf, ses, 0, map, at->name, at->val);
+    if (map->dst && *map->dst && map->src && map->src[0] != '*') {
       D("renaming(%s) to(%s) orig_val(%s) map_val(%.*s)", at->name, map->dst, at->val, at->map_val->len, at->map_val->s);
       name = map->dst;
     } else {
@@ -104,7 +105,7 @@ static void zxid_pepmap_extract(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, str
     }
     
     for (av = at->nv; av; av = av->n) {
-      av->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, av->val));
+      av->map_val = zxid_map_val(cf, ses, 0, map, at->name, av->val);
       xac_at = zxid_mk_xacml_simple_at(cf, 0,
 				       zx_dup_str(cf->ctx, name),
 				       zx_dup_str(cf->ctx, XS_STRING),
@@ -161,7 +162,7 @@ static void zxid_pepmap_extract(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, str
 static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
 {
   X509* sign_cert;
-  RSA*  sign_pkey;
+  EVP_PKEY* sign_pkey;
   struct zxsig_ref refs;
   struct zx_root_s* r;
   struct zx_e_Header_s* hdr;
@@ -178,7 +179,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
 
   //zx_add_content(cf->ctx, &hdr->Action->gg, zx_dup_str(cf->ctx, "SAML2XACMLAuthzRequest"));
   //zx_add_content(cf->ctx, &hdr->Action->gg, zx_dup_str(cf->ctx, "http://ws.apache.org/axis2/TestPolicyPortType/authRequestRequest"));
-  hdr->Action->mustUnderstand = zx_ref_str(cf->ctx, ZXID_TRUE);
+  hdr->Action->mustUnderstand = zx_ref_str(cf->ctx, XML_TRUE);
   hdr->Action->actor = zx_ref_str(cf->ctx, SOAP_ACTOR_NEXT);
 #endif
 
@@ -187,7 +188,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
 
   sec = hdr->Security = zx_NEW_wsse_Security(cf->ctx, &hdr->gg);
   sec->actor = zx_ref_attr(cf->ctx, &sec->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   sec->Timestamp = zx_NEW_wsu_Timestamp(cf->ctx, &sec->gg);
   sec->Timestamp->Created = zx_NEW_wsu_Created(cf->ctx, &sec->Timestamp->gg);
   sec->Assertion = ses->tgta7n;
@@ -217,7 +218,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
     if (cf->sso_soap_sign) {
       ZERO(&refs, sizeof(refs));
       refs.id = &body->xaspcd1_XACMLAuthzDecisionQuery->ID->g;
-      refs.canon = zx_EASY_ENC_elem(cf->ctx, &body->xaspcd1_XACMLAuthzDecisionQuery->gg);
+      refs.canon = zx_easy_enc_elem_sig(cf, &body->xaspcd1_XACMLAuthzDecisionQuery->gg);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert az cd1")) {
 	body->xaspcd1_XACMLAuthzDecisionQuery->Signature
 	  = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
@@ -230,7 +231,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
     if (cf->sso_soap_sign) {
       ZERO(&refs, sizeof(refs));
       refs.id = &body->XACMLAuthzDecisionQuery->ID->g;
-      refs.canon = zx_EASY_ENC_elem(cf->ctx, &body->XACMLAuthzDecisionQuery->gg);
+      refs.canon = zx_easy_enc_elem_sig(cf, &body->XACMLAuthzDecisionQuery->gg);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert az")) {
 	body->XACMLAuthzDecisionQuery->Signature
 	  = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
@@ -295,7 +296,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
  * For simpler API, see zxid_az() family of functions.
  */
 
-/* Called by:  zxid_call_epr, zxid_pep_az_soap, zxid_simple_ab_pep, zxid_simple_ses_active_cf, zxid_wsc_prepare_call, zxid_wsc_validate_resp_env, zxid_wsp_decorate, zxid_wsp_validate */
+/* Called by:  zxid_call_epr, zxid_pep_az_soap, zxid_simple_ab_pep, zxid_simple_ses_active_cf, zxid_wsc_prepare_call, zxid_wsc_valid_re_env, zxid_wsp_decorate, zxid_wsp_validate_env */
 char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zxid_map* pepmap)
 {
   struct zx_xac_Attribute_s* subj = 0;
@@ -308,6 +309,7 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
   struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt;
   struct zx_xasacd1_XACMLAuthzDecisionStatement_s* az_stmt_cd1;
   struct zx_elem_s* decision;
+  char* p;
 
   if (cf->log_level>0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses?ZX_GET_CONTENT(ses->nameid):0, "N", "W", "AZSOAP", ses?ses->sid:0, " ");
@@ -320,7 +322,7 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
   zxid_pepmap_extract(cf, cgi, ses, pepmap, &subj, &rsrc, &act, &env);
   resp = zxid_az_soap(cf, cgi, ses, pdp_url, subj, rsrc, act, env);
   if (!resp || !resp->Assertion) {
-    ERR("DENY due to malformed authorization response from PDP. Either no response or response lacjing assertion. %p", resp);
+    ERR("DENY due to malformed authorization response from PDP. Either no response or response lacking assertion. %p", resp);
     return 0;
   }
   
@@ -328,39 +330,43 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
   if (az_stmt && az_stmt->Response && az_stmt->Response->Result) {
     decision = az_stmt->Response->Result->Decision;
     if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
-      ss = zx_EASY_ENC_elem(cf->ctx, &az_stmt->Response->gg);
+      ss = zx_easy_enc_elem_opt(cf, &az_stmt->Response->gg);
       if (!ss || !ss->len)
 	return 0;
-      ZX_FREE(cf->ctx, ss);
-      DD("Permit azstmt(%s)", ss->s);
+      p = ss->s;
+      DD("Permit azstmt(%s)", p);
       INFO("PERMIT found in azstmt len=%d", ss->len);
-      return ss->s;
+      ZX_FREE(cf->ctx, ss);
+      return p;
     }
   }
   az_stmt_cd1 = resp->Assertion->xasacd1_XACMLAuthzDecisionStatement;
   if (az_stmt_cd1 && az_stmt_cd1->Response && az_stmt_cd1->Response->Result) {
     decision = az_stmt_cd1->Response->Result->Decision;
     if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
-      ss = zx_EASY_ENC_elem(cf->ctx, &az_stmt_cd1->Response->gg);
+      ss = zx_easy_enc_elem_opt(cf, &az_stmt_cd1->Response->gg);
       if (!ss || !ss->len)
 	return 0;
+      p = ss->s;
       ZX_FREE(cf->ctx, ss);
-      DD("Permit cd1(%s)", ss->s);
+      DD("Permit cd1(%s)", p);
       INFO("PERMIT found in azstmt_cd1 len=%d", ss->len);
-      return ss->s;
+      ZX_FREE(cf->ctx, ss);
+      return p;
     }
   }
   stmt = resp->Assertion->Statement;
   if (stmt && stmt->Response && stmt->Response->Result) {  /* Response here is xac:Response */
     decision = stmt->Response->Result->Decision;
     if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
-      ss = zx_EASY_ENC_elem(cf->ctx, &stmt->Response->gg);
+      ss = zx_easy_enc_elem_opt(cf, &stmt->Response->gg);
       if (!ss || !ss->len)
 	return 0;
-      ZX_FREE(cf->ctx, ss);
-      D("Permit stmt(%s)", ss->s);
+      p = ss->s;
+      D("Permit stmt(%s)", p);
       INFO("PERMIT found in stmt len=%d", ss->len);
-      return ss->s;
+      ZX_FREE(cf->ctx, ss);
+      return p;
     }
   }
   /*if (resp->Assertion->AuthzDecisionStatement) {  }*/
@@ -425,7 +431,7 @@ char* zxid_pep_az_base_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, 
 
   az_stmt = resp->Assertion->XACMLAuthzDecisionStatement;
   if (az_stmt && az_stmt->Response) {
-    ss = zx_EASY_ENC_elem(cf->ctx, &az_stmt->Response->gg);
+    ss = zx_easy_enc_elem_opt(cf, &az_stmt->Response->gg);
     if (!ss || !ss->len)
       return 0;
     res = ss->s;
@@ -435,7 +441,7 @@ char* zxid_pep_az_base_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, 
   }
   az_stmt_cd1 = resp->Assertion->xasacd1_XACMLAuthzDecisionStatement;
   if (az_stmt_cd1 && az_stmt_cd1->Response) {
-    ss = zx_EASY_ENC_elem(cf->ctx, &az_stmt_cd1->Response->gg);
+    ss = zx_easy_enc_elem_opt(cf, &az_stmt_cd1->Response->gg);
     if (!ss || !ss->len)
       return 0;
     res = ss->s;
@@ -445,7 +451,7 @@ char* zxid_pep_az_base_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, 
   }
   stmt = resp->Assertion->Statement;
   if (stmt && stmt->Response) {  /* Response here is xac:Response */
-    ss = zx_EASY_ENC_elem(cf->ctx, &stmt->Response->gg);
+    ss = zx_easy_enc_elem_opt(cf, &stmt->Response->gg);
     if (!ss || !ss->len)
       return 0;
     res = ss->s;

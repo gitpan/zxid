@@ -19,6 +19,7 @@
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "c/zxidvers.h"
 #include "c/zx-const.h"
@@ -141,8 +142,8 @@ static void opt(int* argc, char*** argv, char*** env)
     "wsu:Id=\"EPRID92lFPo3ZNEt_3rHtJFoU\">"
   "<a:Address>%s</a:Address>"
   "<a:Metadata>"
-    "<di:Abstract xmlns:di=\"urn:liberty:disco:2006-08\">%s</di:Abstract>"
     "<sbf:Framework xmlns:sbf=\"urn:liberty:sb\" version=\"2.0\"></sbf:Framework>"
+    "<di:Abstract xmlns:di=\"urn:liberty:disco:2006-08\">%s</di:Abstract>"
     "<di:ProviderID xmlns:di=\"urn:liberty:disco:2006-08\">%s</di:ProviderID>"
     "<di:ServiceType xmlns:di=\"urn:liberty:disco:2006-08\">%s</di:ServiceType>"
   "</a:Metadata>"
@@ -316,7 +317,7 @@ static int zxid_reg_svc(zxid_conf* cf, int bs_reg, int dry_run, const char* ddim
 
   /* *** possibly add something here and double check the required fields are available. */
 
-  ss = zx_EASY_ENC_elem(cf->ctx, &epr->gg);
+  ss = zx_easy_enc_elem_opt(cf, &epr->gg);
   if (!ss)
     return 2;
   
@@ -411,7 +412,7 @@ static int zxid_addmd(zxid_conf* cf, char* mdurl, int dry_run, const char* dcot)
   }
 
   for (; ent; ent = ent->n) {
-    ss = zx_EASY_ENC_elem(cf->ctx, &ent->ed->gg);
+    ss = zx_easy_enc_elem_opt(cf, &ent->ed->gg);
     if (!ss)
       return 2;
   

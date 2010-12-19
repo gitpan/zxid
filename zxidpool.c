@@ -22,6 +22,8 @@
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
+#include "zxidpriv.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "c/zx-sa-data.h"
 
@@ -54,8 +56,8 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
 	D("attribute(%s) filtered out by del rule in OUTMAP", at->name);
 	continue;
       }
-      at->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, STRNULLCHK(at->val)));
-      if (map->dst && map->dst[0] && map->src && map->src[0] != '*') {
+      at->map_val = zxid_map_val(cf, 0, 0, map, at->name, at->val);
+      if (map->dst && *map->dst && map->src && map->src[0] != '*') {
 	name_len = strlen(map->dst);
       } else {
 	name_len = strlen(at->name);
@@ -64,7 +66,7 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
       DD("len1=%d", len);
 
       for (av = at->nv; av; av = av->n) {
-	av->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, STRNULLCHK(av->val)));
+	av->map_val = zxid_map_val(cf, 0, 0, map, at->name, av->val);
 	len += name_len + sizeof(": \n")-1 + av->map_val->len;
 	DD("len2=%d", len);
       }
@@ -110,7 +112,7 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
     if (map) {
       if (map->rule == ZXID_MAP_RULE_DEL)
 	continue;
-      if (map->dst && map->dst[0] && map->src && map->src[0] != '*') {
+      if (map->dst && *map->dst && map->src && map->src[0] != '*') {
 	name = map->dst;
       } else {
 	name = at->name;
@@ -199,8 +201,8 @@ static struct zx_str* zxid_pool_to_json(zxid_conf* cf, struct zxid_attr* pool)
 	D("attribute(%s) filtered out by del rule in OUTMAP", at->name);
 	continue;
       }
-      at->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, STRNULLCHK(at->val)));
-      if (map->dst && map->dst[0] && map->src && map->src[0] != '*') {
+      at->map_val = zxid_map_val(cf, 0, 0, map, at->name, at->val);
+      if (map->dst && *map->dst && map->src && map->src[0] != '*') {
 	name_len = strlen(map->dst);
       } else {
 	name_len = strlen(at->name);
@@ -209,7 +211,7 @@ static struct zx_str* zxid_pool_to_json(zxid_conf* cf, struct zxid_attr* pool)
       if (at->nv) {  /* Multivalue requires array */
 	len += name_len + sizeof("\"\":[\"\"],")-1 + at->map_val->len;
 	for (av = at->nv; av; av = av->n) {
-	  av->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, STRNULLCHK(av->val)));
+	  av->map_val = zxid_map_val(cf, 0, 0, map, at->name, av->val);
 	  len += name_len + sizeof(",\"\"")-1 + av->map_val->len;
 	}
       } else {
@@ -238,7 +240,7 @@ static struct zx_str* zxid_pool_to_json(zxid_conf* cf, struct zxid_attr* pool)
     if (map) {
       if (map->rule == ZXID_MAP_RULE_DEL)
 	continue;
-      if (map->dst && map->dst[0] && map->src && map->src[0] != '*') {
+      if (map->dst && *map->dst && map->src && map->src[0] != '*') {
 	name = map->dst;
       } else {
 	name = at->name;
@@ -336,15 +338,15 @@ static struct zx_str* zxid_pool_to_qs(zxid_conf* cf, struct zxid_attr* pool)
 	D("attribute(%s) filtered out by del rule in OUTMAP", at->name);
 	continue;
       }
-      at->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, STRNULLCHK(at->val)));
-      if (map->dst && map->dst[0] && map->src && map->src[0] != '*') {
+      at->map_val = zxid_map_val(cf, 0, 0, map, at->name, at->val);
+      if (map->dst && *map->dst && map->src && map->src[0] != '*') {
 	name_len = strlen(map->dst);
       } else {
 	name_len = strlen(at->name);
       }
       len += name_len + sizeof("=&")-1 + zx_url_encode_len(at->map_val->len,at->map_val->s)-1;
       for (av = at->nv; av; av = av->n) {
-	av->map_val = zxid_map_val(cf, map, zx_ref_str(cf->ctx, STRNULLCHK(av->val)));
+	av->map_val = zxid_map_val(cf, 0, 0, map, at->name, av->val);
 	len += name_len + sizeof("=&")-1 + zx_url_encode_len(av->map_val->len,av->map_val->s)-1;
       }
       D("len=%d name_len=%d %s", len, name_len, at->name);
@@ -371,7 +373,7 @@ static struct zx_str* zxid_pool_to_qs(zxid_conf* cf, struct zxid_attr* pool)
     if (map) {
       if (map->rule == ZXID_MAP_RULE_DEL)
 	continue;
-      if (map->dst && map->src && map->src[0] != '*') {
+      if (map->dst && *map->dst && map->src && map->src[0] != '*') {
 	name = map->dst;
       } else {
 	name = at->name;
@@ -460,7 +462,7 @@ static int zxid_add_at_values(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribu
     return 0;
   }
   
-  if (map && map->dst && map->src && map->src[0] != '*') {
+  if (map && map->dst && *map->dst && map->src && map->src[0] != '*') {
     ses->at = zxid_new_at(cf, ses->at, strlen(map->dst), map->dst, 0, 0, "mapped");
   } else {
     ses->at = zxid_new_at(cf, ses->at, strlen(name), name, 0, 0, "as is");
@@ -475,7 +477,7 @@ static int zxid_add_at_values(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribu
     if (av->EndpointReference || av->ResourceOffering)
       continue;  /* Skip bootstraps. They are handled elsewhere, see zxid_snarf_eprs_from_ses(). */
     if (ZX_GET_CONTENT(av)) {
-      ss = zxid_map_val(cf, map, ZX_GET_CONTENT(av));
+      ss = zxid_map_val_ss(cf, ses, 0, map, ses->at->name, ZX_GET_CONTENT(av));
       if (ses->at->val) {
 	D("map val(%.*s)", ss->len, ss->s);
 	ses->at->nv = zxid_new_at(cf, ses->at->nv, 0, 0, ss->len, ss->s, "multival");
@@ -515,7 +517,7 @@ static void zxid_add_a7n_at_to_pool(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n)
 
 /*() Add simple attribute to pool, applying NEED, WANT, and INMAP */
 
-/* Called by:  zxid_add_ldif_at2ses, zxid_add_qs_to_ses, zxid_ses_to_pool x23 */
+/* Called by:  zxid_add_ldif_at2ses, zxid_add_qs_to_ses, zxid_ses_to_pool x25 */
 void zxid_add_attr_to_ses(zxid_conf* cf, zxid_ses* ses, char* at_name, struct zx_str* val)
 {
   struct zxid_map* map;
@@ -527,7 +529,7 @@ void zxid_add_attr_to_ses(zxid_conf* cf, zxid_ses* ses, char* at_name, struct zx
     if (map && map->rule == ZXID_MAP_RULE_DEL) {
       D("attribute(%s) filtered out by del rule in INMAP", at_name);
     } else {
-      if (map && map->dst && map->src && map->src[0] != '*') {
+      if (map && map->dst && *map->dst && map->src && map->src[0] != '*') {
 	ses->at = zxid_new_at(cf, ses->at, strlen(map->dst), map->dst, val->len, val->s, "mapd2");
       } else {
 	ses->at = zxid_new_at(cf, ses->at, strlen(at_name), at_name, val->len, val->s, "as is2");
@@ -624,7 +626,7 @@ static void zxid_cp_usr_eprs2ses(zxid_conf* cf, zxid_ses* ses, struct zx_str* pa
  * rendering to LDIF (or JSON). This function also implements
  * local attribute authority. */
 
-/* Called by:  zxid_as_call_ses, zxid_fetch_ses, zxid_simple_ab_pep, zxid_wsc_validate_resp_env, zxid_wsp_validate */
+/* Called by:  zxid_as_call_ses, zxid_fetch_ses, zxid_simple_ab_pep, zxid_wsc_valid_re_env, zxid_wsp_validate_env */
 void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
 {
   char* src;
@@ -652,8 +654,10 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   
   /* Format some pseudo attributes that describe the SSO */
 
-  if (a7n)
+  if (a7n) {
+    zxid_add_attr_to_ses(cf, ses, "ssoa7n", zx_easy_enc_elem_opt(cf, &a7n->gg));
     issuer = ZX_GET_CONTENT(a7n->Issuer);
+  }
   zxid_add_attr_to_ses(cf, ses, "issuer", issuer);
   zxid_add_attr_to_ses(cf, ses, "ssoa7npath",zx_dup_str(cf->ctx, STRNULLCHK(ses->sso_a7n_path)));
   
@@ -680,8 +684,10 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
     tgta7n = ses->tgta7n;
   else
     tgta7n = a7n;
-  if (tgta7n)
+  if (tgta7n) {
+    zxid_add_attr_to_ses(cf, ses, "tgta7n", zx_easy_enc_elem_opt(cf, &a7n->gg));
     tgtissuer = ZX_GET_CONTENT(tgta7n->Issuer);
+  }
   if (tgtissuer)
     zxid_add_attr_to_ses(cf, ses, "tgtissuer", tgtissuer);
   zxid_add_attr_to_ses(cf, ses, "tgta7npath",zx_dup_str(cf->ctx, STRNULLCHK(ses->tgt_a7n_path)));
@@ -722,13 +728,13 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   zxid_add_attr_to_ses(cf, ses, "sigres",     zx_strf(cf->ctx, "%x", ses->sigres));
   zxid_add_attr_to_ses(cf, ses, "ssores",     zx_strf(cf->ctx, "%x", ses->ssores));
   if (ses->sid && *ses->sid) {
-    zxid_add_attr_to_ses(cf, ses, "sesid",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sid)));
-    zxid_add_attr_to_ses(cf, ses, "sespath",    zx_strf(cf->ctx, "%s" ZXID_SES_DIR "%s", cf->path, STRNULLCHK(ses->sid)));
+    zxid_add_attr_to_ses(cf, ses, "sesid",    zx_dup_str(cf->ctx, STRNULLCHK(ses->sid)));
+    zxid_add_attr_to_ses(cf, ses, "sespath",  zx_strf(cf->ctx, "%s" ZXID_SES_DIR "%s", cf->path, STRNULLCHK(ses->sid)));
   }
   zxid_add_attr_to_ses(cf, ses, "sesix",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sesix)));
   zxid_add_attr_to_ses(cf, ses, "setcookie",  zx_dup_str(cf->ctx, STRNULLCHK(ses->setcookie)));
   zxid_add_attr_to_ses(cf, ses, "cookie",     zx_dup_str(cf->ctx, STRNULLCHK(ses->cookie)));
-  zxid_add_attr_to_ses(cf, ses, "msgid",      zx_dup_str(cf->ctx, STRNULLCHK(ses->wsp_msgid)));
+  zxid_add_attr_to_ses(cf, ses, "msgid",      ses->wsp_msgid);
 
   zxid_add_attr_to_ses(cf, ses, "rs",         zx_dup_str(cf->ctx, STRNULLCHK(ses->rs)));
   src = dst = ses->at->val;

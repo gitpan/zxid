@@ -15,6 +15,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-const.h"
@@ -26,11 +27,11 @@
 /*() Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied),
  * using SAML2 SOAP binding. This is the (SP) client side that contacts the IdP. */
 
-/* Called by:  zxid_mgmt, zxid_simple_ses_active_cf */
+/* Called by:  a7n_test, zxid_mgmt, zxid_simple_ses_active_cf */
 int zxid_sp_mni_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_str* new_nym)
 {
   X509* sign_cert;
-  RSA*  sign_pkey;
+  EVP_PKEY* sign_pkey;
 
   zxid_get_ses_sso_a7n(cf, ses);
   if (ses->a7n) {
@@ -51,7 +52,7 @@ int zxid_sp_mni_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_str*
     if (cf->sso_soap_sign) {
       ZERO(&refs, sizeof(refs));
       refs.id = &body->ManageNameIDRequest->ID->g;
-      refs.canon = zx_EASY_ENC_elem(cf->ctx, &body->ManageNameIDRequest->gg);
+      refs.canon = zx_easy_enc_elem_sig(cf, &body->ManageNameIDRequest->gg);
       if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert mni")) {
 	body->ManageNameIDRequest->Signature
 	  = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
@@ -102,7 +103,7 @@ struct zx_str* zxid_sp_mni_redir(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, st
       return zx_dup_str(cf->ctx, "* ERR");
     r = zxid_mk_mni(cf, zxid_get_user_nameid(cf, ses->nameid), new_nym, 0);
     r->Destination = zx_ref_len_attr(cf->ctx, &r->gg, zx_Destination_ATTR, loc->len, loc->s);
-    rs = zx_EASY_ENC_elem(cf->ctx, &r->gg);
+    rs = zx_easy_enc_elem_opt(cf, &r->gg);
     D("NIReq(%.*s)", rs->len, rs->s);
     return zxid_saml2_redir(cf, loc, rs, 0);
   }
@@ -146,14 +147,14 @@ struct zx_sp_ManageNameIDResponse_s* zxid_mni_do(zxid_conf* cf, zxid_cgi* cgi, z
 
 /*() Wrapper for zxid_mni_do(), which see. */
 
-/* Called by:  zxid_idp_dispatch, zxid_sp_dispatch */
+/* Called by:  a7n_test, zxid_idp_dispatch, zxid_sp_dispatch */
 struct zx_str* zxid_mni_do_ss(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx_sp_ManageNameIDRequest_s* mni, struct zx_str* loc)
 {
   struct zx_sp_ManageNameIDResponse_s* res;
   res = zxid_mk_mni_resp(cf, zxid_OK(cf,0), &mni->ID->g);
   res = zxid_mni_do(cf, cgi, ses, mni);
   res->Destination = zx_ref_len_attr(cf->ctx, &res->gg, zx_Destination_ATTR, loc->len, loc->s);
-  return zx_EASY_ENC_elem(cf->ctx, &res->gg);
+  return zx_easy_enc_elem_opt(cf, &res->gg);
 }
 
 /* EOF  --  zxidmni.c */

@@ -14,6 +14,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-const.h"
@@ -137,7 +138,7 @@ int zxid_idp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct z
       }
       zx_str_free(cf->ctx, refs.canon);
     }
-    return zxid_soap_cgi_resp_body(cf, body, ZX_GET_CONTENT(req->Issuer));
+    return zxid_soap_cgi_resp_body(cf, ses, body);
   }
 
   if (r->Envelope->Body->ManageNameIDRequest) {

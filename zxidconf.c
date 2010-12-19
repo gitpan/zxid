@@ -31,6 +31,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "c/zxidvers.h"
 
@@ -96,19 +97,23 @@ X509* zxid_extract_cert(char* buf, char* name)
   return x;
 }
 
-/*() Extract a private key from PEM encoded string. */
+/*() Extract a private key from PEM encoded string.
+ * *** This function needs to expand to handle DSA */
 
 /* Called by:  opt, test_mode, zxid_read_private_key */
-RSA* zxid_extract_private_key(char* buf, char* name)
+EVP_PKEY* zxid_extract_private_key(char* buf, char* name)
 {
   char* p;
   char* e;
+  int typ;
   EVP_PKEY* pk = 0;  /* Forces d2i_PrivateKey() to alloc the memory. */
-  RSA* rsa = 0;
   OpenSSL_add_all_algorithms();
   
-  p = strstr(buf, PEM_RSA_PRIV_KEY_START);
-  if (!p) {
+  if (p = strstr(buf, PEM_RSA_PRIV_KEY_START)) {
+    typ = EVP_PKEY_RSA;
+  } else if (p = strstr(buf, PEM_DSA_PRIV_KEY_START)) {
+    typ = EVP_PKEY_DSA;
+  } else {
     ERR("No private key found in file(%s)\n", name);
     return 0;
   }
@@ -116,17 +121,16 @@ RSA* zxid_extract_private_key(char* buf, char* name)
   if (*p == 0xd) ++p;
   if (*p != 0xa) return 0;
   ++p;
-  
-  e = strstr(buf, PEM_RSA_PRIV_KEY_END);
+
+  e = strstr(buf, typ == EVP_PKEY_RSA ? PEM_RSA_PRIV_KEY_END : PEM_RSA_PRIV_KEY_END);
   if (!e) return 0;
   
   p = unbase64_raw(p, e, buf, zx_std_index_64);
-  if (!d2i_PrivateKey(EVP_PKEY_RSA, &pk, (const unsigned char**)&buf /* *** compile warning */, p-buf) || !pk) {
+  if (!d2i_PrivateKey(typ, &pk, (const unsigned char**)&buf, p-buf) || !pk) {
     ERR("DER decoding of private key failed.\n%d", 0);
     return 0;
   }
-  rsa = EVP_PKEY_get1_RSA(pk);
-  return rsa;
+  return pk; /* RSA* rsa = EVP_PKEY_get1_RSA(pk); */
 }
 
 /*() Extract a certificate from PEM encoded file. */
@@ -144,7 +148,7 @@ X509* zxid_read_cert(zxid_conf* cf, char* name)
 /*() Extract a private key from PEM encoded file. */
 
 /* Called by:  test_ibm_cert_problem x2, test_ibm_cert_problem_enc_dec x2, zxenc_privkey_dec, zxid_init_conf x3, zxid_lazy_load_sign_cert_and_pkey, zxlog_write_line x2 */
-RSA* zxid_read_private_key(zxid_conf* cf, char* name)
+EVP_PKEY* zxid_read_private_key(zxid_conf* cf, char* name)
 {
   char buf[4096];
   int got = read_all(sizeof(buf), buf, "read_private_key", 1, "%s" ZXID_PEM_DIR "%s", cf->path, name);
@@ -158,8 +162,8 @@ RSA* zxid_read_private_key(zxid_conf* cf, char* name)
  * generated on disk and the read. Once read from disk, they will be cached in
  * memory. */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_az_soap x3, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x7, zxid_ssos_anreq, zxid_wsf_sign */
-int zxid_lazy_load_sign_cert_and_pkey(zxid_conf* cf, X509** cert, RSA** pkey, const char* logkey)
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_az_soap x3, zxid_idp_soap_dispatch x2, zxid_idp_sso, zxid_mk_art_deref, zxid_mk_at_cert, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x7, zxid_ssos_anreq, zxid_wsf_sign */
+int zxid_lazy_load_sign_cert_and_pkey(zxid_conf* cf, X509** cert, EVP_PKEY** pkey, const char* logkey)
 {
   LOCK(cf->mx, logkey);
   if (cert) {
@@ -186,6 +190,7 @@ int zxid_set_opt(zxid_conf* cf, int which, int val)
 {
   switch (which) {
   case 1: zx_debug = val; return val;
+  case 5: exit(val);  /* This is typically used to force __gcov_flush() */
   }
   return -1;
 }
@@ -222,6 +227,438 @@ void zxid_url_set(zxid_conf* cf, char* url)
   cf->url = zx_dup_cstr(cf->ctx, url);
 }
 
+/* ================== Attribute Broker Config ================*/
+
+#define IS_RULE(rule, val) (!memcmp((rule), (val), sizeof(val)-1) && (rule)[sizeof(val)-1] == '$')
+
+/*() Create new (common pool) attribute and add it to a linked list */
+
+/* Called by:  zxid_add_at_values x3, zxid_add_attr_to_ses x2, zxid_add_qs_to_ses, zxid_load_atsrc, zxid_load_need */
+struct zxid_attr* zxid_new_at(zxid_conf* cf, struct zxid_attr* at, int name_len, char* name, int val_len, char* val, char* lk)
+{
+  struct zxid_attr* aa = ZX_ZALLOC(cf->ctx, struct zxid_attr);
+  aa->n = at;
+  at = aa;
+  COPYVAL(at->name, name, name+name_len);
+  if (val)
+    COPYVAL(at->val, val, val+val_len);
+  D("%s:\tATTR name(%.*s)=val(%.*s)", lk, name_len, name, MIN(val_len, 100), STRNULLCHK(val));
+  return aa;
+}
+
+
+/*() Parse need specification and add it to linked list
+ * A,B$usage$retention$oblig$ext;A,B$usage$retention$oblig$ext;...
+ */
+
+/* Called by:  zxid_init_conf x2, zxid_parse_conf_raw x2 */
+static struct zxid_need* zxid_load_need(zxid_conf* cf, struct zxid_need* need, char* v)
+{
+  char* attrs;
+  char* usage;
+  char* retent;
+  char* oblig;
+  char* ext;
+  char* p = v;
+  char* a;
+  int len;
+  struct zxid_need* nn;
+
+  while (p && *p) {
+    attrs = p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed NEED or WANT directive: attribute list at pos %d", p-v);
+      return need;
+    }
+
+    usage = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed NEED or WANT directive: usage missing at pos %d", p-v);
+      return need;
+    }
+
+    retent = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed NEED or WANT directive: retention missing at pos %d", p-v);
+      return need;
+    }
+
+    oblig = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed NEED or WANT directive: obligations missing at pos %d", p-v);
+      return need;
+    }
+    
+    ext = ++p;
+    p = strchr(p, ';');  /* Stanza ends in separator ; or end of string nul */
+    if (!p)
+      p = ext + strlen(ext);
+    
+    if (IS_RULE(usage, "reset")) {
+      INFO("Reset need %p", need);
+      for (; need; need = nn) {
+	nn = need->n;
+	ZX_FREE(cf->ctx, need);
+      }
+      if (!*p) break;
+      ++p;
+      continue;
+    }
+    
+    nn = ZX_ZALLOC(cf->ctx, struct zxid_need);
+    nn->n = need;
+    need = nn;
+
+    COPYVAL(nn->usage,  usage,  retent-1);
+    COPYVAL(nn->retent, retent, oblig-1);
+    COPYVAL(nn->oblig,  oblig,  ext-1);
+    COPYVAL(nn->ext,    ext,    p);
+
+    DD("need attrs(%.*s) usage(%s) retent(%s) oblig(%s) ext(%s)", usage-attrs-1, attrs, nn->usage, nn->retent, nn->oblig, nn->ext);
+
+    for (a = attrs; ; a += len+1) {
+      len = strcspn(a, ",$");
+      nn->at = zxid_new_at(cf, nn->at, len, a, 0,0, "need/want");
+      if (a[len] == '$')
+	break;
+    }
+    if (!*p) break;
+    ++p;
+  }
+
+  return need;
+}
+
+/*() Parse map specification and add it to linked list
+ * srcns$A$rule$b$ext;src$A$rule$b$ext;...
+ * The list ends up being built in reverse order, which at runtime
+ * causes last stanzas to be evaluated first and first match is used.
+ * Thus you should place most specific rules last and most generic rules first.
+ * See also: zxid_find_map() and zxid_map_val()
+ */
+
+/* Called by:  zxid_init_conf x7, zxid_mk_usr_a7n_to_sp, zxid_parse_conf_raw x7, zxid_read_map */
+struct zxid_map* zxid_load_map(zxid_conf* cf, struct zxid_map* map, char* v)
+{
+  char* ns;
+  char* A;
+  char* rule;
+  char* b;
+  char* ext;
+  char* p = v;
+  int len;
+  struct zxid_map* mm;
+
+  DD("v(%s)", v);
+
+  while (p && *p) {
+    ns = p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed MAP directive: source namespace missing at pos %d", p-v);
+      return map;
+    }
+
+    A = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed MAP directive: source attribute name missing at pos %d", p-v);
+      return map;
+    }
+
+    rule = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed MAP directive: rule missing at pos %d", p-v);
+      return map;
+    }
+
+    b = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed MAP directive: destination attribute name missing at pos %d", p-v);
+      return map;
+    }
+    
+    ext = ++p;
+    len = strcspn(p, ";\n");  /* Stanza ends in separator ; or end of string nul */
+    p = ext + len;
+    
+    if (IS_RULE(rule, "reset")) {
+      INFO("Reset map %p", map);
+      for (; map; map = mm) {
+	mm = map->n;
+	ZX_FREE(cf->ctx, map);
+      }
+      if (!*p) break;
+      ++p;
+      continue;
+    }
+    
+    mm = ZX_ZALLOC(cf->ctx, struct zxid_map);
+    mm->n = map;
+    map = mm;
+    
+    if (IS_RULE(rule, "") || IS_RULE(rule, "rename")) { mm->rule = ZXID_MAP_RULE_RENAME; }
+    else if (IS_RULE(rule, "del"))           { mm->rule = ZXID_MAP_RULE_DEL; }
+    else if (IS_RULE(rule, "feidedec"))      { mm->rule = ZXID_MAP_RULE_FEIDEDEC; }
+    else if (IS_RULE(rule, "feideenc"))      { mm->rule = ZXID_MAP_RULE_FEIDEENC; }
+    else if (IS_RULE(rule, "unsb64-inf"))    { mm->rule = ZXID_MAP_RULE_UNSB64_INF; }
+    else if (IS_RULE(rule, "def-sb64"))      { mm->rule = ZXID_MAP_RULE_DEF_SB64; }
+    else if (IS_RULE(rule, "unsb64"))        { mm->rule = ZXID_MAP_RULE_UNSB64; }
+    else if (IS_RULE(rule, "sb64"))          { mm->rule = ZXID_MAP_RULE_SB64; }
+
+    else if (IS_RULE(rule, "a7n"))           { mm->rule = ZXID_MAP_RULE_WRAP_A7N; }
+    else if (IS_RULE(rule, "a7n-feideenc"))  { mm->rule = ZXID_MAP_RULE_WRAP_A7N | ZXID_MAP_RULE_FEIDEENC; }
+    else if (IS_RULE(rule, "a7n-def-sb64"))  { mm->rule = ZXID_MAP_RULE_WRAP_A7N | ZXID_MAP_RULE_DEF_SB64; }
+    else if (IS_RULE(rule, "a7n-sb64"))      { mm->rule = ZXID_MAP_RULE_WRAP_A7N | ZXID_MAP_RULE_SB64; }
+
+    else if (IS_RULE(rule, "x509"))          { mm->rule = ZXID_MAP_RULE_WRAP_X509; }
+    else if (IS_RULE(rule, "x509-feideenc")) { mm->rule = ZXID_MAP_RULE_WRAP_X509 | ZXID_MAP_RULE_FEIDEENC; }
+    else if (IS_RULE(rule, "x509-def-sb64")) { mm->rule = ZXID_MAP_RULE_WRAP_X509 | ZXID_MAP_RULE_DEF_SB64; }
+    else if (IS_RULE(rule, "x509-sb64"))     { mm->rule = ZXID_MAP_RULE_WRAP_X509 | ZXID_MAP_RULE_SB64; }
+
+    else if (IS_RULE(rule, "file"))          { mm->rule = ZXID_MAP_RULE_WRAP_FILE; }
+    else if (IS_RULE(rule, "file-feideenc")) { mm->rule = ZXID_MAP_RULE_WRAP_FILE | ZXID_MAP_RULE_FEIDEENC; }
+    else if (IS_RULE(rule, "file-def-sb64")) { mm->rule = ZXID_MAP_RULE_WRAP_FILE | ZXID_MAP_RULE_DEF_SB64; }
+    else if (IS_RULE(rule, "file-sb64"))     { mm->rule = ZXID_MAP_RULE_WRAP_FILE | ZXID_MAP_RULE_SB64; }
+
+    else {
+      ERR("Unknown map rule(%.*s) at col %d of (%s)", b-rule, rule, rule-v, v);
+      //ERR("sizeof(rename)=%d cmp=%d c(%c)", sizeof("rename"), memcmp(rule, "rename", sizeof("rename")-1), rule[sizeof("rename")]);
+    }
+
+    COPYVAL(mm->ns,  ns,  A-1);
+    COPYVAL(mm->src, A,   rule-1);
+    COPYVAL(mm->dst, b,   ext-1);
+    COPYVAL(mm->ext, ext, p);
+
+    DD("map ns(%s) src(%s) rule=%d dst(%s) ext(%s)", mm->ns, mm->src, mm->rule, mm->dst, mm->ext);
+    if (!*p || *p == '\n') break;
+    ++p;
+  }
+
+  return map;
+}
+
+/*() Parse ATTRSRC specification and add it to linked list
+ * namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;...
+ */
+
+/* Called by:  zxid_init_conf x4, zxid_parse_conf_raw x4 */
+static struct zxid_cstr_list* zxid_load_cstr_list(zxid_conf* cf, struct zxid_cstr_list* l, char* p)
+{
+  char* q;
+  struct zxid_cstr_list* cs;
+
+  for (; p && *p;) {
+    q = p;
+    p = strchr(p, ',');
+    if (!p)
+      p = q + strlen(q);
+    cs = ZX_ZALLOC(cf->ctx, struct zxid_cstr_list);
+    cs->n = l;
+    l = cs;
+    COPYVAL(cs->s, q, p);    
+  }
+  return l;
+}
+
+/*() Parse ATTRSRC specification and add it to linked list
+ * namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;...
+ */
+
+/* Called by:  zxid_init_conf, zxid_parse_conf_raw */
+static struct zxid_atsrc* zxid_load_atsrc(zxid_conf* cf, struct zxid_atsrc* atsrc, char* v)
+{
+  char* ns;
+  char* attrs;
+  char* weight;
+  char* url;
+  char* aapml;
+  char* otherlim;
+  char* ext;
+  char* p = v;
+  char* a;
+  int len;
+  struct zxid_atsrc* as;
+
+  while (p && *p) {
+    ns = p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed ATSRC directive: namespace missing at pos %d", p-v);
+      return atsrc;
+    }
+
+    attrs = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed ATSRC directive: attribute list missing at pos %d", p-v);
+      return atsrc;
+    }
+
+    weight = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed ATSRC directive: weight missing at pos %d", p-v);
+      return atsrc;
+    }
+
+    url = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed ATSRC directive: url missing at pos %d", p-v);
+      return atsrc;
+    }
+
+    aapml = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed ATSRC directive: aapml ref missing at pos %d", p-v);
+      return atsrc;
+    }
+    
+    otherlim = ++p;
+    p = strchr(p, '$');
+    if (!p) {
+      ERR("Malformed ATSRC directive: otherlim missing at pos %d", p-v);
+      return atsrc;
+    }
+    
+    ext = ++p;
+    p = strchr(p, ';');  /* Stanza ends in separator ; or end of string nul */
+    if (!p)
+      p = ext + strlen(ext);
+    
+    if (IS_RULE(url, "reset")) {
+      INFO("Reset atsrc %p", atsrc);
+      for (; atsrc; atsrc = as) {
+	as = atsrc->n;
+	ZX_FREE(cf->ctx, atsrc);
+      }
+      if (!*p) break;
+      ++p;
+      continue;
+    }
+    
+    as = ZX_ZALLOC(cf->ctx, struct zxid_atsrc);
+    as->n = atsrc;
+    atsrc = as;
+
+    COPYVAL(as->ns,       ns,        attrs-1);
+    COPYVAL(as->weight,   weight,    url-1);
+    COPYVAL(as->url,      url,       aapml-1);
+    COPYVAL(as->aapml,    aapml,     otherlim-1);
+    COPYVAL(as->otherlim, otherlim,  ext-1);
+    COPYVAL(as->ext,      ext,       p);
+
+    D("atsrc ns(%s) attrs(%.*s) weight(%s) url(%s) aapml(%s) otherlim(%s) ext(%s)", as->ns, weight-attrs-1, attrs, as->weight, as->url, as->aapml, as->otherlim, as->ext);
+
+    for (a = attrs; ; a += len+1) {
+      len = strcspn(a, ",$");
+      as->at = zxid_new_at(cf, as->at, len, a, 0,0, "atsrc");
+      if (a[len] == '$')
+	break;
+    }
+    if (!*p) break;
+    ++p;
+  }
+
+  return atsrc;
+}
+
+/*() Check whether attribute is in a (needed or wanted) list. Just a linear
+ * scan as it is simple and good enough for handful of attributes. */
+
+/* Called by:  zxid_add_at_values x2, zxid_add_attr_to_ses x2 */
+struct zxid_need* zxid_is_needed(struct zxid_need* need, const char* name)
+{
+  struct zxid_attr* at;
+  if (!name || !*name)
+    return 0;
+  for (; need; need = need->n)
+    for (at = need->at; at; at = at->n)
+      if (at->name[0] == '*' && !at->name[1]   /* Wild card */
+	  || !strcmp(at->name, name)) /* Match! */
+	return need;
+  return 0;
+}
+
+/*() Check whether attribute is in a (needed or wanted) list. Just a linear
+ * scan as it is simple and good enough for handful of attributes.
+ * The list ends up being built in reverse order, which at runtime
+ * causes last stanzas to be evaluated first and first match is used.
+ * Thus you should place most specific rules last and most generic rules first.
+ * See also: zxid_load_map() and zxid_map_val() */
+
+/* Called by:  pool2apache, zxid_add_at_values, zxid_add_attr_to_ses, zxid_add_mapped_attr x2, zxid_pepmap_extract, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
+struct zxid_map* zxid_find_map(struct zxid_map* map, const char* name)
+{
+  if (!name || !*name)
+    return 0;
+  for (; map; map = map->n)
+    if (map->src[0] == '*' && !map->src[1] /* Wild card (only sensible for del and data xform) */
+	|| !strcmp(map->src, name)) /* Match! */
+      return map;
+  return 0;
+}
+
+/*() Check whether name is in the list. Used for Local PDP wite and black lists. */
+
+/* Called by:  zxid_localpdp x4 */
+struct zxid_cstr_list* zxid_find_cstr_list(struct zxid_cstr_list* cs, const char* name)
+{
+  if (!name || !*name)
+    return 0;
+  for (; cs; cs = cs->n)
+    if (cs->s[0] == '*' && !cs->s[1] /* Wild card */
+	|| !strcmp(cs->s, name))     /* Match! */
+      return cs;
+  return 0;
+}
+
+/*() Check whether attribute is in pool. */
+
+/* Called by:  zxid_localpdp x2 */
+struct zxid_attr* zxid_find_at(struct zxid_attr* pool, const char* name)
+{
+  if (!name || !*name)
+    return 0;
+  for (; pool; pool = pool->n)
+    if (!strcmp(pool->name, name))     /* Match! */
+      return pool;
+  return 0;
+}
+
+/*() Given URL, return a newly allocated string corresponding
+ * to the domain name part of the URL. Used to grab fedusername_suffix
+ * from the url config option. */
+
+/* Called by:  zxid_parse_conf_raw */
+static char* zxid_grab_domain_name(zxid_conf* cf, const char* url)
+{
+  char* dom;
+  char* p;
+  int len;
+  if (!url || !*url)
+    return 0;
+  dom = strchr(url, ':');
+  if (!dom || dom[1] != '/' || dom[2] != '/')
+    return 0;
+  dom += 3;
+  /* After shipping https:// scan for domain name allowable characters. */
+  len = strspn(dom, ".abcdefghijklmnopqrstuvwxyz0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  p = ZX_ALLOC(cf->ctx, len+1);
+  memcpy(p, dom, len);
+  p[len] = 0;
+  return p;
+}
+
 pthread_mutex_t zxid_ent_cache_mx;
 int zxid_ent_cache_mx_init = 0;
 
@@ -252,44 +689,45 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->path = ZX_ALLOC(cf->ctx, cf->path_len+1);
   memcpy(cf->path, zxid_path, cf->path_len);
   cf->path[cf->path_len] = 0;
-  cf->nice_name = ZXID_NICE_NAME;
-  cf->org_name = ZXID_ORG_NAME;
-  cf->org_url = ZXID_ORG_URL;
-  cf->locality = ZXID_LOCALITY;
-  cf->state = ZXID_STATE;
-  cf->country = ZXID_COUNTRY;
-  cf->contact_org = ZXID_CONTACT_ORG;
-  cf->contact_name = ZXID_CONTACT_NAME;
+  cf->nice_name     = ZXID_NICE_NAME;
+  cf->org_name      = ZXID_ORG_NAME;
+  cf->org_url       = ZXID_ORG_URL;
+  cf->locality      = ZXID_LOCALITY;
+  cf->state         = ZXID_STATE;
+  cf->country       = ZXID_COUNTRY;
+  cf->contact_org   = ZXID_CONTACT_ORG;
+  cf->contact_name  = ZXID_CONTACT_NAME;
   cf->contact_email = ZXID_CONTACT_EMAIL;
-  cf->contact_tel = ZXID_CONTACT_TEL;
+  cf->contact_tel   = ZXID_CONTACT_TEL;
   cf->fedusername_suffix = ZXID_FEDUSERNAME_SUFFIX;
   cf->url = ZXID_URL;
   cf->non_standard_entityid = ZXID_NON_STANDARD_ENTITYID;
   cf->redirect_hack_imposed_url = ZXID_REDIRECT_HACK_IMPOSED_URL;
   cf->redirect_hack_zxid_url = ZXID_REDIRECT_HACK_ZXID_URL;
-  cf->cdc_url = ZXID_CDC_URL;
-  cf->cdc_choice = ZXID_CDC_CHOICE;
+  cf->cdc_url       = ZXID_CDC_URL;
+  cf->cdc_choice    = ZXID_CDC_CHOICE;
   cf->authn_req_sign = ZXID_AUTHN_REQ_SIGN;
   cf->want_sso_a7n_signed = ZXID_WANT_SSO_A7N_SIGNED;
   cf->want_authn_req_signed = ZXID_WANT_AUTHN_REQ_SIGNED;
   cf->sso_soap_sign = ZXID_SSO_SOAP_SIGN;
   cf->sso_soap_resp_sign = ZXID_SSO_SOAP_RESP_SIGN;
-  cf->sso_sign     = ZXID_SSO_SIGN;
-  cf->wsc_sign     = ZXID_WSC_SIGN;
-  cf->wsp_sign     = ZXID_WSP_SIGN;
-  cf->wspcgicmd    = ZXID_WSPCGICMD;
-  cf->nameid_enc   = ZXID_NAMEID_ENC;
-  cf->post_a7n_enc = ZXID_POST_A7N_ENC;
-  cf->canon_inopt  = ZXID_CANON_INOPT;
+  cf->sso_sign      = ZXID_SSO_SIGN;
+  cf->wsc_sign      = ZXID_WSC_SIGN;
+  cf->wsp_sign      = ZXID_WSP_SIGN;
+  cf->wspcgicmd     = ZXID_WSPCGICMD;
+  cf->nameid_enc    = ZXID_NAMEID_ENC;
+  cf->post_a7n_enc  = ZXID_POST_A7N_ENC;
+  cf->canon_inopt   = ZXID_CANON_INOPT;
   if (cf->ctx) cf->ctx->canon_inopt = cf->canon_inopt;
-  cf->enckey_opt   = ZXID_ENCKEY_OPT;
-  cf->idpatopt     = ZXID_IDPATOPT;
-  cf->idp_list_meth   = ZXID_IDP_LIST_METH;
+  cf->enc_tail_opt  = ZXID_ENC_TAIL_OPT;
+  cf->enckey_opt    = ZXID_ENCKEY_OPT;
+  cf->idpatopt      = ZXID_IDPATOPT;
+  cf->idp_list_meth = ZXID_IDP_LIST_METH;
   cf->di_allow_create = ZXID_DI_ALLOW_CREATE;
-  cf->di_nid_fmt   = ZXID_DI_NID_FMT;
-  cf->di_a7n_enc   = ZXID_DI_A7N_ENC;
+  cf->di_nid_fmt    = ZXID_DI_NID_FMT;
+  cf->di_a7n_enc    = ZXID_DI_A7N_ENC;
   cf->bootstrap_level = ZXID_BOOTSTRAP_LEVEL;
-  cf->show_conf    = ZXID_SHOW_CONF;
+  cf->show_conf     = ZXID_SHOW_CONF;
 #ifdef USE_OPENSSL
   if (zxid_path) {
 #if 0
@@ -507,7 +945,7 @@ zxid_conf* zxid_init_conf_ctx(zxid_conf* cf, const char* zxid_path)
  * Just initializes the config object to factory defaults (see zxidconf.h).
  * Previous content of the config object is lost. */
 
-/* Called by:  main x5, so_enc_dec, test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, test_mode */
+/* Called by:  a7n_test, attribute_sort_test, covimp_test, main x5, so_enc_dec, test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, test_mode, x509_test */
 zxid_conf* zxid_new_conf(const char* zxid_path)
 {
   /* *** unholy malloc()s: should use our own allocator! */
@@ -517,413 +955,6 @@ zxid_conf* zxid_new_conf(const char* zxid_path)
     exit(1);
   }
   return zxid_init_conf_ctx(cf, zxid_path);
-}
-
-/* ================== Attribute Broker Config ================*/
-
-#define IS_RULE(rule, val) (!memcmp((rule), (val), sizeof(val)-1) && (rule)[sizeof(val)-1] == '$')
-
-/*() Create new (common pool) attribute and add it to a linked list */
-
-/* Called by:  zxid_add_at_values x3, zxid_add_attr_to_ses x2, zxid_add_qs_to_ses, zxid_load_atsrc, zxid_load_need */
-struct zxid_attr* zxid_new_at(zxid_conf* cf, struct zxid_attr* at, int name_len, char* name, int val_len, char* val, char* lk)
-{
-  struct zxid_attr* aa = ZX_ZALLOC(cf->ctx, struct zxid_attr);
-  aa->n = at;
-  at = aa;
-  COPYVAL(at->name, name, name+name_len);
-  if (val)
-    COPYVAL(at->val, val, val+val_len);
-  D("%s:\tATTR name(%.*s) val(%.*s)", lk, name_len, name, val_len, STRNULLCHK(val));
-  return aa;
-}
-
-/*() Parse map specification and add it to linked list
- * srcns$A$rule$b$ext;src$A$rule$b$ext;...
- */
-
-/* Called by:  zxid_init_conf x7, zxid_parse_conf_raw x7 */
-struct zxid_map* zxid_load_map(zxid_conf* cf, struct zxid_map* map, char* v)
-{
-  char* ns;
-  char* A;
-  char* rule;
-  char* b;
-  char* ext;
-  char* p = v;
-  struct zxid_map* mm;
-
-  DD("v(%s)", v);
-
-  while (p && *p) {
-    ns = p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed MAP directive: source namespace missing at pos %d", p-v);
-      return map;
-    }
-
-    A = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed MAP directive: source attribute name missing at pos %d", p-v);
-      return map;
-    }
-
-    rule = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed MAP directive: rule missing at pos %d", p-v);
-      return map;
-    }
-
-    b = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed MAP directive: destination attribute name missing at pos %d", p-v);
-      return map;
-    }
-    
-    ext = ++p;
-    p = strchr(p, ';');  /* Stanza ends in separator ; or end of string nul */
-    if (!p)
-      p = ext + strlen(ext);
-    
-    if (IS_RULE(rule, "reset")) {
-      INFO("Reset map %p", map);
-      for (; map; map = mm) {
-	mm = map->n;
-	ZX_FREE(cf->ctx, map);
-      }
-      if (!*p) break;
-      ++p;
-      continue;
-    }
-    
-    mm = ZX_ZALLOC(cf->ctx, struct zxid_map);
-    mm->n = map;
-    map = mm;
-    
-    if (IS_RULE(rule, "") || IS_RULE(rule, "rename")) { mm->rule = ZXID_MAP_RULE_RENAME; }
-    else if (IS_RULE(rule, "del"))        { mm->rule = ZXID_MAP_RULE_DEL; }
-    else if (IS_RULE(rule, "feidedec"))   { mm->rule = ZXID_MAP_RULE_FEIDEDEC; }
-    else if (IS_RULE(rule, "feideenc"))   { mm->rule = ZXID_MAP_RULE_FEIDEENC; }
-    else if (IS_RULE(rule, "unsb64-inf")) { mm->rule = ZXID_MAP_RULE_UNSB64_INF; }
-    else if (IS_RULE(rule, "def-sb64"))   { mm->rule = ZXID_MAP_RULE_DEF_SB64; }
-    else if (IS_RULE(rule, "unsb64"))     { mm->rule = ZXID_MAP_RULE_UNSB64; }
-    else if (IS_RULE(rule, "sb64"))       { mm->rule = ZXID_MAP_RULE_SB64; }
-    else {
-      ERR("Unknown map rule(%.*s)", b-rule, rule);
-      //ERR("sizeof(rename)=%d cmp=%d c(%c)", sizeof("rename"), memcmp(rule, "rename", sizeof("rename")-1), rule[sizeof("rename")]);
-    }
-
-    COPYVAL(mm->ns,  ns,  A-1);
-    COPYVAL(mm->src, A,   rule-1);
-    COPYVAL(mm->dst, b,   ext-1);
-    COPYVAL(mm->ext, ext, p);
-
-    DD("map ns(%s) src(%s) rule=%d dst(%s) ext(%s)", mm->ns, mm->src, mm->rule, mm->dst, mm->ext);
-    if (!*p) break;
-    ++p;
-  }
-
-  return map;
-}
-
-/*() Parse need specification and add it to linked list
- * A,B$usage$retention$oblig$ext;A,B$usage$retention$oblig$ext;...
- */
-
-/* Called by:  zxid_init_conf x2, zxid_parse_conf_raw x2 */
-struct zxid_need* zxid_load_need(zxid_conf* cf, struct zxid_need* need, char* v)
-{
-  char* attrs;
-  char* usage;
-  char* retent;
-  char* oblig;
-  char* ext;
-  char* p = v;
-  char* a;
-  int len;
-  struct zxid_need* nn;
-
-  while (p && *p) {
-    attrs = p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed NEED or WANT directive: attribute list at pos %d", p-v);
-      return need;
-    }
-
-    usage = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed NEED or WANT directive: usage missing at pos %d", p-v);
-      return need;
-    }
-
-    retent = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed NEED or WANT directive: retention missing at pos %d", p-v);
-      return need;
-    }
-
-    oblig = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed NEED or WANT directive: obligations missing at pos %d", p-v);
-      return need;
-    }
-    
-    ext = ++p;
-    p = strchr(p, ';');  /* Stanza ends in separator ; or end of string nul */
-    if (!p)
-      p = ext + strlen(ext);
-    
-    if (IS_RULE(usage, "reset")) {
-      INFO("Reset need %p", need);
-      for (; need; need = nn) {
-	nn = need->n;
-	ZX_FREE(cf->ctx, need);
-      }
-      if (!*p) break;
-      ++p;
-      continue;
-    }
-    
-    nn = ZX_ZALLOC(cf->ctx, struct zxid_need);
-    nn->n = need;
-    need = nn;
-
-    COPYVAL(nn->usage,  usage,  retent-1);
-    COPYVAL(nn->retent, retent, oblig-1);
-    COPYVAL(nn->oblig,  oblig,  ext-1);
-    COPYVAL(nn->ext,    ext,    p);
-
-    DD("need attrs(%.*s) usage(%s) retent(%s) oblig(%s) ext(%s)", usage-attrs-1, attrs, nn->usage, nn->retent, nn->oblig, nn->ext);
-
-    for (a = attrs; ; a += len+1) {
-      len = strcspn(a, ",$");
-      nn->at = zxid_new_at(cf, nn->at, len, a, 0,0, "need/want");
-      if (a[len] == '$')
-	break;
-    }
-    if (!*p) break;
-    ++p;
-  }
-
-  return need;
-}
-
-/*() Parse ATTRSRC specification and add it to linked list
- * namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;...
- */
-
-/* Called by:  zxid_init_conf x4, zxid_parse_conf_raw x4 */
-struct zxid_cstr_list* zxid_load_cstr_list(zxid_conf* cf, struct zxid_cstr_list* l, char* p)
-{
-  char* q;
-  struct zxid_cstr_list* cs;
-
-  for (; p && *p;) {
-    q = p;
-    p = strchr(p, ',');
-    if (!p)
-      p = q + strlen(q);
-    cs = ZX_ZALLOC(cf->ctx, struct zxid_cstr_list);
-    cs->n = l;
-    l = cs;
-    COPYVAL(cs->s, q, p);    
-  }
-  return l;
-}
-
-/*() Parse ATTRSRC specification and add it to linked list
- * namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;...
- */
-
-/* Called by:  zxid_init_conf, zxid_parse_conf_raw */
-struct zxid_atsrc* zxid_load_atsrc(zxid_conf* cf, struct zxid_atsrc* atsrc, char* v)
-{
-  char* ns;
-  char* attrs;
-  char* weight;
-  char* url;
-  char* aapml;
-  char* otherlim;
-  char* ext;
-  char* p = v;
-  char* a;
-  int len;
-  struct zxid_atsrc* as;
-
-  while (p && *p) {
-    ns = p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed ATSRC directive: namespace missing at pos %d", p-v);
-      return atsrc;
-    }
-
-    attrs = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed ATSRC directive: attribute list missing at pos %d", p-v);
-      return atsrc;
-    }
-
-    weight = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed ATSRC directive: weight missing at pos %d", p-v);
-      return atsrc;
-    }
-
-    url = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed ATSRC directive: url missing at pos %d", p-v);
-      return atsrc;
-    }
-
-    aapml = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed ATSRC directive: aapml ref missing at pos %d", p-v);
-      return atsrc;
-    }
-    
-    otherlim = ++p;
-    p = strchr(p, '$');
-    if (!p) {
-      ERR("Malformed ATSRC directive: otherlim missing at pos %d", p-v);
-      return atsrc;
-    }
-    
-    ext = ++p;
-    p = strchr(p, ';');  /* Stanza ends in separator ; or end of string nul */
-    if (!p)
-      p = ext + strlen(ext);
-    
-    if (IS_RULE(url, "reset")) {
-      INFO("Reset atsrc %p", atsrc);
-      for (; atsrc; atsrc = as) {
-	as = atsrc->n;
-	ZX_FREE(cf->ctx, atsrc);
-      }
-      if (!*p) break;
-      ++p;
-      continue;
-    }
-    
-    as = ZX_ZALLOC(cf->ctx, struct zxid_atsrc);
-    as->n = atsrc;
-    atsrc = as;
-
-    COPYVAL(as->ns,       ns,        attrs-1);
-    COPYVAL(as->weight,   weight,    url-1);
-    COPYVAL(as->url,      url,       aapml-1);
-    COPYVAL(as->aapml,    aapml,     otherlim-1);
-    COPYVAL(as->otherlim, otherlim,  ext-1);
-    COPYVAL(as->ext,      ext,       p);
-
-    D("atsrc ns(%s) attrs(%.*s) weight(%s) url(%s) aapml(%s) otherlim(%s) ext(%s)", as->ns, weight-attrs-1, attrs, as->weight, as->url, as->aapml, as->otherlim, as->ext);
-
-    for (a = attrs; ; a += len+1) {
-      len = strcspn(a, ",$");
-      as->at = zxid_new_at(cf, as->at, len, a, 0,0, "atsrc");
-      if (a[len] == '$')
-	break;
-    }
-    if (!*p) break;
-    ++p;
-  }
-
-  return atsrc;
-}
-
-/*() Check whether attribute is in a (needed or wanted) list. Just a linear
- * scan as it is simple and good enough for handful of attributes. */
-
-/* Called by:  zxid_add_at_values x2, zxid_add_attr_to_ses x2 */
-struct zxid_need* zxid_is_needed(struct zxid_need* need, char* name)
-{
-  struct zxid_attr* at;
-  if (!name || !*name)
-    return 0;
-  for (; need; need = need->n)
-    for (at = need->at; at; at = at->n)
-      if (at->name[0] == '*' && !at->name[1]   /* Wild card */
-	  || !strcmp(at->name, name)) /* Match! */
-	return need;
-  return 0;
-}
-
-/*() Check whether attribute is in a (needed or wanted) list. Just a linear
- * scan as it is simple and good enough for handful of attributes. */
-
-/* Called by:  pool2apache, zxid_add_at_values, zxid_add_attr_to_ses, zxid_pepmap_extract, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
-struct zxid_map* zxid_find_map(struct zxid_map* map, char* name)
-{
-  if (!name || !*name)
-    return 0;
-  for (; map; map = map->n)
-    if (map->src[0] == '*' && !map->src[1] /* Wild card (only sensible for del and data xform) */
-	|| !strcmp(map->src, name)) /* Match! */
-      return map;
-  return 0;
-}
-
-/*() Check whether name is in the list. Used for Local PDP wite and black lists. */
-
-/* Called by:  zxid_localpdp x4 */
-struct zxid_cstr_list* zxid_find_cstr_list(struct zxid_cstr_list* cs, char* name)
-{
-  if (!name || !*name)
-    return 0;
-  for (; cs; cs = cs->n)
-    if (cs->s[0] == '*' && !cs->s[1] /* Wild card */
-	|| !strcmp(cs->s, name))     /* Match! */
-      return cs;
-  return 0;
-}
-
-/*() Check whether attribute is in pool. */
-
-/* Called by:  zxid_localpdp x2 */
-struct zxid_attr* zxid_find_at(struct zxid_attr* pool, char* name)
-{
-  if (!name || !*name)
-    return 0;
-  for (; pool; pool = pool->n)
-    if (!strcmp(pool->name, name))     /* Match! */
-      return pool;
-  return 0;
-}
-
-/*() Given URL, return a newly allocated string corresponding
- * to the domain name part of the URL. Used to grab fedusername_suffix
- * from the url config option. */
-
-/* Called by:  zxid_parse_conf_raw */
-static char* zxid_grab_domain_name(zxid_conf* cf, char* url)
-{
-  char* dom;
-  char* p;
-  int len;
-  if (!url || !*url)
-    return 0;
-  dom = strchr(url, ':');
-  if (!dom || dom[1] != '/' || dom[2] != '/')
-    return 0;
-  dom += 3;
-  /* After shipping https:// scan for domain name allowable characters. */
-  len = strspn(dom, ".abcdefghijklmnopqrstuvwxyz0123456789-ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-  p = ZX_ALLOC(cf->ctx, len+1);
-  memcpy(p, dom, len);
-  p[len] = 0;
-  return p;
 }
 
 /* ======================= CONF PARSING ======================== */
@@ -1032,6 +1063,7 @@ scan_end:
     case 'E':  /* ERR, ERR_IN_ACT */
       if (!strcmp(n, "ERR"))             { SCAN_INT(v, cf->log_err); break; }
       if (!strcmp(n, "ERR_IN_ACT"))      { SCAN_INT(v, cf->log_err_in_act); break; }
+      if (!strcmp(n, "ENC_TAIL_OPT"))    { SCAN_INT(v, cf->enc_tail_opt); break; }
       if (!strcmp(n, "ENCKEY_OPT"))      { SCAN_INT(v, cf->enckey_opt); break; }
       if (!strcmp(n, "ERR_PAGE"))        { cf->err_page = v; break; }
       if (!strcmp(n, "ERR_TEMPL_FILE"))  { cf->err_templ_file = v; break; }
@@ -1411,6 +1443,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "NAMEID_ENC=%x\n"
 "POST_A7N_ENC=%d\n"
 "CANON_INOPT=%x\n"
+"ENC_TAIL_OPT=%x\n"
 "ENCKEY_OPT=%d\n"
 "IDPATOPT=%d\n"
 "DI_ALLOW_CREATE=%d\n"
@@ -1588,6 +1621,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 cf->nameid_enc,
 		 cf->post_a7n_enc,
 		 cf->canon_inopt,
+		 cf->enc_tail_opt,
 		 cf->enckey_opt,
 		 cf->idpatopt,
 		 cf->di_allow_create,

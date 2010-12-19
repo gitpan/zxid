@@ -23,6 +23,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-const.h"
@@ -35,10 +36,10 @@ extern char **environ;
  * If you do not know what PAOS, ECP or LECP means, you should read [SAML2bind] specification. */
 
 /* Called by:  zxid_lecp_check */
-struct zx_paos_Request_s* zxid_mk_paos_Request_hdr(zxid_conf* cf)
+static struct zx_paos_Request_s* zxid_mk_paos_Request_hdr(zxid_conf* cf)
 {
   struct zx_paos_Request_s* hdr= zx_NEW_paos_Request(cf->ctx,0);
-  hdr->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   hdr->actor   = zx_ref_attr(cf->ctx, &hdr->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
   hdr->service = zx_ref_attr(cf->ctx, &hdr->gg, zx_service_ATTR, SAML2_SSO_ECP);
   hdr->responseConsumerURL = zx_attrf(cf->ctx, &hdr->gg, zx_responseConsumerURL_ATTR, "%s?o=P", cf->url);
@@ -55,7 +56,7 @@ struct zx_paos_Request_s* zxid_mk_paos_Request_hdr(zxid_conf* cf)
  * return:: IdP list data structure or 0 on failure */
 
 /* Called by:  zxid_mk_ecp_Request_hdr */
-struct zx_sp_IDPList_s* zxid_mk_idp_list(zxid_conf* cf, char* binding)
+static struct zx_sp_IDPList_s* zxid_mk_idp_list(zxid_conf* cf, char* binding)
 {
   zxid_entity* idp;
   struct zx_md_SingleSignOnService_s* sso_svc;
@@ -94,12 +95,12 @@ struct zx_sp_IDPList_s* zxid_mk_idp_list(zxid_conf* cf, char* binding)
  * If you do not know what PAOS, ECP or LECP means, you should read [SAML2bind] specification. */
 
 /* Called by:  zxid_lecp_check */
-struct zx_ecp_Request_s* zxid_mk_ecp_Request_hdr(zxid_conf* cf)
+static struct zx_ecp_Request_s* zxid_mk_ecp_Request_hdr(zxid_conf* cf)
 {
   struct zx_ecp_Request_s* hdr= zx_NEW_ecp_Request(cf->ctx,0);
-  hdr->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   hdr->actor = zx_ref_attr(cf->ctx, &hdr->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  /*hdr->IsPassive = zx_ref_attr(cf->ctx, &hdr->gg, zx_IsPassive_ATTR, ZXID_TRUE);  OPTIONAL, default=? */
+  /*hdr->IsPassive = zx_ref_attr(cf->ctx, &hdr->gg, zx_IsPassive_ATTR, XML_TRUE);  OPTIONAL, default=? */
   hdr->ProviderName = zxid_my_ent_id_attr(cf, &hdr->gg, zx_ProviderName_ATTR);  /* *** Friendly name? */
   hdr->Issuer = zxid_my_issuer(cf, &hdr->gg);
   hdr->IDPList = zxid_mk_idp_list(cf, SAML2_SOAP);
@@ -153,7 +154,7 @@ struct zx_str* zxid_lecp_check(zxid_conf* cf, zxid_cgi* cgi)
   se->Header = zx_NEW_e_Header(cf->ctx, &se->gg);
   se->Header->Request = zxid_mk_paos_Request_hdr(cf);
   se->Header->ecp_Request = zxid_mk_ecp_Request_hdr(cf);
-  env = zx_EASY_ENC_elem(cf->ctx, &se->gg);
+  env = zx_easy_enc_elem_opt(cf, &se->gg);
   req = zx_strf(cf->ctx,
 		"Cache-Control: no-cache, no-store, must-revalidate, private" CRLF
 		"Pragma: no-cache" CRLF

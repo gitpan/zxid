@@ -67,7 +67,7 @@ int vname_from_path(char* buf, int buf_len, const char* name_fmt, va_list ap)
 
 /*() Generate formatted file name path. */
 
-/* Called by:  main, zxid_check_fed x3, zxid_del_ses x3, zxid_di_query, zxid_find_epr, zxid_find_ses, zxid_gen_boots, zxid_idp_as_do x2, zxid_mk_transient_nid x2, zxid_mk_user_a7n_to_sp x2, zxid_print_session, zxid_put_ses, zxid_put_user */
+/* Called by:  main, zxid_check_fed x3, zxid_del_ses x3, zxid_di_query, zxid_find_epr, zxid_find_ses, zxid_gen_boots, zxid_idp_as_do x2, zxid_mk_transient_nid x2, zxid_mk_usr_a7n_to_sp x2, zxid_print_session, zxid_put_ses, zxid_put_user, zxlog_output x2 */
 int name_from_path(char* buf, int buf_len, const char* name_fmt, ...)
 {
   int ret;
@@ -162,7 +162,7 @@ int read_all_fd(fdtype fd, char* p, int want, int* got_all)
  * name_fmt:: Format string for building file name
  * return:: actual total length. The buffer will always be nul terminated. */
 
-/* Called by:  list_user x2, list_users, main x4, opt x10, test_mode x2, zx_get_symkey, zxid_check_fed, zxid_get_ses, zxid_get_user_nameid, zxid_idp_map_nid2uid, zxid_lscot_line, zxid_nidmap_do, zxid_ps_accept_invite, zxid_ps_finalize_invite, zxid_pw_authn x3, zxid_read_cert, zxid_read_private_key, zxid_template_page_cf */
+/* Called by:  covimp_test, list_user x2, list_users, main x4, opt x10, test_mode x2, zx_get_symkey, zxid_check_fed, zxid_get_ses, zxid_get_user_nameid, zxid_idp_map_nid2uid, zxid_lscot_line, zxid_nidmap_do, zxid_ps_accept_invite, zxid_ps_finalize_invite, zxid_pw_authn x3, zxid_read_cert, zxid_read_private_key, zxid_template_page_cf */
 int read_all(int maxlen, char* buf, const char* logkey, int reperr, const char* name_fmt, ...)
 {
   va_list ap;
@@ -205,7 +205,7 @@ int get_file_size(fdtype fd)
  * name_fmt:: Format string for building file name
  * return:: The data or null on fail. The buffer will always be nul terminated. */
 
-/* Called by:  list_user x3, list_users, zxid_conf_to_cf_len, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n, zxid_mk_user_a7n_to_sp x4, zxid_parse_conf_raw, zxid_print_session, zxid_ses_to_pool x3, zxid_sha1_file */
+/* Called by:  covimp_test, list_user x3, list_users, zxid_conf_to_cf_len, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n, zxid_map_val_ss x4, zxid_parse_conf_raw, zxid_print_session, zxid_read_ldif_attrs, zxid_read_map, zxid_ses_to_pool x3, zxid_sha1_file */
 char* read_all_alloc(struct zx_ctx* c, const char* logkey, int reperr, int* lenp, const char* name_fmt, ...)
 {
   va_list ap;
@@ -215,7 +215,11 @@ char* read_all_alloc(struct zx_ctx* c, const char* logkey, int reperr, int* lenp
   va_start(ap, name_fmt);
   fd = vopen_fd_from_path(O_RDONLY, 0, logkey, reperr, name_fmt, ap);
   va_end(ap);
-  if (fd == BADFD) { if (lenp) *lenp = 0; return 0; }
+  if (fd == BADFD) {
+    if (lenp)
+      *lenp = 0;
+    return 0;
+  }
 
   len = get_file_size(fd);
   buf = ZX_ALLOC(c, len+1);
@@ -264,10 +268,18 @@ int write_all_fd(fdtype fd, const char* p, int pending)
 
 /*() Write all data to a file at the formatted path. The buf is used
  * for formatting data. The path_fmt can have up to two %s specifiers,
- * which will be satisfied by prepath and postpath. Return 1 on
- * success, 0 on fail. */
+ * which will be satisfied by prepath and postpath.
+ *
+ * logkey:: Used for debug prints and error messages
+ * maxlen:: Size of the buffer
+ * buf:: Fied size buffer for dendering the formatted data
+ * path_fmt:: Format string for filesystem path to the file
+ * prepath:: Argument to satisfy first %s in path_fmt
+ * postpath:: Argument to satisfy second %s in path_fmt
+ * data_fmt:: Format string for the data to be written. Following arguments satisfy the format string. Overall the data length is constrained to maxlen. Caller needs to allocate/provide buffer sufficient to satisfy the data_fmt.
+ * Returns:: 1 on success, 0 on fail. */
 
-/* Called by:  main x6, zx_get_symkey, zxid_check_fed x2, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_invite, zxid_put_psobj, zxid_put_ses, zxid_put_user, zxid_pw_authn */
+/* Called by:  main x6, zx_get_symkey, zxid_check_fed x2, zxid_mk_at_cert, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_invite, zxid_put_psobj, zxid_put_ses, zxid_put_user, zxid_pw_authn */
 int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...)
 {
   int len;
@@ -278,12 +290,12 @@ int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* pa
   if (fd == BADFD) return 0;
   
   va_start(ap, data_fmt);
-  len = vsnprintf(buf, maxlen-1, data_fmt, ap);
+  len = vsnprintf(buf, maxlen-1, data_fmt, ap); /* Format data into buf */
   buf[maxlen-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   va_end(ap);
   if (len < 0) {
     perror("vsnprintf");
-    D("%s, Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", logkey, len);
+    ERR("%s, Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", logkey, len);
     len = 0;
   }
   if (write_all_fd(fd, buf, len) == -1) {
@@ -403,7 +415,7 @@ int close_file(fdtype fd, const char* logkey)
  * actually copying file is more portable. Even in Unix, hardlinking
  * can be troublesome if the from and to are on different file systems. */
 
-/* Called by:  zxid_copy_user_eprs_to_ses */
+/* Called by:  covimp_test x5, zxid_cp_usr_eprs2ses */
 int copy_file(const char* from, const char* to, const char* logkey, int may_link)
 {
   fdtype fd_from;
@@ -436,13 +448,13 @@ linkrest:
 
   }
 #ifdef MINGW
-  fd_to = CreateFile(buf, MINGW_RW_PERM, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+  fd_to = CreateFile(to, MINGW_RW_PERM, FILE_SHARE_READ | FILE_SHARE_WRITE, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 #else
-  fd_to = open(buf, O_RDWR | O_CREAT, 0666);
+  fd_to = open(to, O_RDWR | O_CREAT, 0666);
 #endif
   if (fd_to == BADFD) {
       perror("openfile_ro");
-      ERR("%s: Error opening from(%s) euid=%d egid=%d", logkey, from, geteuid(), getegid());
+      ERR("%s: Error opening to(%s) euid=%d egid=%d", logkey, to, geteuid(), getegid());
       return BADFD;
   }
 
@@ -496,7 +508,7 @@ linkrest:
 
 /*() Output a hexdump to stderr. Used for debugging purposes. */
 
-/* Called by:  hexdmp, zxsig_data_rsa_sha1 x2, zxsig_verify_data_rsa_sha1 x4 */
+/* Called by:  hexdmp, zxsig_data x2, zxsig_verify_data x5 */
 int hexdump(char* msg, char* p, char* lim, int max)
 {
   int i;
@@ -531,7 +543,7 @@ int hexdump(char* msg, char* p, char* lim, int max)
   return 0;
 }
 
-/* Called by:  zxsig_validate x5 */
+/* Called by:  covimp_test x2, zxsig_validate x6 */
 int hexdmp(char* msg, char* p, int len, int max) {
   return hexdump(msg, p, p+len, max);
 }
@@ -545,9 +557,9 @@ int hexdmp(char* msg, char* p, int len, int max) {
  * is used by md5_crypt() and other password hashing schemes. */
 
 #define MAX_LINE  76 /* size of encoded lines */
-char std_basis_64[64]  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; /*=*/
-char safe_basis_64[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"; /*=*/
-char pw_basis_64[64]   = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+const char std_basis_64[64]  = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"; /*=*/
+const char safe_basis_64[64] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"; /*=*/
+const char pw_basis_64[64]   = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 /*() Raw version. Can use any encoding table and arbitrary line length.
  * Known bug: line_len is not fully respected on last line - it can
@@ -656,7 +668,7 @@ unsigned char zx_std_index_64[256] = {
  * Returns pointer one past last output char written. Does not nul terminate.
  * Never fails. See also SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(). */
 
-/* Called by:  decode, main x5, zxenc_privkey_dec, zxenc_symkey_dec, zxid_cdc_check, zxid_decode_redir_or_post x2, zxid_decode_ssoreq, zxid_extract_cert, zxid_extract_private_key, zxid_idp_as_do, zxid_map_val x3, zxid_process_keys, zxid_psobj_dec, zxid_sp_deref_art, zxsig_validate x2 */
+/* Called by:  decode, main x5, mk_test_cert x5, zxenc_privkey_dec, zxenc_symkey_dec, zxid_cdc_check, zxid_decode_redir_or_post x2, zxid_decode_ssoreq, zxid_extract_cert, zxid_extract_private_key, zxid_idp_as_do, zxid_map_val_ss x3, zxid_process_keys, zxid_psobj_dec, zxid_sp_deref_art, zxsig_validate x2 */
 char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char* index_64)
 {
   int i;
@@ -706,7 +718,7 @@ char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char*
  * caller can overwrite with nul, if you like).
  *
  * out_buf:: Buffer where result will be written. It must be 28 characters long and already allocated. The buffer will not be null terminated.
- * len:: Length of data. -1=use strlen(data)
+ * len:: Length of data. -2=use strlen(data)
  * data:: Data to be digested
  * return:: Pointer one past last character written (not nul terminated) */
 
@@ -714,7 +726,7 @@ char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char*
 char* sha1_safe_base64(char* out_buf, int len, const char* data)
 {
   char sha1[20];
-  if (len == -1)
+  if (len == -2)
     len = strlen(data);
   SHA1((unsigned char*)data, len, (unsigned char*)sha1);
   return base64_fancy_raw(sha1, 20, out_buf, safe_basis_64, 1<<31, 0, 0, '.');
@@ -739,7 +751,7 @@ void zx_zlib_zfree(void* opaque, voidpf addr)
  * of the comressed data. Since the compressed data will be
  * binary, there is no provision for nul termination. Caveat: RFC1951 is not same a gzip. */
 
-/* Called by:  zxid_map_val, zxid_saml2_redir_enc, zxid_simple_idp_show_an, zxlog_write_line */
+/* Called by:  zxid_map_val_ss, zxid_saml2_redir_enc, zxid_simple_idp_show_an, zxlog_write_line */
 char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out_len)
 {
   int ret, dlen;
@@ -781,7 +793,7 @@ char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out
  * should allow safe nul termination (but the decompressed data itself
  * may contain any number of nuls). Caveat: RFC1951 is not same a gzip. */
 
-/* Called by:  decode, zxid_decode_redir_or_post, zxid_decode_ssoreq, zxid_map_val, zxlog_zsig_verify_print */
+/* Called by:  decode, zxid_decode_redir_or_post, zxid_decode_ssoreq, zxid_map_val_ss, zxlog_zsig_verify_print */
 char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, const char* in, int* out_len)
 {
   int ret, dlen, iter = 30;
@@ -853,10 +865,10 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, const char* in, int* out
  * return: Required buffer size, including nul term. Subtract 1 for string length. */
 
 /* Called by:  zx_url_encode, zxid_pool_to_qs x5, zxid_saml2_redir_enc x2 */
-int zx_url_encode_len(int in_len, char* in)
+int zx_url_encode_len(int in_len, const char* in)
 {
   int n;
-  char* lim;
+  const char* lim;
   /* scan through to see how many escape expansions are needed */
   lim = in + in_len;
   for (n = 0; in < lim; ++in)
@@ -866,15 +878,15 @@ int zx_url_encode_len(int in_len, char* in)
 
 /*() URL encode input into output. The encoding is done to
  * characters listed in URL_BAD() macro in zxutil.c. The output must already
- * have been allocated to correct length (which can be obtained from
- * zx_url_encode_len() function). zx_url_encode() is higher
+ * have been allocated to correct length, which can be obtained from
+ * zx_url_encode_len() function. zx_url_encode() is higher
  * level function that does just that. Raw version does not nul terminate.
  * Returns pointer one past last byte written. */
 
 /* Called by:  zx_url_encode, zxid_pool_to_qs x4, zxid_saml2_redir_enc x2 */
-char* zx_url_encode_raw(int in_len, char* in, char* out)
+char* zx_url_encode_raw(int in_len, const char* in, char* out)
 {
-  char* lim;
+  const char* lim;
   for (lim = in+in_len; in < lim; ++in)
     if (URL_BAD(*in)) {
       *out++ = '%';
@@ -887,17 +899,25 @@ char* zx_url_encode_raw(int in_len, char* in, char* out)
 
 /*() Perform URL encoding on buffer. New output buffer is allocated.
  * The low level work is performed by zx_url_encode_raw().
+ * Returns the length of the output string (not including nul termination,
+ * but nul termination is actually allocated and made).
  *
  * N.B. For zx_url_decode() operation see URL_DECODE() macro in errmac.h */
 
-/* Called by: */
-char* zx_url_encode(struct zx_ctx* c, int in_len, char* in, int* out_len)
+/* Called by:  covimp_test */
+char* zx_url_encode(struct zx_ctx* c, int in_len, const char* in, int* out_len)
 {
+  int olen;
   char* out;
-  *out_len = zx_url_encode_len(in_len, in) + 1;
-  out = ZX_ALLOC(c, *out_len);
-  zx_url_encode_raw(in_len, in, out);
-  out[*out_len-1] = '\0';
+  char* p;
+  if (in_len == -2)
+    in_len = strlen(in);
+  olen = zx_url_encode_len(in_len, in) + 1;
+  out = ZX_ALLOC(c, olen);
+  p = zx_url_encode_raw(in_len, in, out);
+  *p = '\0';
+  if (out_len)
+    *out_len = p - out;
   return out;
 }
 
@@ -907,20 +927,20 @@ const unsigned char const * ykmodhex_trans = (unsigned char*)"cbdefghijklnrtuv";
 /*() Especially useful as yubikey_modhex_decode() replacement.
  * Supports inplace conversion. Does not nul terminate. */
 
-/* Called by:  main x2, zxid_pw_authn x2 */
-char* zx_hexdec(char* dst, char* src, int len, const unsigned char* trans)
+/* Called by:  covimp_test, main x2, zxid_pw_authn x2 */
+char* zx_hexdec(char* dst, char* src, int src_len, const unsigned char* trans)
 {
   const unsigned char* hi;
   const unsigned char* lo;
-  for (; len>1; len-=2, ++dst, src+=2) {
+  for (; src_len>1; src_len-=2, ++dst, src+=2) {
     hi = (const unsigned char*)strchr((char*)trans, src[0]);
     if (!hi) {
-      ERR("Bad hi character(%x) in hex string using trans(%s) len left=%d src(%.*s)", src[0], trans, len, len, src);
+      ERR("Bad hi character(%x) in hex string using trans(%s) len left=%d src(%.*s)", src[0], trans, src_len, src_len, src);
       hi = trans;
     }
     lo = (const unsigned char*)strchr((char*)trans, src[1]);
     if (!lo) {
-      ERR("Bad lo character(%x) in hex string using trans(%s) len left=%d src(%.*s)", src[1], trans, len, len, src);
+      ERR("Bad lo character(%x) in hex string using trans(%s) len left=%d src(%.*s)", src[1], trans, src_len, src_len, src);
       lo = trans;
     }
     *dst = ((hi-trans) << 4) | (lo-trans);
@@ -991,7 +1011,7 @@ static int zx_timegm(const struct tm* t)
  *   01234567890123456789
  *   yyyy-MM-ddThh:mm:ssZ */
 
-/* Called by:  zxid_parse_invite x2, zxid_sp_sso_finalize, zxid_sso_issue_a7n, zxid_validate_cond x2, zxid_wsf_timestamp_check */
+/* Called by:  zxid_parse_invite x2, zxid_sp_sso_finalize, zxid_sso_issue_a7n, zxid_timestamp_chk, zxid_validate_cond x2 */
 int zx_date_time_to_secs(const char* dt)
 {
   struct tm t;

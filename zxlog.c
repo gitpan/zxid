@@ -38,7 +38,9 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidutil.h"  /* for zx_zlib_raw_deflate(), safe_basis_64, and name_from_path */
 #include "zxidconf.h"
+#include "c/zx-data.h"  /* Generated. If missing, run `make dep ENA_GEN=1' */
 
 #define ZXID_LOG_DIR "log/"
 #define ZXLOG_TIME_FMT "%04d%02d%02d-%02d%02d%02d.%03ld"
@@ -87,10 +89,10 @@ static char* zxlog_alloc_zbuf(zxid_conf* cf, int *zlen, char* zbuf, int len, cha
 * logbuf:: The data that should be logged
 */
 
-/* Called by:  test_mode x12 */
+/* Called by:  test_mode x12, zxlog_output x2 */
 void zxlog_write_line(zxid_conf* cf, char* c_path, int encflags, int n, const char* logbuf)
 {
-  RSA* log_sign_pkey;
+  EVP_PKEY* log_sign_pkey;
   struct rsa_st* rsa_pkey;
   struct aes_key_st aes_key;
   int len = 0, blen, zlen;
@@ -122,7 +124,7 @@ void zxlog_write_line(zxid_conf* cf, char* c_path, int encflags, int n, const ch
       UNLOCK(cf->mx, "logsign wrln");      
       if (!log_sign_pkey)
 	break;
-      len = zxsig_data_rsa_sha1(cf->ctx, zlen, zbuf, &sig, log_sign_pkey, "enc log line");
+      len = zxsig_data(cf->ctx, zlen, zbuf, &sig, log_sign_pkey, "enc log line");
       break;
     case 0x06:      /* Dx DSA-SHA1 signature */
       ERR("DSA-SHA1 sig not implemented in encrypted mode. Use RSA-SHA1 or none. %x", encflags);
@@ -221,7 +223,7 @@ void zxlog_write_line(zxid_conf* cf, char* c_path, int encflags, int n, const ch
     UNLOCK(cf->mx, "logsign wrln");
     if (!log_sign_pkey)
       break;
-    zlen = zxsig_data_rsa_sha1(cf->ctx, n-1, logbuf, &zbuf, log_sign_pkey, "log line");
+    zlen = zxsig_data(cf->ctx, n-1, logbuf, &zbuf, log_sign_pkey, "log line");
     len = SIMPLE_BASE64_LEN(zlen) + 4;
     sig = ZX_ALLOC(cf->ctx, len);
     strcpy(sig, "RP ");
@@ -349,6 +351,24 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
   return n;
 }
 
+/*() Figure out which log file should receive the message */
+
+/* Called by: */
+static int zxlog_output(zxid_conf* cf, int n, const char* logbuf, const char* res)
+{
+  char c_path[ZXID_MAX_BUF];
+  DD("LOG(%.*s)", n-1, logbuf);
+  if ((cf->log_err_in_act || res[0] == 'K') && cf->log_act) {
+    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "act", cf->path);
+    zxlog_write_line(cf, c_path, cf->log_act, n, logbuf);
+  }
+  if (cf->log_err && (cf->log_act_in_err || res[0] != 'K')) {  /* If enabled, everything goes to err */
+    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "err", cf->path);
+    zxlog_write_line(cf, c_path, cf->log_err, n, logbuf);
+  }
+  return 0;
+}
+
 /*(i) Log to activity and/or error log depending on ~res~ and configuration settings.
  * This is the main audit logging function you should call. Please see <<link:../../html/zxid-log.html: zxid-log.pd>>
  * for detailed description of the log format and features. See <<link:../../html/zxid-conf.html: zxid-conf.pd>> for
@@ -396,7 +416,6 @@ int zxlog(zxid_conf* cf,   /* 1 */
 {
   int n;
   char logbuf[1024];
-  char c_path[ZXID_MAX_BUF];
   va_list ap;
   
   /* Avoid computation if logging is hopeless. */
@@ -411,19 +430,42 @@ int zxlog(zxid_conf* cf,   /* 1 */
 		ourts, srcts, ipport, entid, msgid, a7nid, nid, sigval, res,
 		op, arg, fmt, ap);
   va_end(ap);
+  return zxlog_output(cf, n, logbuf, res);
+}
+
+/*() Log to activity and/or error log depending on ~res~ and configuration settings.
+ * This variant uses the ses object to extract many of the log fields. These fields
+ * were populated to ses by zxid_wsp_validate()
+ */
+
+int zxlogwsp(zxid_conf* cf,    /* 1 */
+	     zxid_ses* ses,    /* 2 */
+	     const char* res,  /* 3 */
+	     const char* op,   /* 4 */
+	     const char* arg,  /* 5 null allowed, - if not given */
+	     const char* fmt, ...)   /* 13 null allowed as format, ends the line w/o further ado */
+{
+  int n;
+  char logbuf[1024];
+  va_list ap;
   
-  /* Output stage */
+  /* Avoid computation if logging is hopeless. */
   
-  DD("LOG(%.*s)", n-1, logbuf);
-  if ((cf->log_err_in_act || res[0] == 'K') && cf->log_act) {
-    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "act", cf->path);
-    zxlog_write_line(cf, c_path, cf->log_act, n, logbuf);
+  if (!((cf->log_err_in_act || res[0] == 'K') && cf->log_act)
+      && !(cf->log_err && res[0] != 'K')) {
+    return 0;
   }
-  if (cf->log_err && (cf->log_act_in_err || res[0] != 'K')) {  /* If enabled, everything goes to err */
-    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "err", cf->path);
-    zxlog_write_line(cf, c_path, cf->log_err, n, logbuf);
-  }
-  return 0;
+
+  va_start(ap, fmt);
+  n = zxlog_fmt(cf, sizeof(logbuf), logbuf,
+		0, ses?&ses->srcts:0, ses?ses->ipport:0,
+		ses?ses->issuer:0, ses?ses->wsp_msgid:0,
+		ses&&ses->a7n?&ses->a7n->ID->g:0,
+		ses?ZX_GET_CONTENT(ses->nameid):0,
+		ses&&ses->sigres?&ses->sigres:"-", res,
+		op, arg, fmt, ap);
+  va_end(ap);
+  return zxlog_output(cf, n, logbuf, res);
 }
 
 /*() Log user specific data */
@@ -481,7 +523,7 @@ int zxlogusr(zxid_conf* cf,   /* 1 */
  *     is to write a file to the computed path. Usually 0 if the intent is to read.
  * return:: The path, as zx_str or 0 if failure */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_wsc_validate_resp_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
 struct zx_str* zxlog_path(zxid_conf* cf,
 			  struct zx_str* entid,  /* issuer or target entity ID */
 			  struct zx_str* objid,  /* AssertionID or MessageID */
@@ -578,7 +620,7 @@ struct zx_str* zxlog_path(zxid_conf* cf,
  * return::  0 if no duplicate (success), 1 if duplicate (failure)
  */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_wsc_validate_resp_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
 int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
 {
   struct stat st;
@@ -610,10 +652,10 @@ int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
  *   logpath = zxlog_path(cf, issuer, a7n->ID, "rely/", "/a7n/", 1);
  *   if (logpath) {
  *     if (zxlog_dup_check(cf, logpath, "SSO assertion")) {
- *       zxlog_blob(cf, cf->log_rely_a7n, logpath, zx_EASY_ENC_elem(cf->ctx,&a7n->gg), "E");
+ *       zxlog_blob(cf, cf->log_rely_a7n, logpath, zx_easy_enc_elem_sig(cf,&a7n->gg), "E");
  *       goto erro;
  *     }
- *     zxlog_blob(cf, cf->log_rely_a7n, logpath, zx_EASY_ENC_elem(cf->ctx, a7n), "OK");
+ *     zxlog_blob(cf, cf->log_rely_a7n, logpath, zx_easy_enc_elem_sig(cf, a7n), "OK");
  *   }
  *
  * In the above example we determine the logpath and check for the duplicate and then log even
@@ -621,7 +663,7 @@ int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
  * captures both the original and the duplicate assertion (the logging is an append),
  * which may have forensic value. */
 
-/* Called by:  zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_soap_cgi_resp_body x2, zxid_sp_sso_finalize x2, zxid_wsc_validate_resp_env x2, zxid_wsf_validate_a7n x2, zxid_wsp_validate x2 */
+/* Called by:  zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_soap_cgi_resp_body x2, zxid_sp_sso_finalize x2, zxid_wsc_valid_re_env x2, zxid_wsf_validate_a7n x2, zxid_wsp_validate x2 */
 int zxlog_blob(zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob, const char* lk)
 {
   if (!logflag || !blob)
@@ -633,8 +675,8 @@ int zxlog_blob(zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* b
   
   /* We need a c path, but get zx_str. However, the zx_str will come from zxlog_path()
    * so we should be having the nul termination as needed. Just checking. */
-  D("lk(%s): LOGBLOB15(%.*s) len=%d path(%.*s)", lk, MIN(blob->len,15), blob->s, blob->len, path->len, path->s);
-  DD("lk(%s): LOGBLOB(%.*s)", lk, blob->len, blob->s);
+  D("%s: LOGBLOB15(%.*s) len=%d path(%.*s)", lk, MIN(blob->len,15), blob->s, blob->len, path->len, path->s);
+  DD("%s: LOGBLOB(%.*s)", lk, blob->len, blob->s);
   ASSERTOP(path->s[path->len], ==, 0);
   if (!write2_or_append_lock_c_path(path->s, blob->len, blob->s, 0, 0, "zxlog blob", SEEK_END,O_APPEND)) {
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", 0, "Could not write blob. Permissions?");
@@ -663,6 +705,7 @@ extern struct flock zx_unlk; /* = { F_UNLCK, SEEK_SET, 0, 1 };*/
  * to view this file with:
  * tailf /var/zxid/log/xml.dbg | ./xml-pretty.pl */
 
+/* Called by: */
 void zxlog_debug_xml_blob(zxid_conf* cf, const char* file, int line, const char* func, const char* lk, int len, const char* xml)
 {
   int bdy_len;
@@ -706,7 +749,8 @@ nobody:
   bdy_len = MIN(q-p, 100);
 
 print_it:
-  fprintf(stderr, "t %10s:%-3d %-16s %s d %s%s(%.*s) len=%d\n", file, line, func, ERRMAC_INSTANCE, zx_indent, lk, bdy_len, bdy, len);
+  ++zxlog_seq;
+  fprintf(stderr, "t %10s:%-3d %-16s %s d %s%s(%.*s) len=%d %d:%d\n", file, line, func, ERRMAC_INSTANCE, zx_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
 
   if (!zx_xml_debug_log) {
     if (zx_xml_debug_log_err)

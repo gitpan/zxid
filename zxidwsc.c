@@ -18,6 +18,8 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "wsf.h"
@@ -48,7 +50,7 @@
  * See also: zxid_wsp_validate() */
 
 /* Called by:  zxid_call_epr, zxid_wsc_valid_resp */
-static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
+/*static*/ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
 {
   int n_refs = 0;
   struct zxsig_ref refs[ZXID_N_WSF_SIGNED_HEADERS];
@@ -74,12 +76,12 @@ static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cr
   }
   hdr = env->Header;
   if (!hdr) {
-    ERR("No <e:Header> found. enve(%s)", STRNULLCHK(enve));
+    ERR("No <e:Header> found. %d", 0);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No SOAP Header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
   if (!ZX_SIMPLE_ELEM_CHK(hdr->MessageID)) {
-    ERR("No <a:MessageID> found. enve(%s)", STRNULLCHK(enve));
+    ERR("No <a:MessageID> found. %d", 0);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No MessageID header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
@@ -104,7 +106,7 @@ static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cr
     }
   } else {
     if (cf->relto_fatal) {
-      ERR("No <a:RelatesTo> found. enve(%s)", STRNULLCHK(enve));
+      ERR("No <a:RelatesTo> found. %d", 0);
       zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No RelatesTo header found in reply.", "IDStarMsgNotUnderstood", 0, 0, 0));
       return 0;
     } else {
@@ -114,7 +116,7 @@ static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cr
   }
 
   if (!hdr->Sender || !hdr->Sender->providerID && !hdr->Sender->affiliationID) {
-    ERR("No <b:Sender> found (or missing providerID or affiliationID). enve(%s)", STRNULLCHK(enve));
+    ERR("No <b:Sender> found (or missing providerID or affiliationID). %p", hdr->Sender);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No b:Sender header found (or missing providerID or affiliationID).", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
@@ -123,7 +125,7 @@ static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cr
   /* Validate message signature (*** add Issuer trusted check, CA validation, etc.) */
   
   if (!(sec = hdr->Security)) {
-    ERR("No <wsse:Security> found. enve(%s)", STRNULLCHK(enve));
+    ERR("No <wsse:Security> found. %d", 0);
     zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security header found.", "IDStarMsgNotUnderstood", 0, 0, 0));
     return 0;
   }
@@ -131,12 +133,11 @@ static int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cr
   if (!sec->Signature || !sec->Signature->SignedInfo || !sec->Signature->SignedInfo->Reference) {
     ses->sigres = ZXSIG_NO_SIG;
     if (cf->wsp_nosig_fatal) {
-      ERR("No Security/Signature found. enve(%s) %p", STRNULLCHK(enve), sec->Signature);
+      ERR("No Security/Signature found. %p", sec->Signature);
       zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security/ds:Signature found.", TAS3_STATUS_NOSIG, 0, 0, 0));
       return 0;
     } else {
-      INFO("No Security/Signature found, but configured to ignore this problem. %p", sec->Signature);
-      D("No sig OK enve(%s)", STRNULLCHK(enve));
+      INFO("No Security/Signature found, but configured to ignore this problem (WSP_NOSIG_FATAL=0). %p", sec->Signature);
     }
   }
   
@@ -244,7 +245,7 @@ static int zxid_wsc_prep(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_
       tok = epr->Metadata->SecurityContext->Token;
     }
     hdr->TargetIdentity = zx_NEW_b_TargetIdentity(cf->ctx, &hdr->gg);
-    hdr->TargetIdentity->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->TargetIdentity->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+    hdr->TargetIdentity->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->TargetIdentity->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
     hdr->TargetIdentity->actor = zx_ref_attr(cf->ctx, &hdr->TargetIdentity->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
     if (tok->EncryptedAssertion) {
       ZX_ADD_KID(hdr->TargetIdentity, EncryptedAssertion, tok->EncryptedAssertion);
@@ -260,20 +261,20 @@ static int zxid_wsc_prep(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_
   hdr->ReplyTo = zx_NEW_a_ReplyTo(cf->ctx, &hdr->gg);
   /*hdr->ReplyTo->Address = zxid_mk_addr(cf, zx_strf(cf->ctx, "%s?o=P", cf->url));*/
   hdr->ReplyTo->Address = zxid_mk_addr(cf, &hdr->ReplyTo->gg, zx_dup_str(cf->ctx, A_ANON));
-  hdr->ReplyTo->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->ReplyTo->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->ReplyTo->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->ReplyTo->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   hdr->ReplyTo->actor = zx_ref_attr(cf->ctx, &hdr->ReplyTo->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
 #endif
 
   hdr->To = zx_NEW_a_To(cf->ctx, &hdr->gg);
   zx_add_content(cf->ctx, &hdr->To->gg, ZX_GET_CONTENT(epr->Address));
-  hdr->To->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->To->gg, zx_e_mustUnderstand_ATTR,ZXID_TRUE);
+  hdr->To->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->To->gg, zx_e_mustUnderstand_ATTR,XML_TRUE);
   hdr->To->actor = zx_ref_attr(cf->ctx, &hdr->To->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
 
 #if 0
   /* Omission means to use same address as ReplyTo */
   hdr->FaultTo = zx_NEW_a_FaultTo(cf->ctx, &hdr->gg);
   hdr->FaultTo->Address = zx_mk_addr(cf->ctx, &hdr->FaultTo->gg, zx_strf(cf->ctx, "%s?o=P", cf->url));
-  hdr->FaultTo->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->FaultTo->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  hdr->FaultTo->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->FaultTo->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   hdr->FaultTo->actor = zx_ref_attr(cf->ctx, &hdr->FaultTo->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
 #endif
 
@@ -394,7 +395,7 @@ static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, st
  * additional SOAP headers at will before calling this function. This function
  * will add Liberty ID-WSF specific SOAP headers. */
 
-/* Called by:  main x9, zxid_call_epr, zxid_get_epr, zxid_map_identity_token */
+/* Called by:  main x9, zxid_call_epr, zxid_get_epr, zxid_map_identity_token, zxid_nidmap_identity_token */
 struct zx_e_Envelope_s* zxid_wsc_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_e_Envelope_s* env, char** ret_enve)
 {
   int i, res;
@@ -418,7 +419,7 @@ struct zx_e_Envelope_s* zxid_wsc_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* ep
     }
     ses->wsc_msgid = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(env->Header->MessageID));
     
-    root = zxid_soap_call_envelope(cf, ZX_GET_CONTENT(epr->Address), env, ret_enve);
+    root = zxid_soap_call_raw(cf, ZX_GET_CONTENT(epr->Address), env, ret_enve);
     if (!root || !root->Envelope || !root->Envelope->Body) {
       ERR("soap call returned empty or seriously flawed response %p", root);
       D_DEDENT("wsc_call: ");
@@ -576,16 +577,12 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
   /* *** add usage directives */
 
   env = zxid_wsc_call(cf, ses, epr, env, &ret_enve);
-  if (!env) {
-    ERR("Web services call failed %d", 0);
-    /* Let validate report the error so that tas3 status gets set correctly */
-  }
   if (zxid_wsc_valid_re_env(cf, ses, az_cred, env, ret_enve) != 1) {
     D_DEDENT("call: ");
     return 0;
   }
   
-  ret = zx_EASY_ENC_elem(cf->ctx, &env->gg);
+  ret = zx_easy_enc_elem_opt(cf, &env->gg);
   D_DEDENT("call: ");
   return ret;
 }
@@ -750,7 +747,7 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
   
   /* *** add usage directives */
 
-  ret = zx_EASY_ENC_elem(cf->ctx, &env->gg);
+  ret = zx_easy_enc_elem_opt(cf, &env->gg);
   D_DEDENT("prep: ");
   return ret;
 }

@@ -50,6 +50,11 @@ public interface zxidjniConstants {
   public final static int ZXID_MAP_RULE_DEF_SB64 = zxidjniJNI.ZXID_MAP_RULE_DEF_SB64_get();
   public final static int ZXID_MAP_RULE_UNSB64 = zxidjniJNI.ZXID_MAP_RULE_UNSB64_get();
   public final static int ZXID_MAP_RULE_SB64 = zxidjniJNI.ZXID_MAP_RULE_SB64_get();
+  public final static int ZXID_MAP_RULE_ENC_MASK = zxidjniJNI.ZXID_MAP_RULE_ENC_MASK_get();
+  public final static int ZXID_MAP_RULE_WRAP_A7N = zxidjniJNI.ZXID_MAP_RULE_WRAP_A7N_get();
+  public final static int ZXID_MAP_RULE_WRAP_X509 = zxidjniJNI.ZXID_MAP_RULE_WRAP_X509_get();
+  public final static int ZXID_MAP_RULE_WRAP_FILE = zxidjniJNI.ZXID_MAP_RULE_WRAP_FILE_get();
+  public final static int ZXID_MAP_RULE_WRAP_MASK = zxidjniJNI.ZXID_MAP_RULE_WRAP_MASK_get();
   public final static int ZXID_PSOBJ_BUDDY = zxidjniJNI.ZXID_PSOBJ_BUDDY_get();
   public final static int ZXID_PSOBJ_COLLECTION = zxidjniJNI.ZXID_PSOBJ_COLLECTION_get();
   public final static String ZXID_SES_DIR = zxidjniJNI.ZXID_SES_DIR_get();
@@ -66,6 +71,7 @@ public interface zxidjniConstants {
   public final static int ZXID_MAX_CURL_BUF = zxidjniJNI.ZXID_MAX_CURL_BUF_get();
   public final static int ZXID_MAX_EID = zxidjniJNI.ZXID_MAX_EID_get();
   public final static int ZXID_MAX_DIR = zxidjniJNI.ZXID_MAX_DIR_get();
+  public final static int ZXID_MAX_SP_NAME_BUF = zxidjniJNI.ZXID_MAX_SP_NAME_BUF_get();
   public final static int ZXID_AUTO_EXIT = zxidjniJNI.ZXID_AUTO_EXIT_get();
   public final static int ZXID_AUTO_REDIR = zxidjniJNI.ZXID_AUTO_REDIR_get();
   public final static int ZXID_AUTO_SOAPC = zxidjniJNI.ZXID_AUTO_SOAPC_get();
@@ -102,7 +108,6 @@ public interface zxidjniConstants {
   public final static String ZXLOG_A7N_KIND = zxidjniJNI.ZXLOG_A7N_KIND_get();
   public final static String ZXLOG_MSG_KIND = zxidjniJNI.ZXLOG_MSG_KIND_get();
   public final static String ZXLOG_WIR_KIND = zxidjniJNI.ZXLOG_WIR_KIND_get();
-  public final static int ZXID_N_WSF_SIGNED_HEADERS = zxidjniJNI.ZXID_N_WSF_SIGNED_HEADERS_get();
   public final static int ZXID_DAP_SCOPE_BASE = zxidjniJNI.ZXID_DAP_SCOPE_BASE_get();
   public final static int ZXID_DAP_SCOPE_SINGLE = zxidjniJNI.ZXID_DAP_SCOPE_SINGLE_get();
   public final static int ZXID_DAP_SCOPE_SUBTREE = zxidjniJNI.ZXID_DAP_SCOPE_SUBTREE_get();
@@ -132,10 +137,6 @@ public interface zxidjniConstants {
   public final static int ZXID_REDIR_OK = zxidjniJNI.ZXID_REDIR_OK_get();
   public final static int ZXID_SSO_OK = zxidjniJNI.ZXID_SSO_OK_get();
   public final static int ZXID_IDP_REQ = zxidjniJNI.ZXID_IDP_REQ_get();
-  public final static String ZXID_TRUE = zxidjniJNI.ZXID_TRUE_get();
-  public final static String ZXID_FALSE = zxidjniJNI.ZXID_FALSE_get();
-  public final static String CRLF = zxidjniJNI.CRLF_get();
-  public final static String CRLF2 = zxidjniJNI.CRLF2_get();
   public final static String SAML2_PROTO = zxidjniJNI.SAML2_PROTO_get();
   public final static String SAML2_VERSION = zxidjniJNI.SAML2_VERSION_get();
   public final static String SAML2_SC_SUCCESS = zxidjniJNI.SAML2_SC_SUCCESS_get();

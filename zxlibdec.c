@@ -39,7 +39,7 @@
 /*() Format error message describing an XML parse error. The buf argument
  * should be at leaset 256 bytes for satisfactory results. */
 
-/* Called by:  zxid_wsp_validate */
+/* Called by:  covimp_test, zxid_wsp_validate */
 int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey)
 {
   int at, end, start, len;
@@ -52,7 +52,7 @@ int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey)
   return len;
 }
 
-/* Called by:  zx_dec_attr_val x2, zx_scan_elem_end, zx_scan_pi_or_comment, zx_scan_xmlns x2 */
+/* Called by:  covimp_test, zx_dec_attr_val x2, zx_scan_elem_end, zx_scan_pi_or_comment, zx_scan_xmlns x2 */
 void zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const char* msg)
 {
   const char* errloc = MAX(c->p - 20, c->bas);
@@ -147,7 +147,7 @@ static int zx_scan_pi_or_comment(struct zx_ctx* c)
 /*() Assuming current c->p points to a name, scan until end of the name.
  * Called from innards for dec-templ.c for CSE. Leaves c->p pointing to char after name. */
 
-/* Called by:  zx_elem_lookup */
+/* Called by:  zx_el_lookup */
 static const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
 {
   const char* name = c->p;
@@ -190,7 +190,7 @@ look_for_not_found:
  * order is right. */
 
 /* Called by:  zx_reverse_elem_lists */
-int zx_chk_el_ord(struct zx_elem_s* x)
+static int zx_chk_el_ord(struct zx_elem_s* x)
 {
   int i,j,n;
   struct zx_el_tok* et;
@@ -226,6 +226,7 @@ int zx_chk_el_ord(struct zx_elem_s* x)
  * namespace URI (not namespace prefix). Assumes the attribute
  * list has so far been sorted. Used as part of insertion sort. */
 
+/* Called by:  zx_reverse_elem_lists */
 struct zx_attr_s* zx_ord_ins_at(struct zx_elem_s* x, struct zx_attr_s* in_at)
 {
   struct zx_attr_s* at;
@@ -307,7 +308,7 @@ struct zx_attr_s* zx_ord_ins_at(struct zx_elem_s* x, struct zx_attr_s* in_at)
 
 /*() Called from dec-templ.c for CSE elimination. */
 
-/* Called by:  zx_DEC_elem, zxid_ac_desc, zxid_ar_desc, zxid_az_soap, zxid_contact_desc, zxid_idp_sso_desc, zxid_key_desc, zxid_key_info, zxid_mk_a7n, zxid_mk_saml_resp, zxid_mk_xac_az, zxid_mni_desc, zxid_nimap_desc, zxid_org_desc, zxid_slo_desc, zxid_sp_meta, zxid_sp_sso_desc, zxid_sso_desc */
+/* Called by:  zx_DEC_elem, zxenc_pubkey_enc, zxenc_symkey_enc, zxid_ac_desc, zxid_add_fed_tok2epr, zxid_ar_desc, zxid_az_soap, zxid_contact_desc, zxid_idp_sso_desc, zxid_key_desc, zxid_key_info, zxid_mk_a7n, zxid_mk_az, zxid_mk_az_cd1, zxid_mk_di_req_svc, zxid_mk_mni, zxid_mk_saml_resp, zxid_mk_xac_az, zxid_mk_xacml_resp, zxid_mk_xacml_simple_at, zxid_mni_desc, zxid_nimap_desc, zxid_org_desc, zxid_slo_desc, zxid_sp_meta, zxid_sp_sso_desc, zxid_sso_desc, zxid_wsc_prep, zxid_wsf_decor, zxid_wsp_decorate, zxsig_sign x3 */
 void zx_reverse_elem_lists(struct zx_elem_s* x)
 {
   struct zx_elem_s* iternode;
@@ -441,7 +442,7 @@ static int zx_attr_lookup(struct zx_ctx* c, struct zx_elem_s* x)
 
 /*() Given token, find element descriptor. */
 
-/* Called by:  zx_DEC_elem, zx_ENC_WO_any_elem, zx_LEN_WO_any_elem, zx_check_elem_order, zx_elem_lookup, zx_new_elem */
+/* Called by:  zx_DEC_elem, zx_ENC_WO_any_elem, zx_LEN_WO_any_elem, zx_chk_el_ord, zx_el_lookup, zx_new_elem */
 struct zx_el_desc* zx_el_desc_lookup(int tok)
 {
   struct zx_el_desc* ed;
@@ -610,7 +611,7 @@ no_attr:
  *   UNLOCK(cf->ctx->mx, "valid");
  */
 
-/* Called by:  zx_dec_zx_root */
+/* Called by:  covimp_test, zx_dec_zx_root */
 void zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, const char* start, const char* lim)
 {
   c->guard_seen_n.seen_n = &c->guard_seen_p;

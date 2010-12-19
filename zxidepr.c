@@ -30,6 +30,8 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-ns.h"
@@ -61,7 +63,7 @@ void zxid_fold_svc(char* p, int len)
  * ign_prefix:: How many characters to ignore from beginning of name: 0 or 7 (http://)
  * return:: 0 on success (the real return value is returned via ~buf~ result parameter) */
 
-/* Called by:  zxid_add_fed_tok2epr, zxid_epr_path, zxid_idp_map_nid2uid, zxid_imreq, zxid_nidmap_do x2, zxid_sso_issue_a7n */
+/* Called by:  zxid_epr_path, zxid_get_affil_and_sp_name_buf, zxid_idp_map_nid2uid, zxid_imreq, zxid_nidmap_do x2, zxid_sso_issue_a7n */
 int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
 		   struct zx_str* name, struct zx_str* cont, int ign_prefix)
 {
@@ -151,7 +153,7 @@ int zxid_cache_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
     ERR("EPR is not a ID-WSF 2.0 Bootstrap: no Metadata %p", epr);
     return 0;
   }
-  ss = zx_EASY_ENC_elem(cf->ctx, &epr->gg);
+  ss = zx_easy_enc_elem_opt(cf, &epr->gg);
   if (!ss) {
     ERR("Encoding EndpointReference failed %p", epr);
     return 0;
@@ -209,7 +211,7 @@ void zxid_snarf_eprs(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
  * that looks like an EPR and that is strcturally in right place will work.
  * Typical name /var/zxid/ses/SESID/SVCTYPE,SHA1 */
 
-/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize, zxid_wsc_validate_resp_env, zxid_wsp_validate */
+/* Called by:  zxid_sp_anon_finalize, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsp_validate_env */
 void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
 {
   struct zx_sa_AttributeStatement_s* as;
@@ -234,8 +236,7 @@ void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
 	    ++wsf11;
 	    D("Detected wsf11 resource offering. %d", wsf11);
 #if 0	    
-	    ss = zx_EASY_ENC_elem(cf->ctx, &av->ResourceOffering->gg);
-	    
+	    ss = zx_easy_enc_elem_opt(cf, &av->ResourceOffering->gg);
 	    zxid_epr_path(cf, ZXID_SES_DIR, ses->sid, path, sizeof(path),
 			  ZX_GET_CONTENT(av->EndpointReference->Metadata->ServiceType), ss);
 	    fd = open(path, O_CREAT | O_WRONLY | O_TRUNC, 0666);
@@ -408,7 +409,7 @@ zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const cha
  *     of EPRs is returned.
  */
 
-/* Called by:  main x5, zxcall_main, zxid_call, zxid_map_identity_token */
+/* Called by:  main x5, zxcall_main, zxid_call, zxid_map_identity_token, zxid_nidmap_identity_token */
 zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
   int wsf20 = 0;
@@ -574,7 +575,7 @@ void zxid_set_epr_token(zxid_conf* cf, zxid_epr* epr, zxid_tok* tok) {
 
 /*() Constructor for "blank" EPR. Such EPR lacks security context so it is
  * not directly usable for identity web service calls. However, it could
- * be useful as a building block, or for non-idenity web service.
+ * be useful as a building block, or for non-identity web service.
  * Also id, actor, and mustUnderstand fields need to be filled in by
  * other means (we may eventually have defaults for some of these). */
 
@@ -667,7 +668,7 @@ void zxid_set_call_tgttok(zxid_conf* cf, zxid_ses* ses, zxid_tok* tok) {
 struct zx_str* zxid_token2str(zxid_conf* cf, zxid_tok* tok) {
   if (!tok)
     return 0;
-  return zx_EASY_ENC_elem(cf->ctx, &tok->gg);
+  return zx_easy_enc_elem_sig(cf, &tok->gg);
 }
 
 /*() Parse string into token. */
@@ -702,7 +703,7 @@ zxid_tok* zxid_str2token(zxid_conf* cf, struct zx_str* ss) {
 struct zx_str* zxid_a7n2str(zxid_conf* cf, zxid_a7n* a7n) {
   if (!a7n)
     return 0;
-  return zx_EASY_ENC_elem(cf->ctx, &a7n->gg);
+  return zx_easy_enc_elem_sig(cf, &a7n->gg);
 }
 
 /*() Parse string into assertion. */
@@ -729,7 +730,7 @@ zxid_a7n* zxid_str2a7n(zxid_conf* cf, struct zx_str* ss) {
 struct zx_str* zxid_nid2str(zxid_conf* cf, zxid_nid* nid) {
   if (!nid)
     return 0;
-  return zx_EASY_ENC_elem(cf->ctx, &nid->gg);
+  return zx_easy_enc_elem_sig(cf, &nid->gg);
 }
 
 /*() Parse string into NameID. */

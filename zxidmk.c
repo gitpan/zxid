@@ -15,6 +15,8 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-const.h"
@@ -23,7 +25,7 @@
 
 /*() Interpret ZXID standard form fields to construct a XML structure for AuthnRequest */
 
-/* Called by:  zxid_lecp_check, zxid_start_sso_url */
+/* Called by:  a7n_test, x509_test, zxid_lecp_check, zxid_start_sso_url */
 struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(zxid_conf* cf, zxid_cgi* cgi)
 {
   char index[2] = "1";
@@ -32,21 +34,34 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(zxid_conf* cf, zxid_cgi* cgi)
   ar->ID = zxid_mk_id_attr(cf, &ar->gg, zx_ID_ATTR, "N", ZXID_ID_BITS);
   ar->Version = zx_ref_attr(cf->ctx, &ar->gg, zx_Version_ATTR, SAML2_VERSION);
   ar->IssueInstant = zxid_date_time_attr(cf, &ar->gg, zx_IssueInstant_ATTR, time(0));
-  if (cf->nice_name && cf->nice_name[0])  ar->ProviderName = zx_ref_attr(cf->ctx, &ar->gg, zx_ProviderName_ATTR, cf->nice_name);
-  if (BOOL_STR_TEST(cgi->force_authn))    ar->ForceAuthn = zx_ref_attr(cf->ctx, &ar->gg, zx_ForceAuthn_ATTR, ZXID_TRUE);
-  if (BOOL_STR_TEST(cgi->ispassive))      ar->IsPassive = zx_ref_attr(cf->ctx, &ar->gg, zx_IsPassive_ATTR, ZXID_TRUE);
-  if (cgi->consent && cgi->consent[0])    ar->Consent = zx_ref_attr(cf->ctx, &ar->gg, zx_Consent_ATTR, cgi->consent);
+
+  if (cf->nice_name && cf->nice_name[0])
+    ar->ProviderName = zx_ref_attr(cf->ctx, &ar->gg, zx_ProviderName_ATTR, cf->nice_name);
+
+  if (BOOL_STR_TEST(cgi->force_authn))
+    ar->ForceAuthn = zx_ref_attr(cf->ctx, &ar->gg, zx_ForceAuthn_ATTR, XML_TRUE);
+
+  if (BOOL_STR_TEST(cgi->ispassive))
+    ar->IsPassive = zx_ref_attr(cf->ctx, &ar->gg, zx_IsPassive_ATTR, XML_TRUE);
+
+  if (cgi->consent && cgi->consent[0])
+    ar->Consent = zx_ref_attr(cf->ctx, &ar->gg, zx_Consent_ATTR, cgi->consent);
+
   D("nid_fmt(%s) allow_create=%c ispassive=%c", cgi->nid_fmt, cgi->allow_create, cgi->ispassive);
   if (cgi->nid_fmt && cgi->nid_fmt[0] || cgi->affil && cgi->affil[0]
       || BOOL_STR_TEST(cgi->allow_create)) {
     ar->NameIDPolicy = zx_NEW_sp_NameIDPolicy(cf->ctx, &ar->gg);
+
     if (cgi->nid_fmt && cgi->nid_fmt[0])
       ar->NameIDPolicy->Format = zx_ref_attr(cf->ctx, &ar->NameIDPolicy->gg, zx_Format_ATTR, zxid_saml2_map_nid_fmt(cgi->nid_fmt));
+
     if (cgi->affil && cgi->affil[0])
       ar->NameIDPolicy->SPNameQualifier = zx_ref_attr(cf->ctx, &ar->NameIDPolicy->gg, zx_SPNameQualifier_ATTR, cgi->affil);
+
     if (BOOL_STR_TEST(cgi->allow_create))
-      ar->NameIDPolicy->AllowCreate = zx_ref_attr(cf->ctx, &ar->NameIDPolicy->gg, zx_AllowCreate_ATTR, ZXID_TRUE);  /* default false */
+      ar->NameIDPolicy->AllowCreate = zx_ref_attr(cf->ctx, &ar->NameIDPolicy->gg, zx_AllowCreate_ATTR, XML_TRUE);  /* default false */
   }
+
   if (cgi->authn_ctx && cgi->authn_ctx[0]) {
     ar->RequestedAuthnContext = zx_NEW_sp_RequestedAuthnContext(cf->ctx, &ar->gg);
     ar->RequestedAuthnContext->AuthnContextClassRef
@@ -77,10 +92,10 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(zxid_conf* cf, zxid_cgi* cgi)
 /*() Make the body for the ArtifactResolve SOAP message, signing it if needed. */
 
 /* Called by:  zxid_sp_deref_art */
-struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* idp_meta, char* artifact)
+struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* idp_meta, const char* artifact)
 {
   X509* sign_cert;
-  RSA*  sign_pkey;
+  EVP_PKEY* sign_pkey;
   struct zxsig_ref refs;
   struct zx_sp_ArtifactResolve_s* ar = zx_NEW_sp_ArtifactResolve(cf->ctx,0);
   ar->Issuer = zxid_my_issuer(cf, &ar->gg);
@@ -91,7 +106,7 @@ struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* id
   if (cf->sso_soap_sign) {
     ZERO(&refs, sizeof(refs));
     refs.id = &ar->ID->g;
-    refs.canon = zx_EASY_ENC_elem(cf->ctx, &ar->gg);
+    refs.canon = zx_easy_enc_elem_sig(cf, &ar->gg);
     if (zxid_lazy_load_sign_cert_and_pkey(cf, &sign_cert, &sign_pkey, "use sign cert art deref")) {
       ar->Signature = zxsig_sign(cf->ctx, 1, &refs, sign_cert, sign_pkey);
       zx_add_kid_after_sa_Issuer(&ar->gg, &ar->Signature->gg);
@@ -104,7 +119,7 @@ struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* id
 /*() Create SAML protocol <Status> element, given various levels of error input. */
 
 /* Called by:  so_enc_dec, zxid_OK, zxid_nidmap_do x2, zxid_ssos_anreq x4 */
-struct zx_sp_Status_s* zxid_mk_Status(zxid_conf* cf, struct zx_elem_s* father, char* sc1, char* sc2, char* msg)
+struct zx_sp_Status_s* zxid_mk_Status(zxid_conf* cf, struct zx_elem_s* father, const char* sc1, const char* sc2, const char* msg)
 {
   struct zx_sp_Status_s* st = zx_NEW_sp_Status(cf->ctx, father);
   if (msg)
@@ -133,7 +148,7 @@ struct zx_sp_Status_s* zxid_OK(zxid_conf* cf, struct zx_elem_s* father)
 struct zx_sa_EncryptedID_s* zxid_mk_enc_id(zxid_conf* cf, struct zx_elem_s* father, zxid_nid* nid, zxid_entity* meta)
 {
   struct zx_sa_EncryptedID_s* encid = zx_NEW_sa_EncryptedID(cf->ctx, father);
-  struct zx_str* ss = zx_EASY_ENC_elem(cf->ctx, &nid->gg);
+  struct zx_str* ss = zx_easy_enc_elem_opt(cf, &nid->gg);
   if (cf->enckey_opt & 0x20) {
     /* Nested EncryptedKey approach (Shibboleth early 2010) */
     ZX_ADD_KID(encid, EncryptedData, zxenc_pubkey_enc(cf, ss, 0, meta->enc_cert, "41", 0));
@@ -152,7 +167,7 @@ struct zx_sa_EncryptedID_s* zxid_mk_enc_id(zxid_conf* cf, struct zx_elem_s* fath
 struct zx_sa_EncryptedAssertion_s* zxid_mk_enc_a7n(zxid_conf* cf, struct zx_elem_s* father, zxid_a7n* a7n, zxid_entity* meta)
 {
   struct zx_sa_EncryptedAssertion_s* enc_a7n = zx_NEW_sa_EncryptedAssertion(cf->ctx, father);
-  struct zx_str* ss = zx_EASY_ENC_elem(cf->ctx, &a7n->gg);
+  struct zx_str* ss = zx_easy_enc_elem_opt(cf, &a7n->gg);
   if (cf->enckey_opt & 0x20) {
     /* Nested EncryptedKey approach (Shibboleth early 2010) */
     ZX_ADD_KID(enc_a7n, EncryptedData, zxenc_pubkey_enc(cf, ss, 0, meta->enc_cert, "40", 0));
@@ -205,7 +220,7 @@ struct zx_sp_LogoutResponse_s* zxid_mk_logout_resp(zxid_conf* cf, struct zx_sp_S
 /*() Change SPNameID (newnym supplied), or Terminate federation (newnym not supplied).
  * Create XML data structure for <ManageNameIDRequest> element. Low level API. */
 
-/* Called by:  zxid_sp_mni_redir, zxid_sp_mni_soap */
+/* Called by:  a7n_test, zxid_sp_mni_redir, zxid_sp_mni_soap */
 struct zx_sp_ManageNameIDRequest_s* zxid_mk_mni(zxid_conf* cf, zxid_nid* nid, struct zx_str* new_nym, zxid_entity* idp_meta)
 {
   struct zx_str* ss;
@@ -220,7 +235,7 @@ struct zx_sp_ManageNameIDRequest_s* zxid_mk_mni(zxid_conf* cf, zxid_nid* nid, st
     r->EncryptedID = zxid_mk_enc_id(cf, &r->gg, nid, idp_meta);
     if (new_nym && new_nym->len) {
       newid = zx_new_str_elem(cf->ctx, 0, zx_sp_NewID_ELEM, new_nym);
-      ss = zx_EASY_ENC_elem(cf->ctx, newid);
+      ss = zx_easy_enc_elem_opt(cf, newid);
       r->NewEncryptedID = zx_NEW_sp_NewEncryptedID(cf->ctx, &r->gg);
       if (cf->enckey_opt & 0x20) {
 	/* Nested EncryptedKey approach (Shibboleth early 2010) */
@@ -266,7 +281,7 @@ struct zx_sp_ManageNameIDResponse_s* zxid_mk_mni_resp(zxid_conf* cf, struct zx_s
 
 /*() Constructor for Assertion */
 
-/* Called by:  zxid_mk_user_a7n_to_sp, zxid_xacml_az_cd1_do x2, zxid_xacml_az_do x2 */
+/* Called by:  zxid_map_val_ss, zxid_mk_usr_a7n_to_sp, zxid_xacml_az_cd1_do x2, zxid_xacml_az_do x2 */
 zxid_a7n* zxid_mk_a7n(zxid_conf* cf, struct zx_str* audience, struct zx_sa_Subject_s* subj, struct zx_sa_AuthnStatement_s* an_stmt, struct zx_sa_AttributeStatement_s* at_stmt)
 {
   zxid_a7n* a7n =  zx_NEW_sa_Assertion(cf->ctx,0);
@@ -296,7 +311,7 @@ zxid_a7n* zxid_mk_a7n(zxid_conf* cf, struct zx_str* audience, struct zx_sa_Subje
 
 /*() Construct Subject, possibly with EncryptedID */
 
-/* Called by:  zxid_mk_user_a7n_to_sp, zxid_xacml_az_cd1_do, zxid_xacml_az_do */
+/* Called by:  zxid_map_val_ss, zxid_mk_usr_a7n_to_sp, zxid_xacml_az_cd1_do, zxid_xacml_az_do */
 struct zx_sa_Subject_s* zxid_mk_subj(zxid_conf* cf, struct zx_elem_s* father, zxid_entity* sp_meta, zxid_nid* nid)
 {
   struct zx_sa_Subject_s* subj = zx_NEW_sa_Subject(cf->ctx, father);
@@ -329,7 +344,7 @@ struct zx_sa_Subject_s* zxid_mk_subj(zxid_conf* cf, struct zx_elem_s* father, zx
 
 /*() Construct AuthnStatement */
 
-/* Called by:  zxid_mk_user_a7n_to_sp */
+/* Called by:  zxid_mk_usr_a7n_to_sp */
 struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(zxid_conf* cf, zxid_ses* ses, struct zx_elem_s* father, const char* eid)
 {
   struct zx_str sesix;
@@ -360,19 +375,52 @@ struct zx_sa_AuthnStatement_s* zxid_mk_an_stmt(zxid_conf* cf, zxid_ses* ses, str
   return an_stmt;
 }
 
+/*() Construct SAML SAML Attribute from string */
+
+/* Called by:  zxid_add_mapped_attr, zxid_map_val_ss, zxid_mk_sa_attribute */
+struct zx_sa_Attribute_s* zxid_mk_sa_attribute_ss(zxid_conf* cf, struct zx_elem_s* father, const char* name, const char* namfmt, struct zx_str* val)
+{
+  struct zx_root_s* r;
+  struct zx_sa_Attribute_s* at = zx_NEW_sa_Attribute(cf->ctx, father);
+  if (namfmt)
+    at->NameFormat = zx_ref_attr(cf->ctx, &at->gg, zx_NameFormat_ATTR, namfmt);
+  at->Name = zx_dup_attr(cf->ctx, &at->gg, zx_Name_ATTR, name);
+  at->AttributeValue = zx_NEW_sa_AttributeValue(cf->ctx, &at->gg);
+  if (!val)
+    return at;
+
+  if (val->s[0] == '<') {
+    /* Looks like the value may be XML data. We need to pass it as XML data structure for
+     * canonicalization to work right (e.g. value is an A7N that is rendered one
+     * way when canonicalized independently, but in different way when canonicalized
+     * as part of a bigger structure - for example sa namespace may be omitted as it
+     * is already supplied by the parent element). */
+    r = zx_dec_zx_root(cf->ctx, val->len, val->s, "sa at parse");
+    if (r && r->gg.kids) {
+      at->AttributeValue->gg.kids = r->gg.kids;
+      switch (r->gg.kids->g.tok) {
+      case zx_sa_Assertion_ELEM:          at->AttributeValue->Assertion = (void*)r->gg.kids; break;
+      case zx_sa_EncryptedAssertion_ELEM: at->AttributeValue->EncryptedAssertion = (void*)r->gg.kids; break;
+      case zx_di12_ResourceOffering_ELEM: at->AttributeValue->ResourceOffering = (void*)r->gg.kids; break;
+      case zx_a_EndpointReference_ELEM:   at->AttributeValue->EndpointReference = (void*)r->gg.kids; break;
+      }
+      ZX_FREE(cf->ctx, r);
+    } else {
+      /* XML did not parse, may be its just string data, after all. */
+      zx_add_content(cf->ctx, &at->AttributeValue->gg, val);
+    }
+  } else {
+    zx_add_content(cf->ctx, &at->AttributeValue->gg, val);
+  }
+  return at;
+}
+
 /*() Construct SAML SAML Attribute */
 
-/* Called by:  zxid_add_ldif_attrs, zxid_gen_boots, zxid_mk_user_a7n_to_sp x3 */
+/* Called by:  zxid_gen_boots, zxid_mk_usr_a7n_to_sp x2 */
 struct zx_sa_Attribute_s* zxid_mk_sa_attribute(zxid_conf* cf, struct zx_elem_s* father, const char* name, const char* namfmt, const char* val)
 {
-  struct zx_sa_Attribute_s* r = zx_NEW_sa_Attribute(cf->ctx, father);
-  if (namfmt)
-    r->NameFormat = zx_ref_attr(cf->ctx, &r->gg, zx_NameFormat_ATTR, namfmt);
-  r->Name = zx_dup_attr(cf->ctx, &r->gg, zx_Name_ATTR, name);
-  r->AttributeValue = zx_NEW_sa_AttributeValue(cf->ctx, &r->gg);
-  if (val)
-    zx_add_content(cf->ctx, &r->AttributeValue->gg, zx_dup_str(cf->ctx, val));
-  return r;
+  return zxid_mk_sa_attribute_ss(cf, father, name, namfmt, val?zx_dup_str(cf->ctx, val):0);
 }
 
 /*() Construct SAML protocol Response (such as may be used to carry assertion in SSO) */
@@ -421,14 +469,30 @@ struct zx_xac_Response_s* zxid_mk_xacml_resp(zxid_conf* cf, char* decision)
 /* Called by:  zxid_pepmap_extract x3 */
 struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(zxid_conf* cf, struct zx_elem_s* father, struct zx_str* atid, struct zx_str* attype, struct zx_str* atissuer, struct zx_str* atvalue)
 {
+  struct zx_root_s* r;
   struct zx_xac_Attribute_s* at = zx_NEW_xac_Attribute(cf->ctx, father);
   at->AttributeId = zx_ref_len_attr(cf->ctx, &at->gg, zx_AttributeId_ATTR, atid->len, atid->s);
   at->DataType = zx_ref_len_attr(cf->ctx, &at->gg, zx_DataType_ATTR, attype->len, attype->s);
   if (atissuer)
     at->Issuer = zx_ref_len_attr(cf->ctx, &at->gg, zx_Issuer_ATTR, atissuer->len, atissuer->s);
-  //at->AttributeValue = zx_NEW_xac_AttributeValue(cf->ctx, &at->gg);
-  at->AttributeValue = zx_new_str_elem(cf->ctx, &at->gg, zx_xac_AttributeValue_ELEM, atvalue);
-  
+  if (atvalue->s[0] == '<') {
+    /* Looks like the value may be XML data. We need to pass it as XML data structure for
+     * canonicalization to work right (e.g. value is an A7N that is rendered one
+     * way when canonicalized independently, but in different way when canonicalized
+     * as part of a bigger structure - for example sa namespace may be omitted as it
+     * is already supplied by the parent element). */
+    r = zx_dec_zx_root(cf->ctx, atvalue->len, atvalue->s, "xac at parse");
+    if (r && r->gg.kids) {
+      at->AttributeValue = zx_new_elem(cf->ctx, &at->gg, zx_xac_AttributeValue_ELEM);
+      at->AttributeValue->kids = r->gg.kids;
+      ZX_FREE(cf->ctx, r);
+    } else {
+      /* XML did not parse, may be its just string data, after all. */
+      at->AttributeValue = zx_new_str_elem(cf->ctx, &at->gg, zx_xac_AttributeValue_ELEM, atvalue);
+    }
+  } else {
+    at->AttributeValue = zx_new_str_elem(cf->ctx, &at->gg, zx_xac_AttributeValue_ELEM, atvalue);
+  }
   zx_reverse_elem_lists(&at->gg);
   return at;
 }
@@ -458,7 +522,7 @@ struct zx_xac_Request_s* zxid_mk_xac_az(zxid_conf* cf, struct zx_elem_s* father,
 
 /*() Construct XACMLAuthzDecisionQuery */
 
-/* Called by:  zxid_az_soap */
+/* Called by:  attribute_sort_test, zxid_az_soap */
 struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
 {
   struct zx_xasp_XACMLAuthzDecisionQuery_s* r = zx_NEW_xasp_XACMLAuthzDecisionQuery(cf->ctx,0);

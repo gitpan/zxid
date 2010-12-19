@@ -1,4 +1,5 @@
 /* zxidcdc.c  -  Handwritten functions for Common Domain Cookie handling at SP
+ * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -18,6 +19,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 
 /* ============== CDC ============== */
@@ -28,7 +30,7 @@
  *
  * The SAML CDC is a standards based method for SSO IdP discovery. */
 
-/* Called by:  main x2, zxid_simple_no_ses_cf */
+/* Called by:  covimp_test, main x2, zxid_simple_no_ses_cf */
 int zxid_cdc_read(zxid_conf* cf, zxid_cgi* cgi)
 {
   char* p;
@@ -71,7 +73,7 @@ int zxid_cdc_read(zxid_conf* cf, zxid_cgi* cgi)
  *
  * The SAML CDC is a standards based method for SSO IdP discovery. */
 
-/* Called by:  main x2, zxid_simple_no_ses_cf */
+/* Called by:  covimp_test, main x2, zxid_simple_no_ses_cf */
 int zxid_cdc_check(zxid_conf* cf, zxid_cgi* cgi)
 {
   int len;

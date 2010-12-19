@@ -31,6 +31,8 @@
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
+#include "zxidpriv.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "c/zx-const.h"
@@ -56,7 +58,7 @@ int zxid_pick_sso_profile(zxid_conf* cf, zxid_cgi* cgi, zxid_entity* idp_meta)
 }
 
 /*() Map name id format form field to SAML specified URN string. */
-/* Called by:  zxid_map_identity_token, zxid_mk_authn_req */
+/* Called by:  zxid_map_identity_token, zxid_mk_authn_req, zxid_nidmap_identity_token */
 const char* zxid_saml2_map_nid_fmt(const char* f)
 {
   switch (f[0]) {
@@ -179,7 +181,7 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
     }
     ar = zxid_mk_authn_req(cf, cgi);
     ar->Destination = sso_svc->Location;
-    ars = zx_EASY_ENC_elem(cf->ctx, &ar->gg);
+    ars = zx_easy_enc_elem_opt(cf, &ar->gg);
     D("AuthnReq(%.*s)", ars->len, ars->s);
     break;
   default:
@@ -312,7 +314,7 @@ int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
     
     body = zx_NEW_e_Body(cf->ctx,0);
     body->ArtifactResolve = zxid_mk_art_deref(cf, idp_meta, cgi->saml_art);
-    r = zxid_soap_call_body(cf, &ar_svc->Location->g, body);
+    r = zxid_soap_call_hdr_body(cf, &ar_svc->Location->g, 0, body);
     len =  zxid_sp_soap_dispatch(cf, cgi, ses, r);
     D_DEDENT("deref: ");
     return len;
@@ -328,7 +330,7 @@ int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 
 /*() Map ZXSIG constant to letter for log and string message. */
 
-/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize, zxid_wsc_validate_resp_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate_env */
 void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
 {
   switch (sigres) {
@@ -645,7 +647,7 @@ int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* 
     logpath = zxlog_path(cf, issuer, &a7n->ID->g, ZXLOG_RELY_DIR, ZXLOG_A7N_KIND, 1);
     if (logpath) {
       ses->sso_a7n_path = ses->tgt_a7n_path = zx_str_to_c(cf->ctx, logpath);
-      ss = zx_EASY_ENC_elem(cf->ctx, &a7n->gg);
+      ss = zx_easy_enc_elem_sig(cf, &a7n->gg);
       if (zxlog_dup_check(cf, logpath, "SSO assertion")) {
 	if (cf->dup_a7n_fatal) {
 	  err = "C";
@@ -654,6 +656,7 @@ int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* 
 	}
       }
       zxlog_blob(cf, cf->log_rely_a7n, logpath, ss, "sp_sso_finalize");
+      zx_str_free(cf->ctx, ss);
     }
   }
   DD("Creating session... %d", 0);
@@ -691,7 +694,7 @@ erro:
 /* Called by:  zxid_sp_dig_sso_a7n */
 int zxid_sp_anon_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
-  D_INDENT("anoan_ssof: ");
+  D_INDENT("anon_ssof: ");
   cgi->sigval = "N";
   cgi->sigmsg = "Anonymous login. No signature.";
   ses->sigres = ZXSIG_NO_SIG;
@@ -789,7 +792,7 @@ int zxid_as_call_ses(zxid_conf* cf, zxid_entity* idp_meta, zxid_cgi* cgi, zxid_s
   body->SASLRequest = zx_NEW_as_SASLRequest(cf->ctx, &body->gg);
   body->SASLRequest->mechanism = zx_dup_attr(cf->ctx, &body->SASLRequest->gg, zx_mechanism_ATTR, "PLAIN");
   body->SASLRequest->Data = zx_ref_len_elem(cf->ctx, &body->SASLRequest->gg, zx_as_Data_ELEM, p-b64, b64);
-  r = zxid_soap_call_body(cf, &ar_svc->Location->g, body);
+  r = zxid_soap_call_hdr_body(cf, &ar_svc->Location->g, 0, body);
   /* *** free the body */
   
   if (!r || !r->Envelope || !r->Envelope->Body || !(res = r->Envelope->Body->SASLResponse)) {

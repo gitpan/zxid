@@ -96,15 +96,16 @@ struct zx_ctx {
 		       * See zxsig.c:zxsig_validate(). */
   struct zx_ns_s* inc_ns_len;  /* Derived from InclusiveNamespaces/@PrefixList,length computation phase, */
   struct zx_ns_s* inc_ns;  /* Encoding phase. See zxsig_validate(). */
-  /* Allow ZX_ALLOC() layer to be adapted to custome allocators, like Apache pool allocator. */
+  /* Allow ZX_ALLOC() layer to be adapted to custom allocators, like Apache pool allocator. */
   void* (*malloc_func)(size_t);
   void* (*realloc_func)(void*, size_t);
   void  (*free_func)(void*);
 #ifdef USE_PTHREAD
   pthread_mutex_t mx;
 #endif
-  char canon_inopt;
-  char pad1; char pad2; char pad3; char pad4; char pad5; char pad6; char pad7;
+  char canon_inopt;   /* Shib2 InclusiveNamespaces/@PrefixList kludge and other sundry options. */
+  char enc_tail_opt;  /* In encoding, use non-canon empty tag tail optimization, e.g. <ns:foo/> */
+  char pad2; char pad3; char pad4; char pad5; char pad6; char pad7;
 };
 
 /* We arrange all structs to start with a common header (16 bytes on 32bit platforms).
@@ -165,6 +166,7 @@ struct zx_str* zx_ref_len_str(struct zx_ctx* c, int len, const char* s);
 struct zx_str* zx_new_len_str(struct zx_ctx* c, int len);
 struct zx_str* zx_dup_len_str(struct zx_ctx* c, int len, const char* s);
 struct zx_str* zx_dup_str(struct zx_ctx* c, const char* s);  /* data is new memory */
+struct zx_str* zx_dup_zx_str(struct zx_ctx* c, struct zx_str* ss); /* data is new memory */
 struct zx_str* zx_strf(struct zx_ctx* c, const char* f, ...);  /* data is new memory */
 
 char* zx_alloc_sprintf(struct zx_ctx* c, int* retlen, const char* f, ...);
@@ -296,15 +298,12 @@ struct zx_elem_s* zx_replace_kid(struct zx_elem_s* father, struct zx_elem_s* kid
 void  zx_add_content(struct zx_ctx* c, struct zx_elem_s* x, struct zx_str* cont);
 struct zx_attr_s* zx_ord_ins_at(struct zx_elem_s* x, struct zx_attr_s* in_at);
 void  zx_reverse_elem_lists(struct zx_elem_s* x);
-int   zx_check_elem_order(struct zx_elem_s* x);
 int   zx_len_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
 void  zx_add_xmlns_if_not_seen(struct zx_ctx* c, struct zx_ns_s* ns, struct zx_ns_s** pop_seen);
 char* zx_enc_seen(char* p, struct zx_ns_s* ns);
-void  zx_see_attr_ns(struct zx_ctx* c, struct zx_attr_s* aa, struct zx_ns_s** pop_seenp);
 int   zx_LEN_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x);
 char* zx_ENC_WO_any_elem(struct zx_ctx* c, struct zx_elem_s* x, char* p);
 struct zx_str* zx_EASY_ENC_elem(struct zx_ctx* c, struct zx_elem_s* x);
-char* zx_attr_wo_enc(char* p, struct zx_attr_s* attr);
 void  zx_free_attr(struct zx_ctx* c, struct zx_attr_s* attr, int free_strs);
 void  zx_free_elem(struct zx_ctx* c, struct zx_elem_s* x, int free_strs);
 
@@ -324,8 +323,6 @@ void  zx_xml_parse_err(struct zx_ctx* c, char quote, const char* func, const cha
 void  zx_xml_parse_dbg(struct zx_ctx* c, char quote, const char* func, const char* msg);
 struct zx_ns_s* zx_xmlns_detected(struct zx_ctx* c, struct zx_elem_s* x, const char* data);
 
-int   zx_len_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);
-void  zx_add_inc_ns(struct zx_ctx* c, struct zx_ns_s** pop_seenp);
 int   zx_in_inc_ns(struct zx_ctx* c, struct zx_ns_s* new_ns);
 
 void  zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, const char* start, const char* lim);

@@ -18,6 +18,7 @@
 
 #include "errmac.h"
 #include "zxid.h"
+#include "zxidpriv.h"
 #include "zxidconf.h"
 #include "saml2.h"
 #include "wsf.h"
@@ -112,7 +113,7 @@ int zxid_map_sec_mech(zxid_epr* epr)
  * of all apparently signed message parts.
  * See also: zxid_add_header_refs() and zxsig_sign() or zxid_chk_sig() + zxsig_validate() */
 
-/* Called by:  wsse_sec_validate, zxid_wsc_validate_resp_env, zxid_wsp_validate */
+/* Called by:  wsse_sec_validate, zxid_wsc_valid_re_env, zxid_wsp_validate_env */
 int zxid_hunt_sig_parts(zxid_conf* cf, int n_refs, struct zxsig_ref* refs, struct zx_ds_Reference_s* sref, struct zx_e_Header_s* hdr, struct zx_e_Body_s* bdy)
 {
   for (; sref && sref->gg.g.tok == zx_ds_Reference_ELEM
@@ -357,13 +358,13 @@ int zxid_hunt_sig_parts(zxid_conf* cf, int n_refs, struct zxsig_ref* refs, struc
 #define ZXID_ADD_WSU_ID(H,idval) MB if (!H->Id) \
   H->Id = zx_ord_ins_at(&H->gg, zx_ref_attr(cf->ctx, 0, zx_wsu_Id_ATTR, idval)); \
   refs[n_refs].id = &H->Id->g; \
-  refs[n_refs].canon = zx_EASY_ENC_elem(cf->ctx, &H->gg); \
+  refs[n_refs].canon = zx_easy_enc_elem_sig(cf, &H->gg); \
   ++n_refs; ME
 
 #define ZXID_ADD_ID(H,idval) MB if (!H->id) \
   H->id = zx_ord_ins_at(&H->gg, zx_ref_attr(cf->ctx, 0, zx_id_ATTR, idval)); \
   refs[n_refs].id = &H->id->g; \
-  refs[n_refs].canon = zx_EASY_ENC_elem(cf->ctx, &H->gg); \
+  refs[n_refs].canon = zx_easy_enc_elem_sig(cf, &H->gg); \
   ++n_refs; ME
 
 
@@ -454,7 +455,7 @@ int zxid_add_header_refs(zxid_conf* cf, int n_refs, struct zxsig_ref* refs, stru
 void zxid_wsf_sign(zxid_conf* cf, int sign_flags, struct zx_wsse_Security_s* sec, struct zx_wsse_SecurityTokenReference_s* str, struct zx_e_Header_s* hdr, struct zx_e_Body_s* bdy)
 {
   X509* sign_cert;
-  RSA*  sign_pkey;
+  EVP_PKEY* sign_pkey;
   int n_refs;
   struct zxsig_ref refs[ZXID_N_WSF_SIGNED_HEADERS];
       
@@ -483,7 +484,7 @@ void zxid_wsf_sign(zxid_conf* cf, int sign_flags, struct zx_wsse_Security_s* sec
  * The validity is controlled by configuration parameters BEFORE_SLOP and AFTER_SLOP.
  * returns 1 on success, 0 on failure. */
 
-/* Called by:  zxid_wsc_valid_re_env, zxid_wsp_validate */
+/* Called by:  zxid_wsc_valid_re_env, zxid_wsp_validate_env */
 int zxid_timestamp_chk(zxid_conf* cf, zxid_ses* ses, struct zx_wsu_Timestamp_s* ts, struct timeval* ourts, struct timeval* srcts, const char* ctlpt, const char* faultactor)
 {
   if (ts && ZX_SIMPLE_ELEM_CHK(ts->Created)) {
@@ -521,7 +522,7 @@ int zxid_timestamp_chk(zxid_conf* cf, zxid_ses* ses, struct zx_wsu_Timestamp_s* 
  * The ud argument typically comes from cf->wsc_localpdp_obl_pledge
  * or cf->wsp_localpdp_obl_emit */
 
-/* Called by:  zxid_wsc_prep, zxid_wsp_decorate */
+/* Called by:  zxid_wsc_prep, zxid_wsf_decor */
 void zxid_attach_sol1_usage_directive(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, const char* attrid, const char* obl)
 {
   struct zx_b_UsageDirective_s* ud;
@@ -541,7 +542,7 @@ void zxid_attach_sol1_usage_directive(zxid_conf* cf, zxid_ses* ses, struct zx_e_
     return;
 
   env->Header->UsageDirective = ud = zx_NEW_b_UsageDirective(cf->ctx, &env->Header->gg);
-  ud->mustUnderstand = zx_ref_attr(cf->ctx, &ud->gg, zx_e_mustUnderstand_ATTR, ZXID_TRUE);
+  ud->mustUnderstand = zx_ref_attr(cf->ctx, &ud->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   ud->actor = zx_ref_attr(cf->ctx, &ud->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
   ud->Obligation = zx_NEW_xa_Obligation(cf->ctx, &ud->gg);
   ud->Obligation->ObligationId = zx_ref_attr(cf->ctx, &ud->Obligation->gg, zx_ObligationId_ATTR, TAS3_SOL1_ENGINE);

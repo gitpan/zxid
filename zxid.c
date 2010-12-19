@@ -36,17 +36,19 @@
 #include <curl/curl.h>
 #endif
 
-#include "errmac.h"
-#include "zx.h"
-#include "zxid.h"
-#include "zxidconf.h"
-#include "c/zxidvers.h"
-#include "c/zx-ns.h"
-#include "c/zx-md-data.h"
+#include <zx/errmac.h>
+#include <zx/zx.h>
+#include <zx/zxid.h>
+#include <zx/zxidpriv.h>
+#include <zx/zxidutil.h>
+#include <zx/zxidconf.h>
+#include <zx/c/zxidvers.h>
+#include <zx/c/zx-ns.h>
+#include <zx/c/zx-md-data.h>
 
 char* help =
 "zxid  -  SAML 2.0 SP CGI - R" ZXID_REL "\n\
-SAML 2.0 is a standard for federated idenity and Sinlg Sign-On.\n\
+SAML 2.0 is a standard for federated identity and Single Sign-On.\n\
 Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\

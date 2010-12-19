@@ -25,6 +25,8 @@
 
 #include <zx/errmac.h>
 #include <zx/zxid.h>      /* ZXID main API, including zxid_simple(). */
+#include <zx/zxidpriv.h>
+#include <zx/zxidutil.h>
 #include <zx/zxidconf.h>  /* Default and compile-time configuration options. */
 #include <zx/wsf.h>
 #include <zx/c/zxidvers.h>
@@ -33,7 +35,8 @@
 
 char* help =
 "zxidhrxmlwsc  -  SAML 2.0 SP + WSC CGI - R" ZXID_REL "\n\
-SAML 2.0 is a standard for federated idenity and Sinlg Sign-On.\n\
+SAML 2.0 is a standard for federated identity and Single Sign-On.\n\
+Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.\n\
 Author: Sampo Kellomaki (sampo@iki.fi)\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
@@ -305,7 +308,7 @@ int main(int argc, char** argv)
 	ERR("There was no candidate %p", env->Body);
 	break;
       }
-      ss = zx_EASY_ENC_elem(cf->ctx, &env->Body->idhrxml_QueryResponse->Data->Candidate->gg);
+      ss = zx_easy_enc_elem_opt(cf, &env->Body->idhrxml_QueryResponse->Data->Candidate->gg);
       hrxml_resp = ss->s;
     } else {
       hrxml_resp = "Query Failed.";

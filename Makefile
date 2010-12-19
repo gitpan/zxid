@@ -40,8 +40,8 @@ all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxidwspcg
 
 ### This is the authorative spot to set version number. Document in Changes file.
 ### c/zxidvers.h is generated from these, see `make updatevers'
-ZXIDVERSION=0x000072
-ZXIDREL=0.72
+ZXIDVERSION=0x000073
+ZXIDREL=0.73
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -341,6 +341,10 @@ else
 # Flags for Linux 2.6 native compile (gcc + gnu binutils)
 CDEF+=-DLINUX
 
+ifeq ($(DISTRO),fedora)
+CDEF+=-DFEDORA
+endif
+
 endif
 endif
 endif
@@ -364,7 +368,7 @@ ZXIDHDRS=zx.h zxid.h zxidnoswig.h c/zxidvers.h
 
 ZXID_LIB_OBJ=zxidsimp.$(OBJ_EXT) zxidpool.$(OBJ_EXT) zxidpsso.$(OBJ_EXT) zxidsso.$(OBJ_EXT) zxidslo.$(OBJ_EXT) zxiddec.$(OBJ_EXT) zxidspx.$(OBJ_EXT) zxididpx.$(OBJ_EXT) zxidmni.$(OBJ_EXT) zxidpep.$(OBJ_EXT) zxidpdp.$(OBJ_EXT) zxidmk.$(OBJ_EXT) zxida7n.$(OBJ_EXT) zxidses.$(OBJ_EXT) zxiduser.$(OBJ_EXT) zxidcgi.$(OBJ_EXT) zxidconf.$(OBJ_EXT) zxidecp.$(OBJ_EXT) zxidcdc.$(OBJ_EXT) zxidloc.$(OBJ_EXT) zxidlib.$(OBJ_EXT) zxidmeta.$(OBJ_EXT) zxidcurl.$(OBJ_EXT) zxidepr.$(OBJ_EXT) zxida7n.$(OBJ_EXT) ykcrc.$(OBJ_EXT) ykaes.$(OBJ_EXT) $(PLATFORM_OBJ)
 
-ZX_OBJ=c/zx-ns.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT) c/zx-elems.$(OBJ_EXT) zxlibdec.$(OBJ_EXT) zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) c/license.$(OBJ_EXT)
+ZX_OBJ=c/zx-ns.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT) c/zx-elems.$(OBJ_EXT) zxlibdec.$(OBJ_EXT) zxlibenc.$(OBJ_EXT) zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) c/license.$(OBJ_EXT)
 
 WSF_OBJ=zxidmkwsf.$(OBJ_EXT) zxidwsf.$(OBJ_EXT) zxidwsc.$(OBJ_EXT) zxidwsp.$(OBJ_EXT) zxiddi.$(OBJ_EXT) zxidim.$(OBJ_EXT) zxidps.$(OBJ_EXT)
 
@@ -1039,8 +1043,8 @@ zxidjava/zxid_wrap.c: $(ZX_GEN_H) zxid.h javazxid.i
 	mv zxidjava/SWIGTYPE_p_zxid_ses.java zxidjava/zxid_ses.java
 	$(PERL) -pi -e 's/SWIGTYPE_p_zxid_cgi/zxid_cgi/g' zxidjava/*.java
 	mv zxidjava/SWIGTYPE_p_zxid_cgi.java zxidjava/zxid_cgi.java
-	$(PERL) -pi -e 's/SWIGTYPE_p_zxid_entity/zxid_entity/g' zxidjava/*.java
-	mv zxidjava/SWIGTYPE_p_zxid_entity.java zxidjava/zxid_entity.java
+	$(PERL) -pi -e 's/SWIGTYPE_p_zxid_entity_s/zxid_entity/g' zxidjava/*.java
+	mv zxidjava/SWIGTYPE_p_zxid_entity_s.java zxidjava/zxid_entity.java
 	$(PERL) -pi -e 's/SWIGTYPE_p_zx_sa_Assertion_s/zxid_a7n/g' zxidjava/*.java
 	mv zxidjava/SWIGTYPE_p_zx_sa_Assertion_s.java zxidjava/zxid_a7n.java
 	$(PERL) -pi -e 's/SWIGTYPE_p_zx_sa_NameID_s/zxid_nid/g' zxidjava/*.java
@@ -1473,7 +1477,7 @@ t/wspcot:
 t/wsp2cot:
 	sh ./zxmkdirs.sh t/wsp2
 
-test: t/cot t/idp t/wsp t/wsp2 zxencdectest zxcall zxididp
+test: t/cot t/idpcot t/wsp t/wsp2 zxencdectest zxcall zxididp
 	$(PERL) zxtest.pl -a
 
 #test: test.$(OBJ_EXT)
@@ -1564,7 +1568,8 @@ install: zxid $(LIBZXID_A) libzxid.so.0.0 dir
 tags:
 	etags *.[hc] c/*.[hc]
 
-SSL=/aino/openssl-0.9.8g
+#SSL=/aino/openssl-0.9.8g
+SSL=/aino/openssl-1.0.0c
 BB=/aino/busybox-1.11.1
 #DS=~/ds
 #DS=/d/sampo/ds4/ds

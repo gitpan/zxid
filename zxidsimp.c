@@ -37,6 +37,8 @@
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
+#include "zxidpriv.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "c/zxidvers.h"
 #include "c/zx-md-data.h"
@@ -341,6 +343,7 @@ struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* t
     break;
   }
   *pp = 0;
+  ss->len = pp - ss->s;
   return ss;
 }
 
@@ -389,7 +392,9 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
     
     mark[0] = 0;
     if (cgi) {    /* Was IdP recommended in IdP list supplied via CDC? See zxid_cdc_check() */
-      for (idp_cdc = cgi->idp_list, i=1; idp_cdc && idp_cdc != idp; idp_cdc = idp_cdc->n_cdc, ++i);
+      for (idp_cdc = cgi->idp_list, i=1;
+	   idp_cdc && idp_cdc != idp;
+	   idp_cdc = idp_cdc->n_cdc, ++i);
       if (cf->cdc_choice == ZXID_CDC_CHOICE_UI_ONLY_CDC && cgi->idp_list && !idp_cdc)
 	continue;
       if (idp_cdc) {
@@ -1363,21 +1368,23 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
   if (!cf->ipport) {
     remote_addr = getenv("REMOTE_ADDR");
     if (remote_addr) {
-      cf->ipport = ZX_ALLOC(cf->ctx, strlen(remote_addr) + 6 + 1); /* :12345 */
-      sprintf(cf->ipport, "%s:-", remote_addr);
+      ses->ipport = ZX_ALLOC(cf->ctx, strlen(remote_addr) + 6 + 1); /* :12345 */
+      sprintf(ses->ipport, "%s:-", remote_addr);
+      cf->ipport = ses->ipport;
     }
   }
   UNLOCK(cf->mx, "simple ipport");
   
   if (!qs) {
     qs = getenv("QUERY_STRING");
-    D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
     if (qs) {
+      D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
       zxid_parse_cgi(&cgi, qs);
       if (ONE_OF_3(cgi.op, 'P', 'R', 'S')) {
 	cont_len = getenv("CONTENT_LENGTH");
 	if (cont_len) {
 	  sscanf(cont_len, "%d", &got);
+	  D("o=%c cont_len=%s got=%d rel=%s", cgi.op, cont_len, got, ZXID_REL);
 	  buf = ZX_ALLOC(cf->ctx, got);
 	  if (!buf) {
 	    ERR("out of memory len=%d", got);
@@ -1418,7 +1425,11 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
 	    }
 	    zxid_parse_cgi(&cgi, buf);
 	  }
+	} else {
+	  D("o=%c post, but no CONTENT_LENGTH rel=%s", cgi.op, ZXID_REL);
 	}
+      } else {
+	D("o=%c other rel=%s", cgi.op, ZXID_REL);
       }
     }
   } else {

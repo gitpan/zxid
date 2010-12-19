@@ -43,6 +43,7 @@
 #include "errmac.h"
 #include "saml2.h"
 #include "zxid.h"
+#include "zxidutil.h"
 #include "zxidconf.h"
 #include "c/zx-const.h"
 #include "c/zx-ns.h"
@@ -189,7 +190,7 @@ int zxid_write_ent_to_cache(zxid_conf* cf, zxid_entity* ent)
     return 0;
   }
   
-  ss = zx_EASY_ENC_elem(cf->ctx, &ent->ed->gg);
+  ss = zx_easy_enc_elem_opt(cf, &ent->ed->gg);
   if (!ss)
     return 0;
   write_all_fd(fd, ss->s, ss->len);
@@ -317,7 +318,7 @@ zxid_entity* zxid_get_ent_cache(zxid_conf* cf, struct zx_str* eid)
  * eid:: Entity ID whose metadata is desired
  * return:: Entity data structure, including the metadata */
 
-/* Called by:  zxid_add_fed_tok2epr, zxid_chk_sig, zxid_decode_redir_or_post, zxid_get_ent, zxid_get_ses_idp, zxid_idp_dispatch, zxid_idp_sso, zxid_imreq, zxid_simple_idp_show_an, zxid_slo_resp_redir, zxid_sp_dispatch, zxid_sp_sso_finalize, zxid_ssos_anreq, zxid_wsc_validate_resp_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  a7n_test, x509_test, zxid_add_fed_tok2epr, zxid_chk_sig, zxid_decode_redir_or_post, zxid_get_ent, zxid_get_ses_idp, zxid_idp_dispatch, zxid_idp_sso, zxid_imreq, zxid_simple_idp_show_an, zxid_slo_resp_redir, zxid_sp_dispatch, zxid_sp_sso_finalize, zxid_ssos_anreq, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate_env */
 zxid_entity* zxid_get_ent_ss(zxid_conf* cf, struct zx_str* eid)
 {
   zxid_entity* old_cot;
@@ -840,16 +841,16 @@ struct zx_str* zxid_sp_meta(zxid_conf* cf, zxid_cgi* cgi)
   
   ed = zx_NEW_md_EntityDescriptor(cf->ctx,0);
   ed->entityID = zxid_my_ent_id_attr(cf, &ed->gg, zx_entityID_ATTR);
-  ed->SPSSODescriptor = zxid_sp_sso_desc(cf, &ed->gg);
   if (cf->idp_ena)
     ed->IDPSSODescriptor = zxid_idp_sso_desc(cf, &ed->gg);
+  ed->SPSSODescriptor = zxid_sp_sso_desc(cf, &ed->gg);
   ed->Organization = zxid_org_desc(cf, &ed->gg);
   ed->ContactPerson = zxid_contact_desc(cf, &ed->gg);
   zx_reverse_elem_lists(&ed->gg);
   
   if (cf->log_level>0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "MYMD", 0, 0);
-  return zx_EASY_ENC_elem(cf->ctx, &ed->gg);
+  return zx_easy_enc_elem_opt(cf, &ed->gg);
 }
 
 /*() Generate our SP metadata and send it to remote partner.

@@ -38,7 +38,7 @@
  *
  * See also: zxid_mk_fault() */
 
-/* Called by:  zxid_di_query x2, zxid_idp_as_do x3, zxid_idp_map_nid2uid x2, zxid_imreq x6, zxid_mk_fault, zxid_mk_lu_Status, zxid_mk_tas3_status, zxid_ps_addent_invite x2, zxid_ps_resolv_id */
+/* Called by:  zxid_di_query x2, zxid_idp_as_do x3, zxid_idp_map_nid2uid, zxid_imreq x6, zxid_mk_fault, zxid_mk_lu_Status, zxid_mk_tas3_status, zxid_ps_addent_invite x2, zxid_ps_resolv_id */
 struct zx_lu_Status_s* zxid_mk_lu_Status(zxid_conf* cf, struct zx_elem_s* father, const char* sc1, const char* sc2, const char* msg, const char* ref)
 {
   struct zx_lu_Status_s* st = zx_NEW_lu_Status(cf->ctx,father);
@@ -85,7 +85,7 @@ zxid_tas3_status* zxid_mk_tas3_status(zxid_conf* cf, struct zx_elem_s* father, c
  * See also: zxid_mk_lu_Status()
  */
 
-/* Called by:  zxid_call_epr x2, zxid_wsc_prepare_call x2, zxid_wsc_validate_resp_env x13, zxid_wsf_timestamp_check x2, zxid_wsf_validate_a7n x5, zxid_wsp_decorate x2, zxid_wsp_validate x14 */
+/* Called by:  zxid_call_epr x2, zxid_timestamp_chk x2, zxid_wsc_prepare_call x2, zxid_wsc_valid_re_env x13, zxid_wsf_validate_a7n x6, zxid_wsp_decorate x2, zxid_wsp_validate x2, zxid_wsp_validate_env x12 */
 zxid_fault* zxid_mk_fault(zxid_conf* cf, struct zx_elem_s* father, const char* fa, const char* fc, const char* fs, const char* sc1, const char* sc2, const char* msg, const char* ref)
 {
   zxid_fault* flt = zx_NEW_e_Fault(cf->ctx, father);
@@ -105,7 +105,7 @@ zxid_fault* zxid_mk_fault(zxid_conf* cf, struct zx_elem_s* father, const char* f
  * you wish to return application response in situation where fault has been
  * detected, you can use this function to reset the current fault to null. */
 
-/* Called by:  zxid_call_epr x2, zxid_wsc_prepare_call x2, zxid_wsc_validate_resp_env x14, zxid_wsf_timestamp_check x2, zxid_wsf_validate_a7n x5, zxid_wsp_decorate x2, zxid_wsp_validate x15 */
+/* Called by:  zxid_call_epr x2, zxid_timestamp_chk x2, zxid_wsc_prepare_call x2, zxid_wsc_valid_re_env x14, zxid_wsf_validate_a7n x6, zxid_wsp_decorate x2, zxid_wsp_validate x2, zxid_wsp_validate_env x13 */
 void zxid_set_fault(zxid_conf* cf, zxid_ses* ses, zxid_fault* flt) {
   if (ses->curflt) /* Free the previous fault */
     zx_free_elem(cf->ctx, &ses->curflt->gg, 1);
@@ -169,7 +169,7 @@ zxid_tas3_status* zxid_get_fault_status(zxid_conf* cf, zxid_fault* flt) {
  * the zxid_wsp_decorate() function will generate a TAS3 status
  * header. */
 
-/* Called by:  zxid_wsc_validate_resp_env, zxid_wsp_validate */
+/* Called by:  zxid_wsc_valid_re_env, zxid_wsp_validate_env */
 void zxid_set_tas3_status(zxid_conf* cf, zxid_ses* ses, zxid_tas3_status* status) {
   D("curstatus=%p status=%p", ses->curstatus, status);
   if (ses->curstatus) /* Free the previous fault */
@@ -281,7 +281,7 @@ struct zx_dap_Select_s* zxid_mk_dap_select(zxid_conf* cf, struct zx_elem_s* fath
   if (scope)        sel->scope = zx_attrf(cf->ctx, &sel->gg, zx_scope_ATTR, "%d", scope);
   if (sizelimit)    sel->sizelimit = zx_attrf(cf->ctx, &sel->gg, zx_sizelimit_ATTR, "%d", sizelimit);
   if (timelimit)    sel->timelimit = zx_attrf(cf->ctx, &sel->gg, zx_timelimit_ATTR, "%d", timelimit);
-  if (typesonly)    sel->typesonly = zx_ref_attr(cf->ctx, &sel->gg, zx_typesonly_ATTR, ZXID_TRUE);
+  if (typesonly)    sel->typesonly = zx_ref_attr(cf->ctx, &sel->gg, zx_typesonly_ATTR, XML_TRUE);
   return sel;
 }
 
@@ -310,7 +310,7 @@ struct zx_dap_QueryItem_s* zxid_mk_dap_query_item(zxid_conf* cf, struct zx_elem_
   }
 #endif
 
-  if (incl_common_attr) qi->includeCommonAttributes = zx_ref_attr(cf->ctx, &qi->gg, zx_includeCommonAttributes_ATTR, ZXID_TRUE);
+  if (incl_common_attr) qi->includeCommonAttributes = zx_ref_attr(cf->ctx, &qi->gg, zx_includeCommonAttributes_ATTR, XML_TRUE);
   if (offset)           qi->offset = zx_attrf(cf->ctx, &qi->gg, zx_offset_ATTR, "%d", offset);
   if (count)            qi->count  = zx_attrf(cf->ctx, &qi->gg, zx_count_ATTR,  "%d", count);
   
@@ -321,7 +321,7 @@ struct zx_dap_QueryItem_s* zxid_mk_dap_query_item(zxid_conf* cf, struct zx_elem_
   
   if (contingent_itemidref) {
     qi->itemIDRef = zx_ref_attr(cf->ctx, &qi->gg, zx_itemIDRef_ATTR, contingent_itemidref);
-    qi->contingency = zx_ref_attr(cf->ctx, &qi->gg, zx_contingency_ATTR, ZXID_TRUE);
+    qi->contingency = zx_ref_attr(cf->ctx, &qi->gg, zx_contingency_ATTR, XML_TRUE);
   }
   return qi;
 }
@@ -341,7 +341,7 @@ struct zx_dap_TestOp_s* zxid_mk_dap_testop(zxid_conf* cf, struct zx_elem_s* fath
   if (scope)        sel->scope = zx_attrf(cf->ctx, &sel->gg, zx_scope_ATTR, "%d", scope);
   if (sizelimit)    sel->sizelimit = zx_attrf(cf->ctx, &sel->gg, zx_sizelimit_ATTR, "%d", sizelimit);
   if (timelimit)    sel->timelimit = zx_attrf(cf->ctx, &sel->gg, zx_timelimit_ATTR, "%d", timelimit);
-  if (typesonly)    sel->typesonly = zx_ref_attr(cf->ctx, &sel->gg, zx_typesonly_ATTR, ZXID_TRUE);
+  if (typesonly)    sel->typesonly = zx_ref_attr(cf->ctx, &sel->gg, zx_typesonly_ATTR, XML_TRUE);
   return sel;
 }
 
@@ -386,13 +386,13 @@ struct zx_dap_ResultQuery_s* zxid_mk_dap_resquery(zxid_conf* cf, struct zx_elem_
 #endif
   
   if (incl_common_attr)
-    qi->includeCommonAttributes = zx_ref_attr(cf->ctx, &qi->gg, zx_includeCommonAttributes_ATTR, ZXID_TRUE);
+    qi->includeCommonAttributes = zx_ref_attr(cf->ctx, &qi->gg, zx_includeCommonAttributes_ATTR, XML_TRUE);
   
   qi->itemID = zxid_mk_id_attr(cf, &qi->gg, zx_itemID_ATTR, "qi", ZXID_ID_BITS);
   
   if (contingent_itemidref) {
     qi->itemIDRef = zx_ref_attr(cf->ctx, &qi->gg, zx_itemIDRef_ATTR, contingent_itemidref);
-    qi->contingency = zx_ref_attr(cf->ctx, &qi->gg, zx_contingency_ATTR, ZXID_TRUE);
+    qi->contingency = zx_ref_attr(cf->ctx, &qi->gg, zx_contingency_ATTR, XML_TRUE);
   }
   return qi;
 }
@@ -414,7 +414,7 @@ struct zx_dap_Subscription_s* zxid_mk_dap_subscription(zxid_conf* cf, struct zx_
   if (trig)    subs->Trigger = zx_ref_elem(cf->ctx, &subs->gg, zx_dap_Trigger_ELEM, trig);
   if (starts)  subs->starts = zx_ref_attr(cf->ctx, &subs->gg, zx_starts_ATTR, starts);
   if (expires) subs->expires = zx_ref_attr(cf->ctx, &subs->gg, zx_expires_ATTR, expires);
-  if (incl_data)   subs->includeData = zx_ref_attr(cf->ctx, &subs->gg, zx_includeData_ATTR, ZXID_TRUE);
+  if (incl_data)   subs->includeData = zx_ref_attr(cf->ctx, &subs->gg, zx_includeData_ATTR, XML_TRUE);
   if (admin_notif) subs->adminNotifyToRef = zx_ref_attr(cf->ctx, &subs->gg, zx_adminNotifyToRef_ATTR, admin_notif);
   if (notify_ref)  subs->notifyToRef = zx_ref_attr(cf->ctx, &subs->gg, zx_notifyToRef_ATTR, notify_ref);
   subs->subscriptionID = zxid_mk_id_attr(cf, &subs->gg, zx_subscriptionID_ATTR, "subs", ZXID_ID_BITS);;
