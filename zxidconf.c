@@ -1,5 +1,5 @@
 /* zxidconf.c  -  Handwritten functions for parsing ZXID configuration file
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -757,6 +757,8 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->imps_ena          = ZXID_IMPS_ENA;
   cf->as_ena            = ZXID_AS_ENA;
   cf->pdp_ena           = ZXID_PDP_ENA;
+  cf->cpn_ena           = ZXID_CPN_ENA;
+  cf->az_opt            = ZXID_AZ_OPT;
 
   cf->loguser = ZXID_LOGUSER;
   cf->log_level = ZXLOG_LEVEL;
@@ -793,6 +795,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->pdp_url        = ZXID_PDP_URL;
   cf->pdp_call_url   = ZXID_PDP_CALL_URL;
   cf->xasp_vers      = ZXID_XASP_VERS;
+  cf->trustpdp_url   = ZXID_TRUSTPDP_URL;
 
   cf->need           = zxid_load_need(cf, 0, ZXID_NEED);
   cf->want           = zxid_load_need(cf, 0, ZXID_WANT);
@@ -873,6 +876,18 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   return 0;
 }
 
+/*() Reset the doubly linked seen list and unknown_ns list to empty.
+ * This is "light" version of zx_reset_ctx() that can be called
+ * safely from inside lock. */
+
+/* Called by:  dirconf, main x3, zx_init_ctx, zxid_az, zxid_az_base, zxid_simple_len */
+void zx_reset_ns_ctx(struct zx_ctx* ctx)
+{
+  ctx->guard_seen_n.seen_n = &ctx->guard_seen_p;
+  ctx->guard_seen_p.seen_p = &ctx->guard_seen_n;
+  ctx->unknown_ns = 0;
+}
+
 /*() Reset the seen doubly linked list to empty and initialize memory
  * allocation related function pointers to system malloc(3). Without
  * such initialization, any meomory allocation activity as well as
@@ -883,11 +898,10 @@ void zx_reset_ctx(struct zx_ctx* ctx)
 {
   ZERO(ctx, sizeof(struct zx_ctx));
   LOCK_INIT(ctx->mx);
-  ctx->guard_seen_n.seen_n = &ctx->guard_seen_p;
-  ctx->guard_seen_p.seen_p = &ctx->guard_seen_n;
   ctx->malloc_func = &malloc;
   ctx->realloc_func = &realloc;
   ctx->free_func = &free;
+  zx_reset_ns_ctx(ctx);
 }
 
 /*() Allocate new ZX object and initialize it in standard
@@ -1036,6 +1050,7 @@ scan_end:
       if (!strcmp(n, "ATTRSRC"))     { cf->attrsrc = zxid_load_atsrc(cf, cf->attrsrc, v); break; }
       if (!strcmp(n, "A7NTTL"))          { SCAN_INT(v, cf->a7nttl); break; }
       if (!strcmp(n, "AS_ENA"))          { SCAN_INT(v, cf->as_ena); break; }
+      if (!strcmp(n, "AZ_OPT"))          { SCAN_INT(v, cf->az_opt); break; }
       goto badcf;
     case 'B':  /* BEFORE_SLOP */
       if (!strcmp(n, "BEFORE_SLOP"))       { SCAN_INT(v, cf->before_slop); break; }
@@ -1051,6 +1066,7 @@ scan_end:
       if (!strcmp(n, "CONTACT_TEL"))     { cf->contact_tel = v; break; }
       if (!strcmp(n, "COUNTRY"))         { cf->country = v; break; }
       if (!strcmp(n, "CANON_INOPT"))     { SCAN_INT(v, cf->canon_inopt); if (cf->ctx) cf->ctx->canon_inopt = cf->canon_inopt; break; }
+      if (!strcmp(n, "CPN_ENA"))         { SCAN_INT(v, cf->cpn_ena); break; }
       goto badcf;
     case 'D':  /* DUP_A7N_FATAL, DUP_MSG_FATAL */
       if (!strcmp(n, "DEFAULTQS"))       { cf->defaultqs = v; break; }
@@ -1212,6 +1228,7 @@ scan_end:
     case 'T':  /* TIMEOUT_FATAL */
       if (!strcmp(n, "TIMEOUT_FATAL"))  { SCAN_INT(v, cf->timeout_fatal); break; }
       if (!strcmp(n, "TIMESKEW"))       { SCAN_INT(v, cf->timeskew); break; }
+      if (!strcmp(n, "TRUSTPDP_URL"))   { cf->trustpdp_url = v; break; }
       goto badcf;
     case 'U':  /* URL, USER_LOCAL */
       if (!strcmp(n, "URL"))            { cf->url = v; cf->fedusername_suffix = zxid_grab_domain_name(cf, cf->url); break; }
@@ -1462,6 +1479,8 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "IMPS_ENA=%d\n"
 "AS_ENA=%d\n"
 "PDP_ENA=%d\n"
+"CPN_ENA=%d\n"
+"AZ_OPT=%d\n"
 "#ZXID_MAX_BUF=%d (compile)\n"
 
 "LOG_ERR=%d\n"
@@ -1502,6 +1521,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "PDP_URL=%s\n"
 "PDP_CALL_URL=%s\n"
 "XASP_VERS=%s\n"
+"TRUSTPDP_URL=%s\n"
 "MOD_SAML_ATTR_PREFIX=%s\n"
 "BARE_URL_ENTITYID=%d\n"
 "SHOW_TECH=%d\n"
@@ -1640,6 +1660,8 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 cf->imps_ena,
 		 cf->as_ena,
 		 cf->pdp_ena,
+		 cf->cpn_ena,
+		 cf->az_opt,
 		 ZXID_MAX_BUF,
 
 		 cf->log_err,
@@ -1680,6 +1702,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 STRNULLCHK(cf->pdp_url),
 		 STRNULLCHK(cf->pdp_call_url),
 		 STRNULLCHK(cf->xasp_vers),
+		 STRNULLCHK(cf->trustpdp_url),
 		 STRNULLCHK(cf->mod_saml_attr_prefix),
 		 cf->bare_url_entityid,
 		 cf->show_tech,

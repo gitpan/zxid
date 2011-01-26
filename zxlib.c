@@ -1,5 +1,5 @@
 /* zxlib.c  -  Utility functions for generated (and other) code
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -18,6 +18,9 @@
  * 27.10.2010, re-engineered namespace handling --Sampo
  */
 
+#ifdef MINGW
+#include <windows.h>
+#endif
 #include "platform.h"  /* needed on Win32 for snprintf(), va_copy() et al. */
 
 //#include <pthread.h>
@@ -29,6 +32,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #include "errmac.h"
 #include "zx.h"
@@ -47,9 +51,45 @@ char* zx_memmem(const char* haystack, int haystack_len, const char* needle, int 
   return 0;
 }
 
+#ifdef MINGW
+/*() On windows the errno is not set. */
+HANDLE zx_CreateFile(LPCTSTR lpFileName, 
+		     DWORD dwDesiredAccess, DWORD dwShareMode, 
+		     LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, 
+		     DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) 
+{
+  D("CreateFile(%s)", lpFileName);
+  HANDLE res = CreateFile(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes,
+			  dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+  errno = GetLastError();
+  return res;
+}
+#endif
+
+#ifdef MINGW
+#ifdef stat
+#undef stat 
+#endif
+#endif
+
+/*() ZX implmentation of stat for mingw which is dumb */
+int zx_stat( const char *path, struct stat *buffer )
+{
+    int rv = 0;
+    char *p = (char*)malloc( strlen( path ) + 1 );
+    strcpy( p, path );
+
+    if( p[ strlen(p) - 1 ] == '/' )
+        p[ strlen(p) - 1 ] = '\0';
+
+    rv = stat( p, buffer );
+    free( p );
+    return rv;
+}
+
 /*() ZX memory allocator that does not zero the buffer. Allocation is
  * potentially done relative to ZX context <<italic: c>>, though
- * actual (2008) implementation simply uses malloc(3).
+ * actual (2008) implementation simply uses malloc(3). See also zx_reset_ctx().
  *
  * Rather than reference this function directly, you should
  * use the ZX_ALLOC() macro as much as possible.
@@ -61,7 +101,7 @@ char* zx_memmem(const char* haystack, int haystack_len, const char* needle, int 
 void* zx_alloc(struct zx_ctx* c, int size)
 {
   char* p;
-  p = malloc(size);
+  p = c->malloc_func?c->malloc_func(size):malloc(size);
   DD("malloc %p size=%d", p, size);
   if (!p) {
     ERR("Out-of-memory(%d)", size);
@@ -98,7 +138,11 @@ void* zx_zalloc(struct zx_ctx* c, int size)
 /* Called by: */
 void* zx_free(struct zx_ctx* c, void* p)
 {
-  if (p)
+  if (!p)
+    return 0;
+  if (c->free_func)
+    c->free_func(p);
+  else
     free(p);
   return 0;
 }
@@ -365,6 +409,10 @@ void zx_add_content(struct zx_ctx* c, struct zx_elem_s* x, struct zx_str* cont)
 /* Called by:  zx_add_kid_after_sa_Issuer, zxid_add_fed_tok2epr, zxid_az_soap, zxid_di_query, zxid_idp_as_do, zxid_imreq, zxid_mk_a7n x3, zxid_mk_logout_resp, zxid_mk_mni_resp, zxid_mk_saml_resp, zxid_soap_call_hdr_body x2, zxid_soap_cgi_resp_body, zxid_sp_soap_dispatch, zxid_wsf_sign */
 struct zx_elem_s* zx_add_kid(struct zx_elem_s* father, struct zx_elem_s* kid)
 {
+  if (!kid) {
+    ERR("kid argument missing father=%p", father);
+    return 0;
+  }
   if (father) {
     kid->g.n = &father->kids->g;
     father->kids = kid;

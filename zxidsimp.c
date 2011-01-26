@@ -619,8 +619,23 @@ static char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask,
   struct zx_str* ss2;
   if (auto_flags & c_mask && auto_flags & h_mask) {  /* Both H&C: CGI */
     D("CGI %x", auto_flags);
+	int extralen = 0;
+#ifdef MINGW
+    /* 
+     * It seems that Apache strips off the \n in this output when running as a CGI Script. 
+     * This means the content length does not reflect reality, and we end up losing the 
+     * last N bytes, where N is the number of newlines in the output
+     */
+    char *p = ss->s;
+    while( *p != '\0' )
+    {
+        if( *p == '\n' )
+            ++extralen;
+        p++;
+    }
+#endif
     printf("Content-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
-	   cont_type, ss->len, ss->len, ss->s);
+	   cont_type, ss->len+extralen, ss->len+extralen, ss->s);
     if (auto_flags & ZXID_AUTO_EXIT)
       exit(0);
     zx_str_free(cf->ctx, ss);
@@ -1390,7 +1405,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
 	    ERR("out of memory len=%d", got);
 	    exit(1);
 	  }
-	  if (read_all_fd(0, buf, got, &got) == -1) {
+	  if (read_all_fd(fileno(stdin), buf, got, &got) == -1) {
 	    perror("Trouble reading post content.");
 	  } else {
 	    buf[got] = 0;

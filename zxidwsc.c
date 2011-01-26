@@ -50,7 +50,7 @@
  * See also: zxid_wsp_validate() */
 
 /* Called by:  zxid_call_epr, zxid_wsc_valid_resp */
-/*static*/ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
+int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
 {
   int n_refs = 0;
   struct zxsig_ref refs[ZXID_N_WSF_SIGNED_HEADERS];
@@ -546,7 +546,7 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
   struct zx_e_Envelope_s* env;
 
   if (!cf || !ses || !enve) {
-    ERR("Missing mandatory arguments ses=%p", ses);
+    ERR("Missing mandatory arguments ses=%p enve=%p (programmer error)", ses, enve);
     return 0;
   }
 
@@ -644,7 +644,7 @@ struct zx_str* zxid_call(zxid_conf* cf, zxid_ses* ses, const char* svctype, cons
   zxid_epr* epr;
 
   if (!cf || !ses) {
-    ERR("Missing mandatory arguments ses=%p", ses);
+    ERR("Missing mandatory arguments ses=%p (programmer error)", ses);
     return 0;
   }
 
@@ -706,7 +706,7 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
   struct zx_e_Envelope_s* env;
 
   if (!cf || !ses || !enve) {
-    ERR("Missing mandatory arguments ses=%p", ses);
+    ERR("Missing mandatory arguments ses=%p (programmer error)", ses);
     return 0;
   }
   D_INDENT("prep: ");
@@ -775,7 +775,7 @@ int zxid_wsc_valid_resp(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
   struct zx_e_Envelope_s* env;
 
   if (!cf || !ses || !enve) {
-    ERR("Missing mandatory arguments ses=%p enve=%p", ses, enve);
+    ERR("Missing mandatory arguments ses=%p enve=%p (programmer error)", ses, enve);
     return 0;
   }
 

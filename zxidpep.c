@@ -1,5 +1,5 @@
 /* zxidpep.c  -  Handwritten functions for XACML Policy Enforcement Point
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -13,6 +13,7 @@
  * 12.2.2010,  added locking to lazy loading --Sampo
  * 31.5.2010,  generalized to several PEPs model --Sampo
  * 7.9.2010,   merged patches from Stijn Lievens --Sampo
+ * 10.1.2011,  added TrustPDP support --Sampo
  */
 
 #include "errmac.h"
@@ -20,6 +21,7 @@
 #include "zxidpriv.h"
 #include "zxidconf.h"
 #include "saml2.h"
+#include "tas3.h"
 #include "c/zx-const.h"
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
@@ -186,15 +188,16 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
   /* Add our own token so PDP can do whatever PEP can (they are considered to be
    * part of the same entity). This is TAS3 specific hack. */
 
-  sec = hdr->Security = zx_NEW_wsse_Security(cf->ctx, &hdr->gg);
-  sec->actor = zx_ref_attr(cf->ctx, &sec->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
-  sec->Timestamp = zx_NEW_wsu_Timestamp(cf->ctx, &sec->gg);
-  sec->Timestamp->Created = zx_NEW_wsu_Created(cf->ctx, &sec->Timestamp->gg);
-  sec->Assertion = ses->tgta7n;
-  zx_reverse_elem_lists(&sec->gg);
-  D("tgta7n=%p", ses->tgta7n);
-
+  if (!(cf->az_opt & 0x01)) {
+    sec = hdr->Security = zx_NEW_wsse_Security(cf->ctx, &hdr->gg);
+    sec->actor = zx_ref_attr(cf->ctx, &sec->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
+    sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
+    sec->Timestamp = zx_NEW_wsu_Timestamp(cf->ctx, &sec->gg);
+    sec->Timestamp->Created = zx_NEW_wsu_Created(cf->ctx, &sec->Timestamp->gg);
+    sec->Assertion = ses->tgta7n;
+    zx_reverse_elem_lists(&sec->gg);
+    D("tgta7n=%p", ses->tgta7n);
+  }
   /* Prepare request according to the version */
 
   body = zx_NEW_e_Body(cf->ctx,0);
@@ -365,6 +368,24 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
       p = ss->s;
       D("Permit stmt(%s)", p);
       INFO("PERMIT found in stmt len=%d", ss->len);
+      ZX_FREE(cf->ctx, ss);
+      return p;
+    } else if (ZX_CONTENT_EQ_CONST(decision, "Deny")) {
+      ss = zx_easy_enc_elem_opt(cf, &stmt->Response->gg);
+      if (!ss || !ss->len)
+	return 0;
+      p = ss->s;
+      D("Deny stmt(%s)", p);
+      INFO("DENY found in stmt len=%d", ss->len);
+      ZX_FREE(cf->ctx, ss);
+      return p;
+    } else {
+      ss = zx_easy_enc_elem_opt(cf, &stmt->Response->gg);
+      if (!ss || !ss->len)
+       return 0;
+      p = ss->s;
+      D("Other stmt(%s)", p);
+      INFO("Other (treated as Deny) found in stmt len=%d", ss->len);
       ZX_FREE(cf->ctx, ss);
       return p;
     }
@@ -590,6 +611,181 @@ char* zxid_az_base(const char* conf, const char* qs, const char* sid)
   cf.ctx = &ctx;
   zxid_conf_to_cf_len(&cf, -1, conf);
   return zxid_az_base_cf(&cf, qs, sid);
+}
+
+/*() Call Trust Policy Decision Point (PDP) to obtain a trust evaluation and scoring
+ *
+ * You should use this function if the Deny message contains interesting
+ * obligations (normally it does not).
+ *
+ * cf:: the configuration will need to have ~PEPMAP~ and ~PDP_URL~ options
+ *     set according to your situation.
+ * cgi:: if non-null, will receive error and status codes
+ * ses:: all attributes are obtained from the session. You may wish
+ *     to add additional attributes that are not known by SSO.
+ * pepmap:: The map used to extract the attributes from the pool to the XACML request
+ * start:: Start of query string format buffer of trust options
+ * lim:: One past end of trust option buffer
+ * returns:: 0 on error; in case of deny (or indeterminate, etc.) as well as
+ *     permit returns <xac:Response> as string, allowing the obligations to be extracted.
+ */
+
+/* Called by:  zxid_di_query() */
+int zxid_call_trustpdp(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zxid_map* pepmap, const char* start, const char* lim, zxid_epr* epr)
+{
+  struct zx_xac_Attribute_s* xac_at;
+  struct zx_xac_Attribute_s* subj = 0;
+  struct zx_xac_Attribute_s* rsrc = 0;
+  struct zx_xac_Attribute_s* act = 0;
+  struct zx_xac_Attribute_s* env = 0;
+  const char* val;
+  const char* sep;
+  struct zx_str* ss;
+  struct zx_sp_Response_s* resp;
+  struct zx_sp_StatusCode_s* sc;
+  struct zx_sa_Statement_s* stmt;
+  struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt;
+  struct zx_xasacd1_XACMLAuthzDecisionStatement_s* az_stmt_cd1;
+  struct zx_elem_s* decision;
+  struct zx_tas3_TrustRanking_s* tr;
+
+  D("option(%.*s)", lim-start, start);
+
+  if (cf->log_level>0)
+    zxlog(cf, 0, 0, 0, 0, 0, 0, ses?ZX_GET_CONTENT(ses->nameid):0, "N", "W", "TRUSTPDP", ses?ses->sid:0, " ");
+  
+  if (!cf->trustpdp_url || !*cf->trustpdp_url) {
+    ERR("No TRUSTPDP_URL. Deny. %p", cf->trustpdp_url);
+    return 0;
+  }
+
+#if 1
+  if (epr->Metadata && epr->Metadata->ProviderID) {
+    ss = ZX_GET_CONTENT(epr->Metadata->ProviderID);
+    D("Using ProviderID(%.*s) as resource-id", ss->len, ss->s);
+    rsrc = zxid_mk_xacml_simple_at(cf, 0,
+				     zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:resource:resource-id"),
+				     zx_dup_str(cf->ctx, XS_STRING),
+				     0, zx_dup_zx_str(cf->ctx, ss));
+    ss = ZX_GET_CONTENT(epr->Metadata->ServiceType);
+    xac_at = zxid_mk_xacml_simple_at(cf, 0,
+				     zx_dup_str(cf->ctx, "urn:tas3:servicetype"),
+				     zx_dup_str(cf->ctx, XS_STRING),
+				     0, zx_dup_zx_str(cf->ctx, ss));
+    ZX_NEXT(xac_at) = &rsrc->gg.g;
+    rsrc = xac_at;
+  } else {
+    ERR("EPR does not have Metadata or Metadata/ProviderID. resource-id not set %p",epr->Metadata);
+  }
+
+  if (ses->nid && *ses->nid) {
+#if 0
+    /* Pass user as subject. This is TAS3 correct behaviour. */
+    subj = zxid_mk_xacml_simple_at(cf, 0,
+		zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:subject:subject-id"),
+		zx_dup_str(cf->ctx, XS_STRING),
+		0,
+		zx_dup_str(cf->ctx, ses->nid));
+#else
+    /* *** Pass service to rank as subject. This is a kludge to work around Jerry's bug. */
+    ss = ZX_GET_CONTENT(epr->Metadata->ProviderID);
+    D("*** Using ProviderID(%.*s) as subject-id", ss->len, ss->s);
+    subj = zxid_mk_xacml_simple_at(cf, 0,
+		zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:subject:subject-id"),
+		zx_dup_str(cf->ctx, XS_STRING),
+		0, zx_dup_zx_str(cf->ctx, ss));
+#endif
+  } else {
+    D("No ses->nid %p", ses->nid);
+  }
+
+  act = zxid_mk_xacml_simple_at(cf, 0,
+	     zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:action:action-id"),
+	     zx_dup_str(cf->ctx, XS_STRING),
+	     0,
+	     zx_dup_str(cf->ctx, "urn:oasis:names:tc:xacml:1.0:action:implied-action"));
+#else
+  zxid_pepmap_extract(cf, cgi, ses, pepmap, &subj, &rsrc, &act, &env);
+#endif
+  
+  while (start < lim && (start = zx_memmem(start, (lim - start), TAS3_TRUST_CTL1_INPUT, sizeof(TAS3_TRUST_CTL1_INPUT)-1))) {
+
+    val = memchr(start+sizeof(TAS3_TRUST_CTL1_INPUT)-1, '=', lim - (start+sizeof(TAS3_TRUST_CTL1_INPUT)-1));
+    if (!val) {
+      ERR("Malformed trust option(%.*s)", lim-start, start);
+      break;
+    }
+    ++val;
+    sep = memchr(val, '&', lim-val);
+    if (!sep) {
+      sep = lim;
+    }
+    
+    D("add trust attr(%.*s) val(%.*s)", val-1-start, start, sep-val, val);
+    xac_at = zxid_mk_xacml_simple_at(cf, 0,
+				     zx_dup_len_str(cf->ctx, val-1-start, start),
+				     zx_dup_str(cf->ctx, XS_STRING),
+				     0, zx_dup_len_str(cf->ctx, sep-val, val));
+    ZX_NEXT(xac_at) = &env->gg.g;
+    env = xac_at;
+    start = sep;
+  }
+
+  resp = zxid_az_soap(cf, cgi, ses, cf->trustpdp_url, subj, rsrc, act, env);
+  if (!resp)
+    return 0;
+
+  az_stmt = resp->Assertion->XACMLAuthzDecisionStatement;
+  if (az_stmt && az_stmt->Response) {
+    decision = az_stmt->Response->Result->Decision;
+  } else {
+    az_stmt_cd1 = resp->Assertion->xasacd1_XACMLAuthzDecisionStatement;
+    if (az_stmt_cd1 && az_stmt_cd1->Response) {
+      decision = az_stmt_cd1->Response->Result->Decision;
+    } else {
+      stmt = resp->Assertion->Statement;
+      if (stmt && stmt->Response) {  /* Response here is xac:Response */
+	decision = stmt->Response->Result->Decision;
+      } else {
+	D("Missing az related Response element %d",0);
+	return 0;
+      }
+    }
+  }
+  if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
+    D("Permit %d",0);
+    if (resp->Status && resp->Status->StatusCode && resp->Status->StatusCode->StatusCode) {
+      /* Second and further layer status codes may contain Trust Rankings */
+      for (sc = resp->Status->StatusCode->StatusCode; sc; sc = sc->StatusCode) {
+	if (!sc->Value || !sc->Value->g.len < sizeof(TAS3_TRUST_CTL1_RANKING)-1 ||!sc->Value->g.s
+	    || memcmp(sc->Value->g.s, TAS3_TRUST_CTL1_RANKING,sizeof(TAS3_TRUST_CTL1_RANKING)-1))
+	  continue;
+	val = memchr(sc->Value->g.s + sizeof(TAS3_TRUST_CTL1_RANKING)-1, '=', sc->Value->g.len - (sizeof(TAS3_TRUST_CTL1_RANKING)-1));
+	if (!val) {
+	  ERR("Malformed trust renking(%.*s)", sc->Value->g.len, sc->Value->g.s);
+	  continue;
+	}
+	
+	if (!epr->Metadata)
+	  epr->Metadata = zx_NEW_a_Metadata(cf->ctx, &epr->gg);
+	if (!epr->Metadata->Trust)
+	  epr->Metadata->Trust = zx_NEW_tas3_Trust(cf->ctx, &epr->Metadata->gg);
+	tr = zx_NEW_tas3_TrustRanking(cf->ctx, &epr->Metadata->Trust->gg);
+	tr->metric = zx_dup_len_attr(cf->ctx, &tr->gg, zx_metric_ATTR,
+				     val - sc->Value->g.s, sc->Value->g.s);
+	++val;
+	tr->val = zx_dup_len_attr(cf->ctx, &tr->gg, zx_val_ATTR,
+				  sc->Value->g.len - (val - sc->Value->g.s), val);
+      }
+    }
+    
+    INFO("PERMIT found in azstmt len=%d", ss->len);
+    ZX_FREE(cf->ctx, ss);
+    return 1;
+  } else {
+    D("Deny %d",0);
+    return 0;
+  }
 }
 
 /* EOF  --  zxidpep.c */

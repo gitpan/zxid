@@ -1,5 +1,5 @@
 # zxid/Makefile  -  How to build ZXID
-# Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+# Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
 # Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
 # This is confidential unpublished proprietary source code of the author.
@@ -40,8 +40,8 @@ all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxidwspcg
 
 ### This is the authorative spot to set version number. Document in Changes file.
 ### c/zxidvers.h is generated from these, see `make updatevers'
-ZXIDVERSION=0x000073
-ZXIDREL=0.73
+ZXIDVERSION=0x000076
+ZXIDREL=0.76
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -103,6 +103,7 @@ CFLAGS += -Wall -Wno-parentheses -DMAYBE_UNUSED='__attribute__ ((unused))'
 #LDFLAGS += -Wl,--gc-sections
 LIBZXID_A=libzxid.a
 LIBZXID=-L. -lzxid
+SSL_LIBS= -lssl -lcrypto
 OBJ_EXT=o
 PLATFORM_OBJ=
 EXE=
@@ -202,7 +203,7 @@ ifeq ($(TARGET),macosx)
 # Flags for MacOS 10 / Darwin native compile (gcc + Apple linker)
 #   alias ldd='otool -L'
 #   alias strace=ktrace or dtrace or dtruss
-CFLAGS=-g -fPIC -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing
+CFLAGS=-g -fPIC -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing -DMAYBE_UNUSED=''
 CDEF+=-DMACOSX
 JNI_INC=-I/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Headers
 SHARED_FLAGS=-dylib -all_load -bundle
@@ -266,7 +267,7 @@ WIN_LIBS= -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz -lw
 LIBS= -mconsole $(WIN_LIBS)
 #SHARED_FLAGS=-shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-reloc -Wl,-whole-archive
 SHARED_FLAGS=-Wl,--add-stdcall-alias -shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
-CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing  -mno-cygwin
+CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing  -mno-cygwin -DMAYBE_UNUSED='__attribute__ ((unused))'
 
 # java.lang.UnsatisfiedLinkError: Given procedure could not be found
 # -mno-cygwin -mrtd -Wl,--kill-at -Wl,--add-stdcall-alias
@@ -277,13 +278,30 @@ CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-
 else
 ifeq ($(TARGET),mingw)
 
-CDEF+=-DMINGW -DUSE_LOCK=flock -DCURL_STATICLIB
+# These options work with late 2010 vintage mingw (x86-mingw32-build-1.0-sh.tar.bz2?)
+
+CP=ln
+ZXID_PATH=/c/zxid/
+
+CDEF+=-DMINGW -DUSE_LOCK=dummy_no_flock -DCURL_STATICLIB
 CURL_ROOT=/usr/local
 OPENSSL_ROOT=/usr/local/ssl
-WIN_LIBS= -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz -lwinmm -lwsock32 -lgdi32 -lkernel32
-LIBS= -mconsole $(WIN_LIBS)
-SHARED_FLAGS=-Wl,--add-stdcall-alias -shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
-CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing -mno-cygwin
+ZLIB_ROOT=/usr/local/lib/
+
+SSL_LIBS= -lssl -lcrypto -lgdi32 -lwsock32
+CURL_LIBS= -lcurl -lssh2 -lidn -lwldap32
+WIN_LIBS= -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib $(CURL_LIBS) $(SSL_LIBS) -lwinmm -lkernel32 -lz
+LIBS= -mconsole $(WIN_LIBS) -lpthread
+SHARED_FLAGS=-Wl,--add-stdcall-alias -mdll -static -Wl,--export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
+CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing -mno-cygwin -D'ZXID_PATH="$(ZXID_PATH)"'  -DMAYBE_UNUSED='__attribute__ ((unused))'
+
+
+#WIN_LIBS= -L$(CURL_ROOT)/lib -L$(OPENSSL_ROOT)/lib -lcurl -lssl -lcrypto -lz -lwinmm -lwsock32 -lgdi32 -lkernel32
+#LIBS= -mconsole $(WIN_LIBS)
+#SHARED_FLAGS=-Wl,--add-stdcall-alias -shared --export-all-symbols -Wl,-whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
+#CFLAGS=-g -fmessage-length=0 -Wno-unused-label -Wno-unknown-pragmas -fno-strict-aliasing -mno-cygwin -DMAYBE_UNUSED='__attribute__ ((unused))'
+
+JNI_INC=-I"C:/Program Files/Java/jdk1.5.0_14/include" -I"C:/Program Files/Java/jdk1.5.0_14/include/win32"
 ZXIDJNI_SO=zxidjava/zxidjni.dll
 ifeq ($(SHARED),1)
 LIBZXID=-L. -lzxiddll
@@ -317,7 +335,7 @@ LIBS= $(WIN_LIBS)
 #SHARED_CLOSE=/SUBSYSTEM:WINDOWS
 SHARED_FLAGS=-DLL -shared --export-all-symbols
 SHARED_CLOSE=
-CFLAGS=-Zi -WL
+CFLAGS=-Zi -WL  -DMAYBE_UNUSED=''
 #CFLAGS+=-Yd
 OUTOPT=-OUT:
 OBJ_EXT=obj
@@ -1140,6 +1158,9 @@ javaswigchk:
 	ls zxidjava/SWIGTYPE*.java >foo
 	fgrep zxidjava/SWIGTYPE Manifest | cmp - foo
 
+gitreadd:
+	git add zxidjava/*.java zxidjava/*.c Net/Makefile Net/SAML.pm Net/*.c php/*.[hc]
+
 javaclean:
 	rm -rf zxidjava/*.$(OBJ_EXT) zxidjava/*~ zxidjava/*.so zxidjava/*.class *.class
 
@@ -1218,8 +1239,13 @@ zxbench: $(ZXBENCH_OBJ) $(LIBZXID_A)
 zxidssofinalizetest: $(ZXIDSSOFINALIZETEST_OBJ) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)zxidssofinalizetest$(EXE) $(ZXIDSSOFINALIZETEST_OBJ) $(LIBZXID) $(LIBS)
 
+ifneq ($(TARGET),mingw)
 zxencdectest: $(ZXENCDECTEST_OBJ) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)zxencdectest$(EXE) $^ $(LIBZXID) $(LIBS)
+else
+zxencdectest:
+	echo "Port this for mingw" > zxencdectest
+endif
 
 zxmqtest: $(ZXMQTEST_OBJ) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)zxmqtest$(EXE) $^ -lzmq $(LIBZXID) $(LIBS)
@@ -1275,10 +1301,10 @@ endif
 endif
 
 libzxid.so.0.0: $(LIBZXID_A)
-	$(LD) $(OUTOPT)libzxid.so.0.0 $(SHARED_FLAGS) $^ $(SHARED_CLOSE)
+	$(LD) $(OUTOPT)libzxid.so.0.0 $(SHARED_FLAGS) $^ $(SHARED_CLOSE) -lcurl -lssl -lcrypt
 
 zxid.dll zxidimp.lib: $(LIBZXID_A)
-	$(LD) $(OUTOPT)zxid.dll $(SHARED_FLAGS) -Wl,--output-def,zxid.def,--out-implib,zxidimp.lib $^ $(SHARED_CLOSE) $(WIN_LIBS)
+	$(LD) $(OUTOPT)zxid.dll $(SHARED_FLAGS) -Wl,--output-def,zxid.def,--out-implib,zxidimp.lib $^ $(SHARED_CLOSE) $(WIN_LIBS) -mdll
 
 # N.B. Failing to supply -Wl,-no-whole-archive above will cause
 # /apps/gcc/mingw/sysroot/lib/libmingw32.a(main.o):main.c:(.text+0x106): undefined reference to `WinMain@16'
@@ -1368,7 +1394,7 @@ tas3win32pkg: zxid.dll zxididp zxpasswd zxcot zxdecode zxlogview $(ZXIDJNI_SO) z
 	mkdir $(TAS3WIN32)/include/zx
 	mkdir $(TAS3WIN32)/include/zx/c
 	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-ZXID-WIN32 > $(TAS3WIN32)/Manifest
-	$(CP) zxid.dll zxid.lib $(TAS3WIN32)/
+	$(CP) zxid.dll zxid*.lib $(TAS3WIN32)/
 	$(CP) $(ZXIDHDRS) $(TAS3WIN32)/include/zx
 	$(CP) zxididp $(TAS3WIN32)/zxididp.exe
 	$(CP) zxpasswd $(TAS3WIN32)/zxpasswd.exe
@@ -1378,6 +1404,28 @@ tas3win32pkg: zxid.dll zxididp zxpasswd zxcot zxdecode zxlogview $(ZXIDJNI_SO) z
 	$(CP) zxid-idp.pd $(TAS3WIN32)
 	$(CP) mod_auth_saml.dll $(TAS3WIN32)
 	$(CP) *.php php/php_zxid.dll php/zxid.php php/zxid.ini php/README.zxid-php zxid-php.pd $(TAS3WIN32)
+	$(CP) $(ZXIDJNI_SO) $(TAS3WIN32)/
+	$(CP) zxidjava.jar zxiddemo.war zxid-java.pd $(TAS3WIN32)
+	$(CP) *.java *.class $(TAS3WIN32)
+	$(CP) $(TAS3COMMONFILES) $(TAS3WIN32)
+	zip -r $(TAS3WIN32).zip $(TAS3WIN32)
+
+# Minimal package with mod_auth_saml or PHP
+tas3win32pkg-mini: zxid.dll zxididp zxpasswd zxcot zxdecode zxlogview $(ZXIDJNI_SO) zxidjava/zxidjni.class zxidappdemo.class zxidjava.jar zxiddemo.war
+	rm -rf $(TAS3WIN32) $(TAS3WIN32).zip
+	mkdir $(TAS3WIN32)
+	mkdir $(TAS3WIN32)/include
+	mkdir $(TAS3WIN32)/include/zx
+	mkdir $(TAS3WIN32)/include/zx/c
+	$(PERL) ./sed-zxid.pl version $(ZXIDREL) < Manifest.T3-ZXID-WIN32 > $(TAS3WIN32)/Manifest
+	$(CP) zxid.dll zxid*.lib $(TAS3WIN32)/
+	$(CP) $(ZXIDHDRS) $(TAS3WIN32)/include/zx
+	$(CP) zxididp $(TAS3WIN32)/zxididp.exe
+	$(CP) zxpasswd $(TAS3WIN32)/zxpasswd.exe
+	$(CP) zxcot $(TAS3WIN32)/zxcot.exe
+	$(CP) zxdecode $(TAS3WIN32)/zxdecode.exe
+	$(CP) zxlogview $(TAS3WIN32)/zxlogview.exe
+	$(CP) zxid-idp.pd $(TAS3WIN32)
 	$(CP) $(ZXIDJNI_SO) $(TAS3WIN32)/
 	$(CP) zxidjava.jar zxiddemo.war zxid-java.pd $(TAS3WIN32)
 	$(CP) *.java *.class $(TAS3WIN32)
@@ -1412,10 +1460,10 @@ tas3copyrel: tas3rel
 ###
 
 precheck/chk-zlib.exe: precheck/chk-zlib.$(OBJ_EXT)
-	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< -lz
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
 
 precheck/chk-openssl.exe: precheck/chk-openssl.$(OBJ_EXT)
-	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< -lssl -lcrypto
+	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(SSL_LIBS)
 
 precheck/chk-curl.exe: precheck/chk-curl.$(OBJ_EXT)
 	$(LD) $(LDFLAGS) $(OUTOPT)$@ $< $(LIBS)
@@ -1443,7 +1491,6 @@ precheck: precheck/chk-zlib.$(OBJ_EXT) precheck/chk-zlib.exe precheck/chk-openss
 else
 precheck: precheck/chk-zlib.$(OBJ_EXT) precheck/chk-zlib.exe precheck/chk-openssl.$(OBJ_EXT) precheck/chk-openssl.exe precheck/chk-curl.$(OBJ_EXT) precheck/chk-curl.exe zx/zx.h
 	echo CC=$(CC)
-	which cc
 	which gcc
 	$(CC) -v
 	@$(ECHO)
@@ -1668,6 +1715,7 @@ winbindist:
 #     pd2tex apache.pd
 #     pd2tex mod_auth_saml.pd
 #   make javaswigchk
+#   make gitreadd
 #   make dist
 #   make copydist
 #   make release
@@ -1678,8 +1726,8 @@ winbindist:
 #   make winbindist
 #   make winbinrel
 #   make tas3rel
-#   make tas3copyrel    # tas3pool -u T3-ZXID-LINUX-X86_0.54.zip
-#    ./pool-submit.sh 0.62
+#   make tas3copyrel         # tas3pool -u T3-ZXID-LINUX-X86_0.54.zip
+#    ./pool-submit.sh 0.62   # ssh kilo.tas3.eu
 #   make gen ENA_GEN=1
 # zxid.user@lists.unh.edu, wsf-dev@lists.openliberty.org
 

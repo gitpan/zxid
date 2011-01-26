@@ -32,7 +32,7 @@
 char* help =
 "zxididp  -  SAML 2.0 IdP CGI (also DI, IM, and PS) - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated identity and Single Sign-On.\n\
-Copyright (c) 2008-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
+Copyright (c) 2008-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well-researched bug reports to the author. Home: zxid.org\n\
@@ -43,10 +43,14 @@ Usage: zxididp [options]   (when used as CGI, no options can be supplied)\n\
 
 /* ============== M A I N ============== */
 
-/* CONFIG: You must have created /var/zxid directory hierarchy. See `make dir' */
+/* CONFIG: You must have created /var/zxid OR c:/var/zxid directory hierarchy. See `make dir' */
 /* CONFIG: You must edit the URL to match your domain name and port */
 
+#ifdef MINGW
+#define CONF "URL=https://idp1.zxidp.org:8443/zxididp&NICE_NAME=ZXIdP&NOSIG_FATAL=0&SES_COOKIE_NAME=ZXIDPSES&IDP_ENA=1&PDP_ENA=1&PATH=c:/var/zxid/idp"
+#else
 #define CONF "URL=https://idp1.zxidp.org:8443/zxididp&NICE_NAME=ZXIdP&NOSIG_FATAL=0&SES_COOKIE_NAME=ZXIDPSES&IDP_ENA=1&PDP_ENA=1&PATH=/var/zxid/idp"
+#endif
 
 /* Called by: */
 int main(int argc, char** argv)
@@ -75,7 +79,7 @@ int main(int argc, char** argv)
     exit(1);
   }
 
-#if 1
+#if 0
   strncpy(zx_instance, "\t\e[47mzxidp\e[0m", sizeof(zx_instance));
 #else
   strncpy(zx_instance, "\tzxidp", sizeof(zx_instance));

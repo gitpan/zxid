@@ -187,7 +187,7 @@ struct zxid_conf {
   char  enckey_opt;
   char  idpatopt;
   char  idp_list_meth;
-  char  pad8;
+  char  cpn_ena;
   
   char* affiliation;
   char* nice_name;           /* Human readable "nice" name. Used in AuthnReq->ProviderName */
@@ -219,6 +219,7 @@ struct zxid_conf {
   char* pdp_url;             /* If non-NULL, the inline PEP is enabled and PDP at URL is called. */
   char* pdp_call_url;        /* PDP URL for zxid_az() API */
   char* xasp_vers;
+  char* trustpdp_url;
   char* defaultqs;
   char* mod_saml_attr_prefix;  /* Prefix for req variables in mod_auth_saml */
 
@@ -285,18 +286,24 @@ struct zxid_conf {
   char  log_act;
   char  log_issue_a7n;
   char  log_issue_msg;
+
   char  log_rely_a7n;
   char  log_rely_msg;
   char  log_err_in_act;      /* Log errors to action log flag (may also log to error log) */
   char  log_act_in_err;      /* Log actions to error log flag (may also log to action log) */
+
   char  log_sigfail_is_err;  /* Log signature failures to error log */
   char  log_level;           /* act log level: 0=audit, 1=audit+extio, 2=audit+extio+events */
   char  user_local;          /* Whether local user accounts should be maintained. */
   char  redir_to_content;    /* Should explicit redirect to content be used (vs. internal redir) */
+
   char  remote_user_ena;
   char  show_tech;
   char  bare_url_entityid;
   char  loguser;
+
+  char  az_opt;        /* Kludgy options for AZ debugging and to work-around bugs of others */
+  char  pad1; char pad2; char pad3; char pad4; char pad5; char pad6; char pad7;
 
 #ifdef USE_CURL
   CURL* curl;

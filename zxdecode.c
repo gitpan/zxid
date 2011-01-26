@@ -1,5 +1,5 @@
 /* zxdecode.c  -  SAML Decoding tool
- * Copyright (c) 2008-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2008-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
  * Distribution prohibited unless authorized in writing.
@@ -8,6 +8,7 @@
  *
  * 25.11.2008, created --Sampo
  * 4.10.2010, added -s and ss modes, as well as -i N selector --Sampo
+ * 25.1.2011, added -wsc and -wsp validation options --Sampo
  */
 
 #include <string.h>
@@ -45,6 +46,10 @@ Usage: zxdecode [options] <message >decoded\n\
   -s -s            Only validate hashes (check canon), do not fetch meta or check RSA\n\
   -c CONF          For -s, optional configuration string (default -c PATH=/var/zxid/)\n\
                    Most of the configuration is read from /var/zxid/zxid.conf\n\
+  -wscp            Call zxid_wsc_prepare_call() on SOAP request\n\
+  -wspv            Call zxid_wsp_validate() on SOAP request\n\
+  -wspd            Call zxid_wsp_decorate() on SOAP response\n\
+  -wscv            Call zxid_wsc_valid_resp() on SOAP response\n\
   -sha1            Compute sha1 over input and print as base64. For debugging canon.\n\
   -v               Verbose messages.\n\
   -q               Be extra quiet.\n\
@@ -60,7 +65,8 @@ int inflate_flag = 2;  /* Auto */
 int verbose = 1;
 int ix = 1;
 int sig_flag = 0;  /* No sig checking by default. */
-int sha1_flag;
+int sha1_flag = 0;
+char valid_opt = 0;
 zxid_conf* cf = 0;
 char buf[256*1024];
 
@@ -153,6 +159,35 @@ static void opt(int* argc, char*** argv, char*** env)
       }
       break;
 
+    case 'w':
+      switch ((*argv)[0][2]) {
+      case 's':
+	switch ((*argv)[0][3]) {
+	case 'c':
+	  switch ((*argv)[0][4]) {
+	  case 'p':
+	    valid_opt = 'P';
+	    continue;
+	  case 'v':
+	    valid_opt = 'V';
+	    continue;
+	  }
+	  break;
+	case 'p':
+	  switch ((*argv)[0][4]) {
+	  case 'v':
+	    valid_opt = 'v';
+	    continue;
+	  case 'd':
+	    valid_opt = 'd';
+	    continue;
+	  }
+	  break;
+	}
+	break;
+      }
+      break;
+
 #if 0
     case 'l':
       switch ((*argv)[0][2]) {
@@ -195,6 +230,49 @@ static void opt(int* argc, char*** argv, char*** env)
     /*fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());*/
     exit(3);
   }
+}
+
+static int ws_validations()
+{
+  int ret;
+  char* nid;
+  struct zx_str* ss;
+  zxid_ses sess;
+  ZERO(&sess, sizeof(sess));
+  if (!cf)
+    cf = zxid_new_conf_to_cf(0);
+
+  switch (valid_opt) {
+  case 'P':
+    ss = zxid_wsc_prepare_call(cf, &sess, 0 /*epr*/, "", buf);
+    if (!ss)
+      return 1;
+    if (verbose)
+      printf("WSC_PREPARE_CALL(%.*s)\n", ss->len, ss->s);
+    return 0;
+  case 'v':
+    nid = zxid_wsp_validate(cf, &sess, "", buf);
+    if (!nid)
+      return 1;
+    if (verbose)
+      printf("WSP_VALIDATE OK nid(%s)\n", nid);
+    return 0;
+  case 'd':
+    ss = zxid_wsp_decorate(cf, &sess, "", buf);
+    if (!ss)
+      return 1;
+    if (verbose)
+      printf("WSP_DECORATE(%.*s)\n", ss->len, ss->s);
+    return 0;
+  case 'V':
+    ret = zxid_wsc_valid_resp(cf, &sess, "", buf);
+    if (verbose)
+      printf("WSC_VALID_RESP(%d)\n", ret);
+    if (ret == 1)
+      return 0; /* Success */
+    return 1;
+  }
+  return 2;
 }
 
 /* Called by:  sig_validate */
@@ -317,8 +395,7 @@ static int sig_validate(int len, char* p)
 got_a7n:
   if (sig_flag == 2) {
     if (a7n->Signature && a7n->Signature->SignedInfo && a7n->Signature->SignedInfo->Reference) {
-      cf->ctx->guard_seen_n.seen_n = &cf->ctx->guard_seen_p;  /* *** should call zx_reset_ctx? */
-      cf->ctx->guard_seen_p.seen_p = &cf->ctx->guard_seen_n;
+      zx_reset_ns_ctx(cf->ctx);
       ZERO(&refs, sizeof(refs));
       refs.sref = a7n->Signature->SignedInfo->Reference;
       refs.blob = &a7n->gg;
@@ -376,7 +453,7 @@ b64_dec:
     /* msglen = q - msg; */
     p = unbase64_raw(msg, q, msg, zx_std_index_64);  /* inplace */
     *p = 0;
-    D("Unbase64 Msg(%s) x=%x (n.b. message data may be binary at this point)", msg, *msg);
+    D("Unbase64 Msg(%s) x=%x len=%d (n.b. message data may be binary at this point)", msg, *msg, p-msg);
     break;
   case 2:
     if (*msg == '<') {
@@ -390,9 +467,9 @@ b64_dec:
   
   switch (inflate_flag) {
   case 0:
-    D("No decompression by user choice %d",0);
     len = p-msg;
     p = msg;
+    D("No decompression by user choice len=%d",len);
     break;
   case 1:
     D("Decompressing... (force) %d",0);
@@ -418,7 +495,7 @@ decompress:
     }
     break;
   }
-  printf("%.*s", len, p);
+  fwrite(p, 1, len, stdout);
   
   if (sig_flag)
     return sig_validate(len, p);
@@ -441,7 +518,7 @@ int zxdecode_main(int argc, char** argv, char** env)
   strcpy(zx_instance, "\tzxdec");
   opt(&argc, &argv, &env);
 
-  read_all_fd(0, buf, sizeof(buf)-1, &got);
+  read_all_fd(fileno(stdin), buf, sizeof(buf)-1, &got);
   buf[got] = 0;
   lim = buf+got;
 
@@ -452,8 +529,12 @@ int zxdecode_main(int argc, char** argv, char** env)
     return 0;
   }
 
+  if (valid_opt) {
+    return ws_validations();
+  }
+
   /* Try to detect relevant input, iterating if -i N was specified.
-   * The detection is supposed to pick SAMLREquest or SAMLResponse from
+   * The detection is supposed to pick SAMLRequest or SAMLResponse from
    * middle of HTML form, or from log output. Whatever is convenient. */
 
   for (pp = buf; pp && pp < lim; pp = p+1) {
@@ -494,9 +575,9 @@ int zxdecode_main(int argc, char** argv, char** env)
       }
     }
     if (--ix) { p = pp; continue; }
-    return decode(pp, lim);
+    return decode(pp, lim);  /* Decode the object identified above. */
   }
-  ERR("Found no SAMLRequest or SAMLResponse to decode %d",2);
+  ERR("No SAMLRequest or SAMLResponse found to decode %p %p %p", buf, pp, lim);
   return 1;
 }
 

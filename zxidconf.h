@@ -42,7 +42,13 @@
  * is not hashed: you should use a file system that scales easily to oodles
  * of small files in one directory. Say `make dir' to create the directory
  * with proper layout. If you change it here, also edit Makefile. */
+#ifndef ZXID_PATH
+#ifdef MINGW
+#define ZXID_PATH "c:/var/zxid/"
+#else
 #define ZXID_PATH "/var/zxid/"
+#endif
+#endif
 
 /*(c) SP Nickname for IdP User Interface
  * IMPORTANT: You should really configure this option.
@@ -603,6 +609,21 @@
  * PDP_CALL_URL and leave PDP_URL as 0. */
 #define ZXID_PDP_URL 0
 #define ZXID_PDP_CALL_URL 0
+
+/*(c) Trust Policy Decision Point (PDP) URL If TRUSTPDP_URL is set and
+ * appropriate discovery options are passed, then the indicated PDP
+ * will be consulted during discovery processing to determine if a
+ * service should be returned. Default value 0 prevents such processing. */
+#define ZXID_TRUSTPDP_URL 0
+
+/*(c) Enable discovery and web service call to perform TAS3 Credentials
+ * and Privacy Negotiation call. For this to work, there must be discovery registration
+ * for service type urn:tas3:cpn-agent as well. */
+#define ZXID_CPN_ENA 0
+
+/*(c) Kludgy options for AZ debugging and to work-around bugs of others.
+ * 0x01: prevent WS-Security header in SOAP XACML requests.  */
+#define ZXID_AZ_OPT 0
 
 /*(c) Which version of XACML to speak */
 

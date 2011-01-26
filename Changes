@@ -22,6 +22,7 @@ To do:
     - Add attribute editor support to IdP
 
     - Support Danish profiles: http://digitaliser.dk/resource/516724
+    - Support http://saml2int.org/ (interoperability profile and club)
 
 Regarding mod_perl stability: I would assume most of that has to do
 with underlying memory allocator. All allocation activity in zxid code
@@ -51,7 +52,7 @@ Here are example docs for SimpleSAMLPHP, or Shibboleth:
     - zxid_select_tgt() (?)
     - Each credential as its own a7n
     - X509 attr certs
-    - Use post screen as confirmation screen
+    - Use post screen as confirmation screen, option for federation confirmation question
     - If generic XML content is seen as attribute value, it should be reserialized as safe_base64 so it can be returned to app layer as attribute (e.g. via LDIF).
     - Config option for redirection after SLO
     - WSP_LOCALPDP_OBL_REQ processing
@@ -70,6 +71,21 @@ Here are example docs for SimpleSAMLPHP, or Shibboleth:
     - zxpasswd account creation problems
         echo -n tas3 | ~/zxid/zxpasswd -at 'cn: Mallory McBean$givenname: Mallory$sn: McBeanBean$o: Laskenta Keskus$eduPersonEntitlement: admin$' -c mallory
 
+zxid-0.76:: 25.1.2011
+    - Added error checks
+    - Fixed ordering of RelatesTo header
+    - Fixed leakage of unknown namespaces to decoder
+    - Made memory allocators really use function pointers
+
+zxid-0.75:: 24.1.2011
+    - MINGW fixes
+    - User supplied MessageID duplicate fix
+    - Fixed XML encoding of empty namespace prefixes
+
+zxid-0.74:: 22.1.2011
+    - Changed 0 to fileno(stdin) in calls to read_all_fd() for better Windows portability
+    - Included Axis2ZXIDModule.zip
+
 zxid-0.73:: 19.12.2010
     - Added ssoa7n and tgta7n attributes (TAS3 feature req #484)
     - Added optional sessionwide idpsesid attribute (TAS3 feature req #419)
@@ -81,6 +97,7 @@ zxid-0.73:: 19.12.2010
     - Added preliminary DSA support
     - Crude and preliminary X509 attribute cert support
     - Fixed excessive content-length in CGI output
+    - Fixed XML valued attributes (TAS3 bug #385)
     - Test coverage 63%
 
 zxid-0.72:: 5.12.2010

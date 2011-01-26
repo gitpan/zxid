@@ -1,5 +1,5 @@
 /* zxidutil.h  -  (Private) Utility API functions
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -12,6 +12,7 @@
  * 31.5.2010,  eliminated many include dependencies from the public API --Sampo
  * 13.11.2010, added ZXID_DECL for benefit of the Windows port --Sampo
  * 12.12.2010, separate zxidpriv.h and zxidutil.h from zxid.h --Sampo
+ * 10.1.2011,  added TrustPDP support --Sampo
  */
 
 #ifndef _zxidutil_h
@@ -54,6 +55,8 @@ ZXID_DECL struct zx_str* zxlog_path(zxid_conf* cf, struct zx_str* entid, struct 
 ZXID_DECL int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len, struct zx_str* name, struct zx_str* contint, int ign_prefix);
 ZXID_DECL void zxid_fold_svc(char* path, int len);
 ZXID_DECL int zxid_epr_path(zxid_conf* cf, char* dir, char* sid, char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont);
+
+ZXID_DECL int zxid_call_trustpdp(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zxid_map* pepmap, const char* start, const char* lim, zxid_epr* epr);
 
 /* zxutil */
 
