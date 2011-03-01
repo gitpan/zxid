@@ -105,6 +105,8 @@ fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, int reperr, c
       D("File(%s) not found lk(%s) errno=%d err(%s). flags=0x%x, euid=%d egid=%d", buf, logkey, errno, STRERROR(errno), flags, geteuid(), getegid());
     }
     return BADFD;
+  } else {
+    D("File(%s) opened lk(%s) flags=0x%x", buf, logkey, flags);
   }
   return fd;
 }
@@ -283,7 +285,7 @@ int write_all_fd(fdtype fd, const char* p, int pending)
  * data_fmt:: Format string for the data to be written. Following arguments satisfy the format string. Overall the data length is constrained to maxlen. Caller needs to allocate/provide buffer sufficient to satisfy the data_fmt.
  * Returns:: 1 on success, 0 on fail. */
 
-/* Called by:  main x6, zx_get_symkey, zxid_check_fed x2, zxid_mk_at_cert, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_invite, zxid_put_psobj, zxid_put_ses, zxid_put_user, zxid_pw_authn */
+/* Called by:  main x4, zx_get_symkey, zxid_check_fed x2, zxid_mk_at_cert, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_invite, zxid_put_psobj, zxid_put_ses, zxid_put_user, zxid_pw_authn */
 int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...)
 {
   int len;
@@ -740,6 +742,7 @@ char* sha1_safe_base64(char* out_buf, int len, const char* data)
 /* Called by: */
 voidpf zx_zlib_zalloc(void* opaque, uInt items, uInt size)
 {
+  DD("HERE5 len= %d x %d = %d", items, size, items*size);
   return ZX_ALLOC(opaque, items*size);
 }
 
@@ -1005,7 +1008,7 @@ static int zx_timegm(const struct tm* t)
     x -= aa;
   }
   
-  x += zx_mmdd[mon] + dd-1 + (LEAP(aa+1970) && mon>1?1:0);
+  x += zx_mmdd[mon] + dd-1 + (LEAP(t->tm_year+1900) && mon>1?1:0);
   x *= 24; /* Days to hours */
   return ((x + hh) * 60 + mm) * 60 + ss;
 }
@@ -1013,7 +1016,9 @@ static int zx_timegm(const struct tm* t)
 /*() Convert a date-time format timestamp into seconds since Unix epoch.
  * Format is as follows
  *   01234567890123456789
- *   yyyy-MM-ddThh:mm:ssZ */
+ *   yyyy-MM-ddThh:mm:ssZ
+ *
+ * See also zxid_date_time() for inverse. */
 
 /* Called by:  zxid_parse_invite x2, zxid_sp_sso_finalize, zxid_sso_issue_a7n, zxid_timestamp_chk, zxid_validate_cond x2 */
 int zx_date_time_to_secs(const char* dt)

@@ -34,6 +34,7 @@ Happy hacking!
 -------------------
 
 <<doc-inc.pd>>
+<<htmlpreamble: <title>ZXID Low Level ("Raw") API</title><link type="text/css" rel=stylesheet href="zx.css"><body><h1>ZXID Low Level ("Raw") API</h1> >>
 
 12 Full Native C API
 ====================
@@ -102,8 +103,7 @@ Consider following XML
          <ds:DigestMethod
              Algorithm="http://w3.org/xmldsig#sha1"/>
          <ds:DigestValue>lNIzVMrp8CwTE=</></></>
-     <ds:SignatureValue>
-       GeMp7LS...vnjn8=</></>
+     <ds:SignatureValue>GeMp7LS...vnjn8=</></>
 
 Decoding would produce the data structure in Fig-<<see: fig:decode-data>>. You
 should also look at c/zx-sa-data.h to see the structs involved in this

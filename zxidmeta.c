@@ -1,5 +1,5 @@
 /* zxidmeta.c  -  Handwritten functions for metadata parsing and generation as well as CoT handling
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -22,6 +22,7 @@
  * 7.10.2008,  added documentation --Sampo
  * 1.2.2010,   removed arbitrary size limit --Sampo
  * 12.2.2010,  added pthread locking --Sampo
+ * 17.2.2011,  fixed processing of whitespace in metadata --Sampo
  */
 
 #include "platform.h"  /* for dirent.h */
@@ -56,7 +57,7 @@
  * be called twice per entity, with different kd argument. */
 
 /* Called by:  zxid_mk_ent x2 */
-static void zxid_process_keys(zxid_conf* cf, zxid_entity* ent, struct zx_md_KeyDescriptor_s* kd, char* logkey)
+static void zxid_process_keys(zxid_conf* cf, zxid_entity* ent, struct zx_md_KeyDescriptor_s* kd, const char* logkey)
 {
   int len;
   char* pp;
@@ -64,9 +65,9 @@ static void zxid_process_keys(zxid_conf* cf, zxid_entity* ent, struct zx_md_KeyD
   char* e;
   X509* x;
 
-  for (;
-       kd && kd->gg.g.tok == zx_md_KeyDescriptor_ELEM;
-       kd = (struct zx_md_KeyDescriptor_s*)kd->gg.g.n) {
+  for (; kd; kd = (struct zx_md_KeyDescriptor_s*)kd->gg.g.n) {
+    if (kd->gg.g.tok != zx_md_KeyDescriptor_ELEM)
+      continue;
     if (!kd->KeyInfo || !kd->KeyInfo->X509Data || !ZX_GET_CONTENT(kd->KeyInfo->X509Data->X509Certificate)) {
       ERR("KeyDescriptor for %s missing essential subelements KeyInfo=%p", logkey, kd->KeyInfo);
       return;
@@ -95,8 +96,10 @@ static void zxid_process_keys(zxid_conf* cf, zxid_entity* ent, struct zx_md_KeyD
       ent->enc_cert = x;
       DD("Extracted %s enc cert(%.*s)", logkey, len, p);
     } else {
-      ERR("Unknown key use(%.*s)", kd->use->g.len, kd->use->g.s);
+      ERR("Unknown key use(%.*s) Assume certificate can be used for both signing and encryption.", kd->use->g.len, kd->use->g.s);
       D("Extracted %s cert(%.*s)", logkey, len, p);
+      ent->sign_cert = x;
+      ent->enc_cert = x;
     }
   }
 }
@@ -119,6 +122,16 @@ static zxid_entity* zxid_mk_ent(zxid_conf* cf, struct zx_md_EntityDescriptor_s* 
     zxid_process_keys(cf, ent, ed->IDPSSODescriptor->KeyDescriptor, "IDP SSO");
   if (ed->SPSSODescriptor)
     zxid_process_keys(cf, ent, ed->SPSSODescriptor->KeyDescriptor, "SP SSO");
+
+  if (!ent->sign_cert && !ent->enc_cert) {
+    ERR("Metadata did not have any certificates! Incomplete metadata? %d",0);
+  } else if (!ent->sign_cert) {
+    INFO("Metadata only had encryption certificate. Using it for signing as well. %d", 0);
+    ent->sign_cert = ent->enc_cert;
+  } else if (!ent->enc_cert) {
+    INFO("Metadata only had signing certificate. Using it for encryption as well. %d", 0);
+    ent->enc_cert = ent->sign_cert;
+  }
 
   return ent;
  bad_md:
@@ -159,8 +172,10 @@ zxid_entity* zxid_parse_meta(zxid_conf* cf, char** md, char* lim)
     if (!r->EntitiesDescriptor->EntityDescriptor)
       goto bad_md;
     for (ed = r->EntitiesDescriptor->EntityDescriptor;
-	 ed && ed->gg.g.tok == zx_md_EntityDescriptor_ELEM;
+	 ed;
 	 ed = (struct zx_md_EntityDescriptor_s*)ZX_NEXT(ed)) {
+      if (ed->gg.g.tok != zx_md_EntityDescriptor_ELEM)
+	continue;
       ent = zxid_mk_ent(cf, ed);
       ent->n = ee;
       ee = ent;
@@ -211,7 +226,7 @@ int zxid_write_ent_to_cache(zxid_conf* cf, zxid_entity* ent)
  * See also zxid_get_ent_cache() which will compute the sha1_name
  * and then read the metadata. */
 
-/* Called by:  main x3, test_ibm_cert_problem_enc_dec, zxid_get_ent_by_sha1_name, zxid_get_ent_cache, zxid_load_cot_cache_from_file */
+/* Called by:  covimp_test, main x3, test_ibm_cert_problem_enc_dec, zxid_get_ent_by_sha1_name, zxid_get_ent_cache, zxid_load_cot_cache_from_file */
 zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
 {
   int n, got, siz;
@@ -238,7 +253,7 @@ zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
     goto readerr;
   close_file(fd, (const char*)__FUNCTION__);
 
-  DD("md_buf(%.*s) got=%d siz=%d md_buf(%s)", got, md_buf, got, siz, sha1_name);
+  DD("md_buf(%.*s) got=%d siz=%d sha1_name(%s)", got, md_buf, got, siz, sha1_name);
   
   p = md_buf;
   while (p < md_buf+got) {   /* Loop over concatenated descriptors. */
@@ -492,7 +507,7 @@ struct zx_ds_KeyInfo_s* zxid_key_info(zxid_conf* cf, struct zx_elem_s* father, X
   
   len = i2d_X509(x, 0);  /* Length of the DER encoding */
   if (len <= 0) {
-    ERR("DER encoding certificate failed: %d", len);
+    ERR("DER encoding certificate failed: %d %p", len, x);
   } else {
     dd = d = ZX_ALLOC(cf->ctx, len);
     i2d_X509(x, (unsigned char**)&d);  /* DER encoding of the cert */

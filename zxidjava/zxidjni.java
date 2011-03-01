@@ -2112,12 +2112,20 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxid_conf_az_opt_get(zxid_conf.getCPtr(self));
   }
 
-  public static void conf_pad1_set(zxid_conf self, char value) {
-    zxidjniJNI.zxid_conf_pad1_set(zxid_conf.getCPtr(self), value);
+  public static void conf_valid_opt_set(zxid_conf self, char value) {
+    zxidjniJNI.zxid_conf_valid_opt_set(zxid_conf.getCPtr(self), value);
   }
 
-  public static char conf_pad1_get(zxid_conf self) {
-    return zxidjniJNI.zxid_conf_pad1_get(zxid_conf.getCPtr(self));
+  public static char conf_valid_opt_get(zxid_conf self) {
+    return zxidjniJNI.zxid_conf_valid_opt_get(zxid_conf.getCPtr(self));
+  }
+
+  public static void conf_idp_pxy_ena_set(zxid_conf self, char value) {
+    zxidjniJNI.zxid_conf_idp_pxy_ena_set(zxid_conf.getCPtr(self), value);
+  }
+
+  public static char conf_idp_pxy_ena_get(zxid_conf self) {
+    return zxidjniJNI.zxid_conf_idp_pxy_ena_get(zxid_conf.getCPtr(self));
   }
 
   public static void conf_pad2_set(zxid_conf self, char value) {
@@ -3923,6 +3931,11 @@ public class zxidjni implements zxidjniConstants {
     return (cPtr == 0) ? null : new zxid_fault(cPtr, false);
   }
 
+  public static zxid_fault mk_fault_zx_str(zxid_conf cf, SWIGTYPE_p_zx_elem_s father, String fa, String fc, String fs) {
+    long cPtr = zxidjniJNI.zxid_mk_fault_zx_str(zxid_conf.getCPtr(cf), SWIGTYPE_p_zx_elem_s.getCPtr(father), fa, fc, fs);
+    return (cPtr == 0) ? null : new zxid_fault(cPtr, false);
+  }
+
   public static void set_fault(zxid_conf cf, zxid_ses ses, zxid_fault flt) {
     zxidjniJNI.zxid_set_fault(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), zxid_fault.getCPtr(flt));
   }
@@ -4034,6 +4047,8 @@ public class zxidjni implements zxidjniConstants {
 
   public static String get_epr_desc(zxid_conf cf, zxid_epr epr) { return zxidjniJNI.zxid_get_epr_desc(zxid_conf.getCPtr(cf), zxid_epr.getCPtr(epr)); }
 
+  public static String get_epr_tas3_trust(zxid_conf cf, zxid_epr epr) { return zxidjniJNI.zxid_get_epr_tas3_trust(zxid_conf.getCPtr(cf), zxid_epr.getCPtr(epr)); }
+
   public static String get_epr_secmech(zxid_conf cf, zxid_epr epr) { return zxidjniJNI.zxid_get_epr_secmech(zxid_conf.getCPtr(cf), zxid_epr.getCPtr(epr)); }
 
   public static void set_epr_secmech(zxid_conf cf, zxid_epr epr, String secmec) {
@@ -4080,6 +4095,8 @@ public class zxidjni implements zxidjniConstants {
   public static void set_call_tgttok(zxid_conf cf, zxid_ses ses, zxid_tok tok) {
     zxidjniJNI.zxid_set_call_tgttok(zxid_conf.getCPtr(cf), zxid_ses.getCPtr(ses), zxid_tok.getCPtr(tok));
   }
+
+  public static String epr2str(zxid_conf cf, zxid_epr epr) { return zxidjniJNI.zxid_epr2str(zxid_conf.getCPtr(cf), zxid_epr.getCPtr(epr)); }
 
   public static String token2str(zxid_conf cf, zxid_tok tok) { return zxidjniJNI.zxid_token2str(zxid_conf.getCPtr(cf), zxid_tok.getCPtr(tok)); }
 

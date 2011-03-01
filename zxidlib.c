@@ -1,5 +1,5 @@
 /* zxidlib.c  -  Handwritten functions for implementing common application logic for SP
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -61,7 +61,7 @@ char* zxid_version_str()
  * config option ENC_TAIL_OPT. Often used to generate slightly optimized
  * version for wire transfer. Not suitable for generating canonicalization. */
 
-/* Called by:  main x3, so_enc_dec, zxid_addmd, zxid_anoint_sso_resp, zxid_cache_epr, zxid_call_epr, zxid_idp_sso, zxid_lecp_check, zxid_map_val_ss, zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni, zxid_mni_do_ss, zxid_pep_az_base_soap_pepmap x3, zxid_pep_az_soap_pepmap x3, zxid_reg_svc, zxid_ses_to_pool x2, zxid_slo_resp_redir, zxid_snarf_eprs_from_ses, zxid_soap_call_raw, zxid_soap_cgi_resp_body, zxid_sp_meta, zxid_sp_mni_redir, zxid_sp_slo_redir, zxid_start_sso_url, zxid_write_ent_to_cache, zxid_wsc_prepare_call, zxid_wsp_decorate */
+/* Called by:  main x3, so_enc_dec, zxid_addmd, zxid_anoint_sso_resp, zxid_cache_epr, zxid_call_epr, zxid_idp_sso, zxid_lecp_check, zxid_map_val_ss, zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni, zxid_mni_do_ss, zxid_pep_az_base_soap_pepmap x3, zxid_pep_az_soap_pepmap x5, zxid_reg_svc, zxid_ses_to_pool x2, zxid_slo_resp_redir, zxid_snarf_eprs_from_ses, zxid_soap_call_raw, zxid_soap_cgi_resp_body, zxid_sp_meta, zxid_sp_mni_redir, zxid_sp_slo_redir, zxid_start_sso_url, zxid_write_ent_to_cache, zxid_wsc_prepare_call, zxid_wsp_decorate */
 struct zx_str* zx_easy_enc_elem_opt(zxid_conf* cf, struct zx_elem_s* x)
 {
   struct zx_str* ss;
@@ -71,7 +71,7 @@ struct zx_str* zx_easy_enc_elem_opt(zxid_conf* cf, struct zx_elem_s* x)
   return ss;
 }
 
-/* Called by:  attribute_sort_test, zxid_a7n2str, zxid_anoint_a7n x2, zxid_anoint_sso_resp, zxid_az_soap x2, zxid_idp_sso, zxid_mk_art_deref, zxid_nid2str, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x5, zxid_sp_sso_finalize, zxid_ssos_anreq, zxid_token2str, zxid_wsf_validate_a7n */
+/* Called by:  attribute_sort_test x2, zxid_a7n2str, zxid_anoint_a7n x2, zxid_anoint_sso_resp, zxid_az_soap x2, zxid_idp_sso, zxid_mk_art_deref, zxid_nid2str, zxid_sp_mni_soap, zxid_sp_slo_soap, zxid_sp_soap_dispatch x5, zxid_sp_sso_finalize, zxid_ssos_anreq, zxid_token2str, zxid_wsf_validate_a7n */
 struct zx_str* zx_easy_enc_elem_sig(zxid_conf* cf, struct zx_elem_s* x)
 {
   cf->ctx->enc_tail_opt = 0;
@@ -122,7 +122,9 @@ struct zx_attr_s* zxid_mk_id_attr(zxid_conf* cf, struct zx_elem_s* father, int t
  * either form as input, as they are both legal, but will only generate the
  * without milliseconds form. Some other softwares are buggy and fail to
  * accept the without milliseconds form. You can change the format at compile time
- * by editing zxidlib.c:94.
+ * by editing zxidlib.c:140.
+ *
+ * See also: zx_date_time_to_secs()
  */
 /* Called by:  zxid_put_invite x2, zxid_put_psobj x2, zxid_wsc_prep_secmech, zxid_wsf_decor */
 struct zx_str* zxid_date_time(zxid_conf* cf, time_t secs)
@@ -445,6 +447,7 @@ struct zx_str* zxid_saml2_redir_url(zxid_conf* cf, struct zx_str* loc, struct zx
   ss = zx_strf(cf->ctx, (memchr(loc->s, '?', loc->len)
 			 ? "%.*s&%.*s" CRLF2
 			 : "%.*s?%.*s" CRLF2), loc->len, loc->s, rse->len, rse->s);
+  D("%.*s", ss->len, ss->s);
   if (zx_debug & ZXID_INOUT) INFO("%.*s", ss->len, ss->s);
   zx_str_free(cf->ctx, rse);
   return ss;
@@ -907,7 +910,9 @@ struct zx_str* zxid_map_val(zxid_conf* cf, zxid_ses* ses, zxid_entity* meta, str
   return zxid_map_val_ss(cf, ses, meta, map, atname, zx_dup_str(cf->ctx, STRNULLCHK(val)));
 }
 
-/*() Extract from a string representing SOAP envelope, the payload part in the body. */
+/*() Extract the payload part in the SOAP Body from a string representing SOAP Envelope.
+ * This does not really parse the XML. It uses simple, but robust, string matching
+ * based heuristic that can tolerate some garbage input. */
 
 /* Called by:  zxcall_main */
 char* zxid_extract_body(zxid_conf* cf, char* enve)

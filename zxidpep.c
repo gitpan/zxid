@@ -50,7 +50,7 @@
  * env::  Value-result parameter. Linked list of environment attributes.
  */
 
-/* Called by:  zxid_pep_az_base_soap_pepmap, zxid_pep_az_soap_pepmap */
+/* Called by:  zxid_call_trustpdp, zxid_pep_az_base_soap_pepmap, zxid_pep_az_soap_pepmap */
 static void zxid_pepmap_extract(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zxid_map* pepmap, struct zx_xac_Attribute_s** subj, struct zx_xac_Attribute_s** rsrc, struct zx_xac_Attribute_s** act, struct zx_xac_Attribute_s** env)
 {
   struct zxid_map* map;
@@ -160,7 +160,7 @@ static void zxid_pepmap_extract(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, str
  * returns:: SAML Response as data structure or null upon error.
  */
 
-/* Called by:  zxid_pep_az_base_soap_pepmap, zxid_pep_az_soap_pepmap */
+/* Called by:  zxid_call_trustpdp, zxid_pep_az_base_soap_pepmap, zxid_pep_az_soap_pepmap */
 static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
 {
   X509* sign_cert;
@@ -630,7 +630,7 @@ char* zxid_az_base(const char* conf, const char* qs, const char* sid)
  *     permit returns <xac:Response> as string, allowing the obligations to be extracted.
  */
 
-/* Called by:  zxid_di_query() */
+/* Called by:  zxid_di_query */
 int zxid_call_trustpdp(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zxid_map* pepmap, const char* start, const char* lim, zxid_epr* epr)
 {
   struct zx_xac_Attribute_s* xac_at;
@@ -708,9 +708,9 @@ int zxid_call_trustpdp(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zxid_
   zxid_pepmap_extract(cf, cgi, ses, pepmap, &subj, &rsrc, &act, &env);
 #endif
   
-  while (start < lim && (start = zx_memmem(start, (lim - start), TAS3_TRUST_CTL1_INPUT, sizeof(TAS3_TRUST_CTL1_INPUT)-1))) {
+  while (start < lim && (start = zx_memmem(start, (lim - start), TAS3_TRUST_INPUT_CTL1, sizeof(TAS3_TRUST_INPUT_CTL1)-1))) {
 
-    val = memchr(start+sizeof(TAS3_TRUST_CTL1_INPUT)-1, '=', lim - (start+sizeof(TAS3_TRUST_CTL1_INPUT)-1));
+    val = memchr(start+sizeof(TAS3_TRUST_INPUT_CTL1)-1, '=', lim - (start+sizeof(TAS3_TRUST_INPUT_CTL1)-1));
     if (!val) {
       ERR("Malformed trust option(%.*s)", lim-start, start);
       break;
@@ -757,12 +757,12 @@ int zxid_call_trustpdp(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zxid_
     if (resp->Status && resp->Status->StatusCode && resp->Status->StatusCode->StatusCode) {
       /* Second and further layer status codes may contain Trust Rankings */
       for (sc = resp->Status->StatusCode->StatusCode; sc; sc = sc->StatusCode) {
-	if (!sc->Value || !sc->Value->g.len < sizeof(TAS3_TRUST_CTL1_RANKING)-1 ||!sc->Value->g.s
-	    || memcmp(sc->Value->g.s, TAS3_TRUST_CTL1_RANKING,sizeof(TAS3_TRUST_CTL1_RANKING)-1))
+	if (!sc->Value || !sc->Value->g.len < sizeof(TAS3_TRUST_RANKING_CTL1)-1 ||!sc->Value->g.s
+	    || memcmp(sc->Value->g.s, TAS3_TRUST_RANKING_CTL1,sizeof(TAS3_TRUST_RANKING_CTL1)-1))
 	  continue;
-	val = memchr(sc->Value->g.s + sizeof(TAS3_TRUST_CTL1_RANKING)-1, '=', sc->Value->g.len - (sizeof(TAS3_TRUST_CTL1_RANKING)-1));
+	val = memchr(sc->Value->g.s + sizeof(TAS3_TRUST_RANKING_CTL1)-1, '=', sc->Value->g.len - (sizeof(TAS3_TRUST_RANKING_CTL1)-1));
 	if (!val) {
-	  ERR("Malformed trust renking(%.*s)", sc->Value->g.len, sc->Value->g.s);
+	  ERR("Malformed trust ranking(%.*s)", sc->Value->g.len, sc->Value->g.s);
 	  continue;
 	}
 	

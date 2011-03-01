@@ -1,5 +1,5 @@
 /* zxid.h  -  Definitions for zxid CGI
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -26,6 +26,7 @@
 
 #include <memory.h>
 #include <string.h>
+#include <sys/time.h>  /* for struct timeval */
 #ifdef USE_CURL
 #include <curl/curl.h>
 #endif
@@ -303,7 +304,9 @@ struct zxid_conf {
   char  loguser;
 
   char  az_opt;        /* Kludgy options for AZ debugging and to work-around bugs of others */
-  char  pad1; char pad2; char pad3; char pad4; char pad5; char pad6; char pad7;
+  char  valid_opt;     /* Kludgy options for AZ debugging and to work-around bugs of others */
+  char  idp_pxy_ena;
+  char  pad2; char pad3; char pad4; char pad5; char pad6; char pad7;
 
 #ifdef USE_CURL
   CURL* curl;
@@ -691,7 +694,7 @@ ZXID_DECL int zxid_lazy_load_sign_cert_and_pkey(zxid_conf* cf, X509** cert, EVP_
 #endif
 ZXID_DECL int   zxid_set_opt(zxid_conf* cf, int which, int val);
 ZXID_DECL char* zxid_set_opt_cstr(zxid_conf* cf, int which, char* val);
-ZXID_DECL void  zxid_url_set(zxid_conf* cf, char* url);
+ZXID_DECL void  zxid_url_set(zxid_conf* cf, const char* url);
 ZXID_DECL int   zxid_init_conf(zxid_conf* cf, const char* conf_dir);
 ZXID_DECL zxid_conf* zxid_init_conf_ctx(zxid_conf* cf, const char* zxid_path);
 ZXID_DECL zxid_conf* zxid_new_conf(const char* zxid_path);
@@ -825,8 +828,9 @@ ZXID_DECL struct zx_sp_Status_s* zxid_OK(zxid_conf* cf, struct zx_elem_s* father
 /* zxidmkwsf */
 
 ZXID_DECL struct zx_lu_Status_s* zxid_mk_lu_Status(zxid_conf* cf, struct zx_elem_s* father, const char* sc1, const char* sc2, const char* msg, const char* ref);
-ZXID_DECL zxid_tas3_status* zxid_mk_tas3_status(zxid_conf* cf, struct zx_elem_s* father, const char* ctlpt, const char* sc1, const char* sc2, const char* msg, const char* ref);
+ZXID_DECL zxid_tas3_status* zxid_mk_tas3_status(zxid_conf* cf, struct zx_elem_s* father, const char* ctlpt,  const char* sc1, const char* sc2, const char* msg, const char* ref);
 ZXID_DECL zxid_fault* zxid_mk_fault(zxid_conf* cf, struct zx_elem_s* father, const char* fa, const char* fc, const char* fs, const char* sc1, const char* sc2, const char* msg, const char* ref);
+ZXID_DECL zxid_fault* zxid_mk_fault_zx_str(zxid_conf* cf, struct zx_elem_s* father, struct zx_str* fa, struct zx_str* fc, struct zx_str* fs);
 
 ZXID_DECL void zxid_set_fault(zxid_conf* cf, zxid_ses* ses, zxid_fault* flt);
 ZXID_DECL zxid_fault*  zxid_get_fault(zxid_conf* cf, zxid_ses* ses);
@@ -899,6 +903,7 @@ ZXID_DECL zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc,
 ZXID_DECL struct zx_str* zxid_get_epr_address(zxid_conf* cf, zxid_epr* epr);
 ZXID_DECL struct zx_str* zxid_get_epr_entid(zxid_conf* cf, zxid_epr* epr);
 ZXID_DECL struct zx_str* zxid_get_epr_desc(zxid_conf* cf, zxid_epr* epr);
+ZXID_DECL struct zx_str* zxid_get_epr_tas3_trust(zxid_conf* cf, zxid_epr* epr);
 ZXID_DECL struct zx_str* zxid_get_epr_secmech(zxid_conf* cf, zxid_epr* epr);
 
 ZXID_DECL void zxid_set_epr_secmech(zxid_conf* cf, zxid_epr* epr, const char* secmec);
@@ -914,6 +919,7 @@ ZXID_DECL void zxid_set_call_invoktok(zxid_conf* cf, zxid_ses* ses, zxid_tok* to
 ZXID_DECL zxid_tok* zxid_get_call_tgttok(zxid_conf* cf, zxid_ses* ses);
 ZXID_DECL void zxid_set_call_tgttok(zxid_conf* cf, zxid_ses* ses, zxid_tok* tok);
 
+ZXID_DECL struct zx_str* zxid_epr2str(zxid_conf* cf, zxid_epr* epr);
 ZXID_DECL struct zx_str* zxid_token2str(zxid_conf* cf, zxid_tok* tok);
 ZXID_DECL zxid_tok* zxid_str2token(zxid_conf* cf, struct zx_str* ss);
 ZXID_DECL struct zx_str* zxid_a7n2str(zxid_conf* cf, zxid_a7n* a7n);

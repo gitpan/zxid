@@ -1,5 +1,5 @@
 /* zxidconf.h  -  Configuration of ZXID
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -11,6 +11,7 @@
  * 12.8.2006, created --Sampo
  * 29.8.2009, added PDP_URL --Sampo
  * 7.1.2010,  added WSC and WSP signing options --Sampo
+ * 12.2.2011, added proxy IdP related options --Sampo
  *
  * Most of the configuration options can be set via configuration
  * file /var/zxid/zxid.conf or using -O command line flag(s). In
@@ -55,7 +56,7 @@
  * The nice name may be used by IdP user interface to refer to the SP. It
  * is usually a short human readable name or description. It will also
  * appear in metadata as Organization/OrganizationDisplayName */
-#define ZXID_NICE_NAME "ZXID CONF NICE_NAME: Set this to describe your site to humans"
+#define ZXID_NICE_NAME "ZXID configuration NICE_NAME: Set this to describe your site to humans"
 
 /*(c) Web Site URL - root of EntityID
  * IMPORTANT: Failure to config this option may block zxid from operating.
@@ -353,6 +354,9 @@
  * Whether limited IdP functionality is enabled. Affects generated metadata. */
 #define ZXID_IDP_ENA 0
 
+/*(c) IdP Proxying, i.e. IdP can be SP towards another IdP. */
+#define ZXID_IDP_PXY_ENA 0
+
 /*(c) Identity Mapper and People Service
  * Whether limited Identity Mapper and People Service functionality is enabled.
  * For this to work, IDP_ENA=1 is needed. */
@@ -373,7 +377,7 @@
  * Must AuthnReq be signed (controls both IdP metadata and actual behavior, i.e. the check). */
 #define ZXID_WANT_AUTHN_REQ_SIGNED 1
 
-/*() Maximum filesystem path used in /var/zxid tree. */
+/*() Maximum filesystem path length used in /var/zxid tree. */
 #define ZXID_MAX_BUF 1024  /* (compile) */
 
 /*(c) Logging Options
@@ -494,6 +498,15 @@
 /*(c) XML encoding optimizations.
  * 1 = optimize close tag of empty elements as <ns:foo/> */
 #define ZXID_ENC_TAIL_OPT 1
+
+/*(c) SOAP Envelope validation options. In well configured and
+ * bug free environment, you should not need any of these options.
+ * Turning them on will reduce security as validations are not made.
+ *
+ * 0x01 Skip response header validation entirely, see zxid_wsc_valid_re_env()
+ */
+#define ZXID_VALID_OPT 0x00
+#define ZXID_VALID_OPT_SKIP_RESP_HDR 0x01
 
 /*(c) Time Slop
  * Because clock sychronization amoung the servers in the CoT is unlikely
@@ -625,7 +638,7 @@
  * 0x01: prevent WS-Security header in SOAP XACML requests.  */
 #define ZXID_AZ_OPT 0
 
-/*(c) Which version of XACML to speak */
+/*(c) Which version of XACML to speak, e.g. "2.0" or "2.0-cd1" or "xac-soap" */
 
 #define ZXID_XASP_VERS "2.0"
 
@@ -634,20 +647,29 @@
 
 #define ZXID_XA_POLICY_SET_ID_REF ""  /* *** implement */
 
-/*(c) Specify XACML Attributes for SSO PEP in format ns$A$rule$b$ext */
-#define ZXID_PEPMAP "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+/*(c) Specify common XACML Attributes for PEPs in format ns$A$rule$b$ext (compile)
+ * The ZXID_COMMAP can only be specified at compile time. At run time
+ * each map has to be specified separately, sorry.
+ * The order of processing rules has not been fixed yet, but
+ * currently (Feb2011/R0.76) the first rule is processed last, e.g.
+ * the "env$*$$$" stanza that appears as first below causes
+ * all other attributes to be considered environment attributes. */
+#define ZXID_COMMAP       "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$urn:oasis:names:tc:xacml:1.0:subject:subject-id$$$;subj$urn:oid:1.3.6.1.4.1.5923.1.1.1.1$$$;subj$urn:oid:1.3.6.1.4.1.5923.1.1.1.7$$$;subj$eduPersonAffiliation$$$;subj$eduPersonEntitlement$$$subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;rsrc$urn:oasis:names:tc:xacml:1.0:resource:resource-id$$$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;act$urn:oasis:names:tc:xacml:1.0:action:action-id$$$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+
+/*(c) Specify XACML Attributes for SSO / frontchannel request in PEP in format ns$A$rule$b$ext */
+#define ZXID_PEPMAP       ZXID_COMMAP
 
 /*(c) Specify XACML Attributes for Request Outbound PEP at WSC (1) in format ns$A$rule$b$ext */
-#define ZXID_PEPMAP_RQOUT "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+#define ZXID_PEPMAP_RQOUT ZXID_COMMAP
 
 /*(c) Specify XACML Attributes for Request Inbound PEP at WSP (2) in format ns$A$rule$b$ext */
-#define ZXID_PEPMAP_RQIN  "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+#define ZXID_PEPMAP_RQIN  ZXID_COMMAP
 
 /*(c) Specify XACML Attributes for Response Outbound PEP at WSP (3) in format ns$A$rule$b$ext */
-#define ZXID_PEPMAP_RSOUT "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+#define ZXID_PEPMAP_RSOUT ZXID_COMMAP
 
 /*(c) Specify XACML Attributes for Response Inbound PEP at WSC (4) in format ns$A$rule$b$ext */
-#define ZXID_PEPMAP_RSIN  "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+#define ZXID_PEPMAP_RSIN  ZXID_COMMAP
 
 //#define ZXID_XACML2_SUBJ  "idpnid=$idpnid&role=$role"
 //#define ZXID_XACML2_RSRC  "URL=$URL"
@@ -713,12 +735,7 @@
   "<p>IdP URL <input name=e size=60><input type=submit name=l0 value=\" Login \"><br>"\
   "Entity ID of this SP (click on the link to fetch the SP metadata): <a href=\"!!EID\">!!EID</a>"\
   "!!IDP_LIST<h3>Technical options</h3>"\
-  "<input type=checkbox name=fc value=1 checked> Create federation, NID Format:"\
-  "<select name=fn>"\
-  "<option value=prstnt>Persistent"\
-  "<option value=trnsnt>Transient"\
-  "<option value=\"\">(none)"\
-  "</select><br>"\
+  "<input type=hidden name=fc value=1><input type=hidden name=fn value=prstnt>"\
   "<!-- ZXID built-in defaults, see zxidconf.h and zxid-conf.pd for explanation -->"\
   "<input type=hidden name=fq value=\"\">"\
   "<input type=hidden name=fy value=\"\">"\
@@ -777,7 +794,7 @@
   "<ol><li> Yubikey <a href=\"http://yubico.com\"><img src=\"yubiright_16x16.gif\" width=16 height=16 border=0></a>:<input name=au><input type=submit name=alp value=\" Login \">"\
   "<li> User: <input name=au> Password: <input type=password name=ap><input type=submit name=alp value=\" Login \">"\
   "<li><input type=submit name=an value=\" Create New User \"></ol>"\
-  "<h3>Technical options</h3><input type=checkbox name=fc value=1 checked> Create federation, NID Format: <select name=fn><option value=prstnt>Persistent<option value=trnsnt>Transient<option value=\"\">(none)</select><br>"\
+  "<input type=hidden name=fc value=1><input type=hidden name=fn value=prstnt><br>"\
   "<input type=hidden name=fq value=\"\"><input type=hidden name=fy value=\"\"><input type=hidden name=fa value=\"\"><input type=hidden name=fm value=\"\"><input type=hidden name=fp value=0><input type=hidden name=ff value=0><!-- ZXID built-in defaults, see IDP_SEL_TECH_SITE in zxidconf.h-->"\
   "<input type=hidden name=ar value=\"!!SSOREQ\">"\
   "<input type=hidden name=zxapp value=\"!!ZXAPP\">"\

@@ -40,8 +40,8 @@ all: default precheck_apache samlmod phpzxid javazxid apachezxid smime zxidwspcg
 
 ### This is the authorative spot to set version number. Document in Changes file.
 ### c/zxidvers.h is generated from these, see `make updatevers'
-ZXIDVERSION=0x000076
-ZXIDREL=0.76
+ZXIDVERSION=0x000079
+ZXIDREL=0.79
 
 ### Where package is installed (use `make PREFIX=/your/path' to change)
 PREFIX=/usr/local/zxid/$(ZXIDREL)
@@ -1247,8 +1247,14 @@ zxencdectest:
 	echo "Port this for mingw" > zxencdectest
 endif
 
-zxmqtest: $(ZXMQTEST_OBJ) $(LIBZXID_A)
-	$(LD) $(LDFLAGS) $(OUTOPT)zxmqtest$(EXE) $^ -lzmq $(LIBZXID) $(LIBS)
+zxmqtest-zmq: $(ZXMQTEST_OBJ) $(LIBZXID_A)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxmqtest-zmq$(EXE) $^ -lzmq $(LIBZXID) $(LIBS)
+
+zxmqtest.o: zxmqtest.c
+	$(CC) $(CFLAGS) -DOPENAMQ -I/apps/openamq/std/include -c $^ -o zxmqtest.o
+
+zxmqtest-amq: $(ZXMQTEST_OBJ) $(LIBZXID_A)
+	$(LD) $(LDFLAGS) $(OUTOPT)zxmqtest-amq$(EXE) $^ -L/apps/openamq/std/lib -lamq_wireapi -lamq_common -lsmt -lasl -lipr -licl -lpcre -laprutil -lapr -lcrypt -lm $(LIBZXID) $(LIBS)
 
 zxidxmltool: $(ZXIDXMLTOOL_OBJ) $(LIBZXID_A)
 	$(LD) $(LDFLAGS) $(OUTOPT)zxidxmltool$(EXE) $^ $(LIBS)
@@ -1761,25 +1767,25 @@ cleandoc:
 	rm -f $(DOC)
 
 release:
-	scp tex/README.zxid.pdf html/README.zxid-win32.html html/i-*.png zxid-frame.html $(WEBROOT)
+	rsync tex/README.zxid.pdf html/README.zxid-win32.html html/i-*.png zxid-frame.html $(WEBROOT)
 
 winbinrel:
-	scp zxid-$(ZXIDREL)-win32-bin.zip $(WEBROOT)
+	rsync zxid-$(ZXIDREL)-win32-bin.zip $(WEBROOT)
 
 indexrel: zxid-tas3-ios-index.html
 	rsync $< $(WEBROOT)
 
 reldoc:
-	scp $(DOC)  $(WEBROOT)/html
+	rsync $(DOC)  $(WEBROOT)/html
 
 relhtml:
-	scp html/*  $(WEBROOT)/html
+	rsync html/*  $(WEBROOT)/html
 
 refhtml:
-	scp ref/html/*  $(WEBROOT)/ref/html
+	rsync ref/html/*  $(WEBROOT)/ref/html
 
 zxidpcopytc: html/zxidp-user-terms.html html/zxidp-sp-terms.html
-	scp html/zxidp-user-terms.html html/zxidp-sp-terms.html $(WEBROOT)/html
+	rsync html/zxidp-user-terms.html html/zxidp-sp-terms.html $(WEBROOT)/html
 
 rsynclite:
 	cd ..; rsync -a '--exclude=*.o' '--exclude=*.zip' '--exclude=TAGS' '--exclude=*.tgz' '--exclude=*.class' '--exclude=*.so' '--exclude=*.a'  '--exclude=zxlogview' '--exclude=zxidsimple'  '--exclude=zxidhlowsf'  '--exclude=zxidhlo' '--exclude=zxidsp' zxid mesozoic.homeip.net:
@@ -1862,7 +1868,7 @@ API_REF_SRC=aux-templ.c dec-templ.c enc-templ.c getput-templ.c \
  zxidses.c zxidsimp.c zxidpool.c zxidslo.c zxidspx.c zxididpx.c zxiddec.c \
  zxidsso.c zxidpsso.c zxiddi.c   zxidim.c  zxidps.c \
  zxiduser.c zxidwsc.c zxidwsp.c \
- zxlib.c zxlog.c zxlogview.c zxns.c zxsig.c zxutil.c
+ zxlib.c zxlibdec.c zxlibenc.c zxlog.c zxlogview.c zxns.c zxsig.c zxutil.c
 
 refcall:
 	$(PERL) ./call-anal.pl -n $(API_REF_SRC) >callgraph.dot

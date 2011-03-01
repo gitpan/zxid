@@ -94,9 +94,9 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
 
   /* Work through all requests */
 
-  for (rs = req->RequestedService;
-       rs && rs->gg.g.tok == zx_di_RequestedService_ELEM;
-       rs = (struct zx_di_RequestedService_s*)ZX_NEXT(rs)) {
+  for (rs = req->RequestedService; rs; rs = (struct zx_di_RequestedService_s*)ZX_NEXT(rs)) {
+    if (rs->gg.g.tok != zx_di_RequestedService_ELEM)
+      continue;
 
     /* Look for all entities providing service */
 
@@ -128,9 +128,9 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
       
       /* Filter file name by service type */
       
-      for (el = rs->ServiceType;
-	   el && el->g.tok == zx_di_ServiceType_ELEM;
-	   el = (struct zx_elem_s*)el->g.n) {
+      for (el = rs->ServiceType; el; el = (struct zx_elem_s*)el->g.n) {
+	if (el->g.tok != zx_di_ServiceType_ELEM)
+	  continue;
 	ss = ZX_GET_CONTENT(el);
 	if (!ss || !ss->len)
 	  continue;
@@ -177,9 +177,9 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
       /* Filter by service type */
       
       match = 1;
-      for (el = rs->ServiceType;
-	   el && el->g.tok == zx_di_ServiceType_ELEM;
-	   el = (struct zx_elem_s*)el->g.n) {
+      for (el = rs->ServiceType; el; el = (struct zx_elem_s*)el->g.n) {
+	if (el->g.tok != zx_di_ServiceType_ELEM)
+	  continue;
 	ss = ZX_GET_CONTENT(el);
 	if (!ss || !ss->len)
 	  continue;
@@ -205,9 +205,9 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
 
       /* Filter by provider id */
       
-      for (el = rs->ProviderID;
-	   el && el->g.tok == zx_di_ProviderID_ELEM;
-	   el = (struct zx_elem_s*)el->g.n) {
+      for (el = rs->ProviderID; el; el = (struct zx_elem_s*)el->g.n) {
+	if (el->g.tok != zx_di_ProviderID_ELEM)
+	  continue;
 	ss = ZX_GET_CONTENT(el);
 	if (!ss || !ss->len)
 	  continue;
@@ -227,9 +227,9 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
 #if 1
       /* TAS3 extension: allow matching by the Address (URL) as well */
       if (!match) {
-	for (el = rs->ProviderID;
-	     el && el->g.tok == zx_di_ProviderID_ELEM;
-	     el = (struct zx_elem_s*)el->g.n) {
+	for (el = rs->ProviderID; el; el = (struct zx_elem_s*)el->g.n) {
+	  if (el->g.tok != zx_di_ProviderID_ELEM)
+	    continue;
 	  ss = ZX_GET_CONTENT(el);
 	  if (!ss || !ss->len)
 	    continue;
@@ -253,26 +253,26 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
       /* Check Options, in particular whether Trust parameters are there. */
 
       if (rs->Options) {
-	for (el = rs->Options->Option;
-	     el && el->g.tok == zx_di_Option_ELEM;
-	     el = (struct zx_elem_s*)el->g.n) {
+	for (el = rs->Options->Option; el; el = (struct zx_elem_s*)el->g.n) {
+	  if (el->g.tok != zx_di_Option_ELEM)
+	    continue;
 	  ss = ZX_GET_CONTENT(el);
 	  if (!ss || !ss->len) {
 	    D("Option element does not have content %p", ss);
 	    continue;
 	  }
-	  p = zx_memmem(ss->s, ss->len, TAS3_TRUST_CTL1_INPUT, sizeof(TAS3_TRUST_CTL1_INPUT)-1);
+	  p = zx_memmem(ss->s, ss->len, TAS3_TRUST_INPUT_CTL1, sizeof(TAS3_TRUST_INPUT_CTL1)-1);
 	  if (!p) {
 	    D("Option(%.*s) is not trust related", ss->len, ss->s);	    
 	    continue;
 	  }
 	  start = p;
-	  lim = memchr(p+sizeof(TAS3_TRUST_CTL1_INPUT)-1, '&', ss->len - (p - ss->s));
+	  lim = memchr(p+sizeof(TAS3_TRUST_INPUT_CTL1)-1, '&', ss->len - (p - ss->s));
 	  if (!lim) {
 	    lim = ss->s + ss->len;
 	  } else {
-	    while (p = zx_memmem(lim, ss->len - (lim - ss->s), TAS3_TRUST_CTL1_INPUT, sizeof(TAS3_TRUST_CTL1_INPUT)-1)) {
-	      lim = memchr(p+sizeof(TAS3_TRUST_CTL1_INPUT)-1, '&', ss->len - (p - ss->s));
+	    while (p = zx_memmem(lim, ss->len - (lim - ss->s), TAS3_TRUST_INPUT_CTL1, sizeof(TAS3_TRUST_INPUT_CTL1)-1)) {
+	      lim = memchr(p+sizeof(TAS3_TRUST_INPUT_CTL1)-1, '&', ss->len - (p - ss->s));
 	      if (!lim) {
 		lim = ss->s + ss->len;
 		break;
@@ -284,6 +284,7 @@ struct zx_di_QueryResponse_s* zxid_di_query(zxid_conf* cf,zxid_ses* ses,struct z
 	    D("Trust related discovery options(%.*s), TRUSTPDP_URL(%s)", lim-start, start, cf->trustpdp_url);
 	    if (zxid_call_trustpdp(cf, 0, ses, cf->pepmap_rsin, start, lim, epr)) {
 	      D("%d: Trust PERMIT. file(%s)", n_discovered, de->d_name);
+	      /* *** return trust scorings as part of the EPR */
 	      continue;
 	    } else {
 	      D("%d: Rejected due to Trust DENY. file(%s)", n_discovered, de->d_name);

@@ -58,9 +58,14 @@ int zxid_pick_sso_profile(zxid_conf* cf, zxid_cgi* cgi, zxid_entity* idp_meta)
 }
 
 /*() Map name id format form field to SAML specified URN string. */
-/* Called by:  zxid_map_identity_token, zxid_mk_authn_req, zxid_nidmap_identity_token */
+/* Called by:  covimp_test x10, zxid_map_identity_token, zxid_mk_authn_req, zxid_nidmap_identity_token */
 const char* zxid_saml2_map_nid_fmt(const char* f)
 {
+  if (!f || !f[0]) {
+    ERR("NULL argument %p", f);
+    return "trnsnt";
+  }
+#if 0
   switch (f[0]) {
   case 'n' /*'none'*/:   return "";
   case 'p' /*'prstnt'*/: return SAML2_PERSISTENT_NID_FMT;
@@ -71,12 +76,23 @@ const char* zxid_saml2_map_nid_fmt(const char* f)
   case 'w' /*'windmn'*/: return SAML2_WINDOMAINQN_NID_FMT;
   case 'k' /*'kerbrs'*/: return SAML2_KERBEROS_NID_FMT;
   case 's' /*'saml'*/:   return SAML2_ENTITY_NID_FMT;
-  default:               return f;
   }
+#else
+  if (!strcmp("prstnt", f)) return SAML2_PERSISTENT_NID_FMT;
+  if (!strcmp("trnsnt", f)) return SAML2_TRANSIENT_NID_FMT;
+  if (!strcmp("none",   f)) return "";
+  if (!strcmp("unspfd", f)) return SAML2_UNSPECIFIED_NID_FMT;
+  if (!strcmp("emladr", f)) return SAML2_EMAILADDR_NID_FMT;
+  if (!strcmp("x509sn", f)) return SAML2_X509_NID_FMT;
+  if (!strcmp("windmn", f)) return SAML2_WINDOMAINQN_NID_FMT;
+  if (!strcmp("kerbrs", f)) return SAML2_KERBEROS_NID_FMT;
+  if (!strcmp("saml",   f)) return SAML2_ENTITY_NID_FMT;
+#endif
+  return f;
 }
 
 /*() Map protocol binding form field to SAML specified URN string. */
-/* Called by: */
+/* Called by:  covimp_test x7 */
 const char* zxid_saml2_map_protocol_binding(const char* b)
 {
   switch (b[0]) {
@@ -92,7 +108,7 @@ const char* zxid_saml2_map_protocol_binding(const char* b)
 }
 
 /*() Map SAML protocol binding URN to form field. */
-/* Called by:  zxid_idp_sso x3, zxid_sp_loc_by_index_raw */
+/* Called by:  covimp_test x8, zxid_idp_sso x3, zxid_sp_loc_by_index_raw */
 int zxid_protocol_binding_map_saml2(struct zx_str* b)
 {
   if (!b || !b->len || !b->s) {
@@ -110,7 +126,7 @@ int zxid_protocol_binding_map_saml2(struct zx_str* b)
 }
 
 /*() Map authentication contest class ref form field to SAML specified URN string. */
-/* Called by:  zxid_mk_authn_req */
+/* Called by:  covimp_test x8, zxid_mk_authn_req */
 char* zxid_saml2_map_authn_ctx(char* c)
 {
   switch (c[0]) {
@@ -168,10 +184,13 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
       return 0;
     }
     for (sso_svc = idp_meta->ed->IDPSSODescriptor->SingleSignOnService;
-	 sso_svc && sso_svc->gg.g.tok == zx_md_SingleSignOnService_ELEM;
-	 sso_svc = (struct zx_md_SingleSignOnService_s*)sso_svc->gg.g.n)
+	 sso_svc;
+	 sso_svc = (struct zx_md_SingleSignOnService_s*)sso_svc->gg.g.n) {
+      if (sso_svc->gg.g.tok != zx_md_SingleSignOnService_ELEM)
+	continue;
       if (sso_svc->Binding && !memcmp(SAML2_REDIR, sso_svc->Binding->g.s, sso_svc->Binding->g.len))
 	break;
+    }
     if (!sso_svc) {
       ERR("IdP Entity(%s) does not have any IdP SSO Service with " SAML2_REDIR " binding (metadata problem)", cgi->eid);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No redir binding");
@@ -179,8 +198,11 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
       D_DEDENT("start_sso: ");
       return 0;
     }
+    D("HERE1 %p", sso_svc);
+    D("HERE2 %p", sso_svc->Location);
+    D("HERE3 len=%d (%.*s)", sso_svc->Location->g.len, sso_svc->Location->g.len, sso_svc->Location->g.s);
     ar = zxid_mk_authn_req(cf, cgi);
-    ar->Destination = sso_svc->Location;
+    ZX_ORD_INS_ATTR(ar, Destination, sso_svc->Location);
     ars = zx_easy_enc_elem_opt(cf, &ar->gg);
     D("AuthnReq(%.*s)", ars->len, ars->s);
     break;
@@ -299,12 +321,15 @@ int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
       return 0;
     }
     for (ar_svc = idp_meta->ed->IDPSSODescriptor->ArtifactResolutionService;
-	 ar_svc && ar_svc->gg.g.tok == zx_md_ArtifactResolutionService_ELEM;
-	 ar_svc = (struct zx_md_ArtifactResolutionService_s*)ar_svc->gg.g.n)
+	 ar_svc;
+	 ar_svc = (struct zx_md_ArtifactResolutionService_s*)ar_svc->gg.g.n) {
+      if (ar_svc->gg.g.tok != zx_md_ArtifactResolutionService_ELEM)
+	continue;
       if (ar_svc->Binding  && !memcmp(SAML2_SOAP, ar_svc->Binding->g.s, ar_svc->Binding->g.len)
 	  && ar_svc->index && !memcmp(end_pt_ix, ar_svc->index->g.s, ar_svc->index->g.len)
 	  && ar_svc->Location)
 	break;
+    }
     if (!ar_svc) {
       ERR("Entity(%s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding and index(%s) (metadata problem)", idp_meta->eid, end_pt_ix);
       zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", 0, "No Artifact Resolution Svc eid(%s) ep_ix(%s)", idp_meta->eid, end_pt_ix);
@@ -330,7 +355,7 @@ int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 
 /*() Map ZXSIG constant to letter for log and string message. */
 
-/* Called by:  zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate_env */
+/* Called by:  covimp_test x11, zxid_chk_sig, zxid_decode_redir_or_post, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate_env */
 void zxid_sigres_map(int sigres, char** sigval, char** sigmsg)
 {
   switch (sigres) {
@@ -433,11 +458,15 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
 
   if (a7n->Conditions->AudienceRestriction) {
     for (audr = a7n->Conditions->AudienceRestriction;
-	 audr && audr->gg.g.tok == zx_sa_AudienceRestriction_ELEM;
+	 audr;
 	 audr = (struct zx_sa_AudienceRestriction_s*)audr->gg.g.n) {
+      if (audr->gg.g.tok != zx_sa_AudienceRestriction_ELEM)
+	continue;
       for (aud = audr->Audience;
-	   aud && aud->g.tok == zx_sa_Audience_ELEM;
+	   aud;
 	   aud = (struct zx_elem_s*)aud->g.n) {
+	if (aud->g.tok != zx_sa_Audience_ELEM)
+	  continue;
 	ss = ZX_GET_CONTENT(aud);
 	if (ss?ss->len:0 == myentid->len && !memcmp(ss->s, myentid->s, ss->len)) {
 	  D("Found audience. %d", 0);
@@ -690,7 +719,7 @@ erro:
  * ses:: Session object. Will be modified according to new session created from the SSO assertion.
  * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
-/* Called by:  zxid_sp_dig_sso_a7n */
+/* Called by:  covimp_test, zxid_sp_dig_sso_a7n */
 int zxid_sp_anon_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
   D_INDENT("anon_ssof: ");
@@ -752,21 +781,27 @@ int zxid_as_call_ses(zxid_conf* cf, zxid_entity* idp_meta, zxid_cgi* cgi, zxid_s
 
 #if 0
   for (ar_svc = idp_meta->ed->IDPSSODescriptor->ArtifactResolutionService;
-       ar_svc && ar_svc->gg.g.tok == zx_md_ArtifactResolutionService_ELEM;
-       ar_svc = (struct zx_md_ArtifactResolutionService_s*)ar_svc->gg.g.n)
+       ar_svc;
+       ar_svc = (struct zx_md_ArtifactResolutionService_s*)ar_svc->gg.g.n) {
+    if (ar_svc->gg.g.tok != zx_md_ArtifactResolutionService_ELEM)
+      continue;
     if (ar_svc->Binding  && !memcmp(SAML2_SOAP, ar_svc->Binding->s, ar_svc->Binding->len)
 	/*&& ar_svc->index && !memcmp(end_pt_ix, ar_svc->index->s, ar_svc->index->len)*/
 	&& ar_svc->Location)
       break;
+  }
 #else
   /* *** Kludge: We use the SLO SOAP endpoint for AS. ArtifactResolution might be more natural. */
   for (ar_svc = idp_meta->ed->IDPSSODescriptor->SingleLogoutService;
-       ar_svc && ar_svc->gg.g.tok == zx_md_SingleLogoutService_ELEM;
-       ar_svc = (struct zx_md_SingleLogoutService_s*)ar_svc->gg.g.n)
+       ar_svc;
+       ar_svc = (struct zx_md_SingleLogoutService_s*)ar_svc->gg.g.n) {
+    if (ar_svc->gg.g.tok != zx_md_SingleLogoutService_ELEM)
+      continue;
     if (ar_svc->Binding  && !memcmp(SAML2_SOAP, ar_svc->Binding->g.s, ar_svc->Binding->g.len)
 	/*&& ar_svc->index && !memcmp(end_pt_ix, ar_svc->index->s, ar_svc->index->len)*/
 	&& ar_svc->Location)
       break;
+  }
 #endif
   if (!ar_svc) {
     ERR("Entity(%s) does not have any IdP Artifact Resolution Service with " SAML2_SOAP " binding (metadata problem)", idp_meta->eid);

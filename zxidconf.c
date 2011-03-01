@@ -212,12 +212,14 @@ char* zxid_set_opt_cstr(zxid_conf* cf, int which, char* val)
   return 0;
 }
 
-/*() Set the URL configuration variable. Usually you would use zxid_parse_conf()
- * to manipulate this and some other options. This function exists for some
- * special cases encountered in scripting language bindings. */
+/*() Set the URL configuration variable.  Special accessor function to
+ * manipulate URL config option. Manipulating this option is common in
+ * virtual hosting situations - hence this convenience function.  You
+ * could use zxid_parse_conf() instead to manipulate URL and some other
+ * options. */
 
 /* Called by:  main x2, zxidwspcgi_main */
-void zxid_url_set(zxid_conf* cf, char* url)
+void zxid_url_set(zxid_conf* cf, const char* url)
 {
   if (!cf || !url) {
     ERR("NULL pointer as cf or url argument cf=%p url=%p", cf, url);
@@ -721,6 +723,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   if (cf->ctx) cf->ctx->canon_inopt = cf->canon_inopt;
   cf->enc_tail_opt  = ZXID_ENC_TAIL_OPT;
   cf->enckey_opt    = ZXID_ENCKEY_OPT;
+  cf->valid_opt     = ZXID_VALID_OPT;
   cf->idpatopt      = ZXID_IDPATOPT;
   cf->idp_list_meth = ZXID_IDP_LIST_METH;
   cf->di_allow_create = ZXID_DI_ALLOW_CREATE;
@@ -754,6 +757,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->ses_cookie_name   = ZXID_SES_COOKIE_NAME;
   cf->user_local        = ZXID_USER_LOCAL;
   cf->idp_ena           = ZXID_IDP_ENA;
+  cf->idp_pxy_ena       = ZXID_IDP_PXY_ENA;
   cf->imps_ena          = ZXID_IMPS_ENA;
   cf->as_ena            = ZXID_AS_ENA;
   cf->pdp_ena           = ZXID_PDP_ENA;
@@ -880,7 +884,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
  * This is "light" version of zx_reset_ctx() that can be called
  * safely from inside lock. */
 
-/* Called by:  dirconf, main x3, zx_init_ctx, zxid_az, zxid_az_base, zxid_simple_len */
+/* Called by:  sig_validate, zx_prepare_dec_ctx, zx_reset_ctx, zxid_sp_sso_finalize */
 void zx_reset_ns_ctx(struct zx_ctx* ctx)
 {
   ctx->guard_seen_n.seen_n = &ctx->guard_seen_p;
@@ -959,7 +963,7 @@ zxid_conf* zxid_init_conf_ctx(zxid_conf* cf, const char* zxid_path)
  * Just initializes the config object to factory defaults (see zxidconf.h).
  * Previous content of the config object is lost. */
 
-/* Called by:  a7n_test, attribute_sort_test, covimp_test, main x5, so_enc_dec, test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, test_mode, x509_test */
+/* Called by:  attribute_sort_test, covimp_test, main x5, so_enc_dec, test_ibm_cert_problem, test_ibm_cert_problem_enc_dec, test_mode, x509_test */
 zxid_conf* zxid_new_conf(const char* zxid_path)
 {
   /* *** unholy malloc()s: should use our own allocator! */
@@ -1105,6 +1109,7 @@ scan_end:
       if (!strcmp(n, "IDP_SEL_TEMPL_FILE")) { cf->idp_sel_templ_file = v; break; }
       if (!strcmp(n, "IDP_SEL_TEMPL"))   { cf->idp_sel_templ = v; break; }
       if (!strcmp(n, "IDP_ENA"))         { SCAN_INT(v, cf->idp_ena); break; }
+      if (!strcmp(n, "IDP_PXY_ENA"))     { SCAN_INT(v, cf->idp_pxy_ena); break; }
       if (!strcmp(n, "IMPS_ENA"))        { SCAN_INT(v, cf->imps_ena); break; }
       if (!strcmp(n, "IDP_PREF_ACS_BINDING")) { cf->idp_pref_acs_binding = v; break; }
       if (!strcmp(n, "IDPATOPT"))        { SCAN_INT(v, cf->idpatopt); break; }
@@ -1233,6 +1238,9 @@ scan_end:
     case 'U':  /* URL, USER_LOCAL */
       if (!strcmp(n, "URL"))            { cf->url = v; cf->fedusername_suffix = zxid_grab_domain_name(cf, cf->url); break; }
       if (!strcmp(n, "USER_LOCAL"))     { SCAN_INT(v, cf->user_local); break; }
+      goto badcf;
+    case 'V':  /* VALID_OPT */
+      if (!strcmp(n, "VALID_OPT"))      { SCAN_INT(v, cf->valid_opt); break; }
       goto badcf;
     case 'W':  /* WANT_SSO_A7N_SIGNED */
       if (!strcmp(n, "WANT"))           { cf->want = zxid_load_need(cf, cf->want, v); break; }
@@ -1462,6 +1470,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "CANON_INOPT=%x\n"
 "ENC_TAIL_OPT=%x\n"
 "ENCKEY_OPT=%d\n"
+"VALID_OPT=0x%x\n"
 "IDPATOPT=%d\n"
 "DI_ALLOW_CREATE=%d\n"
 "DI_NID_FMT=%d\n"
@@ -1476,6 +1485,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "IPPORT=%s\n"
 "USER_LOCAL=%d\n"
 "IDP_ENA=%d\n"
+"IDP_PXY_ENA=%d\n"
 "IMPS_ENA=%d\n"
 "AS_ENA=%d\n"
 "PDP_ENA=%d\n"
@@ -1643,6 +1653,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 cf->canon_inopt,
 		 cf->enc_tail_opt,
 		 cf->enckey_opt,
+		 cf->valid_opt,
 		 cf->idpatopt,
 		 cf->di_allow_create,
 		 cf->di_nid_fmt,
@@ -1657,6 +1668,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 STRNULLCHK(cf->ipport),
 		 cf->user_local,
 		 cf->idp_ena,
+		 cf->idp_pxy_ena,
 		 cf->imps_ena,
 		 cf->as_ena,
 		 cf->pdp_ena,

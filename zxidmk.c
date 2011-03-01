@@ -91,7 +91,7 @@ struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(zxid_conf* cf, zxid_cgi* cgi)
 
 /*() Make the body for the ArtifactResolve SOAP message, signing it if needed. */
 
-/* Called by:  zxid_sp_deref_art */
+/* Called by:  covimp_test, zxid_sp_deref_art */
 struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* idp_meta, const char* artifact)
 {
   X509* sign_cert;
@@ -147,15 +147,35 @@ struct zx_sp_Status_s* zxid_OK(zxid_conf* cf, struct zx_elem_s* father)
 /* Called by:  zxid_mk_logout, zxid_mk_mni, zxid_mk_subj */
 struct zx_sa_EncryptedID_s* zxid_mk_enc_id(zxid_conf* cf, struct zx_elem_s* father, zxid_nid* nid, zxid_entity* meta)
 {
-  struct zx_sa_EncryptedID_s* encid = zx_NEW_sa_EncryptedID(cf->ctx, father);
-  struct zx_str* ss = zx_easy_enc_elem_opt(cf, &nid->gg);
+  struct zx_xenc_EncryptedData_s* ed;
+  struct zx_sa_EncryptedID_s* encid;
+  struct zx_str* ss;
+  if (!cf || !nid) {
+    ERR("NULL arguments (programmer error) %p", cf);
+    return 0;
+  }
+  if (!meta || !meta->enc_cert) {
+    ERR("Missing destination metadata or the metadata does not have encryption certificate. %p", meta);
+    return 0;
+  }
+  ss = zx_easy_enc_elem_opt(cf, &nid->gg);
+  if (!ss) {
+    ERR("Failed to XML serialize nameid %p", nid);
+    return 0;
+  }
+  encid = zx_NEW_sa_EncryptedID(cf->ctx, father);
   if (cf->enckey_opt & 0x20) {
     /* Nested EncryptedKey approach (Shibboleth early 2010) */
-    ZX_ADD_KID(encid, EncryptedData, zxenc_pubkey_enc(cf, ss, 0, meta->enc_cert, "41", 0));
+    ed = zxenc_pubkey_enc(cf, ss, 0, meta->enc_cert, "41", 0);
   } else {
     /* RetrievalMethod approach */
-    ZX_ADD_KID(encid, EncryptedData, zxenc_pubkey_enc(cf, ss, &encid->EncryptedKey, meta->enc_cert, "38", meta));
+    ed = zxenc_pubkey_enc(cf, ss, &encid->EncryptedKey, meta->enc_cert, "38", meta);
   }
+  if (!ed) {
+    ERR("Failed to encrypt a nameid (this could be due to problems with encryption certificate of the destination or destination's metadata; you may be able to work around this problem by manipulating NAMEID_ENC config option, but consider the security implication) cert=%p", meta->enc_cert);
+    return 0;
+  }
+  ZX_ADD_KID(encid, EncryptedData, ed);
   zx_str_free(cf->ctx, ss);
   return encid;
 }
@@ -166,15 +186,35 @@ struct zx_sa_EncryptedID_s* zxid_mk_enc_id(zxid_conf* cf, struct zx_elem_s* fath
 /* Called by:  zxid_add_fed_tok2epr, zxid_imreq, zxid_mk_saml_resp */
 struct zx_sa_EncryptedAssertion_s* zxid_mk_enc_a7n(zxid_conf* cf, struct zx_elem_s* father, zxid_a7n* a7n, zxid_entity* meta)
 {
-  struct zx_sa_EncryptedAssertion_s* enc_a7n = zx_NEW_sa_EncryptedAssertion(cf->ctx, father);
-  struct zx_str* ss = zx_easy_enc_elem_opt(cf, &a7n->gg);
+  struct zx_xenc_EncryptedData_s* ed;
+  struct zx_str* ss;
+  struct zx_sa_EncryptedAssertion_s* enc_a7n;
+  if (!cf || !a7n) {
+    ERR("NULL arguments (programmer error) %p", cf);
+    return 0;
+  }
+  if (!meta || !meta->enc_cert) {
+    ERR("Missing destination metadata or the metadata does not have encryption certificate. %p", meta);
+    return 0;
+  }
+  ss = zx_easy_enc_elem_opt(cf, &a7n->gg);
+  if (!ss) {
+    ERR("Failed to XML serialize assertion %p", a7n);
+    return 0;
+  }
+  enc_a7n = zx_NEW_sa_EncryptedAssertion(cf->ctx, father);
   if (cf->enckey_opt & 0x20) {
     /* Nested EncryptedKey approach (Shibboleth early 2010) */
-    ZX_ADD_KID(enc_a7n, EncryptedData, zxenc_pubkey_enc(cf, ss, 0, meta->enc_cert, "40", 0));
+    ed = zxenc_pubkey_enc(cf, ss, 0, meta->enc_cert, "40", 0);
   } else {
     /* RetrievalMethod approach */
-    ZX_ADD_KID(enc_a7n, EncryptedData, zxenc_pubkey_enc(cf, ss, &enc_a7n->EncryptedKey, meta->enc_cert, "39", meta));
+    ed = zxenc_pubkey_enc(cf, ss, &enc_a7n->EncryptedKey, meta->enc_cert, "39", meta);
   }
+  if (!ed) {
+    ERR("Failed to encrypt assertion %p (this could be due to problems with encryption certificate of the destination or destination's metadata; you may be able to work around this problem by manipulating POST_A7N_ENC or DI_A7N_ENC config option, but consider the security implication)", a7n);
+    return 0;
+  }
+  ZX_ADD_KID(enc_a7n, EncryptedData, ed);
   zx_str_free(cf->ctx, ss);
   return enc_a7n;
 }
@@ -319,9 +359,9 @@ struct zx_sa_Subject_s* zxid_mk_subj(zxid_conf* cf, struct zx_elem_s* father, zx
 #if 0
   // , struct zx_str* affil, char* fmt
   nid = zx_NEW_sa_NameID(cf->ctx,0);
-  nid->Format = zx_dup_str(cf->ctx, fmt);  /* *** implement persistent */
-  nid->NameQualifier = zxid_my_ent_id(cf);
   nid->SPNameQualifier = affil;
+  nid->NameQualifier = zxid_my_ent_id(cf);
+  nid->Format = zx_dup_str(cf->ctx, fmt);  /* *** implement persistent */
   if (!strcmp(fmt, SAML2_TRANSIENT_NID_FMT)) {
     zx_add_content(cf->ctx, nid, zxid_mk_id(cf, "T", ZXID_ID_BITS));
   } else {
@@ -333,11 +373,12 @@ struct zx_sa_Subject_s* zxid_mk_subj(zxid_conf* cf, struct zx_elem_s* father, zx
     if (sp_meta)
       subj->EncryptedID = zxid_mk_enc_id(cf, &subj->gg, nid, sp_meta);
     else {
-      ERR("NameID encryption confugred, but no metadata supplied. Defaulting to unencrypted NameID %d", 0);
-      subj->NameID = nid;
+      ERR("NameID encryption configred, but no metadata supplied. Defaulting to unencrypted NameID %d", 0);
+      ZX_ADD_KID(subj, NameID, nid);
     }
-  } else
-    subj->NameID = nid;
+  } else {
+    ZX_ADD_KID(subj, NameID, nid);
+  }
   /* SAML spec is more lax than the schema: saml-core-2.0-os.pdf ll.653-657 says <SubjectConfirmation> [Zero or More] */
   return subj;
 }
@@ -466,7 +507,7 @@ struct zx_xac_Response_s* zxid_mk_xacml_resp(zxid_conf* cf, char* decision)
   return resp;
 }
 
-/* Called by:  zxid_pepmap_extract x3 */
+/* Called by:  zxid_call_trustpdp x6, zxid_pepmap_extract x3 */
 struct zx_xac_Attribute_s* zxid_mk_xacml_simple_at(zxid_conf* cf, struct zx_elem_s* father, struct zx_str* atid, struct zx_str* attype, struct zx_str* atissuer, struct zx_str* atvalue)
 {
   struct zx_root_s* r;
@@ -537,7 +578,7 @@ struct zx_xasp_XACMLAuthzDecisionQuery_s* zxid_mk_az(zxid_conf* cf, struct zx_xa
 
 /*() Construct XACMLAuthzDecisionQuery according to Commitee Draft 1 */
 
-/* Called by:  zxid_az_soap */
+/* Called by:  attribute_sort_test, zxid_az_soap */
 struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* zxid_mk_az_cd1(zxid_conf* cf, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
 {
   struct zx_xaspcd1_XACMLAuthzDecisionQuery_s* r = zx_NEW_xaspcd1_XACMLAuthzDecisionQuery(cf->ctx,0);

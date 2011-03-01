@@ -41,7 +41,7 @@
  * additional SOAP headers at will before calling this function. This function
  * will add Liberty ID-WSF specific SOAP headers. */
 
-/* Called by:  main, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate */
+/* Called by:  covimp_test x2, main, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate */
 int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp)
 {
   struct zx_wsse_Security_s* sec;
@@ -199,7 +199,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
  * return:: SOAP Envelope of the response, as a string, ready to be
  *     sent as HTTP response. */
 
-/* Called by:  covimp_test, main x9, zxid_wsp_decoratef, zxidwspcgi_parent */
+/* Called by:  covimp_test, main x9, ws_validations, zxid_wsp_decoratef, zxidwspcgi_parent */
 struct zx_str* zxid_wsp_decorate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve)
 {
   struct zx_str* ss;
@@ -511,9 +511,14 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
       return 0;
     }
   } else {
-    /* *** should there be absolute requirement for a requester assertion to exist? */
-    ERR("No Requester <sa:Assertion> found. %p", ses->a7n);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "No assertion found.", TAS3_STATUS_BADCOND, 0, 0, 0));
+    if (sec->EncryptedAssertion && !ses->a7n) {
+      ERR("<sa:EncryptedAssertion> could not be decrypted. Perhaps the certificate used to encrypt does not match your private key. This could be due to IdP/Discovery service having wrong copy of your metadata. %d", 0);
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "EncryptedAssertion could not be decrypted. (your metadata at the IdP/Disco has problem?)", TAS3_STATUS_BADCOND, 0, 0, 0));
+    } else {
+      /* *** should there be absolute requirement for a requester assertion to exist? */
+      ERR("No Requester <sa:Assertion> found or assertion missing Subject. %p", ses->a7n);
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "No assertion found.", TAS3_STATUS_BADCOND, 0, 0, 0));
+    }
     D_DEDENT("valid: ");
     return 0;
   }
@@ -612,7 +617,7 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
  *
  * See also: zxid_wsc_validate_resp_env() */
 
-/* Called by:  main, zxidwspcgi_main */
+/* Called by:  main, ws_validations, zxidwspcgi_main */
 char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve)
 {
   struct zx_str  ss;

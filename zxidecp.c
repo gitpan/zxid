@@ -73,10 +73,13 @@ static struct zx_sp_IDPList_s* zxid_mk_idp_list(zxid_conf* cf, char* binding)
     if (!idp->ed->IDPSSODescriptor)
       continue;
     for (sso_svc = idp->ed->IDPSSODescriptor->SingleSignOnService;
-	 sso_svc && sso_svc->gg.g.tok == zx_md_SingleSignOnService_ELEM;
-	 sso_svc = (struct zx_md_SingleSignOnService_s*)sso_svc->gg.g.n)
+	 sso_svc;
+	 sso_svc = (struct zx_md_SingleSignOnService_s*)sso_svc->gg.g.n) {
+      if (sso_svc->gg.g.tok != zx_md_SingleSignOnService_ELEM)
+	continue;
       if (sso_svc->Binding && !memcmp(binding, sso_svc->Binding->g.s, sso_svc->Binding->g.len))
 	break;
+    }
     if (!sso_svc) {
       D("Entity(%s) does not have any IdP SSO Service with binding(%s)", idp->eid, binding);
       continue;  /* Not eligible IdP, next one please. */
@@ -118,7 +121,7 @@ static struct zx_ecp_Request_s* zxid_mk_ecp_Request_hdr(zxid_conf* cf)
  *
  * If you do not know what PAOS, ECP or LECP means, you should read [SAML2bind] specification. */
 
-/* Called by:  main x4, zxid_simple_no_ses_cf x2 */
+/* Called by:  covimp_test, main x4, zxid_simple_no_ses_cf x2 */
 struct zx_str* zxid_lecp_check(zxid_conf* cf, zxid_cgi* cgi)
 {
   struct zx_e_Envelope_s* se;

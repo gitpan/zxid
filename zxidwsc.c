@@ -1,5 +1,5 @@
 /* zxidwsc.c  -  Handwritten nitty-gritty functions for Liberty ID-WSF Web Services Client
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -12,6 +12,7 @@
  * 7.10.2008, added documentation --Sampo
  * 7.1.2010,  added WSC signing --Sampo
  * 31.5.2010, added WSC sig validation and PDP calls --Sampo
+ * 16.2.2011, added disable security option VALID_OPT --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for pthread_mutex_lock() et al. */
@@ -49,7 +50,7 @@
  *
  * See also: zxid_wsp_validate() */
 
-/* Called by:  zxid_call_epr, zxid_wsc_valid_resp */
+/* Called by:  covimp_test x3, zxid_call_epr, zxid_wsc_valid_resp */
 int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, struct zx_e_Envelope_s* env, const char* enve)
 {
   int n_refs = 0;
@@ -68,6 +69,11 @@ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, str
   GETTIMEOFDAY(&ourts, 0);
   zxid_set_fault(cf, ses, 0);
   zxid_set_tas3_status(cf, ses, 0);
+
+  if (cf->valid_opt & ZXID_VALID_OPT_SKIP_RESP_HDR) {
+    ERR("WARNING! Important response security validations disabled by VALID_OPT=0x%x", cf->valid_opt);
+    return 1;
+  }
   
   if (!env) {
     ERR("No <e:Envelope> found. enve(%s)", STRNULLCHK(enve));
@@ -130,17 +136,6 @@ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, str
     return 0;
   }
 
-  if (!sec->Signature || !sec->Signature->SignedInfo || !sec->Signature->SignedInfo->Reference) {
-    ses->sigres = ZXSIG_NO_SIG;
-    if (cf->wsp_nosig_fatal) {
-      ERR("No Security/Signature found. %p", sec->Signature);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security/ds:Signature found.", TAS3_STATUS_NOSIG, 0, 0, 0));
-      return 0;
-    } else {
-      INFO("No Security/Signature found, but configured to ignore this problem (WSP_NOSIG_FATAL=0). %p", sec->Signature);
-    }
-  }
-  
   wsc_meta = zxid_get_ent_ss(cf, issuer);
   if (!wsc_meta) {
     ses->sigres = ZXSIG_NO_SIG;
@@ -152,18 +147,28 @@ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, str
       return 0;
     }
   }
-
-  ZERO(refs, sizeof(refs));
-  n_refs = zxid_hunt_sig_parts(cf, n_refs, refs, sec->Signature->SignedInfo->Reference, hdr, env->Body);
-  /* *** Consider adding BDY and STR */
-  ses->sigres = zxsig_validate(cf->ctx, wsc_meta?wsc_meta->sign_cert:0, sec->Signature, n_refs, refs);
-  zxid_sigres_map(ses->sigres, &cgi.sigval, &cgi.sigmsg);
-  if (cf->sig_fatal && ses->sigres) {
-    ERR("Fail due to failed message signature sigres=%d", ses->sigres);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "Message signature did not validate.", TAS3_STATUS_BADSIG, 0, 0, 0));
-    return 0;
+  
+  if (!sec->Signature || !sec->Signature->SignedInfo || !sec->Signature->SignedInfo->Reference) {
+    ses->sigres = ZXSIG_NO_SIG;
+    if (cf->wsp_nosig_fatal) {
+      ERR("No Security/Signature found. %p", sec->Signature);
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "No wsse:Security/ds:Signature found.", TAS3_STATUS_NOSIG, 0, 0, 0));
+      return 0;
+    } else {
+      INFO("No Security/Signature found, but configured to ignore this problem (WSP_NOSIG_FATAL=0). %p", sec->Signature);
+    }
+  } else {
+    ZERO(refs, sizeof(refs));
+    n_refs = zxid_hunt_sig_parts(cf, n_refs, refs, sec->Signature->SignedInfo->Reference, hdr, env->Body);
+    /* *** Consider adding BDY and STR */
+    ses->sigres = zxsig_validate(cf->ctx, wsc_meta?wsc_meta->sign_cert:0, sec->Signature, n_refs, refs);
+    zxid_sigres_map(ses->sigres, &cgi.sigval, &cgi.sigmsg);
+    if (cf->sig_fatal && ses->sigres) {
+      ERR("Fail due to failed message signature sigres=%d", ses->sigres);
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Server", "Message signature did not validate.", TAS3_STATUS_BADSIG, 0, 0, 0));
+      return 0;
+    }
   }
-
   if (!zxid_timestamp_chk(cf, ses, sec->Timestamp, &ourts, &srcts, TAS3_PEP_RS_IN, "e:Server"))
     return 0;
 
@@ -422,6 +427,7 @@ struct zx_e_Envelope_s* zxid_wsc_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* ep
     root = zxid_soap_call_raw(cf, ZX_GET_CONTENT(epr->Address), env, ret_enve);
     if (!root || !root->Envelope || !root->Envelope->Body) {
       ERR("soap call returned empty or seriously flawed response %p", root);
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_PARSE, "e:Server", "Server sent empty or invalid reply. SOAP Envelope or Body can not be found.", 0, 0, 0, 0));
       D_DEDENT("wsc_call: ");
       return 0;
     }
@@ -431,11 +437,13 @@ struct zx_e_Envelope_s* zxid_wsc_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* ep
       str = ZX_GET_CONTENT(flt->faultstring);
       actor = ZX_GET_CONTENT(flt->faultactor);
       D("SOAP Fault(%.*s) string(%.*s) actor(%.*s)", code?code->len:1, code?code->s:"?", str?str->len:1, str?str->s:"?", actor?actor->len:1, actor?actor->s:"?");
+      zxid_set_fault(cf, ses, zxid_mk_fault_zx_str(cf, 0, TAS3_PEP_RS_VAL, code?code:zx_dup_str(cf->ctx,"e:Server"), str));
+
       D_DEDENT("wsc_call: ");
       return 0;
     }
     
-    //res = zxid_wsf_analyze_result_headers(cf, ret);
+    //res = zxid_wsf_analyze_result_headers(cf, ret); // detect, e.g., redirect
     res = ZXID_OK;
     switch (res) {
     case ZXID_OK:
@@ -577,6 +585,16 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
   /* *** add usage directives */
 
   env = zxid_wsc_call(cf, ses, epr, env, &ret_enve);
+  if (!env) {
+    ERR("Parsing return value failed %p", env);
+    D("ret_enve(%s) len=%d", ret_enve, strlen(ret_enve));
+    D_DEDENT("call: ");
+    if (cf->valid_opt & ZXID_VALID_OPT_SKIP_RESP_HDR) {
+      ERR("WARNING! Important response security validations disabled by VALID_OPT=0x%x AND Fault occured or parsing return value failed. Pretending success anyway.", cf->valid_opt);
+      return zx_dup_str(cf->ctx, ret_enve);
+    }
+    return 0;
+  }
   if (zxid_wsc_valid_re_env(cf, ses, az_cred, env, ret_enve) != 1) {
     D_DEDENT("call: ");
     return 0;
@@ -659,7 +677,7 @@ struct zx_str* zxid_call(zxid_conf* cf, zxid_ses* ses, const char* svctype, cons
 
 /*() Call web service, printf style. See zxid_call() for more documentation. */
 
-/* Called by:  main */
+/* Called by:  main, zxid_di_query */
 struct zx_str* zxid_callf(zxid_conf* cf, zxid_ses* ses, const char* svctype, const char* url, const char* di_opt, const char* az_cred, const char* env_f, ...)
 {
   char* s;
@@ -699,7 +717,7 @@ struct zx_str* zxid_callf(zxid_conf* cf, zxid_ses* ses, const char* svctype, con
  * env:: XML payload as a string
  * return:: SOAP Envelope ready to be sent to the WSP. You can pass this to HTTP client. */
 
-/* Called by:  zxid_wsc_prepare_callf */
+/* Called by:  ws_validations, zxid_wsc_prepare_callf */
 struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const char* az_cred, const char* enve)
 {
   struct zx_str* ret;
@@ -768,7 +786,7 @@ struct zx_str* zxid_wsc_prepare_callf(zxid_conf* cf, zxid_ses* ses, zxid_epr* ep
 
 /*(i) Validate a response to web service call. Return: 1=valid. */
 
-/* Called by: */
+/* Called by:  ws_validations */
 int zxid_wsc_valid_resp(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve)
 {
   int ret;
