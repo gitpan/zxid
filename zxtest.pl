@@ -1062,6 +1062,9 @@ CMD('SIG38', 'sig vry', "./zxdecode -v -s -s <t/default-ns-req-simple.xml");
 CMD('SIG39', 'sig vry', "./zxdecode -v -s -s <t/default-ns-req-simple-nons.xml", 2560);
 CMD('SIG40', 'sig vry', "./zxdecode -v -s -s <t/default-ns-req.xml");
 CMD('SIG41', 'sig vry', "./zxdecode -v -s -s <t/soag-namespace-issue.xml");
+CMD('SIG42', 'sig vry shib a7n art',  "./zxdecode -v -s -c AUDIENCE_FATAL=0 -c TIMEOUT_FATAL=0 -c DUP_A7N_FATAL=0 -c DUP_MSG_FATAL=0 <t/shib-a7n-art.xml");
+CMD('SIG43', 'sig vry shib a7n art2',  "./zxdecode -v -s -c AUDIENCE_FATAL=0 -c TIMEOUT_FATAL=0 -c DUP_A7N_FATAL=0 -c DUP_MSG_FATAL=0 <t/shib-a7n-art2.xml");
+CMD('SIG44', 'sig vry shib a7n art3',  "./zxdecode -v -s -c AUDIENCE_FATAL=0 -c TIMEOUT_FATAL=0 -c DUP_A7N_FATAL=0 -c DUP_MSG_FATAL=0 <t/shib-a7n-art3.xml");
 
 ED('XML1',  'Decode-Encode SO and WO: ns-bug',  1000, 't/default-ns-bug.xml');
 ED('XML2',  'Decode-Encode SO and WO: azrq1',   1000, 't/azrq1.xml');
@@ -1094,6 +1097,8 @@ ED('XML28', 'Decode-Encode SO and WO: AdvClient ming-ntt',     10, 't/ac-ming-nt
 ED('XML29', 'Decode-Encode SO and WO: AdvClient ntt-fixed',    10, 't/ac-ming-ntt-fixed.xml');
 ED('XML30', 'Decode-Encode SO and WO: zx a7n',    10, 't/a7n-len-err.xml');
 ED('XML31', 'Decode-Encode SO and WO: covimp',    10, 't/covimp.xml');
+ED('XML32', 'Decode-Encode SO and WO: bad-body malformed close',  10, 't/bad-body.xml');
+ED('XML33', 'Decode-Encode SO and WO: bad-body2 malformed close', 10, 't/bad-body2.xml');
 
 # *** TODO: add EncDec for all other types of protocol messages
 # *** TODO: add specific SSO signature validation tests

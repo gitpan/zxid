@@ -114,6 +114,10 @@ struct zx_dap_Subscription_s;
 struct zx_dap_Query_s;
 #endif
 
+/* zxidsimp */
+
+ZXID_DECL int zxid_decode_ssoreq(zxid_conf* cf, zxid_cgi* cgi);
+
 /* zxidmeta */
 
 #ifdef USE_OPENSSL
@@ -224,7 +228,7 @@ ZXID_DECL char* zxid_simple_ab_pep(zxid_conf* cf, zxid_ses* ses, int* res_len, i
 /* zxidmk */
 
 ZXID_DECL struct zx_sp_AuthnRequest_s* zxid_mk_authn_req(zxid_conf* cf, zxid_cgi* cgi);
-ZXID_DECL struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, zxid_entity* idp_meta, const char* artifact);
+ZXID_DECL struct zx_sp_ArtifactResolve_s* zxid_mk_art_deref(zxid_conf* cf, struct zx_elem_s* father, zxid_entity* idp_meta, const char* artifact);
 
 ZXID_DECL struct zx_sa_EncryptedID_s* zxid_mk_enc_id(zxid_conf* cf, struct zx_elem_s* father, zxid_nid* nid, zxid_entity* meta);
 ZXID_DECL struct zx_sa_EncryptedAssertion_s* zxid_mk_enc_a7n(zxid_conf* cf, struct zx_elem_s* father, zxid_a7n* a7n, zxid_entity* meta);

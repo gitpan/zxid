@@ -1,5 +1,5 @@
 /* zxidsso.c  -  Handwritten functions for implementing Single Sign-On logic for SP
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -14,6 +14,7 @@
  * 22.3.2008, permitted passing RelayState for SSO --Sampo
  * 7.10.2008, added documentation --Sampo
  * 1.2.2010,  added authentication service client --Sampo
+ * 9.3.2011,  added Proxy IdP processing --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
@@ -155,6 +156,7 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
 {
   struct zx_md_SingleSignOnService_s* sso_svc;
   struct zx_sp_AuthnRequest_s* ar;
+  struct zx_attr_s* dest;
   struct zx_str* ars;
   int sso_profile_ix;
   zxid_entity* idp_meta;
@@ -198,13 +200,14 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
       D_DEDENT("start_sso: ");
       return 0;
     }
-    D("HERE1 %p", sso_svc);
-    D("HERE2 %p", sso_svc->Location);
-    D("HERE3 len=%d (%.*s)", sso_svc->Location->g.len, sso_svc->Location->g.len, sso_svc->Location->g.s);
+    DD("HERE1 %p", sso_svc);
+    DD("HERE2 %p", sso_svc->Location);
+    DD("HERE3 len=%d (%.*s)", sso_svc->Location->g.len, sso_svc->Location->g.len, sso_svc->Location->g.s);
     ar = zxid_mk_authn_req(cf, cgi);
-    ZX_ORD_INS_ATTR(ar, Destination, sso_svc->Location);
+    dest = zx_dup_len_attr(cf->ctx, 0, zx_Destination_ATTR, sso_svc->Location->g.len, sso_svc->Location->g.s);
+    ZX_ORD_INS_ATTR(ar, Destination, dest);
     ars = zx_easy_enc_elem_opt(cf, &ar->gg);
-    D("AuthnReq(%.*s)", ars->len, ars->s);
+    D("AuthnReq(%.*s) %p", ars->len, ars->s, dest);
     break;
   default:
     NEVER("Inappropriate SSO profile: %d", sso_profile_ix);
@@ -212,6 +215,15 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
     D_DEDENT("start_sso: ");
     return 0;
   }
+  
+  if (cf->idp_ena) {  /* (PXY) Middle IdP of Proxy IdP scenario */
+    if (cgi->rs) {
+      ERR("Attempt to supply RelayState(%s) in middle IdP of Proxy IdP flow. Ignored.", cgi->rs);
+    }
+    cgi->rs = cgi->ssoreq; /* Carry the original authn req in RelayState */
+    D("Middle IdP of Proxy IdP flow RelayState(%s)", STRNULLCHK(cgi->rs));
+  }
+  
   if (cf->log_level>0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "ANREDIR", cgi->eid, 0);
   ars = zxid_saml2_redir_url(cf, &sso_svc->Location->g, ars, cgi->rs);
@@ -338,7 +350,7 @@ int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
     }
     
     body = zx_NEW_e_Body(cf->ctx,0);
-    body->ArtifactResolve = zxid_mk_art_deref(cf, idp_meta, cgi->saml_art);
+    body->ArtifactResolve = zxid_mk_art_deref(cf, &body->gg, idp_meta, cgi->saml_art);
     r = zxid_soap_call_hdr_body(cf, &ar_svc->Location->g, 0, body);
     len =  zxid_sp_soap_dispatch(cf, cgi, ses, r);
     D_DEDENT("deref: ");
@@ -699,6 +711,20 @@ int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* 
 	cgi->sigval, "K", "NEWSES", ses->sid, "sesix(%s)", ses->sesix?ses->sesix:"-");
   zxlog(cf, &ourts, &srcts, 0, issuer, 0, &a7n->ID->g, subj,
 	cgi->sigval, "K", ses->nidfmt?"FEDSSO":"TMPSSO", ses->sesix?ses->sesix:"-", 0);
+
+  if (cf->idp_ena) {  /* (PXY) Middle IdP of Proxy IdP flow */
+    if (cgi->rs && cgi->rs[0]) {
+      D("ProxyIdP got RelayState(%s) ar(%s)", cgi->rs, cgi->ssoreq?cgi->ssoreq:"");
+      cgi->saml_resp = 0;  /* Clear Response to prevent re-interpretation. We want Request. */
+      cgi->ssoreq = cgi->rs;
+      zxid_decode_ssoreq(cf, cgi);
+      cgi->op = 'V';
+      D_DEDENT("ssof: ");
+      return ZXID_IDP_REQ; /* Cause zxid_simple_idp_an_ok_do_rest() to be called from zxid_sp_dispatch(); */
+    } else {
+      INFO("Middle IdP of Proxy IdP flow did not receive RelayState from upstream IdP %p", cgi->rs);
+    }
+  }
   D_DEDENT("ssof: ");
   return ZXID_SSO_OK;
 
