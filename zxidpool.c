@@ -1,5 +1,5 @@
 /* zxidpool.c  -  Attribute handling
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -105,7 +105,7 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
   }
   *p++ = '\n';
 
-  DD("len 0=%d", p-ss->s);
+  DD("len 0=%d", ((int)(p-ss->s)));
 
   for (at = pool; at; at = at->n) {
     map = zxid_find_map(cf->outmap, at->name);
@@ -127,7 +127,7 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
       p += at->map_val->len;
       *p++ = '\n';
 
-      DD("len 1=%d", p-ss->s);
+      DD("len 1=%d", ((int)(p-ss->s)));
       
       for (av = at->nv; av; av = av->n) {
 	strcpy(p, name);
@@ -138,7 +138,7 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
 	p += av->map_val->len;
 	*p++ = '\n';
 
-	DD("len 2=%d", p-ss->s);
+	DD("len 2=%d", ((int)(p-ss->s)));
       }
 
 
@@ -154,7 +154,7 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
       }
       *p++ = '\n';
 
-      DD("len 3=%d name_len=%d name(%s)", p-ss->s, name_len, at->name);
+      DD("len 3=%d name_len=%d name(%s)", ((int)(p-ss->s)), name_len, at->name);
       
       for (av = at->nv; av; av = av->n) {
 	strcpy(p, at->name);
@@ -167,12 +167,12 @@ static struct zx_str* zxid_pool_to_ldif(zxid_conf* cf, struct zxid_attr* pool)
 	}
 	*p++ = '\n';
 
-	D("len 4=%d", p-ss->s);
+	D("len 4=%d", ((int)(p-ss->s)));
       }
 
     }
   }
-  DD("len Fin=%d", p-ss->s);
+  DD("len Fin=%d", ((int)(p-ss->s)));
 
   ASSERTOP(p, ==, ss->s+len);
   return ss;
@@ -739,7 +739,8 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   }
   zxid_add_attr_to_ses(cf, ses, "sesix",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sesix)));
   zxid_add_attr_to_ses(cf, ses, "setcookie",  zx_dup_str(cf->ctx, STRNULLCHK(ses->setcookie)));
-  zxid_add_attr_to_ses(cf, ses, "cookie",     zx_dup_str(cf->ctx, STRNULLCHK(ses->cookie)));
+  if (ses->cookie && ses->cookie[0])
+    zxid_add_attr_to_ses(cf, ses, "cookie",   zx_dup_str(cf->ctx, ses->cookie));
   zxid_add_attr_to_ses(cf, ses, "msgid",      ses->wsp_msgid);
 
   zxid_add_attr_to_ses(cf, ses, "rs",         zx_dup_str(cf->ctx, STRNULLCHK(ses->rs)));
@@ -768,7 +769,7 @@ int zxid_add_qs_to_ses(zxid_conf* cf, zxid_ses* ses, char* qs, int apply_map)
   if (!qs || !ses)
     return 0;
 
-  D("qs(%s) len=%d", qs, strlen(qs));
+  D("qs(%s) len=%d", qs, (int)strlen(qs));
   while (qs && *qs) {
     for (; *qs == '&'; ++qs) ;    /* Skip over & or && */
     if (!*qs) break;

@@ -1,5 +1,5 @@
 /* zxidcurl.c  -  libcurl interface for making SOAP calls and getting metadata
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -157,14 +157,14 @@ zxid_entity* zxid_get_meta(zxid_conf* cf, const char* url)
   rc.p[1] = 0;
   rc.p = rc.buf;
   if (rc.lim - rc.p < 300) {
-    ERR("Metadata response too short (%d chars, min 300 required). url(%s) CURLcode(%d) CURLerr(%s) buf(%.*s)",	rc.lim-rc.buf, url, res, CURL_EASY_STRERR(res), rc.lim-rc.buf, rc.buf);
+    ERR("Metadata response too short (%d chars, min 300 required). url(%s) CURLcode(%d) CURLerr(%s) buf(%.*s)",	((int)(rc.lim-rc.buf)), url, res, CURL_EASY_STRERR(res), ((int)(rc.lim-rc.buf)), rc.buf);
     ZX_FREE(cf->ctx, rc.buf);
     return 0;
   }
   
   ent = zxid_parse_meta(cf, &rc.p, rc.lim);
   if (!ent) {
-    ERR("Failed to parse metadata response url(%s) CURLcode(%d) CURLerr(%s) buf(%.*s)",	url, res, CURL_EASY_STRERR(res), rc.lim-rc.buf, rc.buf);
+    ERR("Failed to parse metadata response url(%s) CURLcode(%d) CURLerr(%s) buf(%.*s)",	url, res, CURL_EASY_STRERR(res), ((int)(rc.lim-rc.buf)), rc.buf);
     ZX_FREE(cf->ctx, rc.buf);
     return 0;
   }

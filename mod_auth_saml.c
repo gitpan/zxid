@@ -1,5 +1,5 @@
 /* mod_auth_saml.c  -  Handwritten functions for Apache mod_auth_saml module
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2008-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -145,14 +145,15 @@ static int pool2apache(zxid_conf* cf, request_rec* r, struct zxid_attr* pool)
     }
   }
   if (setcookie && setcookie[0] != '-') {
+    /* http://dev.ariel-networks.com/apr/apr-tutorial/html/apr-tutorial-19.html */
     D("Set-Cookie(%s)", setcookie);
-    apr_table_setn(r->headers_out, "Set-Cookie", setcookie);
-    apr_table_setn(r->err_headers_out, "Set-Cookie", setcookie);  /* Only way to get redir to set header */
-    apr_table_setn(r->headers_in,  "Set-Cookie", setcookie);  /* So subrequest can pick them up! */
+    apr_table_addn(r->headers_out, "Set-Cookie", setcookie);
+    apr_table_addn(r->err_headers_out, "Set-Cookie", setcookie);  /* Only way to get redir to set header */
+    apr_table_addn(r->headers_in,  "Set-Cookie", setcookie);  /* So subrequest can pick them up! */
   }
   if (cookie && cookie[0] != '-') {
-    D("Cookie(%s)", cookie);
-    apr_table_setn(r->headers_in, "Cookie", cookie);  /* so internal redirect sees it */
+    D("Cookie(%s) 2", cookie);
+    apr_table_addn(r->headers_in, "Cookie", cookie);  /* so internal redirect sees it */
   }
   if (idpnid && idpnid[0] != '-') {
     D("REMOTE_USER(%s)", idpnid);
@@ -194,7 +195,7 @@ static int send_res(zxid_conf* cf, request_rec* r, char* res)
   DD("CONTENT-LENGTH(%d)", len);
   ap_set_content_length(r, len);
   
-  if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("LEN(%d) strlen(%d) RES(%s)", len, strlen(res), res);
+  if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("LEN(%d) strlen(%d) RES(%s)", len, (int)strlen(res), res);
   
   //register_timeout("send", r);
   ap_send_http_header(r);
@@ -268,7 +269,8 @@ static int chkuid(request_rec* r)
   int ret, uri_len, url_len;
   char* p;
   char* res;
-  const char* cookie_hdr;
+  const char* cookie_hdr=0;
+  const char* set_cookie_hdr;
   const char* cur_auth;
   struct zx_str* ss;
   zxid_conf* cf = dir_cf(r);
@@ -278,15 +280,18 @@ static int chkuid(request_rec* r)
   ZERO(&ses, sizeof(zxid_ses));
 
   D("===== START %s req=%p uri(%s) args(%s)", ZXID_REL, r, r?STRNULLCHK(r->uri):"", r?STRNULLCHK(r->args):"");
-  
+  D_INDENT("chkuid: ");
+
   if (r->main) {  /* subreq can't come from net: always auth. */
     D("sub ok %d", OK);
+    D_DEDENT("chkuid: ");
     return OK;
   }
   
   cur_auth = ap_auth_type(r);   /* From directive: AuthType "saml" */
   if (!cur_auth || strcasecmp(cur_auth, "saml")) {
     D("not saml auth (%s) %d", STRNULLCHKD(cur_auth), DECLINED);
+    D_DEDENT("chkuid: ");
     return DECLINED;
   }
   r->ap_auth_type = "saml";
@@ -294,13 +299,15 @@ static int chkuid(request_rec* r)
   if (cf->ses_cookie_name && *cf->ses_cookie_name) {
     cookie_hdr = apr_table_get(r->headers_in, "Cookie");
     if (cookie_hdr) {
-      D("found cookie(%s)", STRNULLCHK(cookie_hdr));
+      D("found cookie(%s) 3", STRNULLCHK(cookie_hdr));
       zxid_get_sid_from_cookie(cf, &cgi, cookie_hdr);
+      apr_table_addn(r->headers_out, "Cookie", cookie_hdr);       /* Pass cookies to subreq */
+      DD("found cookie(%s) 5", STRNULLCHK(cookie_hdr));
       /* Kludge to get subrequest to set-cookie, i.e. on return path */
-      cookie_hdr = apr_table_get(r->headers_in, "Set-Cookie");
-      if (cookie_hdr) {
-	D("subrequest set-cookie(%s)", cookie_hdr);
-	apr_table_setn(r->headers_out, "Set-Cookie", cookie_hdr);
+      set_cookie_hdr = apr_table_get(r->headers_in, "Set-Cookie");
+      if (set_cookie_hdr) {
+	D("subrequest set-cookie(%s) 2", set_cookie_hdr);
+	apr_table_addn(r->headers_out, "Set-Cookie", set_cookie_hdr);
       }
     }
   }
@@ -343,8 +350,11 @@ static int chkuid(request_rec* r)
 	  D("POST soap parse returned %d", ret);
 #if 0
 	  /* *** TODO: SOAP response should not be sent internally unless there is auto */
-	  if (ret == ZXID_SSO_OK)
-	    return zxid_simple_ab_pep(cf, &ses, res_len, auto_flags);
+	  if (ret == ZXID_SSO_OK) {
+	    ret = zxid_simple_ab_pep(cf, &ses, res_len, auto_flags);
+	    D_DEDENT("chkuid: ");
+	    return ret;
+	  }
 	  if (auto_flags & ZXID_AUTO_SOAPC || auto_flags & ZXID_AUTO_SOAPH) {
 	    res = zx_dup_cstr(cf->ctx, "n");
 	    if (res_len)
@@ -390,36 +400,51 @@ static int chkuid(request_rec* r)
     }
     D("other page: no_ses uri(%s)", r->uri);
   }
-step_up:  
+step_up:
   res = zxid_simple_no_ses_cf(cf, &cgi, &ses, 0, AUTO_FLAGS);
 
 process_zxid_simple_outcome:
+  if (cookie_hdr && cookie_hdr[0]) {
+    D("Passing cookie(%s) to environment", cookie_hdr);
+    zxid_add_attr_to_ses(cf, &ses, "cookie", zx_dup_str(cf->ctx, cookie_hdr));
+  }
+
   switch (res[0]) {
   case 'L':
     if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("REDIR(%s)", res);
     apr_table_setn(r->headers_out, "Location", res+10);
+    D_DEDENT("chkuid: ");
     return HTTP_SEE_OTHER;
   case 'C':
     if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("CONTENT(%s)", res);
-    return send_res(cf, r, res);
+    ret = send_res(cf, r, res);
+    D_DEDENT("chkuid: ");
+    return ret;
   case 'z':
     INFO("User not authorized %d", 0);
+    D_DEDENT("chkuid: ");
     return HTTP_UNAUTHORIZED;
   case 0: /* Logged in case */
     D("SSO OK pre uri(%s) filename(%s) path_info(%s)", r->uri, r->filename, r->path_info);
-    return pool2apache(cf, r, ses.at);
+    ret = pool2apache(cf, r, ses.at);
+    D_DEDENT("chkuid: ");
+    return ret;
 #if 0
   case 'd': /* Logged in case */
     if (zx_debug & MOD_AUTH_SAML_INOUT) INFO("SSO OK LDIF(%s)", res);
     D("SSO OK pre uri(%s) filename(%s) path_info(%s)", r->uri, r->filename, r->path_info);
-    return ldif2apache(cf, r, res);
+    ret = ldif2apache(cf, r, res);
+    D_DEDENT("chkuid: ");
+    return ret;
 #endif
   default:
     ERR("Unknown zxid_simple response(%s)", res);
+    D_DEDENT("chkuid: ");
     return HTTP_INTERNAL_SERVER_ERROR;
   }
 
   D("final ok %d", OK);
+  D_DEDENT("chkuid: ");
   return OK;
 }
 

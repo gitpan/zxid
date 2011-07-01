@@ -264,7 +264,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 /* Catch mallocs of zero size */
 #define MALLOCN(p,n) MB ASSERT(n); CHK_NULL((p)=malloc(n)); ME
 #define REALLOCN(p,n) MB ASSERT(n); if (p) CHK_NULL((p)=realloc((p),(n))); \
-		         else   CHK_NULL((p)=malloc(n)); ME
+		                    else   CHK_NULL((p)=malloc(n)); ME
 #define STRDUP(d,s) MB (d) = strdup(s); ME
 #endif
 #define DUPN(d,s,n) MB MALLOCN(d,n); if (d) memcpy((d),(s),(n)); ME
@@ -436,17 +436,17 @@ extern char zx_indent[256];  /* Defined in zxidlib.c. *** Locking issues? */
 #define D_DEDENT(s)
 #endif
 #ifdef VERBOSE
-#define D(format,...) (void)((fprintf(stderr, "t %10s:%-3d %-16s %s d %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, ## __VA_ARGS__), fflush(stderr)))
+#define D(format,...) (void)((fprintf(stderr, "p%d %10s:%-3d %-16s %s d %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, ## __VA_ARGS__), fflush(stderr)))
 #define DD D
 #else
-#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t %10s:%-3d %-16s %s d %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, ## __VA_ARGS__), fflush(stderr)))
+#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "p%d %10s:%-3d %-16s %s d %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, ## __VA_ARGS__), fflush(stderr)))
 /*#define D(format,...) (void)(zx_debug&ZX_DEBUG_MASK && (fprintf(stderr, "t%x %10s:%-3d %-16s %s d " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr)))*/
 #define DD(format,...)  /* Documentative */
 #endif
 
-#define ERR(format,...) (fprintf(stderr, "t %10s:%-3d %-16s %s E %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))
+#define ERR(format,...) (fprintf(stderr, "p%d %10s:%-3d %-16s %s E %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))
 /*#define ERR(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s E " format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, __VA_ARGS__), fflush(stderr))*/
-#define INFO(format,...) (fprintf(stderr, "t %10s:%-3d %-16s %s I %s" format "\n", __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))
+#define INFO(format,...) (fprintf(stderr, "p%d %10s:%-3d %-16s %s I %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))
 /*#define INFO(format,...) (fprintf(stderr, "t%x %10s:%-3d %-16s %s I %s" format "\n", (int)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, zx_indent, __VA_ARGS__), fflush(stderr))*/
 
 #define D_XML_BLOB(cf, lk, len, xml) zxlog_debug_xml_blob((cf), __FILE__, __LINE__, __FUNCTION__, (lk), (len), (xml))
@@ -697,12 +697,14 @@ extern char* assert_msg;
                                  *((p)++) =  (x) & 0xff; }      \
   else { NEVER("length %d too big to encode in BERLEN\n",(x)); }; ME
 
-#define PEM_CERT_START  "-----BEGIN CERTIFICATE-----"
-#define PEM_CERT_END    "-----END CERTIFICATE-----"
+#define PEM_CERT_START          "-----BEGIN CERTIFICATE-----"
+#define PEM_CERT_END              "-----END CERTIFICATE-----"
 #define PEM_RSA_PRIV_KEY_START  "-----BEGIN RSA PRIVATE KEY-----"
-#define PEM_RSA_PRIV_KEY_END    "-----END RSA PRIVATE KEY-----"
+#define PEM_RSA_PRIV_KEY_END      "-----END RSA PRIVATE KEY-----"
 #define PEM_DSA_PRIV_KEY_START  "-----BEGIN DSA PRIVATE KEY-----"
-#define PEM_DSA_PRIV_KEY_END    "-----END DSA PRIVATE KEY-----"
+#define PEM_DSA_PRIV_KEY_END      "-----END DSA PRIVATE KEY-----"
+#define PEM_PRIV_KEY_START      "-----BEGIN PRIVATE KEY-----"
+#define PEM_PRIV_KEY_END          "-----END PRIVATE KEY-----"
 
 /* Define this so it results CR (0xd) and LF (0xa) on your platform. N.B. \n is not always 0xa! */
 #define CRLF "\015\012"

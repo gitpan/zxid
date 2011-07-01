@@ -61,10 +61,26 @@ Here are example docs for SimpleSAMLPHP, or Shibboleth:
     - AuthnReq QS option for SP to request that attribute list is not shown up front
     - Consider removing zx_scan_pi_or_comment() from most tags, only leaving for top level.
     - Show whether SP wants a persistent or transient, or some other type of Id for the user.
-    - zxpasswd account creation problems
-        echo -n tas3 | ~/zxid/zxpasswd -at 'cn: Mallory McBean$givenname: Mallory$sn: McBeanBean$o: Laskenta Keskus$eduPersonEntitlement: admin$' -c mallory
     - Clarify signature validation error codes, e.g. <SignedInfo> canon fail vs. bad cert
     - Instantiation of declared prefix that only appears in innards of the XML (e.g. xs)
+    - Merge Jeroen's mega patch
+    - Idea: authorization through interaction service, get it logged to audit trail as evidence
+    - Idea: discovery and consent questions up-front in the beginning of the business process
+    - AuthnCtx comparison or matching
+    - Proxy IdP AuthnCtx, RequesterID mapping
+
+zxid-1.01:: 21.6.2011
+    - Added to zxidhlo a possibility of giving CONF using -D at compile time
+    - Fixed long int argument to %d warnings (happened with x86_64 architecture build)
+    - Fixed null pointer check in zxid_extract_body()
+    - improved error reporting to show cwd in vopen_fd_from_path()
+    - Fixed mod_auth_saml to add to the cookies, not to replace them (replacement caused apps behind it to misbehave)
+
+zxid-1.0:: 31.5.2011
+    - Promoted to 1.0 status
+zxid-0.83:: 11.3.2011
+    - Fixed ordering of EPRs returned by zxid_get_epr() to always to be same as with zxid_find_epr().
+    - Made private key reading more robust by tolerating omission of RSA or DSA designation
 
 zxid-0.82:: 10.3.2011
     - Added Proxy IdP support

@@ -15,18 +15,12 @@
  * Test encoding and decoding SAML 2.0 assertions and other related stuff.
  */
 
-#include <signal.h>
-#include <fcntl.h>
-#include <netdb.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/wait.h>
-#include <openssl/x509.h>
 
+#include "platform.h"
 #include "errmac.h"
 
 #include "zx.h"
@@ -691,7 +685,7 @@ int main(int argc, char** argv, char** env)
     printf("Original and WO differ.\n");
 
   if (wo_p - wo_out != len_wo)
-    ERR("WO encode length mismatch %d vs %d (len)", wo_p - wo_out, len_wo);
+    ERR("WO encode length mismatch %d vs %d (len)", ((int)(wo_p - wo_out)), len_wo);
   printf("Re-encoded result WO (len=%d):\n%.*s\n\n", len_wo, len_wo, wo_out);
 
   if (wo_path)
