@@ -39,6 +39,7 @@
 #define WSF11_DI_RO "DiscoveryResourceOffering"               /* Name of bootstrap attribute */
 #define WSF20_DI_RO "urn:liberty:disco:2006-08:DiscoveryEPR"
 #define TAS3_EPR    "urn:tas3:epr"
+#define TAS3_PTM    "urn:tas3:ptm:2012"
 
 #define IMPLIED_RSC        "urn:liberty:isf:implied-resource"
 #define XMLNS_DISCO_1_1    "urn:liberty:disco:2003-08"
@@ -223,6 +224,8 @@
 #define TAS3_STATUS_NOSIG   "urn:tas3:status:nosig"
 #define TAS3_STATUS_BADSIG  "urn:tas3:status:badsig"
 #define TAS3_STATUS_BADCOND "urn:tas3:status:badcond"
+#define TAS3_STATUS_EXPIRED "urn:tas3:status:expired" /* credential expired */
+#define TAS3_STATUS_REPLAY  "urn:tas3:status:replay"
 #define TAS3_STATUS_BADXML  "urn:tas3:status:badxml"
 #define TAS3_STATUS_FAULT   "urn:tas3:status:fault"
 

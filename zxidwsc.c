@@ -196,18 +196,9 @@ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, str
   }
   
   /* Call Rs-In PDP */
-  
-  if (!zxid_localpdp(cf, ses)) {
-    ERR("RSIN4 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Client", "Response denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
+
+  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RS_IN, "e:Client", cf->pepmap_rsin)) {
     return 0;
-  } else if (cf->pdp_url && *cf->pdp_url) {
-    //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
-    if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rsin)) {
-      ERR("RSIN4 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_IN, "e:Client", "Response denied by WSC policy at PDP", TAS3_STATUS_DENY, 0, 0, 0));
-      return 0;
-    }
   }
   
   /* *** execute (or store for future execution) the obligations. */
@@ -287,6 +278,9 @@ static int zxid_wsc_prep(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_
   zx_reverse_elem_lists(&hdr->gg);
   return 1;
 }
+
+/*(-) Use EncryptedAssertion if available, otherwise plain Assertion.
+ * ses->call_invoktok allows other token to be specified, as an override. */
 
 /* Called by:  zxid_wsc_prep_secmech x2 */
 static void zxid_choose_sectok(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_wsse_Security_s* sec)
@@ -495,8 +489,6 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
 {
   struct zx_e_Envelope_s* env;
   struct zx_root_s* r;
-#if 0
-#endif
   r = zx_dec_zx_root(cf->ctx, strlen(enve), enve, "add_env");
   if (!r) {
     ERR("Malformed XML enve(%s)", enve);
@@ -504,11 +496,13 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
   }
   env = r->Envelope;
   if (env) {
+    DD("HERE1 ENV EXISTS %p", env);
     if (!env->Body)
       env->Body = zx_NEW_e_Body(cf->ctx, &env->gg);
     if (!env->Header)
       env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
   } else if (r->Body) {
+    DD("HERE2 BODY EXISTS %p", env);
     env = zx_NEW_e_Envelope(cf->ctx,0);
     ZX_ADD_KID(env, Body, r->Body);
     if (r->Header)
@@ -524,6 +518,7 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
     }
     /* Must be just payload */
     enve = zx_alloc_sprintf(cf->ctx, 0, "%s%s%s", zx_env_body_open, enve, zx_env_body_close);
+    DD("HERE3 ADD ENV(%s)", enve);
     r = zx_dec_zx_root(cf->ctx, strlen(enve), enve, "add_env2");
     if (!r) {
       ERR("Malformed XML enve(%s)", enve);
@@ -566,20 +561,10 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
   }
   
   /* Call Rq-Out PDP */
-  
-  if (!zxid_localpdp(cf, ses)) {
-    ERR("RQOUT1 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
+
+  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RQ_OUT,"e:Client", cf->pepmap_rqout)) {
     D_DEDENT("call: ");
     return 0;
-  } else if (cf->pdp_url && *cf->pdp_url) {
-    //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
-    if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rqout)) {
-      ERR("RQOUT1 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC policy", TAS3_STATUS_DENY, 0, 0, 0));
-      D_DEDENT("call: ");
-      return 0;
-    }
   }
 
   /* *** add usage directives */
@@ -650,7 +635,7 @@ struct zx_str* zxid_callf_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const
  *     configuration option. This implementes generalized (application
  *     independent) Requestor Out and Requestor In PEPs. To implement
  *     application dependent PEP features you should call zxid_az() directly.
- * env:: XML payload
+ * enve:: XML payload as string
  * return:: SOAP Envelope of the response, as a string. You can parse this
  *     string to obtain all returned SOAP headers as well as the Body and its
  *     content. NULL on failure. ses->curflt and/or ses->curstatus contain
@@ -748,19 +733,9 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
 
   /* Call Rq-Out PDP */
   
-  if (!zxid_localpdp(cf, ses)) {
-    ERR("RQOUT1 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_OUT, "e:Client", "Request denied by WSC local policy", TAS3_STATUS_DENY, 0, 0, 0));
+  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RQ_OUT,"e:Client", cf->pepmap_rqout)) {
     D_DEDENT("prep: ");
     return 0;
-  } else if (cf->pdp_url && *cf->pdp_url) {
-    //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
-    if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rqout)) {
-      ERR("RQOUT1 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Request denied by WSC policy", TAS3_STATUS_DENY, 0, 0, 0));
-      D_DEDENT("prep: ");
-      return 0;
-    }
   }
   
   /* *** add usage directives */

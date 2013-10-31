@@ -144,7 +144,7 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
     
     if (!RSA_sign(NID_sha1, (unsigned char*)sha1, sizeof(sha1), (unsigned char*)sigu, (unsigned int*)&siglen, rsa)) {
       ERR("RSA_sign() failed. Bad certificate or private key? %p", rsa);
-      zx_report_openssl_error("signing error");
+      zx_report_openssl_err("signing error");
       ZX_FREE(c, sigu);
       return 0;
     }
@@ -156,7 +156,7 @@ struct zx_ds_Signature_s* zxsig_sign(struct zx_ctx* c, int n, struct zxsig_ref* 
     
     if (!DSA_sign(NID_sha1, (unsigned char*)sha1, sizeof(sha1), (unsigned char*)sigu, (unsigned int*)&siglen, dsa)) {
       ERR("DSA_sign() failed. Bad certificate or private key? %p", dsa);
-      zx_report_openssl_error("signing error");
+      zx_report_openssl_err("signing error");
       ZX_FREE(c, sigu);
       return 0;
     }
@@ -369,12 +369,12 @@ int zxsig_validate(struct zx_ctx* c, X509* cert, struct zx_ds_Signature_s* sig, 
 
 certerr:
   ERR("Certificate error. Maybe the certificate does not have any public key type=0x%x matching the algorithm(%.*s)? Or corrupt or wrong cert?", evp_pkey?evp_pkey->type:-1, algo?algo->len:0, algo?algo->s:"");
-  zx_report_openssl_error("certificate error");
+  zx_report_openssl_err("certificate error");
   ZX_FREE(c, ss);
   return ZXSIG_BAD_CERT;
 
 vfyerr:
-  zx_report_openssl_error("verification error");
+  zx_report_openssl_err("verification error");
   DD("VFY FAIL canon sigInfo(%.*s) %d", ss->len, ss->s,hexdmp("inner md_calc: ", md_calc, 20, 20));
   ERR("VFY FAIL canon sigInfo md %d", hexdmp("inner md_calc: ", md_calc, 20, 20));
   D_XML_BLOB(0, "VFY FAIL CANON SIGINFO", ss->len, ss->s);
@@ -387,8 +387,8 @@ vfyerr:
  * logkey:: Way for caller to indicate what the OpenSSL errors are all about
  * return:: Number of open SSL errors processed, or 0 if none. Often ignored. */
 
-/* Called by:  main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_raw_cipher, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxid_mk_at_cert x2, zxid_mk_self_sig_cert x4, zxlog_write_line, zxsig_data x2, zxsig_sign x2, zxsig_validate x2, zxsig_verify_data x5 */
-int zx_report_openssl_error(const char* logkey)
+/* Called by:  hi_accept_book x3, hi_new_shuffler x4, hi_open_tcp x3, hi_read x3, hi_vfy_peer_ssl_cred x3, hi_write x3, main, zx_EVP_CIPHER_key_length, zx_get_rsa_pub_from_cert x2, zx_print_X509, zx_raw_cipher, zx_rsa_priv_dec, zx_rsa_priv_enc, zx_rsa_pub_dec, zx_rsa_pub_enc, zxbus_open_bus_url x10, zxbus_read_stomp, zxbus_write_line, zxid_extract_private_key x2, zxid_mk_at_cert x2, zxid_mk_self_sig_cert x4, zxlog_write_line, zxsig_data x2, zxsig_sign x2, zxsig_validate x2, zxsig_verify_data x5 */
+int zx_report_openssl_err(const char* logkey)
 {
   char buf[256];
   unsigned long err;
@@ -413,12 +413,13 @@ int zx_report_openssl_error(const char* logkey)
  * c::        ZX context. Used for memory allocation.
  * len::      Length of the raw data
  * data::     Raw data to sign
- * sig::      Result parameter. Raw binary signature data will be returned via this parameter.
+ * sig::      Result parameter. Raw binary signature data, which will
+ *            be allocated, will be returned via this parameter.
  * priv_key:: Private key used for signing.
  * lk::       Log key. Used to make logs and error messages more meaningful.
  * return::   -1 on failure. Upon success the length of the raw signature data. */
 
-/* Called by:  zxid_saml2_post_enc, zxid_saml2_redir_enc, zxlog_write_line x2 */
+/* Called by:  zxbus_mint_receipt, zxbus_write_line x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxlog_write_line x2 */
 int zxsig_data(struct zx_ctx* c, int len, const char* data, char** sig, EVP_PKEY* priv_key, const char* lk)
 {
   RSA* rsa;
@@ -443,7 +444,7 @@ int zxsig_data(struct zx_ctx* c, int len, const char* data, char** sig, EVP_PKEY
     if (RSA_sign(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)*sig, (unsigned int*)&len, rsa))  /* PKCS#1 v2.0 */
       return len;
     ERR("%s: signing data failed. Perhaps you have bad, or no, RSA private key(%p) len=%d data=%p", lk, rsa, len, data);
-    zx_report_openssl_error(lk);
+    zx_report_openssl_err(lk);
     return -1;
   case EVP_PKEY_DSA:
     dsa = EVP_PKEY_get1_DSA(priv_key);
@@ -452,7 +453,7 @@ int zxsig_data(struct zx_ctx* c, int len, const char* data, char** sig, EVP_PKEY
     if (DSA_sign(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)*sig, (unsigned int*)&len, dsa))  /* PKCS#1 v2.0 */
       return len;
     ERR("%s: signing data failed. Perhaps you have bad, or no, DSA private key(%p) len=%d data=%p", lk, dsa, len, data);
-    zx_report_openssl_error(lk);
+    zx_report_openssl_err(lk);
     return -1;
   default:
     ERR("%s: Unknown private key type 0x%x. Wrong or corrupt private key?", lk, priv_key->type);
@@ -463,20 +464,20 @@ int zxsig_data(struct zx_ctx* c, int len, const char* data, char** sig, EVP_PKEY
 /*() Verify a signature over a blob of data using rsa-sha1 algorithm.
  *
  * len::      Length of the raw data
- * data::     Raw data to sign
+ * data::     Raw data that was signed
  * siglen::   Length of the raw binary signature data
  * sig::      Raw binary signature data
  * cert::     Certificate used for signing
  * lk::       Log key. Used to make logs and error messages more meaningful
- * return::   ZX_SIG value. o (ZXSIG_OK) means success. Other values mean failure of some sort. */
+ * return::   ZX_SIG value. 0 (ZXSIG_OK) means success. Other values mean failure of some sort. */
 
-/* Called by:  main, zxid_decode_redir_or_post, zxlog_zsig_verify_print */
+/* Called by:  main, zxbus_verify_receipt, zxid_decode_redir_or_post, zxlog_zsig_verify_print */
 int zxsig_verify_data(int len, char* data, int siglen, char* sig, X509* cert, char* lk)
 {
   int verdict;
-  EVP_PKEY* evp_pkey;
-  struct rsa_st* rsa_pkey;
-  struct dsa_st* dsa_pkey;
+  EVP_PKEY* evp_pubk;
+  struct rsa_st* rsa_pubk;
+  struct dsa_st* dsa_pubk;
   char sha1[20];  /* 160 bits */
   SHA1((unsigned char*)data, len, (unsigned char*)sha1);
   
@@ -484,25 +485,25 @@ int zxsig_verify_data(int len, char* data, int siglen, char* sig, X509* cert, ch
   DD("%s: vfy sig above %d",  lk, hexdump("sig: ",  sig,  sig+siglen, 4096));
   DD("%s: vfy sha1 above %d", lk, hexdump("sha1: ", sha1, sha1+20, 20));
   
-  evp_pkey = X509_get_pubkey(cert);
-  if (!evp_pkey) {
+  evp_pubk = X509_get_pubkey(cert);
+  if (!evp_pubk) {
     ERR("%s: Verify failed to get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %p", lk, cert);
-    zx_report_openssl_error("zxsig rsa vfy get_pub");
+    zx_report_openssl_err("zxsig rsa vfy get_pub");
     return ZXSIG_BAD_CERT;
   }
-  switch (EVP_PKEY_type(evp_pkey->type)) {
+  switch (EVP_PKEY_type(evp_pubk->type)) {
   case EVP_PKEY_RSA:
-    rsa_pkey = EVP_PKEY_get1_RSA(evp_pkey);
-    if (!rsa_pkey) {
+    rsa_pubk = EVP_PKEY_get1_RSA(evp_pubk);
+    if (!rsa_pubk) {
       ERR("RSA vfy: failed to extract RSA get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %p", cert);
-      zx_report_openssl_error("zxsig rsa vfy rsa get_pub rsa");
+      zx_report_openssl_err("zxsig rsa vfy rsa get_pub rsa");
       return ZXSIG_BAD_CERT;
     }
   
-    verdict = RSA_verify(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)sig, siglen, rsa_pkey);  /* PKCS#1 v2.0 */
+    verdict = RSA_verify(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)sig, siglen, rsa_pubk);  /* PKCS#1 v2.0 */
     if (!verdict) {
       ERR("RSA signature verify in %s data failed. Perhaps you have bad or no certificate(%p) len=%d data=%p siglen=%d sig=%p", lk, cert, len, data, siglen, sig);
-      zx_report_openssl_error(lk);
+      zx_report_openssl_err(lk);
       D("RSA_vfy(%s) sig above %d",  lk, hexdump("sig: ",  sig,  sig+siglen, 4096));
       return ZXSIG_VFY_FAIL;
     } else {
@@ -510,17 +511,17 @@ int zxsig_verify_data(int len, char* data, int siglen, char* sig, X509* cert, ch
       return 0;
     }
   case EVP_PKEY_DSA:
-    dsa_pkey = EVP_PKEY_get1_DSA(evp_pkey);
-    if (!dsa_pkey) {
+    dsa_pubk = EVP_PKEY_get1_DSA(evp_pubk);
+    if (!dsa_pubk) {
       ERR("DSA vfy: failed to extract DSA get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %p", cert);
-      zx_report_openssl_error("zxsig dsa vfy dsa get_pub dsa");
+      zx_report_openssl_err("zxsig dsa vfy dsa get_pub dsa");
       return ZXSIG_BAD_CERT;
     }
   
-    verdict = DSA_verify(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)sig, siglen, dsa_pkey);  /* PKCS#1 v2.0 */
+    verdict = DSA_verify(NID_sha1, (unsigned char*)sha1, 20, (unsigned char*)sig, siglen, dsa_pubk);  /* PKCS#1 v2.0 */
     if (!verdict) {
       ERR("DSA signature verify in %s data failed. Perhaps you have bad or no certificate(%p) len=%d data=%p siglen=%d sig=%p", lk, cert, len, data, siglen, sig);
-      zx_report_openssl_error(lk);
+      zx_report_openssl_err(lk);
       D("DSA_vfy(%s) sig above %d",  lk, hexdump("sig: ",  sig,  sig+siglen, 4096));
       return ZXSIG_VFY_FAIL;
     } else {
@@ -528,7 +529,7 @@ int zxsig_verify_data(int len, char* data, int siglen, char* sig, X509* cert, ch
       return 0;
     }
   default:
-    ERR("%s: Unknown public key type 0x%x. Wrong or corrupt certificate key?", lk, evp_pkey->type);
+    ERR("%s: Unknown public key type 0x%x. Wrong or corrupt certificate key?", lk, evp_pubk->type);
     return -1;
   }    
 }

@@ -1,4 +1,5 @@
 /* zxidconf.h  -  Configuration of ZXID
+ * Copyright (c) 2012-2013 Synergetics (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -12,9 +13,13 @@
  * 29.8.2009, added PDP_URL --Sampo
  * 7.1.2010,  added WSC and WSP signing options --Sampo
  * 12.2.2011, added proxy IdP related options --Sampo
+ * 10.12.2011, added VPATH, VURL, BUTTON_URL, delete ORG_URL --Sampo
+ * 17.8.2012, added audit bus configuration --Sampo
+ * 16.2.2013, added WD option --Sampo
+ * 21.6.2013, added wsp_pat --Sampo
  *
  * Most of the configuration options can be set via configuration
- * file /var/zxid/zxid.conf or using -O command line flag(s). In
+ * file /var/zxid/zxid.conf or using -c command line flag(s). In
  * config file or on command line you should omit the ZXID_ prefix
  * and use attribute=value syntax separated by newlines or & characters
  * (the parser implements CGI query string syntax with extension that
@@ -30,13 +35,15 @@
 /*(c) Compile time configuration enforcement
  * Whether configuration is entirely determined at compile time by this file
  * or whether it is possible to use a config file or provide options on
- * command line using -O flags (such as via shell script wrapper). When zxid
- * is used as a library, it depends on application to call zxid_parse_conf().
+ * command line using -c flags (such as via shell script wrapper) or via ZXID_CONF
+ * environment variable. When zxid is used as a library, it depends on application to
+ * call zxid_parse_conf().
+ * See also ZXID_CONF_PATH compile time macro.
  * Generally we recommend you leave these turned on (1). */
 
 #define ZXID_CONF_FILE 1     /* (compile) */
-#define ZXID_CONF_FLAG 1     /* (compile) */
-#define ZXID_SHOW_CONF 1     /* Whether configuration is viewable from url o=d */
+#define ZXID_CONF_FLAG 1     /* (compile) ZXID_CONF environment variable and -c flag enable. */
+#define ZXID_SHOW_CONF 1     /* Whether configuration is viewable from URL?o=d */
 
 /*(c) ZXID configuration and working directory path
  * Where metadata cache and session files are created. Note that the directory
@@ -45,18 +52,110 @@
  * with proper layout. If you change it here, also edit Makefile. */
 #ifndef ZXID_PATH
 #ifdef MINGW
-#define ZXID_PATH "c:/var/zxid/"
+#define ZXID_PATH  "c:/var/zxid/"
 #else
-#define ZXID_PATH "/var/zxid/"
+#define ZXID_PATH  "/var/zxid/"
 #endif
 #endif
+
+#define ZXID_PATH_MAX_RECURS_EXPAND_DEPTH 5  /* (compile) Max no of incls, nested PATH or VPATH */
+
+/*(c) VPATH - PATH for a virtual server
+ *
+ * The VPATH allows different configuration PATH for different
+ * virtual servers (multihoming) to exist, thus allowing
+ * different zxid.conf files and different /var/zxid/ subdirectory.
+ * If the config file <PATH><VPATH>zxid.conf exists (i.e. /var/zxid/<VPATH>zxid.conf
+ * when using default PATH), then the PATH configuration variable is changed
+ * to point to the VPATH, and the virtual host specific config file is read.
+ *
+ * VPATH is rendered by first inserting current PATH, unless VPATH starts by '/',
+ * and then rendering each ordinary letter as is, but expanding the
+ * following % (percent) specifications, inline:
+ *
+ *   %%  expands as single percent sign
+ *   %a  access protocol prefix, e.g. "https://" or "http://"
+ *   %h  the contents of environment variable HTTP_HOST (see CGI spec) This
+ *       usually ends in :port if the port is nonstandard (thus usually
+ *       you do not need %p or %P).
+ *   %p  the contents of environment variable SERVER_PORT (see CGI spec)
+ *   %s  the contents of environment variable SCRIPT_NAME (see CGI spec)
+ *
+ * > N.B. All other %-specs are reserved for future expansion
+ *
+ * After % expansion, the values are squashed to file path safe character set. In
+ * particular, the / (slash) characters are converted to _ (underscore).
+ *
+ * VPATH is not really a configuration option on its own right (there is
+ * no corresponding entry in struct zxid_conf), but rather a directive
+ * that instructs on point of occurrance the PATH variable (see zxid.h)
+ * to change and configuration file to be read.
+ *
+ * Default value: "%h/" (see definition of PATH for example).
+ * See also: VURL
+ */
+
+#define ZXID_VPATH "%h/"
 
 /*(c) SP Nickname for IdP User Interface
  * IMPORTANT: You should really configure this option.
  * The nice name may be used by IdP user interface to refer to the SP. It
  * is usually a short human readable name or description. It will also
  * appear in metadata as Organization/OrganizationDisplayName */
-#define ZXID_NICE_NAME "ZXID configuration NICE_NAME: Set this to describe your site to humans"
+#define ZXID_NICE_NAME "Configuration NICE_NAME: Set this to describe your site to humans, see " ZXID_CONF_PATH
+
+/*(c) Branding button image URL for user interfaces (optional).
+ * IdP BUTTON_URL is (may be) shown in SP IdP selection screens as
+ * a button (provided that IDP_LIST_METH=2 (IDP_LIST_BRAND)) that
+ * user can click to login using that IdP.
+ *
+ * SP BUTTON_URL is shown by IdP login screen so user understands which SP
+ * requested the SSO. In this use, the "button" is not (usually?) clickable.
+ *
+ * BUTTON_URL will also appear in metadata as Organization/OrganizationURL,
+ * see symlabs-saml-displayname-2008.pdf (submitted to OASIS SSTC) for
+ * specification.
+ *
+ * The BUTTON_URL MUST contain substring "saml2_icon" and size designator (see spec),
+ * to distinguish it from other uses of SAML2 MD Organization/OrganizationURL (which
+ * are unspecified, but presumably include home page URL; original SAML2 MD spec
+ * was too loose). ZXID only supports the usage as button image URL (as of 20111210).
+ * BUTTON_URL is typically absolute URL (relative would not make sense as it
+ * is referenced from other web site referring to your web site).
+ *
+ * Typical value::  https://your-site.com/your_brand_saml2_icon_150x60.png
+ *
+ * Other possible values:: Depending on SP user interface, you may
+ *     use any of
+ *
+ *       https://your-site.com/your_brand_saml2_icon_468x60.png
+ *       https://your-site.com/your_brand_saml2_icon_150x60.png
+ *       https://your-site.com/your_brand_saml2_icon_16x16.png
+ *
+ *     This allows different types of user interfaces to be rendered, see
+ *     PREF_BUTTON_SIZE config option. Check with your Trust Operator
+ *     organization to understand the convention they use.
+ *
+ *     > N.B. As of 20111210, you can only specify one in configuration and
+ *     > your own metadata, but any number are tolerated in foreign metadata.
+ *
+ * If BUTTON_URL is not supplied (the default (0)), the NICE_NAME, and
+ * possibly EntityID, is displayed instead. */
+#define ZXID_BUTTON_URL 0  /* By default no button URL is supplied. */
+
+/*(c) Preferred branding button size (squash or ignore others)
+ * See description of BUTTON_URL, above, for general notion of branding button.
+ *
+ * Since different user interfaces may require different sizes of branding button,
+ * many SAML2 metadata provide several. PREF_BUTTON_SIZE must be a substring
+ * of the OrganizationURL for it to be considered as preferred branding button.
+ * Branding button will also have "saml2_icon" as substring. Lacking correct size,
+ * any other branding button may be squashed to fit the right size, or textual
+ * NICE_NAME and possibly EntityID may be displayed instead. Value SHOULD be
+ * one of "468x60" (banners only mode, typically one per row), "150x60" (default,
+ * multicolumn mode), "16x16" (detailed listing mode, typically with
+ * OreanizationDisplayName and EntityID displayed as well). */
+#define ZXID_PREF_BUTTON_SIZE "150x60"
 
 /*(c) Web Site URL - root of EntityID
  * IMPORTANT: Failure to config this option may block zxid from operating.
@@ -66,7 +165,42 @@
  * N.B. There is no explicit way to configure Entity ID (Provider ID) for
  * the zxid SP. The Entity ID is always of form ZXID_URL?o=B, for example
  *   https://sp1.zxidsp.org:8443/zxid?o=B */
-#define ZXID_URL "https://sp1.zxidconf-you-should-set-URL-conf-variable-to-some-useful-and-site-dependent-value.org:8443/zxid"
+#define ZXID_URL "https://sp1.please-set-URL-conf-variable-to-some-useful-site-dep-value.org:8443/zxidhlo"
+
+/*(c) VURL - URL for a virtual server
+ *
+ * The VURL allows different URL for different
+ * virtual servers (multihoming) to be generated automatically based
+ * on the (CGI) environment variables. However, often you would
+ * override the URL in /var/zxid/zxid.conf
+ *
+ * In VURL each ordinary letter is rendered as is, but the
+ * following % (percent) specifications are expanded inline:
+ *
+ *   %%  expands as single percent sign
+ *   %a  access protocol prefix, e.g. "https://" or "http://"
+ *   %h  the contents of environment variable HTTP_HOST (see CGI spec). This
+ *       usually ends in :port if the port is nonstandard (thus usually
+ *       you do not need %p or %P).
+ *   %p  the contents of environment variable SERVER_PORT (see CGI spec).
+ *   %P  Similar to %p, but renders a colon before the portnumber, unless
+ *       the SERVER_PORT is 443 or 80, in which case nothing is rendered.
+ *       This deals with default ports of the http and https protocols.
+ *   %s  the contents of environment variable SCRIPT_NAME (see CGI spec)
+ *
+ * > N.B. All other %-specs are reserved for future expansion
+ *
+ * VURL is not really a configuration option on its own right (there is
+ * no corresponding entry in struct zxid_conf), but rather a directive
+ * that instructs, on point of its occurrance, the URL variable (see zxid.h)
+ * to be computed. It will not have any effect unless evaluted at run time,
+ * thus this "default value" is rather moot. You really need to specify
+ * VURL in your own configuration.
+ *
+ * Default value: "%a%h%s"
+ * See also: VPATH
+ */
+#define ZXID_VURL "%a%h%s"
 
 /*(c) Override standard EntityID Construction
  * The best practise is that SP Entity ID is chosen by the SP (and not
@@ -88,8 +222,8 @@
  * these decisions. In those times you can use this hack to
  * try to map the imposed URL to the one that works in ZXID.
  * Normally you should register at IdP to use the ZXID default
- * URLs (easiest way to do this is to use metadata). This
- * only works in mod_auth_saml. */
+ * URLs (the easiest way to do this is to use metadata). This
+ * config option only works in mod_auth_saml. */
 #define ZXID_REDIRECT_HACK_IMPOSED_URL 0
 #define ZXID_REDIRECT_HACK_ZXID_URL 0
 
@@ -97,7 +231,6 @@
  * The LOCALITY, STATE, and COUNTRY will appear in certificates
  * so you may want to set them to sensible values. */
 #define ZXID_ORG_NAME "Unspecified ORG_NAME conf variable"
-#define ZXID_ORG_URL  0
 #define ZXID_LOCALITY "Lisboa"
 #define ZXID_STATE    "Lisboa"
 #define ZXID_COUNTRY  "PT"
@@ -141,25 +274,28 @@
 
 /*(c) Metadata Fetching Options (Auto-CoT)
  * Following four boolean configuration options control how metadata
- * is obtained. The metadata can be in a cache (by default directory /var/zxid/cot)
- * or it can be fetched "on the fly" using the well known location (WKL) method.
+ * is obtained. It can be in a cache (by default directory /var/zxid/cot)
+ * or it can be fetched "on the fly" using the well known location (WKL)
+ * method.
  *
  * MD_FETCH:: controls whether fetching is performed. This necessitates
  *     that ZXID was linked with libcurl. If you do not enable fetching, you
  *     will need to populate the cache manually, perhaps by using a web browser
  *     to fetch the meta data xml files from well known location URLs (or other
- *     URLs if you know better). Or you could use zxidcot.pl?op=md or zxcot(1) tool.
+ *     URLs if you know better) and thenrunning on commandline zxcot.
+ *     Or you could use zxidcot.pl?op=md or zxcot(1) tool.
  *
  *     N.B. Even if fetching is enabled, the fetch can still fail due to
  *     network connectivity issues or due to other end not supporting it.
  *
  * MD_POPULATE_CACHE:: controls whether ZXID will write the metadata to
  *     the on-disk cache. This requires ZXID_MD_FETCH to be enabled
- *     and the file system permissions of the cache directory (e.g. /var/zxid/cot)
- *     to allow writing.
+ *     and the file system permissions of the cache directory
+ *     (e.g. /var/zxid/cot) to allow writing.
  *
  * MD_CACHE_FIRST:: controls whether cache will be checked before fetching
- *     is attempted. If cache misses, ZXID_MD_FETCH governs whether fetch is tried.
+ *     is attempted. If cache misses, ZXID_MD_FETCH governs whether fetch
+ *     is tried.
  *
  * MD_CACHE_LAST:: If true, metadata is obtained from cache
  *     if fetch was disabled or failed.
@@ -175,9 +311,9 @@
 #define ZXID_MD_CACHE_FIRST    1
 #define ZXID_MD_CACHE_LAST     1
 
-/*(c) Whether to load CoT cache from a file containing the concatenated metadata
- * of the Circle of Trust. Some real world federations distribute their
- * metadata this way. Setting this to 0 disables the feature (default).
+/*(c) Whether to load CoT cache from a file containing the concatenated
+ * metadata of the Circle of Trust. Some real world federations distribute
+ * their metadata this way. Setting this to 0 disables the feature (default).
  * Setting this to file name or path enables this feature. */
 #define ZXID_LOAD_COT_CACHE 0
 
@@ -201,8 +337,12 @@
 #define ZXID_AUTO_CERT 1
 
 /*(c) Authentication Request Signing
- * Whether AuthnReq is signed SP (controls both metadata and actual behavior). */
+ * Whether AuthnReq is signed by SP (controls both metadata and actual behavior). */
 #define ZXID_AUTHN_REQ_SIGN 1
+
+/*(c) IdP Insitence on Signed AuthnReq
+ * Must AuthnReq be signed (controls both IdP metadata and actual behavior, i.e. the check). */
+#define ZXID_WANT_AUTHN_REQ_SIGNED 1
 
 /*(c) Assertion Signing
  * Whether SP insists that SSO assertions are signed. Affects metadata. The
@@ -231,7 +371,10 @@
 #define ZXID_NAMEID_ENC 0x0f
 
 /*(c) Assertion Encryption in POST
- * Whether to encrypt assertions when using POST bindings. */
+ * Whether to encrypt assertions when using POST bindings. This
+ * is enabled by default as it protects against Man-in-the-Middle
+ * attack by compromised web browser. Do not diable unless you know
+ * what you are doing. */
 #define ZXID_POST_A7N_ENC 1
 
 /*(c) When producing EncryptedID, EncruptedAssertion, or EncryptedAttribute,
@@ -284,8 +427,17 @@
  *   0x03  Both Headers and Body are signed. */
 #define ZXID_WSP_SIGN 0x03
 
+/*(c) OAUTH2 / OpenID-Connect1 id_token signing and encryption options
+ * 'n': alg=none
+ * 'h': alg=HS256 (HMAC using SHA256)
+ * 'r': alg=RS256 (RSA using SHA256)
+ */
+#define ZXID_OAZ_JWT_SIGENC_ALG 'n'
+
 /*(c) Command that will be executed by zxidwspcgi to respond to a web service call. */
+#ifndef ZXID_WSPCGICMD
 #define ZXID_WSPCGICMD "./zxid-wspcgicmd.sh"
+#endif
 
 /*(c) Bit length of identifiers, unguessability
  * How many random bits to use in an ID. It would be useful if this was
@@ -324,7 +476,8 @@
  * You may want to archive old sessions because they contain
  * the SSO assertions that allowed the users to log in. This
  * may have legal value for your application, you may even be required
- * by law to keep this audit trail.
+ * by law to keep this audit trail. On the other hand, other
+ * jurisdictions will require you to delete this information.
  *
  * If set to 0, causes old sessions to be unlink(2)'d. */
 #define ZXID_SES_ARCH_DIR 0  /* 0=Remove dead sessions. */
@@ -339,9 +492,20 @@
  * generally the need to set a cookie is expressed by presence of
  * setcookie attribute in the LDIF entry. setcookie specifies what
  * should appear in the Set-Cookie HTTP header of HTTP response). */
+#ifndef ZXID_SES_COOKIE_NAME
 #define ZXID_SES_COOKIE_NAME "ZXIDSES"
+#endif
 
-/*(c) Local user account management.
+/*(c) PTM hint cookie
+ * If PTM_COOKIE_NAME is nonempty string, then
+ * zxid_simple() will attempt to set a cookie by that name when new session
+ * is created (but this may rely on some support in the calling app,
+ * generally the need to set a cookie is expressed by presence of
+ * setcookie attribute in the LDIF entry. setcookie specifies what
+ * should appear in the Set-Cookie HTTP header of HTTP response). */
+#define ZXID_PTM_COOKIE_NAME "ZXIDPTM"
+
+/*(c) Local user account management (local user database in filesystem).
  * This is optional unless you require IdP
  * initiated ManageNameID requests to work. Local user account management
  * may be useful on its own right if your application does not yet have
@@ -373,20 +537,24 @@
  * Whether limited PDP functionality is enabled. */
 #define ZXID_PDP_ENA 1
 
-/*(c) IdP Insitence on Signed AuthnReq
- * Must AuthnReq be signed (controls both IdP metadata and actual behavior, i.e. the check). */
-#define ZXID_WANT_AUTHN_REQ_SIGNED 1
-
 /*() Maximum filesystem path length used in /var/zxid tree. */
 #define ZXID_MAX_BUF 1024  /* (compile) */
 
 /*(c) Logging Options
  * See zxid-log.pd for further explanation. Generally you
  * need error and activity logs to know yourself what is going on.
- * You need the issue logs to know whether other's claims towards you are justified.
- * You need the rely logs to hold others responsible. The bits of the
- * value are as follows
- * 0x00    Don't log.
+ * You need the issue logs to know whether other's claims towards you are
+ * justified. You need the rely logs to hold others responsible.
+ *
+ * > N.B. In addition to act, err, rely, and issue logging, there is also
+ * > debug logging to stderr, typically found in your web server error.log
+ * > or in /var/tmp/zxid.stderr or log/xml.dbg. The debugging logs are
+ * > not conteolled by these options - they are controlled by the debug flag.
+ * > A production site should not enable debugging logs, as they may cause
+ * > exposure of sensitive material, unless there is a problem to investigate.
+ *
+ * The bits of the value are as follows
+ * 0x00    Do not log.
  * 0x01    Log enable
  * 0x06    Signing options    
  *         0:: no signing (Px)
@@ -405,18 +573,21 @@
  *         0x70:: reserved
  * 0x80    reserved
  *
- * N.B. Every encryption and signature has computational cost so be sure to factor this
- * in when doing benchmarks - or disable log enc and sign when performance is at premium.
+ * N.B. Every encryption and signature has computational cost so be
+ * sure to factor this in when doing benchmarks - or disable log enc
+ * and sign when performance is at premium.
  *
  * Log signing may help you to argue that log evidence was (not) tampered with.
- * The private key for signing must be available in /var/zxid/pem/logsign-nopw-cert.pem
+ * The private key for signing must be available
+ * in /var/zxid/pem/logsign-nopw-cert.pem
+ * Often this is just a copy of sign-nopw-cert.pem
  *
  * Log encryption may help to keep the logs confidential.
  * For RSA modes the public key for encryption must be available
  * in /var/zxid/pem/logenc-nopw-cert.pem. For symmetric encryption the key
  * is the sha1 hash of file /var/zxid/pem/logenc.key
- * All modes, except for 0, also RFC1951 zip compress the log line and safe-base64 encode
- * the result of the encryption.
+ * All modes, except 0x01, also RFC1951 zip compress the log line and
+ * safe-base64 encode the result of the encryption.
  */
 
 /* Most common combinations of the above flags. */
@@ -424,7 +595,7 @@
 #define ZXLOG_OP_LOG          0x01
 #define ZXLOG_OP_LOG_SIGN     0x05
 #define ZXLOG_OP_LOG_ENC      0x21
-#define ZXLOG_OP_LOG_SIGN_ENC 0x25
+#define ZXLOG_OP_LOG_SIGN_ENC 0x25  /* RSA-AES enc + RSA-SAH1 sign */
 
 #if 1
 /* Production settings to ship. */
@@ -467,6 +638,39 @@
  * This option enables logging in /var/zxid/idpuid/UID/.log some key
  * events such as authentication, SSO, and SLO. */
 #define ZXID_LOGUSER 1
+
+/*(c) Set debug option. You can also set this via zxid_set_opt().
+ * 0 = debug output off
+ * 1 = debug on
+ * other values are reserved, experimental, or otherwise undocumented.
+ * Setting debug option will enable numerous, sometimes copious, debugging
+ * messages to stderr, which often ends in web server's error.log file.
+ * This option may also create log/xml.dbg file. */
+#define ZXID_DEBUG 0
+
+/*(c) Send debug output to a file. You can also set this via zxid_set_opt_cstr().
+ * By default the debug output goes to stderr, which often goes to
+ * web server's error.log. */
+#define ZXID_DEBUG_LOG 0
+
+/*(c) Audit Bus servers. Multiple, comma separated, URLs may be
+ * specified (audit bus servers are instances of zxbusd, which see).
+ * If no BUS_URL is configured, no audit bus logging is performed. */
+#define ZXID_BUS_URL 0
+
+/*(c) Audit bus password if not using ClientTLS.
+ * Generally using ClientTLS is RECOMMENDED and the certificate is taken
+ * from metadata encryption certificate field so there is nothing
+ * special to configure here. However, if for some reason you
+ * need to run plain TLS, with STOMP 1.1 passcode filed for authentication,
+ * the set this option to the passcode. Note that using passcode is much
+ * less secure than using ClientTLS. Another limitation of BUS_PW
+ * approach is that it is shared across all audit bus servers. */
+#define ZXID_BUS_PW 0
+
+/*(c) How Audit Bus receipts are issued. 0x00 = no receipt, 0x01 = plain, 0x05 = RSA-SHA1 */
+
+#define ZXBUS_RCPT 0x05
 
 /*(c) Assertion validation options.
  * These MUST all be turned on (and assertions signed)
@@ -515,7 +719,7 @@
  * you can configure some slop in how the timeout is evaluated. For production
  * use something like 60 seconds could be a good value. 3600 = 1 hour, 86400 = 1 day.
  * All servers of CoT MUST use GMT (aka UTC), not local timezones. You can synchronize
- * clocks with ntpdate ntp1.funet.fi (see man ntpdate).
+ * clocks with ntpdate pool.ntp.org (see man ntpdate).
  * Slop is used in assessing validity of assertions as well as message timestamps.
  * Time skew allows our end to lie about the time, e.g. if we are in GMT, but
  * the other end is not and therefore we are rejected. Note that the time skew
@@ -556,6 +760,18 @@
 /*(c) Query String if None Given */
 
 #define ZXID_DEFAULTQS ""   /* Default Query String used by mod_auth_saml for protected page */
+
+/*(c) WSP Pattern
+ * Any URL matching this pattern is treated as web service call rather
+ * than SSO attempt. Understood by mod_auth_saml. */
+
+#define ZXID_WSP_PAT "*.wsp"
+
+/*(c) mini_httpd_zxid SSO Pattern
+ * Any URL matching this pattern requires SSO. However
+ * WSP_PAT is matched first. Understood by mini_httpd_zxid. */
+
+#define ZXID_SSO_PAT "*"
 
 /*(c) Anonymous can see protected content
  * If ANON_OK is set and matches prefix of the local URL, SSO failure does
@@ -607,7 +823,7 @@
 #define ZXID_WANT "*,authnctxlevel,sesid,setcookie,cookie,rs,cn$undisclosed,log$400000$$"
 #define ZXID_ATTRSRC ""
 #define ZXID_INMAP ""
-#define ZXID_OUTMAP ""
+#define ZXID_OUTMAP "rsrc$rs$unsb64-inf$$"
 //#define ZXID_SUPPRESS ""
 
 /* ----------------------------------------------------------------------------- */
@@ -655,7 +871,7 @@
  * the "env$*$$$" stanza that appears as first below causes
  * all other attributes to be considered environment attributes.
  * See documentation for INMAP for syntax of the stanzas. */
-#define ZXID_COMMAP       "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$urn:oasis:names:tc:xacml:1.0:subject:subject-id$$$;subj$urn:oid:1.3.6.1.4.1.5923.1.1.1.1$$$;subj$urn:oid:1.3.6.1.4.1.5923.1.1.1.7$$$;subj$eduPersonAffiliation$$$;subj$eduPersonEntitlement$$$subj$role$$$;rsrc$rs$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;rsrc$urn:oasis:names:tc:xacml:1.0:resource:resource-id$$$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;act$urn:oasis:names:tc:xacml:1.0:action:action-id$$$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$"
+#define ZXID_COMMAP       "env$*$$$;subj$idpnid$rename$urn:oasis:names:tc:xacml:1.0:subject:subject-id$;subj$urn:oasis:names:tc:xacml:1.0:subject:subject-id$$$;subj$urn:oid:1.3.6.1.4.1.5923.1.1.1.1$$$;subj$urn:oid:1.3.6.1.4.1.5923.1.1.1.7$$$;subj$eduPersonAffiliation$$$;subj$eduPersonEntitlement$$$;subj$role$$$;rsrc$rs$unsb64-inf$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;rsrc$urn:oasis:names:tc:xacml:1.0:resource:resource-id$$$;rsrc$Resource$rename$urn:oasis:names:tc:xacml:1.0:resource:resource-id$;act$Action$rename$urn:oasis:names:tc:xacml:1.0:action:action-id$;act$urn:oasis:names:tc:xacml:1.0:action:action-id$$$;env$ZXID_PEPvers$$$;$cookie$del$$;$setcookie$del$$;$setptmcookie$del$$"
 
 /*(c) Specify XACML Attributes for SSO / frontchannel request in PEP in format ns$A$rule$b$ext */
 #define ZXID_PEPMAP       ZXID_COMMAP
@@ -683,19 +899,49 @@
 
 /*(c) Whitelists and blacklists for the primitive SSO local PDP. Comma separated lists. */
 
-#define ZXID_LOCALPDP_ROLE_PERMIT 0   /* Whitelist of roles (empty: anything goes) */
-#define ZXID_LOCALPDP_ROLE_DENY   "local_deny"      /* Blacklist of roles */
-#define ZXID_LOCALPDP_IDPNID_PERMIT 0 /* Whitelist of permitted users (empty: anything goes) */
-#define ZXID_LOCALPDP_IDPNID_DENY "denynid" /* Blacklist of denied users */
+#define ZXID_LOCALPDP_ROLE_PERMIT 0   /* Whitelist of roles, comma separated (empty: anything goes) */
+#define ZXID_LOCALPDP_ROLE_DENY   "local_deny"      /* Blacklist of roles, comma separated */
+#define ZXID_LOCALPDP_IDPNID_PERMIT 0 /* Whitelist of permitted users, comma separated (empty: anything goes) */
+#define ZXID_LOCALPDP_IDPNID_DENY "denynid" /* Blacklist of denied users, comma separated */
 
 /*(c) Obligations we are willing to respect (unless an explicit UsageDirectives header
- * is specified by caller), require, generate, and accept. */
+ * is specified by caller), require, generate, and accept. Examples:
+ *
+ *   WSC_LOCALPDP_OBL_PLEDGE=urn:tas3:sol1:contract-fwk=urn:syn-trust:obl:base-contract:2012-11
+ *   WSC_LOCALPDP_OBL_PLEDGE=urn:tas3:sol1:contract-fwk=urn:syn-trust:obl:base-contract:2012-11%26urn:tas3:sol1:xborder=urn:tas3:sol1:xdom:eu
+ *   WSC_LOCALPDP_OBL_PLEDGE=urn:tas3:sol1:contract-fwk=urn:syn-trust:obl:base-contract:2012-11$urn:tas3:sol1:xborder=urn:tas3:sol1:xdom:eu
+ *
+ * Since SOL expressions are parsed according to URL query string
+ * rules and since the configuration directives are also parsed
+ * according toquery string rules, a problem arises with multipart SOL
+ * expressions. The second expression shows how to use URL quoting
+ * (%26) to protect the SOL ampersand from being processed by the
+ * configuration file. Since this is such a common situation, a
+ * special separator dollar ($, 0x24) may be used instead, as
+ * illustrated in third example.
+ *
+ * Multiple WSP_LOCALPDP_OBL_REQ and WSP_LOCALPDP_OBL_EMIT directives
+ * accumulate.  Special pledge name "reset" can be used to reset the
+ * list.
+ *
+ * See further discussion in tas3-proto.pd section 2.12 Simple Obligations Language (SOL). */
 #define ZXID_WSC_LOCALPDP_OBL_PLEDGE  0  /* String: WSC pledged obligations in SOL notation */
 #define ZXID_WSP_LOCALPDP_OBL_REQ     0  /* String: WSP required obligations in SOL notation */
 #define ZXID_WSP_LOCALPDP_OBL_EMIT    0  /* String: WSP obligations emitted on resp */
 #define ZXID_WSC_LOCALPDP_OBL_ACCEPT  0  /* String: WSC acceptable obligations in SOL notation */
 
 /* ----------------------------------------------------------------------------- */
+/*(c) Apache httpd sometimes changes working directory unpredictably
+ * (usually to /). This is in violation of Apache httpd documentation,
+ * but apparently the bug has not gotten fixed as of 2013. This seems
+ * to be related to mod_rewrite. Use this option to change working
+ * directory back to whatever you desire, such as document root of a
+ * virtual host so that relative paths to templates, etc. work. 0 means
+ * not to change (i.e. leave working directory as-is, even if unpredictably
+ * changed to wrong value). */
+
+#define ZXID_WD 0
+
 /*(c) Simple API HTML customization.
  * These allow simple branding and customization.
  * If these options are not enough for you, consider simply rendering your own forms. */
@@ -718,33 +964,38 @@
 /*(c) Template for IdP Selector Page that is used if the
  * path does not work. This is really meant to be the last resort. */
 
-#define ZXID_IDP_SEL_TEMPL "<title>ZXID SP SSO: Choose IdP</title>"\
+#define ZXID_IDP_SEL_TEMPL "<title>SP SSO: Choose IdP</title>"\
   "<link type=\"text/css\" rel=stylesheet href=\"idpsel.css\"><body bgcolor=white>"\
-  "<h1 class=zxtop>ZXID SP Federated SSO (user NOT logged in, no session)</h1>"\
+  "<h1 class=zxtop>SP Federated SSO (user NOT logged in, no session)</h1>"\
   "<form method=get action=\"!!URL\">"\
   "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
   "<h3>Login Using New IdP</h3>"\
-  "<i>A new IdP is one whose metadata we do not have yet. We need to know"\
-  "the IdP URL (aka Entity ID) in order to fetch the metadata using the"\
-  "well known location method. You will need to ask the adminstrator of"\
+  "<i>A new IdP is one whose metadata we do not have yet. We need to know "\
+  "the IdP URL (aka Entity ID) in order to fetch the metadata using the "\
+  "well known location method. You will need to ask the adminstrator of "\
   "the IdP to tell you what the EntityID is.</i>"\
   "<p>IdP URL <input name=e size=60><input type=submit name=l0 value=\" Login \"><br>"\
   "Entity ID of this SP (click on the link to fetch the SP metadata): <a href=\"!!EID\">!!EID</a>"\
-  "!!IDP_LIST<h3>Technical options</h3>"\
+  "<p>!!IDP_LIST<h3>Technical options</h3>"\
   "<input type=hidden name=fc value=1><input type=hidden name=fn value=prstnt>"\
-  "<!-- ZXID built-in defaults, see IDP_SEL_TEMPL in zxidconf.h and zxid-conf.pd for explanation -->"\
+  "<!-- built-in defaults, see IDP_SEL_TEMPL in zxidconf.h and zxid-conf.pd for explanation -->"\
+  "<input type=hidden name=fr value=\"!!FR\">"\
   "<input type=hidden name=fq value=\"\">"\
   "<input type=hidden name=fy value=\"\">"\
   "<input type=hidden name=fa value=\"\">"\
   "<input type=hidden name=fm value=\"\">"\
   "<input type=hidden name=fp value=0>"\
   "<input type=hidden name=ff value=0>"\
-  "<div class=zxbot><a class=zx href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+  "</form>"\
+  "<div class=zxbot>!!VERSION (builtin)</div>"
 
 /*(c) Choose the method for rendeing IdP list.
  * 0 = popup menu
  * 1 = buttons
- * 2 = branded image buttons (not implemented as of 20100922) */
+ * 2 = branded image buttons (a la "nascar")
+ * This configuration option is effective if !!IDP_LIST variable
+ * is used in template. The variables !!IDP_POPUP, !!IDP_BUTTON, and !!IDP_BRAND
+ * in template override this option. */
 #define ZXID_IDP_LIST_METH 0
 
 #define ZXID_IDP_LIST_POPUP   0
@@ -785,12 +1036,12 @@
 /*(c) Template for IdP Authentication Page that is used if the
  * path does not work. This is really meant to be the last resort. */
 
-#define ZXID_AN_TEMPL "<title>ZXID IdP: Authentication</title>"\
+#define ZXID_AN_TEMPL "<title>IdP: Authentication</title>"\
   "<link type=\"text/css\" rel=stylesheet href=\"an.css\"><body bgcolor=white>"\
   "<form method=get action=\"!!URL\">"\
-  "<h1 class=zxtop>ZXID IdP Authentication for Federated SSO</h1>"\
+  "<h1 class=zxtop>IdP Authentication for Federated SSO</h1>"\
   "<p>Entity ID of this IdP (click for the IdP metadata): <a href=\"!!EID\">!!EID</a><br>"\
-  "<p>Login requested by !!SP_DPY_NAME (<a href=\"!!SP_EID\">!!SP_EID</a>)"\
+  "<p>Login requested by <img src=\"!!SP_BUTTON_URL\"> !!SP_DPY_NAME (<a href=\"!!SP_EID\">!!SP_EID</a>)"\
   "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
   "User NOT logged in, no session."\
   "<h3>Please authenticate using one of the following methods:</h3>"\
@@ -802,7 +1053,7 @@
   "<input type=hidden name=fq value=\"\"><input type=hidden name=fy value=\"\"><input type=hidden name=fa value=\"\"><input type=hidden name=fm value=\"\"><input type=hidden name=fp value=0><input type=hidden name=ff value=0><!-- ZXID built-in defaults, see AN_TEMPL zxidconf.h-->"\
   "<input type=hidden name=ar value=\"!!SSOREQ\">"\
   "<input type=hidden name=zxapp value=\"!!ZXAPP\">"\
-  "</form><div class=zxbot><a href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+  "</form><div class=zxbot>!!VERSION (builtin)</div>"
 
 /*(c) Path for Template for POST profile page */
 
@@ -811,15 +1062,15 @@
 /*(c) Template for POST profile age that is used if the
  * path does not work. This is really meant to be the last resort. */
 
-#define ZXID_POST_TEMPL "<title>ZXID Post Profile</title>"\
+#define ZXID_POST_TEMPL "<title>Post Profile</title>"\
   "<link type=\"text/css\" rel=stylesheet href=\"an.css\">"\
   "<body bgcolor=white OnLoad=\"document.forms[0].submit()\">"\
   "<form method=post action=\"!!ACTION_URL\">"\
-  "<h1 class=zxtop>ZXID POST Profile POST</h1>"\
+  "<h1 class=zxtop>POST Profile POST</h1>"\
   "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
   "<input type=hidden name=!!SAML_ART value=\"!!SAML_RESP\">!!RS!!SIG"\
   "<input type=submit name=ok value=\" If JavaScript is not on, please click here to complete the transaction \">"\
-  "</form><div class=zxbot><a href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+  "</form><div class=zxbot>!!VERSION (builtin)</div>"
 
 /*(c) Error Page URL
  * If the template customization options are not sufficient, you can
@@ -841,7 +1092,7 @@
   "<h1 class=zxtop>ZXID Error Message</h1>"\
   "<div class=zxerr>!!ERR</div><div class=zxmsg>!!MSG</div><div class=zxdbg>!!DBG</div>"\
   "<input type=hidden name=zxapp value=\"!!ZXAPP\">"\
-  "</form><div class=zxbot><a href=\"http://zxid.org/\">zxid.org</a>, !!VERSION (builtin)</div>"
+  "</form><div class=zxbot>!!VERSION (builtin)</div>"
 
 #define ZXID_MGMT_START "<title>ZXID SP Mgmt</title><link type=\"text/css\" rel=stylesheet href=\"idpsel.css\"><body bgcolor=white><h1 class=zxtop>ZXID SP Management (user logged in, session active)</h1>\n"
 
@@ -849,7 +1100,7 @@
 
 #define ZXID_MGMT_DEFED "<input type=submit name=gt value=\" Defederate (R) \">\n<input type=submit name=gu value=\" Defederate (S) \">\n"
 
-#define ZXID_MGMT_FOOTER  "<div class=zxbot><a class=zx href=\"http://zxid.org/\">zxid.org</a>, "
+#define ZXID_MGMT_FOOTER  "<div class=zxbot>"
 #define ZXID_MGMT_END     "</div>"
 
 #endif

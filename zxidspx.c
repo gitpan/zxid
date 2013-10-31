@@ -32,7 +32,7 @@
 
 /*() Extract an assertion, decrypting EncryptedAssertion if needed. */
 
-/* Called by:  sig_validate x2, zxid_imreq, zxid_sp_dig_sso_a7n, zxid_wsp_validate_env x2 */
+/* Called by:  sig_validate x2, zxid_imreq, zxid_sp_dig_oauth_sso_a7n, zxid_sp_dig_sso_a7n, zxid_wsp_validate_env x2 */
 zxid_a7n* zxid_dec_a7n(zxid_conf* cf, zxid_a7n* a7n, struct zx_sa_EncryptedAssertion_s* enca7n)
 {
   struct zx_str* ss;
@@ -73,7 +73,7 @@ static int zxid_sp_dig_sso_a7n(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, stru
   if (cf->anon_ok && cgi->rs && !strcmp(cf->anon_ok, cgi->rs))  /* Prefix match */
     return zxid_sp_anon_finalize(cf, cgi, ses);
   ERR("No Assertion found and not anon_ok in SAML Response %d", 0);
-  zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "C", "ERR", 0, "sid(%s) No assertion", ses->sid);
+  zxlog(cf, 0, 0, 0, 0, 0, 0, ZX_GET_CONTENT(ses->nameid), "N", "C", "ERR", 0, "sid(%s) No assertion", ses->sid?ses->sid:"");
   return 0;
 }
 
@@ -312,6 +312,9 @@ static struct zx_sp_Response_s* zxid_xacml_az_cd1_do(zxid_conf* cf, zxid_cgi* cg
 /*() SOAP dispatch can also handle requests and responses received via artifact
  * resolution. However only some combinations make sense.
  * See zxid/sg/wsf-soap11.sg for the master SOAP dispatch from parsing perspective.
+ * Despite being called zxid_sp_soap_dispatch(), this actually dispatches
+ * the IdP functions, such as ManageNameIDRequest, XACMLAuthzDecisionQuery,
+ * SASLRequest (AnSvc), Query (Discovery), and People Service requests.
  *
  * Return 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
@@ -466,9 +469,10 @@ int zxid_sp_soap_dispatch(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, struct zx
       return zxid_soap_cgi_resp_body(cf, ses, body);
     }
 
-    if (!zxid_wsp_validate_env(cf, ses, 0, r->Envelope))
-      return 0;
-
+    if (!zxid_wsp_validate_env(cf, ses, "Resource=Discovery", r->Envelope)) {
+      return zxid_soap_cgi_resp_body(cf, ses, body); /* will include the fault */
+    }
+    
     if (bdy->Query) { /* Discovery 2.0 Query */
       ZX_ADD_KID(body, QueryResponse, zxid_di_query(cf, ses, bdy->Query));
     idwsf_resp:

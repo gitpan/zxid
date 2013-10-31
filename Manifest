@@ -43,7 +43,8 @@ zxid.pem         - Certificate and privatekey combo for testing (not secure)
 favicon.ico      - A ZX/SP favicon for use in demo SPs
 tpn-client.sh    - Wrapper for calling TrustBuilder from discovery
 zxmkdirs.sh      - Create the typical directory hierarchy under /var/zxid
-zxcleanlogs.sh   - Clean away audit trail (looses audit trail, but saves space)
+zxcleanlogs.sh   - Old: Clean away all audit trail (looses audit trail, but saves space)
+zxlogclean.sh    - New log cleaning script for production deployments - study, and run from cron(8)
 covrep.sh        - Test coverage report generator
 gen-consts-from-gperf-output.pl  - Used in build process
 gen-cot-links.pl - Handy tool for creating documentative symlinks in CoT directory
@@ -56,6 +57,8 @@ call-anal.pl     - Call graph analysis tool (see make callgraph)
 xml-pretty.pl    - XML Pretty Printer
 zximport-htpasswd.pl - Script to create users in /var/zxid/idpuid from .htpasswd
 zximport-ldif.pl - Script to create users in /var/zxid/idpuid from LDIF file
+diffy.pl         - Colorized diff utility
+env.cgi          - Dump environment - a helper to debug CGI
 
 # Handwritten code, mainly for libzxid.a
 
@@ -81,6 +84,7 @@ ds-templ.c       - Code generation template for DS script API
 getput-templ.c   - Code generation template for accessor functions
 zx_ext_pt.h      - Included by decoders. Define dummy extention point macros if not already set.
 zxdirent.c       - Kevlin Henney's dirent.c (modified by Sampo) for WIN32CL port
+zxbusprod.c      - Audit bus producer library
 zxlog.c          - Logging routines with encryption and signing
 zxcrypto.c       - Cryptographical functions
 zxsig.c          - XML DSIG support
@@ -89,6 +93,7 @@ zxlibdec.c       - XML decoder
 zxlib.c          - Functions used to capture commonalities in generated code
 zxns.c           - Namespace manipulation functions for generated code
 zxutil.c         - Common library functions used by zx system
+zxpw.c           - Password authentication backend
 zxidcgi.c        - SP specific CGI parsing (see zxid.h)
 zxidconf.c       - Configuration file and option parsing (see zxid.h)
 zxidpool.c       - Attribute pool management
@@ -119,6 +124,7 @@ zxiddi.c         - ID-WSF Discovery Service
 zxidim.c         - ID-WSF Identity Mapping Service
 zxidps.c         - ID-WSF People Service
 zxidmkwsf.c      - Constructors for WSF
+zxidoauth.c      - OAUTH2 URL construction
 zxidsimp.c       - Simple API implementation
 
 # Yubikey (yubico.com) One Time Password (OTP) USB token support
@@ -141,8 +147,37 @@ an.css           - Stylesheet for an-main.html, post.html, and err.html
 zxcot.c          - CoT (Circle-of-Trust) management tool: list CoT, add metadata to CoT
 zxpasswd.c       - Password creation and user management tool
 zxcall.c         - Web Service Client tool
-zxlogview.c      - Log viewing tool with log decryption and log sig verification
+zxlogview.c      - Local log viewing tool with log decryption and log sig verification
 zxdecode.c       - SAML redirect and post message decoding tool
+zxbuslist.c      - Utility for listening to zxbus and sending output to stdout
+zxbustailf.c     - tailf like utility for sending tail of a log to zxbus
+
+# ZXID Audit Bus
+
+zxbusd.c         - Audit Bus Daemon (message queue broker)
+zxbusdist.c      - Message persist and distribution
+zxbusent.c       - Entity management
+zxbussubs.c      - Subscription management
+hiios.h          - Header for Hiquu high performance I/O Engine
+hiios.c          - Hiquu high performance I/O Engine main loop
+hiinit.c         - Hiquu high performance I/O Engine initialization
+hitodo.c         - Hiquu high performance I/O Engine todo queue management
+hinet.c          - Hiquu high performance I/O Engine listen, accept, and connect sockets
+hiread.c         - Hiquu high performance I/O Engine read dispatcher
+hiwrite.c        - Hiquu high performance I/O Engine write dispatcher
+hiproto.h        - Hiquu high performance I/O Engine protocol constants
+hiiosdump.c      - Hiquu high performance I/O Engine data structure dump
+testping.c       - testping benchmarking protocol module for hiios
+stomp.c          - STOMP 1.1 protocol module for hiios
+http.c           - Primitive http/1.0 protocol module for hiios
+smtp.c           - Pipelined SMTP protocol module for hiios
+akbox.h          - Application Black Box - an inmemory multithreaded logging system
+akbox.c          - Application Black Box decoder
+akbox_fn.c       - Application Black Box FN hash (see also akbox.h)
+aktab.h
+akgviz.c
+aklog.c
+ak-lock.pl       - AKB lock analysis tool for debugging
 
 # Test utilities (haphazardly maintained)
 
@@ -193,6 +228,36 @@ zxid-java.sh     - Shell script for wrapping zxid.java with correct paths
 zxidwsctool.c    - Command line WS Client, a tool for making ID-WSF calls (older than zxcall)
 zxidhlowsf.c     - Demonstration of calling ID-WSF services (DS and DAP)
 
+# Jeff Poskanzer's mini_httpd (from acme.com) adapted for zxid use
+
+mini_httpd-1.19-zxid/README
+mini_httpd-1.19-zxid/README.mini_httpd_zxid
+mini_httpd-1.19-zxid/FILES
+mini_httpd-1.19-zxid/Makefile
+mini_httpd-1.19-zxid/htpasswd.1
+mini_httpd-1.19-zxid/htpasswd.c
+mini_httpd-1.19-zxid/index.html
+mini_httpd-1.19-zxid/match.c
+mini_httpd-1.19-zxid/match.h
+mini_httpd-1.19-zxid/mime_encodings.h
+mini_httpd-1.19-zxid/mime_encodings.txt
+mini_httpd-1.19-zxid/mime_types.h
+mini_httpd-1.19-zxid/mime_types.txt
+mini_httpd-1.19-zxid/mini_httpd.8
+mini_httpd-1.19-zxid/mini_httpd.c       - The main httpd, modified for ZXID
+mini_httpd-1.19-zxid/mini_httpd.c.orig  - The original, in case you want to diff
+mini_httpd-1.19-zxid/mini_httpd.cnf
+mini_httpd-1.19-zxid/port.h
+mini_httpd-1.19-zxid/tdate_parse.c
+mini_httpd-1.19-zxid/tdate_parse.h
+mini_httpd-1.19-zxid/version.h
+mini_httpd-1.19-zxid/contrib/redhat-rpm/mini_httpd.init
+mini_httpd-1.19-zxid/contrib/redhat-rpm/mini_httpd.spec
+mini_httpd-1.19-zxid/scripts/500.mini_httpd-rotate
+mini_httpd-1.19-zxid/scripts/mini_httpd.sh
+mini_httpd-1.19-zxid/scripts/mini_httpd_wrapper
+mini_httpd_filter.c  -  Functions, to be called by mini_httpd_zxid, that emulate mod_auth_saml
+
 # S/MIME Utility for Certificate Manipulations, Signing, and Encryption
 
 README.smime     - Tutorial on use of smime tool
@@ -223,8 +288,8 @@ default-cot/OKCy5mMaXMJUnKQ1wVJCcT00AA8  - auth-int.orange.fr
 default-cot/ZLIYSwzbSQdzIWHISwoWtdrx6JI  - auth.orange.fr
 default-cot/_CBGcFVVbIEmt5oh3jUx4GEfHLM  - idp.symdemo.com
 default-cot/s36Te-rgbzReSjVc8vDDGy89tT8  - idp.ssocircle.com
-default-cot/yBeCTPt0NQ2vMuI-srKw5h4N2i8  - zxidp.org
-default-cot/bty2J1MJ0hQsDjiAB8TasGyUU1E  - idp.tas3.eu
+#default-cot/yBeCTPt0NQ2vMuI-srKw5h4N2i8  - zxidp.org
+#default-cot/bty2J1MJ0hQsDjiAB8TasGyUU1E  - idp.tas3.eu
 
 # Module generation facilities
 
@@ -349,7 +414,7 @@ c/zx-sa-data.h;    c/zx-sa-dec.c
 c/zx-sa11-data.h;  c/zx-sa11-dec.c
 c/zx-sbf-data.h;   c/zx-sbf-dec.c
 c/zx-sec-data.h;   c/zx-sec-dec.c
-; c/zx-sec12-data.h; c/zx-sec12-dec.c
+c/zx-sec12-data.h; c/zx-sec12-dec.c
 c/zx-sp-data.h;    c/zx-sp-dec.c
 c/zx-sp11-data.h;  c/zx-sp11-dec.c
 c/zx-wsse-data.h;  c/zx-wsse-dec.c
@@ -439,6 +504,7 @@ index-idp.html
 # Apache authentication module
 
 mod_auth_saml.c        - Apache auth module to SAML protect web pages
+mod_auth_saml.load     - Apache2 config snipped to put in /etc/apache2/mods_available
 protected/content.txt  - Test content for mod_auth_saml
 protected/saml         - Test content for mod_auth_saml
 protected/orange.cgi   - Demonstration of using Orange Personal APIs
@@ -451,6 +517,11 @@ intra/env.cgi
 strong/strong.html
 other/other.html
 idpsel.cgi             - Custom IdP selection script for the strong area.
+
+# Drupal modules
+
+drupal/authn_sso/authn_sso.info    - Drupal module description file
+drupal/authn_sso/authn_sso.module  - Drupal module (in PHP) for mod_auth_saml integration
 
 # Net::SAML module (zxid.i)
 
@@ -590,6 +661,9 @@ zxidjava/SWIGTYPE_p_f_size_t__p_void.java
 zxidjava/SWIGTYPE_p_int.java
 zxidjava/SWIGTYPE_p_p_char.java
 zxidjava/SWIGTYPE_p_p_zx_ns_s.java
+zxidjava/SWIGTYPE_p_pthread_mutex_t.java
+zxidjava/SWIGTYPE_p_pthread_t.java
+zxidjava/SWIGTYPE_p_stomp_hdr.java
 zxidjava/SWIGTYPE_p_time_t.java
 zxidjava/SWIGTYPE_p_timeval.java
 zxidjava/SWIGTYPE_p_void.java
@@ -604,6 +678,7 @@ zxidjava/SWIGTYPE_p_zx_el_desc.java
 zxidjava/SWIGTYPE_p_zx_el_tok.java
 zxidjava/SWIGTYPE_p_zx_elem_s.java
 zxidjava/SWIGTYPE_p_zx_ff12_Assertion_s.java
+zxidjava/SWIGTYPE_p_zx_lock.java
 zxidjava/SWIGTYPE_p_zx_lu_Status_s.java
 zxidjava/SWIGTYPE_p_zx_md_EntityDescriptor_s.java
 zxidjava/SWIGTYPE_p_zx_ns_s.java
@@ -619,10 +694,12 @@ zxidjava/SWIGTYPE_p_zx_xenc_EncryptedData_s.java
 zxidjava/SWIGTYPE_p_zx_xenc_EncryptedKey_s.java
 zxidjava/SWIGTYPE_p_zxid_atsrc.java
 zxidjava/SWIGTYPE_p_zxid_attr.java
+zxidjava/SWIGTYPE_p_zxid_bus_url.java
 zxidjava/SWIGTYPE_p_zxid_cstr_list.java
 zxidjava/SWIGTYPE_p_zxid_invite.java
 zxidjava/SWIGTYPE_p_zxid_map.java
 zxidjava/SWIGTYPE_p_zxid_need.java
+zxidjava/SWIGTYPE_p_zxid_obl_list.java
 zxidjava/SWIGTYPE_p_zxid_perm.java
 zxidjava/SWIGTYPE_p_zxid_psobj.java
 zxidjava/SWIGTYPE_p_zxsig_ref.java

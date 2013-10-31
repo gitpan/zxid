@@ -21,6 +21,7 @@ public interface zxidjniConstants {
   public final static int ZX_TOK_NS_MASK = zxidjniJNI.ZX_TOK_NS_MASK_get();
   public final static int ZX_TOK_NS_SHIFT = zxidjniJNI.ZX_TOK_NS_SHIFT_get();
   public final static int ZX_TOK_FLAGS_MASK = zxidjniJNI.ZX_TOK_FLAGS_MASK_get();
+  public final static int ZX_SYMKEY_LEN = zxidjniJNI.ZX_SYMKEY_LEN_get();
   public final static String SIG_ALGO_RSA_SHA1 = zxidjniJNI.SIG_ALGO_RSA_SHA1_get();
   public final static String SIG_ALGO_DSA_SHA1 = zxidjniJNI.SIG_ALGO_DSA_SHA1_get();
   public final static String SIG_ALGO = zxidjniJNI.SIG_ALGO_get();
@@ -38,6 +39,7 @@ public interface zxidjniConstants {
   public final static String ENC_ENCKEY_METH = zxidjniJNI.ENC_ENCKEY_METH_get();
   public final static String ENC_TYPE_ELEMENT = zxidjniJNI.ENC_TYPE_ELEMENT_get();
   public final static String ENC_TYPE_CONTENT = zxidjniJNI.ENC_TYPE_CONTENT_get();
+  public final static String ZXID_CONF_PATH = zxidjniJNI.ZXID_CONF_PATH_get();
   public final static int ZXID_CONF_MAGIC = zxidjniJNI.ZXID_CONF_MAGIC_get();
   public final static int ZXID_CGI_MAGIC = zxidjniJNI.ZXID_CGI_MAGIC_get();
   public final static int ZXID_SES_MAGIC = zxidjniJNI.ZXID_SES_MAGIC_get();
@@ -65,6 +67,7 @@ public interface zxidjniConstants {
   public final static String ZXID_COT_DIR = zxidjniJNI.ZXID_COT_DIR_get();
   public final static String ZXID_DIMD_DIR = zxidjniJNI.ZXID_DIMD_DIR_get();
   public final static String ZXID_INV_DIR = zxidjniJNI.ZXID_INV_DIR_get();
+  public final static String ZXID_LOG_DIR = zxidjniJNI.ZXID_LOG_DIR_get();
   public final static int ZXID_MAX_USER = zxidjniJNI.ZXID_MAX_USER_get();
   public final static int ZXID_INIT_MD_BUF = zxidjniJNI.ZXID_INIT_MD_BUF_get();
   public final static int ZXID_INIT_SOAP_BUF = zxidjniJNI.ZXID_INIT_SOAP_BUF_get();
@@ -103,9 +106,11 @@ public interface zxidjniConstants {
   public final static int ZXSIG_NO_SIG = zxidjniJNI.ZXSIG_NO_SIG_get();
   public final static int ZXSIG_TIMEOUT = zxidjniJNI.ZXSIG_TIMEOUT_get();
   public final static int ZXSIG_AUDIENCE = zxidjniJNI.ZXSIG_AUDIENCE_get();
+  public final static String ZXBUS_CH_DIR = zxidjniJNI.ZXBUS_CH_DIR_get();
   public final static String ZXLOG_RELY_DIR = zxidjniJNI.ZXLOG_RELY_DIR_get();
   public final static String ZXLOG_ISSUE_DIR = zxidjniJNI.ZXLOG_ISSUE_DIR_get();
   public final static String ZXLOG_A7N_KIND = zxidjniJNI.ZXLOG_A7N_KIND_get();
+  public final static String ZXLOG_JWT_KIND = zxidjniJNI.ZXLOG_JWT_KIND_get();
   public final static String ZXLOG_MSG_KIND = zxidjniJNI.ZXLOG_MSG_KIND_get();
   public final static String ZXLOG_WIR_KIND = zxidjniJNI.ZXLOG_WIR_KIND_get();
   public final static int ZXID_DAP_SCOPE_BASE = zxidjniJNI.ZXID_DAP_SCOPE_BASE_get();
@@ -124,6 +129,7 @@ public interface zxidjniConstants {
   public final static int ZXID_SAML2_POST_SIMPLE_SIGN = zxidjniJNI.ZXID_SAML2_POST_SIMPLE_SIGN_get();
   public final static int ZXID_SAML2_REDIR = zxidjniJNI.ZXID_SAML2_REDIR_get();
   public final static int ZXID_SAML2_URI = zxidjniJNI.ZXID_SAML2_URI_get();
+  public final static int ZXID_OPID_CONNECT = zxidjniJNI.ZXID_OPID_CONNECT_get();
   public final static int ZXID_SLO_SVC = zxidjniJNI.ZXID_SLO_SVC_get();
   public final static int ZXID_MNI_SVC = zxidjniJNI.ZXID_MNI_SVC_get();
   public final static int ZXID_ACS_SVC = zxidjniJNI.ZXID_ACS_SVC_get();
@@ -190,6 +196,7 @@ public interface zxidjniConstants {
   public final static String SAML2_POST = zxidjniJNI.SAML2_POST_get();
   public final static String SAML2_POST_SIMPLE_SIGN = zxidjniJNI.SAML2_POST_SIMPLE_SIGN_get();
   public final static String SAML2_URI = zxidjniJNI.SAML2_URI_get();
+  public final static String OAUTH2_REDIR = zxidjniJNI.OAUTH2_REDIR_get();
   public final static String SAML2_AP_BASIC = zxidjniJNI.SAML2_AP_BASIC_get();
   public final static String SAML2_AP_X500 = zxidjniJNI.SAML2_AP_X500_get();
   public final static String SAML2_AP_UUID = zxidjniJNI.SAML2_AP_UUID_get();
@@ -223,6 +230,7 @@ public interface zxidjniConstants {
   public final static String WSF11_DI_RO = zxidjniJNI.WSF11_DI_RO_get();
   public final static String WSF20_DI_RO = zxidjniJNI.WSF20_DI_RO_get();
   public final static String TAS3_EPR = zxidjniJNI.TAS3_EPR_get();
+  public final static String TAS3_PTM = zxidjniJNI.TAS3_PTM_get();
   public final static String IMPLIED_RSC = zxidjniJNI.IMPLIED_RSC_get();
   public final static String XMLNS_DISCO_1_1 = zxidjniJNI.XMLNS_DISCO_1_1_get();
   public final static String XMLNS_DISCO_EXT = zxidjniJNI.XMLNS_DISCO_EXT_get();
@@ -365,6 +373,8 @@ public interface zxidjniConstants {
   public final static String TAS3_STATUS_NOSIG = zxidjniJNI.TAS3_STATUS_NOSIG_get();
   public final static String TAS3_STATUS_BADSIG = zxidjniJNI.TAS3_STATUS_BADSIG_get();
   public final static String TAS3_STATUS_BADCOND = zxidjniJNI.TAS3_STATUS_BADCOND_get();
+  public final static String TAS3_STATUS_EXPIRED = zxidjniJNI.TAS3_STATUS_EXPIRED_get();
+  public final static String TAS3_STATUS_REPLAY = zxidjniJNI.TAS3_STATUS_REPLAY_get();
   public final static String TAS3_STATUS_BADXML = zxidjniJNI.TAS3_STATUS_BADXML_get();
   public final static String TAS3_STATUS_FAULT = zxidjniJNI.TAS3_STATUS_FAULT_get();
   public final static String TAS3_SOL1_ENGINE = zxidjniJNI.TAS3_SOL1_ENGINE_get();

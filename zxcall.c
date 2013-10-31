@@ -30,7 +30,7 @@
 char* help =
 "zxcall  -  Web Service Client tool R" ZXID_REL "\n\
 SAML 2.0 and ID-WSF 2.0 are standards for federated identity and web services.\n\
-Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
+Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
 NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well researched bug reports to the author. Home: zxid.org\n\
@@ -42,7 +42,7 @@ Usage: zxcall [options] -s SESID -t SVCTYPE <soap_req_body.xml >soap_resp.xml\n\
        zxcall [options] -s SESID -im EID # Identity Mapping to EID\n\
        zxcall [options] -s SESID -l      # List session cache\n\
   -c CONF          Optional configuration string (default -c PATH=/var/zxid/)\n\
-                   Most of the configuration is read from /var/zxid/zxid.conf\n\
+                   Most of the configuration is read from " ZXID_CONF_PATH "\n\
   -s SESID         Session ID referring to a directory in /var/zxid/ses\n\
                    Use zxidhlo to do SSO and then cut and paste from there.\n\
   -a IDP USER:PW   Use Authentication service to authenticate the user and\n\
@@ -91,7 +91,7 @@ char* nidmap_to = 0;
 char* bdy = 0;
 zxid_conf* cf;
 
-/* Called by:  main x8, zxcall_main, zxcot_main, zxdecode_main */
+/* Called by:  main x8, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxdecode_main */
 static void opt(int* argc, char*** argv, char*** env)
 {
   struct zx_str* ss;
@@ -290,10 +290,10 @@ static void opt(int* argc, char*** argv, char*** env)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
 help:
     if (verbose>1) {
-      printf(help);
+      printf("%s", help);
       exit(0);
     }
-    fprintf(stderr, help);
+    fprintf(stderr, "%s", help);
     /*fprintf(stderr, "version=0x%06x rel(%s)\n", zxid_version(), zxid_version_str());*/
     exit(3);
   }

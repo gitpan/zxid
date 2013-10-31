@@ -1,4 +1,5 @@
 /* zxbench.c  -  Benchmark zxid libraries
+ * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -40,7 +41,7 @@
 int read_all_fd(int fd, char* p, int want, int* got_all);
 int write_all_fd(int fd, char* p, int pending);
 
-CU8* help =
+const char* help =
 "zxbench  -  SAML 2.0 encoding and decoding benchmark - R" ZXID_REL "\n\
 SAML 2.0 is a standard for federated identity and Single Sign-On.\n\
 Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.\n\
@@ -71,7 +72,7 @@ Usage: zxbench [options] <saml-assertion.xml >reencoded-a7n.xml\n\
 
 #define DIE(reason) MB fprintf(stderr, "%s\n", reason); exit(2); ME
 
-int afr_buf_size = 0;
+int ak_buf_size = 0;
 int verbose = 1;
 extern int zx_debug;
 int timeout = 0;
@@ -86,7 +87,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 int n_iter = 1;
 
-/* Called by:  main x8, zxcall_main, zxcot_main, zxdecode_main */
+/* Called by:  main x8, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxdecode_main */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc <= 1) goto argerr;
@@ -102,7 +103,7 @@ void opt(int* argc, char*** argv, char*** env)
       DD("End of options by --");
       return;  /* -- ends the options */
 
-    case 'n': if ((*argv)[0][2]) break;
+    case 'i': if ((*argv)[0][2]) break;
       ++(*argv); --(*argc);
       if (!(*argc)) break;
       n_iter = atoi((*argv)[0]);
@@ -122,7 +123,7 @@ void opt(int* argc, char*** argv, char*** env)
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	zx_instance = (*argv)[0];
+	strcpy(zx_instance, (*argv)[0]);
 	continue;
       }
       break;
@@ -156,7 +157,7 @@ void opt(int* argc, char*** argv, char*** env)
     case 'r':
       switch ((*argv)[0][2]) {
       case 'f':
-	/*AFR_TS(LEAK, 0, "memory leaks enabled");*/
+	/*AK_TS(LEAK, 0, "memory leaks enabled");*/
 #if 1
 	ERR("*** WARNING: You have turned memory frees to memory leaks. We will (eventually) run out of memory. Using -rf is not recommended. %d\n", 0);
 #endif
@@ -188,7 +189,7 @@ void opt(int* argc, char*** argv, char*** env)
 	continue;
       case 'a':
 	if ((*argv)[0][3] == 0) {
-	  /*AFR_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
+	  /*AK_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
 #if 1
 	  ERR("*** WARNING: YOU HAVE TURNED ASSERTS OFF USING -ra FLAG. THIS MEANS THAT YOU WILL NOT BE ABLE TO OBTAIN ANY SUPPORT. IF PROGRAM NOW TRIES TO ASSERT IT MAY MYSTERIOUSLY AND UNPREDICTABLY CRASH INSTEAD, AND NOBODY WILL BE ABLE TO FIGURE OUT WHAT WENT WRONG OR HOW MUCH DAMAGE MAY BE DONE. USING -ra IS NOT RECOMMENDED. %d\n", assert_nonfatal);
 #endif
@@ -239,7 +240,7 @@ void opt(int* argc, char*** argv, char*** env)
       case 'i':
 	if (!strcmp((*argv)[0],"-license")) {
 	  extern char* license;
-	  fprintf(stderr, license);
+	  fprintf(stderr, "%s", license);
 	  exit(0);
 	}
 	break;
@@ -251,7 +252,7 @@ void opt(int* argc, char*** argv, char*** env)
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
   argerr:
-    fprintf(stderr, help);
+    fprintf(stderr, "%s", help);
     exit(3);
   }
 }

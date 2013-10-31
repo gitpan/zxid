@@ -14,6 +14,8 @@
  * 31.5.2010,  generalized to several PEPs model --Sampo
  * 7.9.2010,   merged patches from Stijn Lievens --Sampo
  * 10.1.2011,  added TrustPDP support --Sampo
+ *
+ * See also: zxid_simple_ab_pep() in zxidpdp.c, zxidwsc.c, zxidwsp.c
  */
 
 #include "platform.h"
@@ -43,20 +45,21 @@
  *
  * *Arguments*
  *
- * xac_at_list:: List of xac attributes to scan
+ * xac_at_list:: List of (already existing) xac attributes to scan, potentially NULL.
  * name_len:: Length of the attribute name, or 0 if no matching by attribute name is desired
  * name:: attribute name to match (or 0)
  * n:: Howmanieth instance of the matching attribute is desired. 1 means first.
  * return:: Data structure representing the matching attribute.
  */
 
+/* Called by:  zxid_pepmap_extract x4 */
 static struct zx_xac_Attribute_s* zxid_find_xac_attribute(struct zx_xac_Attribute_s* xac_at_list, int name_len, char* name, int n)
 {
   struct zx_xac_Attribute_s* at;
   if (!name) { name_len = 0; name = ""; }
   if (name_len == -1 && name) name_len = strlen(name);
   if (!xac_at_list) {
-    ERR("No xac attribute list when looking for attribute name(%.*s) n=%d", name_len, name, n);
+    DD("No xac attribute list when looking for attribute name(%.*s) n=%d", name_len, name, n);
     return 0;
   }
   for (at = xac_at_list;
@@ -234,12 +237,12 @@ static void zxid_pepmap_extract(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, str
  * subj:: Linked list of subject attributes.
  * rsrc:: Linked list of resource attributes.
  * act::  Linked list of action attributes (usually just one attribute).
- * env::  Linked list of environment attributes.
+ * envi::  Linked list of environment attributes.
  * returns:: SAML Response as data structure or null upon error.
  */
 
 /* Called by:  zxid_call_trustpdp, zxid_pep_az_base_soap_pepmap, zxid_pep_az_soap_pepmap */
-static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* env)
+static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zx_xac_Attribute_s* subj, struct zx_xac_Attribute_s* rsrc, struct zx_xac_Attribute_s* act, struct zx_xac_Attribute_s* envi)
 {
   X509* sign_cert;
   EVP_PKEY* sign_pkey;
@@ -272,6 +275,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
     sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
     sec->Timestamp = zx_NEW_wsu_Timestamp(cf->ctx, &sec->gg);
     sec->Timestamp->Created = zx_NEW_wsu_Created(cf->ctx, &sec->Timestamp->gg);
+    zx_add_content(cf->ctx, &sec->Timestamp->Created->gg, zxid_date_time(cf, time(0)));
     sec->Assertion = ses->tgta7n;
     zx_reverse_elem_lists(&sec->gg);
     D("tgta7n=%p", ses->tgta7n);
@@ -280,7 +284,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
 
   body = zx_NEW_e_Body(cf->ctx,0);
   if (!strcmp(cf->xasp_vers, "xac-soap")) {
-    ZX_ADD_KID(body, xac_Request, zxid_mk_xac_az(cf, &body->gg, subj, rsrc, act, env));
+    ZX_ADD_KID(body, xac_Request, zxid_mk_xac_az(cf, &body->gg, subj, rsrc, act, envi));
 #if 0
     /* *** xac:Response does not have signature field */
     if (cf->sso_soap_sign) {
@@ -295,7 +299,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
     }
 #endif
   } else if (!strcmp(cf->xasp_vers, "2.0-cd1")) {
-    ZX_ADD_KID(body, xaspcd1_XACMLAuthzDecisionQuery, zxid_mk_az_cd1(cf, subj, rsrc, act, env));
+    ZX_ADD_KID(body, xaspcd1_XACMLAuthzDecisionQuery, zxid_mk_az_cd1(cf, subj, rsrc, act, envi));
     if (cf->sso_soap_sign) {
       ZERO(&refs, sizeof(refs));
       refs.id = &body->xaspcd1_XACMLAuthzDecisionQuery->ID->g;
@@ -308,7 +312,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
       zx_str_free(cf->ctx, refs.canon);
     }
   } else {
-    ZX_ADD_KID(body, XACMLAuthzDecisionQuery, zxid_mk_az(cf, subj, rsrc, act, env));
+    ZX_ADD_KID(body, XACMLAuthzDecisionQuery, zxid_mk_az(cf, subj, rsrc, act, envi));
     if (cf->sso_soap_sign) {
       ZERO(&refs, sizeof(refs));
       refs.id = &body->XACMLAuthzDecisionQuery->ID->g;
@@ -378,7 +382,7 @@ static struct zx_sp_Response_s* zxid_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_
  */
 
 /* Called by:  zxid_call_epr, zxid_pep_az_soap, zxid_simple_ab_pep, zxid_simple_ses_active_cf, zxid_wsc_prepare_call, zxid_wsc_valid_re_env, zxid_wsp_decorate, zxid_wsp_validate_env */
-char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zxid_map* pepmap)
+char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url, struct zxid_map* pepmap, const char* lk)
 {
   struct zx_xac_Attribute_s* subj = 0;
   struct zx_xac_Attribute_s* rsrc = 0;
@@ -389,21 +393,21 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
   struct zx_sa_Statement_s* stmt;
   struct zx_xasa_XACMLAuthzDecisionStatement_s* az_stmt;
   struct zx_xasacd1_XACMLAuthzDecisionStatement_s* az_stmt_cd1;
-  struct zx_elem_s* decision;
+  struct zx_elem_s* decision = 0;
   char* p;
 
   if (cf->log_level>0)
     zxlog(cf, 0, 0, 0, 0, 0, 0, ses?ZX_GET_CONTENT(ses->nameid):0, "N", "W", "AZSOAP", ses?ses->sid:0, " ");
   
   if (!pdp_url || !*pdp_url) {
-    ERR("No PDP_URL or PDP_CALL_URL set. Deny. %p", pdp_url);
+    ERR("%s: No PDP_URL or PDP_CALL_URL set. Deny. %p", lk, pdp_url);
     return 0;
   }
 
   zxid_pepmap_extract(cf, cgi, ses, pepmap, &subj, &rsrc, &act, &env);
   resp = zxid_az_soap(cf, cgi, ses, pdp_url, subj, rsrc, act, env);
   if (!resp || !resp->Assertion) {
-    ERR("DENY due to malformed authorization response from PDP. Either no response or response lacking assertion. %p", resp);
+    ERR("%s: DENY due to malformed authorization response from PDP. Either no response or response lacking assertion. %p", lk, resp);
     return 0;
   }
   
@@ -412,11 +416,9 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
     decision = az_stmt->Response->Result->Decision;
     if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
       ss = zx_easy_enc_elem_opt(cf, &az_stmt->Response->gg);
-      if (!ss || !ss->len)
-	return 0;
+      if (!ss || !ss->len) goto nomem;
       p = ss->s;
-      DD("Permit azstmt(%s)", p);
-      INFO("PERMIT found in azstmt len=%d", ss->len);
+      INFO("%s: PERMIT found in azstmt len=%d", lk, ss->len);
       ZX_FREE(cf->ctx, ss);
       return p;
     }
@@ -426,12 +428,10 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
     decision = az_stmt_cd1->Response->Result->Decision;
     if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
       ss = zx_easy_enc_elem_opt(cf, &az_stmt_cd1->Response->gg);
-      if (!ss || !ss->len)
-	return 0;
+      if (!ss || !ss->len) goto nomem;
       p = ss->s;
       ZX_FREE(cf->ctx, ss);
-      DD("Permit cd1(%s)", p);
-      INFO("PERMIT found in azstmt_cd1 len=%d", ss->len);
+      INFO("%s: PERMIT found in azstmt_cd1 len=%d", lk, ss->len);
       ZX_FREE(cf->ctx, ss);
       return p;
     }
@@ -441,24 +441,27 @@ char* zxid_pep_az_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const
     decision = stmt->Response->Result->Decision;
     if (ZX_CONTENT_EQ_CONST(decision, "Permit")) {
       ss = zx_easy_enc_elem_opt(cf, &stmt->Response->gg);
-      if (!ss || !ss->len)
-	return 0;
+      if (!ss || !ss->len) goto nomem;
       p = ss->s;
-      D("Permit stmt(%s)", p);
-      INFO("PERMIT found in stmt len=%d", ss->len);
+      INFO("%s: PERMIT found in stmt len=%d", lk, ss->len);
       ZX_FREE(cf->ctx, ss);
       return p;
-    } else if (ZX_CONTENT_EQ_CONST(decision, "Deny")) {
-      INFO("DENY found in stmt %d", 0);
-      return 0;
-    } else {
-      INFO("Other (treated as Deny) found in stmt %d", 0);
-      return 0;
     }
   }
   /*if (resp->Assertion->AuthzDecisionStatement) {  }*/
-  D("Deny or error or no xac:Response in reply %d",0);
-  INFO("DENY or error or no xac:Response from PDP %p %p %p", az_stmt, az_stmt_cd1, stmt);
+  if (decision) {
+    if (ZX_CONTENT_EQ_CONST(decision, "Deny")) {
+      INFO("%s: DENY found in stmt", lk);
+      return 0;
+    } else {
+      INFO("%s: DENY due to Other(%.*s) (treated as Deny) found in stmt", lk, ZX_GET_CONTENT_LEN(decision), ZX_GET_CONTENT_S(decision));
+      return 0;
+    }
+  }
+  ERR("%s: DENY due to error or no xac:Response from PDP %p %p %p", lk, az_stmt,az_stmt_cd1,stmt);
+  return 0;
+ nomem:
+  ERR("%s: DENY due memory allocation error. %p", lk, ss);
   return 0;
 }
 
@@ -558,7 +561,7 @@ char* zxid_pep_az_base_soap_pepmap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, 
 
 /* Called by:  zxid_az_cf_ses */
 char* zxid_pep_az_soap(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* pdp_url) {
-  return zxid_pep_az_soap_pepmap(cf, cgi, ses, pdp_url, cf->pepmap);
+  return zxid_pep_az_soap_pepmap(cf, cgi, ses, pdp_url, cf->pepmap, "az_soap");
 }
 
 /* Called by:  zxid_az_base_cf_ses */
@@ -593,9 +596,9 @@ char* zxid_az_cf_ses(zxid_conf* cf, const char* qs, zxid_ses* ses)
   char* url = (cf->pdp_call_url&&*cf->pdp_call_url) ? cf->pdp_call_url : cf->pdp_url;
   D_INDENT("az: ");
   ZERO(&cgi, sizeof(cgi));
-  /*zxid_parse_cgi(&cgi, "");  DD("qs(%s) ses=%p", STRNULLCHKD(qs), ses);*/
+  /*zxid_parse_cgi(cf, &cgi, "");  DD("qs(%s) ses=%p", STRNULLCHKD(qs), ses);*/
   if (qs && ses)
-    zxid_add_qs_to_ses(cf, ses, zx_dup_cstr(cf->ctx, qs), 1);
+    zxid_add_qs2ses(cf, ses, zx_dup_cstr(cf->ctx, qs), 1);
   ret = zxid_pep_az_soap(cf, &cgi, ses, url);
   D_DEDENT("az: ");
   return ret;
@@ -609,9 +612,9 @@ char* zxid_az_base_cf_ses(zxid_conf* cf, const char* qs, zxid_ses* ses)
   char* url = (cf->pdp_call_url&&*cf->pdp_call_url) ? cf->pdp_call_url : cf->pdp_url;
   D_INDENT("azb: ");
   ZERO(&cgi, sizeof(cgi));
-  /*zxid_parse_cgi(&cgi, "");  DD("qs(%s) ses=%p", STRNULLCHKD(qs), ses);*/
+  /*zxid_parse_cgi(cf, &cgi, "");  DD("qs(%s) ses=%p", STRNULLCHKD(qs), ses);*/
   if (qs && ses)
-    zxid_add_qs_to_ses(cf, ses, zx_dup_cstr(cf->ctx, qs), 1);
+    zxid_add_qs2ses(cf, ses, zx_dup_cstr(cf->ctx, qs), 1);
   ret = zxid_pep_az_base_soap(cf, &cgi, ses, url);
   D_DEDENT("azb: ");
   return ret;
@@ -639,8 +642,10 @@ char* zxid_az_cf(zxid_conf* cf, const char* qs, const char* sid)
 {
   zxid_ses ses;
   ZERO(&ses, sizeof(ses));
-  if (sid && sid[0])
+  if (sid && sid[0]) {
     zxid_get_ses(cf, &ses, sid);
+    zxid_ses_to_pool(cf, &ses);
+  }
   return zxid_az_cf_ses(cf, qs, &ses);
 }
 
@@ -649,8 +654,10 @@ char* zxid_az_base_cf(zxid_conf* cf, const char* qs, const char* sid)
 {
   zxid_ses ses;
   ZERO(&ses, sizeof(ses));
-  if (sid && sid[0])
+  if (sid && sid[0]) {
     zxid_get_ses(cf, &ses, sid);
+    zxid_ses_to_pool(cf, &ses);
+  }
   return zxid_az_base_cf_ses(cf, qs, &ses);
 }
 

@@ -8,7 +8,7 @@
 #
 # Perform total call graph analysis
 #  - produce graph with graphviz
-#  - annotate the source with comments to effect (Called by:)
+#  - annotate the source with comments to effect /* Called by: ... */
 #
 # Some simplifying assumptions are made:
 #  - Function calls are assumed to be of form
@@ -51,7 +51,9 @@ undef $/;
 #%local_graphs = ( main => 6,     # the start
 #		  yyparse => 3,  # center of compiler
 #		  );
-%local_graphs = ( );
+%local_graphs = ( hi_shuffle => 10,
+		  zxbus_listen_msg => 4,
+		  zxid_simple_cf => 4);
 
 # N.B. names in all upper case, i.e. macros, are always ignored
 @ignore_callee = qw(for if return sizeof switch while);
@@ -69,7 +71,24 @@ push @ignore_callee,
        va_end va_start vprintf vsnprintf vsprintf vsyslog
        write writev);
 
-push @ignore_callee, qw(new_ds_ei);
+push @ignore_callee,
+    qw(name_from_path vname_from_path open_fd_from_path vopen_fd_from_path close_file
+       zx_CreateFile write_all_fd write_all_fd_fmt
+       write_all_path_fmt write2_or_append_lock_c_path
+       read_all_fd read_all hexdump read_all_alloc get_file_size
+       sha1_safe_base64 zxid_nice_sha1
+       zx_strf zx_ref_str zx_ref_len_str zx_dup_str zx_dup_len_str zx_dup_cstr
+       zx_new_len_str zx_str_to_c
+       zx_ref_attr zx_ref_len_attr zx_attrf zx_dup_attr zx_dup_len_attr
+       zx_new_str_elem zx_ref_elem zx_ref_len_elem
+       zx_url_encode zx_url_encode_len zx_url_encode_raw unbase64_raw
+       zx_rand zx_report_openssl_err zx_memmem zxid_mk_self_sig_cert zxid_extract_private_key );
+
+push @ignore_callee,
+    qw(hi_pdu_alloc hi_dump nonblock setkernelbufsizes zxid_get_ent_ss zx_pw_authn
+       xmtp_decode_resp test_ping http_decode smtp_decode_req smtp_decode_resp );
+
+push @ignore_callee, qw(new_zx_ei);
 
 select STDERR; $|=1; select STDOUT;
 
@@ -97,10 +116,10 @@ sub process_func {
 	next if $callee =~ /^[A-Z0-9_]{3,}/; # Ignore all caps starts
 	next if grep $callee eq $_, @ignore_callee;
 	$callee =~ s/^~/D_/;
-	#warn "dslex2() body: >$callee< >>$func_calls[0]<<" if $func eq 'dslex2';
+	#warn "zxlex2() body: >$callee< >>$func_calls[0]<<" if $func eq 'zxlex2';
 	$called_by{$callee}{$func}++;
 	$calls{$func}{$callee}++;
-	#warn "ds_scan_identifier x dslex2: `$called_by{$callee}{$func}' `$calls{$func}{$callee}'" if ($func eq 'dslex2') && ($callee eq 'ds_scan_identifier');
+	#warn "zx_scan_identifier x zxlex2: `$called_by{$callee}{$func}' `$calls{$func}{$callee}'" if ($func eq 'zxlex2') && ($callee eq 'zx_scan_identifier');
 	$fnf{$fn}{$func}{$callee}++;
 	#warn "fn=$fn func=$func callee=$callee: $fnf{$fn}{$func}{$callee}";
     } continue {
@@ -242,19 +261,19 @@ DEBUG
   }
 }
 
-$callee = 'ds_scan_identifier';
-$func = 'dslex2';
-#warn "ds_scan_identifier x dslex2: `$called_by{$callee}{$func}' `$calls{$func}{$callee}'";
+$callee = 'zx_scan_id';
+$func = 'zxlex2';
+#warn "zx_scan_id x zxlex2: `$called_by{$callee}{$func}' `$calls{$func}{$callee}'";
 
 $0 = "generating output";
 warn "Generating output...\n";
 
 open F, ">function.list" or die "Cant write function.list: $!";
-print F map qq(DSFUNC_DEF("$_","$def{$_}[0]")\n), sort keys %def;
+print F map qq(ZXFUNC_DEF("$_","$def{$_}[0]")\n), sort keys %def;
 close F;
 
 open F, ">file.list" or die "Cant write file.list: $!";
-print F map qq(DSFILE_DEF("$_")\n), sort keys %fnf;
+print F map qq(ZXFILE_DEF("$_")\n), sort keys %fnf;
 close F;
 
 print "$dot_header\n// Files of definition\n// =====\n";
@@ -298,9 +317,9 @@ for $fn (sort keys %fnf) {
     print "subgraph cluster_$fn2 {\n  label=\"$fn\";\n";
     for $f (sort keys %{$fnf{$fn}}) {
 	next if !$def{$f};
-	if ($f =~ /^dsvm/) {
+	if ($f =~ /^zxvm/) {
 	    print "  $f [style=filled,color=red];\n";  # [shape=box]
-	} elsif ($f =~ /^ds/) {
+	} elsif ($f =~ /^zx/) {
 	    print "  $f [style=filled,color=yellow];\n";  # [shape=box]
 	} elsif ($f eq 'main') {
 	    print "  $f [style=filled,color=red, shape=octagon];\n";  # [shape=box]

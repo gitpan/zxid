@@ -1,4 +1,5 @@
 /* zxidsso.c  -  Handwritten functions for implementing Single Sign-On logic for SP
+ * Copyright (c) 2013 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -15,6 +16,7 @@
  * 7.10.2008, added documentation --Sampo
  * 1.2.2010,  added authentication service client --Sampo
  * 9.3.2011,  added Proxy IdP processing --Sampo
+ * 26.10.2013, improved error reporting on credential expired case --Sampo
  *
  * See also: http://hoohoo.ncsa.uiuc.edu/cgi/interface.html (CGI specification)
  */
@@ -36,6 +38,7 @@
 #include "zxidutil.h"
 #include "zxidconf.h"
 #include "saml2.h"
+#include "wsf.h"
 #include "c/zx-const.h"
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
@@ -209,6 +212,38 @@ struct zx_str* zxid_start_sso_url(zxid_conf* cf, zxid_cgi* cgi)
     ars = zx_easy_enc_elem_opt(cf, &ar->gg);
     D("AuthnReq(%.*s) %p", ars->len, ars->s, dest);
     break;
+  case ZXID_OPID_CONNECT:
+    if (!idp_meta->ed->IDPSSODescriptor) {
+      ERR("Entity(%s) does not have IdP SSO Descriptor (OAUTH2) (metadata problem)", cgi->eid);
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No IDPSSODescriptor (OAUTH2)");
+      cgi->err = "Bad IdP metadata (OAUTH). Try different IdP.";
+      D_DEDENT("start_sso: ");
+      return 0;
+    }
+    for (sso_svc = idp_meta->ed->IDPSSODescriptor->SingleSignOnService;
+	 sso_svc;
+	 sso_svc = (struct zx_md_SingleSignOnService_s*)sso_svc->gg.g.n) {
+      if (sso_svc->gg.g.tok != zx_md_SingleSignOnService_ELEM)
+	continue;
+      if (sso_svc->Binding && !memcmp(OAUTH2_REDIR,sso_svc->Binding->g.s,sso_svc->Binding->g.len))
+	break;
+    }
+    if (!sso_svc) {
+      ERR("IdP Entity(%s) does not have any IdP SSO Service with " OAUTH2_REDIR " binding (metadata problem)", cgi->eid);
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "ERR", cgi->eid, "No OAUTH2 redir binding");
+      cgi->err = "Bad IdP metadata. Try different IdP.";
+      D_DEDENT("start_sso: ");
+      return 0;
+    }
+    DD("HERE1 %p", sso_svc);
+    DD("HERE2 %p", sso_svc->Location);
+    DD("HERE3 len=%d (%.*s)", sso_svc->Location->g.len, sso_svc->Location->g.len, sso_svc->Location->g.s);
+    if (cf->log_level>0)
+      zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "OANREDIR", cgi->eid, 0);
+    ars = zxid_mk_oauth_az_req(cf, cgi, &sso_svc->Location->g, cgi->rs);
+
+    D_DEDENT("start_sso: ");
+    return ars;
   default:
     NEVER("Inappropriate SSO profile: %d", sso_profile_ix);
     cgi->err = "Inappropriate SSO profile. Bad metadata?";
@@ -496,6 +531,9 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
       ERR("SSO error: AudienceRestriction wrong. My entityID(%.*s)", myentid->len, myentid->s);
       if (err)
 	*err = "P";
+      if (ses) {
+	zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Audience Restriction is wrong. Configuration or implementation error.", TAS3_STATUS_BADCOND, 0, "a7n", 0));
+      }
       return ZXSIG_AUDIENCE;
     } else {
       INFO("SSO warn: AudienceRestriction wrong. My entityID(%.*s). Configured to ignore this (AUDIENCE_FATAL=0).", myentid->len, myentid->s);
@@ -509,16 +547,22 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
     secs = zx_date_time_to_secs(a7n->Conditions->NotOnOrAfter->g.s);
     if (secs <= ourts->tv_sec) {
       if (secs + cf->after_slop <= ourts->tv_sec) {
-	ERR("NotOnOrAfter rejected with slop of %d. Time to expiry %ld secs. Our gettimeofday: %ld secs, remote: %d secs", cf->after_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
+	ERR("NotOnOrAfter rejected with slop of %d. Time to expiry %ld secs. Our gettimeofday: %ld secs, remote: %d secs. Relogin to refresh the session?", cf->after_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
 	if (cgi) {
 	  cgi->sigval = "V";
-	  cgi->sigmsg = "Assertion has expired.";
+	  cgi->sigmsg = "Assertion has expired. Relogin to refresh the session?";
 	}
 	if (ses)
 	  ses->sigres = ZXSIG_TIMEOUT;
 	if (cf->timeout_fatal) {
 	  if (err)
 	    *err = "P";
+	  if (ses) {
+	    /* This is the only problem fixable by the user so emit a special
+	     * informative message with distinctive error code. It may even be
+	     * possible for the client end to automatically refresh the credential. */
+	    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Assertion has expired (or clock synchrony problem between servers). Perhaps relogin to refresh the session will fix the problem?", TAS3_STATUS_EXPIRED, 0, "a7n", 0));
+	  }
 	  return ZXSIG_TIMEOUT;
 	}
       } else {
@@ -538,13 +582,16 @@ int zxid_validate_cond(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7
 	ERR("NotBefore rejected with slop of %d. Time to validity %ld secs. Our gettimeofday: %ld secs, remote: %d secs", cf->before_slop, secs - ourts->tv_sec, ourts->tv_sec, secs);
 	if (cgi) {
 	  cgi->sigval = "V";
-	  cgi->sigmsg = "Assertion is not valid yet (too soon).";
+	  cgi->sigmsg = "Assertion is not valid yet (too soon). Clock synchrony problem between servers?";
 	}
 	if (ses)
 	  ses->sigres = ZXSIG_TIMEOUT;
 	if (cf->timeout_fatal) {
 	  if (err)
 	    *err = "P";
+	  if (ses) {
+	    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Assertion is not valid yet (too soon). Clock synchrony problem between servers?", TAS3_STATUS_BADCOND, 0, "a7n", 0));
+	  }
 	  return ZXSIG_TIMEOUT;
 	}
       } else {
@@ -571,7 +618,7 @@ struct zx_str unknown_str = {0,0,1,"??"};  /* Static string used as dummy value.
  * a7n:: Single Sign-On assertion
  * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
-/* Called by:  main, sig_validate, zxid_sp_dig_sso_a7n */
+/* Called by:  main, sig_validate, zxid_sp_dig_oauth_sso_a7n, zxid_sp_dig_sso_a7n */
 int zxid_sp_sso_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, zxid_a7n* a7n, struct zx_ns_s* pop_seen)
 {
   char* err = "S"; /* See: RES in zxid-log.pd, section "ZXID Log Format" */
@@ -745,7 +792,7 @@ erro:
  * ses:: Session object. Will be modified according to new session created from the SSO assertion.
  * return:: 0 for failure, otherwise some success code such as ZXID_SSO_OK */
 
-/* Called by:  covimp_test, zxid_sp_dig_sso_a7n */
+/* Called by:  covimp_test, zxid_sp_dig_oauth_sso_a7n, zxid_sp_dig_sso_a7n */
 int zxid_sp_anon_finalize(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses)
 {
   D_INDENT("anon_ssof: ");

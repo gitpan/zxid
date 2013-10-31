@@ -1,5 +1,6 @@
 /* zxlog.c  -  Liberty oriented logging facility with log signing and encryption
- * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2012-2013 Synergetics (sampo@synergetics.be), All Rights Reserved.
+ * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -13,6 +14,7 @@
  * 7.10.2008,  added inline documentation --Sampo
  * 29.8.2009,  added hmac chaining field --Sampo
  * 12.3.2010,  added per user logging facility --Sampo
+ * 9.9.2012,  added persist support --Sampo
  *
  * See also: Logging chapter in README.zxid
  */
@@ -42,16 +44,11 @@
 #include "zxidconf.h"
 #include "c/zx-data.h"  /* Generated. If missing, run `make dep ENA_GEN=1' */
 
-#define ZXID_LOG_DIR "log/"
-#define ZXLOG_TIME_FMT "%04d%02d%02d-%02d%02d%02d.%03ld"
-#define ZXLOG_TIME_ARG(t,usec) t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, \
-                               t.tm_hour, t.tm_min, t.tm_sec, usec/1000
-
-/*() Allocate memory for logging purpose.
+/*() Allocate memory for logging purposes.
  * Generally memory allocation goes via zx_alloc() family of functions. However
  * dues to special requirements of cryptographically implemeted logging,
  * we maintain this special allocation function (which backends to zx_alloc()).
- * Among the special features: This functin makes sure the buffer size is
+ * Among the special features: This function makes sure the buffer size is
  * rounded up to multiple of nonce to accommodate block ciphers.
  *
  * This function is considered internal. Do not use unless you know what you are doing. */
@@ -158,7 +155,7 @@ void zxlog_write_line(zxid_conf* cf, char* c_path, int encflags, int n, const ch
       sig = ZX_ALLOC(cf->ctx, len);
       if (RSA_public_encrypt(16, (unsigned char*)keybuf, (unsigned char*)sig, rsa_pkey, RSA_PKCS1_OAEP_PADDING) < 0) {
 	ERR("RSA enc fail %x", encflags);
-	zx_report_openssl_error("zxlog rsa enc");
+	zx_report_openssl_err("zxlog rsa enc");
 	return;
       }
       p = ZX_ALLOC(cf->ctx, 2 + len + zlen);
@@ -315,10 +312,7 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
 	       zx_instance, STRNULLCHKD(sigval), res, op, arg?arg:"-");
   logbuf[len-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   if (n <= 0 || n >= len-3) {
-    if (n < 0) {
-      perror("snprintf");
-      D("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", n);
-    }
+    if (n < 0) zx_broken_snprintf(n);
     D("Log buffer too short: %d chars needed", n);
     if (n <= 0)
       n = 0;
@@ -330,10 +324,7 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
       n = vsnprintf(p, len-n-2, fmt, ap);
       logbuf[len-1] = 0;  /* must terminate manually as on win32 nul term is not guaranteed */
       if (n <= 0 || n >= len-(p-logbuf)-2) {
-	if (n < 0) {
-	  perror("vsnprintf");
-	  D("Broken vsnprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", n);
-	}
+	if (n < 0) zx_broken_snprintf(n);
 	D("Log buffer truncated during format print: %d chars needed", n);
 	if (n <= 0)
 	  n = p-logbuf;
@@ -509,6 +500,25 @@ int zxlogusr(zxid_conf* cf,   /* 1 */
   return 0;
 }
 
+/*(-) Create a directory and perform error checking. */
+
+static int zx_create_dir_with_check(zxid_conf* cf, const char* dir, int create_dirs)
+{
+  struct stat st;
+  if (stat(dir, &st)) {
+    if (create_dirs) {
+      if (MKDIR(dir, 0777)) {
+	ERR("mkdir path(%s) failed: %d %s; euid=%d egid=%d", dir, errno, STRERROR(errno), geteuid(), getegid());
+	return 0;	
+      }
+    } else {
+      ERR("directory missing path(%s) and no create_dirs (stat: %d %s; euid=%d egid=%d)", dir, errno, STRERROR(errno), geteuid(), getegid());
+      return 0;
+    }
+  }
+  return 1;
+}
+
 /*() Compute path for logging. Optionally attempt to create the necessary
  * directories if they are missing (you should do `make dirs' rather than
  * depend on this).
@@ -523,7 +533,7 @@ int zxlogusr(zxid_conf* cf,   /* 1 */
  *     is to write a file to the computed path. Usually 0 if the intent is to read.
  * return:: The path, as zx_str or 0 if failure */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_sso_issue_jwt, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
 struct zx_str* zxlog_path(zxid_conf* cf,
 			  struct zx_str* entid,  /* issuer or target entity ID */
 			  struct zx_str* objid,  /* AssertionID or MessageID */
@@ -549,64 +559,30 @@ struct zx_str* zxlog_path(zxid_conf* cf,
   memcpy(p, "log/", sizeof("log/"));
   p += sizeof("log/")-1;
   if (stat(s, &st)) {
-    ERR("zxid log directory missing path(%s): giving up (%d %s)", s, errno, STRERROR(errno));
-    ZX_FREE(cf->ctx, s);
-    return 0;
+    ERR("zxid log directory missing path(%s): giving up (stat: %d %s; euid=%d egid=%d). Consider checking permissions and running zxmkdirs.sh", s, errno, STRERROR(errno), geteuid(), getegid());
+    goto nodir;
   }
   
   memcpy(p, dir, dir_len+1);
   p += dir_len;
-  if (stat(s, &st)) {
-    if (create_dirs) {
-      if (MKDIR(s, 0777)) {
-	ERR("mkdir path(%s) failed: %d %s", s, errno, STRERROR(errno));
-	ZX_FREE(cf->ctx, s);
-	return 0;	
-      }
-    } else {
-      ERR("directory missing path(%s) and no create_dirs (%d %s)", s, errno, STRERROR(errno));
-      ZX_FREE(cf->ctx, s);
-      return 0;
-    }
-  }
+  if (!zx_create_dir_with_check(cf, s, create_dirs)) goto nodir;
   
   sha1_safe_base64(p, entid->len, entid->s);
   p[27] = 0;
   p+=27;
-  if (stat(s, &st)) {
-    if (create_dirs) {
-      if (MKDIR(s, 0777)) {
-	ERR("mkdir path(%s) failed: %d %s", s, errno, STRERROR(errno));
-	ZX_FREE(cf->ctx, s);
-	return 0;	
-      }
-    } else {
-      ERR("directory missing path(%s) and no create_dirs (%d %s)", s, errno, STRERROR(errno));
-      ZX_FREE(cf->ctx, s);
-      return 0;
-    }
-  }
+  if (!zx_create_dir_with_check(cf, s, create_dirs)) goto nodir;
   
   memcpy(p, kind, kind_len+1);
   p += kind_len;
-  if (stat(s, &st)) {
-    if (create_dirs) {
-      if (MKDIR(s, 0777)) {
-	ERR("mkdir path(%s) failed: %d %s", s, errno, STRERROR(errno));
-	ZX_FREE(cf->ctx, s);
-	return 0;	
-      }
-    } else {
-      ERR("zxid directory missing path(%s) and no create_dirs (%d %s)", s, errno, STRERROR(errno));
-      ZX_FREE(cf->ctx, s);
-      return 0;
-    }
-  }
+  if (!zx_create_dir_with_check(cf, s, create_dirs)) goto nodir;
   
   sha1_safe_base64(p, objid->len, objid->s);
   p[27] = 0;
   p+=27;
   return zx_ref_len_str(cf->ctx, len, s);
+ nodir:
+  ZX_FREE(cf->ctx, s);
+  return 0;
 }
 
 /*() Check if file by path already exist.
@@ -620,7 +596,7 @@ struct zx_str* zxlog_path(zxid_conf* cf,
  * return::  0 if no duplicate (success), 1 if duplicate (failure)
  */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_sso_issue_jwt, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
 int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
 {
   struct stat st;
@@ -630,7 +606,7 @@ int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
   }
   /* We need a c path, but get zx_str. However, the zx_str will come from zxlog_path()
    * so we should be having the nul termination as needed. Just checking. */
-  ASSERTOP(path->s[path->len], ==, 0);
+  ASSERTOPI(path->s[path->len], ==, 0);
   if (!stat(path->s, &st)) {
     ERR("Duplicate %s path(%.*s)", logkey, path->len, path->s);
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "C", "EDUP", path->s, "%s", logkey);
@@ -667,7 +643,7 @@ int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
  * captures both the original and the duplicate assertion (the logging is an append),
  * which may have forensic value. */
 
-/* Called by:  zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_soap_cgi_resp_body x2, zxid_sp_sso_finalize x2, zxid_wsc_valid_re_env x2, zxid_wsf_validate_a7n x2, zxid_wsp_validate x2 */
+/* Called by:  zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_soap_cgi_resp_body x2, zxid_sp_sso_finalize x2, zxid_sso_issue_jwt x2, zxid_wsc_valid_re_env x2, zxid_wsf_validate_a7n x2, zxid_wsp_validate x2 */
 int zxlog_blob(zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob, const char* lk)
 {
   if (!logflag || !blob)
@@ -681,7 +657,7 @@ int zxlog_blob(zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* b
    * so we should be having the nul termination as needed. Just checking. */
   D("%s: LOGBLOB15(%.*s) len=%d path(%.*s)", lk, MIN(blob->len,15), blob->s, blob->len, path->len, path->s);
   DD("%s: LOGBLOB(%.*s)", lk, blob->len, blob->s);
-  ASSERTOP(path->s[path->len], ==, 0);
+  ASSERTOPI(path->s[path->len], ==, 0);
   if (!write2_or_append_lock_c_path(path->s, blob->len, blob->s, 0, 0, "zxlog blob", SEEK_END,O_APPEND)) {
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", 0, "Could not write blob. Permissions?");
   }
@@ -704,14 +680,26 @@ extern struct flock zx_wrlk; /* = { F_WRLCK, SEEK_SET, 0, 1 };*/
 extern struct flock zx_unlk; /* = { F_UNLCK, SEEK_SET, 0, 1 };*/
 #endif
 
+/* Called by:  zxlog_debug_xml_blob */
 static FILE* zx_open_xml_log_file(zxid_conf* cf)
 {
+  FILE* f;
   char buf[ZXID_MAX_DIR];
-  if (!cf||!cf->path)
-    return fopen(XML_LOG_FILE, "a+");
-  snprintf(buf, sizeof(buf)-1, "%slog/xml.dbg", cf->path);
-  buf[sizeof(buf)-1]=0;
-  return fopen(buf, "a+");
+  if (!cf||!cf->path) {
+    strncpy(buf, XML_LOG_FILE, sizeof(buf));
+  } else {
+    snprintf(buf, sizeof(buf)-1, "%slog/xml.dbg", cf->path);
+    buf[sizeof(buf)-1]=0;
+  }
+  f = fopen(buf, "a+");
+  if (!f) {  /* If it did not work out, do not insist. */
+    perror(buf);
+    ERR("Can't open for appending %s: %d %s; euid=%d egid=%d", buf, errno, STRERROR(errno), geteuid(), getegid());
+    zx_xml_debug_log_err = 1;
+    return 0;
+  }
+  D("OPEN BLOB LOG: tailf %s | ./xml-pretty.pl", buf);
+  return f;
 }
 
 /*() Log a blob of XML data to auxiliary log file. This avoids
@@ -764,29 +752,337 @@ nobody:
 
 print_it:
   ++zxlog_seq;
+#ifdef USE_AKBOX_FN
+  fprintf(stderr, "t%lx %04x:%-3d %s d %s%s(%.*s) len=%d %d:%d\n", (long)pthread_self(), akbox_fn(func), __LINE__, ERRMAC_INSTANCE, zx_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+#else
   fprintf(stderr, "p%d %10s:%-3d %-16s %s d %s%s(%.*s) len=%d %d:%d\n", getpid(), file, line, func, ERRMAC_INSTANCE, zx_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+#endif
 
   if (!zx_xml_debug_log) {
     if (zx_xml_debug_log_err)
       return;
-    
     zx_xml_debug_log = zx_open_xml_log_file(cf);
-    if (!zx_xml_debug_log) {  /* If it did not work out, do not insist. */
-      perror(XML_LOG_FILE);
-      ERR("Can't open for appending %s: %d", XML_LOG_FILE, errno);
-      zx_xml_debug_log_err = 1;
+    if (!zx_xml_debug_log)
       return;
-    }
-    D("OPEN BLOB LOG: tailf %s | ./xml-pretty.pl", XML_LOG_FILE);
   }
   
   if (FLOCKEX(fileno(zx_xml_debug_log)) == -1) {
     ERR("Locking exclusively file `%s' failed: %d %s. Check permissions and that the file system supports locking. euid=%d egid=%d", XML_LOG_FILE, errno, STRERROR(errno), geteuid(), getegid());
     /* Fall thru to print without locking */
   }
+#ifdef USE_AKBOX_FN
+  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d:%d %04x:%-3d %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d:%d -->\n", getpid(), zxlog_seq, akbox_fn(func), line, ERRMAC_INSTANCE, zx_indent, lk, len, len, xml, getpid(), zxlog_seq);
+#else
   fprintf(zx_xml_debug_log, "<!-- XMLBEG %d:%d %10s:%-3d %-16s %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d:%d -->\n", getpid(), zxlog_seq, file, line, func, ERRMAC_INSTANCE, zx_indent, lk, len, len, xml, getpid(), zxlog_seq);
+#endif
   fflush(zx_xml_debug_log);
   FUNLOCK(fileno(zx_xml_debug_log));
+}
+
+/*() Generate a timestamped receipt for data.
+ * Typically used for issuing receipts on audit bus. The current time
+ * and our own signing certificate are used.
+ * cf::         ZXID configuration object, used for memory allocation and cert mgmt
+ * sigbuf_len:: Maximum length of signature buffer, e.g. 1024. On return buffer is nul terminated.
+ * sigbuf::     Result parameter. Caller allocated buffer that receives the receipt. nul term.
+ * mid_len::    Length of message id to issue receipt about (-1 to use strlen(mid))
+ * mid::        Message ID to issue receipt about, will be part of signature.
+ * dest_len::   Length of destination to issue receipt about (-1 to use strlen(dest))
+ * dest::       Destination channel to issue receipt about, will be signed.
+ * eid_len::    Length of entity id to issue receipt to (-1 to use strlen(eid))
+ * eid::        Entity ID to issue receipt about, will be part of signature.
+ * body_len::   Length of data to issue receipt about (-1 to use strlen(body))
+ * body::       Data to issue receipt about, i.e. data that will be signed.
+ * return::     sigbuf. If there was error, sigbuf[0] is set to 'E' */
+
+/* Called by:  stomp_send_receipt, test_receipt x9, zxbus_ack_msg */
+char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_len, const char* mid, int dest_len, const char* dest, int eid_len, const char* eid, int body_len, const char* body)
+{
+  int len, zlen;
+  char* zbuf = 0;
+  char* p;
+  char* buf;
+  struct tm ot;
+  struct timeval ourts;
+  
+  if (!mid)
+    mid_len = 0;
+  if (mid_len == -1)
+    mid_len = strlen(mid);
+  else if (mid_len == -2)
+    mid_len = strchr(mid, '\n') - mid;
+
+  if (!dest)
+    dest_len = 0;
+  if (dest_len == -1)
+    dest_len = strlen(dest);
+  else if (dest_len == -2)
+    dest_len = strchr(dest, '\n') - dest;
+
+  if (!eid)
+    eid_len = 0;
+  if (eid_len == -1)
+    eid_len = strlen(eid);
+  else if (eid_len == -2)
+    eid_len = strchr(eid, '\n') - eid;
+
+  if (!body)
+    body_len = 0;
+  if (body_len == -1)
+    body_len = strlen(body);
+  else if (body_len == -2)
+    body_len = strchr(body, '\n') - body;
+
+  /* Prepare values */
+
+  GETTIMEOFDAY(&ourts, 0);
+  GMTIME_R(ourts.tv_sec, ot);
+
+  /* Prepare timestamp prepended data for hashing */
+  len = ZXLOG_TIME_SIZ+1+mid_len+1+dest_len+1+eid_len+1+body_len;
+  buf = ZX_ALLOC(cf->ctx, len+1);
+  zlen = snprintf(buf, len+1, ZXLOG_TIME_FMT " %.*s %.*s %.*s %.*s",
+		  ZXLOG_TIME_ARG(ot, ourts.tv_usec),
+		  mid_len, mid_len?mid:"",
+		  dest_len, dest_len?dest:"",
+		  eid_len, eid_len?eid:"",
+		  body_len, body_len?body:"");
+  ASSERTOPI(zlen, ==, len);
+  buf[len] = 0; /* must terminate manually as on win32 nul is not guaranteed */
+
+  ASSERT(sigbuf_len >= 3+ZXLOG_TIME_SIZ+1);
+  strcpy(sigbuf, "EP ");
+  memcpy(sigbuf+3, buf, ZXLOG_TIME_SIZ);
+  sigbuf[3+ZXLOG_TIME_SIZ] = ' ';
+  memcpy(sigbuf+3+ZXLOG_TIME_SIZ+1, mid, mid_len);
+  sigbuf[3+ZXLOG_TIME_SIZ+1+mid_len] = 0;
+  
+  switch (cf->bus_rcpt & 0x06) {
+  case 0x02:   /* SP plain sha1 */
+    if (sigbuf_len < 3+ZXLOG_TIME_SIZ+1+mid_len+1+27+1) { ERR("Too small sigbuf %d", sigbuf_len); break; }
+    sigbuf[3+ZXLOG_TIME_SIZ+1+mid_len] = ' ';
+    sha1_safe_base64(sigbuf+3+ZXLOG_TIME_SIZ+1+mid_len+1, len, buf);
+    sigbuf[3+ZXLOG_TIME_SIZ+1+mid_len+1+27] = 0;
+    sigbuf[0] = 'S';
+    break;
+  case 0x04:   /* RP RSA-SHA1 signature */
+    LOCK(cf->mx, "mint_receipt");      
+#if 0
+    if (!cf->log_sign_pkey)
+      cf->log_sign_pkey = zxid_read_private_key(cf, "logsign-nopw-cert.pem");
+#else
+    if (!cf->sign_pkey)
+      cf->sign_pkey = zxid_read_private_key(cf, "sign-nopw-cert.pem");
+#endif
+    UNLOCK(cf->mx, "mint_receipt");
+    DD("sign_pkey=%p buf(%.*s) len=%d buf(%s)", cf->sign_pkey, len, buf, len, buf);
+    if (!cf->sign_pkey)
+      break;
+
+    zlen = zxsig_data(cf->ctx, len, buf, &zbuf, cf->sign_pkey, "receipt");
+
+    if (zx_debug>2) HEXDUMP("zbuf:", zbuf, zbuf+zlen, 4096);
+    len = 3+ZXLOG_TIME_SIZ+1+mid_len+1+SIMPLE_BASE64_LEN(zlen)+1;
+    if (sigbuf_len < len) { ERR("Too small sigbuf_len=%d, need=%d", sigbuf_len, len); break; }
+    sigbuf[3+ZXLOG_TIME_SIZ+1+mid_len] = ' ';
+    p = base64_fancy_raw(zbuf, zlen, sigbuf+3+ZXLOG_TIME_SIZ+1+mid_len+1, safe_basis_64, 1<<31, 0, 0, '.');
+    *p = 0;
+    sigbuf[0] = 'R';
+    break;
+  case 0x06:   /* DP DSA-SHA1 signature */
+    ERR("DSA-SHA1 signature not implemented %x", cf->bus_rcpt);
+    break;
+  case 0:      /* Plain logging, no signing, no encryption. */
+    sigbuf[0] = 'P';
+    break;
+  }
+
+  DD("body(%.*s) body_len=%d", body_len, body_len?body:"", body_len);
+  if (zx_debug>1)
+    D("zx-rcpt-sig(%s) sigbuf_len=%d len=%d\nbuf(%s) buflen=%d %x %x", sigbuf, (int)strlen(sigbuf), len, buf, (int)strlen(buf), cf->bus_rcpt, cf->bus_rcpt&0x06);
+  else
+    D("zx-rcpt-sig(%s) %x", sigbuf, cf->bus_rcpt);
+  if (zbuf)
+    ZX_FREE(cf->ctx, zbuf);
+  ZX_FREE(cf->ctx, buf);
+  return sigbuf;
+}
+
+/*() Verify a receipt signature.
+ * cf::         ZXID configuration object, used for memory allocation and CoT mgmt
+ * eid::        EntityID of the receipt issuing party, used to lookup metadata
+ * sigbuf_len:: Length of signature buffer (from zx-rcpt-sig header) or -1 for strlen(sigbuf)
+ * sigbuf::     The receipt (from zx-rcpt-sig header)
+ * mid_len::    Length of message id (-1 to use strlen(mid))
+ * mid::        Message ID
+ * dest_len::   Length of destination (-1 to use strlen(dest))
+ * dest::       Destination channel for the receipt
+ * deid_len::   Length of entity id (-1 to use strlen(eid))
+ * deid::       Entity ID of receiving party
+ * body_len::   Length of data pertaining to receipt (-1 to use strlen(body))
+ * body::       Data pertaining to receipt
+ * return::     0 (ZXSIG_OK) on success, nonzero on failure. */
+
+/* Called by:  stomp_got_ack, test_receipt x10, zxbus_send_cmdf */
+int zxbus_verify_receipt(zxid_conf* cf, const char* eid, int sigbuf_len, char* sigbuf, int mid_len, const char* mid, int dest_len, const char* dest, int deid_len, const char* deid, int body_len, const char* body)
+{
+  int ver = -1, len, zlen;
+  char* p;
+  char* buf;
+  char sig[1024];
+  zxid_entity* meta;
+
+  if (sigbuf_len == -1)
+    sigbuf_len = strlen(sigbuf);
+  else if (sigbuf_len == -2)
+    sigbuf_len = strchr(sigbuf, '\n') - sigbuf;
+  
+  if (!mid)
+    mid_len = 0;
+  if (mid_len == -1)
+    mid_len = strlen(mid);
+  else if (mid_len == -2)
+    mid_len = strchr(mid, '\n') - mid;
+
+  if (!dest)
+    dest_len = 0;
+  if (dest_len == -1)
+    dest_len = strlen(dest);
+  else if (dest_len == -2)
+    dest_len = strchr(dest, '\n') - dest;
+
+  if (!deid)
+    deid_len = 0;
+  if (deid_len == -1)
+    deid_len = strlen(deid);
+  else if (deid_len == -2)
+    deid_len = strchr(deid, '\n') - deid;
+
+  if (!body)
+    body_len = 0;
+  if (body_len == -1)
+    body_len = strlen(body);
+  else if (body_len == -2)
+    body_len = strchr(body, '\n') - body;
+  
+  DD("body(%.*s) body_len=%d", body_len, body_len?body:"", body_len);
+  D("zx-rcpt-sig(%.*s) sigbuf_len=%d", sigbuf_len, sigbuf, sigbuf_len);
+
+  len = ZXLOG_TIME_SIZ+1+mid_len+1+dest_len+1+deid_len+1+body_len;
+  //len = ZXLOG_TIME_SIZ+1+body_len;
+  buf = ZX_ALLOC(cf->ctx, len+1);
+  zlen = snprintf(buf, len+1, "%.*s %.*s %.*s %.*s %.*s",
+		  ZXLOG_TIME_SIZ, sigbuf+3,
+		  mid_len, mid_len?mid:"",
+		  dest_len, dest_len?dest:"",
+		  deid_len, deid_len?deid:"",
+		  body_len, body_len?body:"");
+  ASSERTOPI(zlen, ==, len);
+  buf[len] = 0; /* must terminate manually as on win32 nul is not guaranteed */
+
+  switch (sigbuf[0]) {
+  case 'R':
+    meta = zxid_get_ent(cf, eid);
+    if (!meta) {
+      ERR("Unable to find metadata for eid(%s) in verify receipt", eid);
+      return -1;
+    }
+    //D("check_private_key(%d)",X509_check_private_key(meta->sign_cert, cf->sign_pkey));
+    if (SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(sigbuf_len) > sizeof(sig)) {
+      ERR("Available signature decoding buffer is too short len=%d, need=%d", (int)sizeof(sig), SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(sigbuf_len));
+      return -1;
+    }
+    p = sigbuf+3+ZXLOG_TIME_SIZ+1+mid_len+1;
+    DD("zx-rcpt-sig(%.*s) sigbuf_len=%d", sigbuf_len, sigbuf, sigbuf_len);
+    D("sigbuf(%.*s) len=%d sigbuf=%p lim=%p", (int)(sigbuf_len-(p-sigbuf)), p, (int)(sigbuf_len-(p-sigbuf)), p, sigbuf+sigbuf_len);
+    p = unbase64_raw(p, sigbuf+sigbuf_len, sig, zx_std_index_64);  /* In place, overwrite. */
+
+    ver = zxsig_verify_data(len, buf, p-sig, sig, meta->sign_cert, "rcpt vfy");
+
+    if (ver)
+      D("ver=%d buf(%.*s) len=%d", ver, len, buf, len);
+    break;
+  default:
+    ERR("Unsupported receipt signature algo(%c) sig(%.*s)", sigbuf[0], sigbuf_len, sigbuf);
+  }
+  ZX_FREE(cf->ctx, buf);
+  return ver;
+}
+
+int zxbus_persist_flag = 1;
+
+/*() Attempt to presist a message.
+ * Persisting involves synchronous write and an atomic filesystem rename
+ * operation, ala Maildir. The persisted message is a file that contains
+ * the entire STOMP 1.1 PDU including headers and body. Filename is the sha1
+ * hash of the contents of the file.
+ * return:: 0 on failure, nonzero len of c_path on success.
+ * see also:: persist feature in zxbus_listen_msg() */
+
+/* Called by:  zxbus_listen_msg, zxbus_persist */
+int zxbus_persist_msg(zxid_conf* cf, int c_path_len, char* c_path, int dest_len, const char* dest, int data_len, const char* data)
+{
+  int len;
+   const char* p;
+  char t_path[ZXID_MAX_BUF];  /* temp path before atomic rename */
+  
+  if (dest_len < 1)
+    return 0;
+  while (*dest == '/') {      /* skip initial /s, if any. I.e. no absolute path permitted */
+    ++dest;
+    --dest_len;
+  }
+  if (dest_len < 1)
+    return 0;
+  if (ONE_OF_3(*dest, '\n', 0, '\r')) {
+    ERR("Empty dest (or one consisting etirely of slashes) %x", *dest);
+    return 0;
+  }
+  
+  /* Sanity check destination for any cracking attempts. */
+  for (p = dest; p < dest+dest_len; ++p) {
+    if (p[0] == '.' && p[1] == '.') {
+      ERR("SEND destination is a .. hack(%.*s)", dest_len, dest);
+      return 0;
+    }
+    if (ONE_OF_2(*p, '~', '\\') || *p > 122 || *p < 33) {
+      ERR("SEND destination bad char 0x%x hack(%.*s)", *p, dest_len, dest);
+      return 0;
+    }
+  }
+  
+  /* Persist the message, use Maildir style rename from tmp/ to ch/ */
+  
+  len = name_from_path(c_path, c_path_len, "%s" ZXBUS_CH_DIR "%.*s/", cf->path, dest_len, dest);
+  if (sizeof(c_path)-len < 28+1 /* +1 accounts for t_path having one more char (tmp vs. ch) */) {
+    ERR("The c_path for persisting exceeds limit. len=%d", len);
+    return 0;
+  }
+  DD("c_path(%s) len=%d PATH(%s) dest(%.*s)", c_path, len, cf->path, dest_len, dest);
+  sha1_safe_base64(c_path+len, data_len, data);
+  len += 27;
+  c_path[len] = 0;
+  DD("c_path(%s)", c_path);
+  
+  name_from_path(t_path, sizeof(t_path), "%stmp/%s", cf->path, c_path+len-27);
+  
+  /* Perform synchronous write to disk. Read man 2 open for discussion. It is not
+   * completely clear, but it appears that this is still not sufficient to guarantee
+   * the appearance of the file in the respective directory, but perhaps fsck(8) could
+   * recover it. *** we may want to make a fsync(2) call on the directory fd as well!
+   * The disk should not be NFS mounted as O_SYNC is illdefined in NFS. Also, the
+   * tmp/, ch/DEST/, and ch/DEST/.del directories should be on the same filesystem - otherwise
+   * the rename(2) will not work.*/
+  //  | O_DIRECT  -- seems to give alignment problems, i.e. 22 EINVAL Invalid Argument
+  if (!write2_or_append_lock_c_path(t_path, 0, 0, data_len, data, "zxbus persist", SEEK_SET, O_TRUNC | O_SYNC)) {
+    return 0;
+  }
+  
+  if (rename(t_path, c_path)) {
+    ERR("Renaming file(%s) to(%s) for atomicity failed: %d %s. Check permissions and that directories exist. Directories must be on the same filesystem. euid=%d egid=%d", t_path, c_path, errno, STRERROR(errno), geteuid(), getegid());
+    return 0;
+  }
+  return len;
 }
 
 /* EOF  --  zxlog.c */

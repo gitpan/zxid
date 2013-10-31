@@ -1,5 +1,6 @@
 /* zxidsimp.c  -  Handwritten zxid_simple() API
- * Copyright (c) 2009-2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
+ * Copyright (c) 2012-2013 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
+ * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -16,6 +17,11 @@
  * 31.5.2010, moved local PEP and attribute broker functionality to zxidpep.c --Sampo
  * 7.9.2010,  tweaked the az requests to separate ses az from resource az --Sampo
  * 22.9.2010, added People Service invitation resolution --Sampo
+ * 10.12.2011, added OAuth2, OpenID Connect, and UMA support --Sampo
+ * 30.9.2012, added PTM support --Sampo
+ * 13.2.2013, added WD option --Sampo
+ * 14.3.2013  added language/skin dependent templates --Sampo
+ * 15.4.2013, added fflush(3) here and there to accommodate broken atexit() --Sampo
  *
  * Login button abbreviations
  * A2 = SAML 2.0 Artifact Profile
@@ -38,13 +44,20 @@
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
-#include "zxidpriv.h"
 #include "zxidutil.h"
 #include "zxidconf.h"
+#include "zxidpriv.h"
+#include "wsf.h"
 #include "c/zxidvers.h"
 #include "c/zx-md-data.h"
 
-/*() Convert configuration string ~conf~ to configuration object ~cf~. See zxid_conf_to_cf() */
+/*#include "dietstdio.h"*/
+
+/*() Convert configuration string ~conf~ to configuration object ~cf~.
+ * cf:: Configuration object, already allocated
+ * conf_len:: length of conf string, or -1 to use strlen(conf)
+ * conf:: Configuration string in query string format
+ * See also: zxid_conf_to_cf() */
 
 /* Called by:  dirconf, main x2, zxid_az, zxid_az_base, zxid_fed_mgmt_len, zxid_idp_list_len, zxid_idp_select_len, zxid_new_conf_to_cf, zxid_simple_len */
 int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
@@ -57,8 +70,9 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
       exit(2);
     }
   }
-  zxid_init_conf(cf, ZXID_PATH);
+  zxid_init_conf(cf, ZXID_PATH);   /* Hardwired conf from zxidconf.h, and /var/zxid/zxid.conf */
 #ifdef USE_CURL
+  //INFO("%lx == %lx? eq=%d sizeof(cf->curl_mx.thr)=%ld a=%lx sizeof(a)=%ld sizeof(pthread_t)=%ld sizeof(int)=%ld sizeof(long)=%ld sizeof(long long)=%ld sizeof(char*)=%ld", cf->curl_mx.thr, pthread_self(), (long)cf->curl_mx.thr == (long)pthread_self(), sizeof(cf->curl_mx.thr), a, sizeof(a), sizeof(pthread_t), sizeof(int), sizeof(long), sizeof(long long), sizeof(char*));
   LOCK(cf->curl_mx, "curl init");
   cf->curl = curl_easy_init();
   if (!cf->curl) {
@@ -72,10 +86,17 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
   zxid_init_conf_ctx(cf, ZXID_PATH /* N.B. Often this is overridden. */);
 #endif
 #if defined(ZXID_CONF_FILE) || defined(ZXID_CONF_FLAG)
+  /* The usual case is that config file processing is compiled in, so this code happens. */
   {
     char* buf;
     char* cc;
-    int len, clen = conf_len == -1 && conf ? strlen(conf) : conf_len;
+    int len;
+    if (conf_len == -1) {
+      if (conf)
+	conf_len = strlen(conf);
+      else
+	conf_len = 0;
+    }
 
     if (!conf || conf_len < 5 || memcmp(conf, "PATH=", 5)) {
       /* No conf, or conf does not start by PATH: read from file default values */
@@ -85,34 +106,35 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
     }
 
     buf = getenv("ZXID_PRE_CONF");
+    D("Check ZXID_PRE_CONF(%s)", buf);
     if (buf) {
       /* Copy the conf string because we are going to modify it in place. */
-      clen = strlen(buf);
-      cc = ZX_ALLOC(cf->ctx, clen+1);
-      memcpy(cc, buf, clen);
-      cc[clen] = 0;
-      zxid_parse_conf_raw(cf, clen, cc);
-
+      D("Applying ZXID_PRE_CONF(%s)", buf);
+      len = strlen(buf);
+      cc = ZX_ALLOC(cf->ctx, len+1);
+      memcpy(cc, buf, len);
+      cc[len] = 0;
+      zxid_parse_conf_raw(cf, len, cc);
     }
     
     if (conf && conf_len) {
       /* Copy the conf string because we are going to modify it in place. */
-      cc = ZX_ALLOC(cf->ctx, clen+1);
-      memcpy(cc, conf, clen);
-      cc[clen] = 0;
-      zxid_parse_conf_raw(cf, clen, cc);
+      cc = ZX_ALLOC(cf->ctx, conf_len+1);
+      memcpy(cc, conf, conf_len);
+      cc[conf_len] = 0;
+      zxid_parse_conf_raw(cf, conf_len, cc);
     }
 
     buf = getenv("ZXID_CONF");
     if (buf) {
       /* Copy the conf string because we are going to modify it in place. */
-      clen = strlen(buf);
-      cc = ZX_ALLOC(cf->ctx, clen+1);
-      memcpy(cc, buf, clen);
-      cc[clen] = 0;
-      zxid_parse_conf_raw(cf, clen, cc);
+      D("Applying ZXID_CONF(%s)", buf);
+      len = strlen(buf);
+      cc = ZX_ALLOC(cf->ctx, len+1);
+      memcpy(cc, buf, len);
+      cc[len] = 0;
+      zxid_parse_conf_raw(cf, len, cc);
     }
-    
   }
 #endif
   return 0;
@@ -129,7 +151,7 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
  * conf::   Configuration string
  * return:: Configuration object */
 
-/* Called by:  a7n_test, main x6, opt x2, ws_validations, zxcall_main, zxcot_main, zxidwspcgi_main x2 */
+/* Called by:  a7n_test, main x6, opt x2, test_receipt, ws_validations, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxidwspcgi_main x2 */
 zxid_conf* zxid_new_conf_to_cf(const char* conf)
 {
   zxid_conf* cf = malloc(sizeof(zxid_conf));  /* *** direct use of malloc */
@@ -218,8 +240,9 @@ char* zxid_fed_mgmt_cf(zxid_conf* cf, int* res_len, int sid_len, char* sid, int 
 #endif
 
   if (auto_flags & ZXID_AUTO_MGMTC && auto_flags & ZXID_AUTO_MGMTH) {  /* Both H&C: CGI */
-    printf("Content-Type: text/html" CRLF "Content-Length: %d" CRLF2 "%.*s",
+    fprintf(stdout, "Content-Type: text/html" CRLF "Content-Length: %d" CRLF2 "%.*s",
 	   ss->len, ss->len, ss->s);
+    fflush(stdout);
     zx_str_free(cf->ctx, ss);
     return 0;
   }
@@ -269,9 +292,6 @@ char* zxid_fed_mgmt(char* conf, char* sid, int auto_flags) {
 /* Called by:  zxid_template_page_cf */
 static const char* zxid_map_bangbang(zxid_conf* cf, zxid_cgi* cgi, const char* key, const char* lim, int auto_flags)
 {
-  char* s;
-  struct zx_str* ss;
-  
   switch (*key) {
   case 'A':
     if (BBMATCH("ACTION_URL", key, lim)) return cgi->action_url;
@@ -280,15 +300,26 @@ static const char* zxid_map_bangbang(zxid_conf* cf, zxid_cgi* cgi, const char* k
     if (BBMATCH("DBG", key, lim)) return cgi->dbg;
     break;
   case 'E':
-    if (BBMATCH("EID", key, lim)) {
-      ss = zxid_my_ent_id(cf);
-      s = ss->s; ZX_FREE(cf->ctx, ss);
-      return s;
-    }
+    if (BBMATCH("EID", key, lim)) return zxid_my_ent_id_cstr(cf);
     if (BBMATCH("ERR", key, lim)) return cgi->err;
+    break;
+  case 'F':
+    if (BBMATCH("FR", key, lim)) return zxid_unbase64_inflate(cf->ctx, -2, cgi->rs, 0);
     break;
   case 'I':
     if (BBMATCH("IDP_LIST", key, lim)) return zxid_idp_list_cf_cgi(cf, cgi, 0, auto_flags);
+    if (BBMATCH("IDP_POPUP", key, lim)) {
+      cf->idp_list_meth = ZXID_IDP_LIST_POPUP;
+      return zxid_idp_list_cf_cgi(cf, cgi, 0, auto_flags);
+    }
+    if (BBMATCH("IDP_BUTTON", key, lim)) {
+      cf->idp_list_meth = ZXID_IDP_LIST_BUTTON;
+      return zxid_idp_list_cf_cgi(cf, cgi, 0, auto_flags);
+    }
+    if (BBMATCH("IDP_BRAND", key, lim)) {
+      cf->idp_list_meth = ZXID_IDP_LIST_BRAND;
+      return zxid_idp_list_cf_cgi(cf, cgi, 0, auto_flags);
+    }
     break;
   case 'M':
     if (BBMATCH("MSG", key, lim)) return cgi->msg;
@@ -300,9 +331,11 @@ static const char* zxid_map_bangbang(zxid_conf* cf, zxid_cgi* cgi, const char* k
     if (BBMATCH("RS", key, lim)) return cgi->rs;
     break;
   case 'S':
+    if (BBMATCH("SKIN", key, lim)) return cgi->skin;
     if (BBMATCH("SIG", key, lim)) return cgi->sig;
     if (BBMATCH("SP_EID", key, lim)) return cgi->sp_eid;
     if (BBMATCH("SP_DPY_NAME", key, lim)) return cgi->sp_dpy_name;
+    if (BBMATCH("SP_BUTTON_URL", key, lim)) return cgi->sp_button_url;
     if (BBMATCH("SSOREQ", key, lim)) return cgi->ssoreq;
     if (BBMATCH("SAML_ART", key, lim)) return cgi->saml_art;
     if (BBMATCH("SAML_RESP", key, lim)) return cgi->saml_resp;
@@ -327,9 +360,30 @@ struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* t
   const char* templ;
   const char* tp;
   const char* tq;
+  const char* p;
   char* pp;
   struct zx_str* ss;
-  int len, got = read_all(sizeof(buf)-1, buf, "templ", 1, "%s", templ_path);
+  int len, got = 0;
+
+  if (cgi->skin && *cgi->skin) {
+    for (pp = cgi->skin; *pp; ++pp)
+      if (*pp == '/') {  /* Squash to avoid accessing files beyond webroot */
+	ERR("Illegal character 0x%x (%c) in skin CGI variable (possible attack or misconfiguration)", *pp, *pp);
+	*pp = '_';
+      }
+
+    /* scan for end of path component, if any. */
+    for (p = templ_path + strlen(templ_path)-1;
+	 p >= templ_path && !ONE_OF_2(*p, '/', '\\');
+	 --p);
+
+    got = read_all(sizeof(buf)-1, buf, "templ", 1, "%.*s/%s%s",
+		   p-templ_path, templ_path, cgi->skin, p);
+    D("Tried to read from skin(%s), got=%d", cgi->skin, got);
+  }
+  
+  if (got <= 0)
+    got = read_all(sizeof(buf)-1, buf, "templ", 1, "%s", templ_path);
   if (got <= 0) {
     D("Template at path(%s) not found. Using default template.", templ_path);
     templ = default_templ;
@@ -378,7 +432,7 @@ struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* t
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  zxid_idp_list_cf, zxid_idp_select_zxstr_cf_cgi, zxid_map_bangbang */
+/* Called by:  zxid_idp_list_cf, zxid_idp_select_zxstr_cf_cgi, zxid_map_bangbang x4 */
 char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
   int i;
@@ -396,10 +450,12 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
       *res_len = 0;
     return "";
   }
-  
+
+#if 0
   if ((auto_flags & ZXID_AUTO_FORMT) && (auto_flags & ZXID_AUTO_FORMF))
     ss = zx_dup_str(cf->ctx, "<h3>Login Using Known IdP</h3>\n");
   else
+#endif
     ss = zx_dup_str(cf->ctx, "");
 
   if (cf->idp_list_meth == ZXID_IDP_LIST_POPUP) {
@@ -433,17 +489,20 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
       /* fall thru */
     case ZXID_IDP_LIST_POPUP:
       dd = zx_strf(cf->ctx, "%.*s"
-		   "<option value=\"%s\"> %s (%s) %s\n",
+		   "<option class=zxidplistopt value=\"%s\"> %s (%s) %s\n",
 		   ss->len, ss->s, idp->eid, STRNULLCHK(idp->dpy_name), idp->eid, mark);
       break;
     case ZXID_IDP_LIST_BUTTON:
       if (cf->show_tech) {
 	dd = zx_strf(cf->ctx, "%.*s"
-		     "<input type=submit name=\"l0%s\" value=\" Login with %s (%s)\">\n"
-		     "<input type=submit name=\"l1%s\" value=\" Login with %s (%s) (A2) \">\n"
-		     "<input type=submit name=\"l2%s\" value=\" Login with %s (%s) (P2) \">\n"
-		     "<input type=submit name=\"l5%s\" value=\" Login with %s (%s) (S2) \">%s<br>\n",
+		     "<input type=submit class=zxidplistbut name=\"l0%s\" value=\" Login with %s (%s)\">\n"
+		     "<input type=submit class=zxidplistbut name=\"l1%s\" value=\" Login with %s (%s) (A2) \">\n"
+		     "<input type=submit class=zxidplistbut name=\"l2%s\" value=\" Login with %s (%s) (P2) \">\n"
+		     "<input type=submit class=zxidplistbut name=\"l5%s\" value=\" Login with %s (%s) (S2) \">\n"
+		     "<input type=submit class=zxidplistbut name=\"l6%s\" value=\" Login with %s (%s) (O2) \">"
+		     "%s<br>\n",
 		     ss->len, ss->s,
+		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
 		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
 		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
 		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
@@ -455,6 +514,17 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
 		     ss->len, ss->s, idp->eid, STRNULLCHK(idp->dpy_name), idp->eid, mark);
       }
       break;
+    case ZXID_IDP_LIST_BRAND:
+      if (idp->button_url) {  /* see symlabs-saml-displayname-2008.pdf */
+	dd = zx_strf(cf->ctx, "%.*s"
+		     "<input type=image name=\"l0%s\" src=\"%s\" title=\"%s (%s)\">%s<br>\n",
+		     ss->len, ss->s, idp->eid, idp->button_url, STRNULLCHK(idp->dpy_name), idp->eid, mark);
+      } else {
+	dd = zx_strf(cf->ctx, "%.*s"
+		     "<input type=submit name=\"l0%s\" value=\" %s (%s) \">%s<br>\n",
+		     ss->len, ss->s, idp->eid, STRNULLCHK(idp->dpy_name), idp->eid, mark);
+      }
+      break;
     }
     zx_str_free(cf->ctx, ss);
     ss = dd;
@@ -462,14 +532,15 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
   if (cf->idp_list_meth == ZXID_IDP_LIST_POPUP) {
     if (cf->show_tech) {
       dd = zx_strf(cf->ctx, "%.*s</select>"
-		   "<input type=submit name=\"l0\" value=\" Login \">\n"
-		   "<input type=submit name=\"l1\" value=\" Login (A2) \">\n"
-		   "<input type=submit name=\"l2\" value=\" Login (P2) \">\n"
-		   "<input type=submit name=\"l5\" value=\" Login (S2) \"><br>\n",
+		   "<input type=submit class=zxidplistbut name=\"l0\" value=\" Login \">\n"
+		   "<input type=submit class=zxidplistbut name=\"l1\" value=\" Login (A2) \">\n"
+		   "<input type=submit class=zxidplistbut name=\"l2\" value=\" Login (P2) \">\n"
+		   "<input type=submit class=zxidplistbut name=\"l5\" value=\" Login (S2) \">\n"
+		   "<input type=submit class=zxidplistbut name=\"l6\" value=\" Login (O2) \"><br>\n",
 		   ss->len, ss->s);
     } else {
       dd = zx_strf(cf->ctx, "%.*s</select>"
-		   "<input type=submit name=\"l0\" value=\" Login \"><br>\n",
+		   "<input type=submit id=zxidplistlogin class=zxidplistbut name=\"l0\" value=\" Login \"><br>\n",
 		   ss->len, ss->s);
     }
     zx_str_free(cf->ctx, ss);
@@ -512,18 +583,56 @@ char* zxid_idp_list(char* conf, int auto_flags) {
 /* Called by:  zxid_idp_select_zxstr_cf, zxid_simple_show_idp_sel */
 struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int auto_flags)
 {
-  struct zx_str* eid=0;
+  int please_free_tf = 0;
   struct zx_str* ss;
+  char* tf;
+  char* p;
 
-  D("HERE %p e(%s) m(%s) d(%s)", eid, FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg));
+  DD("HERE e(%s) m(%s) d(%s)", FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg));
   if (cf->log_level>1)
     zxlog(cf, 0,0,0,0,0,0,0, "N", "W", "IDPSEL", 0, 0);
 
 #if 1
-  ss = zxid_template_page_cf(cf, cgi, cf->idp_sel_templ_file, cf->idp_sel_templ, 4096, auto_flags);
+  if (cgi->templ && *cgi->templ) {
+    /* Template supplied by cgi Query String. This is often used
+     * to implement tabbed user interface. See also cgi->skin in zxid_template_page_cf()
+     * Two problems:
+     * 1. This could be an attack so we need to squash dangerous characters
+     * 2. It is not very portable to give absolute paths in QS as filesystem
+     *    layout and location should not be web developer's concern. Thus
+     *    we make requirement that alternate template is in the same subdirectory
+     *    as the original and we use the path prefix of the original. */
+    D("HERE t(%s)", cgi->templ);
+    for (p = cgi->templ; *p; ++p)
+      if (*p == '/') {  /* Squash to avoid accessing files beyond webroot */
+	ERR("Illegal character 0x%x (%c) in templ CGI variable (possible attack or misconfiguration)", *p, *p);
+	*p = '_';
+      }
+    tf = cgi->templ;
+    if (cf->idp_sel_templ_file && *cf->idp_sel_templ_file) {
+      /* scan for end of path component, if any. */
+      for (p = cf->idp_sel_templ_file + strlen(cf->idp_sel_templ_file)-1;
+	   p >= cf->idp_sel_templ_file && !ONE_OF_2(*p, '/', '\\');
+	   --p);
+      if (p > cf->idp_sel_templ_file) {
+	++p;
+	D("making tf from old(%.*s) (%s) templ(%s)", (int)(p-cf->idp_sel_templ_file), cf->idp_sel_templ_file, p, cgi->templ);
+	tf = ZX_ALLOC(cf->ctx, p-cf->idp_sel_templ_file+strlen(cgi->templ)+1);
+	memcpy(tf, cf->idp_sel_templ_file, p-cf->idp_sel_templ_file);
+	strcpy(tf + (p-cf->idp_sel_templ_file), cgi->templ);
+	please_free_tf = 1;
+      }
+    }
+  } else
+    tf = cf->idp_sel_templ_file;
+  D("HERE tf(%s) k(%s) t(%s) cgi=%p", STRNULLCHKNULL(tf), STRNULLCHKNULL(cgi->skin), STRNULLCHKNULL(cf->idp_sel_templ), cgi);
+  ss = zxid_template_page_cf(cf, cgi, tf, cf->idp_sel_templ, 4096, auto_flags);
+  if (please_free_tf)
+    ZX_FREE(cf->ctx, tf);
 #else
+  char* eid=0;
   if (cf->idp_sel_our_eid && cf->idp_sel_our_eid[0])
-    eid = zxid_my_ent_id(cf);
+    eid = zxid_my_ent_id_cstr(cf);
   char* idp_list = zxid_idp_list_cf_cgi(cf, cgi, 0, auto_flags);
   if ((auto_flags & ZXID_AUTO_FORMT) && (auto_flags & ZXID_AUTO_FORMF)) {
     DD("HERE %p", cgi->idp_list);
@@ -536,7 +645,7 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
 #endif
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
 		 "%s"
-		 "%s<a href=\"%.*s\">%.*s</a><br>"
+		 "%s<a href=\"%s\">%s</a><br>"
 		 "%s"    /* IdP List */
 		 "%s%s"
 		 "<input type=hidden name=fr value=\"%s\">\n"
@@ -545,7 +654,7 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
 		 cf->url,
 		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
-		 cf->idp_sel_our_eid, eid?eid->len:0, eid?eid->s:"", eid?eid->len:0, eid?eid->s:"",
+		 cf->idp_sel_our_eid, STRNULLCHK(eid), STRNULLCHK(eid),
 		 idp_list,
 		 cf->idp_sel_tech_user, cf->idp_sel_tech_site,
 		 FLDCHK(cgi, rs),
@@ -560,7 +669,7 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
 #endif
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
 		 "%s"
-		 "%s<a href=\"%.*s\">%.*s</a><br>"
+		 "%s<a href=\"%s\">%s</a><br>"
 		 "%s"    /* IdP List */
 		 "%s%s"
 		 "<input type=hidden name=fr value=\"%s\">\n"
@@ -568,7 +677,7 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
 		 cf->url,
 		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
-		 cf->idp_sel_our_eid, eid?eid->len:0, eid?eid->s:"", eid?eid->len:0, eid?eid->s:"",
+		 cf->idp_sel_our_eid, STRNULLCHK(eid), STRNULLCHK(eid),
 		 idp_list,
 		 cf->idp_sel_tech_user, cf->idp_sel_tech_site,
 		 FLDCHK(cgi, rs));
@@ -576,13 +685,13 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
     ss = zx_strf(cf->ctx,
 		 "<font color=red>%s</font><font color=green>%s</font><font color=white>%s</font>"
 		 "%s"
-		 "%s<a href=\"%.*s\">%.*s</a><br>"
+		 "%s<a href=\"%s\">%s</a><br>"
 		 "%s"    /* IdP List */
 		 "%s%s"
 		 "<input type=hidden name=fr value=\"%s\">\n",
 		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
-		 cf->idp_sel_our_eid, eid?eid->len:0, eid?eid->s:"", eid?eid->len:0, eid?eid->s:"",
+		 cf->idp_sel_our_eid, STRNULLCHK(eid), STRNULLCHK(eid),
 		 idp_list,
 		 cf->idp_sel_tech_user, cf->idp_sel_tech_site,
 		 FLDCHK(cgi, rs));
@@ -635,17 +744,17 @@ char* zxid_idp_select(char* conf, int auto_flags) {
  * as string with or without headers, as indicated by the auto_flag. The
  * page is in ss. */
 
-/* Called by:  zxid_simple_idp_show_an, zxid_simple_show_carml, zxid_simple_show_conf, zxid_simple_show_err, zxid_simple_show_idp_sel, zxid_simple_show_meta */
-static char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_mask, char* rets, char* cont_type, int* res_len, int auto_flags)
+/* Called by:  zxid_idp_oauth2_check_id, zxid_simple_idp_show_an, zxid_simple_show_carml, zxid_simple_show_conf, zxid_simple_show_err, zxid_simple_show_idp_sel, zxid_simple_show_meta */
+char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_mask, char* rets, char* cont_type, int* res_len, int auto_flags)
 {
   char* res;
   struct zx_str* ss2;
   if (auto_flags & c_mask && auto_flags & h_mask) {  /* Both H&C: CGI */
-    D("CGI %x", auto_flags);
-	int extralen = 0;
+    int extralen = 0;
+    D("CGI %x ss->len=%d ss->s=%p ss->s[0]=%x", auto_flags, ss->len, ss->s, ss->s[0]);
+    /*hexdmp("ss->s: ", ss->s, ss->len, 40);*/
 #ifdef MINGW
-    /* 
-     * It seems that Apache strips off the \n in this output when running as a CGI Script. 
+    /* It seems that Apache strips off the \n in this output when running as a CGI Script. 
      * This means the content length does not reflect reality, and we end up losing the 
      * last N bytes, where N is the number of newlines in the output
      */
@@ -657,8 +766,10 @@ static char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask,
         p++;
     }
 #endif
-    printf("Content-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
+    fprintf(stdout, "Content-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
 	   cont_type, ss->len+extralen, ss->len+extralen, ss->s);
+    fflush(stdout);
+    DD("__stdio_file fd=%d flags=%x bs=%d bm=%d buflen=%d buf=%p buf(%.4s) next=%p pok=%d unget=%x ungotten=%x", stdout->fd, stdout->flags, stdout->bs, stdout->bm, stdout->buflen, stdout->buf, stdout->buf, stdout->next, stdout->popen_kludge, stdout->ungetbuf, stdout->ungotten);
     if (auto_flags & ZXID_AUTO_EXIT)
       exit(0);
     zx_str_free(cf->ctx, ss);
@@ -702,7 +813,8 @@ static char* zxid_simple_redir_page(zxid_conf* cf, char* redir, char* rs, int* r
   struct zx_str* ss;
   D("cf=%p redir(%s)", cf, redir);
   if (auto_flags & ZXID_AUTO_REDIR) {
-    printf("Location: %s?%s" CRLF2, redir, STRNULLCHK(rs));
+    fprintf(stdout, "Location: %s?%s" CRLF2, redir, STRNULLCHK(rs));
+    fflush(stdout);
     if (auto_flags & ZXID_AUTO_EXIT)
       exit(0);
     if (res_len)
@@ -725,7 +837,7 @@ static char* zxid_simple_redir_page(zxid_conf* cf, char* redir, char* rs, int* r
 char* zxid_simple_show_idp_sel(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
   struct zx_str* ss;
-  D("cf=%p cgi=%p", cf, cgi);
+  D("cf=%p cgi=%p templ(%s)", cf, cgi, STRNULLCHKQ(cgi->templ));
   if (cf->idp_sel_page && cf->idp_sel_page[0]) {
     D("idp_sel_page(%s) rs(%s)", cf->idp_sel_page, STRNULLCHK(cgi->rs));
     return zxid_simple_redir_page(cf, cf->idp_sel_page, cgi->rs, res_len, auto_flags);
@@ -778,17 +890,15 @@ char* zxid_simple_show_err(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
 {
   char* p;
   struct zx_str* ss;
-
+  
   if (cf->log_level>1)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "ERR", 0, "");
 
   if (cf->err_page && cf->err_page[0]) {
-    ss = zx_strf(cf->ctx, "zxrfr=F%s%s%s%s&zxidpurl=%s",
+    p = zx_alloc_sprintf(cf->ctx, 0, "zxrfr=F%s%s%s%s&zxidpurl=%s",
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
 		 cf->url);
-    p = ss->s;
-    ZX_FREE(cf->ctx, ss);
     D("err_page(%s) p(%s)", cf->err_page, p);
     return zxid_simple_redir_page(cf, cf->err_page, p, res_len, auto_flags);
   }
@@ -802,26 +912,19 @@ char* zxid_simple_show_err(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
 
 /*() Decode ssoreq (ar=), i.e. the preserved original AuthnReq */
 
-/* Called by:  zxid_simple_idp_pw_authn, zxid_simple_idp_show_an */
+/* Called by:  zxid_simple_idp_pw_authn, zxid_simple_idp_show_an, zxid_sp_sso_finalize */
 int zxid_decode_ssoreq(zxid_conf* cf, zxid_cgi* cgi)
 {
   int len;
-  char* buf;
   char* p;
   if (!cgi->ssoreq || !cgi->ssoreq[0])
     return 1;
-  len = strlen(cgi->ssoreq);
-  D("ssoreq(%s) len=%d pessimistic_len=%d", cgi->ssoreq, len, SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(len));
-  buf = ZX_ALLOC(cf->ctx, SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(len));
-  p = unbase64_raw(cgi->ssoreq, cgi->ssoreq + len, buf, zx_std_index_64);
-  p = zx_zlib_raw_inflate(0, p-buf, buf, &len);
-  ZX_FREE(cf->ctx, buf);
+  p = zxid_unbase64_inflate(cf->ctx, -2, cgi->ssoreq, &len);
   if (!p)
     return 0;
-  p[len] = 0;
   cgi->op = 0;
   D("ar/ssoreq decoded(%s) len=%d", p, len);
-  zxid_parse_cgi(cgi, p);  /* cgi->op will be Q due to SAMLRequest inside ssoreq */
+  zxid_parse_cgi(cf, cgi, p);  /* cgi->op will be Q due to SAMLRequest inside ssoreq */
   cgi->op = 'F';
   return 1;
 }
@@ -835,21 +938,18 @@ int zxid_decode_ssoreq(zxid_conf* cf, zxid_cgi* cgi)
 /* Called by:  zxid_simple_idp_pw_authn, zxid_simple_idp_show_an */
 static char* zxid_simple_idp_an_ok_do_rest(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
-  struct zx_str* ss;
   char* p;
   DD("idp do_rest %p", ses);
   if (cf->atsel_page && cgi->atselafter) { /* *** More sophisticated criteria needed. */
-    ss = zx_strf(cf->ctx, "ar=%s&s=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
+    p = zx_alloc_sprintf(cf->ctx, 0, "ar=%s&s=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
 		 cgi->ssoreq, cgi->sid,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
 		 cf->url);
-    p = ss->s;
-    ZX_FREE(cf->ctx, ss);
     D("atsel_page(%s) redir(%s)", cf->atsel_page, p);
     return zxid_simple_redir_page(cf, cf->atsel_page, p, res_len, auto_flags);
   }
-  return zxid_simple_ses_active_cf(cf, cgi, ses, res_len, auto_flags);
+  return zxid_simple_ses_active_cf(cf, cgi, ses, res_len, auto_flags); /* o=F variant */
 }
 
 /*() Show Authentication screen. Generally this will be in response to
@@ -866,14 +966,11 @@ static char* zxid_simple_idp_an_ok_do_rest(zxid_conf* cf, zxid_cgi* cgi, zxid_se
 /* Called by:  zxid_simple_idp_new_user, zxid_simple_idp_pw_authn, zxid_simple_idp_recover_password, zxid_simple_no_ses_cf */
 static char* zxid_simple_idp_show_an(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
-  int zlen, len;
-  char* zbuf;
-  char* b64 = 0;
   char* p;
   char* ar;
   struct zx_sa_Issuer_s* issuer;
   zxid_entity* meta;
-  struct zx_root_s* r;
+  struct zx_root_s* root;
   struct zx_str* ss;
   zxid_ses sess;
   ZERO(&sess, sizeof(sess));
@@ -883,37 +980,46 @@ static char* zxid_simple_idp_show_an(zxid_conf* cf, zxid_cgi* cgi, int* res_len,
   if (cgi->uid && zxid_pw_authn(cf, cgi, &sess)) {  /* Try login, just in case. */
     return zxid_simple_idp_an_ok_do_rest(cf, cgi, &sess, res_len, auto_flags);
   }
-  if (cgi->saml_req) {
-    DD("zz saml_req(%s) rs(%s) sigalg(%s) sig(%s)", cgi->saml_req, cgi->rs, cgi->sigalg, cgi->sig);  
-    ss = zx_strf(cf->ctx, "SAMLRequest=%s%s%s&SigAlg=%s&Signature=%s",
-		 STRNULLCHK(cgi->saml_req),
-		 cgi->rs && cgi->rs[0] ? "&RelayState=" : "", cgi->rs ? cgi->rs : "",
-		 STRNULLCHK(cgi->sigalg),
-		 STRNULLCHK(cgi->sig));
-    D("z input(%.*s) len=%d", ss->len, ss->s, ss->len);
-    zbuf = zx_zlib_raw_deflate(cf->ctx, ss->len, ss->s, &zlen);
-    if (!zbuf)
-      return 0;
-    
-    len = SIMPLE_BASE64_LEN(zlen);
-    DD("zbuf(%.*s) zlen=%d len=%d", zlen, zbuf, zlen, len);
-    b64 = ZX_ALLOC(cf->ctx, len+1);
-    p = base64_fancy_raw(zbuf, zlen, b64, safe_basis_64, 1<<31, 0, 0, '=');
-    *p = 0;
-    zx_str_free(cf->ctx, ss);
-    cgi->ssoreq = b64;
+  if (cgi->response_type) { /* Save incoming OAUTH2 / OpenID-Connect Az request as hidden field */
+    DD("zz response_type(%s) rs(%s)", cgi->response_type, cgi->rs);  
+    cgi->ssoreq = zxid_deflate_safe_b64(cf->ctx,
+		    zx_strf(cf->ctx,
+			    "response_type=%s"
+			    "&client_id=%s"
+			    "&scope=%s"
+			    "&redirect_uri=%s"
+			    "&nonce=%s"
+			    "%s%s"           /* &state= */
+			    "%s%s"           /* &display= */
+			    "%s%s",          /* &prompt= */
+			    cgi->response_type,
+			    cgi->client_id,
+			    cgi->scope,
+			    cgi->redirect_uri,
+			    cgi->nonce,
+			    cgi->state?"&state=":"", STRNULLCHK(cgi->state),
+			    cgi->display?"&display=":"", STRNULLCHK(cgi->display),
+			    cgi->prompt?"&prompt=":"", STRNULLCHK(cgi->prompt)
+			    ));
+  }
+  if (cgi->saml_req) {  /* Save incoming SAMLRequest as hidden form field ar */
+    DD("zz saml_req(%s) rs(%s) sigalg(%s) sig(%s)", cgi->saml_req, cgi->rs, cgi->sigalg, cgi->sig);
+    cgi->ssoreq = zxid_deflate_safe_b64(cf->ctx,
+		    zx_strf(cf->ctx, "SAMLRequest=%s%s%s&SigAlg=%s&Signature=%s",
+			    STRNULLCHK(cgi->saml_req),
+			    cgi->rs && cgi->rs[0] ? "&RelayState=" : "", cgi->rs ? cgi->rs : "",
+			    STRNULLCHK(cgi->sigalg),
+			    STRNULLCHK(cgi->sig)));
   }
   
-  if (cf->an_page && cf->an_page[0]) {
-    ss = zx_strf(cf->ctx, "ar=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
+  if (cf->an_page && cf->an_page[0]) {  /* Redirect to sysadmin configured page */
+    ar = zx_alloc_sprintf(cf->ctx, 0, "ar=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
 		 cgi->ssoreq,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
 		 cf->url);
-    if (b64)
-      ZX_FREE(cf->ctx, b64);
-    ar = ss->s;
-    ZX_FREE(cf->ctx, ss);
+    if (cgi->ssoreq)
+      ZX_FREE(cf->ctx, cgi->ssoreq);
     D("an_page(%s) ar(%s)", cf->an_page, ar);
     return zxid_simple_redir_page(cf, cf->an_page, ar, res_len, auto_flags);
   }
@@ -924,38 +1030,67 @@ static char* zxid_simple_idp_show_an(zxid_conf* cf, zxid_cgi* cgi, int* res_len,
   /* Attempt to provisorily decode the request and fetch metadata of the SP so we
    * can detect trouble early on and provide some assuring knowledge to the user. */
   
-  if (!cgi->saml_req && cgi->ssoreq) {
+  if (!cgi->saml_req && !cgi->response_type && cgi->ssoreq) {
     zxid_decode_ssoreq(cf, cgi);
   }
   
-  r = zxid_decode_redir_or_post(cf, cgi, &sess, 0x2);
-  if (r) {
-    issuer = zxid_extract_issuer(cf, cgi, &sess, r);
-    if (ZX_SIMPLE_ELEM_CHK(issuer)) {
-      meta = zxid_get_ent_ss(cf, ZX_GET_CONTENT(issuer));
+  if (cgi->response_type) {  /* OAUTH2 AzReq redir (OpenID-Connect) */
+    if (cgi->client_id) {
+      meta = zxid_get_ent(cf, cgi->client_id);
       if (meta) {
 	cgi->sp_eid = meta->eid;
 	cgi->sp_dpy_name = meta->dpy_name;
+	cgi->sp_button_url = meta->button_url;
       } else {
-	ERR("Unable to find metadata for Issuer(%.*s) in AnReq Redir", ZX_GET_CONTENT_LEN(issuer), ZX_GET_CONTENT_S(issuer));
-	cgi->err = "Issuer unknown - metadata exchange may be needed (AnReq).";
+	ERR("Unable to find metadata for client_id(%s) in OAUTH2 AzReq Redir", cgi->client_id);
+	cgi->err = "OAUTH2 client_id unknown - metadata exchange may be needed (AnReq).";
 	cgi->sp_dpy_name = "--SP description unavailable--";
-	cgi->sp_eid = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(issuer));
+	cgi->sp_eid = zx_dup_cstr(cf->ctx, cgi->client_id);
       }
     } else {
-      cgi->err = "Issuer could not be determined from Authentication Request.";
+      cgi->err = "OAUTH2 client_id missing.";
       cgi->sp_eid = "";
       cgi->sp_dpy_name = "--No SP could be determined--";
     }
-  } else {
+  } else { /* Assume SAML2 */
+    root = zxid_decode_redir_or_post(cf, cgi, &sess, 0x2);
+    if (root) {
+      issuer = zxid_extract_issuer(cf, cgi, &sess, root);
+      if (ZX_SIMPLE_ELEM_CHK(issuer)) {
+	meta = zxid_get_ent_ss(cf, ZX_GET_CONTENT(issuer));
+	if (meta) {
+	  cgi->sp_eid = meta->eid;
+	  cgi->sp_dpy_name = meta->dpy_name;
+	  cgi->sp_button_url = meta->button_url;
+	} else {
+	  ERR("Unable to find metadata for Issuer(%.*s) in AnReq Redir", ZX_GET_CONTENT_LEN(issuer), ZX_GET_CONTENT_S(issuer));
+	  cgi->err = "Issuer unknown - metadata exchange may be needed (AnReq).";
+	  cgi->sp_dpy_name = "--SP description unavailable--";
+	  cgi->sp_eid = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(issuer));
+	}
+      } else {
+	cgi->err = "Issuer could not be determined from Authentication Request.";
+	cgi->sp_eid = "";
+	cgi->sp_dpy_name = "--No SP could be determined--";
+      }
+    } else {
       cgi->err = "Malformed or nonexistant Authentication Request";
       cgi->sp_eid = "";
       cgi->sp_dpy_name = "--No SP could be determined--";
+    }
   }
-  
+
+  /* Render the authentication page */
+  if (cgi->templ) {
+    cf->an_templ_file = cgi->templ;
+    for (p = cf->an_templ_file; *p; ++p)
+      if (*p == '/') {  /* Squash to avoid accessing files beyond webroot */
+	ERR("Illegal character 0x%x (%c) in templ CGI variable (possible attack or misconfiguration)", *p, *p);
+	*p = '_';
+      }
+  }
   ss = zxid_template_page_cf(cf, cgi, cf->an_templ_file, cf->an_templ, 4096, auto_flags);
-  if (b64)
-    ZX_FREE(cf->ctx, b64);
+  /* if (cgi->ssoreq) ZX_FREE(cf->ctx, cgi->ssoreq); might not be malloc'd if tabs have CGI */
   DD("an_page: ret(%s)", ss?ss->len:1, ss?ss->s:"?");
   return zxid_simple_show_page(cf, ss, ZXID_AUTO_LOGINC, ZXID_AUTO_LOGINH,
 			       "a", "text/html", res_len, auto_flags);
@@ -992,19 +1127,16 @@ static char* zxid_simple_idp_pw_authn(zxid_conf* cf, zxid_cgi* cgi, int* res_len
 static char* zxid_simple_idp_new_user(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
   char* p;
-  struct zx_str* ss;
   D("cf=%p cgi=%p", cf, cgi);
 
   // ***
 
   if (cf->new_user_page && cf->new_user_page[0]) {
-    ss = zx_strf(cf->ctx, "ar=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
+    p = zx_alloc_sprintf(cf->ctx, 0, "ar=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
 		 cgi->ssoreq,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
 		 cf->url);
-    p = ss->s;
-    ZX_FREE(cf->ctx, ss);
     D("new_user_page(%s) redir(%s)", cf->new_user_page, p);
     return zxid_simple_redir_page(cf, cf->new_user_page, p, res_len, auto_flags);
   }
@@ -1021,19 +1153,16 @@ static char* zxid_simple_idp_new_user(zxid_conf* cf, zxid_cgi* cgi, int* res_len
 static char* zxid_simple_idp_recover_password(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
   char* p;
-  struct zx_str* ss;
   D("cf=%p cgi=%p", cf, cgi);
 
   // ***
 
   if (cf->recover_passwd && cf->recover_passwd[0]) {
-    ss = zx_strf(cf->ctx, "ar=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
+    p = zx_alloc_sprintf(cf->ctx, 0, "ar=%s&zxrfr=F%s%s%s%s&zxidpurl=%s",
 		 cgi->ssoreq,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
 		 cf->url);
-    p = ss->s;
-    ZX_FREE(cf->ctx, ss);
     D("recover_passwd(%s) redir(%s)", cf->recover_passwd, p);
     return zxid_simple_redir_page(cf, cf->recover_passwd, p, res_len, auto_flags);
   }
@@ -1044,6 +1173,50 @@ static char* zxid_simple_idp_recover_password(zxid_conf* cf, zxid_cgi* cgi, int*
   return zxid_simple_idp_show_an(cf, cgi, res_len, auto_flags);
 }
 
+/*() Final steps of SSO: set the cookies and check authorization
+ * before returning the LDIF. */
+
+/* Called by:  zxid_simple_no_ses_cf */
+static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
+{
+  struct zx_str* issuer;
+  struct zx_str* url;
+  zxid_epr* epr;
+  
+  if (cf->ses_cookie_name && *cf->ses_cookie_name) {
+    D("setcookie(%s)", cf->ses_cookie_name);
+    ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/%s",
+				      cf->ses_cookie_name, ses->sid,
+				      ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
+    ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
+				   cf->ses_cookie_name, ses->sid);
+  }
+  if (cf->ptm_cookie_name && *cf->ptm_cookie_name) {
+    D("ptm_cookie_name(%s)", cf->ptm_cookie_name);
+    issuer = ZX_GET_CONTENT(ses->a7n->Issuer);
+    if (!issuer)
+      ERR("Assertion does not have Issuer. %p", ses->a7n->Issuer);
+    
+    if (epr = zxid_get_epr(cf, ses, TAS3_PTM, 0, 0, 0, 1)) {
+      url = zxid_get_epr_address(cf, epr);
+      if (!url)
+	ERR("EPR does not have Address. %p", epr);
+      ses->setptmcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%.*s?l0%.*s=1; path=/%s",
+					   cf->ptm_cookie_name,
+					   url?url->len:0, url?url->s:"",
+					   issuer?issuer->len:0, issuer?issuer->s:"",
+					   ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
+      //ses->ptmcookie = zx_alloc_sprintf(cf->ctx,0,"$Version=1; %s=%s",cf->ptm_cookie_name,?);
+      D("setptmcookie(%s)", ses->setptmcookie);
+    } else {
+      D("The PTM epr could not be discovered. Has it been registered at discovery service? Is there a discovery service? %p", epr);
+    }
+  }
+ erro:
+  ses->rs = cgi->rs;
+  return zxid_simple_ab_pep(cf, ses, res_len, auto_flags);
+}
+
 /* ===== Main Control Logic for Session Active and Session Inactive Cases ===== */
 
 /*() Subroutine of zxid_simple_cf() for the session active case.
@@ -1052,7 +1225,7 @@ static char* zxid_simple_idp_recover_password(zxid_conf* cf, zxid_cgi* cgi, int*
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  chkuid x2, zxid_simple_cf_ses, zxid_simple_idp_an_ok_do_rest */
+/* Called by:  chkuid x2, zxid_simple_cf_ses, zxid_simple_idp_an_ok_do_rest, zxid_sp_dispatch, zxid_sp_oauth2_dispatch */
 char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
   struct zx_str* accr;
@@ -1064,6 +1237,8 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
     ERR("FATAL: NULL pointer. You MUST supply configuration(%p), cgi(%p), and session(%p) objects (programming error)", cf, cgi, ses);
     NEVERNEVER("Bad args %p", cf);
   }
+  if (cf->wd)
+    chdir(cf->wd);
   
   /* OPs (the o= CGI field. Not to be confused with first letter of zxid_simple() return value)
    * l = local logout (form gl)
@@ -1092,13 +1267,15 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
    * W = Recover password,  during IdP Login (form aw)
    * D = Delegation / Invitation acceptance user interface, the idp selection
    * G = Delegation / Invitation finalization after SSO (via RelayState)
+   * O = OAuth2 redirect destination
+   * T = OAuth2 Check ID Endpoint
    *
    * I = used for IdP ???
    * K = used?
    * F = IdP: Return SSO A7N after successful An; no ses case, generate IdP ui
    * V = Proxy IdP return
    *
-   * Still available: HJOTUVWXYZabcdefghijkoqwxyz
+   * Still available: HJUVWXYZabcdefghijkoqwxyz
    */
   
   if (cgi->enc_hint)
@@ -1129,7 +1306,7 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
     cgi->msg = "SP Initiated defederation (SOAP).";
     break;     /* Defederation does not have to mean SLO */
   case 'v':    /* N.B. This is just testing facility. The result is ignored. */
-    zxid_pep_az_soap_pepmap(cf, cgi, ses, cf->pdp_call_url?cf->pdp_call_url:cf->pdp_url, cf->pepmap);
+    zxid_pep_az_soap_pepmap(cf, cgi, ses, cf->pdp_call_url?cf->pdp_call_url:cf->pdp_url, cf->pepmap, "test (o=v)");
     cgi->msg = "PEP-to-PDP Authorization call (SOAP).";
     break;     /* Defederation does not have to mean SLO */
   case 'm':
@@ -1166,14 +1343,14 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
     ss = zxid_idp_dispatch(cf, cgi, ses, 1);  /* N.B. The original request is in cgi->saml_req */
   ret_idp_dispatch:
     switch (ss->s[0]) {
-    case 'K': return zxid_simple_show_idp_sel(cf, cgi, res_len, auto_flags);
+    case 'K': return zxid_simple_show_idp_sel(cf, cgi, res_len, auto_flags); /* proxy IdP */
     case 'C': /* Content-type:  -- i.e. ship page or XML out */
     case 'L':
   redir_ok:
       if (auto_flags & ZXID_AUTO_REDIR) {
-	printf("%.*s", ss->len, ss->s);
-	zx_str_free(cf->ctx, ss);
+	fprintf(stdout, "%.*s", ss->len, ss->s);
 	fflush(stdout);
+	zx_str_free(cf->ctx, ss);
 	goto cgi_exit;
       } else
 	goto res_zx_str;
@@ -1243,6 +1420,8 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     ERR("FATAL: NULL pointer. You MUST supply configuration(%p), cgi(%p), and session(%p) objects (programming error)", cf, cgi, ses);
     exit(1);
   }
+  if (cf->wd)
+    chdir(cf->wd);
 
   switch (cgi->op) {
   case 'M':  /* Invoke LECP or redirect to CDC reader. */
@@ -1250,14 +1429,16 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     D("LECP check: ss(%.*s)", ss?ss->len:1, ss?ss->s:"?");
     if (ss) {
       if (auto_flags & ZXID_AUTO_REDIR) {
-	printf("%.*s", ss->len, ss->s);
+	fprintf(stdout, "%.*s", ss->len, ss->s);
+	fflush(stdout);
 	zx_str_free(cf->ctx, ss);
 	goto cgi_exit;
       } else
 	goto res_zx_str;
     } else {
       if (auto_flags & ZXID_AUTO_REDIR) {
-	printf("Location: %s?o=C" CRLF2, cf->cdc_url);
+	fprintf(stdout, "Location: %s?o=C" CRLF2, cf->cdc_url);
+	fflush(stdout);
 	goto cgi_exit;
       } else {
 	ss = zx_strf(cf->ctx, "Location: %s?o=C" CRLF2, cf->cdc_url);
@@ -1265,14 +1446,21 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
       }
     }
   case 'C':  /* CDC Read: Common Domain Cookie Reader */
-    zxid_cdc_read(cf, cgi);
-    goto cgi_exit;
+    ss = zxid_cdc_read(cf, cgi);
+    if (auto_flags & ZXID_AUTO_REDIR) {
+      fprintf(stdout, "%.*s", ss->len, ss->s);
+      fflush(stdout);
+      zx_str_free(cf->ctx, ss);
+      goto cgi_exit;
+    } else
+      goto res_zx_str;
   case 'E':  /* Return from CDC read, or start here to by-pass CDC read. */
     ss = zxid_lecp_check(cf, cgi);  /* use o=E&fc=1&fn=p  to set allow create true */
     D("LECP check: ss(%.*s)", ss?ss->len:1, ss?ss->s:"?");
     if (ss) {
       if (auto_flags & ZXID_AUTO_REDIR) {
-	printf("%.*s", ss->len, ss->s);
+	fprintf(stdout, "%.*s", ss->len, ss->s);
+	fflush(stdout);
 	zx_str_free(cf->ctx, ss);
 	goto cgi_exit;
       } else
@@ -1296,34 +1484,32 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     switch (zxid_sp_deref_art(cf, cgi, ses)) {
     case ZXID_REDIR_OK: ERR("*** Odd, redirect on artifact deref. %d", 0); break;
     case ZXID_SSO_OK:
-show_protected_content_setcookie:
-      D("show_protected_content_setcookie: (%s)", cf->ses_cookie_name);
-      if (cf->ses_cookie_name && *cf->ses_cookie_name) {
-	ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/%s",
-					  cf->ses_cookie_name, ses->sid,
-					  ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
-	ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
-				       cf->ses_cookie_name, ses->sid);
-      }
-      ses->rs = cgi->rs;
-      return zxid_simple_ab_pep(cf, ses, res_len, auto_flags);
+      return zxid_show_protected_content_setcookie(cf, cgi, ses, res_len, auto_flags);
     }
     break;
+  case 'O':
+    D("Process OAUTH2 / OpenID-Connect1 pid=%d", getpid());
+    ss = zxid_sp_oauth2_dispatch(cf, cgi, ses);
+    goto post_dispatch;
+  case 'T':
+    D("Process OAUTH2 / OpenID-Connect1 check id pid=%d", getpid());
+    return zxid_idp_oauth2_check_id(cf, cgi, ses, auto_flags);
   case 'P':    /* POST Profile Responses */
   case 'I':
   case 'K':
   case 'Q':    /* POST Profile Requests */
     DD("PRE saml_req(%s) saml_resp(%s) rs(%s) sigalg(%s) sig(%s)", STRNULLCHK(cgi->saml_req),  STRNULLCHK(cgi->saml_resp), cgi->rs, cgi->sigalg, cgi->sig);
     ss = zxid_sp_dispatch(cf, cgi, ses);
+  post_dispatch:
     D("POST dispatch_loc(%s)", ss->s);
     switch (ss->s[0]) {
-    case 'O': goto show_protected_content_setcookie;
+    case 'O': return zxid_show_protected_content_setcookie(cf, cgi, ses, res_len, auto_flags);
     case 'M': return zxid_simple_ab_pep(cf, ses, res_len, auto_flags); /* Mgmt screen case */
     case 'L':  /* Location */
       if (auto_flags & ZXID_AUTO_REDIR) {
-	printf("%.*s", ss->len, ss->s);
-	zx_str_free(cf->ctx, ss);
+	fprintf(stdout, "%.*s", ss->len, ss->s);
 	fflush(stdout);
+	zx_str_free(cf->ctx, ss);
 	goto cgi_exit;
       } else
 	goto res_zx_str;
@@ -1335,7 +1521,7 @@ show_protected_content_setcookie:
   case 'd':    return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
   case 'B':    return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
   case 'D': /*  Delegation / Invitation URL clicked. */
-     return zxid_ps_accept_invite(cf, cgi, ses, res_len, auto_flags);
+    return zxid_ps_accept_invite(cf, cgi, ses, res_len, auto_flags);
   case 'R':
     cgi->op = 'F';
     /* Fall thru */
@@ -1421,14 +1607,14 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
   if (!qs) {
     qs = getenv("QUERY_STRING");
     if (qs) {
-      D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
-      zxid_parse_cgi(&cgi, qs);
+      D("QUERY_STRING(%s) %s %d", STRNULLCHK(qs), ZXID_REL, zx_debug);
+      zxid_parse_cgi(cf, &cgi, qs);
       if (ONE_OF_3(cgi.op, 'P', 'R', 'S')) {
 	cont_len = getenv("CONTENT_LENGTH");
 	if (cont_len) {
 	  sscanf(cont_len, "%d", &got);
 	  D("o=%c cont_len=%s got=%d rel=%s", cgi.op, cont_len, got, ZXID_REL);
-	  buf = ZX_ALLOC(cf->ctx, got);
+	  buf = ZX_ALLOC(cf->ctx, got + 1 /* nul term */);
 	  if (!buf) {
 	    ERR("out of memory len=%d", got);
 	    exit(1);
@@ -1466,7 +1652,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
 		*res_len = strlen(res);
 	      goto done;
 	    }
-	    zxid_parse_cgi(&cgi, buf);
+	    zxid_parse_cgi(cf, &cgi, buf);
 	  }
 	} else {
 	  D("o=%c post, but no CONTENT_LENGTH rel=%s", cgi.op, ZXID_REL);
@@ -1483,7 +1669,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
       exit(1);
     }
     D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
-    zxid_parse_cgi(&cgi, qs);
+    zxid_parse_cgi(cf, &cgi, qs);
   }
   if (!cgi.op && !cf->bare_url_entityid)
     cgi.op = 'M';  /* By default, if no ses, check CDC and offer SSO */

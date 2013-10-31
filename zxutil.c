@@ -1,4 +1,5 @@
 /* zxutil.c  -  Utility functions
+ * Copyright (c) 2012-2013 Synergetics (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -12,6 +13,8 @@
  * 7.10.2008, added documentation --Sampo
  * 21.5.2010, added file copy --Sampo
  * 20.6.2011, improved error reporting to show cwd in vopen_fd_from_path() --Sampo
+ * 17.8.2012, added socket specific utilities --Sampo
+ * 21.6.2013, added wild card matcher --Sampo
  */
 
 #include "platform.h"
@@ -21,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <time.h>
@@ -33,6 +37,7 @@
 #else
 #define fdtype int
 #include <sys/stat.h>
+#include <sys/socket.h>
 #endif
 
 #include "zx.h"
@@ -51,7 +56,15 @@ struct flock zx_unlk = { F_UNLCK, SEEK_SET, 0, 1 };
 
 int close_file(fdtype fd, const char* logkey);
 
-/*() Generate formatted file name path. */
+/*() Report brokenness of snprintf() */
+
+void zx_broken_snprintf(int n)
+{
+  perror("snprintf");
+  D("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", n);
+}
+
+/*() Generate formatted file name path. Returns length of path or 0 on failure. */
 
 /* Called by:  name_from_path, vopen_fd_from_path */
 int vname_from_path(char* buf, int buf_len, const char* name_fmt, va_list ap)
@@ -59,16 +72,15 @@ int vname_from_path(char* buf, int buf_len, const char* name_fmt, va_list ap)
   int len = vsnprintf(buf, buf_len, name_fmt, ap);
   buf[buf_len-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   if (len < 0) {
-    perror("vsnprintf");
-    D("Broken vsnprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", len);
+    zx_broken_snprintf(len);
     return 0;
   }
-  return 1;
+  return len;
 }
 
-/*() Generate formatted file name path. */
+/*() Generate formatted file name path. Returns length of path or 0 on failure. */
 
-/* Called by:  main, zxid_check_fed x3, zxid_del_ses x3, zxid_di_query, zxid_find_epr, zxid_find_ses, zxid_gen_boots, zxid_idp_as_do x2, zxid_mk_transient_nid x2, zxid_mk_usr_a7n_to_sp x2, zxid_print_session, zxid_put_ses, zxid_put_user, zxlog_output x2 */
+/* Called by:  main, zxbus_load_ent, zxbus_load_subs, zxbus_persist_msg x2, zxbus_retire x2, zxbus_sched_pending_delivery, zxbus_write_ch_subs, zxid_check_fed x3, zxid_del_ses x3, zxid_di_query, zxid_find_epr, zxid_find_ses, zxid_gen_boots, zxid_idp_as_do x2, zxid_mk_transient_nid x2, zxid_mk_usr_a7n_to_sp x2, zxid_print_session, zxid_put_ses, zxid_put_user, zxlog_output x2 */
 int name_from_path(char* buf, int buf_len, const char* name_fmt, ...)
 {
   int ret;
@@ -81,7 +93,7 @@ int name_from_path(char* buf, int buf_len, const char* name_fmt, ...)
 
 /*() Open a file with formatted file name path. */
 
-/* Called by:  open_fd_from_path, read_all, read_all_alloc */
+/* Called by:  open_fd_from_path, read_all, read_all_alloc, read_all_malloc */
 fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, int reperr, const char* name_fmt, va_list ap)
 {
   fdtype fd;
@@ -99,23 +111,26 @@ fdtype vopen_fd_from_path(int flags, int mode, const char* logkey, int reperr, c
   fd = open(buf, flags, mode);
 #endif
   if (fd == BADFD) {
+#ifndef PATH_MAX
+#define PATH_MAX ZXID_MAX_BUF
+#endif
     char err_buf[PATH_MAX];
     if (reperr && logkey[0] != '-') {
       perror("open (vopen_fd_from_path)");
-      ERR("File(%s) not found lk(%s) errno=%d err(%s). flags=0x%x, euid=%d egid=%d cwd(%s)", buf, logkey, errno, STRERROR(errno), flags, geteuid(), getegid(), getcwd(err_buf, sizeof(err_buf)));
+      ERR("%s: File(%s) not found errno=%d err(%s). flags=0x%x %o, euid=%d egid=%d cwd(%s)", logkey, buf, errno, STRERROR(errno), flags, flags, geteuid(), getegid(), getcwd(err_buf, sizeof(err_buf)));
     } else {
-      D("File(%s) not found lk(%s) errno=%d err(%s). flags=0x%x, euid=%d egid=%d cwd(%s)", buf, logkey, errno, STRERROR(errno), flags, geteuid(), getegid(), getcwd(err_buf, sizeof(err_buf)));
+      D("%s: File(%s) not found errno=%d err(%s). flags=0x%x, euid=%d egid=%d cwd(%s)", logkey, buf, errno, STRERROR(errno), flags, geteuid(), getegid(), getcwd(err_buf, sizeof(err_buf)));
     }
     return BADFD;
   } else {
-    D("File(%s) opened lk(%s) flags=0x%x", buf, logkey, flags);
+    D("%s: Opened(%s) flags=0x%x", logkey, buf, flags);
   }
   return fd;
 }
 
 /*() Open a file with formatted file name path. */
 
-/* Called by:  main x2, write_all_path_fmt, zxid_addmd, zxid_cache_epr, zxid_get_ent_file, zxid_get_meta, zxid_reg_svc x2, zxid_write_ent_to_cache */
+/* Called by:  main x2, write_all_path_fmt, zxbus_sched_new_delivery, zxbus_sched_pending_delivery, zxid_addmd, zxid_cache_epr, zxid_get_ent_file, zxid_reg_svc x2, zxid_write_ent_to_cache */
 fdtype open_fd_from_path(int flags, int mode, const char* logkey, int reperr, const char* name_fmt, ...)
 {
   va_list ap;
@@ -132,7 +147,7 @@ fdtype open_fd_from_path(int flags, int mode, const char* logkey, int reperr, co
  * Return value reflects last got, i.e. what last read(2) system call returned.
  * got_all reflects the total number of bytes received. */
 
-/* Called by:  main x10, opt x6, read_all, read_all_alloc, test_ibm_cert_problem, zxcall_main, zxdecode_main, zxid_addmd, zxid_get_ent_file, zxid_reg_svc, zxid_simple_cf_ses, zxidwspcgi_main, zxidwspcgi_parent */
+/* Called by:  main x9, opt x7, read_all, read_all_alloc, read_all_malloc, test_ibm_cert_problem, zxbus_load_acks, zxcall_main, zxdecode_main, zxid_addmd, zxid_get_ent_file, zxid_reg_svc, zxid_simple_cf_ses, zxidwspcgi_main, zxidwspcgi_parent */
 int read_all_fd(fdtype fd, char* p, int want, int* got_all)
 {
 #ifdef USE_STDIO
@@ -144,8 +159,9 @@ int read_all_fd(fdtype fd, char* p, int want, int* got_all)
   HANDLE fdh = fd;
   if( fdh == 0 ) // stdin
       fdh = GetStdHandle(STD_INPUT_HANDLE);
-  if (!ReadFile(fdh, p, want, &got, 0))
+  if (!ReadFile(fdh, p, want, &got, 0)) {
     return -1;
+  }
   if (got_all) *got_all = got;
 #else  /* The Unix way */
   int got = 0;
@@ -165,12 +181,13 @@ int read_all_fd(fdtype fd, char* p, int want, int* got_all)
 /*() Read all data from a file at formatted file name path.
  *
  * maxlen:: Length of buffer
- * buf:: Result parameter. This buffer will be populated with data from the file.
+ * buf:: Result parameter. This buffer will be filled with data from the file. Caller allocates.
  * logkey:: Logging key to help debugging
+ * reperr:: Whether to report an error (flag: 0=do not report)
  * name_fmt:: Format string for building file name
- * return:: actual total length. The buffer will always be nul terminated. */
+ * return:: actual total length. The buffer will always be nul terminated. Zero on failure. */
 
-/* Called by:  covimp_test, list_user x2, list_users, main x4, opt x10, test_mode x2, zx_get_symkey, zxid_check_fed, zxid_get_ses, zxid_get_user_nameid, zxid_idp_map_nid2uid, zxid_lscot_line, zxid_nidmap_do, zxid_ps_accept_invite, zxid_ps_finalize_invite, zxid_pw_authn x3, zxid_read_cert, zxid_read_private_key, zxid_template_page_cf */
+/* Called by:  authn_user x3, covimp_test, list_user x2, list_users, main, opt x10, test_mode x2, zx_get_symkey, zx_pw_authn, zx_yubikey_authn x2, zxbus_login_subj_hash, zxbus_sched_pending_delivery, zxid_check_fed, zxid_get_ses, zxid_get_user_nameid, zxid_idp_map_nid2uid, zxid_lscot_line, zxid_nidmap_do, zxid_ps_accept_invite, zxid_ps_finalize_invite, zxid_read_cert, zxid_read_private_key, zxid_template_page_cf */
 int read_all(int maxlen, char* buf, const char* logkey, int reperr, const char* name_fmt, ...)
 {
   va_list ap;
@@ -192,7 +209,7 @@ int read_all(int maxlen, char* buf, const char* logkey, int reperr, const char* 
   return gotall;
 }
 
-/* Called by:  read_all_alloc, zxid_get_ent_file */
+/* Called by:  read_all_alloc, read_all_malloc, zxbus_load_acks, zxid_get_ent_file */
 int get_file_size(fdtype fd)
 {
 #ifdef MINGW
@@ -205,16 +222,64 @@ int get_file_size(fdtype fd)
 }
 
 /*() Read all data from a file at formatted file name path, allocating
- * the buffer as needed.
+ * the buffer as needed using ZX allocator.
  *
  * c:: ZX allocation context
  * logkey:: Logging key to help debugging
+ * reperr:: Whether to report an error (flag)
  * lenp:: Optional result parameter returning the length of the data read. Null ok.
  * name_fmt:: Format string for building file name
  * return:: The data or null on fail. The buffer will always be nul terminated. */
 
-/* Called by:  covimp_test, list_user x3, list_users, zxid_conf_to_cf_len, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n, zxid_map_val_ss x4, zxid_parse_conf_raw, zxid_print_session, zxid_read_ldif_attrs, zxid_read_map, zxid_ses_to_pool x3, zxid_sha1_file */
+/* Called by:  covimp_test, list_user x3, list_users, zxid_conf_to_cf_len, zxid_di_query, zxid_find_epr, zxid_gen_boots, zxid_get_ses_sso_a7n, zxid_map_val_ss x4, zxid_parse_conf_path_raw, zxid_print_session, zxid_read_ldif_attrs, zxid_read_map, zxid_ses_to_pool x3, zxid_sha1_file */
 char* read_all_alloc(struct zx_ctx* c, const char* logkey, int reperr, int* lenp, const char* name_fmt, ...)
+{
+  va_list ap;
+  char* buf;
+  int len, gotall;
+  fdtype fd;
+  va_start(ap, name_fmt);
+  fd = vopen_fd_from_path(O_RDONLY, 0, logkey, reperr, name_fmt, ap);
+  va_end(ap);
+  if (fd == BADFD) {
+    if (lenp)
+      *lenp = 0;
+    c->zx_errno = errno;
+    return 0;
+  }
+
+  len = get_file_size(fd);
+  buf = ZX_ALLOC(c, len+1);
+  
+  if (read_all_fd(fd, buf, len, &gotall) == -1) {
+    perror("Trouble reading.");
+    c->zx_errno = errno;
+    D("read error lk(%s)", logkey);
+    close_file(fd, logkey);
+    buf[len] = 0;
+    if (lenp)
+      *lenp = 0;
+    return 0;
+  }
+  close_file(fd, logkey);
+  buf[MIN(gotall, len)] = 0;  /* nul terminate */
+  if (lenp)
+    *lenp = gotall;
+  c->zx_errno = 0;
+  return buf;
+}
+
+/*() Read all data from a file at formatted file name path, allocating
+ * the buffer as needed using malloc(3).
+ *
+ * logkey:: Logging key to help debugging
+ * reperr:: Whether to report an error (flag)
+ * lenp:: Optional result parameter returning the length of the data read. Null ok.
+ * name_fmt:: Format string for building file name
+ * return:: The data or null on fail. The buffer will always be nul terminated. */
+
+/* Called by:  zxbus_load_ch_subs */
+char* read_all_malloc(const char* logkey, int reperr, int* lenp, const char* name_fmt, ...)
 {
   va_list ap;
   char* buf;
@@ -230,7 +295,7 @@ char* read_all_alloc(struct zx_ctx* c, const char* logkey, int reperr, int* lenp
   }
 
   len = get_file_size(fd);
-  buf = ZX_ALLOC(c, len+1);
+  ZMALLOCN(buf, len+1);
   
   if (read_all_fd(fd, buf, len, &gotall) == -1) {
     perror("Trouble reading.");
@@ -248,22 +313,30 @@ char* read_all_alloc(struct zx_ctx* c, const char* logkey, int reperr, int* lenp
   return buf;
 }
 
-/*() Low level function that keeps writing data to a file descriptor unil
- * everything is written. It may block in the process. */
+/*() Low level function that keeps writing data to a file descriptor until
+ * everything is written. It may block in the process - infact it WILL block
+ * until the job is done or error has happened.
+ * return:: 0 on error, 1 on success (amount written will always be equal to pending). */
 
-/* Called by:  main x4, write2_or_append_lock_c_path x4, write_all_path_fmt, zxid_addmd x2, zxid_cache_epr, zxid_curl_write_data, zxid_reg_svc x3, zxid_send_sp_meta x2, zxid_snarf_eprs_from_ses, zxid_write_ent_to_cache, zxidwspcgi_child */
+/* Called by:  main x4, write2_or_append_lock_c_path x4, write_all_fd_fmt, write_all_path_fmt, zxid_addmd x2, zxid_cache_epr, zxid_curl_write_data, zxid_reg_svc x3, zxid_send_sp_meta x2, zxid_snarf_eprs_from_ses, zxid_write_ent_to_cache, zxidwspcgi_child */
 int write_all_fd(fdtype fd, const char* p, int pending)
 {
 #ifdef MINGW
   DWORD wrote;
-  if (fd == BADFD || !pending || !p) return 0;  
+  if ((fd == BADFD) || !pending || !p) {
+    ERR("Bad fd(%x) or no data p=%p pending=%d", fd, p, pending);
+    return 0;
+  }
   if (!WriteFile(fd, p, pending, &wrote, 0))
     return 0;
   FlushFileBuffers(fd);
   DD("write_all_fd(%x, `%.*s', %d) wrote=%d\n", fd, pending, p, pending, wrote);
 #else
   int wrote;
-  if ((fd == BADFD) || !pending || !p) return 0;
+  if ((fd == BADFD) || !pending || !p) {
+    ERR("Bad fd(%x) or no data p=%p pending=%d", fd, p, pending);
+    return 0;
+  }
   while (pending) {
     wrote = write(fd, (char*)p, pending);
     if (wrote <= 0) return 0;
@@ -274,20 +347,71 @@ int write_all_fd(fdtype fd, const char* p, int pending)
   return 1;
 }
 
+/*() Low level function that keeps writing data to a socket until
+ * everything is written. It may block in the process. (On Unix
+ * it would be possible to use write_all_fd(), but using send(2)
+ * works on all platforms that support sockets.) */
+
+/* Called by:  zxbus_ack_msg, zxbus_close, zxbus_nack_msg, zxbus_open_bus_url, zxbus_send_cmdf x6 */
+int send_all_socket(fdtype fd, const char* p, int pending)
+{
+  int wrote;
+  if ((fd == BADFD) || !pending || !p) return 0;
+  while (pending) {
+    wrote = send(fd, (char*)p, pending, 0);
+    if (wrote <= 0) return 0;
+    pending -= wrote;
+    p += wrote;
+  }
+  return 1;
+}
+
+/*() Write all formatted data to a file descriptor. The buf is used
+ * for formatting data. The path_fmt can have up to two %s specifiers,
+ * which will be satisfied by prepath and postpath.
+ *
+ * fd::       File descriptor, already open for writing
+ * logkey::   Used for debug prints and error messages
+ * maxlen::   Size of the buffer
+ * buf::      Buffer for rendering the formatted data
+ * data_fmt:: Format string for the data to be written. Following arguments satisfy the format string. Overall the data length is constrained to maxlen. Caller needs to allocate/provide buffer sufficient to satisfy the data_fmt.
+ * Returns:: 1 on success, 0 on fail. */
+
+/* Called by:  stomp_got_ack */
+int write_all_fd_fmt(int fd, const char* logkey, int maxlen, char* buf, const char* data_fmt, ...)
+{
+  int len;
+  va_list ap;
+  va_start(ap, data_fmt);
+  len = vsnprintf(buf, maxlen-1, data_fmt, ap); /* Format data into buf */
+  buf[maxlen-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
+  va_end(ap);
+  if (len < 0) {
+    zx_broken_snprintf(len);
+    len = 0;
+  }
+  if (write_all_fd(fd, buf, len) == -1) {
+    perror("Trouble writing");
+    close_file(fd, logkey);
+    return 0;
+  }
+  return 1;
+}
+
 /*() Write all data to a file at the formatted path. The buf is used
  * for formatting data. The path_fmt can have up to two %s specifiers,
  * which will be satisfied by prepath and postpath.
  *
- * logkey:: Used for debug prints and error messages
- * maxlen:: Size of the buffer
- * buf:: Fied size buffer for dendering the formatted data
+ * logkey::   Used for debug prints and error messages
+ * maxlen::   Size of the buffer
+ * buf::      Buffer for rendering the formatted data
  * path_fmt:: Format string for filesystem path to the file
- * prepath:: Argument to satisfy first %s in path_fmt
+ * prepath::  Argument to satisfy first %s in path_fmt
  * postpath:: Argument to satisfy second %s in path_fmt
  * data_fmt:: Format string for the data to be written. Following arguments satisfy the format string. Overall the data length is constrained to maxlen. Caller needs to allocate/provide buffer sufficient to satisfy the data_fmt.
  * Returns:: 1 on success, 0 on fail. */
 
-/* Called by:  main x4, zx_get_symkey, zxid_check_fed x2, zxid_mk_at_cert, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_invite, zxid_put_psobj, zxid_put_ses, zxid_put_user, zxid_pw_authn */
+/* Called by:  authn_user, main x3, zx_get_symkey, zx_yubikey_authn, zxid_check_fed x2, zxid_mk_at_cert, zxid_mk_self_sig_cert x2, zxid_mk_transient_nid, zxid_put_invite, zxid_put_psobj, zxid_put_ses, zxid_put_user */
 int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...)
 {
   int len;
@@ -302,8 +426,7 @@ int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* pa
   buf[maxlen-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   va_end(ap);
   if (len < 0) {
-    perror("vsnprintf");
-    ERR("%s, Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", logkey, len);
+    zx_broken_snprintf(len);
     len = 0;
   }
   if (write_all_fd(fd, buf, len) == -1) {
@@ -315,8 +438,10 @@ int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* pa
   return 1;
 }
 
-/*() Write or append all data to a file at the formatted path. The
- * file is opened for appending, data written, and file closed
+#define WRITE_FAIL_MSG "Check that all directories exist, permissions allow writing, and disk is not full or that ulimit(1) is not too low."
+
+/*() Write or append all data to a file at the already formatted path.
+ * The file is opened for appending, data written, and file closed
  * (flushing the data).  Will perform file locking to ensure
  * consistent results. Will create the file if needed, but will not
  * create parent directories. Up to two items of data can
@@ -326,7 +451,7 @@ int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* pa
  * supply seeky=SEEK_END and flag=O_APPEND.
  * Returns 1 on success, 0 on err */
 
-/* Called by:  main, zxlog_blob, zxlog_write_line x2 */
+/* Called by:  main, zxbus_persist_msg, zxbus_write_line x2, zxbusd_main x2, zxbuslist_main, zxlog_blob, zxlog_write_line x2 */
 int write2_or_append_lock_c_path(const char* c_path,
 				 int len1, const char* data1,
 				 int len2, const char* data2,
@@ -339,24 +464,24 @@ int write2_or_append_lock_c_path(const char* c_path,
     return 0;
 #ifdef MINGW
   fd = zx_CreateFile(c_path, MINGW_RW_PERM, /*0*/FILE_SHARE_READ | FILE_SHARE_WRITE /* 0  means no sharing allowed */, 0 /* security */,
-		  (flag == O_APPEND) ? OPEN_ALWAYS : CREATE_ALWAYS /* truncates, too? */,
+		  (flag & O_APPEND) ? OPEN_ALWAYS : CREATE_ALWAYS /* truncates, too? */,
 		  FILE_ATTRIBUTE_NORMAL, 0);
   if (fd == BADFD) goto badopen;
-  if (flag == O_APPEND) {
+  if (flag & O_APPEND) {
     MS_LONG zero = 0;
     SetFilePointer(fd, 0, &zero, FILE_END);  /* seek to end */
   }
 
   if (len1 && data1) {
     if (!write_all_fd(fd, data1, len1)) {
-      ERR("%s: Writing to file `%s' %d bytes failed: %d %s. Check permissions and disk space. euid=%d egid=%d", which, c_path, len1, errno, STRERROR(errno), geteuid(), getegid());
+      ERR("%s: Writing to file `%s' %d bytes failed: %d %s; euid=%d egid=%d. %s", which, c_path, len1, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
       close_file(fd, which);
       return 0;
     }
   }
   if (len2 && data2) {
     if (!write_all_fd(fd, data2, len2)) {
-      ERR("%s: Writing to file `%s' %d bytes failed: %d %s. Check permissions and disk space. euid=%d egid=%d", which, c_path, len2, errno, STRERROR(errno), geteuid(), getegid());
+      ERR("%s: Writing to file `%s' %d bytes failed: %d %s; euid=%d egid=%d. %s", which, c_path, len2, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
       close_file(fd, which);
       return 0;
     }
@@ -365,7 +490,7 @@ int write2_or_append_lock_c_path(const char* c_path,
   fd = open(c_path, O_RDWR | O_CREAT | flag, 0666);
   if (fd == BADFD) goto badopen;
   if (FLOCKEX(fd)  == -1) {
-    ERR("%s: Locking exclusively file `%s' failed: %d %s. Check permissions and that the file system supports locking. euid=%d egid=%d", which, c_path, errno, STRERROR(errno), geteuid(), getegid());
+    ERR("%s: Locking exclusively file `%s' failed: %d %s; euid=%d egid=%d. Check that the file system supports locking. %s", which, c_path, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
     close_file(fd, which);
     return 0;
   }
@@ -373,7 +498,7 @@ int write2_or_append_lock_c_path(const char* c_path,
   lseek(fd,0,seeky);
   if (len1 && data1) {
     if (!write_all_fd(fd, data1, len1)) {
-      ERR("%s: Writing to file(%s) fd=%d %d bytes failed: %d %s. Check permissions and disk space. euid=%d egid=%d", which, c_path, fd, len1, errno, STRERROR(errno), geteuid(), getegid());
+      ERR("%s: Writing to file(%s) fd=%d %d bytes starting(%.*s) failed: %d %s; euid=%d egid=%d. %s", which, c_path, fd, len1, MIN(len1, 4), data1, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
       FUNLOCK(fd);
       close_file(fd, which);
       return 0;
@@ -382,7 +507,7 @@ int write2_or_append_lock_c_path(const char* c_path,
 
   if (len2 && data2) {
     if (!write_all_fd(fd, data2, len2)) {
-      ERR("%s: Writing to file(%s) %d bytes failed: %d %s. Check permissions and disk space. euid=%d egid=%d", which, c_path, len2, errno, STRERROR(errno), geteuid(), getegid());
+      ERR("%s: Writing to file(%s) %d bytes starting(%.*s) failed: %d %s; euid=%d egid=%d. %s", which, c_path, len2, MIN(len2, 4), data2, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
       FUNLOCK(fd);
       close_file(fd, which);
       return 0;
@@ -392,12 +517,12 @@ int write2_or_append_lock_c_path(const char* c_path,
   FUNLOCK(fd);
 #endif
   if (close_file(fd, which) < 0) {
-    ERR("%s: closing file(%s) after write failed: %d %s. Check permissions and disk space. Could be NFS problem. euid=%d egid=%d", which, c_path, errno, STRERROR(errno), geteuid(), getegid());
+    ERR("%s: closing file(%s) after write failed: %d %s; euid=%d egid=%d. %s Could be NFS problem.", which, c_path, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
     return 0;
   }
   return 1;
 badopen:
-  ERR("%s: Opening file(%s) for writing failed: %d %s. Check permissions and that directories exist. euid=%d egid=%d", which, c_path, errno, STRERROR(errno), geteuid(), getegid());
+  ERR("%s: Opening file(%s) for writing failed: %d %s; euid=%d egid=%d. %s", which, c_path, errno, STRERROR(errno), geteuid(), getegid(), WRITE_FAIL_MSG);
   return 0;
 }
 
@@ -407,7 +532,7 @@ badopen:
  * from close is important because in NFS environments you may not know
  * that your write has failed until you actually attempt to close the file. */
 
-/* Called by:  copy_file, main x2, read_all x2, read_all_alloc x2, write2_or_append_lock_c_path x6, write_all_path_fmt x2, zxid_addmd, zxid_cache_epr, zxid_get_ent_file x2, zxid_reg_svc x2, zxid_write_ent_to_cache */
+/* Called by:  copy_file, main x2, read_all x2, read_all_alloc x2, read_all_malloc x2, stomp_got_ack, stomp_got_nack, write2_or_append_lock_c_path x6, write_all_fd_fmt, write_all_path_fmt x2, zxid_addmd, zxid_cache_epr, zxid_get_ent_file x2, zxid_reg_svc x2, zxid_write_ent_to_cache */
 int close_file(fdtype fd, const char* logkey)
 {
   int res = closefile(fd);
@@ -517,42 +642,45 @@ linkrest:
 /*() Output a hexdump to stderr. Used for debugging purposes. */
 
 /* Called by:  hexdmp, zxsig_data x2, zxsig_verify_data x5 */
-int hexdump(char* msg, char* p, char* lim, int max)
+int hexdump(const char* msg, const void* data, const void* lim, int max)
 {
   int i;
-  char* lim16;
+  const char* p = (const char*)data;
+  const char* lim16;
   char buf[3*16+1+1+16+1];
   if (!msg)
     msg = "";
-  if (lim-p > max)
+  if ((const char*)lim-p > max)
     lim = p + max;
   
   buf[sizeof(buf)-1] = '\0';
   
-  while (p<lim) {
+  while (p<(const char*)lim) {
     memset(buf, ' ', sizeof(buf)-1);
-    lim16 = MIN(p+16, lim);
+    lim16 = MIN(p+16, (const char*)lim);
     for (i = 0; p<lim16; ++p, ++i) {
       buf[3*i+(i>7?1:0)]   = HEX_DIGIT((*p >> 4) & 0x0f);
       buf[3*i+1+(i>7?1:0)] = HEX_DIGIT(*p & 0x0f);
       switch (*p) {
       case '\0': buf[3*16+1+1+i] = '~'; break;
-      case '\r': buf[3*16+1+1+i] = '['; break;
-      case '\n': buf[3*16+1+1+i] = ']'; break;
+      case '\r': buf[3*16+1+1+i] = '^'; break;
+      case '\n': buf[3*16+1+1+i] = '\\'; break;
       case '~':  buf[3*16+1+1+i] = '^'; break;
-      case '[':  buf[3*16+1+1+i] = '^'; break;
-      case ']':  buf[3*16+1+1+i] = '^'; break;
+      case '\\': buf[3*16+1+1+i] = '^'; break;
+      case 0x7f: buf[3*16+1+1+i] = '^'; break;
+	//case ']':  buf[3*16+1+1+i] = '^'; break;
       default:
 	buf[3*16+1+1+i] = *p < ' ' ? '^' : *p;
       }
     }
-    fprintf(stderr, "%s%s\n", msg, buf);
+    fprintf(stderr, "%s %s\n", msg, buf);
+    /*fprintf(stderr, "%s %s  ;;%*s\n", msg, buf, lim-data, data);*/
   }
   return 0;
 }
 
 /* Called by:  covimp_test x2, zxsig_validate x6 */
-int hexdmp(char* msg, char* p, int len, int max) {
+int hexdmp(const char* msg, const void* p, int len, int max) {
   return hexdump(msg, p, p+len, max);
 }
 
@@ -572,8 +700,12 @@ const char pw_basis_64[64]   = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
 /*() Raw version. Can use any encoding table and arbitrary line length.
  * Known bug: line_len is not fully respected on last line - it can
  * be up to 3 characters longer than specified due to padding.
- * Every three chars (from alphabet of 256) of input map to
+ * Every three bytes (from alphabet of 256) of input map to
  * four chars (from alphabet of 64) of output. See also SIMPLE_BASE64_LEN().
+ *
+ * > +Base64url Encoding+ URL- and filename-safe Base64 encoding
+ * > described in RFC 4648 [RFC4648], Section 5, with the (non URL-
+ * > safe) '=' padding characters may be omitted, as permitted by Section 3.2.
  *
  * p::        input
  * len::      length of input
@@ -583,7 +715,7 @@ const char pw_basis_64[64]   = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
  *     avoid any line breaks
  * eol_len::  Length of End-of-Line string.
  * eol::      End-of-Line string, inserted every line_len.
- * eq_pad::   Padding character, usually equals (=)
+ * eq_pad::   Padding character, usually equals (=). If nul (0), no padding is added.
  * return::   Pointer one past last byte written in r. This function never fails. */
 
 /* Called by:  base64_fancy, safe_base64 */
@@ -624,13 +756,16 @@ char* base64_fancy_raw(const char* p, int len, /* input and its length */
     *r++ = basis_64[c1>>2];
     *r++ = basis_64[((c1 & 0x0003)<< 4) | ((c2 & 0x00f0) >> 4)];
     *r++ = basis_64[(c2 & 0x000f) << 2];
-    *r++ = eq_pad;
+    if (eq_pad)
+      *r++ = eq_pad;
     break;
   case 1:
     *r++ = basis_64[c1>>2];
     *r++ = basis_64[(c1 & 0x0003)<< 4];
-    *r++ = eq_pad;
-    *r++ = eq_pad;
+    if (eq_pad) {
+      *r++ = eq_pad;
+      *r++ = eq_pad;
+    }
     break;
   case 0:
     break;  /* no padding needed */
@@ -668,7 +803,8 @@ unsigned char zx_std_index_64[256] = {
     XX,XX,XX,XX, XX,XX,XX,XX, XX,XX,XX,XX, XX,XX,XX,XX
 };
 
-/*() Raw version. Can use any decoding table. Assumes receiving buffer r has been allocated
+/*() Raw version. Can use any decoding table (such as zx_std_index_64).
+ * Assumes reciving buffer r has been allocated
  * to correct length. Is able to perform the operation in place, i.e. p and r
  * can point to the same buffer. Both canonical and safe base64 are handled.
  * If string contains URL encoding (as it might for + or =) it is automatically
@@ -676,7 +812,7 @@ unsigned char zx_std_index_64[256] = {
  * Returns pointer one past last output char written. Does not nul terminate.
  * Never fails. See also SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(). */
 
-/* Called by:  decode, main x5, mk_test_cert x5, zxenc_privkey_dec, zxenc_symkey_dec, zxid_cdc_check, zxid_decode_redir_or_post x2, zxid_decode_ssoreq, zxid_extract_cert, zxid_extract_private_key, zxid_idp_as_do, zxid_map_val_ss x3, zxid_process_keys, zxid_psobj_dec, zxid_sp_deref_art, zxsig_validate x2 */
+/* Called by:  decode, main x5, zxbus_verify_receipt, zxenc_privkey_dec, zxenc_symkey_dec, zxid_cdc_check, zxid_decode_redir_or_post x2, zxid_decode_ssoreq, zxid_extract_cert, zxid_extract_private_key, zxid_idp_as_do, zxid_map_val_ss x3, zxid_process_keys, zxid_psobj_dec, zxid_sp_deref_art, zxsig_validate x2 */
 char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char* index_64)
 {
   int i;
@@ -730,7 +866,7 @@ char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char*
  * data:: Data to be digested
  * return:: Pointer one past last character written (not nul terminated) */
 
-/* Called by:  zxcot_main, zxdecode_main, zxid_decode_redir_or_post x2, zxid_get_ent_cache, zxid_mk_ent, zxid_nice_sha1, zxid_reg_svc, zxid_user_sha1_name x2, zxlog_path x2, zxlog_write_line */
+/* Called by:  zxbus_load_ent, zxbus_mint_receipt, zxbus_persist_msg, zxbus_pw_authn_ent, zxbus_retire, zxbus_write_line, zxcot_main, zxdecode_main, zxid_decode_redir_or_post x2, zxid_get_ent_cache, zxid_mk_ent, zxid_nice_sha1, zxid_reg_svc, zxid_user_sha1_name x2, zxlog_path x2, zxlog_write_line */
 char* sha1_safe_base64(char* out_buf, int len, const char* data)
 {
   char sha1[20];
@@ -760,7 +896,7 @@ void zx_zlib_zfree(void* opaque, voidpf addr)
  * of the comressed data. Since the compressed data will be
  * binary, there is no provision for nul termination. Caveat: RFC1951 is not same a gzip. */
 
-/* Called by:  zxid_map_val_ss, zxid_saml2_redir_enc, zxid_simple_idp_show_an, zxlog_write_line */
+/* Called by:  zxbus_write_line, zxid_deflate_safe_b64_raw, zxid_map_val_ss, zxid_saml2_redir_enc, zxlog_write_line */
 char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out_len)
 {
   int ret, dlen;
@@ -779,7 +915,7 @@ char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out
     return 0;
   }
   
-  dlen = in_len + (in_len >> 8) + 12;  /* worst case: orig_size * 1.001 + 12 */
+  dlen = in_len + (in_len >> 8) + 12;  /* worst case: orig_size * 1.001 + 12, see also compressBound() */
   out = ZX_ALLOC(c, dlen);
   z.next_out = (unsigned char*)out;
   z.avail_out = dlen;
@@ -793,6 +929,42 @@ char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out
   *out_len = z.total_out;
   deflateEnd(&z);
   return out;
+}
+
+/*() Helper to compress and ascii armour the original request.
+ * return:: string that has been allocated from zx_ctx. Caller frees. */
+
+/* Called by:  zxid_deflate_safe_b64, zxid_mk_oauth_az_req */
+char* zxid_deflate_safe_b64_raw(struct zx_ctx* c, int len, const char* s)
+{
+  int zlen;
+  char* zbuf;
+  char* p;
+  char* b64 = 0;
+  if (len == -2)
+    len = strlen(s);
+  D("z input(%.*s) len=%d", len, s, len);
+  zbuf = zx_zlib_raw_deflate(c, len, s, &zlen);
+  if (!zbuf)
+    return 0;
+  
+  len = SIMPLE_BASE64_LEN(zlen);
+  DD("zbuf(%.*s) zlen=%d len=%d", zlen, zbuf, zlen, len);
+  b64 = ZX_ALLOC(c, len+1);
+  p = base64_fancy_raw(zbuf, zlen, b64, safe_basis_64, 1<<31, 0, 0, '=');
+  *p = 0;
+  ZX_FREE(c, zbuf);
+  return b64;  /* so it can be encoded as hidden form field "ar". */
+}
+
+/*() Helper to compress and ascii armour the original request. */
+
+/* Called by:  zxid_simple_idp_show_an x2 */
+char* zxid_deflate_safe_b64(struct zx_ctx* c, struct zx_str* ss)
+{
+  char* b64 = zxid_deflate_safe_b64_raw(c, ss->len, ss->s);
+  zx_str_free(c, ss);
+  return b64;  /* so it can be encoded as hidden form field "ar". */
 }
 
 /*() Decompress zlib-deflate (RFC1951) compressed data. The decompressed data will
@@ -852,6 +1024,7 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, const char* in, int* out
     default:
       inflateEnd(&z);
       ERR("zlib inflate failed with error code %d. Most probably the input data is empty, corrupt, or not in RFC1951 (zlib deflate) format. A common error is incomplete data (due to read(2) not returing all data on first iteration) resulting a failed detection of uncompressed data (the detection looks for '<' in beginning and '>' in end of base64 decoded data - often the latter is missing in incomplete data). iter=%d in_len=%d dlen=%d", ret, iter, in_len, dlen);
+      D("out80(%.*s)", 80, out);  /* just in case something was successfully deflated */
       return 0;
     }
   }
@@ -860,6 +1033,34 @@ char* zx_zlib_raw_inflate(struct zx_ctx* c, int in_len, const char* in, int* out
   *out_len = z.total_out;
   inflateEnd(&z);
   return out;
+}
+
+/*() Decode safe base64 and then decompress the content. The decompressed
+ * result may be binary, but will be nul terminated anyway. out_len
+ * will not reflect such termination. */
+
+char* zxid_unbase64_inflate(struct zx_ctx* c, int in_len, const char* in, int* out_len)
+{
+  int len;
+  char* buf;
+  char* p;
+  if (!in) {
+    D("NULL input %d", in_len);
+    return 0;
+  }
+  if (in_len == -2)
+    in_len = strlen(in);
+  if (!out_len)
+    out_len = &len;
+  D("in(%s) len=%d pessimistic_len=%d", in, in_len, SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(in_len));
+  buf = ZX_ALLOC(c, SIMPLE_BASE64_PESSIMISTIC_DECODE_LEN(in_len));
+  p = unbase64_raw(in, in + in_len, buf, zx_std_index_64);
+  p = zx_zlib_raw_inflate(c, p-buf, buf, out_len);
+  ZX_FREE(c, buf);
+  if (!p)
+    return 0;
+  p[*out_len] = 0;
+  return p;
 }
 
 #if 1
@@ -913,7 +1114,7 @@ char* zx_url_encode_raw(int in_len, const char* in, char* out)
  *
  * N.B. For zx_url_decode() operation see URL_DECODE() macro in errmac.h */
 
-/* Called by:  covimp_test */
+/* Called by:  covimp_test, zxid_mk_oauth_az_req x2 */
 char* zx_url_encode(struct zx_ctx* c, int in_len, const char* in, int* out_len)
 {
   int olen;
@@ -930,13 +1131,96 @@ char* zx_url_encode(struct zx_ctx* c, int in_len, const char* in, int* out_len)
   return out;
 }
 
+
+/*() Parse one fragment of a query string (QUERY_STRING querystring).
+ *
+ * qs:: The query string to parse, modified in place to insert nul terms and URL decode.
+ * name:: result parameter pointing to the name analyzed from qs, nul terminated
+ * val:: result parameter pointing to the value analyzed from qs, nul terminated
+ * url_decode_val_flag:: 0 = do not decode, 1 = always decode, 2 = decode except SAMLResponse
+ * return:: pointer to beginning of the next name (one past the ampersand ending the
+ *     previous val, i.e. the nul, unless URL decode made the val shorter)
+ *     or to the end of string nul (if nul, outer parsing
+ *     loop should terminate). Any error causes null pointer to be returned.
+ *
+ * Typical invocation pattern:
+ *
+ *   while (qs && *qs) {
+ *     qs = zxid_qs_nv_scan(qs, &name, &val);
+ *     ... switch on name ...
+ *   }
+ */
+
+char* zxid_qs_nv_scan(char* qs, char** name, char** val, int url_decode_val_flag)
+{
+  char* p;
+  char* q;
+  *name = *val = 0;
+  if (!qs)
+    return 0;
+
+again:  
+  qs += strspn(qs, "& \n\t\r");                  /* Skip over & or &&, or line end */
+  if (!*qs)
+    return 0;
+    
+  if (*qs == '#') {                              /* Comment line */
+scan_end:
+    qs += strcspn(qs, "&\n\r"); /* Scan until '&' or end of line */
+    goto again;
+  }
+
+  for (; *qs == '&'; ++qs) ;                     /* Skip over & or && */
+  if (!*qs)
+    return 0;
+  
+  *name = qs;
+  qs = strchr(qs, '=');                          /* Scan name (until '=') */
+  if (!qs)
+    return 0;
+  if (qs == *name)                               /* Key was an empty string: skip it */
+    goto scan_end;
+  for (; *name < qs && **name <= ' '; ++*name) ; /* Skip over initial whitespace before name */
+  p = q = *name;
+  URL_DECODE(p, q, qs);                          /* In place mod of name */
+  *p = 0;                                        /* Nul-term *name */
+
+  *val = ++qs;                /* Skip over =    */
+  qs += strcspn(qs, "&\n\r"); /*   and scan val */
+
+  switch (url_decode_val_flag) {
+  case 0: p = qs; break;      /* 0 = do not decode */
+  case 2:                     /* 1 = decode except SAMLResponse etc. */
+    /* SAMLRequest and Response MUST NOT be URL decoded as the URL encoding
+     * is needed for redirect binding signature validation. See also unbase64_raw()
+     * for how these fields are URL decoded at later stage. */
+    if (!((*name)[0] != 'S' && (*name)[0] != 'R'
+	  || strcmp(*name, "SAMLRequest") && strcmp(*name, "SAMLResponse")
+	  && strcmp(*name, "SigAlg") && strcmp(*name, "Signature")
+	  && strcmp(*name, "RelayState"))) {
+      p = qs;
+      break;
+    }
+    /* fall thru */
+  case 1:                     /* 1 = always decode */
+    p = q = *val;
+    URL_DECODE(p, q, qs);
+    break;
+  default: NEVERNEVER("unsupported case(%d)", url_decode_val_flag);
+  }
+  if (*qs)
+    ++qs;
+  *p = 0;
+  return qs;
+}
+
 const unsigned char const * hex_trans      = (unsigned char*)"0123456789abcdef";
 const unsigned char const * ykmodhex_trans = (unsigned char*)"cbdefghijklnrtuv";  /* as of libyubikey-1.5 */
 
 /*() Especially useful as yubikey_modhex_decode() replacement.
  * Supports inplace conversion. Does not nul terminate. */
 
-/* Called by:  covimp_test, main x2, zxid_pw_authn x2 */
+/* Called by:  authn_user x2, covimp_test, zx_yubikey_authn x2 */
 char* zx_hexdec(char* dst, char* src, int src_len, const unsigned char* trans)
 {
   const unsigned char* hi;
@@ -1022,7 +1306,7 @@ static int zx_timegm(const struct tm* t)
  *
  * See also zxid_date_time() for inverse. */
 
-/* Called by:  zxid_parse_invite x2, zxid_sp_sso_finalize, zxid_sso_issue_a7n, zxid_timestamp_chk, zxid_validate_cond x2 */
+/* Called by:  timegm_tester, zxid_parse_invite x2, zxid_sp_sso_finalize, zxid_sso_issue_a7n, zxid_sso_issue_jwt, zxid_timestamp_chk, zxid_validate_cond x2 */
 int zx_date_time_to_secs(const char* dt)
 {
   struct tm t;
@@ -1033,6 +1317,30 @@ int zx_date_time_to_secs(const char* dt)
   t.tm_year -= 1900;
   --t.tm_mon;
   return zx_timegm(&t);
+}
+
+/*() Check if simple path glob wild card pattern matches.
+ * Only exact match, suffix match (*.wsp) and prefix match
+ * (/foo/bar*) are supported. Unlike in shell, the
+ * asterisk (*) matches also slash (/).
+ * *** investigate whether mini_httpd's match.c by Jeff Poskanzer would be better --Sampo */
+
+int zx_wildcard_pat_match(const char* pat, const char* target)
+{
+  int len;
+  if (!pat || !*pat)
+    return 1;
+  if (!target)
+    return 0;
+  if (!strcmp(pat, target))
+    return 1;
+  len =  strlen(target);
+  if (*pat == '*' && !strcmp(pat+1, target+len-strlen(pat+1)))
+    return 1;
+  len =  strlen(pat);
+  if (pat[len-1] == '*' && !strncmp(pat, target, len-1))
+    return 1;
+  return 0;
 }
 
 /* EOF  --  zxutil.c */

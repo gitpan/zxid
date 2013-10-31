@@ -124,7 +124,7 @@ zxid_entity* zxid_get_ses_idp(zxid_conf* cf, zxid_ses* ses)
 
 /*() Allocate memory for session object. Used with zxid_simple_cf_ses(). */
 
-/* Called by:  main, zxid_as_call, zxid_fetch_ses */
+/* Called by:  zxid_as_call, zxid_fetch_ses */
 zxid_ses* zxid_alloc_ses(zxid_conf* cf)
 {
   zxid_ses* ses = ZX_ZALLOC(cf->ctx, zxid_ses);
@@ -160,6 +160,7 @@ int zxid_get_ses(zxid_conf* cf, zxid_ses* ses, const char* sid)
   char* p;
   int gotall;
 #if 0
+  /* *** why would this set-cookie preservation code ever be needed? */
   if (cf->ses_cookie_name && ses->setcookie
       && !memcmp(cf->ses_cookie_name, ses->setcookie, strlen(cf->ses_cookie_name)))
     p = ses->setcookie;
@@ -248,8 +249,7 @@ int zxid_put_ses(zxid_conf* cf, zxid_ses* ses)
   
   name_from_path(dir, sizeof(dir), "%s" ZXID_SES_DIR "%s", cf->path, ses->sid);
   if (MKDIR(dir, 0777) && errno != EEXIST) {
-    perror("mkdir for session");
-    ERR("Creating session directory(%s) failed, euid=%d egid=%d", dir, geteuid(), getegid());
+    ERR("Creating session directory(%s) failed: %d %s; euid=%d egid=%d", dir, errno, STRERROR(errno), geteuid(), getegid());
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "S", "EFILE", dir, "mkdir fail, permissions?");
     return 0;
   }

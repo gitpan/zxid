@@ -980,55 +980,61 @@ static void SWIG_Php_SetModule(swig_module_info *pointer) {
 #define SWIGTYPE_p_p_char swig_types[7]
 #define SWIGTYPE_p_p_void swig_types[8]
 #define SWIGTYPE_p_p_zx_ns_s swig_types[9]
-#define SWIGTYPE_p_time_t swig_types[10]
-#define SWIGTYPE_p_timeval swig_types[11]
-#define SWIGTYPE_p_void swig_types[12]
-#define SWIGTYPE_p_zx_a_EndpointReference_s swig_types[13]
-#define SWIGTYPE_p_zx_at_tok swig_types[14]
-#define SWIGTYPE_p_zx_attr_s swig_types[15]
-#define SWIGTYPE_p_zx_ctx swig_types[16]
-#define SWIGTYPE_p_zx_ds_Reference_s swig_types[17]
-#define SWIGTYPE_p_zx_e_Body_s swig_types[18]
-#define SWIGTYPE_p_zx_e_Envelope_s swig_types[19]
-#define SWIGTYPE_p_zx_e_Fault_s swig_types[20]
-#define SWIGTYPE_p_zx_e_Header_s swig_types[21]
-#define SWIGTYPE_p_zx_el_desc swig_types[22]
-#define SWIGTYPE_p_zx_el_tok swig_types[23]
-#define SWIGTYPE_p_zx_elem_s swig_types[24]
-#define SWIGTYPE_p_zx_ff12_Assertion_s swig_types[25]
-#define SWIGTYPE_p_zx_lu_Status_s swig_types[26]
-#define SWIGTYPE_p_zx_md_EntityDescriptor_s swig_types[27]
-#define SWIGTYPE_p_zx_ns_s swig_types[28]
-#define SWIGTYPE_p_zx_root_s swig_types[29]
-#define SWIGTYPE_p_zx_sa11_Assertion_s swig_types[30]
-#define SWIGTYPE_p_zx_sa_Assertion_s swig_types[31]
-#define SWIGTYPE_p_zx_sa_Attribute_s swig_types[32]
-#define SWIGTYPE_p_zx_sa_EncryptedAssertion_s swig_types[33]
-#define SWIGTYPE_p_zx_sa_EncryptedID_s swig_types[34]
-#define SWIGTYPE_p_zx_sa_Issuer_s swig_types[35]
-#define SWIGTYPE_p_zx_sa_NameID_s swig_types[36]
-#define SWIGTYPE_p_zx_sec_Token_s swig_types[37]
-#define SWIGTYPE_p_zx_sp_NewEncryptedID_s swig_types[38]
-#define SWIGTYPE_p_zx_sp_Status_s swig_types[39]
-#define SWIGTYPE_p_zx_str swig_types[40]
-#define SWIGTYPE_p_zx_tas3_Status_s swig_types[41]
-#define SWIGTYPE_p_zx_xenc_EncryptedData_s swig_types[42]
-#define SWIGTYPE_p_zx_xenc_EncryptedKey_s swig_types[43]
-#define SWIGTYPE_p_zxid_atsrc swig_types[44]
-#define SWIGTYPE_p_zxid_attr swig_types[45]
-#define SWIGTYPE_p_zxid_cgi swig_types[46]
-#define SWIGTYPE_p_zxid_conf swig_types[47]
-#define SWIGTYPE_p_zxid_cstr_list swig_types[48]
-#define SWIGTYPE_p_zxid_entity_s swig_types[49]
-#define SWIGTYPE_p_zxid_invite swig_types[50]
-#define SWIGTYPE_p_zxid_map swig_types[51]
-#define SWIGTYPE_p_zxid_need swig_types[52]
-#define SWIGTYPE_p_zxid_perm swig_types[53]
-#define SWIGTYPE_p_zxid_psobj swig_types[54]
-#define SWIGTYPE_p_zxid_ses swig_types[55]
-#define SWIGTYPE_p_zxsig_ref swig_types[56]
-static swig_type_info *swig_types[58];
-static swig_module_info swig_module = {swig_types, 57, 0, 0, 0, 0};
+#define SWIGTYPE_p_pthread_mutex_t swig_types[10]
+#define SWIGTYPE_p_pthread_t swig_types[11]
+#define SWIGTYPE_p_stomp_hdr swig_types[12]
+#define SWIGTYPE_p_time_t swig_types[13]
+#define SWIGTYPE_p_timeval swig_types[14]
+#define SWIGTYPE_p_void swig_types[15]
+#define SWIGTYPE_p_zx_a_EndpointReference_s swig_types[16]
+#define SWIGTYPE_p_zx_at_tok swig_types[17]
+#define SWIGTYPE_p_zx_attr_s swig_types[18]
+#define SWIGTYPE_p_zx_ctx swig_types[19]
+#define SWIGTYPE_p_zx_ds_Reference_s swig_types[20]
+#define SWIGTYPE_p_zx_e_Body_s swig_types[21]
+#define SWIGTYPE_p_zx_e_Envelope_s swig_types[22]
+#define SWIGTYPE_p_zx_e_Fault_s swig_types[23]
+#define SWIGTYPE_p_zx_e_Header_s swig_types[24]
+#define SWIGTYPE_p_zx_el_desc swig_types[25]
+#define SWIGTYPE_p_zx_el_tok swig_types[26]
+#define SWIGTYPE_p_zx_elem_s swig_types[27]
+#define SWIGTYPE_p_zx_ff12_Assertion_s swig_types[28]
+#define SWIGTYPE_p_zx_lock swig_types[29]
+#define SWIGTYPE_p_zx_lu_Status_s swig_types[30]
+#define SWIGTYPE_p_zx_md_EntityDescriptor_s swig_types[31]
+#define SWIGTYPE_p_zx_ns_s swig_types[32]
+#define SWIGTYPE_p_zx_root_s swig_types[33]
+#define SWIGTYPE_p_zx_sa11_Assertion_s swig_types[34]
+#define SWIGTYPE_p_zx_sa_Assertion_s swig_types[35]
+#define SWIGTYPE_p_zx_sa_Attribute_s swig_types[36]
+#define SWIGTYPE_p_zx_sa_EncryptedAssertion_s swig_types[37]
+#define SWIGTYPE_p_zx_sa_EncryptedID_s swig_types[38]
+#define SWIGTYPE_p_zx_sa_Issuer_s swig_types[39]
+#define SWIGTYPE_p_zx_sa_NameID_s swig_types[40]
+#define SWIGTYPE_p_zx_sec_Token_s swig_types[41]
+#define SWIGTYPE_p_zx_sp_NewEncryptedID_s swig_types[42]
+#define SWIGTYPE_p_zx_sp_Status_s swig_types[43]
+#define SWIGTYPE_p_zx_str swig_types[44]
+#define SWIGTYPE_p_zx_tas3_Status_s swig_types[45]
+#define SWIGTYPE_p_zx_xenc_EncryptedData_s swig_types[46]
+#define SWIGTYPE_p_zx_xenc_EncryptedKey_s swig_types[47]
+#define SWIGTYPE_p_zxid_atsrc swig_types[48]
+#define SWIGTYPE_p_zxid_attr swig_types[49]
+#define SWIGTYPE_p_zxid_bus_url swig_types[50]
+#define SWIGTYPE_p_zxid_cgi swig_types[51]
+#define SWIGTYPE_p_zxid_conf swig_types[52]
+#define SWIGTYPE_p_zxid_cstr_list swig_types[53]
+#define SWIGTYPE_p_zxid_entity_s swig_types[54]
+#define SWIGTYPE_p_zxid_invite swig_types[55]
+#define SWIGTYPE_p_zxid_map swig_types[56]
+#define SWIGTYPE_p_zxid_need swig_types[57]
+#define SWIGTYPE_p_zxid_obl_list swig_types[58]
+#define SWIGTYPE_p_zxid_perm swig_types[59]
+#define SWIGTYPE_p_zxid_psobj swig_types[60]
+#define SWIGTYPE_p_zxid_ses swig_types[61]
+#define SWIGTYPE_p_zxsig_ref swig_types[62]
+static swig_type_info *swig_types[64];
+static swig_module_info swig_module = {swig_types, 63, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -1129,6 +1135,9 @@ static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_void = {"_p_p_void", "void **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_zx_ns_s = {"_p_p_zx_ns_s", "struct zx_ns_s **", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_pthread_mutex_t = {"_p_pthread_mutex_t", "pthread_mutex_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_pthread_t = {"_p_pthread_t", "pthread_t *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_stomp_hdr = {"_p_stomp_hdr", "struct stomp_hdr *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_time_t = {"_p_time_t", "time_t *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_timeval = {"_p_timeval", "struct timeval *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_void = {"_p_void", "void *", 0, 0, (void*)0, 0};
@@ -1145,6 +1154,7 @@ static swig_type_info _swigt__p_zx_el_desc = {"_p_zx_el_desc", "struct zx_el_des
 static swig_type_info _swigt__p_zx_el_tok = {"_p_zx_el_tok", "struct zx_el_tok *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_elem_s = {"_p_zx_elem_s", "struct zx_elem_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_ff12_Assertion_s = {"_p_zx_ff12_Assertion_s", "struct zx_ff12_Assertion_s *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_zx_lock = {"_p_zx_lock", "struct zx_lock *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_lu_Status_s = {"_p_zx_lu_Status_s", "struct zx_lu_Status_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_md_EntityDescriptor_s = {"_p_zx_md_EntityDescriptor_s", "struct zx_md_EntityDescriptor_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zx_ns_s = {"_p_zx_ns_s", "struct zx_ns_s *", 0, 0, (void*)0, 0};
@@ -1165,6 +1175,7 @@ static swig_type_info _swigt__p_zx_xenc_EncryptedData_s = {"_p_zx_xenc_Encrypted
 static swig_type_info _swigt__p_zx_xenc_EncryptedKey_s = {"_p_zx_xenc_EncryptedKey_s", "struct zx_xenc_EncryptedKey_s *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_atsrc = {"_p_zxid_atsrc", "struct zxid_atsrc *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_attr = {"_p_zxid_attr", "struct zxid_attr *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_zxid_bus_url = {"_p_zxid_bus_url", "struct zxid_bus_url *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_cgi = {"_p_zxid_cgi", "struct zxid_cgi *|zxid_cgi *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_conf = {"_p_zxid_conf", "struct zxid_conf *|zxid_conf *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_cstr_list = {"_p_zxid_cstr_list", "struct zxid_cstr_list *", 0, 0, (void*)0, 0};
@@ -1172,6 +1183,7 @@ static swig_type_info _swigt__p_zxid_entity_s = {"_p_zxid_entity_s", "zxid_entit
 static swig_type_info _swigt__p_zxid_invite = {"_p_zxid_invite", "struct zxid_invite *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_map = {"_p_zxid_map", "struct zxid_map *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_need = {"_p_zxid_need", "struct zxid_need *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_zxid_obl_list = {"_p_zxid_obl_list", "struct zxid_obl_list *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_perm = {"_p_zxid_perm", "struct zxid_perm *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_psobj = {"_p_zxid_psobj", "struct zxid_psobj *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_zxid_ses = {"_p_zxid_ses", "struct zxid_ses *|zxid_ses *", 0, 0, (void*)0, 0};
@@ -1188,6 +1200,9 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_char,
   &_swigt__p_p_void,
   &_swigt__p_p_zx_ns_s,
+  &_swigt__p_pthread_mutex_t,
+  &_swigt__p_pthread_t,
+  &_swigt__p_stomp_hdr,
   &_swigt__p_time_t,
   &_swigt__p_timeval,
   &_swigt__p_void,
@@ -1204,6 +1219,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_zx_el_tok,
   &_swigt__p_zx_elem_s,
   &_swigt__p_zx_ff12_Assertion_s,
+  &_swigt__p_zx_lock,
   &_swigt__p_zx_lu_Status_s,
   &_swigt__p_zx_md_EntityDescriptor_s,
   &_swigt__p_zx_ns_s,
@@ -1224,6 +1240,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_zx_xenc_EncryptedKey_s,
   &_swigt__p_zxid_atsrc,
   &_swigt__p_zxid_attr,
+  &_swigt__p_zxid_bus_url,
   &_swigt__p_zxid_cgi,
   &_swigt__p_zxid_conf,
   &_swigt__p_zxid_cstr_list,
@@ -1231,6 +1248,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_zxid_invite,
   &_swigt__p_zxid_map,
   &_swigt__p_zxid_need,
+  &_swigt__p_zxid_obl_list,
   &_swigt__p_zxid_perm,
   &_swigt__p_zxid_psobj,
   &_swigt__p_zxid_ses,
@@ -1247,6 +1265,9 @@ static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0
 static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_void[] = {  {&_swigt__p_p_void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_zx_ns_s[] = {  {&_swigt__p_p_zx_ns_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_pthread_mutex_t[] = {  {&_swigt__p_pthread_mutex_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_pthread_t[] = {  {&_swigt__p_pthread_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_stomp_hdr[] = {  {&_swigt__p_stomp_hdr, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_time_t[] = {  {&_swigt__p_time_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_timeval[] = {  {&_swigt__p_timeval, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_void[] = {  {&_swigt__p_void, 0, 0, 0},{0, 0, 0, 0}};
@@ -1263,6 +1284,7 @@ static swig_cast_info _swigc__p_zx_el_desc[] = {  {&_swigt__p_zx_el_desc, 0, 0, 
 static swig_cast_info _swigc__p_zx_el_tok[] = {  {&_swigt__p_zx_el_tok, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_elem_s[] = {  {&_swigt__p_zx_elem_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_ff12_Assertion_s[] = {  {&_swigt__p_zx_ff12_Assertion_s, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_zx_lock[] = {  {&_swigt__p_zx_lock, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_lu_Status_s[] = {  {&_swigt__p_zx_lu_Status_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_md_EntityDescriptor_s[] = {  {&_swigt__p_zx_md_EntityDescriptor_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zx_ns_s[] = {  {&_swigt__p_zx_ns_s, 0, 0, 0},{0, 0, 0, 0}};
@@ -1283,6 +1305,7 @@ static swig_cast_info _swigc__p_zx_xenc_EncryptedData_s[] = {  {&_swigt__p_zx_xe
 static swig_cast_info _swigc__p_zx_xenc_EncryptedKey_s[] = {  {&_swigt__p_zx_xenc_EncryptedKey_s, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_atsrc[] = {  {&_swigt__p_zxid_atsrc, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_attr[] = {  {&_swigt__p_zxid_attr, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_zxid_bus_url[] = {  {&_swigt__p_zxid_bus_url, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_cgi[] = {  {&_swigt__p_zxid_cgi, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_conf[] = {  {&_swigt__p_zxid_conf, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_cstr_list[] = {  {&_swigt__p_zxid_cstr_list, 0, 0, 0},{0, 0, 0, 0}};
@@ -1290,6 +1313,7 @@ static swig_cast_info _swigc__p_zxid_entity_s[] = {  {&_swigt__p_zxid_entity_s, 
 static swig_cast_info _swigc__p_zxid_invite[] = {  {&_swigt__p_zxid_invite, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_map[] = {  {&_swigt__p_zxid_map, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_need[] = {  {&_swigt__p_zxid_need, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_zxid_obl_list[] = {  {&_swigt__p_zxid_obl_list, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_perm[] = {  {&_swigt__p_zxid_perm, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_psobj[] = {  {&_swigt__p_zxid_psobj, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_zxid_ses[] = {  {&_swigt__p_zxid_ses, 0, 0, 0},{0, 0, 0, 0}};
@@ -1306,6 +1330,9 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_p_char,
   _swigc__p_p_void,
   _swigc__p_p_zx_ns_s,
+  _swigc__p_pthread_mutex_t,
+  _swigc__p_pthread_t,
+  _swigc__p_stomp_hdr,
   _swigc__p_time_t,
   _swigc__p_timeval,
   _swigc__p_void,
@@ -1322,6 +1349,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_zx_el_tok,
   _swigc__p_zx_elem_s,
   _swigc__p_zx_ff12_Assertion_s,
+  _swigc__p_zx_lock,
   _swigc__p_zx_lu_Status_s,
   _swigc__p_zx_md_EntityDescriptor_s,
   _swigc__p_zx_ns_s,
@@ -1342,6 +1370,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_zx_xenc_EncryptedKey_s,
   _swigc__p_zxid_atsrc,
   _swigc__p_zxid_attr,
+  _swigc__p_zxid_bus_url,
   _swigc__p_zxid_cgi,
   _swigc__p_zxid_conf,
   _swigc__p_zxid_cstr_list,
@@ -1349,6 +1378,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_zxid_invite,
   _swigc__p_zxid_map,
   _swigc__p_zxid_need,
+  _swigc__p_zxid_obl_list,
   _swigc__p_zxid_perm,
   _swigc__p_zxid_psobj,
   _swigc__p_zxid_ses,
@@ -1368,6 +1398,7 @@ static int le_swig__p_zx_a_EndpointReference_s=0; /* handle for _p_zx_a_Endpoint
 static int le_swig__p_char=0; /* handle for _p_char */
 static int le_swig__p_p_char=0; /* handle for _p_p_char */
 static int le_swig__p_zx_ds_Reference_s=0; /* handle for _p_zx_ds_Reference_s */
+static int le_swig__p_zxid_obl_list=0; /* handle for zxid_obl_list */
 static int le_swig__p_zxid_cgi=0; /* handle for _p_zxid_cgi */
 static int le_swig__p_zx_sec_Token_s=0; /* handle for _p_zx_sec_Token_s */
 static int le_swig__p_zx_str=0; /* handle for zx_str */
@@ -1377,16 +1408,17 @@ static int le_swig__p_f_size_t__p_void=0; /* handle for _p_f_size_t__p_void */
 static int le_swig__p_f_p_void_size_t__p_void=0; /* handle for _p_f_p_void_size_t__p_void */
 static int le_swig__int=0; /* handle for _int */
 static int le_swig__p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int=0; /* handle for _p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int */
+static int le_swig__p_pthread_t=0; /* handle for _p_pthread_t */
 static int le_swig__p_zxid_perm=0; /* handle for zxid_perm */
 static int le_swig__p_zxid_conf=0; /* handle for _p_zxid_conf */
 static int le_swig__p_zx_at_tok=0; /* handle for zx_at_tok */
 static int le_swig__p_zxid_invite=0; /* handle for zxid_invite */
 static int le_swig__p_p_zx_ns_s=0; /* handle for _p_p_zx_ns_s */
 static int le_swig__p_zx_ns_s=0; /* handle for zx_ns_s */
-static int le_swig__p_zxid_atsrc=0; /* handle for zxid_atsrc */
 static int le_swig__p_zx_sa_Assertion_s=0; /* handle for _p_zx_sa_Assertion_s */
 static int le_swig__p_f_p_void__void=0; /* handle for _p_f_p_void__void */
 static int le_swig__p_zx_el_tok=0; /* handle for zx_el_tok */
+static int le_swig__p_zxid_atsrc=0; /* handle for zxid_atsrc */
 static int le_swig__p_zx_sa11_Assertion_s=0; /* handle for _p_zx_sa11_Assertion_s */
 static int le_swig__p_zx_ff12_Assertion_s=0; /* handle for _p_zx_ff12_Assertion_s */
 static int le_swig__p_zx_sa_EncryptedAssertion_s=0; /* handle for _p_zx_sa_EncryptedAssertion_s */
@@ -1394,12 +1426,13 @@ static int le_swig__p_zx_root_s=0; /* handle for _p_zx_root_s */
 static int le_swig__p_zx_md_EntityDescriptor_s=0; /* handle for _p_zx_md_EntityDescriptor_s */
 static int le_swig__p_zx_attr_s=0; /* handle for zx_attr_s */
 static int le_swig__p_zxid_cstr_list=0; /* handle for zxid_cstr_list */
-static int le_swig__p_zxid_need=0; /* handle for zxid_need */
 static int le_swig__p_zxid_ses=0; /* handle for _p_zxid_ses */
+static int le_swig__p_zxid_need=0; /* handle for zxid_need */
 static int le_swig__p_zx_e_Body_s=0; /* handle for _p_zx_e_Body_s */
 static int le_swig__p_zx_ctx=0; /* handle for zx_ctx */
 static int le_swig__p_zx_xenc_EncryptedData_s=0; /* handle for _p_zx_xenc_EncryptedData_s */
 static int le_swig__p_zx_e_Envelope_s=0; /* handle for _p_zx_e_Envelope_s */
+static int le_swig__p_zx_lock=0; /* handle for zx_lock */
 static int le_swig__p_zx_sa_NameID_s=0; /* handle for _p_zx_sa_NameID_s */
 static int le_swig__p_timeval=0; /* handle for _p_timeval */
 static int le_swig__p_zx_sa_Issuer_s=0; /* handle for _p_zx_sa_Issuer_s */
@@ -1409,18 +1442,303 @@ static int le_swig__p_zxid_psobj=0; /* handle for zxid_psobj */
 static int le_swig__p_time_t=0; /* handle for _p_time_t */
 static int le_swig__p_zx_sa_EncryptedID_s=0; /* handle for _p_zx_sa_EncryptedID_s */
 static int le_swig__p_zx_sp_NewEncryptedID_s=0; /* handle for _p_zx_sp_NewEncryptedID_s */
+static int le_swig__p_stomp_hdr=0; /* handle for stomp_hdr */
 static int le_swig__p_zx_e_Header_s=0; /* handle for _p_zx_e_Header_s */
+static int le_swig__p_zxid_bus_url=0; /* handle for zxid_bus_url */
 static int le_swig__p_zx_xenc_EncryptedKey_s=0; /* handle for _p_zx_xenc_EncryptedKey_s */
 static int le_swig__p_zxid_entity_s=0; /* handle for zxid_entity_s */
 static int le_swig__p_int=0; /* handle for _p_int */
 static int le_swig__p_zxsig_ref=0; /* handle for zxsig_ref */
 static int le_swig__p_zx_e_Fault_s=0; /* handle for _p_zx_e_Fault_s */
 static int le_swig__p_zxid_map=0; /* handle for zxid_map */
+static int le_swig__p_pthread_mutex_t=0; /* handle for _p_pthread_mutex_t */
 static int le_swig__p_zxid_attr=0; /* handle for zxid_attr */
 /* end vdecl subsection */
 /* wrapper section */
 
 #define zend_error_noreturn zend_error
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_ptmut_set) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  pthread_mutex_t arg2 ;
+  pthread_mutex_t *tmp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_ptmut_set. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_pthread_mutex_t, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zx_lock_ptmut_set. Expected SWIGTYPE_p_pthread_mutex_t");
+    }
+    arg2 = *tmp2;
+  }
+  if (arg1) (arg1)->ptmut = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_ptmut_get) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  zval **args[1];
+  pthread_mutex_t result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_ptmut_get. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result =  ((arg1)->ptmut);
+  {
+    pthread_mutex_t * resultobj = (pthread_mutex_t *) emalloc(sizeof(pthread_mutex_t));
+    memcpy(resultobj, &result, sizeof(pthread_mutex_t));
+    SWIG_SetPointerZval(return_value, (void *)resultobj, SWIGTYPE_p_pthread_mutex_t, 1);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_func_set) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_func_set. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg2) {
+      arg1->func = (char const *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->func, (const char *)arg2);
+    } else {
+      arg1->func = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_func_get) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_func_get. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->func);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_line_set) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  int arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_line_set. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->line = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_line_get) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  zval **args[1];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_line_get. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (int) ((arg1)->line);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_thr_set) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  pthread_t arg2 ;
+  pthread_t *tmp2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_thr_set. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &tmp2, SWIGTYPE_p_pthread_t, 0) < 0 || tmp2 == NULL) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zx_lock_thr_set. Expected SWIGTYPE_p_pthread_t");
+    }
+    arg2 = *tmp2;
+  }
+  if (arg1) (arg1)->thr = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_lock_thr_get) {
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  zval **args[1];
+  pthread_t result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_lock, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_lock_thr_get. Expected SWIGTYPE_p_zx_lock");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result =  ((arg1)->thr);
+  {
+    pthread_t * resultobj = (pthread_t *) emalloc(sizeof(pthread_t));
+    memcpy(resultobj, &result, sizeof(pthread_t));
+    SWIG_SetPointerZval(return_value, (void *)resultobj, SWIGTYPE_p_pthread_t, 1);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_new_zx_lock) {
+  struct zx_lock *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (struct zx_lock *)calloc(1, sizeof(struct zx_lock));
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_lock, 1);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_zx_lock(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  struct zx_lock *arg1 = (struct zx_lock *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (struct zx_lock *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_zx_lock TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "zx_lock resource already free'd");
+  free((char *) arg1);
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
 
 ZEND_NAMED_FUNCTION(_wrap_zx_ns_s_url_set) {
   struct zx_ns_s *arg1 = (struct zx_ns_s *) 0 ;
@@ -3144,9 +3462,9 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad4_set) {
+ZEND_NAMED_FUNCTION(_wrap_zx_ctx_zx_errno_set) {
   struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  char arg2 ;
+  int arg2 ;
   zval **args[2];
   
   SWIG_ResetError();
@@ -3156,17 +3474,17 @@ ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad4_set) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad4_set. Expected SWIGTYPE_p_zx_ctx");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_zx_errno_set. Expected SWIGTYPE_p_zx_ctx");
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
-  convert_to_string_ex(args[1]);
-  arg2 = (char) *Z_STRVAL_PP(args[1]);
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
   /*@SWIG@*/;
   
-  if (arg1) (arg1)->pad4 = arg2;
+  if (arg1) (arg1)->zx_errno = arg2;
   
   return;
 fail:
@@ -3174,10 +3492,10 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad4_get) {
+ZEND_NAMED_FUNCTION(_wrap_zx_ctx_zx_errno_get) {
   struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
   zval **args[1];
-  char result;
+  int result;
   
   SWIG_ResetError();
   if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
@@ -3186,181 +3504,13 @@ ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad4_get) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad4_get. Expected SWIGTYPE_p_zx_ctx");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_zx_errno_get. Expected SWIGTYPE_p_zx_ctx");
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad4);
+  result = (int) ((arg1)->zx_errno);
   {
-    ZVAL_STRINGL(return_value,&result, 1, 1);
-  }
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad5_set) {
-  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  char arg2 ;
-  zval **args[2];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad5_set. Expected SWIGTYPE_p_zx_ctx");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
-  convert_to_string_ex(args[1]);
-  arg2 = (char) *Z_STRVAL_PP(args[1]);
-  /*@SWIG@*/;
-  
-  if (arg1) (arg1)->pad5 = arg2;
-  
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad5_get) {
-  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  zval **args[1];
-  char result;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad5_get. Expected SWIGTYPE_p_zx_ctx");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad5);
-  {
-    ZVAL_STRINGL(return_value,&result, 1, 1);
-  }
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad6_set) {
-  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  char arg2 ;
-  zval **args[2];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad6_set. Expected SWIGTYPE_p_zx_ctx");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
-  convert_to_string_ex(args[1]);
-  arg2 = (char) *Z_STRVAL_PP(args[1]);
-  /*@SWIG@*/;
-  
-  if (arg1) (arg1)->pad6 = arg2;
-  
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad6_get) {
-  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  zval **args[1];
-  char result;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad6_get. Expected SWIGTYPE_p_zx_ctx");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad6);
-  {
-    ZVAL_STRINGL(return_value,&result, 1, 1);
-  }
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad7_set) {
-  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  char arg2 ;
-  zval **args[2];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad7_set. Expected SWIGTYPE_p_zx_ctx");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
-  convert_to_string_ex(args[1]);
-  arg2 = (char) *Z_STRVAL_PP(args[1]);
-  /*@SWIG@*/;
-  
-  if (arg1) (arg1)->pad7 = arg2;
-  
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zx_ctx_pad7_get) {
-  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
-  zval **args[1];
-  char result;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_ctx_pad7_get. Expected SWIGTYPE_p_zx_ctx");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad7);
-  {
-    ZVAL_STRINGL(return_value,&result, 1, 1);
+    ZVAL_LONG(return_value,result);
   }
   return;
 fail:
@@ -5519,6 +5669,28 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zx_free_ctx) {
+  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_free_ctx. Expected SWIGTYPE_p_zx_ctx");
+    }
+  }
+  zx_free_ctx(arg1);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zx_at_tok_name_set) {
   struct zx_at_tok *arg1 = (struct zx_at_tok *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -6251,7 +6423,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zx_report_openssl_error) {
+ZEND_NAMED_FUNCTION(_wrap_zx_report_openssl_err) {
   char *arg1 = (char *) 0 ;
   zval **args[1];
   int result;
@@ -6271,7 +6443,7 @@ ZEND_NAMED_FUNCTION(_wrap_zx_report_openssl_error) {
   }
   /*@SWIG@*/;
   
-  result = (int)zx_report_openssl_error((char const *)arg1);
+  result = (int)zx_report_openssl_err((char const *)arg1);
   {
     ZVAL_LONG(return_value,result);
   }
@@ -6545,6 +6717,88 @@ ZEND_NAMED_FUNCTION(_wrap_zx_format_parse_error) {
   result = (int)zx_format_parse_error(arg1,arg2,arg3,arg4);
   {
     ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zx_hmac_sha256) {
+  struct zx_ctx *arg1 = (struct zx_ctx *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
+  int arg4 ;
+  char *arg5 = (char *) 0 ;
+  char *arg6 = (char *) 0 ;
+  int *arg7 = (int *) 0 ;
+  zval **args[7];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 7 || zend_get_parameters_array_ex(7, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zx_ctx, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zx_hmac_sha256. Expected SWIGTYPE_p_zx_ctx");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[2])->type==IS_NULL) {
+    arg3 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[3]);
+  arg4 = (int) Z_LVAL_PP(args[3]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[4])->type==IS_NULL) {
+    arg5 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[4]);
+    arg5 = (char *) Z_STRVAL_PP(args[4]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[5])->type==IS_NULL) {
+    arg6 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[5]);
+    arg6 = (char *) Z_STRVAL_PP(args[5]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if(SWIG_ConvertPtr(*args[6], (void **) &arg7, SWIGTYPE_p_int, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 7 of zx_hmac_sha256. Expected SWIGTYPE_p_int");
+    }
+  }
+  result = (char *)zx_hmac_sha256(arg1,arg2,(char const *)arg3,arg4,(char const *)arg5,arg6,arg7);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
   }
   return;
 fail:
@@ -8117,6 +8371,78 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_entity_s_dpy_name_get) {
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   result = (char *) ((arg1)->dpy_name);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_entity_s_button_url_set) {
+  struct zxid_entity_s *arg1 = (struct zxid_entity_s *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_entity_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_entity_s_button_url_set. Expected SWIGTYPE_p_zxid_entity_s");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->button_url) free((char *)arg1->button_url);
+    if (arg2) {
+      arg1->button_url = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->button_url, (const char *)arg2);
+    } else {
+      arg1->button_url = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_entity_s_button_url_get) {
+  struct zxid_entity_s *arg1 = (struct zxid_entity_s *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_entity_s, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_entity_s_button_url_get. Expected SWIGTYPE_p_zxid_entity_s");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->button_url);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -11506,6 +11832,150 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_button_url_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_button_url_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->button_url) free((char *)arg1->button_url);
+    if (arg2) {
+      arg1->button_url = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->button_url, (const char *)arg2);
+    } else {
+      arg1->button_url = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_button_url_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_button_url_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->button_url);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pref_button_size_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pref_button_size_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->pref_button_size) free((char *)arg1->pref_button_size);
+    if (arg2) {
+      arg1->pref_button_size = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->pref_button_size, (const char *)arg2);
+    } else {
+      arg1->pref_button_size = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pref_button_size_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pref_button_size_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->pref_button_size);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_org_name_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -11565,78 +12035,6 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_org_name_get) {
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   result = (char *) ((arg1)->org_name);
-  {
-    if(!result) {
-      ZVAL_NULL(return_value);
-    } else {
-      ZVAL_STRING(return_value, (char *)result, 1);
-    }
-  }
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_org_url_set) {
-  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  char *arg2 = (char *) 0 ;
-  zval **args[2];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_org_url_set. Expected SWIGTYPE_p_zxid_conf");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
-  if ((*args[1])->type==IS_NULL) {
-    arg2 = (char *) 0;
-  } else {
-    convert_to_string_ex(args[1]);
-    arg2 = (char *) Z_STRVAL_PP(args[1]);
-  }
-  /*@SWIG@*/;
-  
-  {
-    if (arg1->org_url) free((char *)arg1->org_url);
-    if (arg2) {
-      arg1->org_url = (char *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->org_url, (const char *)arg2);
-    } else {
-      arg1->org_url = 0;
-    }
-  }
-  
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_org_url_get) {
-  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  zval **args[1];
-  char *result = 0 ;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_org_url_get. Expected SWIGTYPE_p_zxid_conf");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char *) ((arg1)->org_url);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -12357,6 +12755,78 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_ses_cookie_name_get) {
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   result = (char *) ((arg1)->ses_cookie_name);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_ptm_cookie_name_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_ptm_cookie_name_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->ptm_cookie_name) free((char *)arg1->ptm_cookie_name);
+    if (arg2) {
+      arg1->ptm_cookie_name = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->ptm_cookie_name, (const char *)arg2);
+    } else {
+      arg1->ptm_cookie_name = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_ptm_cookie_name_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_ptm_cookie_name_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->ptm_cookie_name);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -13513,6 +13983,150 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsp_pat_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_wsp_pat_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->wsp_pat) free((char *)arg1->wsp_pat);
+    if (arg2) {
+      arg1->wsp_pat = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->wsp_pat, (const char *)arg2);
+    } else {
+      arg1->wsp_pat = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsp_pat_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_wsp_pat_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->wsp_pat);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_sso_pat_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_sso_pat_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->sso_pat) free((char *)arg1->sso_pat);
+    if (arg2) {
+      arg1->sso_pat = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->sso_pat, (const char *)arg2);
+    } else {
+      arg1->sso_pat = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_sso_pat_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_sso_pat_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->sso_pat);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_mod_saml_attr_prefix_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -14484,7 +15098,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsp_localpdp_obl_req_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  char *arg2 = (char *) 0 ;
+  struct zxid_obl_list *arg2 = (struct zxid_obl_list *) 0 ;
   zval **args[2];
   
   SWIG_ResetError();
@@ -14498,25 +15112,12 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsp_localpdp_obl_req_set) {
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
-  if ((*args[1])->type==IS_NULL) {
-    arg2 = (char *) 0;
-  } else {
-    convert_to_string_ex(args[1]);
-    arg2 = (char *) Z_STRVAL_PP(args[1]);
-  }
-  /*@SWIG@*/;
-  
   {
-    if (arg1->wsp_localpdp_obl_req) free((char *)arg1->wsp_localpdp_obl_req);
-    if (arg2) {
-      arg1->wsp_localpdp_obl_req = (char *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->wsp_localpdp_obl_req, (const char *)arg2);
-    } else {
-      arg1->wsp_localpdp_obl_req = 0;
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_conf_wsp_localpdp_obl_req_set. Expected SWIGTYPE_p_zxid_obl_list");
     }
   }
+  if (arg1) (arg1)->wsp_localpdp_obl_req = arg2;
   
   return;
 fail:
@@ -14527,7 +15128,7 @@ fail:
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsp_localpdp_obl_req_get) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   zval **args[1];
-  char *result = 0 ;
+  struct zxid_obl_list *result = 0 ;
   
   SWIG_ResetError();
   if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
@@ -14540,14 +15141,10 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsp_localpdp_obl_req_get) {
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char *) ((arg1)->wsp_localpdp_obl_req);
-  {
-    if(!result) {
-      ZVAL_NULL(return_value);
-    } else {
-      ZVAL_STRING(return_value, (char *)result, 1);
-    }
-  }
+  result = (struct zxid_obl_list *) ((arg1)->wsp_localpdp_obl_req);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_obl_list, 0);
+  
   return;
 fail:
   zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
@@ -14628,7 +15225,7 @@ fail:
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsc_localpdp_obl_accept_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  char *arg2 = (char *) 0 ;
+  struct zxid_obl_list *arg2 = (struct zxid_obl_list *) 0 ;
   zval **args[2];
   
   SWIG_ResetError();
@@ -14642,25 +15239,12 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsc_localpdp_obl_accept_set) {
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
-  if ((*args[1])->type==IS_NULL) {
-    arg2 = (char *) 0;
-  } else {
-    convert_to_string_ex(args[1]);
-    arg2 = (char *) Z_STRVAL_PP(args[1]);
-  }
-  /*@SWIG@*/;
-  
   {
-    if (arg1->wsc_localpdp_obl_accept) free((char *)arg1->wsc_localpdp_obl_accept);
-    if (arg2) {
-      arg1->wsc_localpdp_obl_accept = (char *) malloc(strlen((const char *)arg2)+1);
-      strcpy((char *)arg1->wsc_localpdp_obl_accept, (const char *)arg2);
-    } else {
-      arg1->wsc_localpdp_obl_accept = 0;
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_conf_wsc_localpdp_obl_accept_set. Expected SWIGTYPE_p_zxid_obl_list");
     }
   }
+  if (arg1) (arg1)->wsc_localpdp_obl_accept = arg2;
   
   return;
 fail:
@@ -14671,7 +15255,7 @@ fail:
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsc_localpdp_obl_accept_get) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   zval **args[1];
-  char *result = 0 ;
+  struct zxid_obl_list *result = 0 ;
   
   SWIG_ResetError();
   if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
@@ -14684,14 +15268,10 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wsc_localpdp_obl_accept_get) {
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char *) ((arg1)->wsc_localpdp_obl_accept);
-  {
-    if(!result) {
-      ZVAL_NULL(return_value);
-    } else {
-      ZVAL_STRING(return_value, (char *)result, 1);
-    }
-  }
+  result = (struct zxid_obl_list *) ((arg1)->wsc_localpdp_obl_accept);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_obl_list, 0);
+  
   return;
 fail:
   zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
@@ -16754,6 +17334,205 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wd_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_wd_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->wd) free((char *)arg1->wd);
+    if (arg2) {
+      arg1->wd = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->wd, (const char *)arg2);
+    } else {
+      arg1->wd = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_wd_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_wd_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->wd);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_bus_url_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_bus_url_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_conf_bus_url_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if (arg1) (arg1)->bus_url = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_bus_url_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  struct zxid_bus_url *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_bus_url_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (struct zxid_bus_url *) ((arg1)->bus_url);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_bus_url, 0);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_bus_pw_set) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_bus_pw_set. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->bus_pw) free((char *)arg1->bus_pw);
+    if (arg2) {
+      arg1->bus_pw = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->bus_pw, (const char *)arg2);
+    } else {
+      arg1->bus_pw = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_bus_pw_get) {
+  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_bus_pw_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->bus_pw);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_conf_log_err_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char arg2 ;
@@ -17818,7 +18597,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad2_set) {
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_oaz_jwt_sigenc_alg_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char arg2 ;
   zval **args[2];
@@ -17830,7 +18609,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad2_set) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pad2_set. Expected SWIGTYPE_p_zxid_conf");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_oaz_jwt_sigenc_alg_set. Expected SWIGTYPE_p_zxid_conf");
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
@@ -17840,7 +18619,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad2_set) {
   arg2 = (char) *Z_STRVAL_PP(args[1]);
   /*@SWIG@*/;
   
-  if (arg1) (arg1)->pad2 = arg2;
+  if (arg1) (arg1)->oaz_jwt_sigenc_alg = arg2;
   
   return;
 fail:
@@ -17848,7 +18627,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad2_get) {
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_oaz_jwt_sigenc_alg_get) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   zval **args[1];
   char result;
@@ -17860,11 +18639,11 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad2_get) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pad2_get. Expected SWIGTYPE_p_zxid_conf");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_oaz_jwt_sigenc_alg_get. Expected SWIGTYPE_p_zxid_conf");
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad2);
+  result = (char) ((arg1)->oaz_jwt_sigenc_alg);
   {
     ZVAL_STRINGL(return_value,&result, 1, 1);
   }
@@ -17874,7 +18653,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad3_set) {
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_bus_rcpt_set) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   char arg2 ;
   zval **args[2];
@@ -17886,7 +18665,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad3_set) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pad3_set. Expected SWIGTYPE_p_zxid_conf");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_bus_rcpt_set. Expected SWIGTYPE_p_zxid_conf");
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
@@ -17896,7 +18675,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad3_set) {
   arg2 = (char) *Z_STRVAL_PP(args[1]);
   /*@SWIG@*/;
   
-  if (arg1) (arg1)->pad3 = arg2;
+  if (arg1) (arg1)->bus_rcpt = arg2;
   
   return;
 fail:
@@ -17904,7 +18683,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad3_get) {
+ZEND_NAMED_FUNCTION(_wrap_zxid_conf_bus_rcpt_get) {
   struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
   zval **args[1];
   char result;
@@ -17916,67 +18695,11 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad3_get) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pad3_get. Expected SWIGTYPE_p_zxid_conf");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_bus_rcpt_get. Expected SWIGTYPE_p_zxid_conf");
     }
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad3);
-  {
-    ZVAL_STRINGL(return_value,&result, 1, 1);
-  }
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad4_set) {
-  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  char arg2 ;
-  zval **args[2];
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pad4_set. Expected SWIGTYPE_p_zxid_conf");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  
-  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
-  convert_to_string_ex(args[1]);
-  arg2 = (char) *Z_STRVAL_PP(args[1]);
-  /*@SWIG@*/;
-  
-  if (arg1) (arg1)->pad4 = arg2;
-  
-  return;
-fail:
-  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
-}
-
-
-ZEND_NAMED_FUNCTION(_wrap_zxid_conf_pad4_get) {
-  struct zxid_conf *arg1 = (struct zxid_conf *) 0 ;
-  zval **args[1];
-  char result;
-  
-  SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
-    WRONG_PARAM_COUNT;
-  }
-  
-  {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_conf_pad4_get. Expected SWIGTYPE_p_zxid_conf");
-    }
-  }
-  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
-  result = (char) ((arg1)->pad4);
+  result = (char) ((arg1)->bus_rcpt);
   {
     ZVAL_STRINGL(return_value,&result, 1, 1);
   }
@@ -20855,6 +21578,78 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_templ_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_templ_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->templ) free((char *)arg1->templ);
+    if (arg2) {
+      arg1->templ = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->templ, (const char *)arg2);
+    } else {
+      arg1->templ = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_templ_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_templ_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->templ);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_sp_eid_set) {
   struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -20999,6 +21794,1446 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_sp_button_url_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_sp_button_url_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->sp_button_url) free((char *)arg1->sp_button_url);
+    if (arg2) {
+      arg1->sp_button_url = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->sp_button_url, (const char *)arg2);
+    } else {
+      arg1->sp_button_url = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_sp_button_url_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_sp_button_url_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->sp_button_url);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_response_type_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_response_type_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->response_type) free((char *)arg1->response_type);
+    if (arg2) {
+      arg1->response_type = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->response_type, (const char *)arg2);
+    } else {
+      arg1->response_type = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_response_type_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_response_type_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->response_type);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_client_id_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_client_id_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->client_id) free((char *)arg1->client_id);
+    if (arg2) {
+      arg1->client_id = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->client_id, (const char *)arg2);
+    } else {
+      arg1->client_id = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_client_id_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_client_id_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->client_id);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_scope_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_scope_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->scope) free((char *)arg1->scope);
+    if (arg2) {
+      arg1->scope = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->scope, (const char *)arg2);
+    } else {
+      arg1->scope = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_scope_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_scope_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->scope);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_redirect_uri_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_redirect_uri_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->redirect_uri) free((char *)arg1->redirect_uri);
+    if (arg2) {
+      arg1->redirect_uri = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->redirect_uri, (const char *)arg2);
+    } else {
+      arg1->redirect_uri = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_redirect_uri_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_redirect_uri_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->redirect_uri);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_nonce_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_nonce_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->nonce) free((char *)arg1->nonce);
+    if (arg2) {
+      arg1->nonce = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->nonce, (const char *)arg2);
+    } else {
+      arg1->nonce = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_nonce_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_nonce_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->nonce);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_state_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_state_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->state) free((char *)arg1->state);
+    if (arg2) {
+      arg1->state = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->state, (const char *)arg2);
+    } else {
+      arg1->state = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_state_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_state_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->state);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_display_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_display_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->display) free((char *)arg1->display);
+    if (arg2) {
+      arg1->display = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->display, (const char *)arg2);
+    } else {
+      arg1->display = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_display_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_display_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->display);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_prompt_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_prompt_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->prompt) free((char *)arg1->prompt);
+    if (arg2) {
+      arg1->prompt = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->prompt, (const char *)arg2);
+    } else {
+      arg1->prompt = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_prompt_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_prompt_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->prompt);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_access_token_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_access_token_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->access_token) free((char *)arg1->access_token);
+    if (arg2) {
+      arg1->access_token = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->access_token, (const char *)arg2);
+    } else {
+      arg1->access_token = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_access_token_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_access_token_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->access_token);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_token_type_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_token_type_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->token_type) free((char *)arg1->token_type);
+    if (arg2) {
+      arg1->token_type = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->token_type, (const char *)arg2);
+    } else {
+      arg1->token_type = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_token_type_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_token_type_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->token_type);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_id_token_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_id_token_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->id_token) free((char *)arg1->id_token);
+    if (arg2) {
+      arg1->id_token = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->id_token, (const char *)arg2);
+    } else {
+      arg1->id_token = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_id_token_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_id_token_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->id_token);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_expires_in_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_expires_in_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->expires_in) free((char *)arg1->expires_in);
+    if (arg2) {
+      arg1->expires_in = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->expires_in, (const char *)arg2);
+    } else {
+      arg1->expires_in = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_expires_in_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_expires_in_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->expires_in);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_iss_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_iss_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->iss) free((char *)arg1->iss);
+    if (arg2) {
+      arg1->iss = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->iss, (const char *)arg2);
+    } else {
+      arg1->iss = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_iss_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_iss_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->iss);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_user_id_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_user_id_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->user_id) free((char *)arg1->user_id);
+    if (arg2) {
+      arg1->user_id = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->user_id, (const char *)arg2);
+    } else {
+      arg1->user_id = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_user_id_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_user_id_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->user_id);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_aud_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_aud_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->aud) free((char *)arg1->aud);
+    if (arg2) {
+      arg1->aud = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->aud, (const char *)arg2);
+    } else {
+      arg1->aud = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_aud_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_aud_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->aud);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_exp_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_exp_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->exp) free((char *)arg1->exp);
+    if (arg2) {
+      arg1->exp = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->exp, (const char *)arg2);
+    } else {
+      arg1->exp = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_exp_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_exp_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->exp);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_iso29115_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_iso29115_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->iso29115) free((char *)arg1->iso29115);
+    if (arg2) {
+      arg1->iso29115 = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->iso29115, (const char *)arg2);
+    } else {
+      arg1->iso29115 = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_iso29115_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_iso29115_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->iso29115);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_schema_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_schema_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->schema) free((char *)arg1->schema);
+    if (arg2) {
+      arg1->schema = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->schema, (const char *)arg2);
+    } else {
+      arg1->schema = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_schema_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_schema_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->schema);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_id_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_id_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->id) free((char *)arg1->id);
+    if (arg2) {
+      arg1->id = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->id, (const char *)arg2);
+    } else {
+      arg1->id = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_id_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_id_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->id);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_inv_set) {
   struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -21058,6 +23293,78 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_inv_get) {
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   result = (char *) ((arg1)->inv);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_skin_set) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_skin_set. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->skin) free((char *)arg1->skin);
+    if (arg2) {
+      arg1->skin = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->skin, (const char *)arg2);
+    } else {
+      arg1->skin = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_cgi_skin_get) {
+  struct zxid_cgi *arg1 = (struct zxid_cgi *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_cgi_skin_get. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->skin);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -22351,6 +24658,78 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_ses_setcookie_get) {
   }
   if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
   result = (char *) ((arg1)->setcookie);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_ses_setptmcookie_set) {
+  struct zxid_ses *arg1 = (struct zxid_ses *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_ses, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_ses_setptmcookie_set. Expected SWIGTYPE_p_zxid_ses");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->setptmcookie) free((char *)arg1->setptmcookie);
+    if (arg2) {
+      arg1->setptmcookie = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->setptmcookie, (const char *)arg2);
+    } else {
+      arg1->setptmcookie = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_ses_setptmcookie_get) {
+  struct zxid_ses *arg1 = (struct zxid_ses *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_ses, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_ses_setptmcookie_get. Expected SWIGTYPE_p_zxid_ses");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->setptmcookie);
   {
     if(!result) {
       ZVAL_NULL(return_value);
@@ -25191,6 +27570,1538 @@ static void __wrap_delete_zxid_cstr_list(zend_rsrc_list_entry *rsrc, const char 
   if (! newobject) return; /* can't delete it! */
   arg1 = (struct zxid_cstr_list *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_zxid_cstr_list TSRMLS_CC);
   if (! arg1) zend_error(E_ERROR, "zxid_cstr_list resource already free'd");
+  free((char *) arg1);
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_obl_list_n_set) {
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  struct zxid_obl_list *arg2 = (struct zxid_obl_list *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_obl_list_n_set. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_obl_list_n_set. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if (arg1) (arg1)->n = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_obl_list_n_get) {
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  zval **args[1];
+  struct zxid_obl_list *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_obl_list_n_get. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (struct zxid_obl_list *) ((arg1)->n);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_obl_list, 0);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_obl_list_name_set) {
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_obl_list_name_set. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->name) free((char *)arg1->name);
+    if (arg2) {
+      arg1->name = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->name, (const char *)arg2);
+    } else {
+      arg1->name = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_obl_list_name_get) {
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_obl_list_name_get. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->name);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_obl_list_vals_set) {
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  struct zxid_cstr_list *arg2 = (struct zxid_cstr_list *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_obl_list_vals_set. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_cstr_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_obl_list_vals_set. Expected SWIGTYPE_p_zxid_cstr_list");
+    }
+  }
+  if (arg1) (arg1)->vals = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_obl_list_vals_get) {
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  zval **args[1];
+  struct zxid_cstr_list *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_obl_list, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_obl_list_vals_get. Expected SWIGTYPE_p_zxid_obl_list");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (struct zxid_cstr_list *) ((arg1)->vals);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_cstr_list, 0);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_new_zxid_obl_list) {
+  struct zxid_obl_list *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (struct zxid_obl_list *)calloc(1, sizeof(struct zxid_obl_list));
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_obl_list, 1);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_zxid_obl_list(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  struct zxid_obl_list *arg1 = (struct zxid_obl_list *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (struct zxid_obl_list *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_zxid_obl_list TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "zxid_obl_list resource already free'd");
+  free((char *) arg1);
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_len_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  int arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_len_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->len = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_len_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_len_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (int) ((arg1)->len);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_body_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_body_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->body) free((char *)arg1->body);
+    if (arg2) {
+      arg1->body = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->body, (const char *)arg2);
+    } else {
+      arg1->body = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_body_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_body_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->body);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_host_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_host_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->host) free((char *)arg1->host);
+    if (arg2) {
+      arg1->host = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->host, (const char *)arg2);
+    } else {
+      arg1->host = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_host_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_host_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->host);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_vers_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_vers_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->vers) free((char *)arg1->vers);
+    if (arg2) {
+      arg1->vers = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->vers, (const char *)arg2);
+    } else {
+      arg1->vers = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_vers_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_vers_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->vers);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_login_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_login_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->login) free((char *)arg1->login);
+    if (arg2) {
+      arg1->login = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->login, (const char *)arg2);
+    } else {
+      arg1->login = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_login_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_login_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->login);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_pw_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_pw_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->pw) free((char *)arg1->pw);
+    if (arg2) {
+      arg1->pw = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->pw, (const char *)arg2);
+    } else {
+      arg1->pw = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_pw_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_pw_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->pw);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_dest_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_dest_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->dest) free((char *)arg1->dest);
+    if (arg2) {
+      arg1->dest = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->dest, (const char *)arg2);
+    } else {
+      arg1->dest = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_dest_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_dest_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->dest);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_end_of_pdu_set) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_end_of_pdu_set. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->end_of_pdu) free((char *)arg1->end_of_pdu);
+    if (arg2) {
+      arg1->end_of_pdu = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->end_of_pdu, (const char *)arg2);
+    } else {
+      arg1->end_of_pdu = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_stomp_hdr_end_of_pdu_get) {
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of stomp_hdr_end_of_pdu_get. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->end_of_pdu);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_new_stomp_hdr) {
+  struct stomp_hdr *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (struct stomp_hdr *)calloc(1, sizeof(struct stomp_hdr));
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_stomp_hdr, 1);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_stomp_hdr(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  struct stomp_hdr *arg1 = (struct stomp_hdr *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (struct stomp_hdr *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_stomp_hdr TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "stomp_hdr resource already free'd");
+  free((char *) arg1);
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_n_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_n_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_bus_url_n_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if (arg1) (arg1)->n = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_n_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  struct zxid_bus_url *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_n_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (struct zxid_bus_url *) ((arg1)->n);
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_bus_url, 0);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_s_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_s_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->s) free((char *)arg1->s);
+    if (arg2) {
+      arg1->s = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->s, (const char *)arg2);
+    } else {
+      arg1->s = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_s_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_s_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->s);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_eid_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_eid_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->eid) free((char *)arg1->eid);
+    if (arg2) {
+      arg1->eid = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->eid, (const char *)arg2);
+    } else {
+      arg1->eid = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_eid_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_eid_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->eid);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_fd_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  int arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_fd_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->fd = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_fd_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_fd_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (int) ((arg1)->fd);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_m_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_m_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->m) free((char *)arg1->m);
+    if (arg2) {
+      arg1->m = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->m, (const char *)arg2);
+    } else {
+      arg1->m = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_m_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_m_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->m);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_ap_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char *arg2 = (char *) 0 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_ap_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if (arg1->ap) free((char *)arg1->ap);
+    if (arg2) {
+      arg1->ap = (char *) malloc(strlen((const char *)arg2)+1);
+      strcpy((char *)arg1->ap, (const char *)arg2);
+    } else {
+      arg1->ap = 0;
+    }
+  }
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_ap_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_ap_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char *) ((arg1)->ap);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_cur_rcpt_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  int arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_cur_rcpt_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->cur_rcpt = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_cur_rcpt_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_cur_rcpt_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (int) ((arg1)->cur_rcpt);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_scalingpart_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_scalingpart_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
+  convert_to_string_ex(args[1]);
+  arg2 = (char) *Z_STRVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->scalingpart = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_scalingpart_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_scalingpart_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char) ((arg1)->scalingpart);
+  {
+    ZVAL_STRINGL(return_value,&result, 1, 1);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_pad1_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_pad1_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
+  convert_to_string_ex(args[1]);
+  arg2 = (char) *Z_STRVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->pad1 = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_pad1_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_pad1_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char) ((arg1)->pad1);
+  {
+    ZVAL_STRINGL(return_value,&result, 1, 1);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_pad2_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_pad2_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
+  convert_to_string_ex(args[1]);
+  arg2 = (char) *Z_STRVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->pad2 = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_pad2_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_pad2_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char) ((arg1)->pad2);
+  {
+    ZVAL_STRINGL(return_value,&result, 1, 1);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_pad3_set) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  char arg2 ;
+  zval **args[2];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_pad3_set. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,21,CONVERT_CHAR_IN@*/
+  convert_to_string_ex(args[1]);
+  arg2 = (char) *Z_STRVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  if (arg1) (arg1)->pad3 = arg2;
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_bus_url_pad3_get) {
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  zval **args[1];
+  char result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_bus_url_pad3_get. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  if(!arg1) SWIG_PHP_Error(E_ERROR, "this pointer is NULL");
+  result = (char) ((arg1)->pad3);
+  {
+    ZVAL_STRINGL(return_value,&result, 1, 1);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_new_zxid_bus_url) {
+  struct zxid_bus_url *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 0) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  result = (struct zxid_bus_url *)calloc(1, sizeof(struct zxid_bus_url));
+  
+  SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_bus_url, 1);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+/* This function is designed to be called by the zend list destructors */
+/* to typecast and do the actual destruction */
+static void __wrap_delete_zxid_bus_url(zend_rsrc_list_entry *rsrc, const char *type_name TSRMLS_DC) {
+  swig_object_wrapper *value=(swig_object_wrapper *) rsrc->ptr ;
+  void *ptr=value->ptr ;
+  int newobject=value->newobject ;
+  struct zxid_bus_url *arg1 = (struct zxid_bus_url *) 0 ;
+  
+  efree(value);
+  if (! newobject) return; /* can't delete it! */
+  arg1 = (struct zxid_bus_url *)SWIG_ZTS_ConvertResourceData(ptr,type_name,SWIGTYPE_p_zxid_bus_url TSRMLS_CC);
+  if (! arg1) zend_error(E_ERROR, "zxid_bus_url resource already free'd");
   free((char *) arg1);
   return;
 fail:
@@ -29644,6 +33555,703 @@ fail:
 }
 
 
+ZEND_NAMED_FUNCTION(_wrap_zxbus_mint_receipt) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
+  int arg4 ;
+  char *arg5 = (char *) 0 ;
+  int arg6 ;
+  char *arg7 = (char *) 0 ;
+  int arg8 ;
+  char *arg9 = (char *) 0 ;
+  int arg10 ;
+  char *arg11 = (char *) 0 ;
+  zval **args[11];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 11 || zend_get_parameters_array_ex(11, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_mint_receipt. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[2])->type==IS_NULL) {
+    arg3 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[3]);
+  arg4 = (int) Z_LVAL_PP(args[3]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[4])->type==IS_NULL) {
+    arg5 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[4]);
+    arg5 = (char *) Z_STRVAL_PP(args[4]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[5]);
+  arg6 = (int) Z_LVAL_PP(args[5]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[6])->type==IS_NULL) {
+    arg7 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[6]);
+    arg7 = (char *) Z_STRVAL_PP(args[6]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[7]);
+  arg8 = (int) Z_LVAL_PP(args[7]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[8])->type==IS_NULL) {
+    arg9 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[8]);
+    arg9 = (char *) Z_STRVAL_PP(args[8]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[9]);
+  arg10 = (int) Z_LVAL_PP(args[9]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[10])->type==IS_NULL) {
+    arg11 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[10]);
+    arg11 = (char *) Z_STRVAL_PP(args[10]);
+  }
+  /*@SWIG@*/;
+  
+  result = (char *)zxbus_mint_receipt(arg1,arg2,arg3,arg4,(char const *)arg5,arg6,(char const *)arg7,arg8,(char const *)arg9,arg10,(char const *)arg11);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_verify_receipt) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  char *arg4 = (char *) 0 ;
+  int arg5 ;
+  char *arg6 = (char *) 0 ;
+  int arg7 ;
+  char *arg8 = (char *) 0 ;
+  int arg9 ;
+  char *arg10 = (char *) 0 ;
+  int arg11 ;
+  char *arg12 = (char *) 0 ;
+  zval **args[12];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 12 || zend_get_parameters_array_ex(12, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_verify_receipt. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[2]);
+  arg3 = (int) Z_LVAL_PP(args[2]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[3])->type==IS_NULL) {
+    arg4 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[4]);
+  arg5 = (int) Z_LVAL_PP(args[4]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[5])->type==IS_NULL) {
+    arg6 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[5]);
+    arg6 = (char *) Z_STRVAL_PP(args[5]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[6]);
+  arg7 = (int) Z_LVAL_PP(args[6]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[7])->type==IS_NULL) {
+    arg8 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[7]);
+    arg8 = (char *) Z_STRVAL_PP(args[7]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[8]);
+  arg9 = (int) Z_LVAL_PP(args[8]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[9])->type==IS_NULL) {
+    arg10 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[9]);
+    arg10 = (char *) Z_STRVAL_PP(args[9]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[10]);
+  arg11 = (int) Z_LVAL_PP(args[10]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[11])->type==IS_NULL) {
+    arg12 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[11]);
+    arg12 = (char *) Z_STRVAL_PP(args[11]);
+  }
+  /*@SWIG@*/;
+  
+  result = (int)zxbus_verify_receipt(arg1,(char const *)arg2,arg3,arg4,arg5,(char const *)arg6,arg7,(char const *)arg8,arg9,(char const *)arg10,arg11,(char const *)arg12);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_persist_msg) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  int arg2 ;
+  char *arg3 = (char *) 0 ;
+  int arg4 ;
+  char *arg5 = (char *) 0 ;
+  int arg6 ;
+  char *arg7 = (char *) 0 ;
+  zval **args[7];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 7 || zend_get_parameters_array_ex(7, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_persist_msg. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[1]);
+  arg2 = (int) Z_LVAL_PP(args[1]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[2])->type==IS_NULL) {
+    arg3 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[3]);
+  arg4 = (int) Z_LVAL_PP(args[3]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[4])->type==IS_NULL) {
+    arg5 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[4]);
+    arg5 = (char *) Z_STRVAL_PP(args[4]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[5]);
+  arg6 = (int) Z_LVAL_PP(args[5]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[6])->type==IS_NULL) {
+    arg7 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[6]);
+    arg7 = (char *) Z_STRVAL_PP(args[6]);
+  }
+  /*@SWIG@*/;
+  
+  result = (int)zxbus_persist_msg(arg1,arg2,arg3,arg4,(char const *)arg5,arg6,(char const *)arg7);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_open_bus_url) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  zval **args[2];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_open_bus_url. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxbus_open_bus_url. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  result = (int)zxbus_open_bus_url(arg1,arg2);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_close) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  zval **args[2];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_close. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxbus_close. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  result = (int)zxbus_close(arg1,arg2);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_close_all) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_close_all. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  zxbus_close_all(arg1);
+  
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_send_cmdf) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  int arg3 ;
+  char *arg4 = (char *) 0 ;
+  char *arg5 = (char *) 0 ;
+  void *arg6 = 0 ;
+  zval **args[5];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_send_cmdf. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxbus_send_cmdf. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[2]);
+  arg3 = (int) Z_LVAL_PP(args[2]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[3])->type==IS_NULL) {
+    arg4 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[4])->type==IS_NULL) {
+    arg5 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[4]);
+    arg5 = (char *) Z_STRVAL_PP(args[4]);
+  }
+  /*@SWIG@*/;
+  
+  result = (int)zxbus_send_cmdf(arg1,arg2,arg3,(char const *)arg4,(char const *)arg5,arg6);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_send_cmd) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char *arg3 = (char *) 0 ;
+  int arg4 ;
+  char *arg5 = (char *) 0 ;
+  zval **args[5];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 5 || zend_get_parameters_array_ex(5, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_send_cmd. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[2])->type==IS_NULL) {
+    arg3 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[3]);
+  arg4 = (int) Z_LVAL_PP(args[3]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[4])->type==IS_NULL) {
+    arg5 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[4]);
+    arg5 = (char *) Z_STRVAL_PP(args[4]);
+  }
+  /*@SWIG@*/;
+  
+  result = (int)zxbus_send_cmd(arg1,(char const *)arg2,(char const *)arg3,arg4,(char const *)arg5);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_send) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  int arg3 ;
+  char *arg4 = (char *) 0 ;
+  zval **args[4];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_send. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,7,CONVERT_INT_IN@*/
+  convert_to_long_ex(args[2]);
+  arg3 = (int) Z_LVAL_PP(args[2]);
+  /*@SWIG@*/;
+  
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[3])->type==IS_NULL) {
+    arg4 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+  }
+  /*@SWIG@*/;
+  
+  result = (int)zxbus_send(arg1,(char const *)arg2,arg3,(char const *)arg4);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_read_stomp) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  struct stomp_hdr *arg3 = (struct stomp_hdr *) 0 ;
+  zval **args[3];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_read_stomp. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxbus_read_stomp. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[2], (void **) &arg3, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 3 of zxbus_read_stomp. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  result = (int)zxbus_read_stomp(arg1,arg2,arg3);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_ack_msg) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  struct stomp_hdr *arg3 = (struct stomp_hdr *) 0 ;
+  zval **args[3];
+  int result;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_ack_msg. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxbus_ack_msg. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[2], (void **) &arg3, SWIGTYPE_p_stomp_hdr, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 3 of zxbus_ack_msg. Expected SWIGTYPE_p_stomp_hdr");
+    }
+  }
+  result = (int)zxbus_ack_msg(arg1,arg2,arg3);
+  {
+    ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxbus_listen_msg) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  struct zxid_bus_url *arg2 = (struct zxid_bus_url *) 0 ;
+  zval **args[2];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxbus_listen_msg. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_bus_url, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxbus_listen_msg. Expected SWIGTYPE_p_zxid_bus_url");
+    }
+  }
+  result = (char *)zxbus_listen_msg(arg1,arg2);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
 ZEND_NAMED_FUNCTION(_wrap_zxid_get_ent_file) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -29908,7 +34516,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_get_ent) {
   }
   /*@SWIG@*/;
   
-  result = (zxid_entity *)zxid_get_ent(arg1,arg2);
+  result = (zxid_entity *)zxid_get_ent(arg1,(char const *)arg2);
   
   SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zxid_entity_s, 0);
   
@@ -30126,6 +34734,35 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_my_ent_id) {
     if (result)
     ZVAL_STRINGL(return_value, result->s, result->len, 1);
     /* Do not free underlying zx_str because they are usually returned by reference. */
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_my_ent_id_cstr) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  zval **args[1];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_my_ent_id_cstr. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  result = (char *)zxid_my_ent_id_cstr(arg1);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
   }
   return;
 fail:
@@ -30426,6 +35063,28 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_init_conf) {
   {
     ZVAL_LONG(return_value,result);
   }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_free_conf) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  zval **args[1];
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 1 || zend_get_parameters_array_ex(1, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_free_conf. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  zxid_free_conf(arg1);
+  
   return;
 fail:
   zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
@@ -30747,32 +35406,38 @@ fail:
 
 
 ZEND_NAMED_FUNCTION(_wrap_zxid_parse_cgi) {
-  zxid_cgi *arg1 = (zxid_cgi *) 0 ;
-  char *arg2 = (char *) 0 ;
-  zval **args[2];
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  zxid_cgi *arg2 = (zxid_cgi *) 0 ;
+  char *arg3 = (char *) 0 ;
+  zval **args[3];
   int result;
   
   SWIG_ResetError();
-  if(ZEND_NUM_ARGS() != 2 || zend_get_parameters_array_ex(2, args) != SUCCESS) {
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
     WRONG_PARAM_COUNT;
   }
   
   {
-    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_cgi, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_parse_cgi. Expected SWIGTYPE_p_zxid_cgi");
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_parse_cgi. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_parse_cgi. Expected SWIGTYPE_p_zxid_cgi");
     }
   }
   
   /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
-  if ((*args[1])->type==IS_NULL) {
-    arg2 = (char *) 0;
+  if ((*args[2])->type==IS_NULL) {
+    arg3 = (char *) 0;
   } else {
-    convert_to_string_ex(args[1]);
-    arg2 = (char *) Z_STRVAL_PP(args[1]);
+    convert_to_string_ex(args[2]);
+    arg3 = (char *) Z_STRVAL_PP(args[2]);
   }
   /*@SWIG@*/;
   
-  result = (int)zxid_parse_cgi(arg1,arg2);
+  result = (int)zxid_parse_cgi(arg1,arg2,arg3);
   {
     ZVAL_LONG(return_value,result);
   }
@@ -31299,7 +35964,7 @@ fail:
 }
 
 
-ZEND_NAMED_FUNCTION(_wrap_zxid_add_qs_to_ses) {
+ZEND_NAMED_FUNCTION(_wrap_zxid_add_qs2ses) {
   zxid_conf *arg1 = (zxid_conf *) 0 ;
   zxid_ses *arg2 = (zxid_ses *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -31314,12 +35979,12 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_add_qs_to_ses) {
   
   {
     if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_add_qs_to_ses. Expected SWIGTYPE_p_zxid_conf");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_add_qs2ses. Expected SWIGTYPE_p_zxid_conf");
     }
   }
   {
     if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_ses, 0) < 0) {
-      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_add_qs_to_ses. Expected SWIGTYPE_p_zxid_ses");
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_add_qs2ses. Expected SWIGTYPE_p_zxid_ses");
     }
   }
   
@@ -31338,7 +36003,7 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_add_qs_to_ses) {
   arg4 = (int) Z_LVAL_PP(args[3]);
   /*@SWIG@*/;
   
-  result = (int)zxid_add_qs_to_ses(arg1,arg2,arg3,arg4);
+  result = (int)zxid_add_qs2ses(arg1,arg2,arg3,arg4);
   {
     ZVAL_LONG(return_value,result);
   }
@@ -31548,6 +36213,52 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_pw_authn) {
   result = (int)zxid_pw_authn(arg1,arg2,arg3);
   {
     ZVAL_LONG(return_value,result);
+  }
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_http_get) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  char *arg2 = (char *) 0 ;
+  char **arg3 = (char **) 0 ;
+  zval **args[3];
+  char *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 3 || zend_get_parameters_array_ex(3, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_http_get. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[1])->type==IS_NULL) {
+    arg2 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[1]);
+    arg2 = (char *) Z_STRVAL_PP(args[1]);
+  }
+  /*@SWIG@*/;
+  
+  {
+    if(SWIG_ConvertPtr(*args[2], (void **) &arg3, SWIGTYPE_p_p_char, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 3 of zxid_http_get. Expected SWIGTYPE_p_p_char");
+    }
+  }
+  result = (char *)zxid_http_get(arg1,(char const *)arg2,arg3);
+  {
+    if(!result) {
+      ZVAL_NULL(return_value);
+    } else {
+      ZVAL_STRING(return_value, (char *)result, 1);
+    }
   }
   return;
 fail:
@@ -33562,6 +38273,56 @@ ZEND_NAMED_FUNCTION(_wrap_zxid_OK) {
   
   SWIG_SetPointerZval(return_value, (void *)result, SWIGTYPE_p_zx_sp_Status_s, 0);
   
+  return;
+fail:
+  zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
+}
+
+
+ZEND_NAMED_FUNCTION(_wrap_zxid_mk_oauth_az_req) {
+  zxid_conf *arg1 = (zxid_conf *) 0 ;
+  zxid_cgi *arg2 = (zxid_cgi *) 0 ;
+  struct zx_str *arg3 = (struct zx_str *) 0 ;
+  char *arg4 = (char *) 0 ;
+  zval **args[4];
+  struct zx_str *result = 0 ;
+  
+  SWIG_ResetError();
+  if(ZEND_NUM_ARGS() != 4 || zend_get_parameters_array_ex(4, args) != SUCCESS) {
+    WRONG_PARAM_COUNT;
+  }
+  
+  {
+    if(SWIG_ConvertPtr(*args[0], (void **) &arg1, SWIGTYPE_p_zxid_conf, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 1 of zxid_mk_oauth_az_req. Expected SWIGTYPE_p_zxid_conf");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[1], (void **) &arg2, SWIGTYPE_p_zxid_cgi, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 2 of zxid_mk_oauth_az_req. Expected SWIGTYPE_p_zxid_cgi");
+    }
+  }
+  {
+    if(SWIG_ConvertPtr(*args[2], (void **) &arg3, SWIGTYPE_p_zx_str, 0) < 0) {
+      SWIG_PHP_Error(E_ERROR, "Type error in argument 3 of zxid_mk_oauth_az_req. Expected SWIGTYPE_p_zx_str");
+    }
+  }
+  
+  /*@SWIG:/apps/share/swig/1.3.40/php/utils.i,26,CONVERT_STRING_IN@*/
+  if ((*args[3])->type==IS_NULL) {
+    arg4 = (char *) 0;
+  } else {
+    convert_to_string_ex(args[3]);
+    arg4 = (char *) Z_STRVAL_PP(args[3]);
+  }
+  /*@SWIG@*/;
+  
+  result = (struct zx_str *)zxid_mk_oauth_az_req(arg1,arg2,arg3,arg4);
+  {
+    if (result)
+    ZVAL_STRINGL(return_value, result->s, result->len, 1);
+    /* Do not free underlying zx_str because they are usually returned by reference. */
+  }
   return;
 fail:
   zend_error_noreturn(SWIG_ErrorCode(),"%s",SWIG_ErrorMsg());
@@ -36686,6 +41447,9 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_ds_Reference_s) {
   /* No destructor for simple type _p_zx_ds_Reference_s */
   efree(rsrc->ptr);
 }
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_obl_list) {
+  __wrap_delete_zxid_obl_list(rsrc, SWIGTYPE_p_zxid_obl_list->name TSRMLS_CC);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_cgi) {
   /* No destructor for simple type _p_zxid_cgi */
   efree(rsrc->ptr);
@@ -36721,6 +41485,10 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_f_p_struct_zx_ctx_p_struct_zx_elem_s_
   /* No destructor for simple type _p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int */
   efree(rsrc->ptr);
 }
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_pthread_t) {
+  /* No destructor for simple type _p_pthread_t */
+  efree(rsrc->ptr);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_perm) {
   __wrap_delete_zxid_perm(rsrc, SWIGTYPE_p_zxid_perm->name TSRMLS_CC);
 }
@@ -36741,9 +41509,6 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_p_zx_ns_s) {
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_ns_s) {
   __wrap_delete_zx_ns_s(rsrc, SWIGTYPE_p_zx_ns_s->name TSRMLS_CC);
 }
-static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_atsrc) {
-  __wrap_delete_zxid_atsrc(rsrc, SWIGTYPE_p_zxid_atsrc->name TSRMLS_CC);
-}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_sa_Assertion_s) {
   /* No destructor for simple type _p_zx_sa_Assertion_s */
   efree(rsrc->ptr);
@@ -36754,6 +41519,9 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_f_p_void__void) {
 }
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_el_tok) {
   __wrap_delete_zx_el_tok(rsrc, SWIGTYPE_p_zx_el_tok->name TSRMLS_CC);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_atsrc) {
+  __wrap_delete_zxid_atsrc(rsrc, SWIGTYPE_p_zxid_atsrc->name TSRMLS_CC);
 }
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_sa11_Assertion_s) {
   /* No destructor for simple type _p_zx_sa11_Assertion_s */
@@ -36781,12 +41549,12 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_attr_s) {
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_cstr_list) {
   __wrap_delete_zxid_cstr_list(rsrc, SWIGTYPE_p_zxid_cstr_list->name TSRMLS_CC);
 }
-static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_need) {
-  __wrap_delete_zxid_need(rsrc, SWIGTYPE_p_zxid_need->name TSRMLS_CC);
-}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_ses) {
   /* No destructor for simple type _p_zxid_ses */
   efree(rsrc->ptr);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_need) {
+  __wrap_delete_zxid_need(rsrc, SWIGTYPE_p_zxid_need->name TSRMLS_CC);
 }
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_e_Body_s) {
   /* No destructor for simple type _p_zx_e_Body_s */
@@ -36802,6 +41570,9 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_xenc_EncryptedData_s) {
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_e_Envelope_s) {
   /* No destructor for simple type _p_zx_e_Envelope_s */
   efree(rsrc->ptr);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_lock) {
+  __wrap_delete_zx_lock(rsrc, SWIGTYPE_p_zx_lock->name TSRMLS_CC);
 }
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_sa_NameID_s) {
   /* No destructor for simple type _p_zx_sa_NameID_s */
@@ -36836,9 +41607,15 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_sp_NewEncryptedID_s) {
   /* No destructor for simple type _p_zx_sp_NewEncryptedID_s */
   efree(rsrc->ptr);
 }
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_stomp_hdr) {
+  __wrap_delete_stomp_hdr(rsrc, SWIGTYPE_p_stomp_hdr->name TSRMLS_CC);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_e_Header_s) {
   /* No destructor for simple type _p_zx_e_Header_s */
   efree(rsrc->ptr);
+}
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_bus_url) {
+  __wrap_delete_zxid_bus_url(rsrc, SWIGTYPE_p_zxid_bus_url->name TSRMLS_CC);
 }
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_xenc_EncryptedKey_s) {
   /* No destructor for simple type _p_zx_xenc_EncryptedKey_s */
@@ -36861,6 +41638,10 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zx_e_Fault_s) {
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_map) {
   __wrap_delete_zxid_map(rsrc, SWIGTYPE_p_zxid_map->name TSRMLS_CC);
 }
+static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_pthread_mutex_t) {
+  /* No destructor for simple type _p_pthread_mutex_t */
+  efree(rsrc->ptr);
+}
 static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_attr) {
   __wrap_delete_zxid_attr(rsrc, SWIGTYPE_p_zxid_attr->name TSRMLS_CC);
 }
@@ -36871,6 +41652,15 @@ static ZEND_RSRC_DTOR_FUNC(_wrap_destroy_p_zxid_attr) {
 /* entry subsection */
 /* Every non-class user visible function must have an entry here */
 static zend_function_entry zxid_functions[] = {
+ SWIG_ZEND_NAMED_FE(zx_lock_ptmut_set,_wrap_zx_lock_ptmut_set,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_ptmut_get,_wrap_zx_lock_ptmut_get,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_func_set,_wrap_zx_lock_func_set,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_func_get,_wrap_zx_lock_func_get,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_line_set,_wrap_zx_lock_line_set,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_line_get,_wrap_zx_lock_line_get,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_thr_set,_wrap_zx_lock_thr_set,NULL)
+ SWIG_ZEND_NAMED_FE(zx_lock_thr_get,_wrap_zx_lock_thr_get,NULL)
+ SWIG_ZEND_NAMED_FE(new_zx_lock,_wrap_new_zx_lock,NULL)
  SWIG_ZEND_NAMED_FE(zx_ns_s_url_set,_wrap_zx_ns_s_url_set,NULL)
  SWIG_ZEND_NAMED_FE(zx_ns_s_url_get,_wrap_zx_ns_s_url_get,NULL)
  SWIG_ZEND_NAMED_FE(zx_ns_s_url_len_set,_wrap_zx_ns_s_url_len_set,NULL)
@@ -36930,14 +41720,8 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zx_ctx_pad2_get,_wrap_zx_ctx_pad2_get,NULL)
  SWIG_ZEND_NAMED_FE(zx_ctx_pad3_set,_wrap_zx_ctx_pad3_set,NULL)
  SWIG_ZEND_NAMED_FE(zx_ctx_pad3_get,_wrap_zx_ctx_pad3_get,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad4_set,_wrap_zx_ctx_pad4_set,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad4_get,_wrap_zx_ctx_pad4_get,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad5_set,_wrap_zx_ctx_pad5_set,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad5_get,_wrap_zx_ctx_pad5_get,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad6_set,_wrap_zx_ctx_pad6_set,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad6_get,_wrap_zx_ctx_pad6_get,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad7_set,_wrap_zx_ctx_pad7_set,NULL)
- SWIG_ZEND_NAMED_FE(zx_ctx_pad7_get,_wrap_zx_ctx_pad7_get,NULL)
+ SWIG_ZEND_NAMED_FE(zx_ctx_zx_errno_set,_wrap_zx_ctx_zx_errno_set,NULL)
+ SWIG_ZEND_NAMED_FE(zx_ctx_zx_errno_get,_wrap_zx_ctx_zx_errno_get,NULL)
  SWIG_ZEND_NAMED_FE(new_zx_ctx,_wrap_new_zx_ctx,NULL)
  SWIG_ZEND_NAMED_FE(zx_str_n_set,_wrap_zx_str_n_set,NULL)
  SWIG_ZEND_NAMED_FE(zx_str_n_get,_wrap_zx_str_n_get,NULL)
@@ -37000,6 +41784,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zx_reset_ns_ctx,_wrap_zx_reset_ns_ctx,NULL)
  SWIG_ZEND_NAMED_FE(zx_reset_ctx,_wrap_zx_reset_ctx,NULL)
  SWIG_ZEND_NAMED_FE(zx_init_ctx,_wrap_zx_init_ctx,NULL)
+ SWIG_ZEND_NAMED_FE(zx_free_ctx,_wrap_zx_free_ctx,NULL)
  SWIG_ZEND_NAMED_FE(zx_at_tok_name_set,_wrap_zx_at_tok_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zx_at_tok_name_get,_wrap_zx_at_tok_name_get,NULL)
  SWIG_ZEND_NAMED_FE(new_zx_at_tok,_wrap_new_zx_at_tok,NULL)
@@ -37022,7 +41807,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(new_zx_el_tok,_wrap_new_zx_el_tok,NULL)
  SWIG_ZEND_NAMED_FE(zx_date_time_to_secs,_wrap_zx_date_time_to_secs,NULL)
  SWIG_ZEND_NAMED_FE(write2_or_append_lock_c_path,_wrap_write2_or_append_lock_c_path,NULL)
- SWIG_ZEND_NAMED_FE(zx_report_openssl_error,_wrap_zx_report_openssl_error,NULL)
+ SWIG_ZEND_NAMED_FE(zx_report_openssl_err,_wrap_zx_report_openssl_err,NULL)
  SWIG_ZEND_NAMED_FE(zx_dump_ns_tab,_wrap_zx_dump_ns_tab,NULL)
  SWIG_ZEND_NAMED_FE(zx_prefix_seen,_wrap_zx_prefix_seen,NULL)
  SWIG_ZEND_NAMED_FE(zx_prefix_seen_whine,_wrap_zx_prefix_seen_whine,NULL)
@@ -37030,6 +41815,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zx_see_elem_ns,_wrap_zx_see_elem_ns,NULL)
  SWIG_ZEND_NAMED_FE(zx_pop_seen,_wrap_zx_pop_seen,NULL)
  SWIG_ZEND_NAMED_FE(zx_format_parse_error,_wrap_zx_format_parse_error,NULL)
+ SWIG_ZEND_NAMED_FE(zx_hmac_sha256,_wrap_zx_hmac_sha256,NULL)
  SWIG_ZEND_NAMED_FE(zx_raw_digest2,_wrap_zx_raw_digest2,NULL)
  SWIG_ZEND_NAMED_FE(zx_raw_cipher,_wrap_zx_raw_cipher,NULL)
  SWIG_ZEND_NAMED_FE(zx_rsa_pub_enc,_wrap_zx_rsa_pub_enc,NULL)
@@ -37070,6 +41856,8 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_entity_s_eid_get,_wrap_zxid_entity_s_eid_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_entity_s_dpy_name_set,_wrap_zxid_entity_s_dpy_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_entity_s_dpy_name_get,_wrap_zxid_entity_s_dpy_name_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_entity_s_button_url_set,_wrap_zxid_entity_s_button_url_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_entity_s_button_url_get,_wrap_zxid_entity_s_button_url_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_entity_s_sha1_name_set,_wrap_zxid_entity_s_sha1_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_entity_s_sha1_name_get,_wrap_zxid_entity_s_sha1_name_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_entity_s_ed_set,_wrap_zxid_entity_s_ed_set,NULL)
@@ -37185,10 +41973,12 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_conf_affiliation_get,_wrap_zxid_conf_affiliation_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_nice_name_set,_wrap_zxid_conf_nice_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_nice_name_get,_wrap_zxid_conf_nice_name_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_button_url_set,_wrap_zxid_conf_button_url_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_button_url_get,_wrap_zxid_conf_button_url_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_pref_button_size_set,_wrap_zxid_conf_pref_button_size_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_pref_button_size_get,_wrap_zxid_conf_pref_button_size_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_org_name_set,_wrap_zxid_conf_org_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_org_name_get,_wrap_zxid_conf_org_name_get,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_org_url_set,_wrap_zxid_conf_org_url_set,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_org_url_get,_wrap_zxid_conf_org_url_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_locality_set,_wrap_zxid_conf_locality_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_locality_get,_wrap_zxid_conf_locality_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_state_set,_wrap_zxid_conf_state_set,NULL)
@@ -37209,6 +41999,8 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_conf_ses_arch_dir_get,_wrap_zxid_conf_ses_arch_dir_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_ses_cookie_name_set,_wrap_zxid_conf_ses_cookie_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_ses_cookie_name_get,_wrap_zxid_conf_ses_cookie_name_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_ptm_cookie_name_set,_wrap_zxid_conf_ptm_cookie_name_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_ptm_cookie_name_get,_wrap_zxid_conf_ptm_cookie_name_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_ipport_set,_wrap_zxid_conf_ipport_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_ipport_get,_wrap_zxid_conf_ipport_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_load_cot_cache_set,_wrap_zxid_conf_load_cot_cache_set,NULL)
@@ -37243,6 +42035,10 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_conf_trustpdp_url_get,_wrap_zxid_conf_trustpdp_url_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_defaultqs_set,_wrap_zxid_conf_defaultqs_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_defaultqs_get,_wrap_zxid_conf_defaultqs_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_wsp_pat_set,_wrap_zxid_conf_wsp_pat_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_wsp_pat_get,_wrap_zxid_conf_wsp_pat_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_sso_pat_set,_wrap_zxid_conf_sso_pat_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_sso_pat_get,_wrap_zxid_conf_sso_pat_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_mod_saml_attr_prefix_set,_wrap_zxid_conf_mod_saml_attr_prefix_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_mod_saml_attr_prefix_get,_wrap_zxid_conf_mod_saml_attr_prefix_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_need_set,_wrap_zxid_conf_need_set,NULL)
@@ -37341,6 +42137,12 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_conf_mgmt_end_get,_wrap_zxid_conf_mgmt_end_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_dbg_set,_wrap_zxid_conf_dbg_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_dbg_get,_wrap_zxid_conf_dbg_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_wd_set,_wrap_zxid_conf_wd_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_wd_get,_wrap_zxid_conf_wd_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_bus_url_set,_wrap_zxid_conf_bus_url_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_bus_url_get,_wrap_zxid_conf_bus_url_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_bus_pw_set,_wrap_zxid_conf_bus_pw_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_bus_pw_get,_wrap_zxid_conf_bus_pw_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_log_err_set,_wrap_zxid_conf_log_err_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_log_err_get,_wrap_zxid_conf_log_err_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_log_act_set,_wrap_zxid_conf_log_act_set,NULL)
@@ -37379,12 +42181,10 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_conf_valid_opt_get,_wrap_zxid_conf_valid_opt_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_idp_pxy_ena_set,_wrap_zxid_conf_idp_pxy_ena_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_idp_pxy_ena_get,_wrap_zxid_conf_idp_pxy_ena_get,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_pad2_set,_wrap_zxid_conf_pad2_set,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_pad2_get,_wrap_zxid_conf_pad2_get,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_pad3_set,_wrap_zxid_conf_pad3_set,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_pad3_get,_wrap_zxid_conf_pad3_get,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_pad4_set,_wrap_zxid_conf_pad4_set,NULL)
- SWIG_ZEND_NAMED_FE(zxid_conf_pad4_get,_wrap_zxid_conf_pad4_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_oaz_jwt_sigenc_alg_set,_wrap_zxid_conf_oaz_jwt_sigenc_alg_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_oaz_jwt_sigenc_alg_get,_wrap_zxid_conf_oaz_jwt_sigenc_alg_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_bus_rcpt_set,_wrap_zxid_conf_bus_rcpt_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_conf_bus_rcpt_get,_wrap_zxid_conf_bus_rcpt_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_pad5_set,_wrap_zxid_conf_pad5_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_pad5_get,_wrap_zxid_conf_pad5_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_conf_pad6_set,_wrap_zxid_conf_pad6_set,NULL)
@@ -37470,12 +42270,56 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_cgi_zxrfr_get,_wrap_zxid_cgi_zxrfr_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_ok_set,_wrap_zxid_cgi_ok_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_ok_get,_wrap_zxid_cgi_ok_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_templ_set,_wrap_zxid_cgi_templ_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_templ_get,_wrap_zxid_cgi_templ_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_sp_eid_set,_wrap_zxid_cgi_sp_eid_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_sp_eid_get,_wrap_zxid_cgi_sp_eid_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_sp_dpy_name_set,_wrap_zxid_cgi_sp_dpy_name_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_sp_dpy_name_get,_wrap_zxid_cgi_sp_dpy_name_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_sp_button_url_set,_wrap_zxid_cgi_sp_button_url_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_sp_button_url_get,_wrap_zxid_cgi_sp_button_url_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_response_type_set,_wrap_zxid_cgi_response_type_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_response_type_get,_wrap_zxid_cgi_response_type_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_client_id_set,_wrap_zxid_cgi_client_id_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_client_id_get,_wrap_zxid_cgi_client_id_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_scope_set,_wrap_zxid_cgi_scope_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_scope_get,_wrap_zxid_cgi_scope_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_redirect_uri_set,_wrap_zxid_cgi_redirect_uri_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_redirect_uri_get,_wrap_zxid_cgi_redirect_uri_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_nonce_set,_wrap_zxid_cgi_nonce_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_nonce_get,_wrap_zxid_cgi_nonce_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_state_set,_wrap_zxid_cgi_state_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_state_get,_wrap_zxid_cgi_state_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_display_set,_wrap_zxid_cgi_display_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_display_get,_wrap_zxid_cgi_display_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_prompt_set,_wrap_zxid_cgi_prompt_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_prompt_get,_wrap_zxid_cgi_prompt_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_access_token_set,_wrap_zxid_cgi_access_token_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_access_token_get,_wrap_zxid_cgi_access_token_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_token_type_set,_wrap_zxid_cgi_token_type_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_token_type_get,_wrap_zxid_cgi_token_type_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_id_token_set,_wrap_zxid_cgi_id_token_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_id_token_get,_wrap_zxid_cgi_id_token_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_expires_in_set,_wrap_zxid_cgi_expires_in_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_expires_in_get,_wrap_zxid_cgi_expires_in_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_iss_set,_wrap_zxid_cgi_iss_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_iss_get,_wrap_zxid_cgi_iss_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_user_id_set,_wrap_zxid_cgi_user_id_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_user_id_get,_wrap_zxid_cgi_user_id_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_aud_set,_wrap_zxid_cgi_aud_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_aud_get,_wrap_zxid_cgi_aud_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_exp_set,_wrap_zxid_cgi_exp_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_exp_get,_wrap_zxid_cgi_exp_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_iso29115_set,_wrap_zxid_cgi_iso29115_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_iso29115_get,_wrap_zxid_cgi_iso29115_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_schema_set,_wrap_zxid_cgi_schema_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_schema_get,_wrap_zxid_cgi_schema_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_id_set,_wrap_zxid_cgi_id_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_id_get,_wrap_zxid_cgi_id_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_inv_set,_wrap_zxid_cgi_inv_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_inv_get,_wrap_zxid_cgi_inv_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_skin_set,_wrap_zxid_cgi_skin_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_cgi_skin_get,_wrap_zxid_cgi_skin_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_action_url_set,_wrap_zxid_cgi_action_url_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_action_url_get,_wrap_zxid_cgi_action_url_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cgi_idp_list_set,_wrap_zxid_cgi_idp_list_set,NULL)
@@ -37515,6 +42359,8 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_ses_tgt_a7n_path_get,_wrap_zxid_ses_tgt_a7n_path_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ses_setcookie_set,_wrap_zxid_ses_setcookie_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ses_setcookie_get,_wrap_zxid_ses_setcookie_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_ses_setptmcookie_set,_wrap_zxid_ses_setptmcookie_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_ses_setptmcookie_get,_wrap_zxid_ses_setptmcookie_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ses_cookie_set,_wrap_zxid_ses_cookie_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ses_cookie_get,_wrap_zxid_ses_cookie_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ses_rs_set,_wrap_zxid_ses_rs_set,NULL)
@@ -37606,6 +42452,53 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_cstr_list_s_set,_wrap_zxid_cstr_list_s_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_cstr_list_s_get,_wrap_zxid_cstr_list_s_get,NULL)
  SWIG_ZEND_NAMED_FE(new_zxid_cstr_list,_wrap_new_zxid_cstr_list,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_obl_list_n_set,_wrap_zxid_obl_list_n_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_obl_list_n_get,_wrap_zxid_obl_list_n_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_obl_list_name_set,_wrap_zxid_obl_list_name_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_obl_list_name_get,_wrap_zxid_obl_list_name_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_obl_list_vals_set,_wrap_zxid_obl_list_vals_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_obl_list_vals_get,_wrap_zxid_obl_list_vals_get,NULL)
+ SWIG_ZEND_NAMED_FE(new_zxid_obl_list,_wrap_new_zxid_obl_list,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_len_set,_wrap_stomp_hdr_len_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_len_get,_wrap_stomp_hdr_len_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_body_set,_wrap_stomp_hdr_body_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_body_get,_wrap_stomp_hdr_body_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_host_set,_wrap_stomp_hdr_host_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_host_get,_wrap_stomp_hdr_host_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_vers_set,_wrap_stomp_hdr_vers_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_vers_get,_wrap_stomp_hdr_vers_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_login_set,_wrap_stomp_hdr_login_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_login_get,_wrap_stomp_hdr_login_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_pw_set,_wrap_stomp_hdr_pw_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_pw_get,_wrap_stomp_hdr_pw_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_dest_set,_wrap_stomp_hdr_dest_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_dest_get,_wrap_stomp_hdr_dest_get,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_end_of_pdu_set,_wrap_stomp_hdr_end_of_pdu_set,NULL)
+ SWIG_ZEND_NAMED_FE(stomp_hdr_end_of_pdu_get,_wrap_stomp_hdr_end_of_pdu_get,NULL)
+ SWIG_ZEND_NAMED_FE(new_stomp_hdr,_wrap_new_stomp_hdr,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_n_set,_wrap_zxid_bus_url_n_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_n_get,_wrap_zxid_bus_url_n_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_s_set,_wrap_zxid_bus_url_s_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_s_get,_wrap_zxid_bus_url_s_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_eid_set,_wrap_zxid_bus_url_eid_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_eid_get,_wrap_zxid_bus_url_eid_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_fd_set,_wrap_zxid_bus_url_fd_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_fd_get,_wrap_zxid_bus_url_fd_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_m_set,_wrap_zxid_bus_url_m_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_m_get,_wrap_zxid_bus_url_m_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_ap_set,_wrap_zxid_bus_url_ap_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_ap_get,_wrap_zxid_bus_url_ap_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_cur_rcpt_set,_wrap_zxid_bus_url_cur_rcpt_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_cur_rcpt_get,_wrap_zxid_bus_url_cur_rcpt_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_scalingpart_set,_wrap_zxid_bus_url_scalingpart_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_scalingpart_get,_wrap_zxid_bus_url_scalingpart_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_pad1_set,_wrap_zxid_bus_url_pad1_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_pad1_get,_wrap_zxid_bus_url_pad1_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_pad2_set,_wrap_zxid_bus_url_pad2_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_pad2_get,_wrap_zxid_bus_url_pad2_get,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_pad3_set,_wrap_zxid_bus_url_pad3_set,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_bus_url_pad3_get,_wrap_zxid_bus_url_pad3_get,NULL)
+ SWIG_ZEND_NAMED_FE(new_zxid_bus_url,_wrap_new_zxid_bus_url,NULL)
  SWIG_ZEND_NAMED_FE(zxid_atsrc_n_set,_wrap_zxid_atsrc_n_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_atsrc_n_get,_wrap_zxid_atsrc_n_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_atsrc_at_set,_wrap_zxid_atsrc_at_set,NULL)
@@ -37719,6 +42612,18 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxlogwsp,_wrap_zxlogwsp,NULL)
  SWIG_ZEND_NAMED_FE(zxlogusr,_wrap_zxlogusr,NULL)
  SWIG_ZEND_NAMED_FE(zxlog_debug_xml_blob,_wrap_zxlog_debug_xml_blob,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_mint_receipt,_wrap_zxbus_mint_receipt,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_verify_receipt,_wrap_zxbus_verify_receipt,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_persist_msg,_wrap_zxbus_persist_msg,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_open_bus_url,_wrap_zxbus_open_bus_url,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_close,_wrap_zxbus_close,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_close_all,_wrap_zxbus_close_all,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_send_cmdf,_wrap_zxbus_send_cmdf,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_send_cmd,_wrap_zxbus_send_cmd,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_send,_wrap_zxbus_send,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_read_stomp,_wrap_zxbus_read_stomp,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_ack_msg,_wrap_zxbus_ack_msg,NULL)
+ SWIG_ZEND_NAMED_FE(zxbus_listen_msg,_wrap_zxbus_listen_msg,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_ent_file,_wrap_zxid_get_ent_file,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_ent_cache,_wrap_zxid_get_ent_cache,NULL)
  SWIG_ZEND_NAMED_FE(zxid_write_ent_to_cache,_wrap_zxid_write_ent_to_cache,NULL)
@@ -37734,6 +42639,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_send_sp_meta,_wrap_zxid_send_sp_meta,NULL)
  SWIG_ZEND_NAMED_FE(zxid_sp_carml,_wrap_zxid_sp_carml,NULL)
  SWIG_ZEND_NAMED_FE(zxid_my_ent_id,_wrap_zxid_my_ent_id,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_my_ent_id_cstr,_wrap_zxid_my_ent_id_cstr,NULL)
  SWIG_ZEND_NAMED_FE(zxid_my_ent_id_attr,_wrap_zxid_my_ent_id_attr,NULL)
  SWIG_ZEND_NAMED_FE(zxid_my_cdc_url,_wrap_zxid_my_cdc_url,NULL)
  SWIG_ZEND_NAMED_FE(zxid_my_issuer,_wrap_zxid_my_issuer,NULL)
@@ -37742,6 +42648,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_set_opt_cstr,_wrap_zxid_set_opt_cstr,NULL)
  SWIG_ZEND_NAMED_FE(zxid_url_set,_wrap_zxid_url_set,NULL)
  SWIG_ZEND_NAMED_FE(zxid_init_conf,_wrap_zxid_init_conf,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_free_conf,_wrap_zxid_free_conf,NULL)
  SWIG_ZEND_NAMED_FE(zxid_init_conf_ctx,_wrap_zxid_init_conf_ctx,NULL)
  SWIG_ZEND_NAMED_FE(zxid_new_conf,_wrap_zxid_new_conf,NULL)
  SWIG_ZEND_NAMED_FE(zxid_parse_conf_raw,_wrap_zxid_parse_conf_raw,NULL)
@@ -37765,12 +42672,13 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_ses_to_qs,_wrap_zxid_ses_to_qs,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ses_to_pool,_wrap_zxid_ses_to_pool,NULL)
  SWIG_ZEND_NAMED_FE(zxid_add_attr_to_ses,_wrap_zxid_add_attr_to_ses,NULL)
- SWIG_ZEND_NAMED_FE(zxid_add_qs_to_ses,_wrap_zxid_add_qs_to_ses,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_add_qs2ses,_wrap_zxid_add_qs2ses,NULL)
  SWIG_ZEND_NAMED_FE(zxid_user_sha1_name,_wrap_zxid_user_sha1_name,NULL)
  SWIG_ZEND_NAMED_FE(zxid_put_user,_wrap_zxid_put_user,NULL)
  SWIG_ZEND_NAMED_FE(zxid_get_user_nameid,_wrap_zxid_get_user_nameid,NULL)
  SWIG_ZEND_NAMED_FE(zxid_user_change_nameid,_wrap_zxid_user_change_nameid,NULL)
  SWIG_ZEND_NAMED_FE(zxid_pw_authn,_wrap_zxid_pw_authn,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_http_get,_wrap_zxid_http_get,NULL)
  SWIG_ZEND_NAMED_FE(zxid_http_post_raw,_wrap_zxid_http_post_raw,NULL)
  SWIG_ZEND_NAMED_FE(zxid_soap_call_raw,_wrap_zxid_soap_call_raw,NULL)
  SWIG_ZEND_NAMED_FE(zxid_soap_call_hdr_body,_wrap_zxid_soap_call_hdr_body,NULL)
@@ -37815,6 +42723,7 @@ static zend_function_entry zxid_functions[] = {
  SWIG_ZEND_NAMED_FE(zxid_find_attribute,_wrap_zxid_find_attribute,NULL)
  SWIG_ZEND_NAMED_FE(zxid_mk_status,_wrap_zxid_mk_Status,NULL)
  SWIG_ZEND_NAMED_FE(zxid_ok,_wrap_zxid_OK,NULL)
+ SWIG_ZEND_NAMED_FE(zxid_mk_oauth_az_req,_wrap_zxid_mk_oauth_az_req,NULL)
  SWIG_ZEND_NAMED_FE(zxid_mk_lu_status,_wrap_zxid_mk_lu_Status,NULL)
  SWIG_ZEND_NAMED_FE(zxid_mk_tas3_status,_wrap_zxid_mk_tas3_status,NULL)
  SWIG_ZEND_NAMED_FE(zxid_mk_fault,_wrap_zxid_mk_fault,NULL)
@@ -38182,6 +43091,8 @@ le_swig__p_p_char=zend_register_list_destructors_ex(_wrap_destroy_p_p_char,NULL,
 SWIG_TypeClientData(SWIGTYPE_p_p_char,&le_swig__p_p_char);
 le_swig__p_zx_ds_Reference_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_ds_Reference_s,NULL,(char *)(SWIGTYPE_p_zx_ds_Reference_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_ds_Reference_s,&le_swig__p_zx_ds_Reference_s);
+le_swig__p_zxid_obl_list=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_obl_list,NULL,(char *)(SWIGTYPE_p_zxid_obl_list->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_zxid_obl_list,&le_swig__p_zxid_obl_list);
 le_swig__p_zxid_cgi=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_cgi,NULL,(char *)(SWIGTYPE_p_zxid_cgi->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zxid_cgi,&le_swig__p_zxid_cgi);
 le_swig__p_zx_sec_Token_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_sec_Token_s,NULL,(char *)(SWIGTYPE_p_zx_sec_Token_s->name),module_number);
@@ -38200,6 +43111,8 @@ le_swig__int=zend_register_list_destructors_ex(_wrap_destroy_int,NULL,(char *)(S
 SWIG_TypeClientData(SWIGTYPE_int,&le_swig__int);
 le_swig__p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int=zend_register_list_destructors_ex(_wrap_destroy_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int,NULL,(char *)(SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int,&le_swig__p_f_p_struct_zx_ctx_p_struct_zx_elem_s__int);
+le_swig__p_pthread_t=zend_register_list_destructors_ex(_wrap_destroy_p_pthread_t,NULL,(char *)(SWIGTYPE_p_pthread_t->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_pthread_t,&le_swig__p_pthread_t);
 le_swig__p_zxid_perm=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_perm,NULL,(char *)(SWIGTYPE_p_zxid_perm->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zxid_perm,&le_swig__p_zxid_perm);
 le_swig__p_zxid_conf=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_conf,NULL,(char *)(SWIGTYPE_p_zxid_conf->name),module_number);
@@ -38212,14 +43125,14 @@ le_swig__p_p_zx_ns_s=zend_register_list_destructors_ex(_wrap_destroy_p_p_zx_ns_s
 SWIG_TypeClientData(SWIGTYPE_p_p_zx_ns_s,&le_swig__p_p_zx_ns_s);
 le_swig__p_zx_ns_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_ns_s,NULL,(char *)(SWIGTYPE_p_zx_ns_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_ns_s,&le_swig__p_zx_ns_s);
-le_swig__p_zxid_atsrc=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_atsrc,NULL,(char *)(SWIGTYPE_p_zxid_atsrc->name),module_number);
-SWIG_TypeClientData(SWIGTYPE_p_zxid_atsrc,&le_swig__p_zxid_atsrc);
 le_swig__p_zx_sa_Assertion_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_sa_Assertion_s,NULL,(char *)(SWIGTYPE_p_zx_sa_Assertion_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_sa_Assertion_s,&le_swig__p_zx_sa_Assertion_s);
 le_swig__p_f_p_void__void=zend_register_list_destructors_ex(_wrap_destroy_p_f_p_void__void,NULL,(char *)(SWIGTYPE_p_f_p_void__void->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_f_p_void__void,&le_swig__p_f_p_void__void);
 le_swig__p_zx_el_tok=zend_register_list_destructors_ex(_wrap_destroy_p_zx_el_tok,NULL,(char *)(SWIGTYPE_p_zx_el_tok->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_el_tok,&le_swig__p_zx_el_tok);
+le_swig__p_zxid_atsrc=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_atsrc,NULL,(char *)(SWIGTYPE_p_zxid_atsrc->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_zxid_atsrc,&le_swig__p_zxid_atsrc);
 le_swig__p_zx_sa11_Assertion_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_sa11_Assertion_s,NULL,(char *)(SWIGTYPE_p_zx_sa11_Assertion_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_sa11_Assertion_s,&le_swig__p_zx_sa11_Assertion_s);
 le_swig__p_zx_ff12_Assertion_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_ff12_Assertion_s,NULL,(char *)(SWIGTYPE_p_zx_ff12_Assertion_s->name),module_number);
@@ -38234,10 +43147,10 @@ le_swig__p_zx_attr_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_attr_s
 SWIG_TypeClientData(SWIGTYPE_p_zx_attr_s,&le_swig__p_zx_attr_s);
 le_swig__p_zxid_cstr_list=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_cstr_list,NULL,(char *)(SWIGTYPE_p_zxid_cstr_list->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zxid_cstr_list,&le_swig__p_zxid_cstr_list);
-le_swig__p_zxid_need=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_need,NULL,(char *)(SWIGTYPE_p_zxid_need->name),module_number);
-SWIG_TypeClientData(SWIGTYPE_p_zxid_need,&le_swig__p_zxid_need);
 le_swig__p_zxid_ses=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_ses,NULL,(char *)(SWIGTYPE_p_zxid_ses->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zxid_ses,&le_swig__p_zxid_ses);
+le_swig__p_zxid_need=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_need,NULL,(char *)(SWIGTYPE_p_zxid_need->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_zxid_need,&le_swig__p_zxid_need);
 le_swig__p_zx_e_Body_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_e_Body_s,NULL,(char *)(SWIGTYPE_p_zx_e_Body_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_e_Body_s,&le_swig__p_zx_e_Body_s);
 le_swig__p_zx_ctx=zend_register_list_destructors_ex(_wrap_destroy_p_zx_ctx,NULL,(char *)(SWIGTYPE_p_zx_ctx->name),module_number);
@@ -38246,6 +43159,8 @@ le_swig__p_zx_xenc_EncryptedData_s=zend_register_list_destructors_ex(_wrap_destr
 SWIG_TypeClientData(SWIGTYPE_p_zx_xenc_EncryptedData_s,&le_swig__p_zx_xenc_EncryptedData_s);
 le_swig__p_zx_e_Envelope_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_e_Envelope_s,NULL,(char *)(SWIGTYPE_p_zx_e_Envelope_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_e_Envelope_s,&le_swig__p_zx_e_Envelope_s);
+le_swig__p_zx_lock=zend_register_list_destructors_ex(_wrap_destroy_p_zx_lock,NULL,(char *)(SWIGTYPE_p_zx_lock->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_zx_lock,&le_swig__p_zx_lock);
 le_swig__p_zx_sa_NameID_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_sa_NameID_s,NULL,(char *)(SWIGTYPE_p_zx_sa_NameID_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_sa_NameID_s,&le_swig__p_zx_sa_NameID_s);
 le_swig__p_timeval=zend_register_list_destructors_ex(_wrap_destroy_p_timeval,NULL,(char *)(SWIGTYPE_p_timeval->name),module_number);
@@ -38264,8 +43179,12 @@ le_swig__p_zx_sa_EncryptedID_s=zend_register_list_destructors_ex(_wrap_destroy_p
 SWIG_TypeClientData(SWIGTYPE_p_zx_sa_EncryptedID_s,&le_swig__p_zx_sa_EncryptedID_s);
 le_swig__p_zx_sp_NewEncryptedID_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_sp_NewEncryptedID_s,NULL,(char *)(SWIGTYPE_p_zx_sp_NewEncryptedID_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_sp_NewEncryptedID_s,&le_swig__p_zx_sp_NewEncryptedID_s);
+le_swig__p_stomp_hdr=zend_register_list_destructors_ex(_wrap_destroy_p_stomp_hdr,NULL,(char *)(SWIGTYPE_p_stomp_hdr->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_stomp_hdr,&le_swig__p_stomp_hdr);
 le_swig__p_zx_e_Header_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_e_Header_s,NULL,(char *)(SWIGTYPE_p_zx_e_Header_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_e_Header_s,&le_swig__p_zx_e_Header_s);
+le_swig__p_zxid_bus_url=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_bus_url,NULL,(char *)(SWIGTYPE_p_zxid_bus_url->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_zxid_bus_url,&le_swig__p_zxid_bus_url);
 le_swig__p_zx_xenc_EncryptedKey_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_xenc_EncryptedKey_s,NULL,(char *)(SWIGTYPE_p_zx_xenc_EncryptedKey_s->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zx_xenc_EncryptedKey_s,&le_swig__p_zx_xenc_EncryptedKey_s);
 le_swig__p_zxid_entity_s=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_entity_s,NULL,(char *)(SWIGTYPE_p_zxid_entity_s->name),module_number);
@@ -38278,6 +43197,8 @@ le_swig__p_zx_e_Fault_s=zend_register_list_destructors_ex(_wrap_destroy_p_zx_e_F
 SWIG_TypeClientData(SWIGTYPE_p_zx_e_Fault_s,&le_swig__p_zx_e_Fault_s);
 le_swig__p_zxid_map=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_map,NULL,(char *)(SWIGTYPE_p_zxid_map->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zxid_map,&le_swig__p_zxid_map);
+le_swig__p_pthread_mutex_t=zend_register_list_destructors_ex(_wrap_destroy_p_pthread_mutex_t,NULL,(char *)(SWIGTYPE_p_pthread_mutex_t->name),module_number);
+SWIG_TypeClientData(SWIGTYPE_p_pthread_mutex_t,&le_swig__p_pthread_mutex_t);
 le_swig__p_zxid_attr=zend_register_list_destructors_ex(_wrap_destroy_p_zxid_attr,NULL,(char *)(SWIGTYPE_p_zxid_attr->name),module_number);
 SWIG_TypeClientData(SWIGTYPE_p_zxid_attr,&le_swig__p_zxid_attr);
 CG(active_class_entry) = NULL;
@@ -38296,6 +43217,7 @@ SWIG_LONG_CONSTANT(ZX_TOK_TOK_MASK, 0x0000ffff);
 SWIG_LONG_CONSTANT(ZX_TOK_NS_MASK, 0x00ff0000);
 SWIG_LONG_CONSTANT(ZX_TOK_NS_SHIFT, 16);
 SWIG_LONG_CONSTANT(ZX_TOK_FLAGS_MASK, 0xff000000);
+SWIG_LONG_CONSTANT(ZX_SYMKEY_LEN, 20);
 SWIG_STRING_CONSTANT(SIG_ALGO_RSA_SHA1, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
 SWIG_STRING_CONSTANT(SIG_ALGO_DSA_SHA1, "http://www.w3.org/2000/09/xmldsig#dsa-sha1");
 SWIG_STRING_CONSTANT(SIG_ALGO, "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
@@ -38313,6 +43235,7 @@ SWIG_STRING_CONSTANT(ENC_KEYTRAN_ALGO, "http://www.w3.org/2001/04/xmlenc#rsa-1_5
 SWIG_STRING_CONSTANT(ENC_ENCKEY_METH, "http://www.w3.org/2001/04/xmlenc#EncryptedKey");
 SWIG_STRING_CONSTANT(ENC_TYPE_ELEMENT, "http://www.w3.org/2001/04/xmlenc#Element");
 SWIG_STRING_CONSTANT(ENC_TYPE_CONTENT, "http://www.w3.org/2001/04/xmlenc#Content");
+SWIG_STRING_CONSTANT(ZXID_CONF_PATH, "/var/zxid/zxid.conf");
 SWIG_LONG_CONSTANT(ZXID_CONF_MAGIC, 0x900dc07f);
 SWIG_LONG_CONSTANT(ZXID_CGI_MAGIC, 0x900d0c91);
 SWIG_LONG_CONSTANT(ZXID_SES_MAGIC, 0x900d05e5);
@@ -38340,6 +43263,7 @@ SWIG_STRING_CONSTANT(ZXID_PEM_DIR, "pem/");
 SWIG_STRING_CONSTANT(ZXID_COT_DIR, "cot/");
 SWIG_STRING_CONSTANT(ZXID_DIMD_DIR, "dimd/");
 SWIG_STRING_CONSTANT(ZXID_INV_DIR, "inv/");
+SWIG_STRING_CONSTANT(ZXID_LOG_DIR, "log/");
 SWIG_LONG_CONSTANT(ZXID_MAX_USER, (256));
 SWIG_LONG_CONSTANT(ZXID_INIT_MD_BUF, (8*1024-1));
 SWIG_LONG_CONSTANT(ZXID_INIT_SOAP_BUF, (8*1024-1));
@@ -38378,9 +43302,11 @@ SWIG_LONG_CONSTANT(ZXSIG_VFY_FAIL, 6);
 SWIG_LONG_CONSTANT(ZXSIG_NO_SIG, 7);
 SWIG_LONG_CONSTANT(ZXSIG_TIMEOUT, 8);
 SWIG_LONG_CONSTANT(ZXSIG_AUDIENCE, 9);
+SWIG_STRING_CONSTANT(ZXBUS_CH_DIR, "ch/");
 SWIG_STRING_CONSTANT(ZXLOG_RELY_DIR, "rely/");
 SWIG_STRING_CONSTANT(ZXLOG_ISSUE_DIR, "issue/");
 SWIG_STRING_CONSTANT(ZXLOG_A7N_KIND, "/a7n/");
+SWIG_STRING_CONSTANT(ZXLOG_JWT_KIND, "/jwt/");
 SWIG_STRING_CONSTANT(ZXLOG_MSG_KIND, "/msg/");
 SWIG_STRING_CONSTANT(ZXLOG_WIR_KIND, "/wir/");
 SWIG_LONG_CONSTANT(ZXID_DAP_SCOPE_BASE, 0);
@@ -38399,6 +43325,7 @@ SWIG_LONG_CONSTANT(ZXID_SAML2_SOAP, 4);
 SWIG_LONG_CONSTANT(ZXID_SAML2_POST_SIMPLE_SIGN, 5);
 SWIG_LONG_CONSTANT(ZXID_SAML2_REDIR, 6);
 SWIG_LONG_CONSTANT(ZXID_SAML2_URI, 7);
+SWIG_LONG_CONSTANT(ZXID_OPID_CONNECT, 8);
 SWIG_LONG_CONSTANT(ZXID_SLO_SVC, 1);
 SWIG_LONG_CONSTANT(ZXID_MNI_SVC, 2);
 SWIG_LONG_CONSTANT(ZXID_ACS_SVC, 3);
@@ -38465,6 +43392,7 @@ SWIG_STRING_CONSTANT(SAML2_ART, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artif
 SWIG_STRING_CONSTANT(SAML2_POST, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
 SWIG_STRING_CONSTANT(SAML2_POST_SIMPLE_SIGN, "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign");
 SWIG_STRING_CONSTANT(SAML2_URI, "urn:oasis:names:tc:SAML:2.0:bindings:URI");
+SWIG_STRING_CONSTANT(OAUTH2_REDIR, "urn:zxid:OAUTH:2.0:bindings:HTTP-Redirect");
 SWIG_STRING_CONSTANT(SAML2_AP_BASIC, "urn:oasis:names:tc:SAML:2.0:profiles:attribute:basic");
 SWIG_STRING_CONSTANT(SAML2_AP_X500, "urn:oasis:names:tc:SAML:2.0:profiles:attribute:X500");
 SWIG_STRING_CONSTANT(SAML2_AP_UUID, "urn:oasis:names:tc:SAML:2.0:profiles:attribute:UUID");

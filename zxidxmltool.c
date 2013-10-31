@@ -35,31 +35,30 @@ NO WARRANTY, not even implied warranties. Licensed under Apache License v2.0\n\
 See http://www.apache.org/licenses/LICENSE-2.0\n\
 Send well researched bug reports to the author. Home: zxid.org\n\
 \n\
-Usage: zxid [options] < foo.xml\n\
-  -meta            Dump our own metadata to stdout.\n\
-  -import URL      Import metadata of others from URL, usually their Entity ID\n\
-                   or Provider ID, aka well known location. The imported metadata\n\
-                   is written to CoT cache directory.\n\
-  -C CONFPATH      Path to (optional) config file, default /var/zxid/zxid.conf\n\
-  -O OPT=VAL       Override default or config file option. Only after -C, if any.\n\
-  -t SECONDS       Timeout. Default: 0=no timeout.\n\
-  -c CIPHER        Enable crypto on DTS interface using specified cipher. Use '?' for list.\n\
-  -k FDNUMBER      File descriptor for reading symmetric key. Use 0 for stdin.\n\
-  -egd PATH        Specify path of Entropy Gathering Daemon socket, default on\n\
-                   Solaris: /tmp/entropy. On Linux /dev/urandom is used instead\n\
-                   See http://www.lothar.com/tech/crypto/ or\n\
-                   http://www.aet.tu-cottbus.de/personen/jaenicke/postfix_tls/prngd.html\n\
-  -rand PATH       Location of random number seed file. On Solaris EGD is used.\n\
-                   On Linux the default is /dev/urandom. See RFC1750.\n\
-  -uid UID:GID     If run as root, drop privileges and assume specified uid and gid.\n\
-  -v               Verbose messages.\n\
-  -q               Be extra quiet.\n\
-  -d               Turn on debugging.\n\
-  -license         Show licensing details, including NATO C3 Agency disclaimer.\n\
-  -h               This help message\n\
-  --               End of options\n";
+Usage: zxidxmltool [options] < foo.xml\n\
+  -meta        Dump our own metadata to stdout.\n\
+  -import URL  Import metadata of others from URL, usually their Entity ID\n\
+               or Provider ID, aka well known location. The imported metadata\n\
+               is written to CoT cache directory.\n\
+  -C CONFPATH  Path to (optional) config file, default " ZXID_CONF_PATH "\n\
+  -c OPT=VAL   Override default or config file option. Only after -C, if any.\n\
+  -t SECONDS   Timeout. Default: 0=no timeout.\n\
+  -k FDNUMBER  File descriptor for reading symmetric key. Use 0 for stdin.\n\
+  -egd PATH    Specify path of Entropy Gathering Daemon socket, default on\n\
+               Solaris: /tmp/entropy. On Linux /dev/urandom is used instead\n\
+               See http://www.lothar.com/tech/crypto/ or\n\
+               http://www.aet.tu-cottbus.de/personen/jaenicke/postfix_tls/prngd.html\n\
+  -rand PATH   Location of random number seed file. On Solaris EGD is used.\n\
+               On Linux the default is /dev/urandom. See RFC1750.\n\
+  -uid UID:GID If run as root, drop privileges and assume specified uid and gid.\n\
+  -v           Verbose messages.\n\
+  -q           Be extra quiet.\n\
+  -d           Turn on debugging.\n\
+  -license     Show licensing details, including NATO C3 Agency disclaimer.\n\
+  -h           This help message\n\
+  --           End of options\n";
 
-int afr_buf_size = 0;
+int ak_buf_size = 0;
 int verbose = 1;
 int timeout = 0;
 int gcthreshold = 0;
@@ -72,7 +71,7 @@ char  symmetric_key[1024];
 int symmetric_key_len;
 char buf[256*1024];
 
-/* Called by:  main x8, zxcall_main, zxcot_main, zxdecode_main */
+/* Called by:  main x8, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxdecode_main */
 void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
 {
   char* conf_path = 0;
@@ -95,7 +94,7 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
       conf_path = **argv;
       continue;
 
-    case 'O': if ((*argv)[0][2]) break;
+    case 'c': if ((*argv)[0][2]) break;
       ++(*argv); --(*argc);
       if (!(*argc)) break;
       if (conf_path != (char*)1) {
@@ -195,7 +194,7 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
     case 'r':
       switch ((*argv)[0][2]) {
       case 'f':
-	/*AFR_TS(LEAK, 0, "memory leaks enabled");*/
+	/*AK_TS(LEAK, 0, "memory leaks enabled");*/
 	ERR("*** WARNING: You have turned memory frees to memory leaks. We will (eventually) run out of memory. Using -rf is not recommended. %d\n", 0);
 	++leak_free;
 	continue;
@@ -225,7 +224,7 @@ void opt(int* argc, char*** argv, char*** env, zxid_conf* cf, zxid_cgi* cgi)
 	continue;
       case 'a': /* -ra */
 	if ((*argv)[0][3] == 0) {
-	  /*AFR_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
+	  /*AK_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
 #if 1
 	  ERR("*** WARNING: YOU HAVE TURNED ASSERTS OFF USING -ra FLAG. THIS MEANS THAT YOU WILL NOT BE ABLE TO OBTAIN ANY SUPPORT. IF PROGRAM NOW TRIES TO ASSERT IT MAY MYSTERIOUSLY AND UNPREDICTABLY CRASH INSTEAD, AND NOBODY WILL BE ABLE TO FIGURE OUT WHAT WENT WRONG OR HOW MUCH DAMAGE MAY BE DONE. USING -ra IS NOT RECOMMENDED. %d\n", assert_nonfatal);
 #endif
@@ -295,6 +294,7 @@ int main(int argc, char** argv, char** env)
   int got;
   char* qs;
   char* cont_len;
+  //char* eid;
   struct zx_str* ss;
   zxid_entity* idp;
   
@@ -340,7 +340,7 @@ int main(int argc, char** argv, char** env)
   qs = getenv("QUERY_STRING");
   if (qs) {
     D("QS(%s)", qs);
-    zxid_parse_cgi(&cgi, qs);
+    zxid_parse_cgi(cf, &cgi, qs);
     if (cgi.op == 'P') {
       cont_len = getenv("CONTENT_LENGTH");
       if (cont_len) {
@@ -359,7 +359,7 @@ int main(int argc, char** argv, char** env)
 	  if (buf[3] == '<') {  /* UTF-8 BOM and looks XML */
 	    return zxid_sp_soap_parse(cf, &cgi, &ses, got-3, buf+3);
 	  }
-	  zxid_parse_cgi(&cgi, buf);
+	  zxid_parse_cgi(cf, &cgi, buf);
 	}
       }
     }
@@ -469,9 +469,8 @@ int main(int argc, char** argv, char** env)
 #endif
 
   printf("<h3>CoT configuration parameters your IdP may need to know</h3>\n");
-  ss = zxid_my_ent_id(cf);
-  printf("Entity ID of this SP: <a href=\"%.*s\">%.*s</a> (Click on the link to fetch SP metadata.)\n",
-	 ss->len, ss->s, ss->len, ss->s);
+  eid = zxid_my_ent_id_cstr(cf);
+  printf("Entity ID of this SP: <a href=\"%s\">%s</a> (Click on the link to fetch SP metadata.)\n", eid, eid);
 
   printf("<h3>Technical options (typically hidden fields on production site)</h3>\n");
   printf("<input type=checkbox name=fc value=1 checked> Allow new federation to be created<br>\n");

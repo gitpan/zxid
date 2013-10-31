@@ -1,4 +1,5 @@
 /* zxidwsp.c  -  Handwritten nitty-gritty functions for Liberty ID-WSF Web Services Provider
+ * Copyright (c) 2013 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -12,6 +13,7 @@
  * 7.1.2010,   added WSP signing --Sampo
  * 31.5.2010,  reworked PEPs extensively --Sampo
  * 25.1.2011,  tweaked RelatesTo header --Sampo
+ * 26.10.2013, improved error reporting on credential expired case --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for pthread_mutex_lock() et al. */
@@ -41,7 +43,7 @@
  * additional SOAP headers at will before calling this function. This function
  * will add Liberty ID-WSF specific SOAP headers. */
 
-/* Called by:  covimp_test x2, main, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate */
+/* Called by:  covimp_test x2, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate */
 int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp)
 {
   struct zx_wsse_Security_s* sec;
@@ -56,7 +58,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
     env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
   hdr = env->Header;
 
-  /* Populate SOAP headers. */
+  /* 1. Populate SOAP headers. */
   
   hdr->Framework = zx_NEW_sbf_Framework(cf->ctx, &hdr->gg);
   hdr->Framework->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->Framework->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
@@ -64,7 +66,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
   hdr->Framework->version = zx_ref_attr(cf->ctx, &hdr->Framework->gg, zx_version_ATTR, "2.0");
 
 #if 1
-  /* *** Conor claims Sender is not mandatory */
+  /* 2. *** Conor claims Sender is not mandatory */
   if (!hdr->Sender || !hdr->Sender->providerID) {
     hdr->Sender = zx_NEW_b_Sender(cf->ctx, &hdr->gg);
     hdr->Sender->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->Sender->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
@@ -76,7 +78,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
     D("Using caller supplied Sender(%.*s)", hdr->Sender->providerID->g.len, hdr->Sender->providerID->g.s);
   }
 #endif
-
+  /* 3. MessageID */
   if (!hdr->MessageID) {
     hdr->MessageID = zx_NEW_a_MessageID(cf->ctx, &hdr->gg);
     hdr->MessageID->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->MessageID->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
@@ -84,6 +86,23 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
   } else {
     D("Using caller supplied MessageID(%.*s)", ZX_GET_CONTENT_LEN(hdr->MessageID), ZX_GET_CONTENT_S(hdr->MessageID));
   }
+
+  /* 4. Security */
+
+  sec = hdr->Security = zx_NEW_wsse_Security(cf->ctx, &hdr->gg);
+  sec->actor = zx_ref_attr(cf->ctx, &sec->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
+  sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
+  sec->Timestamp = zx_NEW_wsu_Timestamp(cf->ctx, &sec->gg);
+  sec->Timestamp->Created = zx_NEW_wsu_Created(cf->ctx, &sec->Timestamp->gg);
+  zx_reverse_elem_lists(&sec->gg);
+
+  /* 5. Status */
+
+  if (ses && ses->curstatus) {
+    ZX_ADD_KID(hdr, Status, ses->curstatus);
+  }
+
+  /* 6. RelatesTo and other WSA headers... */
 
   if (is_resp) {
     if (ses && ses->wsp_msgid && ses->wsp_msgid->len) {
@@ -138,18 +157,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
   hdr->UserInteraction->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->UserInteraction->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   hdr->UserInteraction->actor = zx_ref_attr(cf->ctx, &hdr->UserInteraction->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
 #endif
-
-  if (ses && ses->curstatus) {
-    ZX_ADD_KID(hdr, Status, ses->curstatus);
-  }
   
-  sec = hdr->Security = zx_NEW_wsse_Security(cf->ctx, &hdr->gg);
-  sec->actor = zx_ref_attr(cf->ctx, &sec->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  sec->mustUnderstand = zx_ref_attr(cf->ctx, &sec->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
-  sec->Timestamp = zx_NEW_wsu_Timestamp(cf->ctx, &sec->gg);
-  sec->Timestamp->Created = zx_NEW_wsu_Created(cf->ctx, &sec->Timestamp->gg);
-  zx_reverse_elem_lists(&sec->gg);
-
   if (is_resp) {
     zx_add_content(cf->ctx, &sec->Timestamp->Created->gg, zxid_date_time(cf, time(0)));
     if (!ZX_GET_CONTENT(hdr->MessageID))
@@ -183,8 +191,8 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
  * will be passed as the contents of the body. If the string starts by
  * "<e:Body", then the <e:Envelope> and <e:Header> are automatically added. If
  * the string starts by neither of the above (be careful to use the "e:" as
- * namespace prefix), the it is assumed to be the payload content of
- * the <e:Body> and the rest of the SOAP envelope is added.
+ * namespace prefix), the it is assumed to be the payload content to be
+ * wrapped in the <e:Body> and the rest of the SOAP envelope.
  *
  * cf:: ZXID configuration object, see zxid_new_conf()
  * ses:: Session object that contains the EPR cache
@@ -196,7 +204,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
  *     option. This implements generalized (application independent)
  *     Responder Out PEP. To implement application dependent PEP features
  *     you should call zxid_az() directly.
- * env:: XML payload
+ * enve:: XML payload as a string
  * return:: SOAP Envelope of the response, as a string, ready to be
  *     sent as HTTP response. */
 
@@ -222,19 +230,10 @@ struct zx_str* zxid_wsp_decorate(zxid_conf* cf, zxid_ses* ses, const char* az_cr
 
   /* Call Rs-Out PDP */
 
-  if (!zxid_localpdp(cf, ses)) {
-    ERR("RSOUT3 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_OUT, "e:Server", "Response denied by WSP local policy", TAS3_STATUS_DENY, 0, 0, 0));
+  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RS_OUT,"e:Server", cf->pepmap_rsout)) {
     /* Fall through, letting zxid_wsf_decor() pick up the fault and package it as response. */
-  } else if (cf->pdp_url && *cf->pdp_url) {
-    //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
-    if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rsout)) {
-      ERR("RSOUT3 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_OUT, "e:Server", "Response denied by WSP policy at PDP", TAS3_STATUS_DENY, 0, 0, 0));
-      /* Fall through, letting zxid_wsf_decor() pick up the fault and package it as response. */
-    }
   }
-  
+
   if (ses->curflt) {
     D("Detected curflt, abandoning previous Body content. %d", 0);
     /* *** LEAK: Should free previous body content */
@@ -359,7 +358,7 @@ static int zxid_wsf_validate_a7n(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n, co
   }
   
   if (zxid_validate_cond(cf, &cgi, ses, a7n, zxid_my_ent_id(cf), 0, 0)) {
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Conditions did not validate.", TAS3_STATUS_BADCOND, 0, lk, 0));
+    /* Fault (ses->curflt) already set in zxid_validate_cond() */
     return 0;
   }
   
@@ -372,6 +371,7 @@ static int zxid_wsf_validate_a7n(zxid_conf* cf, zxid_ses* ses, zxid_a7n* a7n, co
       if (zxlog_dup_check(cf, logpath, "SSO assertion")) {
 	if (cf->dup_a7n_fatal) {
 	  zxlog_blob(cf, cf->log_rely_a7n, logpath, a7nss, "wsp_validade dup err");
+	  zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "Duplicate use of credential (assertion). Replay attack?", TAS3_STATUS_REPLAY, 0, lk, 0));
 	  return 0;
 	}
       }
@@ -415,6 +415,8 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
   struct zx_e_Header_s* hdr;
   struct zx_wsse_Security_s* sec;
   zxid_cgi cgi;
+  /*struct zx_b_UsageDirective_s* ud;*/
+  struct zx_xa_Obligation_s* obl;
 
   D_INDENT("valid: ");
   GETTIMEOFDAY(&ourts, 0);
@@ -514,7 +516,7 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
   } else {
     if (sec->EncryptedAssertion && !ses->a7n) {
       ERR("<sa:EncryptedAssertion> could not be decrypted. Perhaps the certificate used to encrypt does not match your private key. This could be due to IdP/Discovery service having wrong copy of your metadata. %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "EncryptedAssertion could not be decrypted. (your metadata at the IdP/Disco has problem?)", TAS3_STATUS_BADCOND, 0, 0, 0));
+      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Client", "EncryptedAssertion could not be decrypted. (your metadata at the IdP/Discovery has problem?)", TAS3_STATUS_BADCOND, 0, 0, 0));
     } else {
       /* *** should there be absolute requirement for a requester assertion to exist? */
       ERR("No Requester <sa:Assertion> found or assertion missing Subject. %p", ses->a7n);
@@ -550,20 +552,35 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
   }
 
   if (hdr->UsageDirective) {
-    if (hdr->UsageDirective->Obligation && ZX_GET_CONTENT(hdr->UsageDirective->Obligation->AttributeAssignment)) {
-      ses->rcvd_usagedir = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(hdr->UsageDirective->Obligation->AttributeAssignment));
-      D("Found TAS3 UsageDirective with obligation(%s)", ses->rcvd_usagedir);
+    if (obl = hdr->UsageDirective->Obligation) {
+      if (ZX_GET_CONTENT(obl->AttributeAssignment)) {
+	ses->rcvd_usagedir = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(obl->AttributeAssignment));
+	D("Found TAS3 UsageDirective with obligation(%s)", ses->rcvd_usagedir);
+      }
+      if (obl->ObligationId
+	  && ZX_STR_EQ(&obl->ObligationId->g, TAS3_SOL1_ENGINE)) {
+	if (ses->rcvd_usagedir
+	     && obl->AttributeAssignment->AttributeId) {
+	  if (ZX_STR_EQ(&obl->AttributeAssignment->AttributeId->g, TAS3_PLEDGE)) {
+	    if (!zxid_eval_sol1(cf, ses, ses->rcvd_usagedir, cf->wsp_localpdp_obl_req)) {
+	      return 0;
+	    }
+	  } else if (ZX_STR_EQ(&obl->AttributeAssignment->AttributeId->g, TAS3_REQUIRE)) {
+	    /* *** extract inbound sticky policies */
+	    INFO("*** Extraction of inbound sticky policies at WSP not implemented yet %d", 0);
+	  } else {
+	    ERR("UsageDirective/Obligation/AttributeAssignment@AttributeId(%.*s) not understood", obl->AttributeAssignment->AttributeId->g.len, obl->AttributeAssignment->AttributeId->g.s);
+	  }
+	} else {
+	  ERR("UsageDirective/Obligation/AttributeAssignment missing %p",obl->AttributeAssignment);
+	}
+      }
     } else if (ZX_GET_CONTENT(hdr->UsageDirective)) {
       ses->rcvd_usagedir = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(hdr->UsageDirective));
       D("Found unknown UsageDirective(%s)", ses->rcvd_usagedir);
     } else {
       ERR("UsageDirective empty or not understood. %p", hdr->UsageDirective->Dict);
     }
-  }
-
-  if (hdr->UsageDirective && hdr->UsageDirective->Obligation
-      && ZX_STR_EQ(&hdr->UsageDirective->Obligation->ObligationId->g, TAS3_SOL1_ENGINE)) {
-    /* *** extract usage directive */
   }
 
   zxid_put_ses(cf, ses);
@@ -573,19 +590,9 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
   zxlogwsp(cf, ses, "K", "PNEWSES", ses->sid, 0);
   
   /* Call Rq-In PDP */
-  
-  if (!zxid_localpdp(cf, ses)) {
-    ERR("RQIN2 Deny by local PDP %d",0);
-    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RS_OUT, "e:Server", "Request denied by WSP local policy", TAS3_STATUS_DENY, 0, 0, 0));
-    /* Fall through, letting zxid_wsf_decor() pick up the fault and package it as response. */
-  } else if (cf->pdp_url && *cf->pdp_url) {
-    //zxid_add_attr_to_pool(cf, ses, "Action", zx_dup_str(cf->ctx, "access"));
-    if (!zxid_pep_az_soap_pepmap(cf, 0, ses, cf->pdp_url, cf->pepmap_rqin)) {
-      ERR("RQIN2 Deny %d", 0);
-      zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_PEP_RQ_IN, "e:Server", "Request denied by WSP policy", TAS3_STATUS_DENY, 0, 0, 0));
-      D_DEDENT("valid: ");
-      return 0;
-    }
+
+  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RQ_IN, "e:Server", cf->pepmap_rqin)) {
+    return 0;
   }
   
   D_DEDENT("valid: ");
@@ -599,7 +606,7 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
  * parts.
  *
  * cf:: ZXID configuration object, see zxid_new_conf()
- * ses:: Session object that contains the EPR cache
+ * ses:: Session object that contains the EPR cache. New data is extracted from request to session.
  * az_cred:: (Optional) Additional authorization credentials or
  *     attributes, query string format. These credentials will be populated
  *     to the attribute pool in addition to the ones obtained from token and
@@ -607,7 +614,7 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
  *     decision (matching obligations we support to those in the request,
  *     and obligations pleged by caller to those we insist on). See
  *     also PEPMAP configuration option. This implements generalized
- *     (application independent) Responder In PEP. To implement
+ *     (application independent) Responder-In PEP. To implement
  *     application dependent PEP features you should call zxid_az() directly.
  * env:: Entire SOAP envelope as a string
  * return:: idpnid of target identity of the request (rest of the information

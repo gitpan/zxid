@@ -37,6 +37,7 @@
 #ifdef MINGW
 #include <windows.h>
 #define pthread_mutex_t CRITICAL_SECTION
+#define pthread_t DWORD
 #define fdtype HANDLE
 #else
 #include <pthread.h>
@@ -50,6 +51,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct zx_lock {
+  pthread_mutex_t ptmut;
+  const char* func;        /* Remember where we locked to ease debugging. */
+  int line;
+  pthread_t thr;
+};
 
 /*(s) Namespace management. The context references this table. The array is
  * terminated by an element with empty URL (url_len == 0). The elements
@@ -101,11 +109,12 @@ struct zx_ctx {
   void* (*realloc_func)(void*, size_t);
   void  (*free_func)(void*);
 #ifdef USE_PTHREAD
-  pthread_mutex_t mx;
+  struct zx_lock mx;
 #endif
   char canon_inopt;   /* Shib2 InclusiveNamespaces/@PrefixList kludge and other sundry options. */
   char enc_tail_opt;  /* In encoding, use non-canon empty tag tail optimization, e.g. <ns:foo/> */
-  char pad2; char pad3; char pad4; char pad5; char pad6; char pad7;
+  char pad2; char pad3;
+  int  zx_errno;      /* Outcome of last filesystem operation */
 };
 
 /* We arrange all structs to start with a common header (16 bytes on 32bit platforms).
@@ -198,6 +207,7 @@ char* zx_dup_cstr(struct zx_ctx* c, const char* str);
 void  zx_reset_ns_ctx(struct zx_ctx* ctx);
 void  zx_reset_ctx(struct zx_ctx* ctx);
 struct zx_ctx* zx_init_ctx();   /* from malloc(3) */
+void zx_free_ctx(struct zx_ctx* ctx);	/* Wrapper for free(3C). */
 
 /* N.B. All string scanning assumes buffer is terminated with C string style nul byte. */
 /*#define ZX_SKIP_WS_P(c,p,x) MB for (; ONE_OF_4(*(p), ' ', '\n', '\r', '\t'); ++(p)) ; if (!*(p)) return x; ME*/
@@ -242,6 +252,8 @@ struct zx_ctx* zx_init_ctx();   /* from malloc(3) */
 
 struct zx_at_tok { const char* name; };
 
+/* Element descriptor. These are statically initialized in c/zx-elems.c */
+
 struct zx_el_desc {
   struct zx_el_desc* n;
   int tok;
@@ -250,6 +262,8 @@ struct zx_el_desc {
   int (*el_dec)(struct zx_ctx* c,struct zx_elem_s* x); /* funcptr to elem decode switch */
   int el_order[];  /* Ordered list of tags that should appear as kids. */
 };
+
+/* Node of zx_el_tab[] which is indexed by tok number, see c/zx-elems.c */
 
 struct zx_el_tok {
   const char* name;
@@ -262,7 +276,7 @@ struct zx_el_tok {
 
 int   zx_date_time_to_secs(const char* dt);
 int   write2_or_append_lock_c_path(const char* c_path, int len1, const char* data1, int len2, const char* data2, const char* which, int seeky, int flag);
-int   zx_report_openssl_error(const char* logkey);
+int   zx_report_openssl_err(const char* logkey);
 
 #if 0
 void  zx_fix_any_elem_dec(struct zx_ctx* c, struct zx_elem_s* x, const char* nam, int namlen);
@@ -278,6 +292,8 @@ int zx_format_parse_error(struct zx_ctx* ctx, char* buf, int siz, char* logkey);
 
 /* zxcrypto.c - Glue to OpenSSL low level */
 
+#define ZX_SYMKEY_LEN 20  /* size of sha1 */
+char* zx_hmac_sha256(struct zx_ctx* c, int key_len, const char* key, int data_len, const char* data, char* md, int* md_len);
 char* zx_raw_digest2(struct zx_ctx* c, char* md, char* const algo, int len, const char* s, int len2, const char* s2);
 struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, struct zx_str* key, int len, const char* s, int iv_len, const char* iv);
 struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_pkey, int pad);

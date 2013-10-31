@@ -66,7 +66,7 @@ Usage: zxencdectest [options] <foo.xml >reencoded-foo.xml\n\
 
 #define DIE(reason) MB fprintf(stderr, "%s\n", reason); exit(2); ME
 
-int afr_buf_size = 0;
+int ak_buf_size = 0;
 int verbose = 1;
 extern int debug;
 int timeout = 0;
@@ -86,12 +86,12 @@ char buf[256*1024];
 /* Called by:  opt */
 void test_ibm_cert_problem()  /* -r 1 */
 {
-  int len, got_all;
+  int got_all;
   zxid_conf* cf;
   struct zx_root_s* r;
   struct zx_sp_LogoutRequest_s* req;
 
-  len = read_all_fd(fileno(stdin), buf, sizeof(buf)-1, &got_all);
+  read_all_fd(fileno(stdin), buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
 
@@ -237,6 +237,7 @@ void x509_test()      /* -r 7 */
   printf("%s",buf);
 }
 
+/* Called by:  timegm_test x16 */
 int timegm_tester(zxid_conf* cf, const char* date_time)
 {
   struct zx_str* ss;
@@ -254,10 +255,12 @@ int timegm_tester(zxid_conf* cf, const char* date_time)
   }
 }
 
+/* Called by:  timegm_test */
 int leap_test(int aa) {
   return LEAP(aa);
 }
 
+/* Called by:  opt */
 void timegm_test()      /* -r 8 */
 {
   int aa;
@@ -448,7 +451,7 @@ void covimp_test()       /* -r 5 */
   printf("covimp ok\n");
 }
 
-/* Called by:  main x8, zxcall_main, zxcot_main, zxdecode_main */
+/* Called by:  main x8, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxdecode_main */
 void opt(int* argc, char*** argv, char*** env)
 {
   if (*argc < 1) goto argerr;
@@ -533,7 +536,7 @@ void opt(int* argc, char*** argv, char*** env)
 	exit(0);
 
       case 'f':
-	/*AFR_TS(LEAK, 0, "memory leaks enabled");*/
+	/*AK_TS(LEAK, 0, "memory leaks enabled");*/
 #if 1
 	ERR("*** WARNING: You have turned memory frees to memory leaks. We will (eventually) run out of memory. Using -rf is not recommended. %d\n", 0);
 #endif
@@ -565,7 +568,7 @@ void opt(int* argc, char*** argv, char*** env)
 	continue;
       case 'a':
 	if ((*argv)[0][3] == 0) {
-	  /*AFR_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
+	  /*AK_TS(ASSERT_NONFATAL, 0, "assert nonfatal enabled");*/
 #if 1
 	  ERR("*** WARNING: YOU HAVE TURNED ASSERTS OFF USING -ra FLAG. THIS MEANS THAT YOU WILL NOT BE ABLE TO OBTAIN ANY SUPPORT. IF PROGRAM NOW TRIES TO ASSERT IT MAY MYSTERIOUSLY AND UNPREDICTABLY CRASH INSTEAD, AND NOBODY WILL BE ABLE TO FIGURE OUT WHAT WENT WRONG OR HOW MUCH DAMAGE MAY BE DONE. USING -ra IS NOT RECOMMENDED. %d\n", assert_nonfatal);
 #endif
@@ -626,7 +629,7 @@ void opt(int* argc, char*** argv, char*** env)
       case 'i':
 	if (!strcmp((*argv)[0],"-license")) {
 	  extern char* license;
-	  fprintf(stderr, license);
+	  fprintf(stderr, "%s", license);
 	  exit(0);
 	}
 	break;
@@ -638,7 +641,7 @@ void opt(int* argc, char*** argv, char*** env)
     if (*argc)
       fprintf(stderr, "Unrecognized flag `%s'\n", (*argv)[0]);
   argerr:
-    fprintf(stderr, help);
+    fprintf(stderr, "%s", help);
     exit(3);
   }
 }

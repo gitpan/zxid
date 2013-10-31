@@ -1,4 +1,5 @@
 /* zxid/zxcrypto.c  -  Glue for cryptographical functions
+ * Copyright (c) 2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
@@ -9,6 +10,7 @@
  *
  * 7.10.2008, added documentation --Sampo
  * 29.8.2009, added zxid_mk_self_signed_cert() --Sampo
+ * 12.12.2011, added HMAC SHA-256 as needed by JWT/JWS --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for snprintf() et al. */
@@ -31,6 +33,11 @@
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #endif
+
+/* Called by:  zxid_mk_jwt x2 */
+char* zx_hmac_sha256(struct zx_ctx* c, int key_len, const char* key, int data_len, const char* data, char* md, int* md_len) {
+  return (char*)HMAC(EVP_sha256(), key, key_len, (unsigned char*)data, data_len, (unsigned char*)md, (unsigned int*)md_len);
+}
 
 #if 0
 /* Called by: */
@@ -98,7 +105,7 @@ char* zx_raw_digest2(struct zx_ctx* c, char* md, char* const algo, int len, cons
   return md;
 
  sslerr:
-  zx_report_openssl_error(where);
+  zx_report_openssl_err(where);
   EVP_MD_CTX_cleanup(&ctx);
   return 0;
 }
@@ -119,7 +126,7 @@ int zx_EVP_DecryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl) {
       //EVPerr(EVP_F_EVP_DECRYPTFINAL_EX,EVP_R_WRONG_FINAL_BLOCK_LENGTH);
       return(0);
     }
-    ASSERTOP(b, <=, sizeof ctx->final);
+    ASSERTOPI(b, <=, sizeof ctx->final);
     n=ctx->final[b-1];
     if (n == 0 || n > (int)b) {
       //EVPerr(EVP_F_EVP_DECRYPTFINAL_EX,EVP_R_BAD_DECRYPT);
@@ -179,7 +186,7 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, st
       ivv = iv;
     } else {
       ivv = ZX_DEFAULT_IV;
-      ASSERTOP(EVP_MAX_IV_LENGTH, <=, sizeof(ZX_DEFAULT_IV));
+      ASSERTOPI(EVP_MAX_IV_LENGTH, <=, sizeof(ZX_DEFAULT_IV));
     }
   } else
     ivv = 0;
@@ -211,7 +218,7 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, st
     goto sslerr;
   }
   
-  ASSERTOP(outlen + iv_len, <=, alloclen);
+  ASSERTOPI(outlen + iv_len, <=, alloclen);
 
 #if 0  
   if(!EVP_CipherFinal_ex(&ctx, (unsigned char*)out->s + iv_len + outlen, &tmplen)) {  /* Append final block */
@@ -239,13 +246,13 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, st
   EVP_CIPHER_CTX_cleanup(&ctx);
   
   outlen += tmplen;
-  ASSERTOP(outlen + iv_len, <=, alloclen);
+  ASSERTOPI(outlen + iv_len, <=, alloclen);
   out->len = outlen + iv_len;
   out->s[outlen + iv_len] = 0;  /* nul term */
   return out;
 
  sslerr:
-  zx_report_openssl_error(where);
+  zx_report_openssl_err(where);
  clean:
   EVP_CIPHER_CTX_cleanup(&ctx);
   return 0;
@@ -289,10 +296,10 @@ struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_p
   ret = RSA_public_encrypt(plain->len, (unsigned char*)plain->s, (unsigned char*)ciphered->s, rsa_pkey, pad);
   if (siz != ret) {
     D("RSA pub enc wrong ret=%d siz=%d\n",ret,siz);
-    zx_report_openssl_error("zx_pub_encrypt_rsa fail (${ret})");
+    zx_report_openssl_err("zx_pub_encrypt_rsa fail (${ret})");
     return 0;
   }
-  ASSERTOP(ret, <=, siz);
+  ASSERTOPI(ret, <=, siz);
   ciphered->len = ret;
   ciphered->s[ret] = 0;
   return ciphered;
@@ -312,10 +319,10 @@ struct zx_str* zx_rsa_pub_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rs
   ret = RSA_public_decrypt(ciphered->len, (unsigned char*)ciphered->s, (unsigned char*)plain->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA public decrypt failed ret=%d len_cipher_data=%d",ret,ciphered->len);
-    zx_report_openssl_error("zx_public_decrypt_rsa fail");
+    zx_report_openssl_err("zx_public_decrypt_rsa fail");
     return 0;
   }
-  ASSERTOP(ret, <=, siz);
+  ASSERTOPI(ret, <=, siz);
   plain->len = ret;
   plain->s[ret] = 0;
   return plain;
@@ -341,10 +348,10 @@ struct zx_str* zx_rsa_priv_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* r
   ret = RSA_private_decrypt(ciphered->len, (unsigned char*)ciphered->s, (unsigned char*)plain->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA private decrypt failed ret=%d len_cipher_data=%d",ret,ciphered->len);
-    zx_report_openssl_error("zx_priv_decrypt_rsa fail");
+    zx_report_openssl_err("zx_priv_decrypt_rsa fail");
     return 0;
   }
-  ASSERTOP(ret, <=, siz);
+  ASSERTOPI(ret, <=, siz);
   plain->len = ret;
   plain->s[ret] = 0;
   return plain;
@@ -364,10 +371,10 @@ struct zx_str* zx_rsa_priv_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_
   ret = RSA_private_encrypt(plain->len, (unsigned char*)plain->s, (unsigned char*)ciphered->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA private encrypt failed ret=%d len_plain=%d", ret, plain->len);
-    zx_report_openssl_error("zx_priv_encrypt_rsa fail");
+    zx_report_openssl_err("zx_priv_encrypt_rsa fail");
     return 0;
   }
-  ASSERTOP(ret, <=, siz);
+  ASSERTOPI(ret, <=, siz);
   ciphered->len = ret;
   ciphered->s[ret] = 0;
   return ciphered;
@@ -376,7 +383,7 @@ struct zx_str* zx_rsa_priv_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_
 /*() Obtain RSA public key from X509 certificate. The certificate must have been
  * previously read into a data structure. See zxid_read_cert() and zxid_extract_cert() */
 
-/* Called by:  zxenc_pubkey_enc, zxlog_write_line */
+/* Called by:  zxbus_write_line, zxenc_pubkey_enc, zxlog_write_line */
 RSA* zx_get_rsa_pub_from_cert(X509* cert, char* logkey)
 {
   EVP_PKEY* evp_pkey;
@@ -384,13 +391,13 @@ RSA* zx_get_rsa_pub_from_cert(X509* cert, char* logkey)
   evp_pkey = X509_get_pubkey(cert);
   if (!evp_pkey) {
     ERR("RSA enc: failed to get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %s", logkey);
-    zx_report_openssl_error("zx_get_rsa_pub_from_cert");
+    zx_report_openssl_err("zx_get_rsa_pub_from_cert");
     return 0;
   }
   rsa_pkey = EVP_PKEY_get1_RSA(evp_pkey);
   if (!rsa_pkey) {
     ERR("RSA enc: failed to extract RSA get public key from certificate (perhaps you have not supplied any certificate, or it is corrupt or of wrong type) %s", logkey);
-    zx_report_openssl_error("zx_get_rsa_pub_from_cert");
+    zx_report_openssl_err("zx_get_rsa_pub_from_cert");
     return 0;
   }
   return rsa_pkey;
@@ -401,7 +408,7 @@ RSA* zx_get_rsa_pub_from_cert(X509* cert, char* logkey)
  * available. If you want to use /dev/random, which may block, you need
  * to recompile with ZXID_TRUE_RAND set to true. */
 
-/* Called by:  main x2, zx_get_symkey, zxenc_pubkey_enc, zxid_mk_at_cert, zxid_mk_id, zxid_mk_id_attr, zxid_mk_self_sig_cert, zxlog_alloc_zbuf, zxlog_write_line */
+/* Called by:  main x2, zx_get_symkey, zxbus_alloc_zbuf, zxbus_write_line, zxenc_pubkey_enc, zxid_mk_at_cert, zxid_mk_id, zxid_mk_id_attr, zxid_mk_self_sig_cert, zxlog_alloc_zbuf, zxlog_write_line */
 void zx_rand(char* buf, int n_bytes)
 {
 #ifdef USE_OPENSSL
@@ -476,8 +483,14 @@ int zxid_mk_self_sig_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, 
   } else {
     strcpy(cn, "Unknown server cn. Misconfiguration.");
   }
-  
+
+#if 0
+  /* On some CAs the OU can not exceed 30 chars  2         3
+   *                          123456789012345678901234567890 */
   snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert %s", cf->url);
+#else
+  snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert");
+#endif
   ou[sizeof(ou)-1] = 0;  /* must terminate manually as on win32 termination is not guaranteed */
 
   ts = time(0);
@@ -490,7 +503,11 @@ int zxid_mk_self_sig_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, 
   
   pkey=EVP_PKEY_new();
   DD("keygen preparing rsa key %s", lk);
+#if 0
   rsa = RSA_generate_key(1024 /*bits*/, 0x10001 /*65537*/, 0 /*req_cb*/, 0 /*arg*/);
+#else
+  rsa = RSA_generate_key(2048 /*bits*/, 0x10001 /*65537*/, 0 /*req_cb*/, 0 /*arg*/);
+#endif
   DD("keygen rsa key generated %s", name);
   EVP_PKEY_assign_RSA(pkey, rsa);
 
@@ -536,6 +553,8 @@ badurl:
 
   /* Construct DN part by part. We want cn=www.site.com,o=ZXID Auto-Cert */
 
+  if (cf->contact_email)
+    zxid_add_name_field(ri->subject, V_ASN1_IA5STRING, NID_pkcs9_emailAddress, cf->contact_email);
   zxid_add_name_field(ri->subject, V_ASN1_PRINTABLESTRING, NID_commonName, cn);
   zxid_add_name_field(ri->subject, V_ASN1_T61STRING, NID_organizationalUnitName, ou);
   zxid_add_name_field(ri->subject, V_ASN1_T61STRING, NID_organizationName, cf->org_name);
@@ -617,7 +636,7 @@ badurl:
   DD("keygen signing x509ss %s", lk);
   if (!(X509_sign(x509ss, pkey, EVP_md5()))) {
     ERR("Failed to sign x509ss %s", lk);
-    zx_report_openssl_error("X509_sign");
+    zx_report_openssl_err("X509_sign");
     return 0;
   }
   DD("keygen x509ss ready %s", lk);
@@ -630,7 +649,7 @@ badurl:
   DD("write_csr %s", lk);
   if (!PEM_write_bio_X509_REQ(wbio_csr, req)) {
     ERR("write_csr %s", lk);
-    zx_report_openssl_error("write_csr");
+    zx_report_openssl_err("write_csr");
     return 0;
   }
   len = BIO_get_mem_data(wbio_csr, &p);
@@ -648,7 +667,7 @@ badurl:
   DD("write_cert %s", lk);
   if (!PEM_write_bio_X509(wbio_cert, x509ss)) {
     ERR("write_cert %s", lk);
-    zx_report_openssl_error("write_cert");
+    zx_report_openssl_err("write_cert");
     return 0;
   }
   len = BIO_get_mem_data(wbio_cert, &p);
@@ -657,7 +676,7 @@ badurl:
   DD("write_private_key %s", lk);
   if (!PEM_write_bio_PrivateKey(wbio_pkey, pkey, 0,0,0,0,0)) {
     ERR("write_private_key %s", lk);
-    zx_report_openssl_error("write_private_key");
+    zx_report_openssl_err("write_private_key");
     return 0;
   }
   lenq = BIO_get_mem_data(wbio_pkey, &q);
@@ -685,6 +704,24 @@ badurl:
   return 0;
 #endif
 }
+
+#if 0
+/* use PEM_write_X509(fp, cert) instead! */
+/* Called by: */
+void zx_print_X509(FILE* fp, X509* cert)
+{
+  int len;
+  char* p;
+  BIO* wbio_cert = BIO_new(BIO_s_mem());
+  if (!PEM_write_bio_X509(wbio_cert, peer_cert)) {
+    ERR("write_cert %p", peer_cert);
+    zx_report_openssl_err("write_cert");
+    return;
+  }
+  len = BIO_get_mem_data(wbio_cert, &p);
+  fprintf(fp, "%.*s", len, p);
+}
+#endif
 
 /*
 
@@ -859,7 +896,7 @@ int zxid_mk_at_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, zxid_n
   DD("keygen signing x509ss %s", lk);
   if (!(X509_sign(x509ss, sign_pkey, EVP_md5()))) {
     ERR("Failed to sign x509ss %s", lk);
-    zx_report_openssl_error("X509_sign");
+    zx_report_openssl_err("X509_sign");
     return 0;
   }
   DD("keygen x509ss ready %s", lk);
@@ -870,7 +907,7 @@ int zxid_mk_at_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, zxid_n
   DD("write_cert %s", lk);
   if (!PEM_write_bio_X509(wbio_cert, x509ss)) {
     ERR("write_cert %s", lk);
-    zx_report_openssl_error("write_cert");
+    zx_report_openssl_err("write_cert");
     return 0;
   }
   len = BIO_get_mem_data(wbio_cert, &p);
@@ -920,7 +957,7 @@ static void to64(char *s, unsigned long v, int n) {
  * buf:: must be at least 120 chars
  * return:: buf, nul terminated */
 
-/* Called by:  main x2, zxid_pw_authn */
+/* Called by:  authn_user, main, zx_pw_chk */
 char* zx_md5_crypt(const char* pw, const char* salt, char* buf)
 {
   const char* magic = "$1$";    /* magic prefix to identify algo */

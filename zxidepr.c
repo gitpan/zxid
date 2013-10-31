@@ -1,4 +1,5 @@
 /* zxidepr.c  -  Handwritten functions for client side EPR and bootstrap handling
+ * Copyright (c) 2012 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -10,6 +11,7 @@
  *
  * 5.2.2007, created --Sampo
  * 7.10.2008, added documentation --Sampo
+ * 22.4.2012, fixed folding EPR names (to avoid folding comma) --Sampo
  *
  * See also: zxidsimp.c (attributes to LDIF), and zxida7n.c (general attribute querying)
  *
@@ -27,6 +29,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <stdio.h>
+#include <errno.h>
 
 #include "errmac.h"
 #include "zxid.h"
@@ -50,42 +53,29 @@ void zxid_fold_svc(char* p, int len)
 /*() Compute (and fold) unique nice sha1 name according to NAME,SHA1
  *
  * This name format is designed to ensure unique name, while
- * maintainting human readability. This is
+ * maintainting human (=sysadmin) readability. This is
  * useful in the common case where WSC wants to call a specific type of web service.
  *
  * cf::  ZXID configuration object, also used for memory allocation
  * buf:: result parameter. The buffer, which must have been allocated, will be
  *     modified to have the path. The path will be nul terminated.
  * buf_len:: The length of the buf (including nul termination), usually sizeof(buf)
- * name:: Often Service name or SP Entity ID
+ * name:: Often Service type name or SP Entity ID
  * cont:: content of EPR or the SP EntityID, used to compute sha1 hash that becomes part
  *     of the file name
  * ign_prefix:: How many characters to ignore from beginning of name: 0 or 7 (http://)
  * return:: 0 on success (the real return value is returned via ~buf~ result parameter) */
 
-/* Called by:  zxid_epr_path, zxid_get_affil_and_sp_name_buf, zxid_idp_map_nid2uid, zxid_imreq, zxid_nidmap_do x2, zxid_sso_issue_a7n */
-int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
-		   struct zx_str* name, struct zx_str* cont, int ign_prefix)
+/* Called by:  zxid_epr_path, zxid_get_affil_and_sp_name_buf, zxid_idp_map_nid2uid, zxid_imreq, zxid_nidmap_do x2, zxid_sso_issue_a7n, zxid_sso_issue_jwt */
+int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len, struct zx_str* name, struct zx_str* cont, int ign_prefix)
 {
-  char* p;
-  char* q;
-  int len;
+  int len = MAX(name->len - ign_prefix, 0);
   char sha1_cont[28];
   sha1_safe_base64(sha1_cont, cont->len, cont->s);
   sha1_cont[27] = 0;
-  len = snprintf(buf, buf_len, "%.*s,%s",
-		 MAX(name->len-ign_prefix,0), name->s+ign_prefix, sha1_cont);
+  snprintf(buf, buf_len, "%.*s,%s", len, name->s+ign_prefix, sha1_cont);
   buf[buf_len-1] = 0; /* must terminate manually as on win32 termination is not guaranteed */
-  
-  /* 012345678
-   * http://
-   * https://   */
-
-  /* Sanity scan the name part (svc or eid), folding dangerous chars to _. */
-
-  p = buf;
-  q = MIN(p + MAX(name->len-7,0), buf + buf_len);
-  zxid_fold_svc(p, q-p);
+  zxid_fold_svc(buf, len);
   return 0;
 }
 
@@ -101,7 +91,7 @@ int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
  * buf:: result parameter. The buffer, which must have been allocated, will be
  *     modified to have the path. The path will be nul terminated.
  * buf_len:: The length of the buf (including nul termination), usually sizeof(buf)
- * svc:: Service name
+ * svc:: Service type name
  * cont:: content of EPR, used to compute sha1 hash that becomes part of the file name
  * return:: 0 on success (the real return value is returned via ~buf~ result parameter)
  *
@@ -115,14 +105,12 @@ int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len,
  * especially if you get errors about multibyte characters. */
 
 /* Called by:  zxid_cache_epr, zxid_snarf_eprs_from_ses */
-int zxid_epr_path(zxid_conf* cf, char* dir, char* sid,
-		  char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont)
+int zxid_epr_path(zxid_conf* cf, char* dir, char* sid, char* buf, int buf_len, struct zx_str* svc, struct zx_str* cont)
 {
   int len = snprintf(buf, buf_len, "%s%s%s/", cf->path, dir, sid);
   buf[buf_len-1] = 0; /* must terminate manually as on win32 termination is not guaranteed */
   if (len <= 0) {
-    perror("snprintf");
-    ERR("Broken snprintf? Impossible to compute length of string. Be sure to `export LANG=C' if you get errors about multibyte characters. Length returned: %d", len);
+    zx_broken_snprintf(len);
     if (buf && buf_len > 0)
       buf[0] = 0;
     return 1;
@@ -189,6 +177,8 @@ void zxid_snarf_eprs(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr)
   struct zx_str* ss;
   struct zx_str* urlss;
   int wsf20 = 0;
+  if (!epr)
+    return;
   for (; epr; epr = (zxid_epr*)epr->gg.g.n) {
     if (epr->gg.g.tok != zx_a_EndpointReference_ELEM)
       continue;
@@ -294,7 +284,7 @@ void zxid_snarf_eprs_from_ses(zxid_conf* cf, zxid_ses* ses)
  *
  * See also: zxid_print_session() in zxcall.c */
 
-/* Called by:  main x2, zxid_get_epr x2 */
+/* Called by:  main x2, zxid_get_epr x3 */
 zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
   struct zx_root_s* r;
@@ -326,8 +316,7 @@ zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const cha
   D("Looking in session dir(%s) svc(%s) pses=%p", path, svc, ses);
   dir = opendir(path);
   if (!dir) {
-    perror("opendir to find epr in session");
-    ERR("Opening session for find epr by opendir failed path(%s) sesptr=%p", path, ses);
+    ERR("Opening session for find epr by opendir failed path(%s): %d %s; euid=%d egid=%d (sesptr=%p)", path, errno, STRERROR(errno), geteuid(), getegid(), ses);
     D_DEDENT("find_epr: ");
     return 0;
   }
@@ -422,9 +411,11 @@ zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const cha
  * return:: EPR data structure on success, 0 on failure (no discovery EPR in cache, or
  *     not found by the discovery service). If more than one were found, a linked list
  *     of EPRs is returned.
+ *
+ * See also:: zxid_get_epr_address() for extracting URL as a string
  */
 
-/* Called by:  main x5, zxcall_main, zxid_call, zxid_map_identity_token, zxid_nidmap_identity_token */
+/* Called by:  main x5, zxcall_main x2, zxid_call, zxid_map_identity_token, zxid_nidmap_identity_token */
 zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
   int wsf20 = 0;
@@ -514,9 +505,9 @@ struct zx_str* zxid_get_epr_desc(zxid_conf* cf, zxid_epr* epr) {
 
 /*() Accessor function for extracting endpoint TAS3 Trust scores. */
 
-/* Called by:  */
+/* Called by: */
 struct zx_str* zxid_get_epr_tas3_trust(zxid_conf* cf, zxid_epr* epr) {
-  if (!epr || !epr->Metadata)
+  if (!epr || !epr->Metadata || !epr->Metadata->Trust)
     return 0;
   return zx_easy_enc_elem_sig(cf, &epr->Metadata->Trust->gg);
 }
@@ -631,6 +622,7 @@ zxid_epr* zxid_new_epr(zxid_conf* cf, char* address, char* desc, char* entid, ch
   return epr;
 }
 
+/*() Returns delegated discovery EPR, such as someone else's discovery epr. */
 /* Called by: */
 zxid_epr* zxid_get_delegated_discovery_epr(zxid_conf* cf, zxid_ses* ses)
 {
