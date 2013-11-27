@@ -41,7 +41,7 @@ Usage: zxcall [options] -s SESID -t SVCTYPE <soap_req_body.xml >soap_resp.xml\n\
        zxcall [options] -a IDP USER:PW   # Authentication only\n\
        zxcall [options] -s SESID -im EID # Identity Mapping to EID\n\
        zxcall [options] -s SESID -l      # List session cache\n\
-  -c CONF          Optional configuration string (default -c PATH=/var/zxid/)\n\
+  -c CONF          Optional configuration string (default -c CPATH=/var/zxid/)\n\
                    Most of the configuration is read from " ZXID_CONF_PATH "\n\
   -s SESID         Session ID referring to a directory in /var/zxid/ses\n\
                    Use zxidhlo to do SSO and then cut and paste from there.\n\
@@ -146,9 +146,9 @@ static void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++zx_debug;
-	if (zx_debug == 2)
-	  strncpy(zx_instance, "\t\e[43mzxcall\e[0m", sizeof(zx_instance));
+	++errmac_debug;
+	if (errmac_debug == 2)
+	  strncpy(errmac_instance, "\t\e[43mzxcall\e[0m", sizeof(errmac_instance));
 	continue;
       case 'i':
         switch ((*argv)[0][3]) {
@@ -398,7 +398,7 @@ int zxcall_main(int argc, char** argv, char** env)
   zxid_entity* idp_meta;
   zxid_epr* epr;
 
-  strncpy(zx_instance, "\tzxcall", sizeof(zx_instance));
+  strncpy(errmac_instance, CC_CYNY("\tzxcall"), sizeof(errmac_instance));
   cf = zxid_new_conf_to_cf(0);
   opt(&argc, &argv, &env);
   
@@ -473,7 +473,7 @@ int zxcall_main(int argc, char** argv, char** env)
       siz = 4096;
       p = bdy = ZX_ALLOC(cf->ctx, siz);
       while (1) {
-	n = read_all_fd(fileno(stdin), p, siz+bdy-p-1, &got);
+	n = read_all_fd(fdstdin, p, siz+bdy-p-1, &got);
 	if (n == -1) {
 	  perror("reading SOAP req from stdin");
 	  break;

@@ -39,8 +39,33 @@
 #include <openssl/ssl.h>
 #endif
 
+/*(c) ZXID configuration and working directory path
+ * Where metadata cache and session files are created. Note that the directory
+ * is not hashed: you should use a file system that scales easily to oodles
+ * of small files in one directory. Say `make dir' to create the directory
+ * with proper layout. If you change it here, also edit Makefile. */
+#ifndef ZXID_PATH
+#ifdef MINGW
+#define ZXID_PATH  "c:/var/zxid/"
+#else
+#define ZXID_PATH  "/var/zxid/"
+#endif
+#endif
+
+#ifndef ZXID_CONF_FILE
+#define ZXID_CONF_FILE "zxid.conf"
+#endif
+
 #ifndef ZXID_CONF_PATH
-#define ZXID_CONF_PATH "/var/zxid/zxid.conf"
+#define ZXID_CONF_PATH ZXID_PATH ZXID_CONF_FILE
+#endif
+
+#ifndef ZXID_PATH_OPT
+#define ZXID_PATH_OPT "ZXPATH"
+#endif
+
+#ifndef ZXID_ENV_PREFIX
+#define ZXID_ENV_PREFIX "ZXID_"
 #endif
 
 #include <zx/zx.h>
@@ -407,7 +432,7 @@ struct zxid_cgi {
   char* response_type; /* OAuth2 / OpenID-Connect */
   char* client_id;     /* OAuth2 */
   char* scope;         /* OAuth2 */
-  char* redirect_uri;  /* OAuth2 */
+  char* redirect_uri;  /* OAuth2, also decoded RelayState in SAML */
   char* nonce;         /* OAuth2 */
   char* state;         /* OAuth2 */
   char* display;       /* OAuth2 */
@@ -444,7 +469,9 @@ struct zxid_cgi {
 #endif
   char* inv;           /* Invitation ID */
   char* skin;
-  char* action_url;    /* action URL in some forms, such as post.html */
+  char* action_url;    /* <form action=URL> in some forms, such as post.html */
+  char* uri_path;      /* SCRIPT_NAME or other URI path */
+  char* qs;            /* QUERY_STRING */
   zxid_entity* idp_list;   /* IdPs from CDC */
 };
 
@@ -767,7 +794,7 @@ ZXID_DECL int zxlog_blob(zxid_conf* cf, int logflag, struct zx_str* path, struct
 ZXID_DECL int zxlog(zxid_conf* cf, struct timeval* ourts, struct timeval* srcts, const char* ipport, struct zx_str* entid, struct zx_str* msgid, struct zx_str* a7nid, struct zx_str* nid, const char* sigval, const char* res, const char* op, const char* arg, const char* fmt, ...);
 ZXID_DECL int zxlogwsp(zxid_conf* cf, zxid_ses* ses, const char* res, const char* op, const char* arg, const char* fmt, ...);
 ZXID_DECL int zxlogusr(zxid_conf* cf, const char* uid, struct timeval* ourts, struct timeval* srcts, const char* ipport, struct zx_str* entid, struct zx_str* msgid, struct zx_str* a7nid, struct zx_str* nid, const char* sigval, const char* res, const char* op, const char* arg, const char* fmt, ...);
-ZXID_DECL void zxlog_debug_xml_blob(zxid_conf* cf, const char* file, int line, const char* func, const char* lk, int len, const char* xml);
+ZXID_DECL void errmac_debug_xml_blob(zxid_conf* cf, const char* file, int line, const char* func, const char* lk, int len, const char* xml);
 ZXID_DECL char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_len, const char* mid, int dest_len, const char* dest, int eid_len, const char* eid, int body_len, const char* body);
 ZXID_DECL int zxbus_verify_receipt(zxid_conf* cf, const char* eid, int sigbuf_len, char* sigbuf, int mid_len, const char* mid, int dest_len, const char* dest, int deid_len, const char* deid, int body_len, const char* body);
 ZXID_DECL int zxbus_persist_msg(zxid_conf* cf, int c_path_len, char* c_path, int dest_len, const char* dest, int data_len, const char* data);
@@ -786,7 +813,7 @@ ZXID_DECL char* zxbus_listen_msg(zxid_conf* cf, struct zxid_bus_url* bu);
 
 /* zxidmeta */
 
-ZXID_DECL zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name);
+ZXID_DECL zxid_entity* zxid_get_ent_file(zxid_conf* cf, const char* sha1_name, const char* logkey);
 ZXID_DECL zxid_entity* zxid_get_ent_cache(zxid_conf* cf, struct zx_str* eid);
 ZXID_DECL int zxid_write_ent_to_cache(zxid_conf* cf, zxid_entity* ent);
 ZXID_DECL zxid_entity* zxid_parse_meta(zxid_conf* cf, char** md, char* lim);
@@ -917,9 +944,7 @@ ZXID_DECL zxid_a7n* zxid_dec_a7n(zxid_conf* cf, zxid_a7n* a7n, struct zx_sa_Encr
 
 /* zxidsso - SP side of SSO: consuming A7N */
 
-ZXID_DECL int zxid_start_sso(zxid_conf* cf, zxid_cgi* cgi);
 ZXID_DECL int zxid_sp_deref_art(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses);
-
 ZXID_DECL int zxid_as_call_ses(zxid_conf* cf, zxid_entity* idp_meta, zxid_cgi* cgi, zxid_ses* ses);
 ZXID_DECL zxid_ses* zxid_as_call(zxid_conf* cf, zxid_entity* idp_meta, const char* user, const char* pw);
 

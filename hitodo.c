@@ -43,7 +43,7 @@
 #include "hiios.h"
 #include "errmac.h"
 
-extern int zx_debug;
+extern int errmac_debug;
 
 const char* qel_kind[] = {
   "OFF0",
@@ -78,7 +78,7 @@ static struct hi_qel* hi_todo_consume_queue_inlock(struct hiios* shf)
 
 /*(-) Simple mechanics of enque operation against shf->todo_producer */
 
-/* Called by: */
+/* Called by:  hi_todo_consume, hi_todo_produce */
 static void hi_todo_produce_queue_inlock(struct hiios* shf, struct hi_qel* qe)
 {
   if (shf->todo_produce)
@@ -106,7 +106,7 @@ struct hi_qel* hi_todo_consume(struct hi_thr* hit)
 
  deque_again:
   while (!hit->shf->todo_consume && hit->shf->poll_tok.proto == HIPROTO_POLL_OFF)  /* Empty? */
-    ZX_COND_WAIT(&hit->shf->todo_cond, hit->shf->todo_mut, "todo-cons"); /* Block until work */
+    ERRMAC_COND_WAIT(&hit->shf->todo_cond, hit->shf->todo_mut, "todo-cons"); /* Block until work */
   D("Out of cond_wait todo_mut.thr=%lx", (long)hit->shf->todo_mut.thr);
   
   if (!hit->shf->todo_consume) {
@@ -162,7 +162,7 @@ struct hi_qel* hi_todo_consume(struct hi_thr* hit)
  * listener, or pdu type todos there is no such consideration.
  * locking:: Takes todo_mut and io->qel.mut */
 
-/* Called by:  hi_accept, hi_accept_book, hi_in_out, hi_poll x2, hi_send0, stomp_msg_deliver, zxbus_sched_new_delivery, zxbus_sched_pending_delivery */
+/* Called by:  hi_accept, hi_accept_book, hi_close, hi_in_out, hi_poll x3, hi_send0, stomp_msg_deliver, zxbus_sched_new_delivery, zxbus_sched_pending_delivery */
 void hi_todo_produce(struct hi_thr* hit, struct hi_qel* qe, const char* lk, int from_poll)
 {
   struct hi_io* io;
@@ -209,7 +209,7 @@ void hi_todo_produce(struct hi_thr* hit, struct hi_qel* qe, const char* lk, int 
 
 produce:
   hi_todo_produce_queue_inlock(hit->shf, qe);
-  ZX_COND_SIG(&hit->shf->todo_cond, "todo-prod");  /* Wake up consumers */
+  ERRMAC_COND_SIG(&hit->shf->todo_cond, "todo-prod");  /* Wake up consumers */
 
  out:
   D("%s: UNLOCK todo_mut.thr=%lx", lk, (long)hit->shf->todo_mut.thr);

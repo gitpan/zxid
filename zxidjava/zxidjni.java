@@ -2789,6 +2789,22 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxid_cgi_action_url_get(zxid_cgi.getCPtr(self));
   }
 
+  public static void cgi_uri_path_set(zxid_cgi self, String value) {
+    zxidjniJNI.zxid_cgi_uri_path_set(zxid_cgi.getCPtr(self), value);
+  }
+
+  public static String cgi_uri_path_get(zxid_cgi self) {
+    return zxidjniJNI.zxid_cgi_uri_path_get(zxid_cgi.getCPtr(self));
+  }
+
+  public static void cgi_qs_set(zxid_cgi self, String value) {
+    zxidjniJNI.zxid_cgi_qs_set(zxid_cgi.getCPtr(self), value);
+  }
+
+  public static String cgi_qs_get(zxid_cgi self) {
+    return zxidjniJNI.zxid_cgi_qs_get(zxid_cgi.getCPtr(self));
+  }
+
   public static void cgi_idp_list_set(zxid_cgi self, zxid_entity value) {
     zxidjniJNI.zxid_cgi_idp_list_set(zxid_cgi.getCPtr(self), zxid_entity.getCPtr(value));
   }
@@ -4010,8 +4026,8 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxlogusr(zxid_conf.getCPtr(cf), uid, SWIGTYPE_p_timeval.getCPtr(ourts), SWIGTYPE_p_timeval.getCPtr(srcts), ipport, entid, msgid, a7nid, nid, sigval, res, op, arg, fmt);
   }
 
-  public static void zxlog_debug_xml_blob(zxid_conf cf, String file, int line, String func, String lk, int len, String xml) {
-    zxidjniJNI.zxlog_debug_xml_blob(zxid_conf.getCPtr(cf), file, line, func, lk, len, xml);
+  public static void errmac_debug_xml_blob(zxid_conf cf, String file, int line, String func, String lk, int len, String xml) {
+    zxidjniJNI.errmac_debug_xml_blob(zxid_conf.getCPtr(cf), file, line, func, lk, len, xml);
   }
 
   public static String zxbus_mint_receipt(zxid_conf cf, int sigbuf_len, String sigbuf, int mid_len, String mid, int dest_len, String dest, int eid_len, String eid, int body_len, String body) {
@@ -4062,8 +4078,8 @@ public class zxidjni implements zxidjniConstants {
     return zxidjniJNI.zxbus_listen_msg(zxid_conf.getCPtr(cf), SWIGTYPE_p_zxid_bus_url.getCPtr(bu));
   }
 
-  public static zxid_entity get_ent_file(zxid_conf cf, String sha1_name) {
-    long cPtr = zxidjniJNI.zxid_get_ent_file(zxid_conf.getCPtr(cf), sha1_name);
+  public static zxid_entity get_ent_file(zxid_conf cf, String sha1_name, String logkey) {
+    long cPtr = zxidjniJNI.zxid_get_ent_file(zxid_conf.getCPtr(cf), sha1_name, logkey);
     return (cPtr == 0) ? null : new zxid_entity(cPtr, false);
   }
 
@@ -4380,10 +4396,6 @@ public class zxidjni implements zxidjniConstants {
   public static zxid_a7n dec_a7n(zxid_conf cf, zxid_a7n a7n, SWIGTYPE_p_zx_sa_EncryptedAssertion_s enca7n) {
     long cPtr = zxidjniJNI.zxid_dec_a7n(zxid_conf.getCPtr(cf), zxid_a7n.getCPtr(a7n), SWIGTYPE_p_zx_sa_EncryptedAssertion_s.getCPtr(enca7n));
     return (cPtr == 0) ? null : new zxid_a7n(cPtr, false);
-  }
-
-  public static int start_sso(zxid_conf cf, zxid_cgi cgi) {
-    return zxidjniJNI.zxid_start_sso(zxid_conf.getCPtr(cf), zxid_cgi.getCPtr(cgi));
   }
 
   public static int sp_deref_art(zxid_conf cf, zxid_cgi cgi, zxid_ses ses) {

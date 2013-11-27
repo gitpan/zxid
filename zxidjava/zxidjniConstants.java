@@ -39,7 +39,11 @@ public interface zxidjniConstants {
   public final static String ENC_ENCKEY_METH = zxidjniJNI.ENC_ENCKEY_METH_get();
   public final static String ENC_TYPE_ELEMENT = zxidjniJNI.ENC_TYPE_ELEMENT_get();
   public final static String ENC_TYPE_CONTENT = zxidjniJNI.ENC_TYPE_CONTENT_get();
+  public final static String ZXID_PATH = zxidjniJNI.ZXID_PATH_get();
+  public final static String ZXID_CONF_FILE = zxidjniJNI.ZXID_CONF_FILE_get();
   public final static String ZXID_CONF_PATH = zxidjniJNI.ZXID_CONF_PATH_get();
+  public final static String ZXID_PATH_OPT = zxidjniJNI.ZXID_PATH_OPT_get();
+  public final static String ZXID_ENV_PREFIX = zxidjniJNI.ZXID_ENV_PREFIX_get();
   public final static int ZXID_CONF_MAGIC = zxidjniJNI.ZXID_CONF_MAGIC_get();
   public final static int ZXID_CGI_MAGIC = zxidjniJNI.ZXID_CGI_MAGIC_get();
   public final static int ZXID_SES_MAGIC = zxidjniJNI.ZXID_SES_MAGIC_get();
@@ -361,6 +365,7 @@ public interface zxidjniConstants {
   public final static String LIBERTY_ENA_HDR = zxidjniJNI.LIBERTY_ENA_HDR_get();
   public final static String LIBERTY_CONSENT_OBTAINED = zxidjniJNI.LIBERTY_CONSENT_OBTAINED_get();
   public final static String XMLNS_DAP = zxidjniJNI.XMLNS_DAP_get();
+  public final static String TAS3_WSC_RQ_OUT = zxidjniJNI.TAS3_WSC_RQ_OUT_get();
   public final static String TAS3_PEP_RQ_OUT = zxidjniJNI.TAS3_PEP_RQ_OUT_get();
   public final static String TAS3_PEP_RQ_IN = zxidjniJNI.TAS3_PEP_RQ_IN_get();
   public final static String TAS3_PEP_RS_PARSE = zxidjniJNI.TAS3_PEP_RS_PARSE_get();
@@ -373,10 +378,11 @@ public interface zxidjniConstants {
   public final static String TAS3_STATUS_NOSIG = zxidjniJNI.TAS3_STATUS_NOSIG_get();
   public final static String TAS3_STATUS_BADSIG = zxidjniJNI.TAS3_STATUS_BADSIG_get();
   public final static String TAS3_STATUS_BADCOND = zxidjniJNI.TAS3_STATUS_BADCOND_get();
-  public final static String TAS3_STATUS_EXPIRED = zxidjniJNI.TAS3_STATUS_EXPIRED_get();
   public final static String TAS3_STATUS_REPLAY = zxidjniJNI.TAS3_STATUS_REPLAY_get();
   public final static String TAS3_STATUS_BADXML = zxidjniJNI.TAS3_STATUS_BADXML_get();
   public final static String TAS3_STATUS_FAULT = zxidjniJNI.TAS3_STATUS_FAULT_get();
+  public final static String TAS3_STATUS_EXPIRED = zxidjniJNI.TAS3_STATUS_EXPIRED_get();
+  public final static String TAS3_STATUS_EPR_NOT_FOUND = zxidjniJNI.TAS3_STATUS_EPR_NOT_FOUND_get();
   public final static String TAS3_SOL1_ENGINE = zxidjniJNI.TAS3_SOL1_ENGINE_get();
   public final static String TAS3_PLEDGE = zxidjniJNI.TAS3_PLEDGE_get();
   public final static String TAS3_REQUIRE = zxidjniJNI.TAS3_REQUIRE_get();

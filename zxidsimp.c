@@ -22,6 +22,8 @@
  * 13.2.2013, added WD option --Sampo
  * 14.3.2013  added language/skin dependent templates --Sampo
  * 15.4.2013, added fflush(3) here and there to accommodate broken atexit() --Sampo
+ * 17.11.2013, move redir_to_content feature to zxid_simple() --Sampo
+ * 20.11.2013, move defaultqs feature feature to zxid_simple() --Sampo
  *
  * Login button abbreviations
  * A2 = SAML 2.0 Artifact Profile
@@ -85,7 +87,7 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
 #else
   zxid_init_conf_ctx(cf, ZXID_PATH /* N.B. Often this is overridden. */);
 #endif
-#if defined(ZXID_CONF_FILE) || defined(ZXID_CONF_FLAG)
+#if defined(ZXID_CONF_FILE_ENA) || defined(ZXID_CONF_FLAG)
   /* The usual case is that config file processing is compiled in, so this code happens. */
   {
     char* buf;
@@ -100,16 +102,18 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
 
     if (!conf || conf_len < 5 || memcmp(conf, "PATH=", 5)) {
       /* No conf, or conf does not start by PATH: read from file default values */
-      buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%szxid.conf", cf->path);
+      buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%s" ZXID_CONF_FILE, cf->path);
+      if (!buf || !len)
+	buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%szxid.conf", cf->path);
       if (buf && len)
 	zxid_parse_conf_raw(cf, len, buf);
     }
 
-    buf = getenv("ZXID_PRE_CONF");
-    D("Check ZXID_PRE_CONF(%s)", buf);
+    buf = getenv(ZXID_ENV_PREFIX "PRE_CONF");
+    D("Check " ZXID_ENV_PREFIX "PRE_CONF(%s)", buf);
     if (buf) {
       /* Copy the conf string because we are going to modify it in place. */
-      D("Applying ZXID_PRE_CONF(%s)", buf);
+      D("Applying " ZXID_ENV_PREFIX "PRE_CONF(%s)", buf);
       len = strlen(buf);
       cc = ZX_ALLOC(cf->ctx, len+1);
       memcpy(cc, buf, len);
@@ -125,10 +129,10 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
       zxid_parse_conf_raw(cf, conf_len, cc);
     }
 
-    buf = getenv("ZXID_CONF");
+    buf = getenv(ZXID_ENV_PREFIX "CONF");
     if (buf) {
       /* Copy the conf string because we are going to modify it in place. */
-      D("Applying ZXID_CONF(%s)", buf);
+      D("Applying " ZXID_ENV_PREFIX "CONF(%s)", buf);
       len = strlen(buf);
       cc = ZX_ALLOC(cf->ctx, len+1);
       memcpy(cc, buf, len);
@@ -151,7 +155,7 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
  * conf::   Configuration string
  * return:: Configuration object */
 
-/* Called by:  a7n_test, main x6, opt x2, test_receipt, ws_validations, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxidwspcgi_main x2 */
+/* Called by:  a7n_test, handle_request, main x6, opt x2, test_receipt, ws_validations, zxbusd_main, zxbuslist_main, zxbustailf_main, zxcall_main, zxcot_main, zxidwspcgi_main x2 */
 zxid_conf* zxid_new_conf_to_cf(const char* conf)
 {
   zxid_conf* cf = malloc(sizeof(zxid_conf));  /* *** direct use of malloc */
@@ -780,12 +784,12 @@ char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_
   
   if (auto_flags & (c_mask | h_mask)) {
     if (auto_flags & h_mask) {  /* H only: return both H and C */
-      D("With headers %x", auto_flags);
+      if (errmac_debug & MOD_AUTH_SAML_INOUT) D("With headers %x (%s)", auto_flags, ss->s);
       ss2 = zx_strf(cf->ctx, "Content-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
 		    cont_type, ss->len, ss->len, ss->s);
       zx_str_free(cf->ctx, ss);
     } else {
-      D("No headers %x", auto_flags);
+      D("No headers %x (%s)", auto_flags, ss->s);
       ss2 = ss;       /* C only */
     }
     res = ss2->s;
@@ -806,14 +810,14 @@ char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_
 
 /*() Helper function to redirect according to auto flags. */
 
-/* Called by:  zxid_simple_idp_an_ok_do_rest, zxid_simple_idp_new_user, zxid_simple_idp_recover_password, zxid_simple_idp_show_an, zxid_simple_show_err, zxid_simple_show_idp_sel */
+/* Called by:  zxid_show_protected_content_setcookie, zxid_simple_idp_an_ok_do_rest, zxid_simple_idp_new_user, zxid_simple_idp_recover_password, zxid_simple_idp_show_an, zxid_simple_show_err, zxid_simple_show_idp_sel */
 static char* zxid_simple_redir_page(zxid_conf* cf, char* redir, char* rs, int* res_len, int auto_flags)
 {
   char* res;
   struct zx_str* ss;
   D("cf=%p redir(%s)", cf, redir);
   if (auto_flags & ZXID_AUTO_REDIR) {
-    fprintf(stdout, "Location: %s?%s" CRLF2, redir, STRNULLCHK(rs));
+    fprintf(stdout, "Location: %s%c%s" CRLF2, redir, rs?'?':0, STRNULLCHK(rs));
     fflush(stdout);
     if (auto_flags & ZXID_AUTO_EXIT)
       exit(0);
@@ -821,7 +825,7 @@ static char* zxid_simple_redir_page(zxid_conf* cf, char* redir, char* rs, int* r
       *res_len = 1;
     return zx_dup_cstr(cf->ctx, "n");
   }
-  ss = zx_strf(cf->ctx, "Location: %s?%s" CRLF2, redir, STRNULLCHK(rs));
+  ss = zx_strf(cf->ctx, "Location: %s%c%s" CRLF2, redir, rs?'?':0, STRNULLCHK(rs));
   if (res_len)
     *res_len = ss->len;
   res = ss->s;
@@ -837,6 +841,16 @@ static char* zxid_simple_redir_page(zxid_conf* cf, char* redir, char* rs, int* r
 char* zxid_simple_show_idp_sel(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
   struct zx_str* ss;
+
+  /* cgi->rs will be copied to ses->rs and from there in ab_pep to resource-id.
+   * We compress and safe_base64 encode it to protect any URL special characters.
+   * *** seems that at this point the p is not just rs, but the entire local URL --Sampo */
+  D("Previous rs(%s)", STRNULLCHKD(cgi->rs));
+  ss = zx_strf(cf->ctx, "%s%c%s", cgi->uri_path, cgi->qs&&cgi->qs[0]?'?':0, STRNULLCHK(cgi->qs));
+  cgi->rs = zxid_deflate_safe_b64_raw(cf->ctx, -2, ss->s);
+  D("rs(%s) from(%s) uri_path(%s) qs(%s)",cgi->rs,ss->s,cgi->uri_path,STRNULLCHKD(cgi->qs));
+  zx_str_free(cf->ctx, ss);
+
   D("cf=%p cgi=%p templ(%s)", cf, cgi, STRNULLCHKQ(cgi->templ));
   if (cf->idp_sel_page && cf->idp_sel_page[0]) {
     D("idp_sel_page(%s) rs(%s)", cf->idp_sel_page, STRNULLCHK(cgi->rs));
@@ -1176,20 +1190,22 @@ static char* zxid_simple_idp_recover_password(zxid_conf* cf, zxid_cgi* cgi, int*
 /*() Final steps of SSO: set the cookies and check authorization
  * before returning the LDIF. */
 
-/* Called by:  zxid_simple_no_ses_cf */
+/* Called by:  zxid_simple_no_ses_cf x2 */
 static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
   struct zx_str* issuer;
   struct zx_str* url;
   zxid_epr* epr;
-  
+  char* rs;
+  char* rs_qs;
+
   if (cf->ses_cookie_name && *cf->ses_cookie_name) {
-    D("setcookie(%s)", cf->ses_cookie_name);
     ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/%s",
 				      cf->ses_cookie_name, ses->sid,
 				      ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
     ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
 				   cf->ses_cookie_name, ses->sid);
+    D("setcookie(%s)=(%s) ses=%p", cf->ses_cookie_name, ses->setcookie, ses);
   }
   if (cf->ptm_cookie_name && *cf->ptm_cookie_name) {
     D("ptm_cookie_name(%s)", cf->ptm_cookie_name);
@@ -1212,8 +1228,37 @@ static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi,
       D("The PTM epr could not be discovered. Has it been registered at discovery service? Is there a discovery service? %p", epr);
     }
   }
- erro:
+  // *** check cf->redir_to_content here
   ses->rs = cgi->rs;
+  if (cgi->rs && cgi->rs[0] && cgi->rs[0] != '-') {
+    /* N.B. RelayState was set by chkuid() "some other page" section by setting cgi.rs
+     * to deflated and safe base64 encoded value which was then sent to IdP as RelayState.
+     * It then came back from IdP and was decoded as one of the SSO attributes.
+     * The decoding is controlled by <<tt: rsrc$rs$unsb64-inf$$ >>  rule in OUTMAP. */
+    cgi->redirect_uri = rs = zxid_unbase64_inflate(cf->ctx, -2, cgi->rs, 0);
+    if (!rs) {
+      ERR("Bad relaystate. Error in inflate. %d", 0);
+      goto erro;
+    }
+    if (!*rs) {
+      D("Empty rs %p", rs);
+      goto erro;
+    }
+    if (cgi->uri_path) {
+      rs_qs = strchr(rs, '?');
+      if (rs_qs /* if there is query string, compare differently */
+	  ?(memcmp(cgi->uri_path, rs, rs_qs-rs)||strcmp(cgi->qs?cgi->qs:"",rs_qs+1))
+	  :strcmp(cgi->uri_path, rs)) {  /* Different, need external or internal redirect */
+	D("redirect(%s) redir_to_content=%d", rs, cf->redir_to_content);
+	if (cf->redir_to_content) {
+	  return zxid_simple_redir_page(cf, rs, 0, res_len, auto_flags);
+	} else {
+	  D("*** internal redirect(%s)", rs);
+	}
+      }
+    }
+  }
+ erro:
   return zxid_simple_ab_pep(cf, ses, res_len, auto_flags);
 }
 
@@ -1225,7 +1270,7 @@ static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi,
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  chkuid x2, zxid_simple_cf_ses, zxid_simple_idp_an_ok_do_rest, zxid_sp_dispatch, zxid_sp_oauth2_dispatch */
+/* Called by:  chkuid x2, zxid_mini_httpd_sso x2, zxid_simple_cf_ses, zxid_simple_idp_an_ok_do_rest, zxid_sp_dispatch, zxid_sp_oauth2_dispatch */
 char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
   struct zx_str* accr;
@@ -1410,7 +1455,7 @@ res_zx_str:
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
-/* Called by:  chkuid, zxid_simple_cf_ses */
+/* Called by:  chkuid, zxid_mini_httpd_sso, zxid_simple_cf_ses */
 char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
   char* res = 0;
@@ -1422,6 +1467,11 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
   }
   if (cf->wd)
     chdir(cf->wd);
+
+  if (!cgi->op && cf->defaultqs && cf->defaultqs[0]) {
+    zxid_parse_cgi(cf, cgi, cf->defaultqs);
+    INFO("DEFAULTQS(%s) op(%c)", cf->defaultqs, cgi->op);
+  }
 
   switch (cgi->op) {
   case 'M':  /* Invoke LECP or redirect to CDC reader. */
@@ -1471,12 +1521,13 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     D("NOT CDC %d", 0);
     break;
   case 'L':
-    if (auto_flags & ZXID_AUTO_REDIR) {
-      if (zxid_start_sso(cf, cgi))
+    if (ss = zxid_start_sso_location(cf, cgi)) {
+      if (auto_flags & ZXID_AUTO_REDIR) {
+	printf("%.*s", ss->len, ss->s);
 	goto cgi_exit;
-    } else {
-      if ((ss = zxid_start_sso_location(cf, cgi)))
+      } else {
 	goto res_zx_str;
+      }
     }
     break;
   case 'A':
@@ -1607,7 +1658,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
   if (!qs) {
     qs = getenv("QUERY_STRING");
     if (qs) {
-      D("QUERY_STRING(%s) %s %d", STRNULLCHK(qs), ZXID_REL, zx_debug);
+      D("QUERY_STRING(%s) %s %d", STRNULLCHK(qs), ZXID_REL, errmac_debug);
       zxid_parse_cgi(cf, &cgi, qs);
       if (ONE_OF_3(cgi.op, 'P', 'R', 'S')) {
 	cont_len = getenv("CONTENT_LENGTH");
@@ -1619,7 +1670,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
 	    ERR("out of memory len=%d", got);
 	    exit(1);
 	  }
-	  if (read_all_fd(fileno(stdin), buf, got, &got) == -1) {
+	  if (read_all_fd(fdstdin, buf, got, &got) == -1) {
 	    perror("Trouble reading post content.");
 	  } else {
 	    buf[got] = 0;
@@ -1664,15 +1715,19 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
   } else {
     if (qs_len == -1)
       qs_len = strlen(qs);
-    if (qs[qs_len]) {   /* *** reads one past end of buffer */
+    if (qs[qs_len]) {   /* *** may read one past end of buffer in non-nulterm case */
       ERR("IMPLEMENTATION LIMIT: Query String MUST be nul terminated len=%d", qs_len);
       exit(1);
     }
     D("QUERY_STRING(%s) %s", STRNULLCHK(qs), ZXID_REL);
     zxid_parse_cgi(cf, &cgi, qs);
   }
+  
   if (!cgi.op && !cf->bare_url_entityid)
     cgi.op = 'M';  /* By default, if no ses, check CDC and offer SSO */
+  
+  cgi.uri_path = getenv("SCRIPT_NAME");
+  cgi.qs = qs;
 
   if (!cgi.sid && cf->ses_cookie_name && *cf->ses_cookie_name)
     zxid_get_sid_from_cookie(cf, &cgi, getenv("HTTP_COOKIE"));

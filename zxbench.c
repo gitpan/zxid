@@ -74,7 +74,7 @@ Usage: zxbench [options] <saml-assertion.xml >reencoded-a7n.xml\n\
 
 int ak_buf_size = 0;
 int verbose = 1;
-extern int zx_debug;
+extern int errmac_debug;
 int timeout = 0;
 int gcthreshold = 0;
 int leak_free = 0;
@@ -118,12 +118,12 @@ void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++zx_debug;
+	++errmac_debug;
 	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	strcpy(zx_instance, (*argv)[0]);
+	strcpy(errmac_instance, (*argv)[0]);
 	continue;
       }
       break;
@@ -298,7 +298,7 @@ int main(int argc, char** argv, char** env)
   if (drop_gid) if (setgid(drop_gid)) { perror("INIT: setgid"); exit(1); }
   if (drop_uid) if (setuid(drop_uid)) { perror("INIT: setuid"); exit(1); }
   
-  len_so = read_all_fd(fileno(stdin), buf, sizeof(buf)-1, &got_all);
+  len_so = read_all_fd(fdstdin, buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
   
@@ -309,9 +309,9 @@ int main(int argc, char** argv, char** env)
     r = zx_dec_zx_root(cf->ctx, got_all, buf, "zxbench");  /* n_decode=1000 ?!? */
     if (!r) DIE("Decode failure");
     
-    //ent = zxid_get_ent_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4" /* cxp06 */);
-    //ent = zxid_get_ent_file(cf, "zIDxx57qGA-qwnsymUf4JD0Er2A" /* s-idp */);
-    //ent = zxid_get_ent_file(cf, "7S4XRMew6HHKey9j8fESiJUV-Cs" /* hp-idp */);
+    //ent = zxid_get_ent_file(cf, "YV7HPtu3bfqW3I4W_DZr-_DKMP4" /* cxp06 */, "bench");
+    //ent = zxid_get_ent_file(cf, "zIDxx57qGA-qwnsymUf4JD0Er2A" /* s-idp */, "bench");
+    //ent = zxid_get_ent_file(cf, "7S4XRMew6HHKey9j8fESiJUV-Cs" /* hp-idp */, "bench");
     //r->Envelope->Body->ArtifactResolve
     if (r->Envelope && r->Envelope->Body) {
       if (r->Envelope->Body->ArtifactResponse) {

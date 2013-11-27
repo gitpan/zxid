@@ -31,10 +31,10 @@
 #include "c/zx-ns.h"
 #include "c/zx-data.h"
 
-int zx_debug = 0;              /* declared in errmac.h */
-FILE* zx_debug_log = 0;        /* declared in errmac.h, 0 means stderr will be used */
-char zx_indent[256] = "";      /* declared in errmac.h */
-char zx_instance[64] = "\tzx"; /* declared in errmac.h */
+int errmac_debug = 0;              /* declared in errmac.h */
+FILE* errmac_debug_log = 0;        /* declared in errmac.h, 0 means stderr will be used */
+char errmac_indent[256] = "";      /* declared in errmac.h */
+char errmac_instance[64] = "\tzx"; /* declared in errmac.h */
 int assert_nonfatal = 0;
 char* assert_msg = "%s: Internal error caused an ASSERT to fire. Deliberately trying to dump core.\nSorry for the inconvenience. If no core appears, try `ulimit -c unlimited'\n";
 int trace = 0;
@@ -68,9 +68,13 @@ const char* zxid_version_str()
 
 /*(i) Render any element with some options, controlled by
  * config option ENC_TAIL_OPT. Often used to generate slightly optimized
- * version for wire transfer. Not suitable for generating canonicalization. */
+ * version for wire transfer. Not suitable for generating canonicalization.
+ * The lists are assumed to be in forward order, i.e. opposite
+ * of what zx_dec_zx_root() and zx_DEC_elem() return. You should call
+ * zx_reverse_elem_lists() if needed.
+ * Wire Order is respected first, and then kids list forward order. */
 
-/* Called by:  main x3, so_enc_dec, zxid_addmd, zxid_anoint_sso_resp, zxid_cache_epr, zxid_call_epr, zxid_idp_sso, zxid_lecp_check, zxid_map_val_ss, zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni, zxid_mni_do_ss, zxid_pep_az_base_soap_pepmap x3, zxid_pep_az_soap_pepmap x3, zxid_reg_svc, zxid_ses_to_pool x2, zxid_slo_resp_redir, zxid_snarf_eprs_from_ses, zxid_soap_call_raw, zxid_soap_cgi_resp_body, zxid_sp_meta, zxid_sp_mni_redir, zxid_sp_slo_redir, zxid_start_sso_url, zxid_write_ent_to_cache, zxid_wsc_prepare_call, zxid_wsp_decorate */
+/* Called by:  main x3, so_enc_dec, zxid_add_env_if_needed x2, zxid_addmd, zxid_anoint_sso_resp, zxid_cache_epr, zxid_call_epr x2, zxid_idp_sso, zxid_lecp_check, zxid_map_val_ss, zxid_mk_enc_a7n, zxid_mk_enc_id, zxid_mk_mni, zxid_mni_do_ss, zxid_pep_az_base_soap_pepmap x3, zxid_pep_az_soap_pepmap x3, zxid_reg_svc, zxid_ses_to_pool x2, zxid_slo_resp_redir, zxid_snarf_eprs_from_ses, zxid_soap_call_raw, zxid_soap_cgi_resp_body, zxid_sp_meta, zxid_sp_mni_redir, zxid_sp_slo_redir, zxid_start_sso_url, zxid_write_ent_to_cache, zxid_wsc_prepare_call, zxid_wsp_decorate */
 struct zx_str* zx_easy_enc_elem_opt(zxid_conf* cf, struct zx_elem_s* x)
 {
   struct zx_str* ss;
@@ -456,7 +460,7 @@ struct zx_str* zxid_saml2_redir_url(zxid_conf* cf, struct zx_str* loc, struct zx
 			 ? "%.*s&%.*s" CRLF2
 			 : "%.*s?%.*s" CRLF2), loc->len, loc->s, rse->len, rse->s);
   D("%.*s", ss->len, ss->s);
-  if (zx_debug & ZXID_INOUT) INFO("%.*s", ss->len, ss->s);
+  if (errmac_debug & ERRMAC_INOUT) INFO("%.*s", ss->len, ss->s);
   zx_str_free(cf->ctx, rse);
   return ss;
 }
@@ -484,7 +488,7 @@ struct zx_str* zxid_saml2_redir(zxid_conf* cf, struct zx_str* loc, struct zx_str
   ss = zx_strf(cf->ctx, (memchr(loc->s, '?', loc->len)
 			 ? "Location: %.*s&%.*s" CRLF2
 			 : "Location: %.*s?%.*s" CRLF2), loc->len, loc->s, rse->len, rse->s);
-  if (zx_debug & ZXID_INOUT) INFO("%.*s", ((int)(ss->len - sizeof(CRLF2) + 1)), ss->s);
+  if (errmac_debug & ERRMAC_INOUT) INFO("%.*s", ((int)(ss->len - sizeof(CRLF2) + 1)), ss->s);
   zx_str_free(cf->ctx, rse);
   return ss;
 }
@@ -511,7 +515,7 @@ struct zx_str* zxid_saml2_resp_redir(zxid_conf* cf, struct zx_str* loc, struct z
   ss = zx_strf(cf->ctx, (memchr(loc->s, '?', loc->len)
 			 ? "Location: %.*s&%.*s" CRLF2
 			 : "Location: %.*s?%.*s" CRLF2), loc->len, loc->s, rse->len, rse->s);
-  if (zx_debug & ZXID_INOUT) INFO("%.*s", ((int)(ss->len - sizeof(CRLF2) + 1)), ss->s);
+  if (errmac_debug & ERRMAC_INOUT) INFO("%.*s", ((int)(ss->len - sizeof(CRLF2) + 1)), ss->s);
   zx_str_free(cf->ctx, rse);
   return ss;
 }
@@ -908,7 +912,7 @@ struct zx_str* zxid_map_val_ss(zxid_conf* cf, zxid_ses* ses, zxid_entity* meta, 
   return ss;
 }
 
-/* Called by:  pool2apache x2, zxid_add_mapped_attr, zxid_pepmap_extract x2, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
+/* Called by:  pool2apache x2, zxid_add_mapped_attr, zxid_pepmap_extract x2, zxid_pool2env x3, zxid_pool_to_json x2, zxid_pool_to_ldif x2, zxid_pool_to_qs x2 */
 struct zx_str* zxid_map_val(zxid_conf* cf, zxid_ses* ses, zxid_entity* meta, struct zxid_map* map, const char* atname, const char* val) {
   return zxid_map_val_ss(cf, ses, meta, map, atname, zx_dup_str(cf->ctx, STRNULLCHK(val)));
 }
@@ -961,7 +965,7 @@ nobody:
  * already have been allocated and MUST hold 20 characters. It will not be
  * nul terminated and in fact will contain binary data (sha1 hash output). */
 
-/* Called by:  zxbus_write_line, zxid_mk_jwt, zxid_psobj_key_setup, zxlog_write_line */
+/* Called by:  zxid_mk_jwt, zxid_psobj_key_setup, zxlog_write_line */
 char* zx_get_symkey(zxid_conf* cf, const char* keyname, char* symkey)
 {
   char buf[1024];

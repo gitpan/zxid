@@ -122,7 +122,7 @@ int main(int argc, char** argv)
     sscanf(qs, "%d", &cl);
 
   if (cl) {
-    read_all_fd(fileno(stdin), buf, MIN(cl, sizeof(buf)-1), &got);
+    read_all_fd(fdstdin, buf, MIN(cl, sizeof(buf)-1), &got);
     buf[got] = 0;
     qs2 = buf;
   } else {
@@ -138,7 +138,7 @@ int main(int argc, char** argv)
   if (open("tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
     exit(2);
   fprintf(stderr, "=================== Running ===================\n");
-  zx_debug = 1;
+  errmac_debug = 1;
 #endif
 
   if (argc > 1) {

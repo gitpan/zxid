@@ -623,6 +623,25 @@ This is because the IdP already set the session cookie (IdP sessions
 usually start with "MMSES") and the SP is errornously picking it up
 and then not finding the corresponding session in its session store.
 
+97.3.5 Using HTTP or SOCKS proxy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ZXID uses libcurl as its underlying HTTP client. Although ZXID does
+not offer any proxy related options, it respects the environment
+variables ~https_proxy~, ~all_proxy~, and ~no_proxy~, because libcurl sees
+them and uses them. Thus you can
+
+  all_proxy=corpproxy:1080 zxcot -g https://some.external.com/url
+  all_proxy=corpproxy:1080 zxcall ...
+
+or you can set the variables more permently
+
+  export all_proxy=corpproxy:1080
+  export no_proxy=localhost
+  zxcot -g https://external.url/
+
+See libcurl documentation at curl.haxx.se for more information.
+
 97.4 API Questions
 ------------------
 
@@ -2792,5 +2811,58 @@ make more complete investigation on the IdP metadata.
 Cheers,
 --Sampo
 
+
+>>
+
+<<ignore:
+
+Karthik Sudarshan <ksudarshan@xtivia.com> said:
+> Hi all,
+>     I have downloaded the latest version of zxid (1.16) and compiled
+
+Rest of the list: sorry folks, I did not announce it, but there is a
+new release available :-)
+
+There will be another before christmas.
+
+> against Apache 2.2  on Ubuntu to get the mod_auth_saml.so. I have
+> registered an IDP in my COT using the zxcot utility. I can see that in my
+> dropdown list on the IDP selection page as well.
+> 
+> I want to be able to bypass the IDP selection page and directly go to the
+> IDP login page. For that I used the DEFAULTQS configuration option and it
+> does not seem to work.
+> 
+> My option in the apache conf file for the <Location> is  as below:
+> 
+> DEFAULTQS=10https://<hostname>/<path>/metadata.xml
+
+The correct syntax is the query string syntax as if a form
+had been submitted. Try the following
+
+DEFAULTQS=l0https://<host>/<path>/idp.xml=1%26fp=1
+
+Please note
+
+1. The l0... stuff must end with "=1"
+
+2. If there are any other fields you would like to pass, you need
+   to include them in the query string, but you need to URI escape
+   characters, such as ampersand ("&") with %26 (percent 26).
+
+3. One other field in particular that you may want to pass is
+   fr (aka RelayState) which will control the redirection
+   after SSO if you have configured REDIR_TO_CONTENT=1
+
+Cheers,
+--Sampo
+
+> I tried to give this in the zxid.conf file as well, and that didn't work
+> either.
+> 
+> Can someone please suggest how to set this configuration correctly?
+> 
+> Regards,
+> Karthik
 
 >>

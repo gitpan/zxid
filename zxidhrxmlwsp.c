@@ -68,7 +68,8 @@ int main(int argc, char** argv)
   char* res;
   char buf[256*1024];  /* *** should figure the size dynamically */
   char urlbuf[256];
-  int got, fd, cl=0;
+  int got, cl=0;
+  fdtype fd;
   char* qs;
   char* qs2;
   ZERO(ses, sizeof(zxid_ses));
@@ -79,12 +80,12 @@ int main(int argc, char** argv)
   if (open("/var/tmp/zxid.stderr", O_WRONLY | O_CREAT | O_APPEND, 0666) != 2)
     exit(2);
   fprintf(stderr, "=================== Running idhrxml wsp ===================\n");
-  zx_debug = 2;
+  errmac_debug = 2;
 #endif
 #if 1
-  strncpy(zx_instance, "\t\e[45mhrxml_wsp\e[0m", sizeof(zx_instance));
+  strncpy(errmac_instance, "\t\e[45mhrxml_wsp\e[0m", sizeof(errmac_instance));
 #else
-  strncpy(zx_instance, "\thrxml_wsp", sizeof(zx_instance));
+  strncpy(errmac_instance, "\thrxml_wsp", sizeof(errmac_instance));
 #endif
 
   qs = getenv("CONTENT_LENGTH");
@@ -92,7 +93,7 @@ int main(int argc, char** argv)
     sscanf(qs, "%d", &cl);
 
   if (cl) {
-    read_all_fd(fileno(stdin), buf, MIN(cl, sizeof(buf)-1), &got);
+    read_all_fd(fdstdin, buf, MIN(cl, sizeof(buf)-1), &got);
     buf[got] = 0;
     qs2 = buf;
   } else {

@@ -32,6 +32,9 @@
  * 6. Regression test mode
  */
 
+#include "platform.h"
+#include "errmac.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -43,8 +46,6 @@
 #include <openssl/aes.h>
 #endif
 
-#include "platform.h"
-#include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
 #include "zxidutil.h"
@@ -81,7 +82,7 @@ Usage: zxlogview [options] logsign-nopw-cert.pem logenc-nopw-cert.pem <loglines\
 #define DIE(reason) MB fprintf(stderr, "%s\n", reason); exit(2); ME
 
 int verbose = 1;
-extern int zx_debug;
+extern int errmac_debug;
 int leak_free = 0;
 
 X509* log_verify_cert;
@@ -112,12 +113,12 @@ static void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++zx_debug;
+	++errmac_debug;
 	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	strcpy(zx_instance, (*argv)[0]);
+	strcpy(errmac_instance, (*argv)[0]);
 	continue;
       }
       break;
@@ -274,7 +275,7 @@ static void test_receipt(int* argc, char*** argv, char*** env)
 {
   char sigbuf[1024];
   char* eid;
-  zxid_conf* cf = zxid_new_conf_to_cf("PATH=/var/zxid/bus/&NON_STANDARD_ENTITYID=stomp://localhost:2229/");
+  zxid_conf* cf = zxid_new_conf_to_cf("CPATH=/var/zxid/bus/&NON_STANDARD_ENTITYID=stomp://localhost:2229/");
 
   eid = zxid_my_ent_id_cstr(cf);
 
@@ -309,6 +310,7 @@ static void test_receipt(int* argc, char*** argv, char*** env)
 
 /* Called by:  main x3 */
 
+/* Called by:  main x3 */
 static void zxlog_zsig_verify_print(zxid_conf* cf, int len, char* buf, char* se, char* p)
 {
   char sha1[20];
@@ -375,7 +377,7 @@ int main(int argc, char** argv, char** env)
   struct aes_key_st aes_key;
   zxid_suppress_vpath_warning = 2;
   zxid_conf* cf = zxid_new_conf(0);
-  strcpy(zx_instance, "\tzxlogview");
+  strcpy(errmac_instance, "\tzxlogview");
   opt(&argc, &argv, &env);
   
   while (1) {

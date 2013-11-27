@@ -41,7 +41,7 @@
 #include "hiios.h"
 #include "errmac.h"
 
-extern int zx_debug;
+extern int errmac_debug;
 #ifdef MUTEX_DEBUG
 extern pthread_mutexattr_t MUTEXATTR_DECL;
 #endif
@@ -77,7 +77,7 @@ extern pthread_mutexattr_t MUTEXATTR_DECL;
  *
  * locking:: will take io->qel.mut */
 
-/* Called by:  hi_in_out x2, hi_read x2, hi_write */
+/* Called by:  hi_in_out x2, hi_read x2, hi_todo_consume, hi_write */
 void hi_close(struct hi_thr* hit, struct hi_io* io, const char* lk)
 {
   struct hi_pdu* pdu;

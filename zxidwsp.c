@@ -41,9 +41,11 @@
  *
  * env (rather than Body) is taken as argument so that caller can prepare
  * additional SOAP headers at will before calling this function. This function
- * will add Liberty ID-WSF specific SOAP headers. */
+ * will add Liberty ID-WSF specific SOAP headers.
+ * The returned lists are in reverse order, remember to call zx_reverse_elem_lists(),
+ * unless is_resp is set in which case the list is in forward order. */
 
-/* Called by:  covimp_test x2, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate */
+/* Called by:  covimp_test x2, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate x2 */
 int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp)
 {
   struct zx_wsse_Security_s* sec;
@@ -208,7 +210,7 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
  * return:: SOAP Envelope of the response, as a string, ready to be
  *     sent as HTTP response. */
 
-/* Called by:  covimp_test, main x9, ws_validations, zxid_wsp_decoratef, zxidwspcgi_parent */
+/* Called by:  covimp_test, main x9, ws_validations, zxid_mini_httpd_wsp_response, zxid_wsp_decoratef, zxidwspcgi_parent */
 struct zx_str* zxid_wsp_decorate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve)
 {
   struct zx_str* ss;
@@ -246,7 +248,7 @@ struct zx_str* zxid_wsp_decorate(zxid_conf* cf, zxid_ses* ses, const char* az_cr
     D_DEDENT("decor: ");
     return 0;
   }
-  zx_reverse_elem_lists(&env->Header->gg);
+  //zx_reverse_elem_lists(&env->Header->gg);  // *** Again?!? Already done in zxid_wsf_decor(is_resp)
   
   ss = zx_easy_enc_elem_opt(cf, &env->gg);
   DD("DECOR len=%d envelope(%.*s)", ss->len, ss->len, ss->s);
@@ -625,7 +627,7 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
  *
  * See also: zxid_wsc_validate_resp_env() */
 
-/* Called by:  main, ws_validations, zxidwspcgi_main */
+/* Called by:  chkuid, main, ws_validations, zxid_mini_httpd_wsp, zxidwspcgi_main */
 char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve)
 {
   struct zx_str  ss;

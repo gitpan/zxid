@@ -58,7 +58,7 @@
  * passw:: not used in Yubikey authentication
  * return:: 0 on failure, 1 on success  */
 
-/* Called by:  zx_pw_authn */
+/* Called by:  zx_password_authn */
 int zx_yubikey_authn(const char* path, char* uid, const char* passw)
 {
   unsigned char buf[256];
@@ -108,7 +108,7 @@ int zx_yubikey_authn(const char* path, char* uid, const char* passw)
 /*() Low level password check using various different types of hash
  * return:: 0 on failure, 1 on success  */
 
-/* Called by:  zx_pw_authn */
+/* Called by:  zx_password_authn */
 static int zx_pw_chk(const char* uid, const char* pw_buf, const char* passw, int fd_hint)
 {
   unsigned char pw_hash[120];
@@ -161,7 +161,7 @@ static int zx_pw_chk(const char* uid, const char* pw_buf, const char* passw, int
  * return:: 0 on failure, 1 on success  */
 
 /* Called by:  zxbus_pw_authn_ent, zxid_pw_authn */
-int zx_pw_authn(const char* path, char* uid, const char* passw, int fd_hint)
+int zx_password_authn(const char* path, char* uid, const char* passw, int fd_hint)
 {
   char pw_buf[256];
   int len;

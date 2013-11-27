@@ -15,13 +15,13 @@
  * Test encoding and decoding SAML 2.0 assertions and other related stuff.
  */
 
+#include "platform.h"  /* This needs to appear first to avoid mingw64 problems. */
+#include "errmac.h"
+
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-
-#include "platform.h"
-#include "errmac.h"
 
 #include "zx.h"
 #include "zxid.h"
@@ -32,8 +32,6 @@
 #include "c/zx-data.h"
 #include "c/zx-const.h"
 #include "c/zx-ns.h"
-
-int read_all_fd(int fd, char* p, int want, int* got_all);
 
 char* help =
 "zxencdectest  -  ZX encoding and decoding tester - R" ZXID_REL "\n\
@@ -91,7 +89,7 @@ void test_ibm_cert_problem()  /* -r 1 */
   struct zx_root_s* r;
   struct zx_sp_LogoutRequest_s* req;
 
-  read_all_fd(fileno(stdin), buf, sizeof(buf)-1, &got_all);
+  read_all_fd(fdstdin, buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
 
@@ -132,7 +130,7 @@ void test_ibm_cert_problem_enc_dec()  /* -r 2 */
   cf->enc_pkey = zxid_read_private_key(cf, "sym-idp-enc.pem");
 #else
   cf->enc_pkey = zxid_read_private_key(cf, "ibm-idp-enc.pem");
-  idp_meta = zxid_get_ent_file(cf, "N9zsU-AwbI1O-U3mvjLmOALtbtU"); /* IBMIdP */
+  idp_meta = zxid_get_ent_file(cf, "N9zsU-AwbI1O-U3mvjLmOALtbtU", "test_ibm"); /* IBMIdP */
 #endif
   
   req = zxid_mk_logout(cf, nameid, 0, idp_meta);  
@@ -334,8 +332,10 @@ void covimp_test()       /* -r 5 */
   ss = zx_ref_str(cf->ctx, "abc");
   zx_str_conv(ss, &outlen, &out);
   zxid_wsp_decorate(cf, &sess, 0, "<foo/>");
+#ifndef MINGW
   setenv("HTTP_COOKIE", "_liberty_idp=\"test8\"", 1);
   zxid_cdc_read(cf, &cgi);
+#endif
   cgi.cdc = "test9";
   zxid_cdc_check(cf, &cgi);
   zxid_new_cgi(cf, "=test10&ok=1&okx=2&s=S123&c=test11&e=abc&d=def&&l=x&l1=y&l1foo=z&inv=qwe&fg=1&fh=7&fr=RS&gu=1&gn=asa&ge=1&an=&aw=&at=&SAMLart=artti&SAMLResponse=respis");
@@ -391,10 +391,12 @@ void covimp_test()       /* -r 5 */
 
   printf("fake_sso=%d\n", zxid_sp_anon_finalize(cf, &cgi, &sess));
 
+#ifndef MINGW
   setenv("HTTP_PAOS", SAML2_SSO_ECP, 1);
   zxid_lecp_check(cf, &cgi);        /* *** should test in realistic context */
+#endif
 
-  meta = zxid_get_ent_file(cf, "N9zsU-AwbI1O-U3mvjLmOALtbtU"); /* IBMIdP */
+  meta = zxid_get_ent_file(cf, "N9zsU-AwbI1O-U3mvjLmOALtbtU", "covimp"); /* IBMIdP */
   zxid_mk_art_deref(cf, 0, meta, "ART124121");  /* *** should test in realistic context */
   
   zxid_mk_lu_Status(cf, 0, 0, "SC2-dummy", "MSG-dummy", "REF-dummy");
@@ -482,12 +484,12 @@ void opt(int* argc, char*** argv, char*** env)
     case 'd':
       switch ((*argv)[0][2]) {
       case '\0':
-	++zx_debug;
+	++errmac_debug;
 	continue;
       case 'i':  if ((*argv)[0][3]) break;
 	++(*argv); --(*argc);
 	if (!(*argc)) break;
-	strncpy(zx_instance, (*argv)[0], sizeof(zx_instance));
+	strncpy(errmac_instance, (*argv)[0], sizeof(errmac_instance));
 	continue;
       }
       break;
@@ -595,6 +597,7 @@ void opt(int* argc, char*** argv, char*** env)
       }
       break;
 
+#ifndef MINGW
     case 'k':
       switch ((*argv)[0][2]) {
       case '\0':
@@ -605,6 +608,7 @@ void opt(int* argc, char*** argv, char*** env)
 	continue;
       }
       break;
+#endif
 
     case 'c': if ((*argv)[0][2]) break;
       ++(*argv); --(*argc);
@@ -658,7 +662,7 @@ int main(int argc, char** argv, char** env)
   char* wo_p;
   opt(&argc, &argv, &env);
   
-  len_wo = read_all_fd(fileno(stdin), buf, sizeof(buf)-1, &got_all);
+  len_wo = read_all_fd(fdstdin, buf, sizeof(buf)-1, &got_all);
   if (got_all <= 0) DIE("Missing data");
   buf[got_all] = 0;
 

@@ -261,6 +261,7 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
 		     va_list ap)
 {
   int n;
+  time_t secs;
   char* p;
   char sha1_name[28];
   struct tm ot;
@@ -279,8 +280,10 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
     srctsdefault.tv_sec = 0;
     srctsdefault.tv_usec = 501000;
   }
-  GMTIME_R(ourts->tv_sec, ot);
-  GMTIME_R(srcts->tv_sec, st);
+  GMTIME_R(secs, ot);
+  ourts->tv_sec = secs;
+  GMTIME_R(secs, st);
+  srcts->tv_sec = secs;
   
   if (entid && entid->len && entid->s) {
     sha1_safe_base64(sha1_name, entid->len, entid->s);
@@ -309,10 +312,10 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
 	       msgid?msgid->len:1, msgid?msgid->s:"-",
 	       a7nid?a7nid->len:1, a7nid?a7nid->s:"-",
 	       nid?nid->len:1,     nid?nid->s:"-",
-	       zx_instance, STRNULLCHKD(sigval), res, op, arg?arg:"-");
+	       errmac_instance, STRNULLCHKD(sigval), res, op, arg?arg:"-");
   logbuf[len-1] = 0; /* must terminate manually as on win32 nul is not guaranteed */
   if (n <= 0 || n >= len-3) {
-    if (n < 0) zx_broken_snprintf(n);
+    if (n < 0) platform_broken_snprintf(n, __FUNCTION__, len-3, "log line");
     D("Log buffer too short: %d chars needed", n);
     if (n <= 0)
       n = 0;
@@ -324,7 +327,7 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
       n = vsnprintf(p, len-n-2, fmt, ap);
       logbuf[len-1] = 0;  /* must terminate manually as on win32 nul term is not guaranteed */
       if (n <= 0 || n >= len-(p-logbuf)-2) {
-	if (n < 0) zx_broken_snprintf(n);
+	if (n < 0) platform_broken_snprintf(n, __FUNCTION__, len-n-2, fmt);
 	D("Log buffer truncated during format print: %d chars needed", n);
 	if (n <= 0)
 	  n = p-logbuf;
@@ -502,6 +505,7 @@ int zxlogusr(zxid_conf* cf,   /* 1 */
 
 /*(-) Create a directory and perform error checking. */
 
+/* Called by:  zxlog_path x3 */
 static int zx_create_dir_with_check(zxid_conf* cf, const char* dir, int create_dirs)
 {
   struct stat st;
@@ -533,7 +537,7 @@ static int zx_create_dir_with_check(zxid_conf* cf, const char* dir, int create_d
  *     is to write a file to the computed path. Usually 0 if the intent is to read.
  * return:: The path, as zx_str or 0 if failure */
 
-/* Called by:  zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_sso_issue_jwt, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
+/* Called by:  zxbus_send_cmdf, zxid_anoint_a7n, zxid_anoint_sso_resp, zxid_decode_redir_or_post x2, zxid_saml2_post_enc, zxid_saml2_redir_enc, zxid_soap_cgi_resp_body, zxid_sp_sso_finalize, zxid_sso_issue_jwt, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate */
 struct zx_str* zxlog_path(zxid_conf* cf,
 			  struct zx_str* entid,  /* issuer or target entity ID */
 			  struct zx_str* objid,  /* AssertionID or MessageID */
@@ -559,7 +563,7 @@ struct zx_str* zxlog_path(zxid_conf* cf,
   memcpy(p, "log/", sizeof("log/"));
   p += sizeof("log/")-1;
   if (stat(s, &st)) {
-    ERR("zxid log directory missing path(%s): giving up (stat: %d %s; euid=%d egid=%d). Consider checking permissions and running zxmkdirs.sh", s, errno, STRERROR(errno), geteuid(), getegid());
+    ERR("zxid log directory missing path(%s): giving up (stat: %d %s; euid=%d egid=%d). Consider checking permissions and running zxcot -dirs", s, errno, STRERROR(errno), geteuid(), getegid());
     goto nodir;
   }
   
@@ -643,7 +647,7 @@ int zxlog_dup_check(zxid_conf* cf, struct zx_str* path, const char* logkey)
  * captures both the original and the duplicate assertion (the logging is an append),
  * which may have forensic value. */
 
-/* Called by:  zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_soap_cgi_resp_body x2, zxid_sp_sso_finalize x2, zxid_sso_issue_jwt x2, zxid_wsc_valid_re_env x2, zxid_wsf_validate_a7n x2, zxid_wsp_validate x2 */
+/* Called by:  zxbus_send_cmdf, zxid_anoint_a7n x2, zxid_anoint_sso_resp x2, zxid_decode_redir_or_post x2, zxid_saml2_post_enc x2, zxid_saml2_redir_enc x2, zxid_soap_cgi_resp_body x2, zxid_sp_sso_finalize x2, zxid_sso_issue_jwt x2, zxid_wsc_valid_re_env x2, zxid_wsf_validate_a7n x2, zxid_wsp_validate x2 */
 int zxlog_blob(zxid_conf* cf, int logflag, struct zx_str* path, struct zx_str* blob, const char* lk)
 {
   if (!logflag || !blob)
@@ -675,12 +679,12 @@ int zxlog_seq = 0;
  * On Linux-2.4 and 2.6 as well as Solaris-8 the ordering is as follows, but this needs
  * to be checked on other platforms.
  *                       l_type,  l_whence, l_start, l_len */
-extern struct flock zx_rdlk; /* = { F_RDLCK, SEEK_SET, 0, 1 };*/
-extern struct flock zx_wrlk; /* = { F_WRLCK, SEEK_SET, 0, 1 };*/
-extern struct flock zx_unlk; /* = { F_UNLCK, SEEK_SET, 0, 1 };*/
+extern struct flock errmac_rdlk; /* = { F_RDLCK, SEEK_SET, 0, 1 };*/
+extern struct flock errmac_wrlk; /* = { F_WRLCK, SEEK_SET, 0, 1 };*/
+extern struct flock errmac_unlk; /* = { F_UNLCK, SEEK_SET, 0, 1 };*/
 #endif
 
-/* Called by:  zxlog_debug_xml_blob */
+/* Called by:  errmac_debug_xml_blob */
 static FILE* zx_open_xml_log_file(zxid_conf* cf)
 {
   FILE* f;
@@ -708,13 +712,13 @@ static FILE* zx_open_xml_log_file(zxid_conf* cf)
  * tailf /var/zxid/log/xml.dbg | ./xml-pretty.pl */
 
 /* Called by: */
-void zxlog_debug_xml_blob(zxid_conf* cf, const char* file, int line, const char* func, const char* lk, int len, const char* xml)
+void errmac_debug_xml_blob(zxid_conf* cf, const char* file, int line, const char* func, const char* lk, int len, const char* xml)
 {
   int bdy_len;
   const char* bdy;
   const char* p;
   const char* q;
-  if (!zx_debug || len == -1 || !xml)
+  if (!(errmac_debug & ERRMAC_XMLDBG) || len == -1 || !xml)
     return;
   if (len == -2)
     len = strlen(xml);
@@ -752,10 +756,18 @@ nobody:
 
 print_it:
   ++zxlog_seq;
-#ifdef USE_AKBOX_FN
-  fprintf(stderr, "t%lx %04x:%-3d %s d %s%s(%.*s) len=%d %d:%d\n", (long)pthread_self(), akbox_fn(func), __LINE__, ERRMAC_INSTANCE, zx_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+#ifdef USE_PTHREAD
+# ifdef USE_AKBOX_FN
+  fprintf(stderr, "%d.%lx %04x:%-3d %s d %s%s(%.*s) len=%d %d:%d\n", getpid(), (long)pthread_self(), akbox_fn(func), __LINE__, ERRMAC_INSTANCE, errmac_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+# else
+  fprintf(stderr, "%d.%lx %10s:%-3d %-16s %s d %s%s(%.*s) len=%d %d:%d\n", getpid(), (long)pthread_self(), file, line, func, ERRMAC_INSTANCE, errmac_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+# endif
 #else
-  fprintf(stderr, "p%d %10s:%-3d %-16s %s d %s%s(%.*s) len=%d %d:%d\n", getpid(), file, line, func, ERRMAC_INSTANCE, zx_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+# ifdef USE_AKBOX_FN
+  fprintf(stderr, "%d %04x:%-3d %s d %s%s(%.*s) len=%d %d:%d\n", getpid(), akbox_fn(func), __LINE__, ERRMAC_INSTANCE, errmac_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+# else
+  fprintf(stderr, "%d %10s:%-3d %-16s %s d %s%s(%.*s) len=%d %d:%d\n", getpid(), file, line, func, ERRMAC_INSTANCE, errmac_indent, lk, bdy_len, bdy, len, getpid(), zxlog_seq);
+# endif
 #endif
 
   if (!zx_xml_debug_log) {
@@ -770,10 +782,18 @@ print_it:
     ERR("Locking exclusively file `%s' failed: %d %s. Check permissions and that the file system supports locking. euid=%d egid=%d", XML_LOG_FILE, errno, STRERROR(errno), geteuid(), getegid());
     /* Fall thru to print without locking */
   }
-#ifdef USE_AKBOX_FN
-  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d:%d %04x:%-3d %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d:%d -->\n", getpid(), zxlog_seq, akbox_fn(func), line, ERRMAC_INSTANCE, zx_indent, lk, len, len, xml, getpid(), zxlog_seq);
+#ifdef USE_PTHREAD
+# ifdef USE_AKBOX_FN
+  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d.%lx:%d %04x:%-3d %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d.%lx:%d %s -->\n", getpid(), (long)pthread_self(), zxlog_seq, akbox_fn(func), line, ERRMAC_INSTANCE, errmac_indent, lk, len, len, xml, getpid(), (long)pthread_self(), zxlog_seq, lk);
+# else
+  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d.%lx:%d %10s:%-3d %-16s %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d.%lx:%d %s -->\n", getpid(), (long)pthread_self(), zxlog_seq, file, line, func, ERRMAC_INSTANCE, errmac_indent, lk, len, len, xml, getpid(), (long)pthread_self(), zxlog_seq, lk);
+# endif
 #else
-  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d:%d %10s:%-3d %-16s %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d:%d -->\n", getpid(), zxlog_seq, file, line, func, ERRMAC_INSTANCE, zx_indent, lk, len, len, xml, getpid(), zxlog_seq);
+# ifdef USE_AKBOX_FN
+  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d:%d %04x:%-3d %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d:%d %s -->\n", getpid(), zxlog_seq, akbox_fn(func), line, ERRMAC_INSTANCE, errmac_indent, lk, len, len, xml, getpid(), zxlog_seq, lk);
+# else
+  fprintf(zx_xml_debug_log, "<!-- XMLBEG %d:%d %10s:%-3d %-16s %s d %s %s len=%d -->\n%.*s\n<!-- XMLEND %d:%d %s -->\n", getpid(), zxlog_seq, file, line, func, ERRMAC_INSTANCE, errmac_indent, lk, len, len, xml, getpid(), zxlog_seq, lk);
+# endif
 #endif
   fflush(zx_xml_debug_log);
   FUNLOCK(fileno(zx_xml_debug_log));
@@ -795,10 +815,11 @@ print_it:
  * body::       Data to issue receipt about, i.e. data that will be signed.
  * return::     sigbuf. If there was error, sigbuf[0] is set to 'E' */
 
-/* Called by:  stomp_send_receipt, test_receipt x9, zxbus_ack_msg */
+/* Called by:  stomp_send_receipt, test_receipt x9 */
 char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_len, const char* mid, int dest_len, const char* dest, int eid_len, const char* eid, int body_len, const char* body)
 {
   int len, zlen;
+  time_t secs;
   char* zbuf = 0;
   char* p;
   char* buf;
@@ -836,7 +857,8 @@ char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_le
   /* Prepare values */
 
   GETTIMEOFDAY(&ourts, 0);
-  GMTIME_R(ourts.tv_sec, ot);
+  GMTIME_R(secs, ot);
+  ourts.tv_sec = secs;
 
   /* Prepare timestamp prepended data for hashing */
   len = ZXLOG_TIME_SIZ+1+mid_len+1+dest_len+1+eid_len+1+body_len;
@@ -881,7 +903,7 @@ char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_le
 
     zlen = zxsig_data(cf->ctx, len, buf, &zbuf, cf->sign_pkey, "receipt");
 
-    if (zx_debug>2) HEXDUMP("zbuf:", zbuf, zbuf+zlen, 4096);
+    if (errmac_debug>2) HEXDUMP("zbuf:", zbuf, zbuf+zlen, 4096);
     len = 3+ZXLOG_TIME_SIZ+1+mid_len+1+SIMPLE_BASE64_LEN(zlen)+1;
     if (sigbuf_len < len) { ERR("Too small sigbuf_len=%d, need=%d", sigbuf_len, len); break; }
     sigbuf[3+ZXLOG_TIME_SIZ+1+mid_len] = ' ';
@@ -898,7 +920,7 @@ char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_le
   }
 
   DD("body(%.*s) body_len=%d", body_len, body_len?body:"", body_len);
-  if (zx_debug>1)
+  if (errmac_debug>1)
     D("zx-rcpt-sig(%s) sigbuf_len=%d len=%d\nbuf(%s) buflen=%d %x %x", sigbuf, (int)strlen(sigbuf), len, buf, (int)strlen(buf), cf->bus_rcpt, cf->bus_rcpt&0x06);
   else
     D("zx-rcpt-sig(%s) %x", sigbuf, cf->bus_rcpt);
@@ -1019,7 +1041,7 @@ int zxbus_persist_flag = 1;
  * return:: 0 on failure, nonzero len of c_path on success.
  * see also:: persist feature in zxbus_listen_msg() */
 
-/* Called by:  zxbus_listen_msg, zxbus_persist */
+/* Called by:  zxbus_persist */
 int zxbus_persist_msg(zxid_conf* cf, int c_path_len, char* c_path, int dest_len, const char* dest, int data_len, const char* data)
 {
   int len;

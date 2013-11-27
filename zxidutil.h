@@ -38,7 +38,7 @@ extern "C" {
 
 /* zxpw */
 
-ZXID_DECL int zx_pw_authn(const char* path, char* uid, const char* passw, int fd_hint);
+ZXID_DECL int zx_password_authn(const char* path, char* uid, const char* passw, int fd_hint);
 
 /* zxidsso - trivial mapping functions */
 
@@ -70,7 +70,7 @@ ZXID_DECL int zxid_call_trustpdp(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, st
 
 /* zxutil */
 
-ZXID_DECL int zx_wildcard_pat_match(const char* pat, const char* target);
+ZXID_DECL int zx_match(const char* pat, const char* target);
 ZXID_DECL char* base64_fancy_raw(const char* p, int len, char* r, const char* basis_64, int line_len, int eol_len, const char* eol, char eq_pad);
 ZXID_DECL char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char* index_64);
 ZXID_DECL char* zx_zlib_raw_deflate(struct zx_ctx* c, int in_len, const char* in, int* out_len);  /* gzip */
@@ -92,7 +92,7 @@ ZXID_DECL int name_from_path(char* buf, int buf_len, const char* name_fmt, ...);
 ZXID_DECL fdtype open_fd_from_path(int flags, int mode, const char* logkey, int reperr, const char* name_fmt, ...);
 ZXID_DECL int read_all_fd(fdtype fd, char* p, int want, int* got_all);
 ZXID_DECL int write_all_fd(fdtype fd, const char* p, int pending);
-ZXID_DECL int write_all_fd_fmt(int fd, const char* logkey, int maxlen, char* buf, const char* data_fmt, ...)
+ZXID_DECL int write_all_fd_fmt(fdtype fd, const char* logkey, int maxlen, char* buf, const char* data_fmt, ...)
 ;
 ZXID_DECL int write_all_path_fmt(const char* logkey, int len, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...);
 ZXID_DECL int copy_file(const char* from, const char* to, const char* logkey, int may_link);

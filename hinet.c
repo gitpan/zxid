@@ -44,7 +44,7 @@
 #include "errmac.h"
 
 extern zxid_conf* zxbus_cf;
-extern int zx_debug;
+extern int errmac_debug;
 #ifdef MUTEX_DEBUG
 extern pthread_mutexattr_t MUTEXATTR_DECL;
 #endif
@@ -70,7 +70,7 @@ int hi_vfy_peer_ssl_cred(struct hi_thr* hit, struct hi_io* io, const char* eid)
   zxid_entity* meta;
   long vfy_err;
   
-  if (zx_debug>1) D("SSL_version(%s) cipher(%s)",SSL_get_version(io->ssl),SSL_get_cipher(io->ssl));
+  if (errmac_debug>1) D("SSL_version(%s) cipher(%s)",SSL_get_version(io->ssl),SSL_get_cipher(io->ssl));
   
   vfy_err = SSL_get_verify_result(io->ssl);
   switch (vfy_err) {
@@ -111,7 +111,7 @@ int hi_vfy_peer_ssl_cred(struct hi_thr* hit, struct hi_io* io, const char* eid)
 /*() Set socket to be nonblocking.
  * Our I/O strategy (edge triggered epoll or /dev/poll) depends on nonblocking fds. */
 
-/* Called by:  hi_accept, hi_open_listener, hi_open_tcp, serial_init, zxbus_open_bus_url */
+/* Called by: */
 void nonblock(int fd)
 {
 #ifdef MINGW
@@ -149,7 +149,7 @@ void nonblock(int fd)
  * size is 64KB in each direction, leading to 128KB memory consumption. Tweaking
  * to only, say, 8KB can bring substantial savings (but may hurt TCP performance). */
 
-/* Called by:  hi_accept, hi_open_listener, hi_open_tcp, zxbus_open_bus_url */
+/* Called by: */
 void setkernelbufsizes(int fd, int tx, int rx)
 {
   /* See `man 7 tcp' for TCP_CORK, TCP_NODELAY, etc. */

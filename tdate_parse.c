@@ -29,8 +29,6 @@
 ** http://www.acme.com/software/date_parse/
 */
 
-#include <sys/types.h>
-
 #include <ctype.h>
 #ifdef HAVE_MEMORY_H
 #include <memory.h>
@@ -40,7 +38,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "tdate_parse.h"
+/*#include "tdate_parse.h"  --Sampo */
 
 
 struct strlong {

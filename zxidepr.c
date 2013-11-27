@@ -66,7 +66,7 @@ void zxid_fold_svc(char* p, int len)
  * ign_prefix:: How many characters to ignore from beginning of name: 0 or 7 (http://)
  * return:: 0 on success (the real return value is returned via ~buf~ result parameter) */
 
-/* Called by:  zxid_epr_path, zxid_get_affil_and_sp_name_buf, zxid_idp_map_nid2uid, zxid_imreq, zxid_nidmap_do x2, zxid_sso_issue_a7n, zxid_sso_issue_jwt */
+/* Called by: */
 int zxid_nice_sha1(zxid_conf* cf, char* buf, int buf_len, struct zx_str* name, struct zx_str* cont, int ign_prefix)
 {
   int len = MAX(name->len - ign_prefix, 0);
@@ -110,7 +110,7 @@ int zxid_epr_path(zxid_conf* cf, char* dir, char* sid, char* buf, int buf_len, s
   int len = snprintf(buf, buf_len, "%s%s%s/", cf->path, dir, sid);
   buf[buf_len-1] = 0; /* must terminate manually as on win32 termination is not guaranteed */
   if (len <= 0) {
-    zx_broken_snprintf(len);
+    platform_broken_snprintf(len, __FUNCTION__, buf_len, "%s%s%s/");
     if (buf && buf_len > 0)
       buf[0] = 0;
     return 1;
@@ -415,7 +415,7 @@ zxid_epr* zxid_find_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const cha
  * See also:: zxid_get_epr_address() for extracting URL as a string
  */
 
-/* Called by:  main x5, zxcall_main x2, zxid_call, zxid_map_identity_token, zxid_nidmap_identity_token */
+/* Called by:  main x5, zxcall_main x2, zxid_call, zxid_map_identity_token, zxid_nidmap_identity_token, zxid_show_protected_content_setcookie */
 zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char* url, const char* di_opt, const char* action, int n)
 {
   int wsf20 = 0;
@@ -478,7 +478,7 @@ zxid_epr* zxid_get_epr(zxid_conf* cf, zxid_ses* ses, const char* svc, const char
 
 /*() Accessor function for extracting endpoint address URL. */
 
-/* Called by:  zxcall_main, zxid_print_session */
+/* Called by:  zxcall_main, zxid_print_session, zxid_show_protected_content_setcookie */
 struct zx_str* zxid_get_epr_address(zxid_conf* cf, zxid_epr* epr) {
   if (!epr)
     return 0;

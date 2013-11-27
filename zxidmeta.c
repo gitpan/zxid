@@ -249,7 +249,7 @@ int zxid_write_ent_to_cache(zxid_conf* cf, zxid_entity* ent)
  * and then read the metadata. */
 
 /* Called by:  covimp_test, main x3, test_ibm_cert_problem_enc_dec, zxid_get_ent_by_sha1_name, zxid_get_ent_cache, zxid_load_cot_cache_from_file */
-zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
+zxid_entity* zxid_get_ent_file(zxid_conf* cf, const char* sha1_name, const char* logkey)
 {
   int n, got, siz;
   fdtype fd;
@@ -258,9 +258,9 @@ zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
   zxid_entity* first = 0;
   zxid_entity* ent;
   zxid_entity* ee;
-  
+
   DD("sha1_name(%s)", sha1_name);
-  fd = open_fd_from_path(O_RDONLY, 0, "get_ent_file", 1,
+  fd = open_fd_from_path(O_RDONLY, 0, logkey, 1,
 			 "%s" ZXID_COT_DIR "%s", cf->path, sha1_name);
   if (fd == BADFD) {
     perror("open metadata to read");
@@ -276,7 +276,7 @@ zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
   close_file(fd, (const char*)__FUNCTION__);
 
   if (got <= 20) {
-    ERR("Metadata found is too short, only %d bytes. sha1_name(%s) md_buf(%.*s)", got, sha1_name, got, md_buf);
+    ERR("%s: Metadata found is too short, only %d bytes. sha1_name(%s) md_buf(%.*s)", logkey, got, sha1_name, got, md_buf);
     return 0;
   }
   DD("md_buf(%.*s) got=%d siz=%d sha1_name(%s)", got, md_buf, got, siz, sha1_name);
@@ -289,7 +289,7 @@ zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
     DD("++++++++++++sha1_name(%s)", sha1_name);
     if (!ent) {
       ZX_FREE(cf->ctx, md_buf);
-      ERR("***** Parsing metadata failed for sha1_name(%s)", sha1_name);
+      ERR("%s: ***** Parsing metadata failed for sha1_name(%s)", logkey, sha1_name);
       return first;
     }
     LOCK(cf->mx, "add ent to cot");
@@ -306,7 +306,7 @@ zxid_entity* zxid_get_ent_file(zxid_conf* cf, char* sha1_name)
 
 readerr:
   perror("read metadata");
-  D("Failed to read metadata for sha1_name(%s)", sha1_name);
+  D("%s: Failed to read metadata for sha1_name(%s)", logkey, sha1_name);
   close_file(fd, (const char*)__FUNCTION__);
   return 0;
 }
@@ -326,7 +326,7 @@ static void zxid_load_cot_cache_from_file(zxid_conf* cf)
   UNLOCK(cf->mx, "check cot");
   if (!ee) {
     D("Loading cot cache from(%s)", cf->load_cot_cache);
-    zxid_get_ent_file(cf, cf->load_cot_cache);
+    zxid_get_ent_file(cf, cf->load_cot_cache, "load_cot_cache_from_file");
     D("CoT cache loaded from(%s)", cf->load_cot_cache);
   }
   UNLOCK(zxid_ent_cache_mx, "get ent from cache");
@@ -341,6 +341,8 @@ zxid_entity* zxid_get_ent_cache(zxid_conf* cf, struct zx_str* eid)
 {
   zxid_entity* ent;
   char sha1_name[28];
+  char logkey[256];
+  
   zxid_load_cot_cache_from_file(cf);
   for (ent = cf->cot; ent; ent = ent->n)  /* Check in memory cache. */
     if (eid->len == strlen(ent->eid) && !memcmp(eid->s, ent->eid, eid->len)) {
@@ -349,7 +351,10 @@ zxid_entity* zxid_get_ent_cache(zxid_conf* cf, struct zx_str* eid)
     }
   sha1_safe_base64(sha1_name, eid->len, eid->s);
   sha1_name[27] = 0;
-  return zxid_get_ent_file(cf, sha1_name);
+
+  snprintf(logkey, sizeof(logkey)-1, "get_ent_cache EntityID(%.*s)", eid->len, eid->s);
+  logkey[sizeof(logkey)-1] = 0;
+  return zxid_get_ent_file(cf, sha1_name, logkey);
 }
 
 /*(i) Get metadata for entity, either from cache or network (using WKL), depending
@@ -359,7 +364,7 @@ zxid_entity* zxid_get_ent_cache(zxid_conf* cf, struct zx_str* eid)
  * eid:: Entity ID whose metadata is desired
  * return:: Entity data structure, including the metadata */
 
-/* Called by:  a7n_test, x509_test, zxid_add_fed_tok2epr, zxid_chk_sig, zxid_decode_redir_or_post, zxid_get_ent, zxid_get_ses_idp, zxid_idp_dispatch, zxid_idp_sso, zxid_imreq, zxid_simple_idp_show_an, zxid_slo_resp_redir, zxid_sp_dispatch, zxid_sp_sso_finalize, zxid_ssos_anreq, zxid_wsc_valid_re_env, zxid_wsf_validate_a7n, zxid_wsp_validate_env */
+/* Called by: */
 zxid_entity* zxid_get_ent_ss(zxid_conf* cf, struct zx_str* eid)
 {
   zxid_entity* old_cot;
@@ -423,7 +428,7 @@ zxid_entity* zxid_get_ent_ss(zxid_conf* cf, struct zx_str* eid)
 
 /*() Wrapper for zxid_get_ent_ss(), which see. */
 
-/* Called by:  hi_vfy_peer_ssl_cred, zxbus_open_bus_url, zxbus_verify_receipt, zxcall_main, zxid_cdc_check x2, zxid_oauth2_az_server_sso, zxid_simple_idp_show_an, zxid_start_sso_url */
+/* Called by:  hi_vfy_peer_ssl_cred, zxbus_verify_receipt, zxcall_main, zxid_cdc_check x2, zxid_oauth2_az_server_sso, zxid_simple_idp_show_an, zxid_start_sso_url */
 zxid_entity* zxid_get_ent(zxid_conf* cf, const char* eid)
 {
   struct zx_str ss;
@@ -448,7 +453,7 @@ zxid_entity* zxid_get_ent_by_sha1_name(zxid_conf* cf, char* sha1_name)
       return ent;
     }
   UNLOCK(cf->mx, "scan cache by sha1_name");
-  ent = zxid_get_ent_file(cf, sha1_name);
+  ent = zxid_get_ent_file(cf, sha1_name, "get_ent_by_sha1_name");
   if (!ent)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "B", "NOMD", 0, "sha1_name(%s)", sha1_name);
   return ent;
@@ -835,7 +840,7 @@ struct zx_str* zxid_my_ent_id(zxid_conf* cf)
 
 /*() Return our EntityID as c-string. Caller must free with ZX_FREE(cf->ctx, eid) */
 
-/* Called by:  main x2, stomp_got_ack, test_receipt, zxbus_open_bus_url, zxbus_send_cmdf, zxid_idp_select_zxstr_cf_cgi, zxid_map_bangbang, zxid_show_conf, zxid_sso_issue_jwt */
+/* Called by:  main x2, stomp_got_ack, test_receipt, zxbus_send_cmdf, zxid_idp_select_zxstr_cf_cgi, zxid_map_bangbang, zxid_show_conf, zxid_sso_issue_jwt */
 char* zxid_my_ent_id_cstr(zxid_conf* cf)
 {
   int len;
@@ -929,7 +934,7 @@ struct zx_str* zxid_sp_meta(zxid_conf* cf, zxid_cgi* cgi)
  *
  * Limitation:: This function only works with CGI as it will print the
  *     serialized metadata straight to stdout. There are other
- *     methods for getting metadat without this limitation, e.g. zxid_sp_meta() */
+ *     methods for getting metadata without this limitation, e.g. zxid_sp_meta() */
 
 /* Called by:  main x2, opt x2 */
 int zxid_send_sp_meta(zxid_conf* cf, zxid_cgi* cgi)
@@ -938,7 +943,7 @@ int zxid_send_sp_meta(zxid_conf* cf, zxid_cgi* cgi)
   if (!ss)
     return 0;
   //write_all_fd(1, ss->s, ss->len);
-  write_all_fd(fileno(stdout), ss->s, ss->len);
+  write_all_fd(fdstdout, ss->s, ss->len);
   zx_str_free(cf->ctx, ss);
   return 0;
 }

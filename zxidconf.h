@@ -41,22 +41,9 @@
  * See also ZXID_CONF_PATH compile time macro.
  * Generally we recommend you leave these turned on (1). */
 
-#define ZXID_CONF_FILE 1     /* (compile) */
+#define ZXID_CONF_FILE_ENA 1 /* (compile) */
 #define ZXID_CONF_FLAG 1     /* (compile) ZXID_CONF environment variable and -c flag enable. */
 #define ZXID_SHOW_CONF 1     /* Whether configuration is viewable from URL?o=d */
-
-/*(c) ZXID configuration and working directory path
- * Where metadata cache and session files are created. Note that the directory
- * is not hashed: you should use a file system that scales easily to oodles
- * of small files in one directory. Say `make dir' to create the directory
- * with proper layout. If you change it here, also edit Makefile. */
-#ifndef ZXID_PATH
-#ifdef MINGW
-#define ZXID_PATH  "c:/var/zxid/"
-#else
-#define ZXID_PATH  "/var/zxid/"
-#endif
-#endif
 
 #define ZXID_PATH_MAX_RECURS_EXPAND_DEPTH 5  /* (compile) Max no of incls, nested PATH or VPATH */
 
@@ -503,7 +490,9 @@
  * generally the need to set a cookie is expressed by presence of
  * setcookie attribute in the LDIF entry. setcookie specifies what
  * should appear in the Set-Cookie HTTP header of HTTP response). */
+#ifndef ZXID_PTM_COOKIE_NAME
 #define ZXID_PTM_COOKIE_NAME "ZXIDPTM"
+#endif
 
 /*(c) Local user account management (local user database in filesystem).
  * This is optional unless you require IdP
@@ -528,7 +517,7 @@
 
 /*(c) Mini Authentication Service
  * Whether limited Authentication Service functionality is enabled.
- * Please note that the AuthenticationService impmenetation at present (2010)
+ * Please note that the AuthenticationService implementation at present (2010)
  * is incomplete and fails to properly authenticate and authorize the caller
  * system entity, i.e. anyone who knows a username and password can call it. */
 #define ZXID_AS_ENA 0
@@ -763,7 +752,8 @@
 
 /*(c) WSP Pattern
  * Any URL matching this pattern is treated as web service call rather
- * than SSO attempt. Understood by mod_auth_saml. */
+ * than SSO attempt. Understood by mod_auth_saml and mini_httpd_zxid.
+ * WSP_PAT is matched before SSO_PAT. */
 
 #define ZXID_WSP_PAT "*.wsp"
 

@@ -29,8 +29,9 @@
 #include "c/zx-data.h"
 #include "c/zx-e-data.h"
 
-/*() WSC response validation work horse. This check the ID-WSF [SOAPbind2] specified
- * criteria, as well as additional criteria and calls PDP, if configured.
+/*() WSC response validation work horse.
+ * Checks the ID-WSF [SOAPbind2] specified criteria, as well
+ * as additional criteria and calls PDP, if configured.
  *
  * cf:: ZXID configuration object, see zxid_new_conf()
  * ses:: Session object, used for attributes passed to az, and for recording errors
@@ -221,9 +222,12 @@ int zxid_wsc_valid_re_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, str
   return 1;
 }
 
-/*() Prepare some headers for WSC call */
+/*() Prepare some headers for WSC call. Some of the headers, such
+ * as MessageID and Security, will receive their final content
+ * in zxid_wsc_pres_secmech(). All signing also happens later.
+ * The header list is kept in forward order. */
 
-/* Called by:  zxid_wsc_call */
+/* Called by:  zxid_wsc_call, zxid_wsc_prepare_call */
 static int zxid_wsc_prep(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_e_Envelope_s* env)
 {
   zxid_tok* tok;
@@ -308,9 +312,13 @@ static void zxid_choose_sectok(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, stru
     ERR("No <sa:EncryptedAssertion> or <sa:Assertion> found in <sec:Token> %p", tok);
 }
 
-/*() Perform security mechanism related processing for a WSC call */
+/*() Perform security mechanism related processing for a WSC call.
+ * This function will add Liberty ID-WSF specific content to already
+ * existing SOAP headers, namely in Security and MessageID. This
+ * header content varies from SOAP call retry to retry. Other
+ * headers are always the same and handled in zxid_wsc_prep(). */
 
-/* Called by:  zxid_wsc_call */
+/* Called by:  zxid_wsc_call, zxid_wsc_prepare_call */
 static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_e_Envelope_s* env)
 {
   int secmech;
@@ -391,8 +399,7 @@ static int zxid_wsc_prep_secmech(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, st
  * function again to continue the web service call after interaction.
  *
  * env (rather than Body) is taken as argument so that caller can prepare
- * additional SOAP headers at will before calling this function. This function
- * will add Liberty ID-WSF specific SOAP headers. */
+ * additional SOAP headers at will before calling this function. */
 
 /* Called by:  main x9, zxid_call_epr, zxid_get_epr, zxid_map_identity_token, zxid_nidmap_identity_token */
 struct zx_e_Envelope_s* zxid_wsc_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, struct zx_e_Envelope_s* env, char** ret_enve)
@@ -482,6 +489,8 @@ static char zx_env_close[] = "</e:Envelope>";
  * automatically added. If the string starts by neither of the above (be
  * careful to use the "e:" as namespace prefix), then it is assumed to be the
  * payload content of the <e:Body> and the rest of the SOAP envelope is added.
+ * Supplying <e:Header>, but not <e:Body>, is not supported.
+ * N.B. The lists are returned in forward order.
  */
 
 /* Called by:  zxid_call_epr, zxid_wsc_prepare_call, zxid_wsc_valid_resp, zxid_wsp_decorate */
@@ -489,26 +498,30 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
 {
   struct zx_e_Envelope_s* env;
   struct zx_root_s* r;
+  struct zx_str* ret;
   r = zx_dec_zx_root(cf->ctx, strlen(enve), enve, "add_env");
   if (!r) {
     ERR("Malformed XML enve(%s)", enve);
     return 0;
   }
+  /* N.B. The lists are in reverse order after the parse. */
   env = r->Envelope;
   if (env) {
-    DD("HERE1 ENV EXISTS %p", env);
+    D("HERE1 ENV EXISTS %p", env);
     if (!env->Body)
       env->Body = zx_NEW_e_Body(cf->ctx, &env->gg);
     if (!env->Header)
       env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
+    /* N.B. Maintain the forward order, Header is now first element of Element->kids. */
   } else if (r->Body) {
-    DD("HERE2 BODY EXISTS %p", env);
+    D("HERE2 BODY EXISTS %p", env);
     env = zx_NEW_e_Envelope(cf->ctx,0);
     ZX_ADD_KID(env, Body, r->Body);
     if (r->Header)
       ZX_ADD_KID(env, Header, r->Header);
     else
       env->Header = zx_NEW_e_Header(cf->ctx, &env->gg);
+    /* N.B. Maintain the Forward order: Header is now first element of Element->kids. */
   } else { /* Resort to stringwise attempt to add envelope. */
     ZX_FREE(cf->ctx, r);
     if (!memcmp(enve, "<?xml ", sizeof("<?xml ")-1)) {  /* Ignore common, but unnecessary decl. */
@@ -518,17 +531,25 @@ struct zx_e_Envelope_s* zxid_add_env_if_needed(zxid_conf* cf, const char* enve)
     }
     /* Must be just payload */
     enve = zx_alloc_sprintf(cf->ctx, 0, "%s%s%s", zx_env_body_open, enve, zx_env_body_close);
-    DD("HERE3 ADD ENV(%s)", enve);
+    D("HERE3 ADD ENV(%s)", enve);
     r = zx_dec_zx_root(cf->ctx, strlen(enve), enve, "add_env2");
     if (!r) {
       ERR("Malformed XML enve(%s)", enve);
       return 0;
     }
     env = r->Envelope;
+#if 0
+    ret=zx_easy_enc_elem_opt(cf,&env->gg); INFO("ser(%.*s) enve(%s)",ret->len,ret->s,enve); // ***
+    /* The lists are in reverse order after the parse. But since this is a text parse,
+     * wireorder is maintained, thus giving forward order, afterall. */
+    zx_reverse_elem_lists(&env->gg);
+#endif
   }
   ZX_FREE(cf->ctx, r);
+  ret = zx_easy_enc_elem_opt(cf,&env->gg); INFO("ser(%.*s) enve(%s)",ret->len,ret->s,enve); // ***
   if (!env)
     ERR("No <e:Envelope> found in input argument. enve(%s)", enve);
+  /* DO NOT: zx_reverse_elem_lists(&env->gg);  * ensure forward order for external use */
   return env;
 }
 
@@ -559,6 +580,7 @@ struct zx_str* zxid_call_epr(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const 
     D_DEDENT("call: ");
     return 0;
   }
+  ret = zx_easy_enc_elem_opt(cf, &env->gg);  INFO("sending(%.*s) enve(%s)", ret->len, ret->s, enve); // ***
   
   /* Call Rq-Out PDP */
 
@@ -653,7 +675,8 @@ struct zx_str* zxid_call(zxid_conf* cf, zxid_ses* ses, const char* svctype, cons
 
   epr = zxid_get_epr(cf, ses, svctype, url, di_opt, 0 /*Action*/, 1);
   if (!epr) {
-    ERR("EPR could not be discovered for svctype(%s)", svctype);
+    ERR("EPR could not be discovered for svctype(%s) (missing registration?)", svctype);
+    zxid_set_fault(cf, ses, zxid_mk_fault(cf, 0, TAS3_WSC_RQ_OUT, "e:Client", "End Point for the service type could not be found. No end point has been registered? Too strict criteria for id_opt or az_cred? Permission denied? No discovery bootstrap is available?", TAS3_STATUS_EPR_NOT_FOUND, 0, url, svctype));
     return 0;
   }
   
@@ -699,8 +722,11 @@ struct zx_str* zxid_callf(zxid_conf* cf, zxid_ses* ses, const char* svctype, con
  *     configuration option. This implementes generalized (application
  *     independent) Requestor Out and Requestor In PEPs. To implement
  *     application dependent PEP features you should call zxid_az() directly.
- * env:: XML payload as a string
- * return:: SOAP Envelope ready to be sent to the WSP. You can pass this to HTTP client. */
+ * env:: XML payload (or SOAP Envelope) as a string
+ * return:: SOAP Envelope ready to be sent to the WSP. You can pass this to HTTP client.
+ *
+ * N.B. If the ID-WSF call for some reason needs to be retried, this function
+ * should be called for each retry. */
 
 /* Called by:  ws_validations, zxid_wsc_prepare_callf */
 struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr, const char* az_cred, const char* enve)
@@ -719,7 +745,14 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
     return 0;
   }
   
-  //*** Needs thought and development
+  /* Call Rq-Out PDP */
+  
+  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RQ_OUT,"e:Client", cf->pepmap_rqout)) {
+    D_DEDENT("prep: ");
+    return 0;
+  }
+  
+  /* *** add usage directives */
 
   if (!zxid_wsc_prep(cf, ses, epr, env)) {
     D_DEDENT("prep: ");
@@ -730,15 +763,6 @@ struct zx_str* zxid_wsc_prepare_call(zxid_conf* cf, zxid_ses* ses, zxid_epr* epr
     return 0;
   }
   ses->wsc_msgid = zx_str_to_c(cf->ctx, ZX_GET_CONTENT(env->Header->MessageID));
-
-  /* Call Rq-Out PDP */
-  
-  if (!zxid_query_ctlpt_pdp(cf, ses, az_cred, env, TAS3_PEP_RQ_OUT,"e:Client", cf->pepmap_rqout)) {
-    D_DEDENT("prep: ");
-    return 0;
-  }
-  
-  /* *** add usage directives */
 
   ret = zx_easy_enc_elem_opt(cf, &env->gg);
   D_DEDENT("prep: ");

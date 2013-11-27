@@ -16,7 +16,10 @@
 #include <time.h>
 #include <unistd.h>
 
-extern char *crypt(const char *key, const char *setting);
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/des.h>
+#define crypt(pw,salt) DES_crypt((pw),(salt))
 
 #define LF 10
 #define CR 13
@@ -28,6 +31,7 @@ char temp_template[] = "/tmp/htp.XXXXXX";
 
 void interrupted(int);
 
+/* Called by:  add_password */
 static char * strd(char *s) {
     char *d;
 
@@ -36,6 +40,7 @@ static char * strd(char *s) {
     return(d);
 }
 
+/* Called by:  main */
 static void getword(char *word, char *line, char stop) {
     int x = 0,y;
 
@@ -49,6 +54,7 @@ static void getword(char *word, char *line, char stop) {
     while((line[y++] = line[x++]));
 }
 
+/* Called by:  main */
 static int htpasswd_getline(char *s, int n, FILE *f) {
     register int i=0;
 
@@ -66,6 +72,7 @@ static int htpasswd_getline(char *s, int n, FILE *f) {
     }
 }
 
+/* Called by:  main x2 */
 static void putline(FILE *f,char *l) {
     int x;
 
@@ -78,6 +85,7 @@ static void putline(FILE *f,char *l) {
 static unsigned char itoa64[] =         /* 0 ... 63 => ascii - 64 */
         "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
+/* Called by:  add_password, zx_md5_crypt x6 */
 static void to64(register char *s, register long v, register int n) {
     while (--n >= 0) {
         *s++ = itoa64[v&0x3f];
@@ -104,6 +112,7 @@ return (char *)&password;
 }
 #endif
 
+/* Called by:  main x3 */
 static void
 add_password( char* user, FILE* f )
     {
@@ -142,12 +151,14 @@ static void usage(void) {
     exit(1);
 }
 
+/* Called by: */
 void interrupted(int signo) {
     fprintf(stderr,"Interrupted.\n");
     if(tfd != -1) unlink(temp_template);
     exit(1);
 }
 
+/* Called by: */
 int main(int argc, char *argv[]) {
     FILE *tfp,*f;
     char user[MAX_STRING_LEN];

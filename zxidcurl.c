@@ -67,7 +67,7 @@ size_t zxid_curl_write_data(void *buffer, size_t size, size_t nmemb, void *userp
   }
   memcpy(rc->p, buffer, len);
   rc->p += len;
-  if (zx_debug & CURL_INOUT) {
+  if (errmac_debug & CURL_INOUT) {
     INFO("RECV(%.*s) %d chars", len, (char*)buffer, len);
     D_XML_BLOB(0, "RECV", len, (char*)buffer);
   }
@@ -90,7 +90,7 @@ size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
     len = wc->lim - wc->p;
   memcpy(buffer, wc->p, len);
   wc->p += len;
-  if (zx_debug & CURL_INOUT) {
+  if (errmac_debug & CURL_INOUT) {
     INFO("SEND(%.*s) %d chars", len, (char*)buffer, len);
     D_XML_BLOB(0, "SEND", len, (char*)buffer);
   }
@@ -116,6 +116,8 @@ size_t zxid_curl_read_data(void *buffer, size_t size, size_t nmemb, void *userp)
  * given configuration object can have only one HTTP request active
  * at a time. If you need more parallelism, you need more configuration
  * objects.
+ *
+ * N.B. To use proxy, set environment variable all_proxy=proxyhost:port
  */
 
 /* Called by:  zxid_get_meta, zxid_sp_dig_oauth_sso_a7n */
@@ -233,7 +235,7 @@ struct zx_str* zxid_http_post_raw(zxid_conf* cf, int url_len, const char* url, i
   SOAPaction.next = &content_type;    //curl_slist_append(3)
   curl_easy_setopt(cf->curl, CURLOPT_HTTPHEADER, &SOAPaction);
   
-  D("----------- url(%s) -----------", urli);
+  INFO("----------- call(%s) -----------", urli);
   DD("SOAP_CALL post(%.*s) len=%d\n", len, data, len);
   D_XML_BLOB(cf, "SOAPCALL POST", len, data);
   res = curl_easy_perform(cf->curl);  /* <========= Actual call, blocks. */
@@ -339,7 +341,7 @@ zxid_entity* zxid_get_meta_ss(zxid_conf* cf, struct zx_str* url)
  * return:: XML data structure representing the response, or 0 upon failure
  *
  * The underlying HTTP client is libcurl. While libcurl is documented to
- * be "entirely thread safe", one limitation is that chrl handle can not
+ * be "entirely thread safe", one limitation is that curl handle can not
  * be shared between threads. Since we keep the curl handle a part
  * of the configuration object, which may be shared between threads,
  * we need to take a lock for duration of the curl operation. Thus any
@@ -431,7 +433,7 @@ struct zx_root_s* zxid_soap_call_body(zxid_conf* cf, struct zx_str* url, struct 
  * body::   XML data structure representing the request
  * return:: 0 if fail, ZXID_REDIR_OK if success. */
 
-/* Called by:  zxid_idp_soap_dispatch x2, zxid_sp_soap_dispatch x7 */
+/* Called by:  zxid_idp_soap_dispatch x2, zxid_sp_soap_dispatch x8 */
 int zxid_soap_cgi_resp_body(zxid_conf* cf, zxid_ses* ses, struct zx_e_Body_s* body)
 {
   struct zx_e_Envelope_s* env = zx_NEW_e_Envelope(cf->ctx,0);
@@ -471,7 +473,7 @@ int zxid_soap_cgi_resp_body(zxid_conf* cf, zxid_ses* ses, struct zx_e_Body_s* bo
     }
   }
   
-  if (zx_debug & ZXID_INOUT) INFO("SOAP_RESP(%.*s)", ss->len, ss->s);
+  if (errmac_debug & ERRMAC_INOUT) INFO("SOAP_RESP(%.*s)", ss->len, ss->s);
   fprintf(stdout, "CONTENT-TYPE: text/xml" CRLF "CONTENT-LENGTH: %d" CRLF2 "%.*s", ss->len, ss->len, ss->s);
   fflush(stdout);
   D("^^^^^^^^^^^^^^ Done (%d chars returned) ^^^^^^^^^^^^^", ss->len);
