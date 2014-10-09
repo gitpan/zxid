@@ -49,7 +49,7 @@ Usage: zxcall [options] -s SESID -t SVCTYPE <soap_req_body.xml >soap_resp.xml\n\
                    create session. IDP is IdP's Entity ID. This is alternative to -s\n\
   -t SVCTYPE       Service Type URI. Used for discovery. Mandatory (omitting -t\n\
                    causes authorization only mode, provided that -az was specified).\n\
-  -u URL           Optional endpoint URL or ProviderID. Discovery must match this.\n\
+  -u EPURL         Optional endpoint URL or ProviderID. Discovery must match this.\n\
   -di DISCOOPTS    Optional discovery options. Query string format.\n\
   -din N           Discovery index (default: 1=pick first).\n\
   -az AZCREDS      Optional authorization credentials. Query string format.\n\
@@ -163,6 +163,7 @@ static void opt(int* argc, char*** argv, char*** env)
 	  sscanf((*argv)[0], "%i", &din);
 	  continue;
 	}
+	break;
       case 'c':
 	ss = zxid_show_conf(cf);
 	if (verbose>1) {
@@ -327,7 +328,7 @@ int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
   
   D_INDENT("lstses: ");
 
-  if (!name_from_path(path, sizeof(path), "%s" ZXID_SES_DIR "%s", cf->path, ses->sid)) {
+  if (!name_from_path(path, sizeof(path), "%s" ZXID_SES_DIR "%s", cf->cpath, ses->sid)) {
     D_DEDENT("lstses: ");
     return 0;
   }
@@ -349,7 +350,7 @@ int zxid_print_session(zxid_conf* cf, zxid_ses* ses)
       continue;
     D("%d Checking EPR content file(%s)", din, de->d_name);
     epr_buf = read_all_alloc(cf->ctx, "lstses", 1, &epr_len,
-			     "%s" ZXID_SES_DIR "%s/%s", cf->path, ses->sid, de->d_name);
+			     "%s" ZXID_SES_DIR "%s/%s", cf->cpath, ses->sid, de->d_name);
     if (!epr_buf)
       continue;
     
@@ -424,6 +425,7 @@ int zxcall_main(int argc, char** argv, char** env)
       ERR("Login using Authentication Service failed idp(%s)", idp);
       return 1;
     }
+    INFO("Logged in. NameID(%s) Session in %s" ZXID_SES_DIR "%s", ses->nid, cf->cpath, ses->sid);
   }
 
   if (listses)
@@ -444,7 +446,7 @@ int zxcall_main(int argc, char** argv, char** env)
   }
 
   if (di_only) {
-    D("Discover only. svctype(%s), index=%d", STRNULLCHK(svc), din);
+    D("Discover only. svctype(%s), dindex=%d", STRNULLCHK(svc), din);
     epr = zxid_get_epr(cf, ses, svc, url, di, 0 /*action*/, din);
     if (!epr) {
       ERR("Discovery failed to find any epr of service type(%s)", STRNULLCHK(svc));
@@ -454,13 +456,13 @@ int zxcall_main(int argc, char** argv, char** env)
       epr = zxid_get_epr(cf, ses, svc, url, di, 0 /*action*/, din);
       if (!epr)
 	break;
-      ss = zxid_get_epr_address(cf, epr);
-      printf("%d. Found epr for service type(%s)\n   URL:         %.*s\n",
-	     din, STRNULLCHK(svc), ss?ss->len:0, ss?ss->s:"");
-      ss = zxid_get_epr_entid(cf, epr);
-      printf("   EntityID:    %.*s\n", ss?ss->len:0, ss?ss->s:"");
+      printf("%d. Found epr for service type(%s)\n", din, STRNULLCHK(svc));
       ss = zxid_get_epr_desc(cf, epr);
       printf("   Description: %.*s\n", ss?ss->len:0, ss?ss->s:"");
+      ss = zxid_get_epr_address(cf, epr);
+      printf("   EPURL:       %.*s\n", ss?ss->len:0, ss?ss->s:"");
+      ss = zxid_get_epr_entid(cf, epr);
+      printf("   EntityID:    %.*s\n", ss?ss->len:0, ss?ss->s:"");
     }
     return 0;
   }
@@ -499,7 +501,7 @@ int zxcall_main(int argc, char** argv, char** env)
       return 2;
     }
     if (verbose)
-      fprintf(stderr, "Call returned %d bytes.\n", ss->len);
+      fprintf(stderr, "Done. Call returned %d bytes.\n", ss->len);
     if (out_fmt) {
       p = zxid_extract_body(cf, ss->s);
       printf("%s", p);

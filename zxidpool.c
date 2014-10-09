@@ -517,6 +517,7 @@ static int zxid_add_at_vals(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribute
   struct zx_str* ss;
   struct zxid_map* map;
   struct zx_sa_AttributeValue_s* av;
+  struct zxid_attr* ses_at;
   
   /* Attribute must be needed or wanted */
 
@@ -531,13 +532,20 @@ static int zxid_add_at_vals(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribute
     return 0;
   }
   
+  /* Locate existing session pool attribute by name or mapped name, or create
+   * empty one if needed. N.B. The value is not assigned here yet. */
+  
   if (map && map->dst && *map->dst && map->src && map->src[0] != '*') {
-    ses->at = zxid_new_at(cf, ses->at, strlen(map->dst), map->dst, 0, 0, "mappd");
+    ses_at = zxid_find_at(ses->at, map->dst);
+    if (!ses_at)
+      ses->at = ses_at = zxid_new_at(cf, ses->at, strlen(map->dst), map->dst, 0, 0, "mappd");
   } else {
-    ses->at = zxid_new_at(cf, ses->at, strlen(name), name, 0, 0, "as is");
+    ses_at = zxid_find_at(ses->at, name);
+    if (!ses_at)
+      ses->at = ses_at = zxid_new_at(cf, ses->at, strlen(name), name, 0, 0, "as is");
   }
-  ses->at->orig = at;
-  ses->at->issuer = issuer;
+  ses_at->orig = at;
+  ses_at->issuer = issuer;
   
   for (av = at->AttributeValue;
        av;
@@ -548,13 +556,13 @@ static int zxid_add_at_vals(zxid_conf* cf, zxid_ses* ses, struct zx_sa_Attribute
     if (av->EndpointReference || av->ResourceOffering)
       continue;  /* Skip bootstraps. They are handled elsewhere, see zxid_snarf_eprs_from_ses(). */
     if (ZX_GET_CONTENT(av)) {
-      ss = zxid_map_val_ss(cf, ses, 0, map, ses->at->name, ZX_GET_CONTENT(av));
-      if (ses->at->val) {
-	D("  map val(%.*s)", ss->len, ss->s);
-	ses->at->nv = zxid_new_at(cf, ses->at->nv, 0, 0, ss->len, ss->s, "multival");
+      ss = zxid_map_val_ss(cf, ses, 0, map, ses_at->name, ZX_GET_CONTENT(av));
+      if (ses_at->val) {
+	D("  multival(%.*s)", ss->len, ss->s);
+	ses->at->nv = zxid_new_at(cf, ses_at->nv, 0, 0, ss->len, ss->s, "multival");
       } else {
-	D("  copy val(%.*s)", ss->len, ss->s);
-	COPYVAL(ses->at->val, ss->s, ss->s+ss->len);
+	D("  1st val(%.*s)", ss->len, ss->s);
+	COPYVAL(ses_at->val, ss->s, ss->s+ss->len);
       }
     }
   }
@@ -661,7 +669,7 @@ static void zxid_add_ldif_at2ses(zxid_conf* cf, zxid_ses* ses, const char* prefi
  * a given SP some EPR. Naturally such EPR can not have per user
  * or short time credential. This can have security implications.
  *
- * cf:: Config object for cf->path, and for memory allocation
+ * cf:: Config object for cf->cpath, and for memory allocation
  * ses:: Session object. ses->sid is used to determine desitmation directory.
  * path:: Path to the user directory (in /var/zxid/user/<sha1_safe_base64(idpnid)>/)
  */
@@ -744,7 +752,7 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   zxid_add_attr_to_ses(cf, ses, "nidfmt", zx_dup_str(cf->ctx, ses->nidfmt?"P":"T"));
   if (nid) {  
     zxid_user_sha1_name(cf, affid, nid, sha1_name);
-    path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR "%s", cf->path, sha1_name);
+    path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR "%s", cf->cpath, sha1_name);
     zxid_add_attr_to_ses(cf, ses, "localpath",   path);
     buf = read_all_alloc(cf->ctx, "splocal_user_at", 0, 0, "%.*s/.bs/.at", path->len, path->s);
     if (buf) {
@@ -778,7 +786,7 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   zxid_add_attr_to_ses(cf, ses, "tgtfmt",    zx_dup_str(cf->ctx, ses->tgtfmt?"P":"T"));
   if (tgtnid) {
     zxid_user_sha1_name(cf, tgtaffid, tgtnid, sha1_name);
-    path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR "%s", cf->path, sha1_name);
+    path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR "%s", cf->cpath, sha1_name);
     zxid_add_attr_to_ses(cf, ses, "tgtpath",   path);
     buf = read_all_alloc(cf->ctx, "sptgt_user_at", 0, 0, "%.*s/.bs/.at", path->len, path->s);
     if (buf) {
@@ -792,12 +800,12 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   //accr = a7n&&a7n->AuthnStatement&&a7n->AuthnStatement->AuthnContext&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content&&a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content?a7n->AuthnStatement->AuthnContext->AuthnContextClassRef->content:0;
   zxid_add_attr_to_ses(cf, ses, "authnctxlevel", accr);
   
-  buf = read_all_alloc(cf->ctx, "splocal.all", 0, 0, "%s" ZXID_USER_DIR ".all/.bs/.at" , cf->path);
+  buf = read_all_alloc(cf->ctx, "splocal.all", 0,0, "%s" ZXID_USER_DIR ".all/.bs/.at" , cf->cpath);
   if (buf) {
     zxid_add_ldif_at2ses(cf, ses, 0, buf, "splocal.all");
     ZX_FREE(cf->ctx, buf);
   }
-  path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR ".all", cf->path);
+  path = zx_strf(cf->ctx, "%s" ZXID_USER_DIR ".all", cf->cpath);
   zxid_cp_usr_eprs2ses(cf, ses, path);
   
   zxid_add_attr_to_ses(cf, ses, "eid",        zxid_my_ent_id(cf));
@@ -805,7 +813,7 @@ void zxid_ses_to_pool(zxid_conf* cf, zxid_ses* ses)
   zxid_add_attr_to_ses(cf, ses, "ssores",     zx_strf(cf->ctx, "%x", ses->ssores));
   if (ses->sid && *ses->sid) {
     zxid_add_attr_to_ses(cf, ses, "sesid",    zx_dup_str(cf->ctx, STRNULLCHK(ses->sid)));
-    zxid_add_attr_to_ses(cf, ses, "sespath",  zx_strf(cf->ctx, "%s" ZXID_SES_DIR "%s", cf->path, STRNULLCHK(ses->sid)));
+    zxid_add_attr_to_ses(cf, ses, "sespath",  zx_strf(cf->ctx, "%s" ZXID_SES_DIR "%s", cf->cpath, STRNULLCHK(ses->sid)));
   }
   zxid_add_attr_to_ses(cf, ses, "sesix",      zx_dup_str(cf->ctx, STRNULLCHK(ses->sesix)));
   zxid_add_attr_to_ses(cf, ses, "setcookie",  zx_dup_str(cf->ctx, STRNULLCHK(ses->setcookie)));

@@ -14,7 +14,8 @@
  * 7.10.2008,  added inline documentation --Sampo
  * 29.8.2009,  added hmac chaining field --Sampo
  * 12.3.2010,  added per user logging facility --Sampo
- * 9.9.2012,  added persist support --Sampo
+ * 9.9.2012,   added persist support --Sampo
+ * 30.11.2013, fixed seconds handling re gmtime_r() - found by valgrind --Sampo
  *
  * See also: Logging chapter in README.zxid
  */
@@ -242,7 +243,8 @@ void zxlog_write_line(zxid_conf* cf, char* c_path, int encflags, int n, const ch
     ZX_FREE(cf->ctx, sig);
 }
 
-/*() Helper function for formatting all kinds of logs. */
+/*() Helper function for formatting all kinds of logs.
+ * This is the real workhorse. */
 
 static int zxlog_fmt(zxid_conf* cf,   /* 1 */
 		     int len, char* logbuf,
@@ -261,7 +263,6 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
 		     va_list ap)
 {
   int n;
-  time_t secs;
   char* p;
   char sha1_name[28];
   struct tm ot;
@@ -280,10 +281,8 @@ static int zxlog_fmt(zxid_conf* cf,   /* 1 */
     srctsdefault.tv_sec = 0;
     srctsdefault.tv_usec = 501000;
   }
-  GMTIME_R(secs, ot);
-  ourts->tv_sec = secs;
-  GMTIME_R(secs, st);
-  srcts->tv_sec = secs;
+  GMTIME_R(ourts->tv_sec, ot);
+  GMTIME_R(srcts->tv_sec, st);
   
   if (entid && entid->len && entid->s) {
     sha1_safe_base64(sha1_name, entid->len, entid->s);
@@ -353,11 +352,11 @@ static int zxlog_output(zxid_conf* cf, int n, const char* logbuf, const char* re
   char c_path[ZXID_MAX_BUF];
   DD("LOG(%.*s)", n-1, logbuf);
   if ((cf->log_err_in_act || res[0] == 'K') && cf->log_act) {
-    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "act", cf->path);
+    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "act", cf->cpath);
     zxlog_write_line(cf, c_path, cf->log_act, n, logbuf);
   }
   if (cf->log_err && (cf->log_act_in_err || res[0] != 'K')) {  /* If enabled, everything goes to err */
-    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "err", cf->path);
+    name_from_path(c_path, sizeof(c_path), "%s" ZXID_LOG_DIR "err", cf->cpath);
     zxlog_write_line(cf, c_path, cf->log_err, n, logbuf);
   }
   return 0;
@@ -498,7 +497,7 @@ int zxlogusr(zxid_conf* cf,   /* 1 */
   /* Output stage */
   
   D("UID(%s) LOG(%.*s)", uid, n-1, logbuf);
-  name_from_path(c_path, sizeof(c_path), "%s" ZXID_UID_DIR "%s/.log", cf->path, uid);
+  name_from_path(c_path, sizeof(c_path), "%s" ZXID_UID_DIR "%s/.log", cf->cpath, uid);
   zxlog_write_line(cf, c_path, cf->log_act, n, logbuf);
   return 0;
 }
@@ -548,7 +547,7 @@ struct zx_str* zxlog_path(zxid_conf* cf,
   struct stat st;
   int dir_len = strlen(dir);
   int kind_len = strlen(kind);
-  int len = cf->path_len + sizeof("log/")-1 + dir_len + 27 + kind_len + 27;
+  int len = cf->cpath_len + sizeof("log/")-1 + dir_len + 27 + kind_len + 27;
   char* s = ZX_ALLOC(cf->ctx, len+1);
   char* p;
 
@@ -558,8 +557,8 @@ struct zx_str* zxlog_path(zxid_conf* cf,
     return 0;
   }
 
-  memcpy(s, cf->path, cf->path_len);
-  p = s + cf->path_len;
+  memcpy(s, cf->cpath, cf->cpath_len);
+  p = s + cf->cpath_len;
   memcpy(p, "log/", sizeof("log/"));
   p += sizeof("log/")-1;
   if (stat(s, &st)) {
@@ -689,10 +688,10 @@ static FILE* zx_open_xml_log_file(zxid_conf* cf)
 {
   FILE* f;
   char buf[ZXID_MAX_DIR];
-  if (!cf||!cf->path) {
+  if (!cf||!cf->cpath) {
     strncpy(buf, XML_LOG_FILE, sizeof(buf));
   } else {
-    snprintf(buf, sizeof(buf)-1, "%slog/xml.dbg", cf->path);
+    snprintf(buf, sizeof(buf)-1, "%slog/xml.dbg", cf->cpath);
     buf[sizeof(buf)-1]=0;
   }
   f = fopen(buf, "a+");
@@ -709,7 +708,16 @@ static FILE* zx_open_xml_log_file(zxid_conf* cf)
 /*() Log a blob of XML data to auxiliary log file. This avoids
  * mega clutter in the main debug logs. You are supposed
  * to view this file with:
- * tailf /var/zxid/log/xml.dbg | ./xml-pretty.pl */
+ * tailf /var/zxid/log/xml.dbg | ./xml-pretty.pl
+ *
+ * cf:: Config (and memory allocation) object
+ * file:: Source code file, see __FILE__ in D_XML_BLOB() macro, in errmac.h
+ * line:: Source code line number, see __LINE__ in D_XML_BLOB()
+ * func:: Source code function name, see __FUNCTION__ in D_XML_BLOB()
+ * lk:: Log key
+ * len:: Length of the blob, or -1 for error or -2 to use strlen()
+ * xml:: blob data (not always XML)
+ */
 
 /* Called by: */
 void errmac_debug_xml_blob(zxid_conf* cf, const char* file, int line, const char* func, const char* lk, int len, const char* xml)
@@ -802,6 +810,7 @@ print_it:
 /*() Generate a timestamped receipt for data.
  * Typically used for issuing receipts on audit bus. The current time
  * and our own signing certificate are used.
+ *
  * cf::         ZXID configuration object, used for memory allocation and cert mgmt
  * sigbuf_len:: Maximum length of signature buffer, e.g. 1024. On return buffer is nul terminated.
  * sigbuf::     Result parameter. Caller allocated buffer that receives the receipt. nul term.
@@ -813,13 +822,12 @@ print_it:
  * eid::        Entity ID to issue receipt about, will be part of signature.
  * body_len::   Length of data to issue receipt about (-1 to use strlen(body))
  * body::       Data to issue receipt about, i.e. data that will be signed.
- * return::     sigbuf. If there was error, sigbuf[0] is set to 'E' */
+ * return::     sigbuf. If there was error, first character of sigbuf is set to 'E' */
 
 /* Called by:  stomp_send_receipt, test_receipt x9 */
 char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_len, const char* mid, int dest_len, const char* dest, int eid_len, const char* eid, int body_len, const char* body)
 {
   int len, zlen;
-  time_t secs;
   char* zbuf = 0;
   char* p;
   char* buf;
@@ -857,8 +865,7 @@ char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_le
   /* Prepare values */
 
   GETTIMEOFDAY(&ourts, 0);
-  GMTIME_R(secs, ot);
-  ourts.tv_sec = secs;
+  GMTIME_R(ourts.tv_sec, ot);
 
   /* Prepare timestamp prepended data for hashing */
   len = ZXLOG_TIME_SIZ+1+mid_len+1+dest_len+1+eid_len+1+body_len;
@@ -931,6 +938,7 @@ char* zxbus_mint_receipt(zxid_conf* cf, int sigbuf_len, char* sigbuf, int mid_le
 }
 
 /*() Verify a receipt signature.
+ *
  * cf::         ZXID configuration object, used for memory allocation and CoT mgmt
  * eid::        EntityID of the receipt issuing party, used to lookup metadata
  * sigbuf_len:: Length of signature buffer (from zx-rcpt-sig header) or -1 for strlen(sigbuf)
@@ -1038,8 +1046,9 @@ int zxbus_persist_flag = 1;
  * operation, ala Maildir. The persisted message is a file that contains
  * the entire STOMP 1.1 PDU including headers and body. Filename is the sha1
  * hash of the contents of the file.
+ *
  * return:: 0 on failure, nonzero len of c_path on success.
- * see also:: persist feature in zxbus_listen_msg() */
+ * See also:: persist feature in zxbus_listen_msg() */
 
 /* Called by:  zxbus_persist */
 int zxbus_persist_msg(zxid_conf* cf, int c_path_len, char* c_path, int dest_len, const char* dest, int data_len, const char* data)
@@ -1075,18 +1084,18 @@ int zxbus_persist_msg(zxid_conf* cf, int c_path_len, char* c_path, int dest_len,
   
   /* Persist the message, use Maildir style rename from tmp/ to ch/ */
   
-  len = name_from_path(c_path, c_path_len, "%s" ZXBUS_CH_DIR "%.*s/", cf->path, dest_len, dest);
+  len = name_from_path(c_path, c_path_len, "%s" ZXBUS_CH_DIR "%.*s/", cf->cpath, dest_len, dest);
   if (sizeof(c_path)-len < 28+1 /* +1 accounts for t_path having one more char (tmp vs. ch) */) {
     ERR("The c_path for persisting exceeds limit. len=%d", len);
     return 0;
   }
-  DD("c_path(%s) len=%d PATH(%s) dest(%.*s)", c_path, len, cf->path, dest_len, dest);
+  DD("c_path(%s) len=%d PATH(%s) dest(%.*s)", c_path, len, cf->cpath, dest_len, dest);
   sha1_safe_base64(c_path+len, data_len, data);
   len += 27;
   c_path[len] = 0;
   DD("c_path(%s)", c_path);
   
-  name_from_path(t_path, sizeof(t_path), "%stmp/%s", cf->path, c_path+len-27);
+  name_from_path(t_path, sizeof(t_path), "%stmp/%s", cf->cpath, c_path+len-27);
   
   /* Perform synchronous write to disk. Read man 2 open for discussion. It is not
    * completely clear, but it appears that this is still not sufficient to guarantee

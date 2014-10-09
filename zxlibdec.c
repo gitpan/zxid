@@ -1,4 +1,5 @@
 /* zxlibdec.c  -  Utility functions for generated decoders
+ * Copyright (c) 2013 Synergetics SA (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2010 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -17,6 +18,7 @@
  * 26.5.2010, added XML parse error reporting --Sampo
  * 27.10.2010, forked from zxlib.c, re-engineered namespace handling --Sampo
  * 20.11.2010, reengineered for unified simplifed decoder --Sampo
+ * 30.11.2013, fixed bondary condition of loop looking one past end (found by valgrind) --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for snprintf(), va_copy() et al. */
@@ -72,7 +74,7 @@ static int zx_scan_data(struct zx_ctx* c, struct zx_elem_s* el)
 {
   struct zx_str* ss;
   const char* d = c->p;
-  if (c->p)
+  if (*c->p)
     ZX_LOOK_FOR(c,'<');
   ss = ZX_ZALLOC(c, struct zx_str);
   ss->len = c->p - d;
@@ -150,10 +152,10 @@ static const char* zx_scan_elem_start(struct zx_ctx* c, const char* func)
   const char* name = c->p;
   int len = strcspn(c->p, " >/\n\r\t");
   c->p += len;
-  /*for (++c->p; *c->p && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;*/
-  if (*c->p)
+  /*for (++c->p; c->p<c->lim && !ONE_OF_6(*c->p, ' ', '>', '/', '\n', '\r', '\t'); ++c->p) ;*/
+  if (c->p < c->lim)
     return name;
-  ERR("%s: Incomplete %s", func, name);
+  ERR("%s: Incomplete %.*s", func, ((int)(c->lim-name)), name);
   return 0;
 }
 
@@ -165,6 +167,8 @@ static int zx_scan_elem_end(struct zx_ctx* c, const char* start, const char* fun
   const char* name;
   const char* errloc;
   ++c->p;
+  if (c->p >= c->lim)
+    goto look_for_not_found;
   name = c->p;
   ZX_LOOK_FOR(c,'>');
   if (memcmp(start?start:"", name, c->p-name))	{
@@ -184,7 +188,10 @@ look_for_not_found:
  * Returns 0 if ordering is good. If ordering is bad, returns index to
  * the offending child element. This check does not verify whether all
  * mandatory child elements are present - it merely checks that the
- * order is right. */
+ * order is right.
+ *
+ * N.B. Check c/zx-elems.c for the tables that show the ordering (tables
+ * were generated from schema so hand editing them is not recommended). */
 
 /* Called by:  zx_reverse_elem_lists */
 static int zx_chk_el_ord(struct zx_elem_s* x)
@@ -201,8 +208,14 @@ static int zx_chk_el_ord(struct zx_elem_s* x)
     if (x->g.tok == ZX_TOK_DATA)
       continue;
     for (j = i; ed->el_order[j] != ZX_TOK_NOT_FOUND; ++j)
-      if (x->g.tok == ed->el_order[j])
+      if (x->g.tok == ed->el_order[j]) {
+	if ((errmac_debug & ERRMAC_DEBUG_MASK)>2) {
+	  et = zx_el_tab + (x->g.tok & ZX_TOK_TOK_MASK);
+	  ef = zx_el_tab + MINMAX(ed->tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX);
+	  D("Right: Known <%s> tok(0x%06x) as %d. child of <%s> tok(0x%06x) (%d,%d)", et->name, x->g.tok, n, ef->name, ed->tok, i, j);
+	}
 	break;
+      }
     if (ed->el_order[j] == ZX_TOK_NOT_FOUND) {
       if (x->g.tok == ZX_TOK_NOT_FOUND || !IN_RANGE(x->g.tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX)) {
 	ef = zx_el_tab + MINMAX(ed->tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX);
@@ -212,7 +225,7 @@ static int zx_chk_el_ord(struct zx_elem_s* x)
       } else {
 	et = zx_el_tab + (x->g.tok & ZX_TOK_TOK_MASK);
 	ef = zx_el_tab + MINMAX(ed->tok & ZX_TOK_TOK_MASK, 0, zx__ELEM_MAX);
-	ERR("Known <%s> tok(0x%06x) in wrong place as %d. child of <%s> tok(0x%06x) (%d,%d)", et->name, x->g.tok, n, ef->name, ed->tok, i, j);
+	ERR("WRONG: Known <%s> tok(0x%06x) in wrong place as %d. child of <%s> tok(0x%06x) (%d,%d)", et->name, x->g.tok, n, ef->name, ed->tok, i, j);
 	// *** we should really dump the whole message into log
       }
       return n;
@@ -350,19 +363,21 @@ void zx_reverse_elem_lists(struct zx_elem_s* x)
 static const char* zx_dec_attr_val(struct zx_ctx* c, const char* func)
 {
   const char* data;
-  char quote;
-  quote = '=';
+  char quote = '=';
   ZX_LOOK_FOR(c,'=');
   
   ++c->p;
+  if (c->p >= c->lim)
+    goto look_for_not_found;
   if (!ONE_OF_2(*c->p, '"', '\'')) {
     zx_xml_parse_err(c, *c->p, func, "zx_dec_attr_val: Did not find expected quote char (single or double), saw");
     return 0;
   }
   quote = *c->p;
   ++c->p;
+  if (c->p >= c->lim)
+    goto look_for_not_found;
   data = c->p;	
-  
   ZX_LOOK_FOR(c, quote);
   return data;
  look_for_not_found:
@@ -530,7 +545,7 @@ unknown_el:
 /*() Element Decoder. When per element decoder is called, the c->p
  * will point to just past the element name. The element has already
  * been allocated to the correct size and the namespace prescan has
- * already been done. */
+ * already been done (except when called from zx_dec_zx_root()). */
 
 /* Called by:  zx_DEC_elem, zx_dec_zx_root */
 void zx_DEC_elem(struct zx_ctx* c, struct zx_elem_s* x)
@@ -543,7 +558,7 @@ void zx_DEC_elem(struct zx_ctx* c, struct zx_elem_s* x)
   if (x->g.tok != zx_root_ELEM) {
     /* The tag name has already been detected. Process attributes until '>' */
     
-    for (; c->p; ++c->p) {
+    for (; c->p < c->lim; ++c->p) {
       tok = zx_attr_lookup(c, x);
       switch (tok) {
       case ZX_TOK_XMLNS: break;
@@ -557,23 +572,27 @@ void zx_DEC_elem(struct zx_ctx* c, struct zx_elem_s* x)
       }
     }
 no_attr:
-    if (c->p) {
+    if (c->p < c->lim) {
       ++c->p;
-      if (c->p[-1] == '/' && c->p[0] == '>') {  /* <Tag/> without content */
+      if (c->p < c->lim && c->p[-1] == '/' && c->p[0] == '>') {  /* <Tag/> without content */
 	++c->p;
 	goto out;
       }
     }
   }
 
-  /* Process contents until '</' */
+  /* Process contents until '</' or end of string nul */
   
-  while (c->p) {
+  while (1) {
   next_elem:
-    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WS! EXC-CANON NEEDS IT. */
+    if (c->p >= c->lim)
+      goto out;
+    /*ZX_SKIP_WS(c,x);    DO NOT SQUASH WHITESPACE! EXC-CANON NEEDS IT. */
     if (*c->p == '<') {
     potential_tag:
       ++c->p;
+      if (c->p >= c->lim)
+	goto out;
       switch (*c->p) {
       case '?':  /* processing instruction <?xml ... ?> */
       case '!':  /* comment <!-- ... --> */
@@ -591,14 +610,17 @@ no_attr:
 	  el = zx_el_lookup(c, (struct zx_elem_s*)x, &pop_seen);
 	  if (!el)
 	    return;
-	  zx_DEC_elem(c, el);
-	  if (!ed || !ed->el_dec(c, x)) { /* element specific subelement processing */
+	  zx_DEC_elem(c, el);  /* read the kid on syntactic level */
+	  /* element specific subelement processing: assign the kid to correct struct field */
+	  if (!ed || !ed->el_dec(c, x)) {
 	    if (el->g.tok != ZX_TOK_NOT_FOUND) {
 	      D("Known element(%.*s) tok=0x%x in wrong context(%.*s)", el->g.len, el->g.s, el->g.tok, x->g.len, x->g.s);
 	      el->g.tok = ZX_TOK_NOT_FOUND;
 	    }
 	  }
 	  zx_pop_seen(pop_seen);
+	  if (c->top1 && x->g.tok == zx_root_ELEM)  /* to stop parse after single <e:Envelope> */
+	    goto out;
 	  goto next_elem;
 	}
       }
@@ -617,8 +639,9 @@ no_attr:
  * N.B. Often you would wrap this in locks, like
  *   LOCK(cf->ctx->mx, "valid");
  *   zx_prepare_dec_ctx(cf->ctx, zx_ns_tab, n_ns, ss->s, ss->s + ss->len);
- *   r = zx_DEC_root(cf->ctx, 0, 1);
+ *   r = zx_DEC_elem(cf->ctx, &r->gg);
  *   UNLOCK(cf->ctx->mx, "valid");
+ * or just see zx_dec_zx_root()
  */
 
 /* Called by:  covimp_test, zx_dec_zx_root */

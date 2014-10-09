@@ -131,7 +131,7 @@ sub process_func {
 #$watch2 = 'zxid_decode_redir_or_post';  # zxiddec.c
 
 sub process_doc {
-    my ($fn, $func, $doc_flag, $doc) = @_;
+    my ($fn, $func, $doc_flag, $doc, $params) = @_;
     return if $doc_flag =~ /-/;   # (-) suppresses function from documentation
     warn "DOC1 FUNC($func) ($doc)" if $func eq $watch1 || $func eq $watch2;
     #$doc =~ s/\n\/\*\sCalled\sby:[^\*\/]*?\*\/)?//;
@@ -143,16 +143,33 @@ sub process_doc {
     warn "DOC4($doc)" if $func eq $watch1 || $func eq $watch2;
     $local_graphs{$func} = 1;  # Cause call graph (2 deep) to be generated for this function
     ++$n_fn;
-    open F, ">ref/$func.pd" or die "Can't write(ref/func.pd): $!";
+    $params =~ s%\/\*.*?\*\/%%g; # zap comments
+    my @param = split /\s*,\s*/, $params;
+    for $_ (@param) {
+	s%^[\w\*:\[\]\s\/.&]+?[\t ]+\**(\w+)[\[\]]*([\t ]*=[\w:.-]*?)?$%$1%g;
+    }
+    $params = join ', ', @param;
+    my $javaname = $func;
+    $javaname =~ s%^zxid_%%;
+    $javaname = "Java name: zxidjni.$javaname()";
+    my $perlname = $func;
+    $perlname =~ s%^zxid_%%;
+    $perlname = "Perl name: Net::SAML::$perlname()";
+    my $src_file = "Source file: $fn" unless $no_srcfile;
     #<<img: $func-call,H,: Call graph for $func()>>
     my $img = qq(<<img: $func-call,R: >>) if $call_size{$func};
+    open F, ">ref/$func.pd" or die "Can't write(ref/func.pd): $!";
     print F <<PD;
-1.3.$n_fn $func()
+1.3.$n_fn $func($params)
 ~~~~~~~~~~~~~~~~~~~~
 
 $doc
 
-Source file: $fn
+$javaname
+
+$perlname
+
+$src_file
 
 $img
 
@@ -181,11 +198,13 @@ sub match_funcs {
     # perl seg faults on: ((?:[^/]+?/?)+)
     #              (?:\s*?\n)*                         (?# Potential empty lines )
 
+    if (0) {
     my @fx = $x =~
-	m{(?:\n\/\*\((\w*)\)\s*(.+?)\*\/)? (?# 0=doc-flag, 1=doc )
+	#       /*() Doc string           */
+	m<(?:\n\/\*\((\w*)\)\s*([^{}]+?)\*\/)? (?# 0=doc-flag, 1=doc )
                   (\n\n?(                             (?# 2=whole, 3=proto )
-                      (\w[\w\*:\[\] \t]+?)            (?# 4=ret )
-                      (?:[ \t]*\/\*[^\*\/\n]*?\*\/)?\s+  (?# ignore some comment )
+                      (\w[\w\*:\[\] \t]+?)            (?# 4=ret type spec)
+                      (?:[ \t]*\/\*[^\*\/\n]*?\*\/)?\s+  (?# ignore /* some comment */ )
                       ((\w+::)*(\w+))                 (?# 5=full name, 6=namespace, 7=localname )
                       [ \t]*\(                        (?# start parameter list )
                       ([\w\*:\[\],\s\/.&=]*?) \)      (?# 8=the parameters )
@@ -193,7 +212,25 @@ sub match_funcs {
                      (?:YYPARSE_PARAM_DECL)?          (?# Whatever? )
                      (?:\/\*[^\*\/]*?\*\/)?           (?# Comments between proto and body )
                      \s*\{(.+?)\n\}                   (?# 9=body )
-                  )}gsx;  # close 2-whole  ;; version 3, plaindoc and comment tolerant
+                  )>gsx;  # close 2-whole  ;; version 3, plaindoc and comment tolerant
+    }
+    my @fx = $x =~
+	#       /*() Doc string              */
+	m<(?:\n\/\*\(([\w-]*)\)\s*([^{}]+?)\*\/)?     (?# 0=doc-flag, 1=doc )
+                  (\n\n?(                             (?# 2=whole, 3=proto )
+                      (\w[\w\*:\[\] \t]+?)            (?# 4=ret type spec)
+                      (?:[ \t]*\/\*[^\*\/\n]*?\*\/)?\s+  (?# ignore /* some comment */ )
+                      ((\w+::)*(\w+))                 (?# 5=full name, 6=namespace, 7=localname )
+                      [ \t]*\((                       (?# start parameter list-8 )
+                        (?:\s*[\w\*:\[\]\s\/.&]*?[\t ]+   (?# param type )
+                           \**\w+[\t \[\]=\w:.-]*,?   (?# param_name[] = default assignment?, )
+                           (?:\s*\/\*[^{}]*?\*\/)? )+ (?# /* param comment */? )
+                        (?:\s*\.\.\.)?                (?# more va params ... )
+                      \s*)\))\s*                      (?# close 8-parameters, close 3-proto )
+                     (?:YYPARSE_PARAM_DECL)?          (?# Whatever? )
+                     (?:\/\*[^{}]*?\*\/)?             (?# Comments between proto and body )
+                     \s*\{(.+?)\n\}                   (?# 9=body )
+                  )>gsx;  # close 2-whole  ;; version 3, plaindoc and comment tolerant
     return @fx;
 }
 
@@ -221,7 +258,7 @@ for $fn (@ARGV) {
     while (@fx) {
 	#warn "  $fx[4]()\n";
 #WHOLE >>$fx[3]<<
-#BODY >>$fx[7]<<
+#BODY: >$fx[9]<
 	print <<DEBUG if 0;
 FX =================================================================
 DOCFLAG: >>$fx[0]<<
@@ -237,7 +274,7 @@ DEBUG
     ;
 	process_func($fn, $fx[7], $fx[9]);
 	warn "fx($fx[7]) static?($fx[4])";
-	#process_doc($fn, $fx[7], $fx[0], $fx[1]) if $fx[1] || $fx[4] !~ /^static /;
+	#process_doc($fn, $fx[7], $fx[0], $fx[1], $fx[8]) if $fx[1] || $fx[4] !~ /^static /;
 	splice @fx, 0, 10;
   }
 
@@ -475,7 +512,7 @@ for $fn (@ARGV) {
 	#warn "  $fx[4]()\n";
 #WHOLE >>$fx[3]<<
 #BODY >>$fx[7]<<
-	print <<DEBUG if 1;
+	print <<DEBUG if 0;
 FX2 =================================================================
 NAME: >$fx[5]<
 NAMESPACE: >$fx[6]<
@@ -488,11 +525,10 @@ PARAMS: >$fx[8]<
 
 DEBUG
     ;
-	process_doc($fn, $fx[7], $fx[0], $fx[1]) if $fx[1] || $fx[4] !~ /^static /;
+	process_doc($fn, $fx[7], $fx[0], $fx[1], $fx[8]) if $fx[1] || $fx[4] !~ /^static /;
 	splice @fx, 0, 10;
     }
 }
-
 
 ### Annotate the source files with comments indicating where
 ### each defined function is called from so that M-. (ESC-.) in
@@ -540,46 +576,6 @@ for $fn (sort keys %fnf) {
 	warn "$n changes. Nothing written.\n";
     }
 }
-
-###
-### Generate per funciton documentation
-###
-
-
-sub process_doc_inline {
-    die "*** Never called";
-    my ($fn, $func, $doc_flag, $doc) = @_;
-    return if $doc_flag =~ /-/;   # (-) suppresses function from documentation
-    #$doc =~ s/\n\/\*\sCalled\sby:[^\*\/]*?\*\/)?//;
-    $doc =~ s/\n\/\*\sCalled\sby:.*$//s;
-    $doc =~ s/\n ?\* ?/\n/gs;
-    $local_graphs{$func} = 1;  # Cause call graph (2 deep) to be generated for this function
-    ++$n_fn;
-    open F, ">ref/$func.pd" or die "Can't write(ref/$func.pd): $!";
-    #<<img: $func-call,H,: Call graph for $func()>>
-
-    my $img = qq(<<img: $func-call,R: >>) if $call_size{$func};
-
-    print F <<PD;
-1.3.$n_fn $func()
-~~~~~~~~~~~~~~~~~~~~
-
-$doc
-
-Source file: $fn
-
-$img
-
-PD
-;
-    close F;
-
-    $doc{$func} = $doc;
-    ++$func{$func};
-    ++$important{$func} if $doc_flag =~ /i/;
-    ++$struct{$func} if $doc_flag =~ /s/;
-}
-
 
 ###
 ### Generate documentation index page

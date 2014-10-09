@@ -1,5 +1,5 @@
 # zxid/Makefile  -  How to build ZXID (try: make help)
-# Copyright (c) 2012-2013 Synergetics SA (sampo@synergetics.be), All Rights Reserved.
+# Copyright (c) 2012-2014 Synergetics SA (sampo@synergetics.be), All Rights Reserved.
 # Copyright (c) 2010-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
 # Copyright (c) 2006-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
 # Author: Sampo Kellomaki (sampo@iki.fi)
@@ -27,6 +27,7 @@
 # 21.6.2013, added mini_httpd --Sampo
 # 4.11.2013, reformed the TARGET system; include and lib paths per Debian --Sampo
 # 21.11.2013, added zxid_httpd --Sampo
+# 9.2.2014,  added musl-libc compile --Sampo
 #
 # Build so far only tested on Linux, Solaris 8, MacOS 10.3, and mingw-w64. This
 # makefile needs gmake-3.78 or newer.
@@ -43,8 +44,8 @@ vpath %.h ../zxid
 
 ### This is the authorative spot to set version number. Document in Changes file.
 ### c/zxidvers.h is generated from these, see `make updatevers'
-ZXIDVERSION=0x000118
-ZXIDREL=1.18
+ZXIDVERSION=0x000122
+ZXIDREL=1.22
 
 TOP=$(shell pwd)
 
@@ -116,7 +117,8 @@ ZXIDJNI_SO?=zxidjava/libzxidjni.so
 # find / -name jni.h; find / -name jni_md.h
 # apt-get install openjdk-6-jdk
 #JNI_INC?=-I/usr/java/include -I/usr/java/include/linux
-JNI_INC?=-I/usr/lib/jvm/java-6-openjdk/include -I/usr/lib/jvm/java-6-openjdk/include/linux
+#JNI_INC?=-I/usr/lib/jvm/java-6-openjdk/include -I/usr/lib/jvm/java-6-openjdk/include/linux
+JNI_INC?=-I/usr/lib/jvm/java-6-openjdk-amd64/include -I/usr/lib/jvm/java-6-openjdk-amd64/include/linux
 #JNI_INC?=-I/usr/lib/jvm/java-6-openjdk-i386/include -I/usr/lib/jvm/java-6-openjdk-i386/include/linux
 #JNI_INC?=-I/usr/lib/jvm/java-6-openjdk-amd64/include -I/usr/lib/jvm/java-6-openjdk-amd64/include/linux
 # Path where HttpServlet supplied by your application server resides
@@ -165,7 +167,9 @@ ECHO?=echo
 CP?=cp
 PERL?=perl
 XSD2SG_PL?= ../pd/xsd2sg.pl
-XSD2SG=$(PERL) $(XSD2SG_PL)
+XSD2SG?=$(PERL) $(XSD2SG_PL)
+PD2TEX_PL?= ../pd/pd2tex
+PD2TEX?=$(PERL) $(PD2TEX_PL)
 PULVERIZE=$(PERL) ./pulverize.pl
 GPERF?=gperf
 SWIG?=swig
@@ -233,7 +237,6 @@ endif
 ifeq ($(TARGET),diet-linux)
 CROSS_COMPILE=1
 DIETDIR=/usr/local/dietlibc-0.33
-SYSROOT=$(DIETDIR)/sysroot
 CC=$(DIETDIR)/bin/diet gcc
 LD=$(DIETDIR)/bin/diet gcc
 CDEF+=-DLINUX
@@ -243,6 +246,23 @@ CINC= -I. -I$(DIETDIR)/include
 # -fno-stack-protector is needed to eliminate unwanted function plrologue code that causes segv
 CFLAGS+= -fno-stack-protector
 LDFLAGS= -L$(DIETDIR)/lib-i386 -L$(DIETDIR)/lib
+LIBS+=-lpthread
+# Marks that target has been detected
+TARGET_FOUND=1
+endif
+
+ifeq ($(TARGET),musl-linux)
+CROSS_COMPILE=1
+MUSLDIR=/usr/local/musl-0.9.15
+CC=$(MUSLDIR)/bin/musl-gcc
+LD=$(MUSLDIR)/bin/musl-gcc
+CDEF+=-DLINUX
+# Using PTHREAD helps to avoid problems in multithreaded programs, such as Java servlets
+CDEF+= -DUSE_PTHREAD -pthread
+CINC= -I. -I$(MUSLDIR)/include
+# -fno-stack-protector is needed to eliminate unwanted function plrologue code that causes segv
+CFLAGS+= -fno-stack-protector
+LDFLAGS= -L$(MUSLDIR)/lib-i386 -L$(MUSLDIR)/lib
 LIBS+=-lpthread
 # Marks that target has been detected
 TARGET_FOUND=1
@@ -314,6 +334,10 @@ MOD_AUTH_SAML_LIBS=-lapr-1
 TARGET_FOUND=1
 endif
 
+ifeq ($(TARGET),FreeBSD)
+# Some freebsd guesses result "FreeBSD" so we map it to "freebsd"
+TARGET=freebsd
+endif
 ifeq ($(TARGET),freebsd)
 ### Putative flags for Freebsd compile
 CDEF+=-DFREEBSD
@@ -322,6 +346,10 @@ CDEF+= -DUSE_PTHREAD -pthread
 LIBS+=-lpthread
 SO_LIBS+=$(LIBS)
 TARGET_FOUND=1
+endif
+
+ifeq ($(TARGET),CYGWIN_NT-6.1)
+TARGET=cygwin
 endif
 
 ifeq ($(TARGET),cygwin)
@@ -401,7 +429,7 @@ LIBZXID=-L. -lzxiddll
 endif
 # -lws2_32  -lmingw32  -u _imp__curl_easy_setopt -u _imp__curl_easy_strerror
 SO_LIBS= -L$(SYSROOT)/lib -lcurl -lssl -lcrypto -lz -lwinmm -lwsock32 -lgdi32 -lkernel32
-LIBS= -mconsole $(WIN_LIBS)
+LIBS= -mconsole $(SO_LIBS)
 # --dll  -mdll
 #SHARED_FLAGS=-shared --export-all-symbols -Wl,--whole-archive -Wl,-no-undefined -Wl,--enable-runtime-reloc -Wl,--whole-archive
 SHARED_FLAGS= -shared -Wl,--add-stdcall-alias --export-all-symbols -Wl,--whole-archive -Wl,-no-undefined -Wl,--enable-runtime-pseudo-reloc -Wl,--allow-multiple-definition
@@ -603,7 +631,7 @@ TARGET_FOUND=1
 endif
 
 ifeq ($(TARGET_FOUND),)
-$(error TARGET $(TARGET) not found. Run make help
+$(error TARGET $(TARGET) not found. Run make help)
 endif
 
 ### To change any of the above options, you can either supply
@@ -708,7 +736,7 @@ diet64: zxcot-static-x64 zxpasswd-static-x64 zxididp-static-x64 zxidhlo-static-x
 
 ZXIDHDRS=zx.h zxid.h zxidnoswig.h c/zxidvers.h
 
-ZXID_LIB_OBJ=zxidsimp.$(OBJ_EXT) zxidpool.$(OBJ_EXT) zxidpsso.$(OBJ_EXT) zxidsso.$(OBJ_EXT) zxidslo.$(OBJ_EXT) zxiddec.$(OBJ_EXT) zxidspx.$(OBJ_EXT) zxididpx.$(OBJ_EXT) zxidmni.$(OBJ_EXT) zxidpep.$(OBJ_EXT) zxidpdp.$(OBJ_EXT) zxidmk.$(OBJ_EXT) zxida7n.$(OBJ_EXT) zxidses.$(OBJ_EXT) zxiduser.$(OBJ_EXT) zxidcgi.$(OBJ_EXT) zxidconf.$(OBJ_EXT) zxidecp.$(OBJ_EXT) zxidcdc.$(OBJ_EXT) zxidloc.$(OBJ_EXT) zxidlib.$(OBJ_EXT) zxidmeta.$(OBJ_EXT) zxidcurl.$(OBJ_EXT) zxidepr.$(OBJ_EXT) zxida7n.$(OBJ_EXT) ykcrc.$(OBJ_EXT) ykaes.$(OBJ_EXT) $(PLATFORM_OBJ)
+ZXID_LIB_OBJ=zxidsimp.$(OBJ_EXT) zxidpool.$(OBJ_EXT) zxidpsso.$(OBJ_EXT) zxidsso.$(OBJ_EXT) zxidslo.$(OBJ_EXT) zxiddec.$(OBJ_EXT) zxidspx.$(OBJ_EXT) zxididpx.$(OBJ_EXT) zxidmni.$(OBJ_EXT) zxidpep.$(OBJ_EXT) zxidpdp.$(OBJ_EXT) zxidmk.$(OBJ_EXT) zxida7n.$(OBJ_EXT) zxidses.$(OBJ_EXT) zxiduser.$(OBJ_EXT) zxidcgi.$(OBJ_EXT) zxidconf.$(OBJ_EXT) zxidecp.$(OBJ_EXT) zxidcdc.$(OBJ_EXT) zxidloc.$(OBJ_EXT) zxidlib.$(OBJ_EXT) zxidmeta.$(OBJ_EXT) zxidmda.$(OBJ_EXT) zxidcurl.$(OBJ_EXT) zxidepr.$(OBJ_EXT) zxida7n.$(OBJ_EXT) ykcrc.$(OBJ_EXT) ykaes.$(OBJ_EXT) $(PLATFORM_OBJ)
 
 ZX_OBJ=c/zx-ns.$(OBJ_EXT) c/zx-attrs.$(OBJ_EXT) c/zx-elems.$(OBJ_EXT) zxlibdec.$(OBJ_EXT) zxlibenc.$(OBJ_EXT) zxlib.$(OBJ_EXT) zxns.$(OBJ_EXT) zxpw.$(OBJ_EXT) zxutil.$(OBJ_EXT) zxbusprod.$(OBJ_EXT) zxlog.$(OBJ_EXT) zxsig.$(OBJ_EXT) zxcrypto.$(OBJ_EXT) akbox_fn.$(OBJ_EXT) match.$(OBJ_EXT) c/license.$(OBJ_EXT)
 
@@ -2063,7 +2091,7 @@ regen: clean perlcleaner phpcleaner pycleaner rubycleaner csharpcleaner javaclea
 #      zxid to be built without the tools needed to generate those files.
 clean: perlclean phpclean pyclean rubyclean csharpclean javaclean docclean precheckclean cleanbin
 	@$(ECHO) ------------------ Making clean
-	rm -f *.o c/*.o *.obj c/*.obj
+	rm -f *.o */*.o *.obj */*.obj
 	rm -f core* *~ .*~ .\#* c/.*~ c/.\#* sg/*~ sg/.*~ sg/.\#* foo bar ak.*
 
 winclean:
@@ -2145,16 +2173,16 @@ copydist:
 	rsync zxid-$(ZXIDREL).tgz $(WEBROOT)
 
 tex/%.pdf: %.pd
-	pd2tex -noref -nortf -nodbx -nohtml $<
+	$(PD2TEX) -noref -nortf -nodbx -nohtml $<
 
 html/%.html: %.pd doc-inc.pd doc-end.pd
-	pd2tex -noref -nortf -nodbx -notex $<
+	$(PD2TEX) -noref -nortf -nodbx -notex $<
 
 tex/README.zxid.pdf: README.zxid
-	pd2tex -noref -nortf -nodbx -nohtml $<
+	$(PD2TEX) -noref -nortf -nodbx -nohtml $<
 
 html/README.zxid.html: README.zxid doc-inc.pd doc-end.pd
-	pd2tex -noref -nortf -nodbx -notex README.zxid
+	$(PD2TEX) -noref -nortf -nodbx -notex README.zxid
 
 DOC= html/README.zxid.html html/index.html html/apache.html html/mod_auth_saml.html html/zxid-simple.html html/zxid-install.html html/zxid-conf.html html/zxid-cot.html html/zxid-java.html html/zxid-log.html html/zxid-perl.html html/zxid-php.html html/zxid-raw.html html/zxid-wsf.html html/zxid-idp.html html/zxid-faq.html html/schemata.html
 
@@ -2284,9 +2312,9 @@ refcall:
 	$(PERL) ./call-anal.pl -n $(API_REF_SRC) >callgraph.dot
 
 reference: refcall
-	cd ref; pd2tex -noref -nortf -nodbx ref.pd
-	cd ref/tex; pdflatex -file-line-error-style -interaction=errorstopmode ../ref.tex # Thrice so refs and index are right
-	cd ref/tex #; pdflatex -file-line-error-style -interaction=errorstopmode ../ref.tex # Thrice so refs and index are right
+	cd ref; $(PD2TEX) -noref -nortf -nodbx ref.pd
+	cd ref/tex; pdflatex -file-line-error-style -interaction=errorstopmode ref.tex # Thrice so refs and index are right
+	cd ref/tex #; pdflatex -file-line-error-style -interaction=errorstopmode ref.tex # Thrice so refs and index are right
 
 ifeq ($(PULVER),1)
 

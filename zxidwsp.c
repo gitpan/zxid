@@ -1,5 +1,5 @@
 /* zxidwsp.c  -  Handwritten nitty-gritty functions for Liberty ID-WSF Web Services Provider
- * Copyright (c) 2013 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
+ * Copyright (c) 2013-2014 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -14,10 +14,11 @@
  * 31.5.2010,  reworked PEPs extensively --Sampo
  * 25.1.2011,  tweaked RelatesTo header --Sampo
  * 26.10.2013, improved error reporting on credential expired case --Sampo
+ * 12.3.2014,  added partial mime multipart support --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for pthread_mutex_lock() et al. */
-
+#include <string.h>
 #include "errmac.h"
 #include "zx.h"
 #include "zxid.h"
@@ -32,6 +33,110 @@
 
 #define BOOL_STR_TEST(x) ((x) && (x) != '0')
 
+/*() Create SOAP header Action (which is distinct from HTTP headers SOAPaction).
+ * This is driven by the configuration option WSC_ACTION_HDR */
+
+static void zxid_add_action_hdr(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env)
+{
+  struct zx_e_Header_s* hdr = env->Header;
+  struct zx_elem_s* first;
+  struct zx_el_tok* el_tok;
+  struct zx_str* ss;
+  char* p;
+  
+  if (!strcmp(cf->wsc_action_hdr, "#ses")) {
+    ERR("***NOT IMPLEMENTED %d", 0);  /* *** TBD */
+    return;
+  } else if (!strcmp(cf->wsc_action_hdr, "#body1st")) {
+    if (env->Body && (first = env->Body->gg.kids)) {
+      if (first->g.s) {
+	if (!(p = memchr(first->g.s, ':', first->g.len))) {
+	  ss = &first->g;
+	} else {
+	  ++p;
+	  ss = zx_ref_len_str(cf->ctx, first->g.len - (p - first->g.s), p);
+	}
+      } else {
+	if (el_tok = zx_get_el_tok(first)) {
+	  ss = zx_ref_str(cf->ctx, el_tok->name);
+	} else {
+	  ERR("First child element of <e:Body> does not have tag string and is not known token %x", first->g.tok);
+	  return;
+	}
+      }
+    } else {
+      ERR("Tried to set <a:Action> SOAP header from first child of <e:Body>, but the body does not exist or does not have child element %p", env->Body);
+      return;
+    }
+  } else if (!strcmp(cf->wsc_action_hdr, "#body1stns")) {
+    if (env->Body && (first = env->Body->gg.kids)) {
+      if (first->g.s) {
+	if (!(p = memchr(first->g.s, ':', first->g.len))) {
+	  ss = zx_strf(cf->ctx, "%s:%.*s", first->ns&&first->ns->url?first->ns->url:"", first->g.len, first->g.s);
+	} else {
+	  ++p;
+	  ss = zx_strf(cf->ctx, "%s:%.*s", first->ns&&first->ns->url?first->ns->url:"", first->g.len - (p - first->g.s), p);
+	}
+      } else {
+	if (el_tok = zx_get_el_tok(first)) {
+	  ss = zx_strf(cf->ctx, "%s:%s", first->ns&&first->ns->url?first->ns->url:"", el_tok->name);
+	} else {
+	  ERR("First child element of <e:Body> does not have tag string and is not known token %x", first->g.tok);
+	  return;
+	}
+      }
+    } else {
+      ERR("Tried to set <a:Action> SOAP header from first child of <e:Body>, but the Body does not exist or does not have child element %p", env->Body);
+      return;
+    }
+  } else {
+    ss = zx_ref_str(cf->ctx, cf->wsc_action_hdr);
+  }
+  hdr->Action = zx_NEW_a_Action(cf->ctx, &hdr->gg);
+  hdr->Action->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->Action->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
+  hdr->Action->actor = zx_ref_attr(cf->ctx, &hdr->Action->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
+  zx_add_content(cf->ctx, &hdr->Action->gg, ss);
+}
+
+/* Possible child elements of e:Header and their order (see c/zx-elem.c, generated from sg)
+paos_Request
+paos_Response
+ecp_Request
+ecp_Response
+ecp_RelayState
+1.    sbf_Framework
+2.    b_Sender
+3.    a_MessageID
+4.    wsse_Security
+5.    tas3_Status
+6.rs  a_RelatesTo
+6.rq  a_ReplyTo      Often omitted, defaults to anonymous, i.e. other end of TCP conn.
+a_From               Not used in ID-WSF2
+a_FaultTo            Omitted, defaults to ReplyTo
+7.rq  a_To
+8.rq  a_Action
+a_ReferenceParameters
+b_Framework
+9.rq  b_TargetIdentity
+b_CredentialsContext
+b_EndpointUpdate
+b_Timeout
+b_ProcessingContext
+b_Consent
+10.   b_UsageDirective
+b_ApplicationEPR
+b_UserInteraction
+b_RedirectRequest
+b12_Correlation
+b12_Provider
+b12_ProcessingContext
+b12_Consent
+b12_UsageDirective
+mm7_TransactionID
+tas3_Credentials
+tas3_ESLPolicies
+ */
+
 /*(i) zxid_wsf_decor() implements the main low level ID-WSF web service call logic, including
  * preparation of SOAP headers, use of sec mech (e.g. preparation of wsse:Security
  * header and signing of appropriate compoments of the message), and sequencing
@@ -43,10 +148,11 @@
  * additional SOAP headers at will before calling this function. This function
  * will add Liberty ID-WSF specific SOAP headers.
  * The returned lists are in reverse order, remember to call zx_reverse_elem_lists(),
- * unless is_resp is set in which case the list is in forward order. */
+ * unless is_resp is set in which case the list is in forward order.
+ * epr must be set for request and can be null for response. */
 
 /* Called by:  covimp_test x2, zxid_soap_cgi_resp_body, zxid_wsc_prep, zxid_wsp_decorate x2 */
-int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp)
+int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp, zxid_epr* epr)
 {
   struct zx_wsse_Security_s* sec;
   struct zx_e_Header_s* hdr;
@@ -104,9 +210,10 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
     ZX_ADD_KID(hdr, Status, ses->curstatus);
   }
 
-  /* 6. RelatesTo and other WSA headers... */
-
   if (is_resp) {
+
+    /* 6.rs: RelatesTo and other WSA headers... */
+
     if (ses && ses->wsp_msgid && ses->wsp_msgid->len) {
       D("wsp_msgid(%.*s) %p %d %p", ses->wsp_msgid->len, ses->wsp_msgid->s, ses->wsp_msgid, ses->wsp_msgid->len, ses->wsp_msgid->s);
       hdr->RelatesTo = zx_NEW_a_RelatesTo(cf->ctx, &hdr->gg);
@@ -119,19 +226,36 @@ int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, in
   }
 
 #if 0
+  /* <a:From> is not used by ID-WSF2 as it is redundant with <b:Sender> */
   hdr->From = zx_NEW_a_From(cf->ctx, &hdr->gg);
   hdr->From->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->From->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
   hdr->From->actor = zx_ref_attr(cf->ctx, &hdr->From->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-  hdr->From->Address = zxid_mk_addr(cf, zx_strf(cf->ctx, "%s?o=P", cf->url));
+  hdr->From->Address = zxid_mk_addr(cf, zx_strf(cf->ctx, "%s?o=P", cf->burl));
 #endif
 
-#if 0
-  hdr->Action = zx_NEW_a_Action(cf->ctx, &hdr->gg);
-  zx_add_content(cf->ctx, &hdr->Action->gg, zx_ref_str(cf->ctx, ***));
-  hdr->Action->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->Action->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
-  hdr->Action->actor = zx_ref_attr(cf->ctx, gghdr->Action->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
-#endif
 
+  /* 7.rq a:To */
+  
+  if (!is_resp && cf->wsc_to_hdr && strcmp(cf->wsc_to_hdr, "#inhibit")) {
+    hdr->To = zx_NEW_a_To(cf->ctx, &hdr->gg);
+    if (!strcmp(cf->wsc_to_hdr, "#url")) {
+      if (epr && epr->Address) {
+	zx_add_content(cf->ctx, &hdr->To->gg, ZX_GET_CONTENT(epr->Address));
+      } else {
+	ERR("WSC_TO_HDR specified as #url, but no epr supplied %p (programmer error)", epr);
+      }
+    } else {
+      zx_add_content(cf->ctx, &hdr->To->gg, zx_dup_str(cf->ctx, cf->wsc_to_hdr));
+    }
+    hdr->To->mustUnderstand = zx_ref_attr(cf->ctx,&hdr->To->gg,zx_e_mustUnderstand_ATTR,XML_TRUE);
+    hdr->To->actor = zx_ref_attr(cf->ctx, &hdr->To->gg, zx_e_actor_ATTR, SOAP_ACTOR_NEXT);
+  }
+  
+  /* 8. a:Action */
+  
+  if (!is_resp && !hdr->Action && cf->wsc_action_hdr)
+    zxid_add_action_hdr(cf, ses, env);
+  
 #if 0
   hdr->ReferenceParameters = zx_NEW_a_ReferenceParameters(cf->ctx, &hdr->gg);
   hdr->ReferenceParameters->mustUnderstand = zx_ref_attr(cf->ctx, &hdr->ReferenceParameters->gg, zx_e_mustUnderstand_ATTR, XML_TRUE);
@@ -243,12 +367,12 @@ struct zx_str* zxid_wsp_decorate(zxid_conf* cf, zxid_ses* ses, const char* az_cr
     ZX_ADD_KID(env->Body, Fault, ses->curflt);
   }
   
-  if (!zxid_wsf_decor(cf, ses, env, 1)) {
+  if (!zxid_wsf_decor(cf, ses, env, 1, 0)) {
     ERR("Response decoration failed %p", env);
     D_DEDENT("decor: ");
     return 0;
   }
-  //zx_reverse_elem_lists(&env->Header->gg);  // *** Again?!? Already done in zxid_wsf_decor(is_resp)
+  //zx_reverse_elem_lists(&env->Header->gg); //*** Again?!? Already done in zxid_wsf_decor(is_resp)
   
   ss = zx_easy_enc_elem_opt(cf, &env->gg);
   DD("DECOR len=%d envelope(%.*s)", ss->len, ss->len, ss->s);
@@ -631,6 +755,7 @@ char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* az_cred, s
 char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve)
 {
   struct zx_str  ss;
+  const char* enve_start;
   char* p;
   char msg[256];
   struct zx_str* logpath;
@@ -640,8 +765,16 @@ char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const
     ERR("Missing config, session, or envelope argument %p %p %p (programmer error)", cf,ses,enve);
     return 0;
   }
-  ss.s = (char*)enve;
-  ss.len = strlen(enve);
+
+  enve_start = zxid_locate_soap_Envelope(enve);
+  if (!enve_start) {
+    ERR("SOAP request does not have Envelope element %d", 0);
+    D_XML_BLOB(cf, "NO ENVELOPE SOAP request", -2, enve);
+    return 0;
+  }
+  
+  ss.s = (char*)enve_start;
+  ss.len = strlen(enve_start);
   D_XML_BLOB(cf, "WSP_VALIDATE", ss.len, ss.s);
   r = zx_dec_zx_root(cf->ctx, ss.len, enve, "valid");
   if (!r) {

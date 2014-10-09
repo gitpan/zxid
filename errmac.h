@@ -1,6 +1,6 @@
 /* errmac.h  -  Utility, debugging, and error checking macros
  *
- * Copyright (c) 1998,2001,2006,2010-2013 Sampo Kellomaki <sampo@iki.fi>, All Rights Reserved.
+ * Copyright (c) 1998,2001,2006,2010-2014 Sampo Kellomaki <sampo@iki.fi>, All Rights Reserved.
  * Copyright (c) 2001-2008 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * This is free software and comes with NO WARRANTY. Licensed under Apache2 license.
  * $Id$
@@ -69,6 +69,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define STRNULLCHK(s)  ((s)?(char*)(s):"")
 #define STRNULLCHKQ(s) ((s)?(char*)(s):"?")
 #define STRNULLCHKD(s) ((s)?(char*)(s):"-")
+#define STRNULLCHKZ(s) ((s)?(char*)(s):"0")
 #define STRNULLCHKNULL(s) ((s)?(char*)(s):"(null)")
 
 /* Common datatypes */
@@ -156,6 +157,9 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
  
 
 #define AZaz_09_(x) ( IN_RANGE((x), '0', '9') || ((x) == '_') || \
+                    IN_RANGE((x), 'A', 'Z') || IN_RANGE((x), 'a', 'z') )
+#define AZaz_09_dash(x) ( IN_RANGE((x), '0', '9') || ((x) == '_') || \
+                    ((x) == '-') || \
                     IN_RANGE((x), 'A', 'Z') || IN_RANGE((x), 'a', 'z') )
 #define AZaz_09_dot(x) ( IN_RANGE((x), '0', '9') || ((x) == '_') || \
                     ((x)=='.') || ((x) == '-') || \
@@ -445,12 +449,12 @@ extern FILE* errmac_debug_log;    /* Defined in zxidlib.c as 0 alias to stderr *
 #else
 # ifdef USE_PTHREAD
 #  ifdef USE_AKBOX_FN
-#   define D(format,...) (void)(errmac_debug&ERRMAC_DEBUG_MASK && (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %04x:%-4d %s d %s" format "\n", getpid(), (long)pthread_self(), AKBOX_FN(__FUNCTION__), __LINE__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
+#   define D(format,...) (void)((errmac_debug&ERRMAC_DEBUG_MASK)>1 && (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %04x:%-4d %s d %s" format "\n", getpid(), (long)pthread_self(), AKBOX_FN(__FUNCTION__), __LINE__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
 #  else
-#   define D(format,...) (void)(errmac_debug&ERRMAC_DEBUG_MASK && (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %10s:%-3d %-16s %s d %s" format "\n", getpid(), (long)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
+#   define D(format,...) (void)((errmac_debug&ERRMAC_DEBUG_MASK)>1 && (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %10s:%-3d %-16s %s d %s" format "\n", getpid(), (long)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
 #  endif
 # else
-#  define D(format,...) (void)(errmac_debug&ERRMAC_DEBUG_MASK && (fprintf(ERRMAC_DEBUG_LOG, "%d %10s:%-3d %-16s %s d %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, ## __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
+#  define D(format,...) (void)((errmac_debug&ERRMAC_DEBUG_MASK)>1 && (fprintf(ERRMAC_DEBUG_LOG, "%d %10s:%-3d %-16s %s d %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, ## __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
 # endif
 # define DD(format,...)  /* Documentative */
 #endif
@@ -459,16 +463,16 @@ extern FILE* errmac_debug_log;    /* Defined in zxidlib.c as 0 alias to stderr *
 # ifdef USE_AKBOX_FN
 #  define ERR(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %04x:%-4d %s E %s" format "\n", getpid(), (long)pthread_self(), AKBOX_FN(__FUNCTION__), __LINE__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
 #  define WARN(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %04x:%-4d %s W %s" format "\n", getpid(), (long)pthread_self(), AKBOX_FN(__FUNCTION__), __LINE__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
-#  define INFO(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %04x:%-4d %s I %s" format "\n", getpid(), (long)pthread_self(), AKBOX_FN(__FUNCTION__), __LINE__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
+#  define INFO(format,...) (void)(errmac_debug&ERRMAC_DEBUG_MASK && (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %04x:%-4d %s I %s" format "\n", getpid(), (long)pthread_self(), AKBOX_FN(__FUNCTION__), __LINE__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
 # else
 #  define ERR(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %10s:%-3d %-16s %s E %s" format "\n", getpid(), (long)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
 #  define WARN(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %10s:%-3d %-16s %s W %s" format "\n", getpid(), (long)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
-#  define INFO(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %10s:%-3d %-16s %s I %s" format "\n", getpid(), (long)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
+#  define INFO(format,...) (void)(errmac_debug&ERRMAC_DEBUG_MASK && (fprintf(ERRMAC_DEBUG_LOG, "%d.%lx %10s:%-3d %-16s %s I %s" format "\n", getpid(), (long)pthread_self(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
 # endif
 #else
 # define ERR(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d %10s:%-3d %-16s %s E %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
 # define WARN(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d %10s:%-3d %-16s %s W %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
-# define INFO(format,...) (fprintf(ERRMAC_DEBUG_LOG, "%d %10s:%-3d %-16s %s I %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG))
+# define INFO(format,...) (void)(errmac_debug&ERRMAC_DEBUG_MASK && (fprintf(ERRMAC_DEBUG_LOG, "%d %10s:%-3d %-16s %s I %s" format "\n", getpid(), __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, errmac_indent, __VA_ARGS__), fflush(ERRMAC_DEBUG_LOG)))
 #endif
 
 #define D_XML_BLOB(cf, lk, len, xml) errmac_debug_xml_blob((cf), __FILE__, __LINE__, __FUNCTION__, (lk), (len), (xml))
@@ -477,7 +481,7 @@ extern FILE* errmac_debug_log;    /* Defined in zxidlib.c as 0 alias to stderr *
 int hexdmp(const char* msg, const void* p, int len, int max);
 int hexdump(const char* msg, const void* p, const void* lim, int max);
 
-#define HEXDUMP(msg, p, lim, max) if (errmac_debug > 1) hexdump((msg), (p), (lim), (max))
+#define HEXDUMP(msg, p, lim, max) if ((errmac_debug&ERRMAC_DEBUG_MASK) > 1) hexdump((msg), (p), (lim), (max))
 #define DHEXDUMP(msg, p, lim, max) /* Disabled hex dump */
 
 #define DUMP_CORE() ASSERT(0)
@@ -548,7 +552,8 @@ int hexdump(const char* msg, const void* p, const void* lim, int max);
 /* Try to produce some exception, unless global setting says asserting is NOT ok. */
 
 extern char* assert_msg;
-#define DIE_ACTION(b) MB fprintf(ERRMAC_DEBUG_LOG, assert_msg, ERRMAC_INSTANCE); if (assert_nonfatal == 0) { *((int*)0xffffffff) = 1; } ME
+//#define DIE_ACTION(b) MB fprintf(ERRMAC_DEBUG_LOG, assert_msg, ERRMAC_INSTANCE); if (assert_nonfatal == 0) { *((int*)0xffffffff) = 1; } ME
+#define DIE_ACTION(b) MB fprintf(ERRMAC_DEBUG_LOG, assert_msg, ERRMAC_INSTANCE); if (assert_nonfatal == 0) { *((int*)-1) = 1; } ME
 
 /* Many development time sanity checks use these macros so that they
  * can be compiled away from the final version. ASSERT macros are more

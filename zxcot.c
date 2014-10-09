@@ -58,6 +58,7 @@ Usage: zxcot [options] [cotdir]         # Gives listing of metadata\n\
   -bs              Register Web Service and Bootstrap, add Service EPR from stdin\n\
   -e endpoint abstract entid servicetype   Construct and dump EPR to stdout.\n\
   -g URL           Do HTTP(S) GET to URL (aka WKL) and add as metadata (if compiled w/libcurl)\n\
+  -sign            Sign imported metadata (used with -a or -g). Used for Metadata Authority.\n\
   -n               Dryrun. Do not actually add the metadata. Instead print it to stdout.\n\
   -s               Swap columns, for easier sorting by URL\n\
   -m               Output metadata of this installation (our own metadata). Caveat: If your\n\
@@ -71,11 +72,13 @@ Usage: zxcot [options] [cotdir]         # Gives listing of metadata\n\
   -h               This help message\n\
   --               End of options\n\
 \n\
+HTTP_HOST=idp.cloud-identity.eu SCRIPT_NAME=/idp e2etacot -c 'CPATH=/d/relifex/e2eta/' -m\n\
 zxcot -e http://idp.tas3.pt:8081/zxididp?o=S 'TAS3 Default Discovery Service (ID-WSF 2.0)' http://idp.tas3.pt:8081/zxididp?o=B urn:liberty:disco:2006-08 | zxcot -b\n\
 \n";
 
 #define ZXID_MAX_MD (256*1024)
 
+int sign_md = 0;
 int swap = 0;
 int addmd = 0;
 int regsvc = 0;
@@ -204,6 +207,12 @@ static void opt(int* argc, char*** argv, char*** env)
       case '\0':
 	++swap;
 	continue;
+      case 'i':
+	if (!strcmp((*argv)[0],"-sign")) {
+	  sign_md = 1;
+	  continue;
+	}
+	break;
       }
       break;
 
@@ -291,17 +300,17 @@ static void opt(int* argc, char*** argv, char*** env)
     }
   } else {
 path_to_dir:
-    len = strlen(cf->path);
+    len = strlen(cf->cpath);
     cotdir = malloc(len+sizeof(ZXID_COT_DIR));
-    strcpy(cotdir, cf->path);
+    strcpy(cotdir, cf->cpath);
     strcpy(cotdir+len, ZXID_COT_DIR);
 
     dimddir = malloc(len+sizeof(ZXID_DIMD_DIR));
-    strcpy(dimddir, cf->path);
+    strcpy(dimddir, cf->cpath);
     strcpy(dimddir+len, ZXID_DIMD_DIR);
 
     uiddir = malloc(len+sizeof(ZXID_UID_DIR));
-    strcpy(uiddir, cf->path);
+    strcpy(uiddir, cf->cpath);
     strcpy(uiddir+len, ZXID_UID_DIR);
   }
 }
@@ -336,10 +345,12 @@ static void zxmkdirs()
   char* p;
   const char** dir;
   int len;
+  struct stat st;
+  
 #define ZXID_PATH_LENGTH_MARGIN (sizeof("ch/default/.del")+10) /* Accommodate longest subdir */
-  len = snprintf(path, sizeof(path)-ZXID_PATH_LENGTH_MARGIN, "%s", cf->path);
+  len = snprintf(path, sizeof(path)-ZXID_PATH_LENGTH_MARGIN, "%s", cf->cpath);
   if (len > sizeof(path)-ZXID_PATH_LENGTH_MARGIN) {
-    ERR("CPATH %s too long. len=%d, space=%d", cf->path, len, (int)(sizeof(path)-ZXID_PATH_LENGTH_MARGIN));
+    ERR("CPATH %s too long. len=%d, space=%d", cf->cpath, len, (int)(sizeof(path)-ZXID_PATH_LENGTH_MARGIN));
     exit(1);
   }
 
@@ -357,14 +368,32 @@ static void zxmkdirs()
   }
   
   for (dir = mkdirs_list; *dir; ++dir) {
-    len = snprintf(path, sizeof(path)-ZXID_PATH_LENGTH_MARGIN, "%s%s", cf->path, *dir);
+    len = snprintf(path, sizeof(path)-ZXID_PATH_LENGTH_MARGIN, "%s%s", cf->cpath, *dir);
     if (MKDIR(path, 02770) < 0) {
       ERR("Failed to create directory %s: %d (%s)", path, errno, STRERROR(errno));
     } else {
       D("Created %s", path);
     }
   }
-  INFO("Created directories. You should inspect their ownership and permissions to ensure the webserver can read and write them, yet outsiders can not access them. You may want to run  chown -R www-data %s", cf->path);
+  
+  len = snprintf(path, sizeof(path)-ZXID_PATH_LENGTH_MARGIN, "%s" ZXID_CONF_FILE, cf->cpath);
+  if (stat(path, &st)) {  /* error return from stat means file does not exist, create example */
+    write_all_path_fmt("-dirs", sizeof(path), path, "%s%s", cf->cpath, ZXID_CONF_FILE,
+"# This is example configuration file %s" ZXID_CONF_FILE "\n"
+"# You should edit the values to suit your situation.\n"
+"NICE_NAME=Configuration NICE_NAME: Set this to describe your site to humans, see %s" ZXID_CONF_FILE "\n"
+"BUTTON_URL=https://example.com/YOUR_BRAND_saml2_icon_150x60.png\n"
+"ORG_NAME=Unspecified ORG_NAME conf variable\n"
+"LOCALITY=Lisboa\n"
+"STATE=Lisboa\n"
+"COUNTRY=PT\n"
+"CONTACT_ORG=Your organization\n"
+"CONTACT_NAME=Your Name\n"
+"CONTACT_EMAIL=your@email.com\n"
+"CONTACT_TEL=+351918731007\n", cf->cpath, cf->cpath);
+  }
+
+  INFO("Created directories. You should inspect their ownership and permissions to ensure the webserver can read and write them, yet outsiders can not access them. You may want to run  chown -R www-data %s", cf->cpath);
 }
 
 /* --------------- reg_svc --------------- */

@@ -1,5 +1,5 @@
 /* zxidsimp.c  -  Handwritten zxid_simple() API
- * Copyright (c) 2012-2013 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
+ * Copyright (c) 2012-2014 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2007-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -24,6 +24,7 @@
  * 15.4.2013, added fflush(3) here and there to accommodate broken atexit() --Sampo
  * 17.11.2013, move redir_to_content feature to zxid_simple() --Sampo
  * 20.11.2013, move defaultqs feature feature to zxid_simple() --Sampo
+ * 14.2.2014,  added redirafter feature for local IdP logins (e.g. zxidatsel.pl) --Sampo
  *
  * Login button abbreviations
  * A2 = SAML 2.0 Artifact Profile
@@ -102,9 +103,9 @@ int zxid_conf_to_cf_len(zxid_conf* cf, int conf_len, const char* conf)
 
     if (!conf || conf_len < 5 || memcmp(conf, "PATH=", 5)) {
       /* No conf, or conf does not start by PATH: read from file default values */
-      buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%s" ZXID_CONF_FILE, cf->path);
+      buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%s" ZXID_CONF_FILE, cf->cpath);
       if (!buf || !len)
-	buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%szxid.conf", cf->path);
+	buf = read_all_alloc(cf->ctx, "-conf_to_cf", 1, &len, "%szxid.conf", cf->cpath);
       if (buf && len)
 	zxid_parse_conf_raw(cf, len, buf);
     }
@@ -204,7 +205,7 @@ char* zxid_fed_mgmt_cf(zxid_conf* cf, int* res_len, int sid_len, char* sid, int 
 		 "%s%s\n"
 		 "</form>%s%s%s%s",
 		 cf->mgmt_start,
-		 cf->url,
+		 cf->burl,
 		 slen, STRNULLCHK(sid),
 		 cf->mgmt_logout, cf->mgmt_defed,
 		 cf->mgmt_footer, zxid_version_str(), STRNULLCHK(cf->dbg), cf->mgmt_end);
@@ -218,7 +219,7 @@ char* zxid_fed_mgmt_cf(zxid_conf* cf, int* res_len, int sid_len, char* sid, int 
 		 "<input type=hidden name=s value=\"%.*s\">"
 		 "%s%s\n"
 		 "</form>",
-		 cf->url,
+		 cf->burl,
 		 slen, STRNULLCHK(sid),
 		 cf->mgmt_logout, cf->mgmt_defed);
   else if (auto_flags & ZXID_AUTO_FORMF)
@@ -329,7 +330,7 @@ static const char* zxid_map_bangbang(zxid_conf* cf, zxid_cgi* cgi, const char* k
     if (BBMATCH("MSG", key, lim)) return cgi->msg;
     break;
   case 'U':
-    if (BBMATCH("URL", key, lim)) return cf->url;
+    if (BBMATCH("URL", key, lim)) return cf->burl;
     break;
   case 'R':
     if (BBMATCH("RS", key, lim)) return cgi->rs;
@@ -360,14 +361,13 @@ static const char* zxid_map_bangbang(zxid_conf* cf, zxid_cgi* cgi, const char* k
 /* Called by:  zxid_idp_select_zxstr_cf_cgi, zxid_saml2_post_enc, zxid_simple_idp_show_an, zxid_simple_show_err */
 struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* templ_path, const char* default_templ, int size_hint, int auto_flags)
 {
-  char buf[8192];
-  const char* templ;
+  const char* templ = 0;
   const char* tp;
   const char* tq;
   const char* p;
   char* pp;
   struct zx_str* ss;
-  int len, got = 0;
+  int len;
 
   if (cgi->skin && *cgi->skin) {
     for (pp = cgi->skin; *pp; ++pp)
@@ -381,21 +381,17 @@ struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* t
 	 p >= templ_path && !ONE_OF_2(*p, '/', '\\');
 	 --p);
 
-    got = read_all(sizeof(buf)-1, buf, "templ", 1, "%.*s/%s%s",
-		   p-templ_path, templ_path, cgi->skin, p);
-    D("Tried to read from skin(%s), got=%d", cgi->skin, got);
+    templ = read_all_alloc(cf->ctx, "templ", 1, 0, "%.*s/%s%s",
+			   p-templ_path, templ_path, cgi->skin, p);
+    D("Tried to read from skin(%s) %p", cgi->skin, templ);
   }
   
-  if (got <= 0)
-    got = read_all(sizeof(buf)-1, buf, "templ", 1, "%s", templ_path);
-  if (got <= 0) {
+  if (!templ)
+    templ = read_all_alloc(cf->ctx, "templ", 1, 0, "%s", templ_path);
+  if (!templ) {
     D("Template at path(%s) not found. Using default template.", templ_path);
     templ = default_templ;
-  } else if (got == sizeof(buf)-1) {
-    ERR("Template at path(%s) does not fit in buffer of %d. Using default template.", templ_path, (int)sizeof(buf)-1);
-    templ = default_templ;
-  } else
-    templ = buf;
+  }
   while (1) {  /* Try rendering, iterate if expansion is needed. */
     tp = templ;
     ss = zx_new_len_str(cf->ctx, strlen(tp) + size_hint);
@@ -417,12 +413,14 @@ struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* t
       *pp++ = *tp++;
     }
     if (pp >= ss->s + ss->len) {
-      INFO("Expansion of template too big. Does not fit in %d. Expanding.", ss->len);
+      INFO("Expansion of template does not fit in %d. Enlarging buffer.", ss->len);
       size_hint += size_hint;  /* Double it */
       continue;
     }
     break;
   }
+  if (templ && templ != default_templ)
+    ZX_FREE(cf->ctx, templ);
   *pp = 0;
   ss->len = pp - ss->s;
   return ss;
@@ -655,7 +653,7 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
 		 "<input type=hidden name=fr value=\"%s\">\n"
 		 "</form>%s%s%s",
 		 cf->idp_sel_start,
-		 cf->url,
+		 cf->burl,
 		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
 		 cf->idp_sel_our_eid, STRNULLCHK(eid), STRNULLCHK(eid),
@@ -678,7 +676,7 @@ struct zx_str* zxid_idp_select_zxstr_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int au
 		 "%s%s"
 		 "<input type=hidden name=fr value=\"%s\">\n"
 		 "</form>",
-		 cf->url,
+		 cf->burl,
 		 FLDCHK(cgi, err), FLDCHK(cgi, msg), FLDCHK(cgi, dbg),
 		 cf->idp_sel_new_idp,
 		 cf->idp_sel_our_eid, STRNULLCHK(eid), STRNULLCHK(eid),
@@ -840,16 +838,8 @@ static char* zxid_simple_redir_page(zxid_conf* cf, char* redir, char* rs, int* r
 /* Called by:  zxid_ps_accept_invite, zxid_ps_finalize_invite, zxid_simple_no_ses_cf, zxid_simple_ses_active_cf x5 */
 char* zxid_simple_show_idp_sel(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
 {
-  struct zx_str* ss;
-
-  /* cgi->rs will be copied to ses->rs and from there in ab_pep to resource-id.
-   * We compress and safe_base64 encode it to protect any URL special characters.
-   * *** seems that at this point the p is not just rs, but the entire local URL --Sampo */
-  D("Previous rs(%s)", STRNULLCHKD(cgi->rs));
-  ss = zx_strf(cf->ctx, "%s%c%s", cgi->uri_path, cgi->qs&&cgi->qs[0]?'?':0, STRNULLCHK(cgi->qs));
-  cgi->rs = zxid_deflate_safe_b64_raw(cf->ctx, -2, ss->s);
-  D("rs(%s) from(%s) uri_path(%s) qs(%s)",cgi->rs,ss->s,cgi->uri_path,STRNULLCHKD(cgi->qs));
-  zx_str_free(cf->ctx, ss);
+  struct zx_str* ss;  
+  zxid_sso_set_relay_state_to_return_to_this_url(cf, cgi);
 
   D("cf=%p cgi=%p templ(%s)", cf, cgi, STRNULLCHKQ(cgi->templ));
   if (cf->idp_sel_page && cf->idp_sel_page[0]) {
@@ -912,7 +902,7 @@ char* zxid_simple_show_err(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
     p = zx_alloc_sprintf(cf->ctx, 0, "zxrfr=F%s%s%s%s&zxidpurl=%s",
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
-		 cf->url);
+		 cf->burl);
     D("err_page(%s) p(%s)", cf->err_page, p);
     return zxid_simple_redir_page(cf, cf->err_page, p, res_len, auto_flags);
   }
@@ -952,6 +942,7 @@ int zxid_decode_ssoreq(zxid_conf* cf, zxid_cgi* cgi)
 /* Called by:  zxid_simple_idp_pw_authn, zxid_simple_idp_show_an */
 static char* zxid_simple_idp_an_ok_do_rest(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags)
 {
+  int len;
   char* p;
   DD("idp do_rest %p", ses);
   if (cf->atsel_page && cgi->atselafter) { /* *** More sophisticated criteria needed. */
@@ -959,9 +950,19 @@ static char* zxid_simple_idp_an_ok_do_rest(zxid_conf* cf, zxid_cgi* cgi, zxid_se
 		 cgi->ssoreq, cgi->sid,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
-		 cf->url);
+		 cf->burl);
     D("atsel_page(%s) redir(%s)", cf->atsel_page, p);
     return zxid_simple_redir_page(cf, cf->atsel_page, p, res_len, auto_flags);
+  }
+  if (cgi->redirafter && *cgi->redirafter) {
+    len = strlen(cgi->redirafter);
+    if (!strcmp(cgi->redirafter + len - sizeof("s=X") + 1, "s=X")) {
+      p = zx_alloc_sprintf(cf->ctx, 0, "%.*s%s", len-1, cgi->redirafter, cgi->sid);
+      D("redirafter(%s)", p);
+      return zxid_simple_redir_page(cf, p, 0, res_len, auto_flags);
+    } else {
+      return zxid_simple_redir_page(cf, cgi->redirafter, 0, res_len, auto_flags);
+    }
   }
   return zxid_simple_ses_active_cf(cf, cgi, ses, res_len, auto_flags); /* o=F variant */
 }
@@ -993,6 +994,13 @@ static char* zxid_simple_idp_show_an(zxid_conf* cf, zxid_cgi* cgi, int* res_len,
   DD("z saml_req(%s) rs(%s) sigalg(%s) sig(%s)", cgi->saml_req, cgi->rs, cgi->sigalg, cgi->sig);  
   if (cgi->uid && zxid_pw_authn(cf, cgi, &sess)) {  /* Try login, just in case. */
     return zxid_simple_idp_an_ok_do_rest(cf, cgi, &sess, res_len, auto_flags);
+  }
+  if (cgi->redirafter) { /* Save next screen for local login (e.g. zxidatsel.pl */
+    D("zz redirafter(%s) rs(%s)", cgi->redirafter, cgi->rs);  
+    cgi->ssoreq = zxid_deflate_safe_b64(cf->ctx,
+		    zx_strf(cf->ctx,
+			    "redirafter=%s",
+			    cgi->redirafter));
   }
   if (cgi->response_type) { /* Save incoming OAUTH2 / OpenID-Connect Az request as hidden field */
     DD("zz response_type(%s) rs(%s)", cgi->response_type, cgi->rs);  
@@ -1031,7 +1039,7 @@ static char* zxid_simple_idp_show_an(zxid_conf* cf, zxid_cgi* cgi, int* res_len,
 		 cgi->ssoreq,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
-		 cf->url);
+		 cf->burl);
     if (cgi->ssoreq)
       ZX_FREE(cf->ctx, cgi->ssoreq);
     D("an_page(%s) ar(%s)", cf->an_page, ar);
@@ -1150,7 +1158,7 @@ static char* zxid_simple_idp_new_user(zxid_conf* cf, zxid_cgi* cgi, int* res_len
 		 cgi->ssoreq,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
-		 cf->url);
+		 cf->burl);
     D("new_user_page(%s) redir(%s)", cf->new_user_page, p);
     return zxid_simple_redir_page(cf, cf->new_user_page, p, res_len, auto_flags);
   }
@@ -1176,7 +1184,7 @@ static char* zxid_simple_idp_recover_password(zxid_conf* cf, zxid_cgi* cgi, int*
 		 cgi->ssoreq,
 		 cgi->zxapp && cgi->zxapp[0] ? "&zxapp=" : "", cgi->zxapp ? cgi->zxapp : "",
 		 cgi->err && cgi->err[0] ? "&err=" : "", cgi->err ? cgi->err : "",
-		 cf->url);
+		 cf->burl);
     D("recover_passwd(%s) redir(%s)", cf->recover_passwd, p);
     return zxid_simple_redir_page(cf, cf->recover_passwd, p, res_len, auto_flags);
   }
@@ -1202,7 +1210,7 @@ static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi,
   if (cf->ses_cookie_name && *cf->ses_cookie_name) {
     ses->setcookie = zx_alloc_sprintf(cf->ctx, 0, "%s=%s; path=/%s",
 				      cf->ses_cookie_name, ses->sid,
-				      ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
+				      ONE_OF_2(cf->burl[4], 's', 'S')?"; secure":"");
     ses->cookie = zx_alloc_sprintf(cf->ctx, 0, "$Version=1; %s=%s",
 				   cf->ses_cookie_name, ses->sid);
     D("setcookie(%s)=(%s) ses=%p", cf->ses_cookie_name, ses->setcookie, ses);
@@ -1221,7 +1229,7 @@ static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi,
 					   cf->ptm_cookie_name,
 					   url?url->len:0, url?url->s:"",
 					   issuer?issuer->len:0, issuer?issuer->s:"",
-					   ONE_OF_2(cf->url[4], 's', 'S')?"; secure":"");
+					   ONE_OF_2(cf->burl[4], 's', 'S')?"; secure":"");
       //ses->ptmcookie = zx_alloc_sprintf(cf->ctx,0,"$Version=1; %s=%s",cf->ptm_cookie_name,?);
       D("setptmcookie(%s)", ses->setptmcookie);
     } else {
@@ -1265,6 +1273,7 @@ static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi,
 /* ===== Main Control Logic for Session Active and Session Inactive Cases ===== */
 
 /*() Subroutine of zxid_simple_cf() for the session active case.
+ * cgi->uri_path should have been set by the caller.
  *
  * NULL return means the "not logged in" processing is needed, see zxid_simple_no_ses_cf()
  *
@@ -1289,8 +1298,8 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
    * l = local logout (form gl)
    * r = SLO redir    (form gr)
    * s = SLO soap     (form gs)
-   * t = nireg redir  (form gt)
-   * u = nireg soap   (form gu)
+   * t = nireg redir  (form gt, gn=newnym)
+   * u = nireg soap   (form gu, gn=newnym)
    * v = Az soap      (form gv)
    * c = CARML for the SP
    * d = Dump internal data, including config; debug screen
@@ -1301,7 +1310,10 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
    * Q = POST request
    * R = POST request to IdP
    * S = SOAP (POST) request
+   * Y = SOAP (POST) request for PDP and misc support services
+   * Z = SOAP (POST) request for discovery
    * B = Metadata
+   * b = Metadata Authority
    *
    * M = CDC redirect and LECP detect
    * C = CDC reader
@@ -1320,13 +1332,13 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
    * F = IdP: Return SSO A7N after successful An; no ses case, generate IdP ui
    * V = Proxy IdP return
    *
-   * Still available: HJUVWXYZabcdefghijkoqwxyz
+   * Still available: HJUVWXacefghijkoqwxyz
    */
   
   if (cgi->enc_hint)
     cf->nameid_enc = cgi->enc_hint != '0';
-  D("op(%c) sesid(%s) active", cgi->op, STRNULLCHK(cgi->sid));
-  DD("session(%s) active op(%c) saml_req(%s)", cgi->sid, cgi->op, STRNULLCHK(cgi->saml_req));
+  D("op(%c) sesid(%s) active", cgi->op?cgi->op:'-', STRNULLCHK(cgi->sid));
+  DD("ses(%s) active op(%c) saml_req(%s)",cgi->sid,cgi->op?cgi->op:'-', STRNULLCHK(cgi->saml_req));
   switch (cgi->op) {
   case 'l':
     if (cf->log_level>0)
@@ -1406,6 +1418,7 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
   case 'c': return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
   case 'd': return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
   case 'B': return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
+  case 'b': return zxid_simple_md_authority(cf, cgi, res_len, auto_flags);
   case 'n': break;
   case 'p': break;
   default:
@@ -1452,6 +1465,7 @@ res_zx_str:
 }
 
 /*() Subroutine of zxid_simple_cf() for the no session detected/active case.
+ * cgi->uri_path should have been set by the caller.
  *
  * N.B. More complete documentation is available in <<link: zxid-simple.pd>> (*** fixme) */
 
@@ -1465,14 +1479,15 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     ERR("FATAL: NULL pointer. You MUST supply configuration(%p), cgi(%p), and session(%p) objects (programming error)", cf, cgi, ses);
     exit(1);
   }
-  if (cf->wd)
+  if (cf->wd && *cf->wd)
     chdir(cf->wd);
 
+  D("op(%c) cf=%p cgi=%p ses=%p auto=%x wd(%s)", cgi->op?cgi->op:'-', cf, cgi, ses, auto_flags, STRNULLCHKD(cf->wd));
   if (!cgi->op && cf->defaultqs && cf->defaultqs[0]) {
     zxid_parse_cgi(cf, cgi, cf->defaultqs);
-    INFO("DEFAULTQS(%s) op(%c)", cf->defaultqs, cgi->op);
+    INFO("DEFAULTQS(%s) op(%c)", cf->defaultqs, cgi->op?cgi->op:'-');
   }
-
+  
   switch (cgi->op) {
   case 'M':  /* Invoke LECP or redirect to CDC reader. */
     ss = zxid_lecp_check(cf, cgi);
@@ -1571,6 +1586,7 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
   case 'c':    return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
   case 'd':    return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
   case 'B':    return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
+  case 'b':    return zxid_simple_md_authority(cf, cgi, res_len, auto_flags);
   case 'D': /*  Delegation / Invitation URL clicked. */
     return zxid_ps_accept_invite(cf, cgi, ses, res_len, auto_flags);
   case 'R':
@@ -1660,7 +1676,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
     if (qs) {
       D("QUERY_STRING(%s) %s %d", STRNULLCHK(qs), ZXID_REL, errmac_debug);
       zxid_parse_cgi(cf, &cgi, qs);
-      if (ONE_OF_3(cgi.op, 'P', 'R', 'S')) {
+      if (ONE_OF_5(cgi.op, 'P', 'R', 'S', 'Y', 'Z')) {
 	cont_len = getenv("CONTENT_LENGTH");
 	if (cont_len) {
 	  sscanf(cont_len, "%d", &got);

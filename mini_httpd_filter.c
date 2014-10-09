@@ -39,8 +39,8 @@
 
 /* declare stuff from mini_httpd.c */
 void send_error_and_exit(int s, char* title, char* extra_header, char* text);
-ssize_t my_read(char* buf, size_t size);
-ssize_t my_write(char* buf, size_t size);
+ssize_t conn_read(char* buf, size_t size);
+ssize_t conn_write(char* buf, size_t size);
 void add_to_buf(char** bufP, size_t* bufsizeP, size_t* buflenP, char* str, size_t len);
 void add_to_request(char* str, size_t len);
 void add_headers(int s, char* title, char* extra_header, char* me, char* mt, off_t b, time_t mod);
@@ -144,7 +144,7 @@ static char* zxid_mini_httpd_read_post(zxid_conf* cf)
     DD("uri(%s)=%p buf=%p request(%.*s)=%p request_size=%d request_len=%d", path, path, buf, (int)request_size, request, request, (int)request_size, (int)request_len);
     if (!len)
       break;  /* nothing further to read */
-    len = my_read(buf, len);
+    len = conn_read(buf, len);
     if (len < 0 && ONE_OF_2(errno, EINTR, EAGAIN))
       continue;
     if (len <= 0)
@@ -214,10 +214,10 @@ void zxid_mini_httpd_wsp_response(zxid_conf* cf, zxid_ses* ses, int rfd, char** 
   if ((*response)[br_ix] == '\012') ++br_ix;
 
   D("DECOR3 response_len=%d br_ix=%d header(%.*s)", (int)*response_len, br_ix, br_ix, *response);
-  (void) my_write(*response, br_ix);
+  (void) conn_write(*response, br_ix);
 
   res = zxid_wsp_decorate(cf, ses, 0, *response+br_ix);
-  (void) my_write(res->s, res->len);
+  (void) conn_write(res->s, res->len);
   D_DEDENT("wsp_resp");
 }
 
@@ -293,7 +293,7 @@ zxid_ses* zxid_mini_httpd_sso(zxid_conf* cf, const char* method, const char* uri
    * SSO by virtue of the web server configuration (SSO_PAT in mini_httpd_zxid). */
 
   uri_len = strlen(uri_path);
-  for (local_url = cf->url; *local_url && *local_url != ':' && *local_url != '/'; ++local_url);
+  for (local_url = cf->burl; *local_url && *local_url != ':' && *local_url != '/'; ++local_url);
   if (local_url[0] == ':' && local_url[1] == '/' && local_url[2] == '/') {
     for (local_url += 3; *local_url && *local_url != '/'; ++local_url);
   }
@@ -307,7 +307,7 @@ zxid_ses* zxid_mini_httpd_sso(zxid_conf* cf, const char* method, const char* uri
   url_len = p-local_url;
 
   if (url_len == uri_len && !memcmp(local_url, uri_path, uri_len)) {  /* Exact match */
-    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("matched uri(%s)=%p cf->url(%s) qs(%s) rs(%s) op(%c)", uri_path, uri_path, cf->url, STRNULLCHKNULL(qs), STRNULLCHKNULL(cgi.rs), cgi.op);
+    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("matched uri(%s)=%p cf->burl(%s) qs(%s) rs(%s) op(%c)", uri_path, uri_path, cf->burl, STRNULLCHKNULL(qs), STRNULLCHKNULL(cgi.rs), cgi.op);
     if (*method == 'P') {
       res = zxid_mini_httpd_read_post(cf);   /* Will print some debug output */  // ***
       if (res) {
@@ -340,7 +340,7 @@ zxid_ses* zxid_mini_httpd_sso(zxid_conf* cf, const char* method, const char* uri
 	}
       }
     }
-    D("HERE2.1 urls_len=%d local_url(%.*s) url(%s)", url_len, url_len, local_url, cf->url);
+    D("HERE2.1 urls_len=%d local_url(%.*s) url(%s)", url_len, url_len, local_url, cf->burl);
     if (ONE_OF_2(cgi.op, 'L', 'A')) /* SSO (Login, Artifact) activity overrides current session. */
       goto step_up;
     if (!cgi.sid || !zxid_get_ses(cf, ses, cgi.sid)) {
@@ -354,7 +354,7 @@ zxid_ses* zxid_mini_httpd_sso(zxid_conf* cf, const char* method, const char* uri
     /* not logged in, fall thru to step_up */
   } else {
     /* Some other page. Just check for session. */
-    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("other page uri(%s) qs(%s) cf->url(%s) uri_len=%d url_len=%d", uri_path, STRNULLCHKNULL(qs), cf->url, uri_len, url_len);
+    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("other page uri(%s) qs(%s) cf->burl(%s) uri_len=%d url_len=%d", uri_path, STRNULLCHKNULL(qs), cf->burl, uri_len, url_len);
     if (qs && qs[0] == 'l') {
       D("Detect login(%s)", qs);
     } else

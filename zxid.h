@@ -173,15 +173,16 @@ struct zxid_conf {
   unsigned int magic;
   struct zx_ctx* ctx; /* ZX parsing context. Usually used for memory allocation. */
   zxid_entity* cot;   /* Linked list of metadata for CoT partners (in-memory CoT cache) */
-  int path_supplied;  /* FLAG: If config variable PATH is supplied, it may trigger reading config file from the supplied location. */
-  int path_len;
-  char* path;
-  char* url;
+  int cpath_supplied; /* FLAG: If config variable PATH is supplied, it may trigger reading config file from the supplied location. */
+  int cpath_len;
+  char* cpath;        /* Config PATH */
+  char* burl;         /* Base URL */
   char* non_standard_entityid;
   char* redirect_hack_imposed_url;
   char* redirect_hack_zxid_url;
   char* redirect_hack_zxid_qs;
   char* cdc_url;
+  char* md_authority;
 
   char  cdc_choice;
   char  md_fetch;            /* Auto-CoT */
@@ -250,6 +251,7 @@ struct zxid_conf {
   char* load_cot_cache;
   char* wspcgicmd;
   char* anon_ok;
+  char* optional_login_pat;
   char** required_authnctx;  /* Array of acceptable authentication context class refs */
   char* issue_authnctx_pw;   /* What authentication context IdP issues for password authent. */
   char* idp_pref_acs_binding;
@@ -266,6 +268,11 @@ struct zxid_conf {
   char* wsp_pat;
   char* sso_pat;
   char* mod_saml_attr_prefix;  /* Prefix for req variables in mod_auth_saml */
+  char* wsc_to_hdr;
+  char* wsc_replyto_hdr;
+  char* wsc_action_hdr;
+  char* soap_action_hdr;
+  char* wsc_soap_content_type;
 
   struct zxid_need*  need;
   struct zxid_need*  want;
@@ -355,7 +362,9 @@ struct zxid_conf {
   char  idp_pxy_ena;
   char  oaz_jwt_sigenc_alg;  /* What signature and encryption to apply to issued JWT (OAUTH2) */
   char  bus_rcpt;            /* Audit Bus receipt enable and signing flags */
-  char  pad5; char pad6; char pad7;
+  char  az_fail_mode;        /* What to do when authorization can not be done */
+  char  md_authority_ena;
+  char  pad7;
 
 #ifdef USE_CURL
   CURL* curl;
@@ -400,7 +409,7 @@ struct zxid_cgi {
   char* uid;           /* au= Form field for user. */
   char* pw;            /* ap= Form field for password. */
   char* ssoreq;        /* ar= Used for conveying original AuthnReq through authn phase. */
-  char* cdc;           /* c=  Common Domain Cookie as returned by the CDC reader */
+  char* cdc;           /* c=  Common Domain Cookie, returned by the CDC reader, also succinctID */
   char* eid;           /* e=, d= Entity ID of an IdP (typically for login) */
   char* nid_fmt;       /* fn= Name ID format */
   char* affil;         /* fq= SP NameQualifier (such as in affiliation of SPs) */
@@ -424,6 +433,7 @@ struct zxid_cgi {
   char* dbg;           /* When rendering screens: used to put debug message to screen. */
   char* zxapp;         /* Deployment specific application parameter passed in some querystrings. */
   char* zxrfr;         /* ZX Referer. Indicates to some external pages why user was redirected. */
+  char* redirafter;    /* On IdP, if local login is desired, the next page */
   char* ok;            /* Ok button in some forms */
   char* templ;         /* Template name in some forms (used to implement tabs, e.g. in idpsel) */
   char* sp_eid;        /* IdP An for to generate page */
@@ -894,10 +904,11 @@ ZXID_DECL int zxid_pw_authn(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses);
 /* zxidcurl */
 
 ZXID_DECL char* zxid_http_get(zxid_conf* cf, const char* url, char** lim);
-ZXID_DECL struct zx_str* zxid_http_post_raw(zxid_conf* cf, int url_len, const char* url, int len, const char* data);
+ZXID_DECL struct zx_str* zxid_http_post_raw(zxid_conf* cf, int url_len, const char* url, int len, const char* data, const char* SOAPactionre);
 ZXID_DECL struct zx_root_s* zxid_soap_call_raw(zxid_conf* cf, struct zx_str* url, struct zx_e_Envelope_s* env, char** ret_enve);
 ZXID_DECL struct zx_root_s* zxid_soap_call_hdr_body(zxid_conf* cf, struct zx_str* url, struct zx_e_Header_s* hdr, struct zx_e_Body_s* body);
 ZXID_DECL int zxid_soap_cgi_resp_body(zxid_conf* cf, zxid_ses* ses, struct zx_e_Body_s* body);
+ZXID_DECL const char* zxid_get_last_content_type(zxid_conf* cf);
 
 /* zxidlib */
 
@@ -1014,7 +1025,7 @@ ZXID_DECL char* zxid_wsp_validate_env(zxid_conf* cf, zxid_ses* ses, const char* 
 ZXID_DECL char* zxid_wsp_validate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve);
 ZXID_DECL struct zx_str* zxid_wsp_decorate(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* enve);
 ZXID_DECL struct zx_str* zxid_wsp_decoratef(zxid_conf* cf, zxid_ses* ses, const char* az_cred, const char* env_f, ...);
-ZXID_DECL int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp);
+ZXID_DECL int zxid_wsf_decor(zxid_conf* cf, zxid_ses* ses, struct zx_e_Envelope_s* env, int is_resp, zxid_epr* epri);
 
 /* zxidwsc */
 
@@ -1103,6 +1114,10 @@ ZXID_DECL zxid_tok* zxid_nidmap_identity_token(zxid_conf* cf, zxid_ses* ses, con
 
 ZXID_DECL char* zxid_ps_accept_invite(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags);
 ZXID_DECL char* zxid_ps_finalize_invite(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* res_len, int auto_flags);
+
+/* zxidpsso */
+
+ZXID_DECL char* zxid_get_idpnid_at_eid(zxid_conf* cf, const char* uid, const char* eid, int allow_create);
 
 /* DAP scope constants are same as for LDAP, see RFC2251 */
 

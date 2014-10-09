@@ -75,14 +75,20 @@
  *
  * VPATH is not really a configuration option on its own right (there is
  * no corresponding entry in struct zxid_conf), but rather a directive
- * that instructs on point of occurrance the PATH variable (see zxid.h)
+ * that instructs on point of occurrance of the PATH variable (see zxid.h)
  * to change and configuration file to be read.
  *
  * Default value: "%h/" (see definition of PATH for example).
- * See also: VURL
+ * See also: VURL, INCLUDE
  */
 
 #define ZXID_VPATH "%h/"
+
+/*(c) INCLUDE=file  - Include a file into configuration.
+ * This is an alternative to VPATH and inheritance for implementing multiple
+ * entities that share some common configutation, e.g. CONTACT metadata items. */
+
+/*(c) OPT_INCLUDE=file - Like INCLUDE but does not fail if the file is missing */
 
 /*(c) SP Nickname for IdP User Interface
  * IMPORTANT: You should really configure this option.
@@ -110,7 +116,7 @@
  * BUTTON_URL is typically absolute URL (relative would not make sense as it
  * is referenced from other web site referring to your web site).
  *
- * Typical value::  https://your-site.com/your_brand_saml2_icon_150x60.png
+ * Typical value::  https://your-site.com/YOUR_BRAND_saml2_icon_150x60.png
  *
  * Other possible values:: Depending on SP user interface, you may
  *     use any of
@@ -144,22 +150,24 @@
  * OreanizationDisplayName and EntityID displayed as well). */
 #define ZXID_PREF_BUTTON_SIZE "150x60"
 
-/*(c) Web Site URL - root of EntityID
+/*(c) Web Site Base URL - root of EntityID
  * IMPORTANT: Failure to config this option may block zxid from operating.
- * URL for most zxid operations. It must end in whatever triggers
- * the ZXID functionality in the web server. The hostname
+ * BURL is the stem for EntityID and most zxid SSO operations. It must end
+ * in whatever triggers the ZXID functionality in the web server. The hostname
  * and port number should match the server under which zxid CGI is accessible.
- * N.B. There is no explicit way to configure Entity ID (Provider ID) for
- * the zxid SP. The Entity ID is always of form ZXID_URL?o=B, for example
+ * The BURL config option may be set dynamically by VURL, see below, or from
+ * program code.
+ * N.B. There is no explicit way to configure EntityID (ProviderID) for
+ * the zxid SP. The EntityID is always of form ZXID_BURL?o=B, for example
  *   https://sp1.zxidsp.org:8443/zxid?o=B */
-#define ZXID_URL "https://sp1.please-set-URL-conf-variable-to-some-useful-site-dep-value.org:8443/zxidhlo"
+#define ZXID_BURL "https://sp1.please-set-BURL-conf-variable-to-some-useful-site-dep-value.org:8443/zxidhlo"
 
-/*(c) VURL - URL for a virtual server
+/*(c) VURL - BURL for a virtual server
  *
- * The VURL allows different URL for different
+ * The VURL allows different BURL for different
  * virtual servers (multihoming) to be generated automatically based
  * on the (CGI) environment variables. However, often you would
- * override the URL in /var/zxid/zxid.conf
+ * override the BURL in /var/zxid/zxid.conf
  *
  * In VURL each ordinary letter is rendered as is, but the
  * following % (percent) specifications are expanded inline:
@@ -179,7 +187,7 @@
  *
  * VURL is not really a configuration option on its own right (there is
  * no corresponding entry in struct zxid_conf), but rather a directive
- * that instructs, on point of its occurrance, the URL variable (see zxid.h)
+ * that instructs, on point of its occurrance, the BURL variable (see zxid.h)
  * to be computed. It will not have any effect unless evaluted at run time,
  * thus this "default value" is rather moot. You really need to specify
  * VURL in your own configuration.
@@ -191,15 +199,15 @@
 
 /*(c) Override standard EntityID Construction
  * The best practise is that SP Entity ID is chosen by the SP (and not
- * forced upon SP by IdP). In ZXID this is done by setting ZXID_URL,
+ * forced upon SP by IdP). In ZXID this is done by setting BURL,
  * see above. However, should you have to work with an obstinate IdP
  * that refuses to follow this best practise, you can use this option
  * to manually set the Entity ID. Not following the best practise
  * breaks automatic metadata exchange (Auto-CoT). Recommended
- * value: leave as 0 so that Entity ID is formed from ZXID_URL */
+ * value: leave as 0 so that Entity ID is formed from BURL */
 #define ZXID_NON_STANDARD_ENTITYID 0
 
-/*(c) Allow omission of o=B, i.e. make the URL be the entity ID. */
+/*(c) Allow omission of o=B, i.e. make the BURL be the entity ID. */
 #define ZXID_BARE_URL_ENTITYID 0
 
 /*(c) Illadviced ACS URL Hack
@@ -226,7 +234,7 @@
 #define ZXID_CONTACT_EMAIL 0
 #define ZXID_CONTACT_TEL 0
 
-/*(c) If set (by default this is always set when URL is set, you have to
+/*(c) If set (by default this is always set when BURL is set, you have to
  * explicitly unset it if you do not want it), causes IdP to include
  * fedusername attribute in the assertion. The value of this attribute
  * will be the (persistent) nameid followed by @ sign and this suffix,
@@ -269,11 +277,14 @@
  *     that ZXID was linked with libcurl. If you do not enable fetching, you
  *     will need to populate the cache manually, perhaps by using a web browser
  *     to fetch the meta data xml files from well known location URLs (or other
- *     URLs if you know better) and thenrunning on commandline zxcot.
+ *     URLs if you know better) and then running on commandline zxcot -a.
  *     Or you could use zxidcot.pl?op=md or zxcot(1) tool.
  *
  *     N.B. Even if fetching is enabled, the fetch can still fail due to
  *     network connectivity issues or due to other end not supporting it.
+ *     
+ *     MD_FETCH=1:: Fetch from WKL (Auto-CoT)
+ *     MD_FETCH=2:: Fetch from metadata authority, see MD_AUTHORITY, below.
  *
  * MD_POPULATE_CACHE:: controls whether ZXID will write the metadata to
  *     the on-disk cache. This requires ZXID_MD_FETCH to be enabled
@@ -290,13 +301,30 @@
  * If you want to control manually your CoT (e.g. because human process is
  * needed to verify that all the paperwork is in place), set MD_FETCH to 0.
  *
- * If you want as automatic operation as possible, set all four to 1.
- */
+ * If you want as automatic operation as possible, set all four to 1. */
 
 #define ZXID_MD_FETCH          1   /* The Auto-CoT ena option */
 #define ZXID_MD_POPULATE_CACHE 1
 #define ZXID_MD_CACHE_FIRST    1
 #define ZXID_MD_CACHE_LAST     1
+
+/*(c) Metadata Authority EntityID
+ * If MD_FETCH=2 and this is set to an EntityID (whose metadata MUST already
+ * be in the CoT cache, typically manually populated using zxcot -a)
+ * then in situations where metadata is missing, the authority is queried
+ * for the missing metadata. The returned metadata 3rd party should be
+ * signed by the authority and the authority's own metadata is used
+ * in validating the signature.
+ *
+ * The URL from where the metadata is fetched is formed by looking at
+ * <md:AdditionalMetadataLocation> element in the authority's metadata
+ * and concatenating the succinct ID of the entity.
+ *
+ * Usually the authority is the IdP that the SP trusts. This allows
+ * centralized management of a Circle of Trust. Such IdP will know
+ * to produce the AdditionalMetadataLocation in its own metadata.
+ * See also: MD_AUTHORITY_ENA in IdP configuration. */
+#define ZXID_MD_AUTHORITY 0
 
 /*(c) Whether to load CoT cache from a file containing the concatenated
  * metadata of the Circle of Trust. Some real world federations distribute
@@ -397,6 +425,105 @@
  * generation tends to be expensive and wasteful, you should use discovery
  * instead and leave BOOTSTRAP_LEVEL set to 1. */
 #define ZXID_BOOTSTRAP_LEVEL 1
+
+/*(c) WSC Content-Type header generation
+ * For SOAP 1.1 (SOAP11) that TAS3 and IF-WSF2 use,
+ * the value should be "Content-Type: text/xml" (n.b. even
+ * the header name has to be included) per
+ * http://www.w3.org/TR/2000/NOTE-SOAP-20000508/ section 6.1.1
+ * If WSP asks this to be anything else, the chances are
+ * it is misconfigured, not standards compliant, or using SOAP 1.2.
+ * This should be fixed in WSP end. Changing the value in WSC end
+ * should only be desperate last resort as it will cause WSC
+ * to be incompatible with standards compliant WSPs. */
+#define ZXID_WSC_SOAP_CONTENT_TYPE "Content-Type: text/xml"
+
+/*(c) WSC <a:To> header generation. The default is not to
+ * generate which, according to http://www.w3.org/TR/ws-addr-core/ section 3.2
+ * produces same semantics as http://www.w3.org/2005/08/addressing/anonymous,
+ * i.e. responding end of HTTP connection. Special values:
+ *
+ * 0 (null):: No To header generated
+ * "#inhibit":: No To header generated
+ * "#url":: To header has same value as end point URL (this is the default, see below).
+ * Other values:: The value to supply as To header.
+ *
+ * N.B. Although WS-Addressing states that this header is optional, as it is
+ * one of the signed headers, it may have significance in showing the
+ * intended recipient of the message (the Audience for the Assertion is
+ * an other place where intended recipient is expressed, albeit as
+ * entity ID rather than end point URL). */
+#define ZXID_WSC_TO_HDR "#url"
+
+/*(c) WSC <a:ReplyTo> header generation. The default is not to
+ * generate which, according to http://www.w3.org/TR/ws-addr-core/ section 3.2
+ * produces same semantics as http://www.w3.org/2005/08/addressing/anonymous,
+ * i.e. reply to the requesting end of HTTP connection. In
+ * liberty-idwsf-soap-binding-2.0-errata-v1.0.pdf value
+ * http://www.w3.org/2005/03/addressing/role/anonymous is
+ * illustrated, but this is in violation of http://www.w3.org/2005/08/addressing
+ * namespace. The Liberty specification also hints that ReplyTo can be
+ * omitted to get the default semantics. Special values:
+ *
+ * 0 (null):: No ReplyTo header generated
+ * "#inhibit":: No ReplyTo header generated
+ * "#anon":: http://www.w3.org/2005/08/addressing/anonymous
+ * "#anon_2005_03":: http://www.w3.org/2005/03/addressing/role/anonymous
+ * Other values:: The value to supply as To header.
+ */
+#define ZXID_WSC_REPLYTO_HDR 0
+
+/*(c) WSC <a:Action> header generation. The most reliable way
+ * to dispatch SOAP web services is to simply look at the first
+ * child element of <e:Body>. If, however, you are cursed with
+ * having to interoperate with WSP that insists on seeing some
+ * specific Action header, this option gives you some control
+ * as to what it should be.
+ *
+ * First method of generating Action header is to pass it in as
+ * input to zxid_call(), e.g.
+ *
+ *   ret = zxid_call(cf, ses, svctype, url, 0, 0,
+ *     "<e:Envelope  xmlns:e=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+ *        "<e:Header>""
+ *           "<a:Action xmlns:a=\"http://www.w3.org/2005/08/addressing\" "
+ *               "actor=\"http://schemas.xmlsoap.org/soap/actor/next\" "
+ *               "mustUnderstand=\"1\">toimikaa</a:Action>"
+ *        "</e:Header>"
+ *        "<e:Body><r:Req xmlns:r=\"urn:test\"/></e:Body></e:Envelope>");
+ *
+ * This method overrides any other, i.e. if WSC code sees an already existing
+ * Action header, it will not replace it.
+ *
+ * Other methods depend on the WSC_ACTION_HDR option with following special values:
+ *
+ * 0 (null):: No Action header will be generated,
+ * "#ses":: Look for key "Action" in session attribute pool
+ * "#body1st":: Special value that will use the name of the first child element
+ *     of the <e:Body> tag.
+ * "#body1stns":: Same as #body1st, but will prefix by namespace URI
+ * Other values:: cause the Action header to be set to the given value. */
+#define ZXID_WSC_ACTION_HDR "#body1stns"
+
+/*(c) Like WSC_ACTION_HDR, but deals with the HTTP level SOAPAction header.
+ * Dependence on HTTP layer header to say what is inside <e:Body> is poor
+ * programming and architecture. WSPs should be coded to ignore the
+ * SOAPAction http header.
+ *
+ * The ID-WSF2 default value for this is empty string "", which generally
+ * does not cause indigestion to the buggy softwares and causes them to
+ * route the request to default place. For semantics of "" and omitting, see
+ * http://www.w3.org/TR/2000/NOTE-SOAP-20000508/ section 6.1.1
+ *
+ * Possible values:
+ *
+ * 0 (null):: Do not generate SOAPAction
+ * "#inhibit":: Do not generate SOAPAction (use this in configuration)
+ * "#same":: Same as <a:Action> SOAP header. This is often the #body1stns, i.e. the namespace
+ *     qualified name of the 1st child element of <e:Body>
+ * "" (empty string):: the default for ID-WSF
+ * Other values:: use the value of this config option as SOAPAction HTTP header. */
+#define ZXID_SOAP_ACTION_HDR "#same"
 
 /*(c) WSC Signing Options
  * Which components of a web service request should be signed by WSC
@@ -521,6 +648,12 @@
  * is incomplete and fails to properly authenticate and authorize the caller
  * system entity, i.e. anyone who knows a username and password can call it. */
 #define ZXID_AS_ENA 0
+
+/*(c) Metadata Authority
+ * Whether IdP will serve as Metadata Authority (see also MD_AUTHORITY and MD_FETCH=2).
+ * Enables generation of <md:AdditionalMetadataLocation namespace="#md-authority">
+ * element in the metadata of the IdP. */
+#define ZXID_MD_AUTHORITY_ENA 1
 
 /*(c) Dummy PDP
  * Whether limited PDP functionality is enabled. */
@@ -752,28 +885,44 @@
 
 /*(c) WSP Pattern
  * Any URL matching this pattern is treated as web service call rather
- * than SSO attempt. Understood by mod_auth_saml and mini_httpd_zxid.
+ * than SSO attempt. Understood by mod_auth_saml, zxid_httpd and mini_httpd_zxid.
  * WSP_PAT is matched before SSO_PAT. */
 
 #define ZXID_WSP_PAT "*.wsp"
 
 /*(c) mini_httpd_zxid SSO Pattern
  * Any URL matching this pattern requires SSO. However
- * WSP_PAT is matched first. Understood by mini_httpd_zxid. */
+ * WSP_PAT is matched first. Understood by zxid_httpd and mini_httpd_zxid. */
 
 #define ZXID_SSO_PAT "*"
 
 /*(c) Anonymous can see protected content
- * If ANON_OK is set and matches prefix of the local URL, SSO failure does
- * not block protected content from being
+ * If ANON_OK is set and matches the local URL - see zx_match(), SSO failure
+ * does not block protected content from being
  * shown. While this usually is a security problem, in some circumstances
  * you may want to show error message or nonpersonalized content from the
  * application layer. If application checks that the SSO really happened,
  * then there is no security problem - the responsibility is application's.
  * Typically ANON_OK=/dir/ is used with IsPassive (fp=1) to implement personalization
  * if user already has session, but allow the user to access page anonymously
- * without logging in if he does not have session. */
+ * without logging in if he does not have session.
+ *
+ * *** This option does not prevent the SSO from being tried in the
+ * *** first place and consequently, IdP selection will be invoked in any
+ * *** case - even if user has no meaningful IdP in mind. This option only
+ * *** controls what happens after IdP redirects back without having
+ * *** authenticated the user. By clever manupulation of DEFAULTQS and fp=1
+ * *** this could be made to work, if there is only one IdP. */
 #define ZXID_ANON_OK 0
+
+/*(c) If a page matching OPTIONAL_LOGIN_PAT is accessed, then
+ * a. If session is already active, session is used and attributes of session
+ *    are visible to the page.
+ * b. If no session is active, then no login is requested, unless the
+ *    URL matches BURL.
+ * N.B. This option tries to do what many people try to use ANON_OK for.
+ */
+#define ZXID_OPTIONAL_LOGIN_PAT 0
 
 /*(c) Required Authentication Context Class Ref.
  * This can be used
@@ -844,6 +993,25 @@
  * 0x01: prevent WS-Security header in SOAP XACML requests.  */
 #define ZXID_AZ_OPT 0
 
+/*(c) Authorization failure mode
+ * 0x00: Any failure is Deny (sane default)
+ * 0x01: Missing PDP_URL or PDP_CALL_URL is Permit (allows you to
+ *       run code that makes explicit az calls even if you do not have PDP)
+ * 0x02: Network connectivity error is Permit (emergency panic
+ *       option - do not enable unless you are willing to assume
+ *       the liability: that failure to contact PDP is interpretted as Permit
+ *       may be the express objective of the attack you are under)
+ * 0x03: Combine the two above: Missing URL or no connectivity is Permit
+ * 0x04: Always return Permit (only for development use)
+ */
+#define ZXID_AZ_FAIL_MODE 0
+
+/* Use these constants in code */
+#define ZXID_AZ_FAIL_MODE0_DENY 0
+#define ZXID_AZ_FAIL_MODE1_MISSING_URL 1
+#define ZXID_AZ_FAIL_MODE2_NET_FAIL 2
+#define ZXID_AZ_FAIL_MODE4_PERMIT_ALWAYS 4
+
 /*(c) Which version of XACML to speak, e.g. "2.0" or "2.0-cd1" or "xac-soap" */
 
 #define ZXID_XASP_VERS "2.0"
@@ -903,7 +1071,7 @@
  *
  * Since SOL expressions are parsed according to URL query string
  * rules and since the configuration directives are also parsed
- * according toquery string rules, a problem arises with multipart SOL
+ * according to query string rules, a problem arises with multipart SOL
  * expressions. The second expression shows how to use URL quoting
  * (%26) to protect the SOL ampersand from being processed by the
  * configuration file. Since this is such a common situation, a
@@ -1000,15 +1168,18 @@
 
 #define ZXID_IDP_SEL_PAGE 0
 
-/*(c) If user clicks "Create New User" he is redirected to this page. */
+/*(c) If user clicks "Create New User" he is redirected to this page.
+ * E.g. "zxidnewuser.pl" */
 
 #define ZXID_NEW_USER_PAGE 0
 
-/*(c) If user clicks on recover password, redirect to this page. */
+/*(c) If user clicks on recover password, redirect to this page.
+ * E.g. "zxidrecoverpw.pl" */
 
 #define ZXID_RECOVER_PASSWD 0
 
-/*(c) If attribute selection is desired during SSO, redirect to this page. */
+/*(c) If attribute selection is desired during SSO, redirect to this page.
+ * E.g. "zxidatsel.pl" */
 
 #define ZXID_ATSEL_PAGE 0
 
@@ -1092,5 +1263,21 @@
 
 #define ZXID_MGMT_FOOTER  "<div class=zxbot>"
 #define ZXID_MGMT_END     "</div>"
+
+/*(c) ECHO - Print to debug out that given line in configuration has been reached.
+ * Used for debugging complex sequences of VPATH and INCLUDE. */
+
+/* FYI, ERR config file option already has another meaning: error log */
+
+/*(c) INFO - Like ECHO, but prints at debug level INFO. */
+
+/*(c) WARN - Like ECHO, but prints at debug level WARN. */
+
+/*(c) DIE - Like ECHO, but prints at debug level ERR and the aborts (exits) the process. */
+
+/*(c) REM - Remark. A comment that is not printed anywhere. Alternate mechanism
+ * when compated to using hash sign ("#") in configuration files.  */
+
+/*(c) PRAGMA - Implementation dependent config parsing time option. Ignore if not understood. */
 
 #endif

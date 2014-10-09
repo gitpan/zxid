@@ -181,6 +181,7 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, st
   if (tmplen) {
     if (iv) {
       if (iv_len != tmplen) {
+	ERR("iv len=%d does not match one required by cipher=%d", iv_len, tmplen);
 	goto clean;
       }
       ivv = iv;
@@ -202,6 +203,8 @@ struct zx_str* zx_raw_cipher(struct zx_ctx* c, const char* algo, int encflag, st
     memcpy(out->s, ivv, iv_len);
   else
     iv_len = 0;  /* When decrypting, the iv has already been stripped. */
+  
+  if ((errmac_debug&ERRMAC_DEBUG_MASK) > 2) hexdmp("symkey ", key->s, key->len, 1024);
   
   if (!EVP_CipherInit_ex(&ctx, evp_cipher, 0 /* engine */, (unsigned char*)key->s, (unsigned char*)ivv, encflag)) {
     where = "EVP_CipherInit_ex()";
@@ -272,6 +275,12 @@ struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_p
 {
   struct zx_str* ciphered;
   int ret, siz = RSA_size(rsa_pkey);
+
+  if ((errmac_debug&ERRMAC_DEBUG_MASK) > 2) {
+    D("pad=%d, RSA public key follows...", pad);
+    RSA_print_fp(ERRMAC_DEBUG_LOG, rsa_pkey, 0);
+  }
+
   switch (pad) {
   case RSA_PKCS1_PADDING:
   case RSA_SSLV23_PADDING:
@@ -316,6 +325,10 @@ struct zx_str* zx_rsa_pub_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* rs
   plain = zx_new_len_str(c, siz);
   if (!plain)
     return 0;
+  if ((errmac_debug&ERRMAC_DEBUG_MASK) > 2) {
+    D("pad=%d, RSA public key follows...", pad);
+    RSA_print_fp(ERRMAC_DEBUG_LOG, rsa_pkey, 0);
+  }
   ret = RSA_public_decrypt(ciphered->len, (unsigned char*)ciphered->s, (unsigned char*)plain->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA public decrypt failed ret=%d len_cipher_data=%d",ret,ciphered->len);
@@ -345,6 +358,10 @@ struct zx_str* zx_rsa_priv_dec(struct zx_ctx* c, struct zx_str* ciphered, RSA* r
   plain = zx_new_len_str(c, siz);
   if (!plain)
     return 0;
+  if ((errmac_debug&ERRMAC_DEBUG_MASK) > 2) {
+    D("pad=%d, RSA private key follows...", pad);
+    RSA_print_fp(ERRMAC_DEBUG_LOG, rsa_pkey, 0);
+  }
   ret = RSA_private_decrypt(ciphered->len, (unsigned char*)ciphered->s, (unsigned char*)plain->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA private decrypt failed ret=%d len_cipher_data=%d",ret,ciphered->len);
@@ -368,6 +385,10 @@ struct zx_str* zx_rsa_priv_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_
   ciphered = zx_new_len_str(c, siz);
   if (!ciphered)
     return 0;
+  if ((errmac_debug&ERRMAC_DEBUG_MASK) > 2) {
+    D("pad=%d, RSA private key follows...", pad);
+    RSA_print_fp(ERRMAC_DEBUG_LOG, rsa_pkey, 0);
+  }
   ret = RSA_private_encrypt(plain->len, (unsigned char*)plain->s, (unsigned char*)ciphered->s, rsa_pkey, pad);
   if (ret == -1) {
     D("RSA private encrypt failed ret=%d len_plain=%d", ret, plain->len);
@@ -472,7 +493,7 @@ int zxid_mk_self_sig_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, 
   
   D("keygen start lk(%s) name(%s)", lk, name);
 
-  p = strstr(cf->url, "://");
+  p = strstr(cf->burl, "://");
   if (p) {
     p += sizeof("://")-1;
     len = strcspn(p, ":/");
@@ -487,7 +508,7 @@ int zxid_mk_self_sig_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, 
 #if 0
   /* On some CAs the OU can not exceed 30 chars  2         3
    *                          123456789012345678901234567890 */
-  snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert %s", cf->url);
+  snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert %s", cf->burl);
 #else
   snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert");
 #endif
@@ -531,19 +552,19 @@ int zxid_mk_self_sig_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, 
 #if 0 /* See cn code above */
   /* Parse domain name out of the URL: skip https:// and then scan name without port or path */
   
-  for (p = cf->url; !ONE_OF_2(*p, '/', 0); ++p) ;
+  for (p = cf->burl; !ONE_OF_2(*p, '/', 0); ++p) ;
   if (*p != '/') goto badurl;
   ++p;
   if (*p != '/') {
 badurl:
-    ERR("Malformed URL: does not start by https:// or http:// -- URL(%s)", cf->url);
+    ERR("Malformed URL: does not start by https:// or http:// -- URL(%s)", cf->burl);
     return 0;
   }
   ++p;
   for (q = cn; !ONE_OF_3(*p, ':', '/', 0) && q < cn + sizeof(cn)-1; ++q, ++p) *q = *p;
   *q = 0;
 
-  D("keygen populate DN: cn(%s) org(%s) c(%s) url=%p cn=%p p=%p q=%p", cn, cf->org_name, cf->country, cf->url, cn, p, q);
+  D("keygen populate DN: cn(%s) org(%s) c(%s) url=%p cn=%p p=%p q=%p", cn, cf->org_name, cf->country, cf->burl, cn, p, q);
 #endif
 
   /* Note on string types and allowable char sets:
@@ -655,7 +676,7 @@ badurl:
   len = BIO_get_mem_data(wbio_csr, &p);
 
   write_all_path_fmt("auto_cert csr", buflen, buf,
-		     "%s" ZXID_PEM_DIR "csr-%s", cf->path, name,
+		     "%s" ZXID_PEM_DIR "csr-%s", cf->cpath, name,
 		     "%.*s", len, p);
   BIO_free_all(wbio_csr);
 
@@ -682,7 +703,7 @@ badurl:
   lenq = BIO_get_mem_data(wbio_pkey, &q);
 
   write_all_path_fmt("auto_cert ss", buflen, buf,
-		     "%s" ZXID_PEM_DIR "%s", cf->path, name,
+		     "%s" ZXID_PEM_DIR "%s", cf->cpath, name,
 		     "%.*s%.*s", len, p, lenq, q);
 
   BIO_free_all(wbio_cert);
@@ -778,7 +799,7 @@ int zxid_mk_at_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, zxid_n
   
   D("keygen start lk(%s) name(%s)", lk, name);
 
-  p = strstr(cf->url, "://");
+  p = strstr(cf->burl, "://");
   if (p) {
     p += sizeof("://")-1;
     len = strcspn(p, ":/");
@@ -790,7 +811,7 @@ int zxid_mk_at_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, zxid_n
     strcpy(cn, "Unknown server cn. Misconfiguration.");
   }
   
-  snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert %s", cf->url);
+  snprintf(ou, sizeof(ou)-1, "SSO Dept ZXID Auto-Cert %s", cf->burl);
   ou[sizeof(ou)-1] = 0;  /* must terminate manually as on win32 termination is not guaranteed */
 
   ts = time(0);
@@ -914,7 +935,7 @@ int zxid_mk_at_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, zxid_n
   memcpy(buf, p, MIN(len, buflen-1));
   buf[MIN(len, buflen-1)] = 0;
 
-  //***write_all_path_fmt("auto_cert ss", buflen, buf, "%s" ZXID_PEM_DIR "%s", cf->path, name,  "%.*s", len, p);
+  //***write_all_path_fmt("auto_cert ss", buflen, buf, "%s" ZXID_PEM_DIR "%s", cf->cpath, name,  "%.*s", len, p);
 
   BIO_free_all(wbio_cert);
 
@@ -950,10 +971,10 @@ static void to64(char *s, unsigned long v, int n) {
   }
 }
 
-/*() Compute MD5-Crypt password hash (starts by $1$)
+/*() Compute MD5-Crypt password hash (starts by \$1\$)
  * 
  * pw:: Password in plain
- * salt:: 0-8 chars of salt. Preceding $1$ is automatically skipped. Salt ends in $ or nul.
+ * salt:: 0-8 chars of salt. Preceding \$1\$ is automatically skipped. Salt ends in \$ or nul.
  * buf:: must be at least 120 chars
  * return:: buf, nul terminated */
 

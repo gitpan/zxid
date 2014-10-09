@@ -1,5 +1,5 @@
 /* mod_auth_saml.c  -  Handwritten functions for Apache mod_auth_saml module
- * Copyright (c) 2012-2013 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
+ * Copyright (c) 2012-2014 Synergetics NV (sampo@synergetics.be), All Rights Reserved.
  * Copyright (c) 2009-2011 Sampo Kellomaki (sampo@iki.fi), All Rights Reserved.
  * Copyright (c) 2008-2009 Symlabs (symlabs@symlabs.com), All Rights Reserved.
  * Author: Sampo Kellomaki (sampo@iki.fi)
@@ -18,6 +18,7 @@
  * 13.2.2013, added WD option --Sampo
  * 21.6.2013, added SOAP WSP capability --Sampo
  * 17.11.2013, move redir_to_content feature to zxid_simple() --Sampo
+ * 8.2.2014,  added OPTIONAL_LOGIN_PAT feature --Sampo
  *
  * To configure this module add to httpd.conf something like
  *
@@ -67,7 +68,7 @@
 extern module AP_MODULE_DECLARE_DATA auth_saml_module;
 
 #if 0
-/* This function is run when each child process of apache starts. It does
+/*(-) This function is run when each child process of apache starts. It does
  * initializations that do not survive fork(2). */
 /* Called by: */
 static void chldinit(apr_pool_t* p, server_rec* s)
@@ -80,6 +81,26 @@ static void chldinit(apr_pool_t* p, server_rec* s)
   }
 }
 #endif
+
+/*(-) Set cookies apache style. Internal. */
+
+static void set_cookies(zxid_conf* cf, request_rec* r, const char* setcookie, const char* setptmcookie)
+{
+  if (setcookie && setcookie[0] && setcookie[0] != '-') {
+    /* http://dev.ariel-networks.com/apr/apr-tutorial/html/apr-tutorial-19.html */
+    D("Set-Cookie(%s)", setcookie);
+    apr_table_addn(r->headers_out, "Set-Cookie", setcookie);
+    apr_table_addn(r->err_headers_out, "Set-Cookie", setcookie);  /* Only way to get redir to set header */
+    apr_table_addn(r->headers_in,  "Set-Cookie", setcookie);  /* So subrequest can pick them up! */
+  }
+  if (setptmcookie && setptmcookie[0] && setptmcookie[0] != '-') {
+    /* http://dev.ariel-networks.com/apr/apr-tutorial/html/apr-tutorial-19.html */
+    D("PTM Set-Cookie(%s)", setptmcookie);
+    apr_table_addn(r->headers_out, "Set-Cookie", setptmcookie);
+    apr_table_addn(r->err_headers_out, "Set-Cookie", setptmcookie);  /* Only way to get redir to set header */
+    apr_table_addn(r->headers_in,  "Set-Cookie", setptmcookie);  /* So subrequest can pick them up! */
+  }
+}
 
 /* ------------------------ Run time action -------------------------- */
 
@@ -177,21 +198,8 @@ static int pool2apache(zxid_conf* cf, request_rec* r, struct zxid_attr* pool)
     }
   }
 #endif
-  
-  if (setcookie && setcookie[0] && setcookie[0] != '-') {
-    /* http://dev.ariel-networks.com/apr/apr-tutorial/html/apr-tutorial-19.html */
-    D("Set-Cookie(%s)", setcookie);
-    apr_table_addn(r->headers_out, "Set-Cookie", setcookie);
-    apr_table_addn(r->err_headers_out, "Set-Cookie", setcookie);  /* Only way to get redir to set header */
-    apr_table_addn(r->headers_in,  "Set-Cookie", setcookie);  /* So subrequest can pick them up! */
-  }
-  if (setptmcookie && setptmcookie[0] && setptmcookie[0] != '-') {
-    /* http://dev.ariel-networks.com/apr/apr-tutorial/html/apr-tutorial-19.html */
-    D("PTM Set-Cookie(%s)", setptmcookie);
-    apr_table_addn(r->headers_out, "Set-Cookie", setptmcookie);
-    apr_table_addn(r->err_headers_out, "Set-Cookie", setptmcookie);  /* Only way to get redir to set header */
-    apr_table_addn(r->headers_in,  "Set-Cookie", setptmcookie);  /* So subrequest can pick them up! */
-  }
+
+  set_cookies(cf, r, setcookie, setptmcookie);  
   if (cookie && cookie[0] != '-') {
     D("Cookie(%s) 2", cookie);
     apr_table_addn(r->headers_in, "Cookie", cookie);  /* so internal redirect sees it */
@@ -245,7 +253,7 @@ static int send_res(zxid_conf* cf, request_rec* r, char* res)
   return DONE;   /* Prevent further hooks from processing the request. */
 }
 
-/*() Read POST input, Apache style
+/*(-) Read POST input, Apache style
  *
  * This is considered internal function to mod_auth_saml, called by chkuid().
  * You should not call this directly, unless you know what you are doing. */
@@ -300,7 +308,9 @@ static char* read_post(zxid_conf* cf, request_rec* r)
  * 0x0008 10 + 00 = SOAP w/headers as string + no auto redir, no exit(2) */
 #define AUTO_FLAGS 0x6ea8
 
-/*(i) Apache hook. Called from httpd-2.2.8/server/request.c: ap_process_request_internal()
+/*() Apache hook. Internal function of mod_auth_saml. Do not try to call.
+ *
+ * Called from httpd-2.2.8/server/request.c: ap_process_request_internal()
  * ap_run_check_user_id(). Return value is processed in modules/http/http_request.c
  * and redirect is in ap_die(), http_protocol.c: ap_send_error_response()
  *
@@ -314,7 +324,7 @@ static char* read_post(zxid_conf* cf, request_rec* r)
 static int chkuid(request_rec* r)
 {
   int ret, len, uri_len, url_len, args_len;
-  char* p;
+  char* cp;
   char* res;
   char buf[256];
   const char* cookie_hdr=0;
@@ -333,7 +343,7 @@ static int chkuid(request_rec* r)
     chdir(cf->wd);  /* Ensure the working dir is not / (sometimes Apache httpd changes dir) */
   D_INDENT("chkuid: ");
 
-  if (r->main) {  /* subreq can't come from net: always auth. */
+  if (r->main) {  /* subreq can't come from net: always auth OK. */
     D("sub ok %d", OK);
     D_DEDENT("chkuid: ");
     return OK;
@@ -375,11 +385,11 @@ static int chkuid(request_rec* r)
       if (args_len) {
 	/* concatenate redirect_hack_zxid_qs with existing qs */
 	len = strlen(cf->redirect_hack_zxid_qs);
-	p = apr_palloc(r->pool, len+1+args_len+1);
-	strcpy(p, cf->redirect_hack_zxid_qs);
-	p[len] = '&';
-	strcpy(p+len+1, r->args);
-	cgi.qs = r->args = p;
+	cp = apr_palloc(r->pool, len+1+args_len+1);
+	strcpy(cp, cf->redirect_hack_zxid_qs);
+	cp[len] = '&';
+	strcpy(cp+len+1, r->args);
+	cgi.qs = r->args = cp;
       } else {
 	cgi.qs = r->args = cf->redirect_hack_zxid_qs;
       }
@@ -391,9 +401,9 @@ static int chkuid(request_rec* r)
   DD("HERE1 args_len=%d cgi=%p k(%s) args(%s)", args_len, &cgi, STRNULLCHKNULL(cgi.skin), STRNULLCHKNULL(r->args));
   if (args_len) {
     /* leak the dup str: the cgi structure will take references to this and change &s to nuls */
-    p = apr_palloc(r->pool, args_len + 1);
-    strcpy(p, r->args);
-    zxid_parse_cgi(cf, &cgi, p);
+    cp = apr_palloc(r->pool, args_len + 1);
+    strcpy(cp, r->args);
+    zxid_parse_cgi(cf, &cgi, cp);
     DD("HERE2 args_len=%d cgi=%p k(%s) args(%s)", args_len, &cgi, STRNULLCHKNULL(cgi.skin), STRNULLCHKNULL(r->args));
   }
   /* Check if we are supposed to enter zxid due to URL suffix - to
@@ -405,15 +415,15 @@ static int chkuid(request_rec* r)
    * SSO by virtue of the web server configuration. */
 
   uri_len = strlen(r->uri);
-  url_len = strlen(cf->url);
-  for (p = cf->url + url_len - 1; p > cf->url; --p)
-    if (*p == '?')
+  url_len = strlen(cf->burl);
+  for (cp = cf->burl + url_len - 1; cp > cf->burl; --cp)
+    if (*cp == '?')
       break;
-  if (p == cf->url)
-    p = cf->url + url_len;
+  if (cp == cf->burl)
+    cp = cf->burl + url_len;
   
-  if (url_len >= uri_len && !memcmp(p - uri_len, r->uri, uri_len)) {  /* Suffix match */
-    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("matched uri(%s) cf->url(%s) qs(%s) rs(%s) op(%c)", r->uri, cf->url, STRNULLCHKNULL(r->args), STRNULLCHKNULL(cgi.rs), cgi.op);
+  if (url_len >= uri_len && !memcmp(cp - uri_len, r->uri, uri_len)) {  /* Suffix match */
+    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("matched uri(%s) cf->burl(%s) qs(%s) rs(%s) op(%c)", r->uri, cf->burl, STRNULLCHKNULL(r->args), STRNULLCHKNULL(cgi.rs), cgi.op);
     if (r->method_number == M_POST) {
       res = read_post(cf, r);   /* Will print some debug output */
       if (res) {
@@ -478,26 +488,24 @@ static int chkuid(request_rec* r)
     }
   } else {
     /* Some other page. Just check for session. */
-    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("other page uri(%s) qs(%s) cf->url(%s) uri_len=%d url_len=%d", r->uri, STRNULLCHKNULL(r->args), cf->url, uri_len, url_len);
-    if (r->args && r->args[0] == 'l') {
-      D("Detect login(%s)", r->args);
-    } else
-      cgi.op = 'E';   /* Trigger IdP selection screen */
-    p = apr_palloc(r->pool, uri_len+1+args_len+1);
-    strcpy(p, r->uri);
-    if (args_len) {
-      p[uri_len] = '?';
-      strcpy(p+uri_len+1, r->args);
-    }
-    D("HERE3 args_len=%d cgi=%p k(%s) uri(%s) args(%s) rs(%s)", args_len, &cgi, STRNULLCHKNULL(cgi.skin), r->uri, STRNULLCHKNULL(r->args), p);
+    if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("other page uri(%s) qs(%s) cf->burl(%s) uri_len=%d url_len=%d", r->uri, STRNULLCHKNULL(r->args), cf->burl, uri_len, url_len);
     if (cgi.sid && cgi.sid[0] && zxid_get_ses(cf, &ses, cgi.sid)) {
       res = zxid_simple_ses_active_cf(cf, &cgi, &ses, 0, AUTO_FLAGS);
       if (res)
 	goto process_zxid_simple_outcome;
     } else {
-      D("No session(%s) active op(%c)", STRNULLCHK(cgi.sid), cgi.op);
+      D("No active session(%s) op(%c)", STRNULLCHK(cgi.sid), cgi.op?cgi.op:'-');
+      if (cf->optional_login_pat && zx_match(cf->optional_login_pat, r->uri)) {
+	D("optional_login_pat matches ok %d", OK);
+	D_DEDENT("chkuid: ");
+	return OK;
+      }
     }
-    D("other page: no_ses uri(%s) templ(%s) tf(%s) k(%s) cgi=%p", r->uri, STRNULLCHKNULL(cgi.templ), STRNULLCHKNULL(cf->idp_sel_templ_file), cgi.skin, &cgi);
+    if (r->args && r->args[0] == 'l') {
+      D("Detect login(%s)", r->args);
+    } else
+      cgi.op = 'E';   /* Trigger IdP selection screen */
+    D("other page: no_ses uri(%s) templ(%s) tf(%s) k(%s)", r->uri, STRNULLCHKNULL(cgi.templ), STRNULLCHKNULL(cf->idp_sel_templ_file), STRNULLCHKNULL(cgi.skin));
   }
 step_up:
   res = zxid_simple_no_ses_cf(cf, &cgi, &ses, 0, AUTO_FLAGS);
@@ -512,10 +520,12 @@ process_zxid_simple_outcome:
   case 'L':
     if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("REDIR(%s)", res);
     apr_table_setn(r->headers_out, "Location", res+10);
+    set_cookies(cf, r, ses.setcookie, ses.setptmcookie);  
     D_DEDENT("chkuid: ");
     return HTTP_SEE_OTHER;
   case 'C':
     if (errmac_debug & MOD_AUTH_SAML_INOUT) INFO("CONTENT(%s)", res);
+    set_cookies(cf, r, ses.setcookie, ses.setptmcookie);  
     ret = send_res(cf, r, res);
     D_DEDENT("chkuid: ");
     return ret;
@@ -549,7 +559,7 @@ process_zxid_simple_outcome:
 
 /* ------------------------ CONF -------------------------- */
 
-/*() Process ZXIDDebug directive in Apache configuration file.
+/*(-) Process ZXIDDebug directive in Apache configuration file.
  *
  * This is considered internal function to mod_auth_saml. Do not call directly. */
 
@@ -559,10 +569,15 @@ static const char* set_debug(cmd_parms* cmd, void* st, const char* arg) {
   D("old debug=%x, new debug(%s)", errmac_debug, arg);
   sscanf(arg, "%i", &errmac_debug);
   INFO("debug=0x%x now arg(%s) cwd(%s)", errmac_debug, arg, getcwd(buf, sizeof(buf)));
+  {
+    struct rlimit rlim;
+    getrlimit(RLIMIT_CORE, &rlim);
+    D("MALLOC_CHECK_(%s) core_rlimit=%d,%d", getenv("MALLOC_CHECK_"), (int)rlim.rlim_cur, (int)rlim.rlim_max);
+  }
   return 0;
 }
 
-/*() Process ZXIDConf directive in Apache configuration file.
+/*(-) Process ZXIDConf directive in Apache configuration file.
  * Can be called any number of times to set additional parameters.
  *
  * This is considered internal function to mod_auth_saml. Do not call directly. */
@@ -589,9 +604,9 @@ const command_rec zxid_apache_commands[] = {
 };
 
 
-#define ZXID_APACHE_DEFAULT_CONF ""  /* defaults will reign, including path /var/zxid */
+#define ZXID_APACHE_DEFAULT_CONF ""  /* defaults will reign, including cpath /var/zxid */
 
-/*() Create default configuration in response for Apache <Location> or <Directory>
+/*(-) Create default configuration in response for Apache <Location> or <Directory>
  * directives. This is then augmented by ZXIDConf directives.
  * This code may run twice: once for syntax check, and then again for
  * production use. Currently we just redo the work.
@@ -610,13 +625,13 @@ static void* dirconf(apr_pool_t* p, char* d)
   D("cf=%p ctx=%p d(%s)", cf, cf->ctx, STRNULLCHKD(d));
   /* *** set malloc func ptr in ctx to use apr_palloc() */
   zxid_conf_to_cf_len(cf, -1, ZXID_APACHE_DEFAULT_CONF);
-  cf->path_supplied = 0;
+  cf->cpath_supplied = 0;
   return cf;
 }
 
 /* ------------------------ Hooks -------------------------- */
 
-/*() Register Apache hook for mod_auth_saml
+/*(-) Register Apache hook for mod_auth_saml
  *
  * This is considered internal function to mod_auth_saml. Do not call directly. */
 

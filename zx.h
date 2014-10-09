@@ -69,10 +69,10 @@ struct zx_lock {
 
 struct zx_ns_s {
   /*int name;              / * For gperf -P (%pic) string-pool offset when in hash. */
-  const char* url;          /* Needs to be first so gperf (without -P or %pic) works */
+  const char* url;          /* Needs to be first so gperf (without -P or %pic) works. nul term */
   int url_len;              /* 0 = end of nstab */
   int prefix_len;
-  const char* prefix;
+  const char* prefix;       /* Always nul terminated (despite prefix_len field) */
   struct zx_ns_s* n;        /* Next: For holding runtime equivalences as a linked list. */
   struct zx_ns_s* master;   /* For a runtime equivalence, pointer to the master entry. */
   struct zx_ns_s* seen;     /* Pointer to other "seen" namespaces with same prefix (stack) */
@@ -113,7 +113,8 @@ struct zx_ctx {
 #endif
   char canon_inopt;   /* Shib2 InclusiveNamespaces/@PrefixList kludge and other sundry options. */
   char enc_tail_opt;  /* In encoding, use non-canon empty tag tail optimization, e.g. <ns:foo/> */
-  char pad2; char pad3;
+  char top1;          /* There can only be one top level element, e.g. <e:Envelope> */
+  char pad3;
   int  zx_errno;      /* Outcome of last filesystem operation */
 };
 
@@ -136,8 +137,8 @@ struct zx_str {
 /* Attributes that are unforeseen (errornous or extensions). */
 
 struct zx_attr_s {
-  struct zx_str g;
-  struct zx_ns_s* ns;        /* namespace of the attribute */
+  struct zx_str g;     /* value at g.s */
+  struct zx_ns_s* ns;  /* namespace of the attribute */
   int name_len;
   char* name;
 };
@@ -182,8 +183,8 @@ char* zx_alloc_sprintf(struct zx_ctx* c, int* retlen, const char* f, ...);
 void  zx_str_free(struct zx_ctx* c, struct zx_str* ss);   /* free both ss->s and ss */
 char* zx_str_to_c(struct zx_ctx* c, struct zx_str* ss);
 void  zx_str_conv(struct zx_str* ss, int* out_len, char** out_s);  /* SWIG typemap friendly */
+int   zx_str_cmp(struct zx_str* a, struct zx_str* b);
 int   zx_str_ends_in(struct zx_str* ss, int len, const char* suffix);
-#define ZX_STRCMP(a, b) ((a)?((b)?((a)->len == (b)->len?memcmp((a)->s, (b)->s, (a)->len):(a)->len - (b)->len):1):((b)?-1:0))
 #define ZX_STR_EQ(ss, cstr) ((ss) && (cstr) && (ss)->s && (ss)->len == strlen(cstr) && !memcmp((cstr), (ss)->s, (ss)->len))
 #define ZX_STR_ENDS_IN_CONST(ss, suffix) zx_str_ends_in((ss), sizeof(suffix)-1, (suffix))
 
@@ -235,11 +236,11 @@ void zx_free_ctx(struct zx_ctx* ctx);	/* Wrapper for free(3C). */
 #define ZX_TOK_NO_ATTR   (-7)
 #define ZX_TOK_ATTR_ERR  (-6)
 #define ZX_TOK_XMLNS     (-4)
-#define ZX_TOK_DATA             0x0000fffd
+#define ZX_TOK_DATA             0x0000fffd  /* Decimal 65533: string data between elements */
 #define ZX_TOK_ATTR_NOT_FOUND   0x0000fffe
 #define ZX_TOK_TOK_NOT_FOUND    0x0000ffff
 #define ZX_TOK_NS_NOT_FOUND     0x00ff0000
-#define ZX_TOK_NOT_FOUND        0x00ffffff  /* Decimal 16777215 */
+#define ZX_TOK_NOT_FOUND        0x00ffffff  /* Decimal 16777215: common among payload elements */
 #define ZX_TOK_TOK_MASK         0x0000ffff
 #define ZX_TOK_NS_MASK          0x00ff0000
 #define ZX_TOK_NS_SHIFT         16
@@ -309,6 +310,8 @@ char* zx_md5_crypt(const char* pw, const char* salt, char* buf);
 #define ZX_ORD_INS_ATTR(b,f,k) (zx_ord_ins_at(&(b)->gg,((b)->f=(k))))
 #define ZX_ADD_KID(b,f,k)  (zx_add_kid(&(b)->gg,(struct zx_elem_s*)((b)->f=(k))))
 
+/* zxlib.c */
+
 struct zx_elem_s* zx_add_kid(struct zx_elem_s* father, struct zx_elem_s* kid);
 struct zx_elem_s* zx_add_kid_before(struct zx_elem_s* father, int before, struct zx_elem_s* kid);
 struct zx_elem_s* zx_add_kid_after_sa_Issuer(struct zx_elem_s* father, struct zx_elem_s* kid);
@@ -342,6 +345,7 @@ void  zx_xml_parse_dbg(struct zx_ctx* c, char quote, const char* func, const cha
 struct zx_ns_s* zx_xmlns_detected(struct zx_ctx* c, struct zx_elem_s* x, const char* data);
 
 int   zx_in_inc_ns(struct zx_ctx* c, struct zx_ns_s* new_ns);
+struct zx_el_tok* zx_get_el_tok(struct zx_elem_s* x);
 
 void  zx_prepare_dec_ctx(struct zx_ctx* c, struct zx_ns_s* ns_tab, int n_ns, const char* start, const char* lim);
 struct zx_root_s* zx_dec_zx_root(struct zx_ctx* c, int len, const char* start, const char* func);

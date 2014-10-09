@@ -27,6 +27,8 @@
  * 16.2.2013, added WD option --Sampo
  * 21.6.2013, added wsp_pat --Sampo
  * 20.11.2013, added %d expansion for VURL, added ECHO for debug prints --Sampo
+ * 29.11.2013, added INCLUDE feature --Sampo
+ * 4.12.2013,  changed URL to BURL --Sampo
  */
 
 #include "platform.h"  /* needed on Win32 for pthread_mutex_lock() et al. */
@@ -69,7 +71,7 @@ void zxid_sha1_file(zxid_conf* cf, char* name, char* sha1)
   int gotall;
   char* buf;
   ZERO(sha1, 20);
-  buf = read_all_alloc(cf->ctx, "sha1_file", 1, &gotall, "%s%s", cf->path, name);
+  buf = read_all_alloc(cf->ctx, "sha1_file", 1, &gotall, "%s%s", cf->cpath, name);
   if (!buf)
     return;
   SHA1(buf, gotall, sha1);
@@ -165,7 +167,7 @@ EVP_PKEY* zxid_extract_private_key(char* buf, char* name)
 X509* zxid_read_cert(zxid_conf* cf, char* name)
 {
   char buf[4096];
-  int got = read_all(sizeof(buf), buf, "read_cert", 1, "%s" ZXID_PEM_DIR "%s", cf->path, name);
+  int got = read_all(sizeof(buf), buf, "read_cert", 1, "%s" ZXID_PEM_DIR "%s", cf->cpath, name);
   if (!got && cf->auto_cert)
     zxid_mk_self_sig_cert(cf, sizeof(buf), buf, "read_cert", name);
   return zxid_extract_cert(buf, name);
@@ -177,7 +179,7 @@ X509* zxid_read_cert(zxid_conf* cf, char* name)
 EVP_PKEY* zxid_read_private_key(zxid_conf* cf, char* name)
 {
   char buf[4096];
-  int got = read_all(sizeof(buf),buf,"read_private_key",1, "%s" ZXID_PEM_DIR "%s", cf->path, name);
+  int got = read_all(sizeof(buf),buf,"read_private_key",1, "%s" ZXID_PEM_DIR "%s", cf->cpath, name);
   if (!got && cf->auto_cert)
     zxid_mk_self_sig_cert(cf, sizeof(buf), buf, "read_private_key", name);
   return zxid_extract_private_key(buf, name);
@@ -255,21 +257,21 @@ char* zxid_set_opt_cstr(zxid_conf* cf, int which, char* val)
   return 0;
 }
 
-/*() Set the URL configuration variable.  Special accessor function to
- * manipulate URL config option. Manipulating this option is common in
+/*() Set the BURL configuration variable.  Special accessor function to
+ * manipulate BURL config option. Manipulating this option is common in
  * virtual hosting situations - hence this convenience function.  You
- * could use zxid_parse_conf() instead to manipulate URL and some other
+ * could use zxid_parse_conf() instead to manipulate BURL and some other
  * options. */
 
 /* Called by:  main x2, zxidwspcgi_main */
-void zxid_url_set(zxid_conf* cf, const char* url)
+void zxid_url_set(zxid_conf* cf, const char* burl)
 {
-  if (!cf || !url) {
-    ERR("NULL pointer as cf or url argument cf=%p url=%p", cf, url);
+  if (!cf || !burl) {
+    ERR("NULL pointer as cf or url argument cf=%p url=%p", cf, burl);
     return;
   }
-  D("Setting url(%s)", url);
-  cf->url = zx_dup_cstr(cf->ctx, url);
+  D("Setting url(%s)", burl);
+  cf->burl = zx_dup_cstr(cf->ctx, burl);
 }
 
 /* ================== Attribute Broker Config ================*/
@@ -542,7 +544,7 @@ struct zxid_cstr_list* zxid_load_cstr_list(zxid_conf* cf, struct zxid_cstr_list*
   char* q;
   struct zxid_cstr_list* cs;
 
-  for (; p && *p; *p && ++p) {  /* ignore: warning: value computed is not used [-Wunused-value] */
+  for (; p && *p; (void)(*p && ++p)) {
     q = p;
     p = strchr(p, ',');
     if (!p)
@@ -624,7 +626,7 @@ struct zxid_bus_url* zxid_load_bus_url(zxid_conf* cf, struct zxid_bus_url* bu_ro
   char* q;
   struct zxid_bus_url* bu;
 
-  for (; p && *p; *p && ++p) {  /* ignore: warning: value computed is not used [-Wunused-value] */
+  for (; p && *p; (void)(*p && ++p)) {
     q = p;
     p = strchr(p, ',');
     if (!p)
@@ -654,7 +656,7 @@ void zxid_free_bus_url(struct zxid_conf* cf, struct zxid_bus_url* bu)
 }
 
 /*() Parse ATTRSRC specification and add it to linked list
- * namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;...
+ *   namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;namespace$A,B$weight$accessparamURL$AAPMLref$otherLim$ext;...
  */
 
 /* Called by:  zxid_init_conf, zxid_parse_conf_raw */
@@ -826,6 +828,17 @@ struct zxid_cstr_list* zxid_find_cstr_list(struct zxid_cstr_list* cs, const char
   return 0;
 }
 
+/*() Chech whether any of multivalues of an attribute is on the list. */
+
+struct zxid_cstr_list* zxid_find_at_multival_on_cstr_list(struct zxid_cstr_list* cs, struct zxid_attr* at)
+{
+  struct zxid_cstr_list* ret;
+  for (; at; at = at->nv)
+    if ((ret = zxid_find_cstr_list(cs, at->val)))
+      return ret;
+  return 0;
+}
+
 /*() Check whether name is in the obligations list. */
 
 /* Called by:  zxid_eval_sol1 */
@@ -882,7 +895,7 @@ int zxid_ent_cache_mx_init = 0;
 
 /*(i) Initialize configuration object, which must have already been
  * allocated, to factory defaults (i.e. compiled in defaults, see
- * zxidconf.h).
+ * zxidconf.h). Config file is not read.
  *
  * cf:: Pointer to previously allocated configuration object
  * path:: Since this configuration option is so fundamental, it can
@@ -903,10 +916,10 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
 {
   DD("Initconf with path(%s)", zxid_path);
   cf->magic = ZXID_CONF_MAGIC;
-  cf->path_len = zxid_path ? strlen(zxid_path) : 0;
-  cf->path = ZX_ALLOC(cf->ctx, cf->path_len+1);
-  memcpy(cf->path, zxid_path, cf->path_len);
-  cf->path[cf->path_len] = 0;
+  cf->cpath_len = zxid_path ? strlen(zxid_path) : 0;
+  cf->cpath = ZX_ALLOC(cf->ctx, cf->cpath_len+1);
+  memcpy(cf->cpath, zxid_path, cf->cpath_len);
+  cf->cpath[cf->cpath_len] = 0;
   cf->nice_name     = ZXID_NICE_NAME;
   cf->button_url    = ZXID_BUTTON_URL;
   cf->pref_button_size = ZXID_PREF_BUTTON_SIZE;
@@ -921,7 +934,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   /* NB: Typically allocated by zxid_grab_domain_name(). */
   COPYVAL(cf->fedusername_suffix, ZXID_FEDUSERNAME_SUFFIX,
 	  ZXID_FEDUSERNAME_SUFFIX + strlen(ZXID_FEDUSERNAME_SUFFIX));
-  cf->url = ZXID_URL;
+  cf->burl = ZXID_BURL;
   cf->non_standard_entityid = ZXID_NON_STANDARD_ENTITYID;
   cf->redirect_hack_imposed_url = ZXID_REDIRECT_HACK_IMPOSED_URL;
   cf->redirect_hack_zxid_url = ZXID_REDIRECT_HACK_ZXID_URL;
@@ -973,6 +986,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->md_populate_cache = ZXID_MD_POPULATE_CACHE;
   cf->md_cache_first    = ZXID_MD_CACHE_FIRST;
   cf->md_cache_last     = ZXID_MD_CACHE_LAST;
+  cf->md_authority      = ZXID_MD_AUTHORITY;
   cf->load_cot_cache    = ZXID_LOAD_COT_CACHE;
   cf->auto_cert         = ZXID_AUTO_CERT;
   cf->ses_arch_dir      = ZXID_SES_ARCH_DIR;
@@ -983,9 +997,11 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->idp_pxy_ena       = ZXID_IDP_PXY_ENA;
   cf->imps_ena          = ZXID_IMPS_ENA;
   cf->as_ena            = ZXID_AS_ENA;
+  cf->md_authority_ena  = ZXID_MD_AUTHORITY_ENA;
   cf->pdp_ena           = ZXID_PDP_ENA;
   cf->cpn_ena           = ZXID_CPN_ENA;
   cf->az_opt            = ZXID_AZ_OPT;
+  cf->az_fail_mode      = ZXID_AZ_FAIL_MODE;
 
   cf->loguser = ZXID_LOGUSER;
   cf->log_level = ZXLOG_LEVEL;
@@ -1013,6 +1029,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->wsp_nosig_fatal = ZXID_WSP_NOSIG_FATAL;
   cf->notimestamp_fatal = ZXID_NOTIMESTAMP_FATAL;
   cf->anon_ok        = ZXID_ANON_OK;
+  cf->optional_login_pat = ZXID_OPTIONAL_LOGIN_PAT;
   cf->required_authnctx = ZXID_REQUIRED_AUTHNCTX;	/* NB: NULL. */
   cf->issue_authnctx_pw = ZXID_ISSUE_AUTHNCTX_PW;
   cf->idp_pref_acs_binding = ZXID_IDP_PREF_ACS_BINDING;
@@ -1051,7 +1068,12 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->redir_to_content  = ZXID_REDIR_TO_CONTENT;
   cf->remote_user_ena   = ZXID_REMOTE_USER_ENA;
   cf->max_soap_retry    = ZXID_MAX_SOAP_RETRY;
-  cf->mod_saml_attr_prefix = ZXID_MOD_SAML_ATTR_PREFIX;
+  cf->mod_saml_attr_prefix  = ZXID_MOD_SAML_ATTR_PREFIX;
+  cf->wsc_soap_content_type = ZXID_WSC_SOAP_CONTENT_TYPE;
+  cf->wsc_to_hdr        = ZXID_WSC_TO_HDR;
+  cf->wsc_replyto_hdr   = ZXID_WSC_REPLYTO_HDR;
+  cf->wsc_action_hdr    = ZXID_WSC_ACTION_HDR;
+  cf->soap_action_hdr   = ZXID_SOAP_ACTION_HDR;
 
   cf->bare_url_entityid = ZXID_BARE_URL_ENTITYID;
   cf->show_tech         = ZXID_SHOW_TECH;
@@ -1098,10 +1120,10 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   }
   
 #if 1
-  DD("path(%.*s) cf->magic=%x", cf->path_len, cf->path, cf->magic);
+  DD("path(%.*s) cf->magic=%x", cf->cpath_len, cf->cpath, cf->magic);
 #else
   fprintf(stderr, "t %9s:%-3d %-16s %s d " "path(%.*s) cf->magic=%x" "\n",
-	  __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, cf->path_len, cf->path, cf->magic);
+	  __FILE__, __LINE__, __FUNCTION__, ERRMAC_INSTANCE, cf->cpath_len, cf->cpath, cf->magic);
   fflush(stderr);
 #endif
   return 0;
@@ -1133,8 +1155,8 @@ void zxid_free_conf(zxid_conf *cf)
   if (cf->fedusername_suffix) {
     ZX_FREE(cf->ctx, cf->fedusername_suffix);
   }
-  if (cf->path) {
-    ZX_FREE(cf->ctx, cf->path);
+  if (cf->cpath) {
+    ZX_FREE(cf->ctx, cf->cpath);
   }
 }
 
@@ -1226,7 +1248,7 @@ zxid_conf* zxid_init_conf_ctx(zxid_conf* cf, const char* zxid_path)
   return cf;
 }
 
-/*() Allocate conf object and initialize it with default config or config file.
+/*() Allocate conf object and initialize it with default config (config file is not read).
  * See zxid_new_conf_to_cf() for a more complete solution.
  * Just initializes the config object to factory defaults (see zxidconf.h).
  * Previous content of the config object is lost. */
@@ -1254,7 +1276,7 @@ zxid_conf* zxid_new_conf(const char* zxid_path)
  * is found. This is used by VPATH. */
 
 /* Called by:  zxid_parse_conf_raw, zxid_parse_vpath */
-static void zxid_parse_conf_path_raw(zxid_conf* cf, char* v, int check_file_exists)
+static void zxid_parse_conf_path_raw(zxid_conf* cf, const char* v, int check_file_exists)
 {
   int len;
   char *buf;
@@ -1264,15 +1286,40 @@ static void zxid_parse_conf_path_raw(zxid_conf* cf, char* v, int check_file_exis
   if (!buf || !len)
     buf = read_all_alloc(cf->ctx, "-parse_conf_raw", 1, &len, "%szxid.conf", v);
   if (buf && len) {
-    cf->path = v;
-    cf->path_len = strlen(v);
-    ++cf->path_supplied;   /* Record level of recursion so we can avoid infinite recursion. */
+    cf->cpath = (char*)v;
+    cf->cpath_len = strlen(v);
+    ++cf->cpath_supplied;   /* Record level of recursion so we can avoid infinite recursion. */
     if (len)
       zxid_parse_conf_raw(cf, len, buf);  /* Recurse */
-    --cf->path_supplied;
+    --cf->cpath_supplied;
   } else if (!check_file_exists) {
-    cf->path = v;  /* Set PATH anyway. */
-    cf->path_len = strlen(v);
+    cf->cpath = (char*)v;   /* Set PATH anyway. */
+    cf->cpath_len = strlen(v);
+  }
+}
+
+/*(-) Helper to parse an include file. check_file_exists helps to implement
+ * the sematic where PATH is not changed unless corresponding zxid.conf
+ * is found. This is used by VPATH. */
+
+/* Called by:  zxid_parse_conf_raw */
+static void zxid_parse_inc(zxid_conf* cf, const char* inc_file, int check_file_exists)
+{
+  int len;
+  char *buf;
+
+  /* N.B: The buffer read here leaks on purpose as conf parsing takes references inside it. */
+  buf = read_all_alloc(cf->ctx, "-parse_inc", 1, &len, "%s", inc_file);
+  if (buf && len) {
+    ++cf->cpath_supplied;   /* Record level of recursion so we can avoid infinite recursion. */
+    if (len)
+      zxid_parse_conf_raw(cf, len, buf);  /* Recurse */
+    --cf->cpath_supplied;
+  } else if (check_file_exists) {
+    ERR("Mandatory configuration include file(%s) not found. Aborting.", inc_file);
+    DIE_ACTION(errno);
+  } else {
+    ERR("Optional configuration include file(%s) not found. Ignored.", inc_file);
   }
 }
 
@@ -1401,10 +1448,10 @@ static int zxid_parse_vpath(zxid_conf* cf, char* vpath)
   char newpath[PATH_MAX];
   char *np, *lim;
 
-  DD("VPATH inside file(%.*s) %d new(%s)", cf->path_len, cf->path, cf->path_supplied, vpath);
-  if (cf->path_supplied && !memcmp(cf->path, vpath, cf->path_len)
-      || cf->path_supplied > ZXID_PATH_MAX_RECURS_EXPAND_DEPTH) {
-    D("Skipping VPATH inside file(%.*s) path_supplied=%d", cf->path_len, cf->path, cf->path_supplied);
+  DD("VPATH inside file(%.*s) %d new(%s)", cf->cpath_len, cf->cpath, cf->cpath_supplied, vpath);
+  if (cf->cpath_supplied && !memcmp(cf->cpath, vpath, cf->cpath_len)
+      || cf->cpath_supplied > ZXID_PATH_MAX_RECURS_EXPAND_DEPTH) {
+    D("Skipping VPATH inside file(%.*s) path_supplied=%d", cf->cpath_len, cf->cpath, cf->cpath_supplied);
     return 0;
   }
 
@@ -1414,17 +1461,18 @@ static int zxid_parse_vpath(zxid_conf* cf, char* vpath)
   lim = newpath + sizeof(newpath);
   
   if (*vpath != '/') {
-    if (cf->path_len > lim-np) {
-      ERR("TOO LONG: PATH(%.*s) len=%d does not fit in vpath buffer size=%ld", cf->path_len, cf->path, cf->path_len, (long)(lim-np));
+    if (cf->cpath_len > lim-np) {
+      ERR("TOO LONG: PATH(%.*s) len=%d does not fit in vpath buffer size=%ld", cf->cpath_len, cf->cpath, cf->cpath_len, (long)(lim-np));
       return 0;
     }
-    memcpy(np, cf->path, cf->path_len);
-    np +=  cf->path_len;
+    memcpy(np, cf->cpath, cf->cpath_len);
+    np +=  cf->cpath_len;
   }
   
   zxid_expand_percent(vpath, np, lim, 0);
-  if (--zxid_suppress_vpath_warning > 0)
-    INFO("VPATH(%s) alters PATH(%s) to new PATH(%s)", vpath, cf->path, newpath);
+  if (--zxid_suppress_vpath_warning > 0) {
+    INFO("VPATH(%s) alters PATH(%s) to new PATH(%s)", vpath, cf->cpath, newpath);
+  }
   zxid_parse_conf_path_raw(cf, zx_dup_cstr(cf->ctx, newpath), 1);
   return 1;
 }
@@ -1436,9 +1484,10 @@ static int zxid_parse_vurl(zxid_conf* cf, char* vurl)
 {
   char newurl[PATH_MAX];
   zxid_expand_percent(vurl, newurl, newurl + sizeof(newurl), 1);
-  if (--zxid_suppress_vpath_warning > 0)
-    INFO("VURL(%s) alters URL(%s) to new URL(%s)", vurl, cf->url, newurl);
-  cf->url = zx_dup_cstr(cf->ctx, newurl);
+  if (--zxid_suppress_vpath_warning > 0) {
+    INFO("VURL(%s) alters URL(%s) to new URL(%s)", vurl, cf->burl, newurl);
+  }
+  cf->burl = zx_dup_cstr(cf->ctx, newurl);
   return 1;
 }
 
@@ -1502,8 +1551,10 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "A7NTTL"))          { SCAN_INT(v, cf->a7nttl); break; }
       if (!strcmp(n, "AS_ENA"))          { SCAN_INT(v, cf->as_ena); break; }
       if (!strcmp(n, "AZ_OPT"))          { SCAN_INT(v, cf->az_opt); break; }
+      if (!strcmp(n, "AZ_FAIL_MODE"))    { SCAN_INT(v, cf->az_fail_mode); break; }
       goto badcf;
     case 'B':  /* BEFORE_SLOP */
+      if (!strcmp(n, "BURL"))            { cf->burl = v; cf->fedusername_suffix = zxid_grab_domain_name(cf, cf->burl); break; }
       if (!strcmp(n, "BEFORE_SLOP"))       { SCAN_INT(v, cf->before_slop); break; }
       if (!strcmp(n, "BOOTSTRAP_LEVEL"))   { SCAN_INT(v, cf->bootstrap_level); break; }
       if (!strcmp(n, "BARE_URL_ENTITYID")) { SCAN_INT(v, cf->bare_url_entityid); break; }
@@ -1538,6 +1589,8 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "DI_A7N_ENC"))      { SCAN_INT(v, cf->di_a7n_enc); break; }
       if (!strcmp(n, "DEBUG"))           { SCAN_INT(v, errmac_debug); INFO("errmac_debug:%d", errmac_debug); break; }
       if (!strcmp(n, "DEBUG_LOG"))       { zxid_set_opt_cstr(cf, 6, v); break; }
+      if (!strcmp(n, "D"))               { D("D=%s (conf line %d)", v, lineno); break; }
+      if (!strcmp(n, "DIE"))             { ERR("DIE=%s (conf line %d)", v, lineno); DIE_ACTION(1); break; }
       goto badcf;
     case 'E':  /* ERR, ERR_IN_ACT */
       if (!strcmp(n, "ERR"))             { SCAN_INT(v, cf->log_err); break; }
@@ -1575,6 +1628,8 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "IDPATOPT"))        { SCAN_INT(v, cf->idpatopt); break; }
       if (!strcmp(n, "IDP_LIST_METH"))   { SCAN_INT(v, cf->idp_list_meth); break; }
       if (!strcmp(n, "INMAP"))           { cf->inmap = zxid_load_map(cf, cf->inmap, v); break; }
+      if (!strcmp(n, "INFO"))            { INFO("INFO=%s (conf line %d)", v, lineno); break; }
+      if (!strcmp(n, "INCLUDE"))         { zxid_parse_inc(cf, v, 1); break; }
       goto badcf;
     case 'L':  /* LEVEL (log level) */
       if (!strcmp(n, "LEVEL"))     { SCAN_INT(v, cf->log_level); break; }
@@ -1592,6 +1647,8 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "MD_POPULATE_CACHE")) { SCAN_INT(v, cf->md_populate_cache); break; }
       if (!strcmp(n, "MD_CACHE_FIRST"))    { SCAN_INT(v, cf->md_cache_first); break; }
       if (!strcmp(n, "MD_CACHE_LAST"))     { SCAN_INT(v, cf->md_cache_last); break; }
+      if (!strcmp(n, "MD_AUTHORITY_ENA"))  { SCAN_INT(v, cf->md_authority_ena); break; }
+      if (!strcmp(n, "MD_AUTHORITY")) { cf->md_authority = v; break; }
       if (!strcmp(n, "MGMT_START"))   { cf->mgmt_start = v; break; }
       if (!strcmp(n, "MGMT_LOGOUT"))  { cf->mgmt_logout = v; break; }
       if (!strcmp(n, "MGMT_DEFED"))   { cf->mgmt_defed = v; break; }
@@ -1620,15 +1677,17 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
 	break;
       }
       if (!strcmp(n, "OAZ_JWT_SIGENC_ALG")) { cf->oaz_jwt_sigenc_alg = *v; break; }
+      if (!strcmp(n, "OPT_INCLUDE"))    { zxid_parse_inc(cf, v, 0); break; }
+      if (!strcmp(n, "OPTIONAL_LOGIN_PAT")) { cf->optional_login_pat = v; D("optional_login_pat(%s)", cf->optional_login_pat); break; }
       goto badcf;
     case 'P':  /* PATH (e.g. /var/zxid) */
       DD("PATH maybe n(%s)=v(%s)", n, v);
       if (!strcmp(n, "PATH")) {
     path:
-	DD("CPATH inside file(%.*s) %d new(%s)", cf->path_len, cf->path, cf->path_supplied, v);
-	if (cf->path_supplied && !memcmp(cf->path, v, cf->path_len)
-	    || cf->path_supplied > ZXID_PATH_MAX_RECURS_EXPAND_DEPTH) {
-	  D("Skipping CPATH inside file(%.*s) path_supplied=%d", cf->path_len, cf->path, cf->path_supplied);
+	DD("CPATH inside file(%.*s) %d new(%s)", cf->cpath_len, cf->cpath, cf->cpath_supplied, v);
+	if (cf->cpath_supplied && !memcmp(cf->cpath, v, cf->cpath_len)
+	    || cf->cpath_supplied > ZXID_PATH_MAX_RECURS_EXPAND_DEPTH) {
+	  D("Skipping CPATH inside file(%.*s) cpath_supplied=%d", cf->cpath_len, cf->cpath, cf->cpath_supplied);
 	  break;
 	}
 	zxid_parse_conf_path_raw(cf, v, 0);
@@ -1652,6 +1711,7 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
 	break;
       }
       if (!strcmp(n, "PTM_COOKIE_NAME")) { cf->ptm_cookie_name = (!v[0] || v[0]=='0' && !v[1]) ? 0 : v; break; }
+      if (!strcmp(n, "PRAGMA"))          { D("PRAGMA(%s)", v); break; }
       goto badcf;
     case 'R':  /* RELY_A7N, RELY_MSG */
       if (!strcmp(n, "REDIRECT_HACK_IMPOSED_URL")) { cf->redirect_hack_imposed_url = v; break; }
@@ -1687,6 +1747,7 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "RECOVER_PASSWD")) { cf->recover_passwd = v; break; }
       if (!strcmp(n, "RELTO_FATAL"))    { SCAN_INT(v, cf->relto_fatal); break; }
       if (!strcmp(n, "RCPT"))           { SCAN_INT(v, cf->bus_rcpt); break; }
+      if (!strcmp(n, "REM"))            { /* no-op */ break; }
       goto badcf;
     case 'S':  /* SES_ARCH_DIR, SIGFAIL_IS_ERR, SIG_FATAL */
       if (!strcmp(n, "SES_ARCH_DIR"))   { cf->ses_arch_dir = (!v[0] || v[0]=='0' && !v[1]) ? 0 : v; break; }
@@ -1700,6 +1761,7 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "SHOW_TECH"))      { SCAN_INT(v, cf->show_tech); break; }
       if (!strcmp(n, "STATE"))          { cf->state = v; break; }
       if (!strcmp(n, "SSO_PAT"))        { cf->sso_pat = v; break; }
+      if (!strcmp(n, "SOAP_ACTION_HDR")) { cf->soap_action_hdr = v; break; }
       goto badcf;
     case 'T':  /* TIMEOUT_FATAL */
       if (!strcmp(n, "TIMEOUT_FATAL"))  { SCAN_INT(v, cf->timeout_fatal); break; }
@@ -1707,7 +1769,7 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "TRUSTPDP_URL"))   { cf->trustpdp_url = v; break; }
       goto badcf;
     case 'U':  /* URL, USER_LOCAL */
-      if (!strcmp(n, "URL"))            { cf->url = v; cf->fedusername_suffix = zxid_grab_domain_name(cf, cf->url); break; }
+      if (!strcmp(n, "URL"))            { cf->burl = v; cf->fedusername_suffix = zxid_grab_domain_name(cf, cf->burl); break; }
       if (!strcmp(n, "USER_LOCAL"))     { SCAN_INT(v, cf->user_local); break; }
       goto badcf;
     case 'V':  /* VALID_OPT */
@@ -1729,6 +1791,11 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       if (!strcmp(n, "WSC_LOCALPDP_OBL_ACCEPT"))  { cf->wsc_localpdp_obl_accept = zxid_load_obl_list(cf, cf->wsc_localpdp_obl_accept, v);   break; }
       if (!strcmp(n, "WD"))             { cf->wd = v; chdir(v); break; }
       if (!strcmp(n, "WSP_PAT"))        { cf->wsp_pat = v; break; }
+      if (!strcmp(n, "WSC_SOAP_CONTENT_TYPE")) { cf->wsc_soap_content_type = v; break; }
+      if (!strcmp(n, "WSC_TO_HDR"))     { cf->wsc_to_hdr = v; break; }
+      if (!strcmp(n, "WSC_REPLYTO_HDR")) { cf->wsc_replyto_hdr = v; break; }
+      if (!strcmp(n, "WSC_ACTION_HDR")) { cf->wsc_action_hdr = v; break; }
+      if (!strcmp(n, "WARN"))           { WARN("WARN=%s (conf line %d)", v, lineno); break; }
       goto badcf;
     case 'X':  /* XASP_VERS */
       if (!strcmp(n, "XASP_VERS"))      { cf->xasp_vers = v; break; }
@@ -1892,7 +1959,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
       ss->len -= 1;
       ss->s[ss->len] = 0;
     }
-    attrsrc = zx_strf(cf->ctx, "  attrs(%s)\n    ns(%s)\n    weight(%s)\n    url(%s)\n    aapml(%s)\n    otherlim(%s)\n    ext(%s)$\n%.*s", ss->s, STRNULLCHK(sp->ns), STRNULLCHK(sp->weight), STRNULLCHK(sp->url), STRNULLCHK(sp->aapml), STRNULLCHK(sp->otherlim), STRNULLCHK(sp->ext),
+    attrsrc = zx_strf(cf->ctx, "  attrs(%s)\n    ns(%s)\n    weight(%s)\n    burl(%s)\n    aapml(%s)\n    otherlim(%s)\n    ext(%s)$\n%.*s", ss->s, STRNULLCHK(sp->ns), STRNULLCHK(sp->weight), STRNULLCHK(sp->url), STRNULLCHK(sp->aapml), STRNULLCHK(sp->otherlim), STRNULLCHK(sp->ext),
 		   attrsrc->len, attrsrc->s);
   }
   if (attrsrc->len) {  /* chop off last dollar separator */
@@ -1924,8 +1991,8 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "<p>Version: R" ZXID_REL " (" ZXID_COMPILE_DATE ")\n"
 
 "<pre>"
-ZXID_PATH_OPT "=%s\n"
-"URL=%s\n"
+"CPATH=%s\n"
+"BURL=%s\n"
 "AFFILIATION=%s\n"
 "NICE_NAME=%s\n"
 "BUTTON_URL=%s\n"
@@ -1948,6 +2015,11 @@ ZXID_PATH_OPT "=%s\n"
 "DEFAULTQS=%s\n"
 "WSP_PAT=%s\n"
 "SSO_PAT=%s\n"
+"WSC_SOAP_CONTENT_TYPE=%s\n"
+"WSC_TO_HDR=%s\n"
+"WSC_REPLYTO_HDR=%s\n"
+"WSC_ACTION_HDR=%s\n"
+"SOAP_ACTION_HDR=%s\n"
 "CDC_URL=%s\n"
 "CDC_CHOICE=%d\n"
 
@@ -1956,6 +2028,7 @@ ZXID_PATH_OPT "=%s\n"
 "MD_POPULATE_CACHE=%d\n"
 "MD_CACHE_FIRST=%d\n"
 "MD_CACHE_LAST=%d\n"
+"MD_AUTHORITY=%s\n"
 
 "AUTO_CERT=%d\n"
 "AUTHN_REQ_SIGN=%d\n"
@@ -1992,9 +2065,11 @@ ZXID_PATH_OPT "=%s\n"
 "IDP_PXY_ENA=%d\n"
 "IMPS_ENA=%d\n"
 "AS_ENA=%d\n"
+"MD_AUTHORITY_ENA=%d\n"
 "PDP_ENA=%d\n"
 "CPN_ENA=%d\n"
 "AZ_OPT=%d\n"
+"AZ_FAIL_MODE=%d\n"
 "#ZXID_MAX_BUF=%d (compile)\n"
 
 /* *** should these be prefixed by LOG? */
@@ -2030,6 +2105,7 @@ ZXID_PATH_OPT "=%s\n"
 "A7NTTL=%d\n"
 
 "ANON_OK=%s\n"
+"OPTIONAL_LOGIN_PAT=%s\n"
 "ISSUE_AUTHNCTX_PW=%s\n"
 "IDP_PREF_ACS_BINDING=%s\n"
 "MANDATORY_ATTR=%s\n"
@@ -2114,11 +2190,11 @@ ZXID_PATH_OPT "=%s\n"
 "WSP_LOCALPDP_OBL_EMIT=%s\n"
 //"WSC_LOCALPDP_OBL_ACCEPT=%s\n"
 "</pre>",
-		 cf->url, eid,
-		 cf->path,
+		 cf->burl, eid,
+		 cf->cpath,
 
-		 cf->path,
-		 cf->url,
+		 cf->cpath,
+		 cf->burl,
 		 STRNULLCHK(cf->affiliation),
 		 STRNULLCHK(cf->nice_name),
 		 STRNULLCHK(cf->button_url),
@@ -2142,6 +2218,11 @@ ZXID_PATH_OPT "=%s\n"
 		 STRNULLCHK(cf->wsp_pat),
 		 STRNULLCHK(cf->sso_pat),
 		 STRNULLCHK(cf->cdc_url),
+		 STRNULLCHK(cf->wsc_soap_content_type),
+		 STRNULLCHK(cf->wsc_to_hdr),
+		 STRNULLCHK(cf->wsc_replyto_hdr),
+		 STRNULLCHK(cf->wsc_action_hdr),
+		 STRNULLCHK(cf->soap_action_hdr),
 		 cf->cdc_choice,
 
 		 STRNULLCHK(cf->load_cot_cache),
@@ -2149,6 +2230,7 @@ ZXID_PATH_OPT "=%s\n"
 		 cf->md_populate_cache,
 		 cf->md_cache_first,
 		 cf->md_cache_last,
+		 STRNULLCHK(cf->md_authority),
 
 		 cf->auto_cert,
 		 cf->authn_req_sign,
@@ -2185,9 +2267,11 @@ ZXID_PATH_OPT "=%s\n"
 		 cf->idp_pxy_ena,
 		 cf->imps_ena,
 		 cf->as_ena,
+		 cf->md_authority_ena,
 		 cf->pdp_ena,
 		 cf->cpn_ena,
 		 cf->az_opt,
+		 cf->az_fail_mode,
 		 ZXID_MAX_BUF,
 
 		 cf->log_err,
@@ -2222,6 +2306,7 @@ ZXID_PATH_OPT "=%s\n"
 		 cf->a7nttl,
 
 		 STRNULLCHK(cf->anon_ok),
+		 STRNULLCHK(cf->optional_login_pat),
 		 STRNULLCHK(cf->issue_authnctx_pw),
 		 STRNULLCHK(cf->idp_pref_acs_binding),
 		 STRNULLCHK(cf->mandatory_attr),
