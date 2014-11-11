@@ -79,15 +79,10 @@ void zxid_sha1_file(zxid_conf* cf, char* name, char* sha1)
 }
 #endif
 
-/*() Extract a certificate from PEM encoded string. */
-
-/* Called by:  opt, test_mode, zxid_read_cert */
-X509* zxid_extract_cert(char* buf, char* name)
+char* zxid_extract_cert_pem(char* buf, char* name)
 {
-  X509* x = 0;  /* Forces d2i_X509() to alloc the memory. */
   char* p;
   char* e;
-  OpenSSL_add_all_algorithms();
   p = strstr(buf, PEM_CERT_START);
   if (!p) {
     ERR("No certificate found in file(%s)\n", name);
@@ -100,9 +95,56 @@ X509* zxid_extract_cert(char* buf, char* name)
   
   e = strstr(buf, PEM_CERT_END);
   if (!e) return 0;
-  
-  p = unbase64_raw(p, e, buf, zx_std_index_64);
-  if (!d2i_X509(&x, (const unsigned char**)&buf /* *** compile warning */, p-buf) || !x) {
+  *e = 0;
+  return p;
+}
+
+/*() Extract a certificate as base64 textr from PEM encoded file. */
+
+char* zxid_read_cert_pem(zxid_conf* cf, char* name, int siz, char* buf)
+{
+  int got = read_all(siz, buf, "read_cert", 1, "%s" ZXID_PEM_DIR "%s", cf->cpath, name);
+  if (!got && cf->auto_cert)
+    zxid_mk_self_sig_cert(cf, siz, buf, "read_cert", name);
+  return zxid_extract_cert_pem(buf, name);
+}
+
+
+/*() Extract a certificate from PEM encoded string. */
+
+/* Called by:  opt, test_mode, zxid_read_cert */
+X509* zxid_extract_cert(char* buf, char* name)
+{
+  X509* x = 0;  /* Forces d2i_X509() to alloc the memory. */
+  char* p;
+  char* e;
+  p = zxid_extract_cert_pem(buf, name);
+  if (!p)
+    return 0;
+  e = unbase64_raw(p, p+strlen(p), p, zx_std_index_64);
+  OpenSSL_add_all_algorithms();
+  if (!d2i_X509(&x, (const unsigned char**)&p /* *** compile warning */, e-p) || !x) {
+    ERR("DER decoding of X509 certificate failed.\n%d", 0);
+    return 0;
+  }
+  return x;
+}
+
+/*() Extract a certificate from PEM encoded file. */
+
+/* Called by:  hi_new_shuffler, zxid_idp_sso_desc x2, zxid_init_conf x3, zxid_lazy_load_sign_cert_and_pkey, zxid_sp_sso_desc x2, zxlog_write_line */
+X509* zxid_read_cert(zxid_conf* cf, char* name)
+{
+  X509* x = 0;  /* Forces d2i_X509() to alloc the memory. */
+  char buf[4096];
+  char* p;
+  char* e;
+  p = zxid_read_cert_pem(cf, name, sizeof(buf), buf);
+  if (!p)
+    return 0;
+  OpenSSL_add_all_algorithms();
+  e = unbase64_raw(p, p+strlen(p), p, zx_std_index_64);
+  if (!d2i_X509(&x, (const unsigned char**)&p /* *** compile warning */, e-p) || !x) {
     ERR("DER decoding of X509 certificate failed.\n%d", 0);
     return 0;
   }
@@ -110,7 +152,7 @@ X509* zxid_extract_cert(char* buf, char* name)
 }
 
 /*() Extract a private key from PEM encoded string.
- * *** This function needs to expand to handle DSA */
+ * *** This function needs to expand to handle DSA and EC */
 
 /* Called by: */
 EVP_PKEY* zxid_extract_private_key(char* buf, char* name)
@@ -159,18 +201,6 @@ EVP_PKEY* zxid_extract_private_key(char* buf, char* name)
   }
   zx_report_openssl_err("extract_private_key2"); /* *** seems d2i can leave errors on stack */
   return pk; /* RSA* rsa = EVP_PKEY_get1_RSA(pk); */
-}
-
-/*() Extract a certificate from PEM encoded file. */
-
-/* Called by:  hi_new_shuffler, zxid_idp_sso_desc x2, zxid_init_conf x3, zxid_lazy_load_sign_cert_and_pkey, zxid_sp_sso_desc x2, zxlog_write_line */
-X509* zxid_read_cert(zxid_conf* cf, char* name)
-{
-  char buf[4096];
-  int got = read_all(sizeof(buf), buf, "read_cert", 1, "%s" ZXID_PEM_DIR "%s", cf->cpath, name);
-  if (!got && cf->auto_cert)
-    zxid_mk_self_sig_cert(cf, sizeof(buf), buf, "read_cert", name);
-  return zxid_extract_cert(buf, name);
 }
 
 /*() Extract a private key from PEM encoded file. */
@@ -940,6 +970,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->redirect_hack_zxid_url = ZXID_REDIRECT_HACK_ZXID_URL;
   cf->defaultqs     = ZXID_DEFAULTQS;
   cf->wsp_pat       = ZXID_WSP_PAT;
+  cf->uma_pat       = ZXID_UMA_PAT;
   cf->sso_pat       = ZXID_SSO_PAT;
   cf->cdc_choice    = ZXID_CDC_CHOICE;
   cf->authn_req_sign = ZXID_AUTHN_REQ_SIGN;
@@ -998,6 +1029,7 @@ int zxid_init_conf(zxid_conf* cf, const char* zxid_path)
   cf->imps_ena          = ZXID_IMPS_ENA;
   cf->as_ena            = ZXID_AS_ENA;
   cf->md_authority_ena  = ZXID_MD_AUTHORITY_ENA;
+  cf->backwards_compat_ena  = ZXID_BACKWARDS_COMPAT_ENA;
   cf->pdp_ena           = ZXID_PDP_ENA;
   cf->cpn_ena           = ZXID_CPN_ENA;
   cf->az_opt            = ZXID_AZ_OPT;
@@ -1567,6 +1599,7 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
       }
       if (!strcmp(n, "BUS_URL"))         { cf->bus_url = zxid_load_bus_url(cf, cf->bus_url, v);   break; }
       if (!strcmp(n, "BUS_PW"))          { cf->bus_pw = v; break; }
+      if (!strcmp(n, "BACKWARDS_COMPAT_ENA")) { SCAN_INT(v, cf->backwards_compat_ena); break; }
       goto badcf;
     case 'C':  /* CDC_URL, CDC_CHOICE */
       if (!strcmp(n, "CPATH"))           goto path;
@@ -1771,6 +1804,7 @@ int zxid_parse_conf_raw(zxid_conf* cf, int qs_len, char* qs)
     case 'U':  /* URL, USER_LOCAL */
       if (!strcmp(n, "URL"))            { cf->burl = v; cf->fedusername_suffix = zxid_grab_domain_name(cf, cf->burl); break; }
       if (!strcmp(n, "USER_LOCAL"))     { SCAN_INT(v, cf->user_local); break; }
+      if (!strcmp(n, "UMA_PAT"))        { cf->uma_pat = v; break; }
       goto badcf;
     case 'V':  /* VALID_OPT */
       if (!strcmp(n, "VALID_OPT"))      { SCAN_INT(v, cf->valid_opt); break; }
@@ -2014,6 +2048,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "REDIRECT_HACK_ZXID_QS=%s\n"
 "DEFAULTQS=%s\n"
 "WSP_PAT=%s\n"
+"UMA_PAT=%s\n"
 "SSO_PAT=%s\n"
 "WSC_SOAP_CONTENT_TYPE=%s\n"
 "WSC_TO_HDR=%s\n"
@@ -2066,6 +2101,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 "IMPS_ENA=%d\n"
 "AS_ENA=%d\n"
 "MD_AUTHORITY_ENA=%d\n"
+"BACKWARDS_COMPAT_ENA=%d\n"
 "PDP_ENA=%d\n"
 "CPN_ENA=%d\n"
 "AZ_OPT=%d\n"
@@ -2216,6 +2252,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 STRNULLCHK(cf->redirect_hack_zxid_qs),
 		 STRNULLCHK(cf->defaultqs),
 		 STRNULLCHK(cf->wsp_pat),
+		 STRNULLCHK(cf->uma_pat),
 		 STRNULLCHK(cf->sso_pat),
 		 STRNULLCHK(cf->cdc_url),
 		 STRNULLCHK(cf->wsc_soap_content_type),
@@ -2268,6 +2305,7 @@ struct zx_str* zxid_show_conf(zxid_conf* cf)
 		 cf->imps_ena,
 		 cf->as_ena,
 		 cf->md_authority_ena,
+		 cf->backwards_compat_ena,
 		 cf->pdp_ena,
 		 cf->cpn_ena,
 		 cf->az_opt,

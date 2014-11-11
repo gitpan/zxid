@@ -81,6 +81,7 @@ ZXID_DECL char* zxid_unbase64_inflate(struct zx_ctx* c, int in_len, const char* 
 ZXID_DECL int   zx_url_encode_len(int in_len, const char* in);
 ZXID_DECL char* zx_url_encode_raw(int in_len, const char* in, char* out);
 ZXID_DECL char* zx_url_encode(struct zx_ctx* c, int in_len, const char* in, int* out_len);
+ZXID_DECL char* zx_mk_basic_auth_b64(struct zx_ctx* c, const char* uid, const char* pw);
 ZXID_DECL char* zxid_qs_nv_scan(char* qs, char** name, char** val, int url_decode_val_flag);
 ZXID_DECL char* zx_hexdec(char* dst, char* src, int src_len, const unsigned char* trans);
 
@@ -95,9 +96,17 @@ ZXID_DECL int write_all_fd(fdtype fd, const char* p, int pending);
 ZXID_DECL int write_all_fd_fmt(fdtype fd, const char* logkey, int maxlen, char* buf, const char* data_fmt, ...)
 ;
 ZXID_DECL int write_all_path_fmt(const char* logkey, int len, char* buf, const char* path_fmt, const char* prepath, const char* postpath, const char* data_fmt, ...);
+ZXID_DECL int write_all_path(const char* logkey, const char* path_fmt, const char* prepath, const char* postpath, int len, const char* data);
 ZXID_DECL int copy_file(const char* from, const char* to, const char* logkey, int may_link);
 ZXID_DECL int close_file(fdtype fd, const char* logkey);
 ZXID_DECL int send_all_socket(fdtype fd, const char* p, int pending);
+ZXID_DECL char* zx_zap_inplace_raw(char* s, const char* zap);
+
+ZXID_DECL const char* zx_json_extract_raw(const char* hay, const char* key, int* len);
+ZXID_DECL char* zx_json_extract_dup(struct zx_ctx* c, const char* hay, const char* key);
+ZXID_DECL int zx_json_extract_int(const char* hay, const char* key);
+ZXID_DECL const char* zx_qs_extract_raw(const char* hay, const char* key, int* len);
+ZXID_DECL char* zx_qs_extract_dup(struct zx_ctx* c, const char* hay, const char* key);
 
 struct zxid_curl_ctx {
   char* p;

@@ -11,6 +11,8 @@
  * 7.10.2008, added documentation --Sampo
  * 29.8.2009, added zxid_mk_self_signed_cert() --Sampo
  * 12.12.2011, added HMAC SHA-256 as needed by JWT/JWS --Sampo
+ *
+ * See paper: Tibor Jager, Kenneth G. Paterson, Juraj Somorovsky: "One Bad Apple: Backwards Compatibility Attacks on State-of-the-Art Cryptography", 2013 http://www.nds.ruhr-uni-bochum.de/research/publications/backwards-compatibility/ /t/BackwardsCompatibilityAttacks.pdf
  */
 
 #include "platform.h"  /* needed on Win32 for snprintf() et al. */
@@ -286,7 +288,8 @@ struct zx_str* zx_rsa_pub_enc(struct zx_ctx* c, struct zx_str* plain, RSA* rsa_p
   case RSA_SSLV23_PADDING:
     if (plain->len > (siz-11))
       ERR("Too much data for RSA key: can=%d, you have %d bytes.\n", siz-11, plain->len);
-    D("RSA_PKCS1_PADDING %d", pad);
+    WARN("RSA_PKCS1_PADDING %d v1.5: WARNING: This padding is vulnearable to attacks. Use OAEP instead.", pad);
+    /* See paper: Tibor Jager, Kenneth G. Paterson, Juraj Somorovsky: "One Bad Apple: Backwards Compatibility Attacks on State-of-the-Art Cryptography", 2013 http://www.nds.ruhr-uni-bochum.de/research/publications/backwards-compatibility/ /t/BackwardsCompatibilityAttacks.pdf */
     break;
   case RSA_NO_PADDING:
     if (plain->len > siz)
@@ -675,9 +678,7 @@ badurl:
   }
   len = BIO_get_mem_data(wbio_csr, &p);
 
-  write_all_path_fmt("auto_cert csr", buflen, buf,
-		     "%s" ZXID_PEM_DIR "csr-%s", cf->cpath, name,
-		     "%.*s", len, p);
+  write_all_path("auto_cert csr", "%s" ZXID_PEM_DIR "csr-%s", cf->cpath, name, len, p);
   BIO_free_all(wbio_csr);
 
   /* Output combined self signed plus private key file. It is important
@@ -935,7 +936,7 @@ int zxid_mk_at_cert(zxid_conf* cf, int buflen, char* buf, const char* lk, zxid_n
   memcpy(buf, p, MIN(len, buflen-1));
   buf[MIN(len, buflen-1)] = 0;
 
-  //***write_all_path_fmt("auto_cert ss", buflen, buf, "%s" ZXID_PEM_DIR "%s", cf->cpath, name,  "%.*s", len, p);
+  //***write_all_path("auto_cert ss", "%s" ZXID_PEM_DIR "%s", cf->cpath, name, len, p);
 
   BIO_free_all(wbio_cert);
 

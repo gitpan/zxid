@@ -188,7 +188,7 @@ char* zxid_fed_mgmt_cf(zxid_conf* cf, int* res_len, int sid_len, char* sid, int 
   struct zx_str* ss;
   struct zx_str* ss2;
   int slen = sid_len == -1 && sid ? strlen(sid) : sid_len;
-  if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 1);
+  if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 3);
 
   if (cf->log_level>1)
     zxlog(cf, 0, 0, 0, 0, 0, 0, 0, "N", "W", "MGMT", 0, "sid(%.*s)", sid_len, STRNULLCHK(sid));
@@ -420,7 +420,7 @@ struct zx_str* zxid_template_page_cf(zxid_conf* cf, zxid_cgi* cgi, const char* t
     break;
   }
   if (templ && templ != default_templ)
-    ZX_FREE(cf->ctx, templ);
+    ZX_FREE(cf->ctx, (void*)templ);
   *pp = 0;
   ss->len = pp - ss->s;
   return ss;
@@ -444,7 +444,7 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
   struct zx_str* dd;
   zxid_entity* idp;
   zxid_entity* idp_cdc;
-  if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 1);
+  if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 3);
   idp = zxid_load_cot_cache(cf);
   if (!idp) {
     D("No IdP's found %p", res_len);
@@ -501,9 +501,11 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
 		     "<input type=submit class=zxidplistbut name=\"l1%s\" value=\" Login with %s (%s) (A2) \">\n"
 		     "<input type=submit class=zxidplistbut name=\"l2%s\" value=\" Login with %s (%s) (P2) \">\n"
 		     "<input type=submit class=zxidplistbut name=\"l5%s\" value=\" Login with %s (%s) (S2) \">\n"
-		     "<input type=submit class=zxidplistbut name=\"l6%s\" value=\" Login with %s (%s) (O2) \">"
+		     "<input type=submit class=zxidplistbut name=\"l8%s\" value=\" Login with %s (%s) (O2C) \">"
+		     "<input type=submit class=zxidplistbut name=\"l9%s\" value=\" Login with %s (%s) (O2I) \">"
 		     "%s<br>\n",
 		     ss->len, ss->s,
+		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
 		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
 		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
 		     idp->eid, STRNULLCHK(idp->dpy_name), idp->eid,
@@ -538,7 +540,8 @@ char* zxid_idp_list_cf_cgi(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
 		   "<input type=submit class=zxidplistbut name=\"l1\" value=\" Login (A2) \">\n"
 		   "<input type=submit class=zxidplistbut name=\"l2\" value=\" Login (P2) \">\n"
 		   "<input type=submit class=zxidplistbut name=\"l5\" value=\" Login (S2) \">\n"
-		   "<input type=submit class=zxidplistbut name=\"l6\" value=\" Login (O2) \"><br>\n",
+		   "<input type=submit class=zxidplistbut name=\"l8\" value=\" Login (O2C) \">\n"
+		   "<input type=submit class=zxidplistbut name=\"l9\" value=\" Login (O2I) \"><br>\n",
 		   ss->len, ss->s);
     } else {
       dd = zx_strf(cf->ctx, "%.*s</select>"
@@ -744,10 +747,23 @@ char* zxid_idp_select(char* conf, int auto_flags) {
 
 /*() Deal with the various methods of shipping the page, including CGI stdout, or
  * as string with or without headers, as indicated by the auto_flag. The
- * page is in ss. */
+ * page is in ss.
+ *
+ * cf:: ZXID configuration object
+ * ss:: The page
+ * c_mask:: auto_flags content mask
+ * h_mask:: auto_flags headers mask
+ * rets:: Return value in case content is output (not returned)
+ * cont_type:: content-type header
+ * res_len:: Response length, pass 0 if not needed
+ * auto_flags:: flags to control if content is output or returned
+ * status:: Additional CGI headers, such as Status: 201 Created
+ * return:: Depends on autoflags and masks. Can be headers+data, data only, or rets (data
+ *     was output to stdout, cgi style)
+ */
 
 /* Called by:  zxid_idp_oauth2_check_id, zxid_simple_idp_show_an, zxid_simple_show_carml, zxid_simple_show_conf, zxid_simple_show_err, zxid_simple_show_idp_sel, zxid_simple_show_meta */
-char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_mask, char* rets, char* cont_type, int* res_len, int auto_flags)
+char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_mask, char* rets, char* cont_type, int* res_len, int auto_flags, const char* status)
 {
   char* res;
   struct zx_str* ss2;
@@ -761,15 +777,14 @@ char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_
      * last N bytes, where N is the number of newlines in the output
      */
     char *p = ss->s;
-    while( *p != '\0' )
-    {
-        if( *p == '\n' )
-            ++extralen;
-        p++;
+    while(*p != '\0') {
+      if(*p == '\n')
+	++extralen;
+      p++;
     }
 #endif
-    fprintf(stdout, "Content-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
-	   cont_type, ss->len+extralen, ss->len+extralen, ss->s);
+    fprintf(stdout, "%sContent-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
+	    STRNULLCHK(status), cont_type, ss->len+extralen, ss->len+extralen, ss->s);
     fflush(stdout);
     DD("__stdio_file fd=%d flags=%x bs=%d bm=%d buflen=%d buf=%p buf(%.4s) next=%p pok=%d unget=%x ungotten=%x", stdout->fd, stdout->flags, stdout->bs, stdout->bm, stdout->buflen, stdout->buf, stdout->buf, stdout->next, stdout->popen_kludge, stdout->ungetbuf, stdout->ungotten);
     if (auto_flags & ZXID_AUTO_EXIT)
@@ -783,8 +798,8 @@ char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_
   if (auto_flags & (c_mask | h_mask)) {
     if (auto_flags & h_mask) {  /* H only: return both H and C */
       if (errmac_debug & MOD_AUTH_SAML_INOUT) D("With headers %x (%s)", auto_flags, ss->s);
-      ss2 = zx_strf(cf->ctx, "Content-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
-		    cont_type, ss->len, ss->len, ss->s);
+      ss2 = zx_strf(cf->ctx, "%sContent-Type: %s" CRLF "Content-Length: %d" CRLF2 "%.*s",
+		    STRNULLCHK(status), cont_type, ss->len, ss->len, ss->s);
       zx_str_free(cf->ctx, ss);
     } else {
       D("No headers %x (%s)", auto_flags, ss->s);
@@ -804,6 +819,14 @@ char* zxid_simple_show_page(zxid_conf* cf, struct zx_str* ss, int c_mask, int h_
   if (res_len)
     *res_len = 1;
   return zx_dup_cstr(cf->ctx, rets);   /* Neither H nor C */
+}
+
+/*() Show JSON page, as often needed in OAUTH2 */
+
+char* zxid_simple_show_json(zxid_conf* cf, const char* json, int* res_len, int auto_flags, const char* status)
+{
+  struct zx_str* ss = zx_ref_str(cf->ctx, json);
+  return zxid_simple_show_page(cf, ss, ZXID_AUTO_METAC, ZXID_AUTO_METAH, "J", "application/json", res_len, auto_flags, status);
 }
 
 /*() Helper function to redirect according to auto flags. */
@@ -851,7 +874,7 @@ char* zxid_simple_show_idp_sel(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int a
     : 0;
   DD("idp_select: ret(%s)", ss?ss->len:1, ss?ss->s:"?");
   return zxid_simple_show_page(cf, ss, ZXID_AUTO_LOGINC, ZXID_AUTO_LOGINH,
-			       "e", "text/html", res_len, auto_flags);
+			       "e", "text/html", res_len, auto_flags, 0);
 }
 
 
@@ -864,7 +887,7 @@ static char* zxid_simple_show_meta(zxid_conf* cf, zxid_cgi* cgi, int* res_len, i
 {
   struct zx_str* meta = zxid_sp_meta(cf, cgi);
   return zxid_simple_show_page(cf, meta, ZXID_AUTO_METAC, ZXID_AUTO_METAH,
-			       "b", "text/xml", res_len, auto_flags);
+			       "b", "text/xml", res_len, auto_flags, 0);
 }
 
 /*() Emit CARML declaration for SP. Corresponds to "o=c" query string. */
@@ -874,7 +897,7 @@ static char* zxid_simple_show_carml(zxid_conf* cf, zxid_cgi* cgi, int* res_len, 
 {
   struct zx_str* carml = zxid_sp_carml(cf);
   return zxid_simple_show_page(cf, carml, ZXID_AUTO_METAC, ZXID_AUTO_METAH,
-			       "c", "text/xml", res_len, auto_flags);
+			       "c", "text/xml", res_len, auto_flags, 0);
 }
 
 /*() Dump internal info and configuration. Corresponds to "o=d" query string. */
@@ -884,7 +907,41 @@ static char* zxid_simple_show_conf(zxid_conf* cf, zxid_cgi* cgi, int* res_len, i
 {
   struct zx_str* ss = zxid_show_conf(cf);
   return zxid_simple_show_page(cf, ss, ZXID_AUTO_METAC, ZXID_AUTO_METAH,
-			       "d", "text/html", res_len, auto_flags);
+			       "d", "text/html", res_len, auto_flags, 0);
+}
+
+/*() Emit Java Web Key Set. Corresponds to "o=j" query string. */
+
+/* Called by:  zxid_simple_no_ses_cf, zxid_simple_ses_active_cf */
+static char* zxid_simple_show_jwks(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
+{
+  struct zx_str* ss = zx_ref_str(cf->ctx, zxid_mk_jwks(cf));
+  return zxid_simple_show_page(cf, ss, ZXID_AUTO_METAC, ZXID_AUTO_METAH,
+			       "j",
+			       //"text/json",
+			       "application/jwk-set+json",
+			       res_len, auto_flags, 0);
+}
+
+/*() Perform and reply to OAUTH2 Dynamic Client Registration. Corresponds to "o=J" query string. */
+
+/* Called by:  zxid_simple_no_ses_cf, zxid_simple_ses_active_cf */
+static char* zxid_simple_show_dynclireg(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
+{
+  return zxid_simple_show_json(cf, zxid_mk_oauth2_dyn_cli_reg_res(cf, cgi),
+			       res_len, auto_flags, "Status: 201 Created" CRLF);
+}
+
+/*() Perform and reply to OAUTH2 Resource Registration. Corresponds to "o=H" query string. */
+
+/* Called by:  zxid_simple_no_ses_cf, zxid_simple_ses_active_cf */
+static char* zxid_simple_show_rsrcreg(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_flags)
+{
+  char rev[256];
+  char status_etag[1024];
+  char* json = zxid_mk_oauth2_rsrc_reg_res(cf, cgi, rev);
+  snprintf(status_etag, sizeof(status_etag), "Status: 201 Created" CRLF "Etag: %s" CRLF, rev);
+  return zxid_simple_show_json(cf, json, res_len, auto_flags, status_etag);
 }
 
 /*() Show Error screen. */
@@ -909,7 +966,7 @@ char* zxid_simple_show_err(zxid_conf* cf, zxid_cgi* cgi, int* res_len, int auto_
     
   ss = zxid_template_page_cf(cf, cgi, cf->err_templ_file, cf->err_templ, 4096, auto_flags);
   return zxid_simple_show_page(cf, ss, ZXID_AUTO_LOGINC, ZXID_AUTO_LOGINH,
-			       "g", "text/html", res_len, auto_flags);
+			       "g", "text/html", res_len, auto_flags, 0);
 }
 
 /* ----------- IdP Screens ----------- */
@@ -1115,7 +1172,7 @@ static char* zxid_simple_idp_show_an(zxid_conf* cf, zxid_cgi* cgi, int* res_len,
   /* if (cgi->ssoreq) ZX_FREE(cf->ctx, cgi->ssoreq); might not be malloc'd if tabs have CGI */
   DD("an_page: ret(%s)", ss?ss->len:1, ss?ss->s:"?");
   return zxid_simple_show_page(cf, ss, ZXID_AUTO_LOGINC, ZXID_AUTO_LOGINH,
-			       "a", "text/html", res_len, auto_flags);
+			       "a", "text/html", res_len, auto_flags, 0);
 }
 
 /*() Process password authentication form and, if ssoreq (ar=) is present
@@ -1216,10 +1273,10 @@ static char* zxid_show_protected_content_setcookie(zxid_conf* cf, zxid_cgi* cgi,
     D("setcookie(%s)=(%s) ses=%p", cf->ses_cookie_name, ses->setcookie, ses);
   }
   if (cf->ptm_cookie_name && *cf->ptm_cookie_name) {
-    D("ptm_cookie_name(%s)", cf->ptm_cookie_name);
-    issuer = ZX_GET_CONTENT(ses->a7n->Issuer);
+    D("ptm_cookie_name(%s) ses->a7n=%p", cf->ptm_cookie_name, ses->a7n);
+    issuer = ses->a7n?ZX_GET_CONTENT(ses->a7n->Issuer):0;
     if (!issuer)
-      ERR("Assertion does not have Issuer. %p", ses->a7n->Issuer);
+      ERR("Assertion does not have Issuer. %p", ses->a7n);
     
     if (epr = zxid_get_epr(cf, ses, TAS3_PTM, 0, 0, 0, 1)) {
       url = zxid_get_epr_address(cf, epr);
@@ -1314,6 +1371,9 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
    * Z = SOAP (POST) request for discovery
    * B = Metadata
    * b = Metadata Authority
+   * j = jwks
+   * J = OAUTH2 Dynamic client registration endpoint
+   * H = OAUTH2 Resource Registration endpoint
    *
    * M = CDC redirect and LECP detect
    * C = CDC reader
@@ -1325,14 +1385,14 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
    * D = Delegation / Invitation acceptance user interface, the idp selection
    * G = Delegation / Invitation finalization after SSO (via RelayState)
    * O = OAuth2 redirect destination
-   * T = OAuth2 Check ID Endpoint
+   * T = OAuth2 Check ID / Token Endpoint
    *
    * I = used for IdP ???
    * K = used?
    * F = IdP: Return SSO A7N after successful An; no ses case, generate IdP ui
    * V = Proxy IdP return
    *
-   * Still available: HJUVWXacefghijkoqwxyz
+   * Still available: UWXacefghikqwxyz
    */
   
   if (cgi->enc_hint)
@@ -1415,6 +1475,9 @@ char* zxid_simple_ses_active_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int
     D("idp err(%.*s) (fall thru)", ss->len, ss->s);
     /* *** */
     break;
+  case 'H': return zxid_simple_show_rsrcreg(cf, cgi, res_len, auto_flags);
+  case 'J': return zxid_simple_show_dynclireg(cf, cgi, res_len, auto_flags);
+  case 'j': return zxid_simple_show_jwks(cf, cgi, res_len, auto_flags);
   case 'c': return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
   case 'd': return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
   case 'B': return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
@@ -1559,7 +1622,7 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     goto post_dispatch;
   case 'T':
     D("Process OAUTH2 / OpenID-Connect1 check id pid=%d", getpid());
-    return zxid_idp_oauth2_check_id(cf, cgi, ses, auto_flags);
+    return zxid_idp_oauth2_token_and_check_id(cf, cgi, ses, res_len, auto_flags);
   case 'P':    /* POST Profile Responses */
   case 'I':
   case 'K':
@@ -1583,10 +1646,13 @@ char* zxid_simple_no_ses_cf(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, int* re
     }
     D("Q err (fall thru) %d", 0);
     break;
-  case 'c':    return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
-  case 'd':    return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
-  case 'B':    return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
-  case 'b':    return zxid_simple_md_authority(cf, cgi, res_len, auto_flags);
+  case 'H': return zxid_simple_show_rsrcreg(cf, cgi, res_len, auto_flags);
+  case 'J': return zxid_simple_show_dynclireg(cf, cgi, res_len, auto_flags);
+  case 'j': return zxid_simple_show_jwks(cf, cgi, res_len, auto_flags);
+  case 'c': return zxid_simple_show_carml(cf, cgi, res_len, auto_flags);
+  case 'd': return zxid_simple_show_conf(cf, cgi, res_len, auto_flags);
+  case 'B': return zxid_simple_show_meta(cf, cgi, res_len, auto_flags);
+  case 'b': return zxid_simple_md_authority(cf, cgi, res_len, auto_flags);
   case 'D': /*  Delegation / Invitation URL clicked. */
     return zxid_ps_accept_invite(cf, cgi, ses, res_len, auto_flags);
   case 'R':
@@ -1659,7 +1725,7 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
   }
   
   /*fprintf(stderr, "qs(%s) arg, autoflags=%x\n", qs, auto_flags);*/
-  if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 1);
+  if (auto_flags & ZXID_AUTO_DEBUG) zxid_set_opt(cf, 1, 3);
   LOCK(cf->mx, "simple ipport");
   if (!cf->ipport) {
     remote_addr = getenv("REMOTE_ADDR");
@@ -1676,12 +1742,12 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
     if (qs) {
       D("QUERY_STRING(%s) %s %d", STRNULLCHK(qs), ZXID_REL, errmac_debug);
       zxid_parse_cgi(cf, &cgi, qs);
-      if (ONE_OF_5(cgi.op, 'P', 'R', 'S', 'Y', 'Z')) {
+      if (ONE_OF_8(cgi.op, 'H', 'J', 'P', 'R', 'S', 'T', 'Y', 'Z')) {
 	cont_len = getenv("CONTENT_LENGTH");
 	if (cont_len) {
 	  sscanf(cont_len, "%d", &got);
 	  D("o=%c cont_len=%s got=%d rel=%s", cgi.op, cont_len, got, ZXID_REL);
-	  buf = ZX_ALLOC(cf->ctx, got + 1 /* nul term */);
+	  cgi.post = buf = ZX_ALLOC(cf->ctx, got + 1 /* nul term */);
 	  if (!buf) {
 	    ERR("out of memory len=%d", got);
 	    exit(1);
@@ -1693,10 +1759,16 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
 	    DD("POST(%s) got=%d cont_len(%s)", buf, got, cont_len);
 	    D_XML_BLOB(cf, "POST", got, buf);
 	    if (buf[0] == '<') goto sp_soap;  /* No BOM and looks like XML */
+	    if (buf[0] == '{') goto json;     /* No BOM and looks like JSON */
 	    if (buf[2] == '<') {              /* UTF-16 BOM and looks like XML */
 	      got-=2; buf+=2;
 	      ERR("UTF-16 NOT SUPPORTED %x%x", buf[0], buf[1]);
 	      goto sp_soap;
+	    }
+	    if (buf[2] == '{') {              /* UTF-16 BOM and looks like JSON */
+	      got-=2; buf+=2;
+	      ERR("UTF-16 NOT SUPPORTED %x%x", buf[0], buf[1]);
+	      goto json;
 	    }
 	    if (buf[3] == '<') {              /* UTF-8 BOM and looks XML */
 	      got-=3; buf+=3;
@@ -1719,7 +1791,13 @@ char* zxid_simple_cf_ses(zxid_conf* cf, int qs_len, char* qs, zxid_ses* ses, int
 		*res_len = strlen(res);
 	      goto done;
 	    }
-	    zxid_parse_cgi(cf, &cgi, buf);
+	    if (buf[3] == '{') {              /* UTF-8 BOM and looks JSON */
+	      got-=3; buf+=3;
+	    json:
+	      D("JSON detected %s", buf);
+	      /* Do not parse yet, this will be handled later in zxid_simple code. */
+	    } else
+	      zxid_parse_cgi(cf, &cgi, buf);
 	  }
 	} else {
 	  D("o=%c post, but no CONTENT_LENGTH rel=%s", cgi.op, ZXID_REL);

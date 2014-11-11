@@ -32,6 +32,7 @@ public interface zxidjniConstants {
   public final static String ENC_ALGO_AES128_CBC = zxidjniJNI.ENC_ALGO_AES128_CBC_get();
   public final static String ENC_ALGO_AES192_CBC = zxidjniJNI.ENC_ALGO_AES192_CBC_get();
   public final static String ENC_ALGO_AES256_CBC = zxidjniJNI.ENC_ALGO_AES256_CBC_get();
+  public final static String ENC_ALGO_AES256_GFC = zxidjniJNI.ENC_ALGO_AES256_GFC_get();
   public final static String ENC_ALGO = zxidjniJNI.ENC_ALGO_get();
   public final static String ENC_KEYTRAN_RSA_1_5 = zxidjniJNI.ENC_KEYTRAN_RSA_1_5_get();
   public final static String ENC_KEYTRAN_RSA_OAEP = zxidjniJNI.ENC_KEYTRAN_RSA_OAEP_get();
@@ -72,6 +73,8 @@ public interface zxidjniConstants {
   public final static String ZXID_DIMD_DIR = zxidjniJNI.ZXID_DIMD_DIR_get();
   public final static String ZXID_INV_DIR = zxidjniJNI.ZXID_INV_DIR_get();
   public final static String ZXID_LOG_DIR = zxidjniJNI.ZXID_LOG_DIR_get();
+  public final static String ZXID_DCR_DIR = zxidjniJNI.ZXID_DCR_DIR_get();
+  public final static String ZXID_RSR_DIR = zxidjniJNI.ZXID_RSR_DIR_get();
   public final static int ZXID_MAX_USER = zxidjniJNI.ZXID_MAX_USER_get();
   public final static int ZXID_INIT_MD_BUF = zxidjniJNI.ZXID_INIT_MD_BUF_get();
   public final static int ZXID_INIT_SOAP_BUF = zxidjniJNI.ZXID_INIT_SOAP_BUF_get();
@@ -115,6 +118,7 @@ public interface zxidjniConstants {
   public final static String ZXLOG_ISSUE_DIR = zxidjniJNI.ZXLOG_ISSUE_DIR_get();
   public final static String ZXLOG_A7N_KIND = zxidjniJNI.ZXLOG_A7N_KIND_get();
   public final static String ZXLOG_JWT_KIND = zxidjniJNI.ZXLOG_JWT_KIND_get();
+  public final static String ZXLOG_AZC_KIND = zxidjniJNI.ZXLOG_AZC_KIND_get();
   public final static String ZXLOG_MSG_KIND = zxidjniJNI.ZXLOG_MSG_KIND_get();
   public final static String ZXLOG_WIR_KIND = zxidjniJNI.ZXLOG_WIR_KIND_get();
   public final static int ZXID_DAP_SCOPE_BASE = zxidjniJNI.ZXID_DAP_SCOPE_BASE_get();
@@ -126,14 +130,16 @@ public interface zxidjniConstants {
   public final static int ZXID_CDC_CHOICE_UI_PREF = zxidjniJNI.ZXID_CDC_CHOICE_UI_PREF_get();
   public final static int ZXID_CDC_CHOICE_UI_NOPREF = zxidjniJNI.ZXID_CDC_CHOICE_UI_NOPREF_get();
   public final static int ZXID_CDC_CHOICE_UI_ONLY_CDC = zxidjniJNI.ZXID_CDC_CHOICE_UI_ONLY_CDC_get();
+  public final static int ZXID_DEFAULT_PR_IX = zxidjniJNI.ZXID_DEFAULT_PR_IX_get();
   public final static int ZXID_SAML2_ART = zxidjniJNI.ZXID_SAML2_ART_get();
   public final static int ZXID_SAML2_POST = zxidjniJNI.ZXID_SAML2_POST_get();
-  public final static int ZXID_SAML2_PAOS = zxidjniJNI.ZXID_SAML2_PAOS_get();
   public final static int ZXID_SAML2_SOAP = zxidjniJNI.ZXID_SAML2_SOAP_get();
+  public final static int ZXID_SAML2_PAOS = zxidjniJNI.ZXID_SAML2_PAOS_get();
   public final static int ZXID_SAML2_POST_SIMPLE_SIGN = zxidjniJNI.ZXID_SAML2_POST_SIMPLE_SIGN_get();
   public final static int ZXID_SAML2_REDIR = zxidjniJNI.ZXID_SAML2_REDIR_get();
   public final static int ZXID_SAML2_URI = zxidjniJNI.ZXID_SAML2_URI_get();
-  public final static int ZXID_OPID_CONNECT = zxidjniJNI.ZXID_OPID_CONNECT_get();
+  public final static int ZXID_OIDC1_CODE = zxidjniJNI.ZXID_OIDC1_CODE_get();
+  public final static int ZXID_OIDC1_ID_TOK_TOK = zxidjniJNI.ZXID_OIDC1_ID_TOK_TOK_get();
   public final static int ZXID_SLO_SVC = zxidjniJNI.ZXID_SLO_SVC_get();
   public final static int ZXID_MNI_SVC = zxidjniJNI.ZXID_MNI_SVC_get();
   public final static int ZXID_ACS_SVC = zxidjniJNI.ZXID_ACS_SVC_get();

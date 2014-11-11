@@ -180,7 +180,7 @@
  *   %p  the contents of environment variable SERVER_PORT (see CGI spec).
  *   %P  Similar to %p, but renders a colon before the portnumber, unless
  *       the SERVER_PORT is 443 or 80, in which case nothing is rendered.
- *       This deals with default ports of the http and https protocols.
+ *       This deals with default ports of the https and http protocols.
  *   %s  the contents of environment variable SCRIPT_NAME (see CGI spec)
  *
  * > N.B. All other %-specs are reserved for future expansion
@@ -548,6 +548,12 @@
  */
 #define ZXID_OAZ_JWT_SIGENC_ALG 'n'
 
+/*(c) JSON client Content-Type header generation
+ * Various styles exist */
+//#define ZXID_JSON_CONTENT_TYPE "Content-Type: text/json"
+#define ZXID_JSON_CONTENT_TYPE "Content-Type: application/json"
+
+
 /*(c) Command that will be executed by zxidwspcgi to respond to a web service call. */
 #ifndef ZXID_WSPCGICMD
 #define ZXID_WSPCGICMD "./zxid-wspcgicmd.sh"
@@ -886,9 +892,16 @@
 /*(c) WSP Pattern
  * Any URL matching this pattern is treated as web service call rather
  * than SSO attempt. Understood by mod_auth_saml, zxid_httpd and mini_httpd_zxid.
- * WSP_PAT is matched before SSO_PAT. */
+ * WSP_PAT is matched before UMA_PAT and SSO_PAT. */
 
 #define ZXID_WSP_PAT "*.wsp"
+
+/*(c) UMA Pattern
+ * Any URL matching this pattern is treated as web service call protected by UMA rather
+ * than SSO attempt. Understood by mod_auth_saml, zxid_httpd and mini_httpd_zxid.
+ * UMA_PAT is matched after WSP_PAT but before SSO_PAT. */
+
+#define ZXID_UMA_PAT "*/uma/*"
 
 /*(c) mini_httpd_zxid SSO Pattern
  * Any URL matching this pattern requires SSO. However
@@ -1088,6 +1101,13 @@
 #define ZXID_WSP_LOCALPDP_OBL_EMIT    0  /* String: WSP obligations emitted on resp */
 #define ZXID_WSC_LOCALPDP_OBL_ACCEPT  0  /* String: WSC acceptable obligations in SOL notation */
 
+/*(c) Enable CBC (instead of GCM) and PKCS#1 v1.5 padding, both of which
+ * are vulnearable and can compromise modern crypto through Backwards
+ * Compatibility Attacks.
+ * See paper: Tibor Jager, Kenneth G. Paterson, Juraj Somorovsky: "One Bad Apple: Backwards Compatibility Attacks on State-of-the-Art Cryptography", 2013 http://www.nds.ruhr-uni-bochum.de/research/publications/backwards-compatibility/ /t/BackwardsCompatibilityAttacks.pdf
+ */
+#define ZXID_BACKWARDS_COMPAT_ENA 0 /* safe default */
+
 /* ----------------------------------------------------------------------------- */
 /*(c) Apache httpd sometimes changes working directory unpredictably
  * (usually to /). This is in violation of Apache httpd documentation,
@@ -1163,7 +1183,7 @@
 /*(c) IdP Selector Page URL
  * If the IDP_SEL_TEMPL_FILE or IDP_SEL_TEMPL, above, is not sufficient for
  * your customization needs, you can provide URL to page of your own design.
- *This page will receive as query string argument the relay state.
+ * This page will receive as query string argument the relay state.
  * 0 (zero) disables. */
 
 #define ZXID_IDP_SEL_PAGE 0

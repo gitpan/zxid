@@ -266,6 +266,7 @@ struct zxid_conf {
   char* trustpdp_url;
   char* defaultqs;
   char* wsp_pat;
+  char* uma_pat;
   char* sso_pat;
   char* mod_saml_attr_prefix;  /* Prefix for req variables in mod_auth_saml */
   char* wsc_to_hdr;
@@ -364,7 +365,7 @@ struct zxid_conf {
   char  bus_rcpt;            /* Audit Bus receipt enable and signing flags */
   char  az_fail_mode;        /* What to do when authorization can not be done */
   char  md_authority_ena;
-  char  pad7;
+  char  backwards_compat_ena; /* Enable CBC (instead of GCM) and PKCS#1 v1.5 padding, both of which are vulnearable and can compromise modern crypto through Backwards Compatibility Attacks. */
 
 #ifdef USE_CURL
   CURL* curl;
@@ -439,18 +440,22 @@ struct zxid_cgi {
   char* sp_eid;        /* IdP An for to generate page */
   char* sp_dpy_name;
   char* sp_button_url;
-  char* response_type; /* OAuth2 / OpenID-Connect */
+  char* rest;          /* OAUTH2 Resource Set Registration: RESTful part of the URI */
+  char* response_type; /* OAuth2 / OpenID-Connect (OIDC1), used to detect An/Az req */
   char* client_id;     /* OAuth2 */
   char* scope;         /* OAuth2 */
   char* redirect_uri;  /* OAuth2, also decoded RelayState in SAML */
   char* nonce;         /* OAuth2 */
-  char* state;         /* OAuth2 */
+  char* state;         /* OAuth2 (like SAML RelayState) */
   char* display;       /* OAuth2 */
   char* prompt;        /* OAuth2 */
   char* access_token;  /* OAuth2 */
+  char* refresh_token; /* OAuth2 */
   char* token_type;    /* OAuth2 */
+  char* grant_type;    /* OAuth2 */
+  char* code;          /* OAuth2 */
   char* id_token;      /* OAuth2 */
-  char* expires_in;    /* OAuth2 */
+  int   expires_in;    /* OAuth2 */
   char* iss;           /* OAuth2 */
   char* user_id;       /* OAuth2 */
   char* aud;           /* OAuth2 */
@@ -482,6 +487,7 @@ struct zxid_cgi {
   char* action_url;    /* <form action=URL> in some forms, such as post.html */
   char* uri_path;      /* SCRIPT_NAME or other URI path */
   char* qs;            /* QUERY_STRING */
+  char* post;          /* Unparsed body of a POST */
   zxid_entity* idp_list;   /* IdPs from CDC */
 };
 
@@ -514,6 +520,8 @@ struct zxid_ses {
   zxid_nid* tgtnameid; /* From a7n or EncryptedID */
   zxid_a7n* a7n;       /* SAML 2.0 for Subject */
   zxid_a7n* tgta7n;    /* SAML 2.0 for Target */
+  char* jwt;           /* Javascript Web Token for Subject */
+  char* tgtjwt;        /* Javascript Web Token for Target */
   struct zx_sa11_Assertion_s* a7n11;
   struct zx_sa11_Assertion_s* tgta7n11;
   struct zx_ff12_Assertion_s* a7n12;
@@ -528,6 +536,14 @@ struct zxid_ses {
   char* sesbuf;
   char* sso_a7n_buf;
   struct zxid_attr* at; /* Attributes extracted from a7n and translated using inmap. Linked list */
+  char* access_token;  /* OAuth2 */
+  char* refresh_token; /* OAuth2 */
+  char* token_type;    /* OAuth2 */
+  char* id_token;      /* OAuth2 */
+  int   expires_in;    /* OAuth2 */
+  char* client_id;     /* OAuth2 */
+  char* client_secret; /* OAuth2 */
+  char* rpt;           /* UMA */
 #ifdef USE_PTHREAD
   struct zx_lock mx;
 #endif
@@ -692,7 +708,9 @@ struct zxid_invite {
 #define ZXID_DIMD_DIR "dimd/"
 #define ZXID_INV_DIR  "inv/"
 #define ZXID_LOG_DIR  "log/"
-#define ZXID_MAX_USER (256)  /* Maximum size of .mni or user file */
+#define ZXID_DCR_DIR  "dcr/"  /* OAUTH2 Dynamic Client Registrations */
+#define ZXID_RSR_DIR  "rsr/"  /* OAUTH2 Resource Set Registrations */
+#define ZXID_MAX_USER (256)   /* Maximum size of .mni or user file */
 #define ZXID_INIT_MD_BUF   (8*1024-1)  /* Initial size, will automatically reallocate. */
 #define ZXID_INIT_SOAP_BUF (8*1024-1)  /* Initial size, will automatically reallocate. */
 #define ZXID_MAX_CURL_BUF  (10*1024*1024-1)  /* Buffer reallocation will not grow beyond this. */
@@ -795,6 +813,7 @@ ZXID_DECL struct zx_str* zxenc_symkey_dec(zxid_conf* cf, struct zx_xenc_Encrypte
 #define ZXLOG_ISSUE_DIR "issue/"
 #define ZXLOG_A7N_KIND  "/a7n/"
 #define ZXLOG_JWT_KIND  "/jwt/"
+#define ZXLOG_AZC_KIND  "/azc/"
 #define ZXLOG_MSG_KIND  "/msg/"
 #define ZXLOG_WIR_KIND  "/wir/"
 
@@ -903,8 +922,7 @@ ZXID_DECL int zxid_pw_authn(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses);
 
 /* zxidcurl */
 
-ZXID_DECL char* zxid_http_get(zxid_conf* cf, const char* url, char** lim);
-ZXID_DECL struct zx_str* zxid_http_post_raw(zxid_conf* cf, int url_len, const char* url, int len, const char* data, const char* SOAPactionre);
+ZXID_DECL struct zx_str* zxid_http_cli(zxid_conf* cf, int url_len, const char* url, int len, const char* data, const char* content_type, const char* headers, int flags);
 ZXID_DECL struct zx_root_s* zxid_soap_call_raw(zxid_conf* cf, struct zx_str* url, struct zx_e_Envelope_s* env, char** ret_enve);
 ZXID_DECL struct zx_root_s* zxid_soap_call_hdr_body(zxid_conf* cf, struct zx_str* url, struct zx_e_Header_s* hdr, struct zx_e_Body_s* body);
 ZXID_DECL int zxid_soap_cgi_resp_body(zxid_conf* cf, zxid_ses* ses, struct zx_e_Body_s* body);
@@ -991,6 +1009,17 @@ ZXID_DECL struct zx_sp_Status_s* zxid_OK(zxid_conf* cf, struct zx_elem_s* father
 /* zxidoauth */
 
 ZXID_DECL struct zx_str* zxid_mk_oauth_az_req(zxid_conf* cf, zxid_cgi* cgi, struct zx_str* loc, char* relay_state);
+ZXID_DECL char* zxid_mk_jwks(zxid_conf* cf);
+ZXID_DECL char* zxid_mk_oauth2_dyn_cli_reg_req(zxid_conf* cf);
+ZXID_DECL char* zxid_mk_oauth2_dyn_cli_reg_res(zxid_conf* cf, zxid_cgi* cgi);
+ZXID_DECL char* zxid_mk_oauth2_rsrc_reg_req(zxid_conf* cf, const char* rsrc_name, const char* rsrc_icon_uri, const char* rsrc_scope_url, const char* rsrc_type);
+ZXID_DECL char* zxid_mk_oauth2_rsrc_reg_res(zxid_conf* cf, zxid_cgi* cgi, char* rev);
+ZXID_DECL char* zxid_oauth_get_well_known_item(zxid_conf* cf, const char* base_uri, const char* key);
+ZXID_DECL struct zx_str* zxid_oauth_dynclireg_client(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* as_uri);
+ZXID_DECL void zxid_oauth_rsrcreg_client(zxid_conf* cf, zxid_cgi* cgi, zxid_ses* ses, const char* as_uri, const char* rsrc_name, const char* rsrc_icon_uri, const char* rsrc_scope_url, const char* rsrc_type);
+ZXID_DECL char* zxid_oauth_call_rpt_endpoint(zxid_conf* cf, zxid_ses* ses, const char* host_id, const char* as_uri);
+ZXID_DECL char* zxid_oauth_call_az_endpoint(zxid_conf* cf, zxid_ses* ses, const char* host_id, const char* as_uri, const char* ticket);
+ZXID_DECL int zxid_oidc_as_call(zxid_conf* cf, zxid_ses* ses, zxid_entity* idp_meta, const char* _uma_authn);
 
 /* zxidmkwsf */
 
@@ -1134,16 +1163,23 @@ ZXID_DECL char* zxid_get_idpnid_at_eid(zxid_conf* cf, const char* uid, const cha
 #define ZXID_CDC_CHOICE_UI_NOPREF    5  /* Offer UI. Do not give preference to CDC IdPs. */
 #define ZXID_CDC_CHOICE_UI_ONLY_CDC  6  /* Offer UI. If CDC was set, only show IdPs from CDC. Otherwise show all IdPs. */
 
-#define ZXID_SAML2_ART   1
-#define ZXID_SAML2_POST  2
-#define ZXID_SAML2_PAOS  3
-#define ZXID_SAML2_SOAP  4
-#define ZXID_SAML2_POST_SIMPLE_SIGN  5
-#define ZXID_SAML2_REDIR 6   /* for function of same name, see */
-#define ZXID_SAML2_URI   7
+/* index values for selecting different bindings. These appear as index XML
+ * attribute in metadata and also in Web GUI formfield names, e.g. "l1" means
+ * HTTP-Artifact and "l6" means OpenID-Connect 1.0 (OIDC1).
+ * See also: zxid_pick_sso_profile(), cgi->pr_ix */
 
-/* Following are experimental protocol bindings (2011) */
-#define ZXID_OPID_CONNECT 8
+#define ZXID_DEFAULT_PR_IX 0
+#define ZXID_SAML2_ART 1
+#define ZXID_SAML2_POST 2
+#define ZXID_SAML2_SOAP 3
+#define ZXID_SAML2_PAOS 4
+#define ZXID_SAML2_POST_SIMPLE_SIGN 5
+#define ZXID_SAML2_REDIR 6
+#define ZXID_SAML2_URI 7
+#define ZXID_OIDC1_CODE 8
+#define ZXID_OIDC1_ID_TOK_TOK 9
+
+/* Service enumerators */
 
 #define ZXID_SLO_SVC 1
 #define ZXID_MNI_SVC 2

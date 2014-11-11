@@ -5,7 +5,7 @@
  * Author: Sampo Kellomaki (sampo@iki.fi)
  * This is confidential unpublished proprietary source code of the author.
  * NO WARRANTY, not even implied warranties. Contains trade secrets.
- * Distribution prohibited unless authorized in writing.
+ * Distrtion prohibited unless authorized in writing.
  * Licensed under Apache License 2.0, see file COPYING.
  * $Id: zxutil.c,v 1.53 2009-11-29 12:23:06 sampo Exp $
  *
@@ -440,6 +440,36 @@ int write_all_path_fmt(const char* logkey, int maxlen, char* buf, const char* pa
   return 1;
 }
 
+/*() Write all data to a file at the formatted path. The buf is used
+ * for formatting data. The path_fmt can have up to two %s specifiers,
+ * which will be satisfied by prepath and postpath.
+ *
+ * logkey::   Used for debug prints and error messages
+ * path_fmt:: Format string for filesystem path to the file
+ * prepath::  Argument to satisfy first %s in path_fmt
+ * postpath:: Argument to satisfy second %s in path_fmt
+ * len::      Length of the data, pass -1 to use strlen(data).
+ * data::     Data to be written. No formatting on data is performed.
+ * Returns:: 1 on success, 0 on fail. */
+
+/* Called by: */
+int write_all_path(const char* logkey, const char* path_fmt, const char* prepath, const char* postpath, int len, const char* data)
+{
+  fdtype fd;
+  fd = open_fd_from_path(O_CREAT | O_RDWR | O_TRUNC, 0666, logkey, 1, path_fmt, prepath, postpath);
+  DD("write_all_path(%s, %x)", logkey, fd);
+  if (fd == BADFD) return 0;
+  if (len == -1)
+    len = strlen(data);
+  if (write_all_fd(fd, data, len) == -1) {
+    perror("Trouble writing");
+    close_file(fd, logkey);
+    return 0;
+  }
+  close_file(fd, logkey);
+  return 1;
+}
+
 #define WRITE_FAIL_MSG "Check that all directories exist, permissions allow writing, and disk is not full or that ulimit(1) is not too low."
 
 /*() Write or append all data to a file at the already formatted path.
@@ -719,7 +749,7 @@ const char pw_basis_64[64]   = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij
  * eq_pad::   Padding character, usually equals (=). If nul (0), no padding is added.
  * return::   Pointer one past last byte written in r. This function never fails. */
 
-/* Called by:  base64_fancy, safe_base64 */
+/* Called by:  sha_safe_base64 */
 char* base64_fancy_raw(const char* p, int len, /* input and its length */
 		       char* r,                /* Output buffer. Will not be NUL terminated. */
 		       const char* basis_64,   /* 64 character alphabet to be used, see above */
@@ -860,7 +890,7 @@ char* unbase64_raw(const char* p, const char* lim, char* r, const unsigned char*
 }
 
 /*() The out_buf should be 28 chars in length. The buffer is not automatically nul termianated.
- * There will be 27 characters of payload, plus one termination character "." (which
+ * There will be 27 characters of payload, plus one padding character "." (which
  * caller can overwrite with nul, if you like).
  *
  * out_buf:: Buffer where result will be written. It must be 28 characters long and already allocated. The buffer will not be null terminated.
@@ -1071,6 +1101,29 @@ char* zxid_unbase64_inflate(struct zx_ctx* c, int in_len, const char* in, int* o
   return p;
 }
 
+/*() Eliminate characters in zap from the string s, in place, i.e. shifting the
+ * tail of the string left. The string is modified in place. */
+
+char* zx_zap_inplace_raw(char* s, const char* zap)
+{
+  char* ret = s;
+  char* p;
+  // *** scanning in reverse would be (marginally) more efficient
+  int n;
+  while (*s) {
+    n = strcspn(s, zap);
+    s += n;
+    if (!*s)
+      break;
+    n = strspn(s, zap);
+    for (p = s; *(p+n); ++p)
+      *p = *(p+n);
+    *p = 0;
+    //memmove(s, s+n);  // whish strmove existed
+  }
+  return ret;
+}
+
 #if 1
 /* N.B. Many other Liberty implementations expect nearly everything to be URL encoded. */
 #define URL_BAD(x) (!AZaz_09_(x))
@@ -1139,6 +1192,23 @@ char* zx_url_encode(struct zx_ctx* c, int in_len, const char* in, int* out_len)
   return out;
 }
 
+/*() Base64 encode and URL encode concatenation "uid:password" as in HTTP basic authentication */
+
+char* zx_mk_basic_auth_b64(struct zx_ctx* c, const char* uid, const char* pw)
+{
+  char* p;
+  char* q;
+  char* b64;
+  int len;
+
+  p = zx_alloc_sprintf(c, &len, "%s:%s", uid, pw);
+  b64 = ZX_ALLOC(c, SIMPLE_BASE64_LEN(len));
+  q = base64_fancy_raw(p, len, b64, std_basis_64, 10000000, 0, 0, '=');
+  ZX_FREE(c, p);
+  p = zx_url_encode(c, q-b64, b64, 0);
+  ZX_FREE(c, b64);
+  return p;
+}
 
 /*() Parse one fragment of a query string (QUERY_STRING querystring).
  *
@@ -1332,6 +1402,113 @@ int zx_date_time_to_secs(const char* dt)
   t.tm_year -= 1900;
   --t.tm_mon;
   return zx_timegm(&t);
+}
+
+/*() Extract simple scalar string value of a json key using string
+ * matching, rather than actually parsing JSON.
+ * return: pointer to the value, but this is in the original hay buffer and is
+ *     not nul terminated. You need to look at len for the length of the string.
+ * N.B. The key specification MUST include the quotes, e.g. "\"yourkey\""
+ */
+
+const char* zx_json_extract_raw(const char* hay, const char* key, int* len)
+{
+  const char* s;
+  const char* p = strstr(hay, key);
+  if (!p) {
+    D("key(%s) not found in json(%s)", key, hay);
+    return 0;
+  }
+  p += strlen(key);
+  p += strspn(p, " \t\r\n");
+  if (*p != ':') {
+    D("key(%s) found in json(%s) but subsequent colon (:) not found. Did you forget the double quotes around the key? p(%s)", key, hay, p);
+    return 0;
+  }
+  ++p;
+  p += strspn(p, " \t\r\n");
+  if (*p != '"')
+    return 0;
+  s = ++p;
+  p = strchr(p, '"');  /* *** Escaped double quotes not correctly considered. */
+  if (len)
+    *len = p-s;
+  return s;
+}
+
+/*() Extract simple scalar string from JSON document. Return newly allocated memory.
+ * N.B. The key specification MUST include the quotes, e.g. "\"yourkey\""
+ */
+
+char* zx_json_extract_dup(struct zx_ctx* c, const char* hay, const char* key)
+{
+  int len;
+  const char* p = zx_json_extract_raw(hay, key, &len);
+  if (!p)
+    return 0;
+  return zx_dup_len_cstr(c, len, p);
+}
+
+/*() Extract simple scalar integer from JSON document.
+ * N.B. The key specification MUST include the quotes, e.g. "\"yourkey\""
+ */
+
+int zx_json_extract_int(const char* hay, const char* key)
+{
+  int i;
+  const char* p = strstr(hay, key);
+  if (!p) {
+    D("key(%s) not found in json(%s)", key, hay);
+    return 0;
+  }
+  p += strlen(key);
+  p += strspn(p, " \t\r\n");
+  if (*p != ':') {
+    D("key(%s) found in json(%s) but subsequent colon (:) not found. Did you forget the double quotes around the key? p(%s)", key, hay, p);
+    return 0;
+  }
+  ++p;
+  p += strspn(p, " \t\r\n");
+  sscanf(p, "%i", &i);
+  return i;
+}
+
+/*() Extract query string parameter without really parsing the query string.
+ * return: pointer to the value, but this is in the original hay buffer and is
+ *     not nul terminated. You need to look at len for the length of the string.
+ * N.B. The key specification MUST include the equals sign, e.g. "yourkey="
+ */
+
+const char* zx_qs_extract_raw(const char* hay, const char* key, int* len)
+{
+  const char* s;
+  const char* p = strstr(hay, key);
+  if (!p) {
+    D("key(%s) not found in qs(%s)", key, hay);
+    return 0;
+  }
+  p += strlen(key);
+  if (len) {
+    s = strchr(p, '&');
+    if (!s)
+      *len = strlen(p);
+    else
+      *len = s-p;
+  }
+  return p;
+}
+
+/*() Extract simple scalar string from query string. Return newly allocated memory.
+ * N.B. The key specification MUST include the quotes, e.g. "\"yourkey\""
+ */
+
+char* zx_qs_extract_dup(struct zx_ctx* c, const char* hay, const char* key)
+{
+  int len;
+  const char* p = zx_qs_extract_raw(hay, key, &len);
+  if (!p)
+    return 0;
+  return zx_dup_len_cstr(c, len, p);
 }
 
 /* EOF  --  zxutil.c */

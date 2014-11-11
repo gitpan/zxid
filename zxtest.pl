@@ -1238,6 +1238,7 @@ CMD('HELP2', 'zxpasswd -h',  "./zxpasswd -v -h");
 CMD('HELP3', 'zxcot -h',     "./zxcot -v -h");
 CMD('HELP4', 'zxdecode -h',  "./zxdecode -v -h");
 CMD('HELP5', 'zxlogview -h', "./zxlogview -v -h");
+CMD('HELP6', 'zxumacall -h', "./zxumacall -v -h");
 
 CMD('SOENC1', 'EncDec Status',     "./zxencdectest -r 3");
 CMD('ATORD1', 'Attribute sorting', "./zxencdectest -r 4");
@@ -1447,7 +1448,6 @@ CMD('ZXC-WS8', 'AS + WSF call hr-xml query', "./zxcall -d -a http://idp.tas3.pt:
 CMD('ZXC-WS9', 'AS + WSF call hr-xml mod', "./zxcall -d -a http://idp.tas3.pt:8081/zxididp test:foo -t urn:id-sis-idhrxml:2007-06:dst-2.1 -e '<idhrxml:Modify xmlns:idhrxml=\"urn:id-sis-idhrxml:2007-06:dst-2.1\"><idhrxml:ModifyItem><idhrxml:Select>test query</idhrxml:Select><idhrxml:NewData><hrxml:Candidate xmlns:hrxml=\"http://ns.hr-xml.org/2007-04-15\">test mod</hrxml:Candidate></idhrxml:NewData></idhrxml:ModifyItem></idhrxml:Modify>' -b");
 CMD('ZXC-WS10', 'AS + WSF call hr-xml mod', "./zxcall -d -a http://idp.tas3.pt:8081/zxididp test:foo -t urn:id-sis-idhrxml:2007-06:dst-2.1 -e '<idhrxml:Delete xmlns:idhrxml=\"urn:id-sis-idhrxml:2007-06:dst-2.1\"><idhrxml:DeleteItem><idhrxml:Select>test query</idhrxml:Select></idhrxml:DeleteItem></idhrxml:Delete>' -b");
 
-
 ### Simulated browsing tests (a bit fragile)
 
 tA('ST','LOGIN-IDP1', 'IdP Login screen',  'http://idp.tas3.pt:8081/zxididp?o=F');
@@ -1478,6 +1478,14 @@ tA('ST','SSOHLO9', 'SP local logout', 'http://sp1.zxidsp.org:8081/zxidhlo?gl=+Lo
 # http://sp1.zxidsp.org:8080/zxidservlet/zxidHLO?o=E
 # http://sp.tas3.pt:8080/zxidservlet/appdemo
 # http://sp.tas3.pt:8080/zxidservlet/wscprepdemo
+
+###
+### UMA and OATH2 tests
+###
+# ./zxid_httpd -p 8081 -c 'zxid*' &
+
+tA('ST','OAZ-JWKS1', 'Java Web Key Set test',  'http://idp.tas3.pt:8081/zxididp?o=j');
+CMD('OAZ-DCR1', 'Dynamic CLient Registration', "./zxumacall -u 'http://sp.tas3.pt:8081/zxididp?o=J' -iat foobar-iat -dynclireg");
 
 ###
 ### Audit bus tests

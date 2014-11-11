@@ -139,6 +139,8 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 #define ONE_OF_4(x,a,b,c,d) (ONE_OF_2((x),(a),(b)) || ONE_OF_2((x),(c),(d)))
 #define ONE_OF_5(x,a,b,c,d,e) (ONE_OF_3((x),(a),(b),(c)) || ONE_OF_2((x),(d),(e)))
 #define ONE_OF_6(x,a,b,c,d,e,f) (ONE_OF_3((x),(a),(b),(c)) || ONE_OF_3((x),(d),(e),(f)))
+#define ONE_OF_7(x,a,b,c,d,e,f,g)   (ONE_OF_4((x),(a),(b),(c),(g)) || ONE_OF_3((x),(d),(e),(f)))
+#define ONE_OF_8(x,a,b,c,d,e,f,g,h) (ONE_OF_4((x),(a),(b),(c),(g)) || ONE_OF_4((x),(d),(e),(f),(h)))
 
 #define THREE_IN_ROW(p,a,b,c) ((p)[0] == (a) && (p)[1] == (b) && (p)[2] == (c))
 
@@ -422,7 +424,7 @@ extern int trace;   /* this gets manipulated by -v or similar flag */
 extern char errmac_instance[64];
 #endif
 
-#define ERRMAC_DEBUG_MASK   0x03  /* 0 = no debug, 1=minimal debug, 2=bit more, 3=lot more */
+#define ERRMAC_DEBUG_MASK   0x03  /* 0 = no debug, 1=minimal info debug, 2=bit more, 3=lot more */
 #define ERRMAC_XMLDBG       0x04
 #define ERRMAC_RESERVED     0x08
 #define ERRMAC_INOUT        0x10

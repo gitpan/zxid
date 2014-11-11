@@ -72,10 +72,12 @@ int zxid_parse_cgi(zxid_conf* cf, zxid_cgi* cgi, char* qs)
       if (!strcmp(n, "prompt")) { cgi->prompt = v; break; }  /* OAUTH2 */
       goto unknown;
     case 'r':
-      if (!strcmp(n, "response_type")) { cgi->response_type = v; break; }  /* OAUTH2 */
+      if (!strcmp(n, "response_type")) { cgi->response_type = v; break; }  /* OAUTH2/OIDC1 */
       if (!strcmp(n, "redirect_uri"))  { cgi->redirect_uri = v;	 break; }  /* OAUTH2 */
       if (!strcmp(n, "redirafter"))    { cgi->redirafter = v;	 break; }
       if (!strcmp(n, "rs"))            { cgi->rs = v; break; }
+      if (!strcmp(n, "rest"))          { cgi->rest = v; break; }
+      if (!strcmp(n, "refresh_token")) { cgi->refresh_token = v; break; }  /* OAUTH2 */
       goto unknown;
     case 's':
       if (!n[1]) { cgi->sid = v; break; }
@@ -93,12 +95,13 @@ int zxid_parse_cgi(zxid_conf* cf, zxid_cgi* cgi, char* qs)
     case 'c':
       if (!n[1]) { cgi->cdc = v; break; }
       if (!strcmp(n, "client_id")) { cgi->client_id = v; break; }    /* OAUTH2 */
+      if (!strcmp(n, "code"))      { cgi->code = v;      break; }    /* OAUTH2 */
       goto unknown;
       /* The following two entity IDs, combined with various login buttons
        * aim at supporting may different user interface layouts. You need to
        * understand how they interact to avoid undesired conflicts. */
     case 'e':  /* EntityID field (manual entry). Overrides 'd'. */
-      if (!strcmp(n, "expires_in")) { cgi->nonce = v; break; }  /* OAUTH2 */
+      if (!strcmp(n, "expires_in")) { cgi->expires_in = atoi(v); break; }  /* OAUTH2 */
       if (!strcmp(n, "exp"))        { cgi->exp = v; break; }    /* OAUTH2 */
       if (!n[1]) {
 set_eid:
@@ -122,7 +125,7 @@ set_eid:
        * protocol profile designator, and <eid> is Entity ID of the IdP.
        * N.B. If eid is omitted from button name, it may be provided using
        * d or e fields (see above). */
-      cgi->pr_ix = n[1];
+      cgi->pr_ix = n[1]-'0';
       if (n[2]) {
 	cgi->eid = n+2;
 	/*if (cf->idp_list_meth == ZXID_IDP_LIST_BRAND)*/
@@ -151,7 +154,7 @@ set_eid:
        * N.B. If eid is omitted from button name, it may be provided using
        * d or e fields (see above). This effectively allows i to be just
        * a protocol selection popup. */
-      cgi->pr_ix = v[0];
+      cgi->pr_ix = v[0]-'0';
       if (v[1])
 	cgi->eid = v+1;
       break;
@@ -173,15 +176,19 @@ set_eid:
       }
       break;
     case 'g':  /* management (gestion) form fields or query string arguments */
-      if (!n[1] || n[2]) goto unknown;  /* N.B. single letter g=GrantToken in zxidgrant.pl */
       switch (n[1]) {
-      case 'l': /* gl - local logout */
       case 'r': /* gr - single logout redirect */
+	if (!strcmp(n, "grant_type")) {    /* OAUTH2 */
+	  cgi->grant_type = v;
+	  break;
+	}
+      case 'l': /* gl - local logout */
       case 's': /* gs - single logout SOAP */
       case 't': /* gt - defederate redir */
       case 'u': cgi->op = n[1];           break; /* gu - defederate SOAP */
       case 'n': cgi->newnym = v;          break; /* gn */
       case 'e': cgi->enc_hint = v[0];     break; /* ge */
+      case 0: goto unknown; /* N.B. single letter g=GrantToken in zxidgrant.pl */
       }
       break;
     case 'a':
@@ -236,6 +243,22 @@ set_eid:
 	cgi->sig = v;
 	break;
       }
+      goto unknown;
+    case '_':
+      if (!strcmp(n, "_uma_authn")) {
+	/* Decode in place: it should always fit */
+	p = unbase64_raw(v, v+strlen(v), v, zx_std_index_64);
+	*p = 0;
+	cgi->uid = v;
+	p = strchr(v, ':');
+	if (p) {
+	  *p = 0;
+	  cgi->pw = p+1;
+	} else {
+	  ERR("Malformed _uma_authn token(%s): no colon found", v);
+	}
+	break;
+      }      
       /* fall thru */
     unknown:
     default:  D("Unknown CGI field(%s) val(%s) cgi=%p", n, v, cgi);
